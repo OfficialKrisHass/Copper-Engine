@@ -26,8 +26,7 @@ mono_crash.*
 
 # Build results
 [Bb]uild/
-[Bb]in/
-[Bb]in-int/
+[Bb]uild[Ii]nt/
 
 # Custom Batch scripts
 [Cc]alculate[Ll]ines.bat

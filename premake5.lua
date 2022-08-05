@@ -13,6 +13,9 @@ project "Copper-Engine"
     targetdir("Build/" .. outputDir .. "/%{prj.name}")
     objdir("BuildInt/" .. outputDir .. "/%{prj.name}")
 
+    pchheader "cupch.h"
+    pchsource "Copper-Engine/src/cupch.cpp"
+
     files {
 
         "%{prj.name}/src/**.h",
@@ -99,7 +102,7 @@ project "Copper-Editor"
     includedirs {
 
         "%{prj.name}/src",
-        
+
         "Copper-Engine/src",
         "Copper-Engine/lib/spdlog",
 

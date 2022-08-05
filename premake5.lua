@@ -24,6 +24,8 @@ project "Copper-Engine"
 
         "%{prj.name}/src",
 
+        "%{prj.name}/lib/spdlog",
+
     }
 
     defines {
@@ -97,8 +99,9 @@ project "Copper-Editor"
     includedirs {
 
         "%{prj.name}/src",
-
-        "Copper-Engine/src"
+        
+        "Copper-Engine/src",
+        "Copper-Engine/lib/spdlog",
 
     }
 

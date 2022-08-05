@@ -1,6 +1,8 @@
 #pragma once
 
-#include "Copper/Core/Core.h"
-#include "Copper/Core/Engine.h"
+#include "Engine/Core/Core.h"
+#include "Engine/Core/Engine.h"
 
-#include "Copper/Core/Entry.h"
+#include "Engine/Debug/Log.h"
+
+#include "Engine/Core/Entry.h"

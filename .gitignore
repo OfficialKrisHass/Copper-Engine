@@ -28,6 +28,8 @@ mono_crash.*
 [Bb]uild/
 [Bb]uild[Ii]nt/
 
+[Dd]ocs
+
 # Custom Batch scripts
 [Cc]alculate[Ll]ines.bat
 [Pp]s.ps1

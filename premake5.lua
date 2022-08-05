@@ -5,6 +5,8 @@ workspace "Copper-Engine"
 
 outputDir = "%{cfg.system}-%{cfg.architecture}-%{cfg.buildcfg}"
 
+include "Copper-Engine/lib/GLFW"
+
 project "Copper-Engine"
     location "Copper-Engine"
     kind "SharedLib"
@@ -28,6 +30,14 @@ project "Copper-Engine"
         "%{prj.name}/src",
 
         "%{prj.name}/lib/spdlog",
+        "%{prj.name}/lib/GLFW/include",
+
+    }
+
+    links {
+
+        "GLFW",
+        "opengl32.lib"
 
     }
 
@@ -62,27 +72,11 @@ project "Copper-Engine"
 
         buildoptions "/MTd"
 
-        linkoptions {
-
-            '/NODEFAULTLIB:"libcmt.lib"',
-            '/NODEFAULTLIB:"msvcrt.lib"',
-            '/NODEFAULTLIB:"msvcrtd.lib"'
-
-        }
-
     filter "configurations:Release"
         defines "CU_RELEASE"
         optimize "On"
 
         buildoptions "/MT"
-
-        linkoptions {
-
-            '/NODEFAULTLIB:"msvcrt.lib"',
-            '/NODEFAULTLIB:"libcmtd.lib"',
-            '/NODEFAULTLIB:"msvcrtd.lib"'
-
-        }
 
 project "Copper-Editor"
     location "Copper-Editor"
@@ -138,24 +132,8 @@ project "Copper-Editor"
 
         buildoptions "/MTd"
 
-        linkoptions {
-
-            '/NODEFAULTLIB:"libcmt.lib"',
-            '/NODEFAULTLIB:"msvcrt.lib"',
-            '/NODEFAULTLIB:"msvcrtd.lib"'
-
-        }
-
     filter "configurations:Release"
         defines "CU_RELEASE"
         optimize "On"
 
         buildoptions "/MT"
-
-        linkoptions {
-
-            '/NODEFAULTLIB:"msvcrt.lib"',
-            '/NODEFAULTLIB:"libcmtd.lib"',
-            '/NODEFAULTLIB:"msvcrtd.lib"'
-
-        }

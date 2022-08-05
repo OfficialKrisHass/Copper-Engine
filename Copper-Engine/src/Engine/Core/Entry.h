@@ -5,6 +5,8 @@
 int main() {
 
 	Copper::Initialize();
+	Copper::Run();
+	Copper::Shutdown();
 
 	return 0;
 

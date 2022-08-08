@@ -59,4 +59,20 @@ namespace Copper {
 
 	}
 
+	bool OnWindowResize(Event& e) {
+
+		Log("{0}", e);
+
+		return true;
+
+	}
+
+	bool OnWindowClose(Event& e) {
+
+		Log("{0}", e);
+
+		return true;
+
+	}
+
 }

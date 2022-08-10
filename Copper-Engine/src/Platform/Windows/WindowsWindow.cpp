@@ -1,6 +1,8 @@
 #include "cupch.h"
 #include "Engine/Core/Window.h"
+
 #include "Engine/Core/Engine.h"
+#include "Engine/Renderer/Renderer.h"
 
 #include <GLFW/glfw3.h>
 
@@ -22,8 +24,14 @@ namespace Copper {
 
 		if (!glfwInit()) { LogError("Could not Initialize GLFW!"); }
 
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
 		windowPtr = (void*) glfwCreateWindow(data.width, data.height, data.title.c_str(), NULL, NULL);
 		glfwMakeContextCurrent(WINDOW);
+
+		Renderer::Initialize();
 
 		data.wResE += OnWindowResize;
 		data.wClsE += OnWindowClose;

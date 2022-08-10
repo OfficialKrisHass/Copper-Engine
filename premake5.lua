@@ -6,6 +6,7 @@ workspace "Copper-Engine"
 outputDir = "%{cfg.system}-%{cfg.architecture}-%{cfg.buildcfg}"
 
 include "Copper-Engine/lib/GLFW"
+include "Copper-Engine/lib/GLAD"
 
 project "Copper-Engine"
     location "Copper-Engine"
@@ -35,12 +36,14 @@ project "Copper-Engine"
 
         "%{prj.name}/lib/spdlog",
         "%{prj.name}/lib/GLFW/include",
+        "%{prj.name}/lib/GLAD/include"
 
     }
 
     links {
 
         "GLFW",
+        "GLAD",
         "opengl32.lib"
 
     }
@@ -49,6 +52,12 @@ project "Copper-Engine"
 
         "CU_ENGINE",
         "CU_DLL"
+
+    }
+
+    postbuildcommands {
+
+        "{COPYDIR} assets ../Build/" .. outputDir .. "/Copper-Editor/assets"
 
     }
 
@@ -66,7 +75,8 @@ project "Copper-Engine"
 
         files {
 
-            "%{prj.name}/src/Platform/Windows/**.cpp"
+            "%{prj.name}/src/Platform/Windows/**.cpp",
+            "%{prj.name}/src/Platform/OpenGL/**.cpp"
 
         }
 

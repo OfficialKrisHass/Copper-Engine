@@ -3,15 +3,38 @@
 
 #include "Engine/Core/Window.h"
 
-#include <GLFW/glfw3.h>
+#include "Engine/Renderer/Renderer.h"
+#include "Engine/Renderer/Buffer.h"
+#include "Engine/Renderer/VertexArray.h"
+#include "Engine/Renderer/Shader.h"
 
 namespace Copper {
+
+	std::vector<float> vertices{
+
+		-0.5f, -0.5f, 0.0f,    1.0f, 0.0f, 0.0f,
+		 0.5f, -0.5f, 0.0f,    0.0f, 1.0f, 0.0f,
+		 0.5f,  0.5f, 0.0f,    0.0f, 0.0f, 1.0f,
+		-0.5f,  0.5f, 0.0f,    1.0f, 0.0f, 1.0f,
+
+	};
+
+	std::vector<uint32_t> indices{
+
+		0, 1, 2,
+		2, 3, 0
+
+	};
 
 	struct EngineData {
 
 		bool running = true;
 
 		Window* window;
+
+		VertexBuffer* vbo;
+		IndexBuffer* ibo;
+		VertexArray* vao;
 
 	};
 
@@ -26,6 +49,18 @@ namespace Copper {
 
 		data.window = new Window(WindowData("Copper Engine", 800, 600));
 
+		Renderer::SetShader(new Shader("assets/Shaders/vertexDefault.glsl", "assets/Shaders/fragmentDefault.glsl"));
+
+		data.vao = new VertexArray();
+		data.vbo = new VertexBuffer(vertices, { {"Position", ElementType::Float3}, {"Color", ElementType::Float3} });
+		data.ibo = new IndexBuffer(indices);
+
+		data.vao->SetVertexBuffer(data.vbo);
+		data.vao->SetIndexBuffer(data.ibo);
+
+		data.vbo->Unbind();
+		data.vao->Unbind();
+
 		Log("Engine Succesfully Initialized");
 		Log("--------------------Engine Initialization\n");
 
@@ -38,11 +73,8 @@ namespace Copper {
 
 		while (data.running) {
 
-			if (IsKey(KeyTab)) {
-
-				Log("Tab Pressed!");
-
-			}
+			Renderer::ClearColor(0.18f, 0.18f, 0.18f);
+			Renderer::Render(data.vao);
 
 			data.window->Update();
 

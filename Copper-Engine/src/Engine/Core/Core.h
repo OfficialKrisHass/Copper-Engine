@@ -17,5 +17,3 @@
 	#error This version of the Copper Engine only supports Windows!
 
 #endif
-
-#include "Engine/Core/Log.h"

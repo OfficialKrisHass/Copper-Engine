@@ -9,6 +9,8 @@ namespace Copper {
 
 	struct EngineData {
 
+		bool running = true;
+
 		Window* window;
 
 	};
@@ -34,7 +36,13 @@ namespace Copper {
 		Log("--------------------Engine Run Loop");
 		Log("Engine Entered the Run Loop");
 
-		while (!glfwWindowShouldClose((GLFWwindow*) data.window->windowPtr)) {
+		while (data.running) {
+
+			if (IsKey(KeyTab)) {
+
+				Log("Tab Pressed!");
+
+			}
 
 			data.window->Update();
 
@@ -55,13 +63,13 @@ namespace Copper {
 		Log("Engine Succesfully Shutdown");
 		Log("--------------------Engine Shutdown\n");
 
-		std::cin.get();
+		//std::cin.get();
 
 	}
 
-	bool OnWindowResize(Event& e) {
+	Window GetWindow() { return *data.window; }
 
-		Log("{0}", e);
+	bool OnWindowResize(Event& e) {
 
 		return true;
 
@@ -69,7 +77,7 @@ namespace Copper {
 
 	bool OnWindowClose(Event& e) {
 
-		Log("{0}", e);
+		data.running = false;
 
 		return true;
 

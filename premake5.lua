@@ -20,8 +20,12 @@ project "Copper-Engine"
 
     files {
 
-        "%{prj.name}/src/**.h",
-        "%{prj.name}/src/**.cpp",
+        "%{prj.name}/src/Copper.h",
+        "%{prj.name}/src/cupch.h",
+        "%{prj.name}/src/cupch.cpp",
+
+        "%{prj.name}/src/Engine/**.h",
+        "%{prj.name}/src/Engine/**.cpp",
 
     }
 
@@ -57,6 +61,12 @@ project "Copper-Engine"
 
             "CU_WINDOWS",
             "GLM_ENABLE_EXPERIMENTAL"
+
+        }
+
+        files {
+
+            "%{prj.name}/src/Platform/Windows/**.cpp"
 
         }
 

@@ -3,8 +3,6 @@
 #include "Engine/Core/Core.h"
 #include "Engine/Events/WindowEvent.h"
 
-#include <GLFW/glfw3.h>
-
 namespace Copper {
 
 	struct WindowData {
@@ -29,10 +27,11 @@ namespace Copper {
 		void Update();
 		void Shutdown();
 
-		void* windowPtr;
+		inline void* GetWindowPtr() { return windowPtr; }
 
 	private:
 		WindowData data;
+		void* windowPtr;
 
 	};
 

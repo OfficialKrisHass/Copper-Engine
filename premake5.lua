@@ -36,7 +36,8 @@ project "Copper-Engine"
 
         "%{prj.name}/lib/spdlog",
         "%{prj.name}/lib/GLFW/include",
-        "%{prj.name}/lib/GLAD/include"
+        "%{prj.name}/lib/GLAD/include",
+        "%{prj.name}/lib/GLM/include",
 
     }
 

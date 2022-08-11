@@ -8,6 +8,8 @@
 #include "Engine/Renderer/VertexArray.h"
 #include "Engine/Renderer/Shader.h"
 
+#include <GLM/vec3.hpp>
+
 namespace Copper {
 
 	std::vector<float> vertices{

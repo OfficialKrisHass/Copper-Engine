@@ -29,6 +29,8 @@ namespace Copper {
 
 		}
 
+		return 0;
+
 	}
 
 	struct COPPER_API Element {
@@ -55,6 +57,8 @@ namespace Copper {
 			case ElementType::Bool:     return 1;
 
 			}
+
+			return 0;
 
 		}
 

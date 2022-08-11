@@ -127,6 +127,6 @@ typedef int Key;
 
 namespace Copper {
 
-	bool COPPER_API IsKey(Key key);
+	bool IsKey(Key key);
 
 }

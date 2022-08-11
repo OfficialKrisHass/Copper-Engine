@@ -4,7 +4,7 @@
 
 namespace Copper {
 
-	struct COPPER_API Vector2 {
+	struct Vector2 {
 
 		Vector2() = default;
 		Vector2(float all) : x(all), y(all) {}
@@ -105,7 +105,7 @@ namespace Copper {
 
 	};
 
-	struct COPPER_API Vector3 {
+	struct Vector3 {
 
 		Vector3() = default;
 		Vector3(float all) : x(all), y(all), z(all) {}
@@ -218,7 +218,7 @@ namespace Copper {
 
 	};
 
-	struct COPPER_API Vector4 {
+	struct Vector4 {
 
 		Vector4() = default;
 		Vector4(float all) : x(all), y(all), z(all), w(all) {}
@@ -343,7 +343,7 @@ namespace Copper {
 
 	};
 
-	struct COPPER_API Color {
+	struct Color {
 
 		Color() = default;
 		Color(float all, float alpha = 1.0f) : r(all), g(all), b(all), a(alpha) {}

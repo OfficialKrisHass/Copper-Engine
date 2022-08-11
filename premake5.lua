@@ -7,11 +7,14 @@ outputDir = "%{cfg.system}-%{cfg.architecture}-%{cfg.buildcfg}"
 
 include "Copper-Engine/lib/GLFW"
 include "Copper-Engine/lib/GLAD"
+include "Copper-Engine/lib/ImGui/ImGui"
 
 project "Copper-Engine"
     location "Copper-Engine"
-    kind "SharedLib"
+    kind "StaticLib"
     language "C++"  
+    cppdialect "C++17"
+    staticruntime "on"
 
     targetdir("Build/" .. outputDir .. "/%{prj.name}")
     objdir("BuildInt/" .. outputDir .. "/%{prj.name}")
@@ -38,6 +41,7 @@ project "Copper-Engine"
         "%{prj.name}/lib/GLFW/include",
         "%{prj.name}/lib/GLAD/include",
         "%{prj.name}/lib/GLM/include",
+        "%{prj.name}/lib/ImGui",
 
     }
 
@@ -45,6 +49,7 @@ project "Copper-Engine"
 
         "GLFW",
         "GLAD",
+        "ImGui",
         "opengl32.lib"
 
     }
@@ -52,19 +57,17 @@ project "Copper-Engine"
     defines {
 
         "CU_ENGINE",
-        "CU_DLL"
 
     }
 
     postbuildcommands {
 
-        "{COPYDIR} assets ../Build/" .. outputDir .. "/Copper-Editor/assets"
+        "{COPYDIR} assets ../Build/" .. outputDir .. "/Copper-Editor/assets",
+        "{COPYDIR} assets ../Copper-Editor/assets",
 
     }
 
     filter "system:windows"
-        cppdialect "C++17"
-        staticruntime "On"
         systemversion "latest"
 
         defines {
@@ -81,28 +84,22 @@ project "Copper-Engine"
 
         }
 
-        postbuildcommands {
-
-            ("{COPY} %{cfg.buildtarget.relpath} ../Build/" .. outputDir .. "/Copper-Editor")
-
-        }
-
     filter "configurations:Debug"
         defines "CU_DEBUG"
-        symbols "On"
-
-        buildoptions "/MTd"
+        runtime "Debug"
+        symbols "on"
 
     filter "configurations:Release"
         defines "CU_RELEASE"
-        optimize "On"
-
-        buildoptions "/MT"
+        runtime "Release"
+        optimize "on"
 
 project "Copper-Editor"
     location "Copper-Editor"
     kind "ConsoleApp"
     language "C++"
+    cppdialect "C++17"
+    staticruntime "on"
 
     targetdir("Build/" .. outputDir .. "/%{prj.name}")
     objdir("BuildInt/" .. outputDir .. "/%{prj.name}")
@@ -120,6 +117,7 @@ project "Copper-Editor"
 
         "Copper-Engine/src",
         "Copper-Engine/lib/spdlog",
+        "Copper-Engine/lib/ImGui",
 
     }
 
@@ -136,8 +134,7 @@ project "Copper-Editor"
     }
 
     filter "system:windows"
-        cppdialect "C++17"
-        staticruntime "On"
+        staticruntime "on"
         systemversion "latest"
 
         defines {
@@ -149,12 +146,10 @@ project "Copper-Editor"
 
     filter "configurations:Debug"
         defines "CU_DEBUG"
-        symbols "On"
-
-        buildoptions "/MTd"
+        runtime "Debug"
+        symbols "on"
 
     filter "configurations:Release"
         defines "CU_RELEASE"
-        optimize "On"
-
-        buildoptions "/MT"
+        runtime "Release"
+        optimize "on"

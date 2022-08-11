@@ -8,7 +8,10 @@
 #include "Engine/Renderer/VertexArray.h"
 #include "Engine/Renderer/Shader.h"
 
+#include "Engine/UI/ImGui.h"
+
 #include <GLM/vec3.hpp>
+#include <ImGui/imgui.h>
 
 namespace Copper {
 
@@ -38,6 +41,9 @@ namespace Copper {
 		IndexBuffer* ibo;
 		VertexArray* vao;
 
+		void (*EditorRun)();
+		void (*EditorUI)();
+			
 	};
 
 	EngineData data;
@@ -52,6 +58,7 @@ namespace Copper {
 		data.window = new Window(WindowData("Copper Engine", 800, 600));
 
 		Renderer::SetShader(new Shader("assets/Shaders/vertexDefault.glsl", "assets/Shaders/fragmentDefault.glsl"));
+		UI::Initialize();
 
 		data.vao = new VertexArray();
 		data.vbo = new VertexBuffer(vertices, { {"Position", ElementType::Float3}, {"Color", ElementType::Float3} });
@@ -78,6 +85,12 @@ namespace Copper {
 			Renderer::ClearColor(0.18f, 0.18f, 0.18f);
 			Renderer::Render(data.vao);
 
+			data.EditorRun();
+
+			UI::Begin();
+			data.EditorUI();
+			UI::End();
+
 			data.window->Update();
 
 		}
@@ -92,6 +105,7 @@ namespace Copper {
 		Log("--------------------Engine Shutdown");
 		Log("Engine Entered the Shutdown");
 
+		UI::Shutdown();
 		data.window->Shutdown();
 
 		Log("Engine Succesfully Shutdown");
@@ -116,5 +130,8 @@ namespace Copper {
 		return true;
 
 	}
+
+	void SetEditorRunFunc(void (*func)()) { data.EditorRun = func; }
+	void SetEditorUIFunc(void (*func)()) { data.EditorUI = func; }
 
 }

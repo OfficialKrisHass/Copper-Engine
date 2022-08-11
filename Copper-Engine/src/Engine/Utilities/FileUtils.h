@@ -6,6 +6,6 @@
 
 namespace Copper::Utilities {
 
-	std::string COPPER_API ReadFile(std::string path);
+	std::string ReadFile(std::string path);
 
 }

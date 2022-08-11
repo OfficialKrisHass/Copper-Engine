@@ -27,6 +27,9 @@ namespace Copper {
 		void Update();
 		void Shutdown();
 
+		inline uint32_t Width() { return data.width; }
+		inline uint32_t Height() { return data.height; }
+
 		inline void* GetWindowPtr() { return windowPtr; }
 
 	private:

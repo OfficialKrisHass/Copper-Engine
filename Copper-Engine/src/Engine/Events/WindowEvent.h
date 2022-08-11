@@ -4,14 +4,14 @@
 
 namespace Copper {
 
-	class COPPER_API WindowCloseEvent : public Event {
+	class WindowCloseEvent : public Event {
 
 	public:
 		virtual std::string ToString() const override { return "Window Close Event"; }
 
 	};
 
-	class COPPER_API WindowResizeEvent : public Event {
+	class WindowResizeEvent : public Event {
 
 	public:
 		WindowResizeEvent() = default;

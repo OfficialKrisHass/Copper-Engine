@@ -6,7 +6,7 @@
 
 namespace Copper {
 
-	class COPPER_API Event {
+	class Event {
 
 	public:
 		Event() = default;

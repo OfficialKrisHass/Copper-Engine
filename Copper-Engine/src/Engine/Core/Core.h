@@ -2,15 +2,7 @@
 
 #ifdef CU_WINDOWS
 
-	#ifdef CU_DLL
-
-		#define COPPER_API __declspec(dllexport)
-
-	#else
-
-		#define COPPER_API __declspec(dllimport)
-
-	#endif
+	//
 
 #else
 

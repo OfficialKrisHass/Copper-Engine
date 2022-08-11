@@ -9,16 +9,16 @@ namespace Copper {
 
 	namespace Renderer {
 
-		void COPPER_API Initialize();
+		void Initialize();
 		
-		void COPPER_API ClearColor(float r, float g, float b);
-		void COPPER_API Render(VertexArray* vao);
+		void ClearColor(float r, float g, float b);
+		void Render(VertexArray* vao);
 
-		void COPPER_API SetShader(Shader* shader);
+		void SetShader(Shader* shader);
 
 	}
 
-	class COPPER_API RendererAPI {
+	class RendererAPI {
 
 	public:
 		static void Initialize();

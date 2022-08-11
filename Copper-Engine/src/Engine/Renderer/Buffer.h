@@ -33,7 +33,7 @@ namespace Copper {
 
 	}
 
-	struct COPPER_API Element {
+	struct Element {
 
 		ElementType type;
 		uint32_t size;
@@ -64,7 +64,7 @@ namespace Copper {
 
 	};
 
-	class COPPER_API VertexBuffer {
+	class VertexBuffer {
 
 	private:
 
@@ -104,7 +104,7 @@ namespace Copper {
 
 	};
 
-	class COPPER_API IndexBuffer {
+	class IndexBuffer {
 
 	public:
 		IndexBuffer() = default;

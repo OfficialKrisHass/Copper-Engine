@@ -6,7 +6,7 @@
 
 namespace Copper {
 
-	class COPPER_API VertexArray {
+	class VertexArray {
 
 	public:
 		VertexArray();

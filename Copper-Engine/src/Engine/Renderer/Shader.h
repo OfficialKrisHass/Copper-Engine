@@ -5,7 +5,7 @@
 
 namespace Copper {
 
-	class COPPER_API Shader {
+	class Shader {
 
 	public:
 		Shader() = default;

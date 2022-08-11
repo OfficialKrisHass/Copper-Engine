@@ -23,7 +23,7 @@ namespace Copper {
 
 #endif
 
-	class COPPER_API Logger {
+	class Logger {
 
 	public:
 		static void Initialize();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Copper.h>
+#include <Engine/Core/Entry.h>
 
 namespace Editor {
 
@@ -8,6 +9,9 @@ namespace Editor {
 
 	void Run();
 	void UI();
+
+	void RenderDockspace();
+	void RenderViewport();
 
 }
 

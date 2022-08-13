@@ -2,8 +2,12 @@
 
 #include "Panels/SceneHierarchy.h"
 
+#include "Engine/Renderer/FrameBuffer.h"
+
 #include "Engine/Scene/Scene.h"
 #include "Engine/Scene/Object.h"
+
+#include "Engine/Scene/Components/Mesh.h"
 
 #include <ImGui/imgui.h>
 
@@ -11,9 +15,33 @@ namespace Editor {
 
 	using namespace Copper;
 
+	std::vector<float> vertices{
+
+		-0.5f, -0.5f, 0.0f,    1.0f, 0.0f, 0.0f,
+		 0.5f, -0.5f, 0.0f,    0.0f, 1.0f, 0.0f,
+		 0.5f,  0.5f, 0.0f,    0.0f, 0.0f, 1.0f,
+		-0.5f,  0.5f, 0.0f,    1.0f, 0.0f, 1.0f,
+
+	};
+
+	std::vector<uint32_t> indices{
+
+		0, 1, 2,
+		2, 3, 0
+
+	};
+
 	struct EditorData {
 
+		UVector2I viewportSize;
+		std::shared_ptr<FrameBuffer> fbo;
+
+		Scene scene;
+
 		SceneHierarchy sceneHierarchy;
+
+		Object square;
+		Object camera;
 
 	};
 
@@ -24,7 +52,21 @@ namespace Editor {
 		Log("--------------------Editor Initialization");
 		Log("Editor Initialization Started!");
 
+		data.viewportSize = UVector2I(1280, 720);
+		data.fbo = std::make_shared<FrameBuffer>(data.viewportSize);
+		
 		data.sceneHierarchy = SceneHierarchy();
+		data.scene = Scene();
+		data.sceneHierarchy.SetScene(&data.scene);
+
+		data.square = data.scene.CreateObject("Square");
+		data.camera = data.scene.CreateObject("Camera");
+
+		Mesh* m = data.square.AddComponent<Mesh>();
+
+		m->vertices = vertices;
+		m->indices = indices;
+		m->Regenerate();
 
 		Log("Editor Succesfully Initialized");
 		Log("--------------------Editor Initialization\n");
@@ -33,7 +75,11 @@ namespace Editor {
 
 	void Run() {
 
-		//
+		if (data.fbo->Width() != data.viewportSize.x || data.fbo->Height() != data.viewportSize.y) { data.fbo->Resize(data.viewportSize); }
+
+		data.fbo->Bind();
+		data.scene.Update();
+		data.fbo->Unbind();
 
 	}
 
@@ -100,9 +146,16 @@ namespace Editor {
 
 	void RenderViewport() {
 
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
 		ImGui::Begin("Viewport");
-		ImGui::Text("Viewport!");
+
+		ImVec2 windowSize = ImGui::GetContentRegionAvail();
+		data.viewportSize = UVector2I(windowSize.x, windowSize.y);
+
+		uint64_t texture = data.fbo->GetColorAttachment();
+		ImGui::Image(reinterpret_cast<void*>(texture), windowSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 		ImGui::End();
+		ImGui::PopStyleVar();
 
 	}
 

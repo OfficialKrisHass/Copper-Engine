@@ -5,6 +5,8 @@
 #include "Engine/Renderer/VertexArray.h"
 #include "Engine/Renderer/Shader.h"
 
+#include "Engine/Scene/Components/Mesh.h"
+
 namespace Copper {
 
 	namespace Renderer {
@@ -12,7 +14,7 @@ namespace Copper {
 		void Initialize();
 		
 		void ClearColor(float r, float g, float b);
-		void Render(VertexArray* vao);
+		void Render(Mesh* mesh);
 
 		void SetShader(Shader* shader);
 
@@ -24,7 +26,7 @@ namespace Copper {
 		static void Initialize();
 
 		void ClearColor(float r, float g, float b);
-		void Render(VertexArray* vao);
+		void Render(Mesh* mesh);
 
 		inline void SetShader(Shader* shader) { this->shader = shader; }
 		

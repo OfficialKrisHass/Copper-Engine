@@ -2,6 +2,10 @@
 
 #include "Engine/Core/Core.h"
 
+#include <GLM/vec2.hpp>
+#include <GLM/vec3.hpp>
+#include <GLM/vec4.hpp>
+
 namespace Copper {
 
 	struct Vector2 {
@@ -16,6 +20,8 @@ namespace Copper {
 		inline static Vector2 Zero() { return Vector2(0.0f); }
 		inline static Vector2 One() { return Vector2(1.0f); }
 		inline static Vector2 MinusOne() { return Vector2(-1.0f); }
+
+		inline operator glm::vec2() const { return glm::vec2(x, y); }
 
 		inline Vector2& operator=(const Vector2& other) {
 
@@ -118,6 +124,8 @@ namespace Copper {
 		inline static Vector3 Zero() { return Vector3(0.0f); }
 		inline static Vector3 One() { return Vector3(1.0f); }
 		inline static Vector3 MinusOne() { return Vector3(-1.0f); }
+
+		inline operator glm::vec3() const { return glm::vec3(x, y, z); }
 
 		inline Vector3& operator=(const Vector3& other) {
 
@@ -233,6 +241,8 @@ namespace Copper {
 		inline static Vector4 One() { return Vector4(1.0f); }
 		inline static Vector4 MinusOne() { return Vector4(-1.0f); }
 
+		inline operator glm::vec4() const { return glm::vec4(x, y, z, w); }
+
 		inline Vector4& operator=(const Vector4& other) {
 
 			this->x = other.x;
@@ -340,6 +350,106 @@ namespace Copper {
 
 		}
 
+
+	};
+
+	struct UVector2I {
+
+		UVector2I() = default;
+		UVector2I(uint32_t all) : x(all), y(all) {}
+		UVector2I(uint32_t x, uint32_t y) : x(x), y(y) {}
+
+		uint32_t x;
+		uint32_t y;
+
+		inline static UVector2I Zero() { return UVector2I(0.0f); }
+		inline static UVector2I One() { return UVector2I(1.0f); }
+		inline static UVector2I MinusOne() { return UVector2I(-1.0f); }
+
+		inline UVector2I& operator=(const UVector2I& other) {
+
+			this->x = other.x;
+			this->y = other.y;
+			return *this;
+
+		}
+		inline UVector2I& operator+=(const UVector2I& other) {
+
+			this->x += other.x;
+			this->y += other.y;
+			return *this;
+
+		}
+		inline UVector2I& operator+=(const uint32_t& other) {
+
+			this->x += other;
+			this->y += other;
+			return *this;
+
+		}
+		inline UVector2I& operator-=(const UVector2I& other) {
+
+			this->x -= other.x;
+			this->y -= other.y;
+			return *this;
+
+		}
+		inline UVector2I& operator-=(const uint32_t& other) {
+
+			this->x -= other;
+			this->y -= other;
+			return *this;
+
+		}
+		inline UVector2I& operator*=(const UVector2I& other) {
+
+			this->x *= other.x;
+			this->y *= other.y;
+			return *this;
+
+		}
+		inline UVector2I& operator*=(const uint32_t& other) {
+
+			this->x *= other;
+			this->y *= other;
+			return *this;
+
+		}
+		inline UVector2I& operator/=(const UVector2I& other) {
+
+			this->x /= other.x;
+			this->y /= other.y;
+			return *this;
+
+		}
+		inline UVector2I& operator/=(const uint32_t& other) {
+
+			this->x /= other;
+			this->y /= other;
+			return *this;
+
+		}
+
+		inline UVector2I& operator++() {
+
+			++this->x;
+			++this->y;
+			return *this;
+
+		}
+		inline UVector2I& operator--() {
+
+			--this->x;
+			--this->y;
+			return *this;
+
+		}
+
+		inline UVector2I& operator-(const UVector2I& other) {
+
+			return UVector2I(-x, -y);
+
+		}
 
 	};
 

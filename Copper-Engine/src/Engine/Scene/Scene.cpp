@@ -1,7 +1,11 @@
 #include "cupch.h"
 #include "Scene.h"
 
+#include "Engine/Renderer/Renderer.h"
+
 #include "Engine/Scene/Object.h"
+
+#include "Engine/Scene/Components/Mesh.h"
 
 namespace Copper {
 
@@ -11,7 +15,10 @@ namespace Copper {
 
 		Object obj(registry.CreateEntity(), this);
 
-		obj.name = name;
+		obj.name = registry.AddComponent<Name>(obj.id);
+		obj.name->name = name;
+
+		obj.transform = registry.AddComponent<Transform>(obj.id);
 
 		return obj;
 
@@ -20,6 +27,18 @@ namespace Copper {
 	void Scene::DestroyObject(Object obj) {
 
 		registry.DestroyEntitiy(obj.id);
+
+	}
+
+	void Scene::Update() {
+
+		Renderer::ClearColor(0.18f, 0.18f, 0.18f);
+
+		for (Object o : SceneView<Mesh>(*this)) {
+
+			Renderer::Render(o.GetComponent<Mesh>());
+
+		}
 
 	}
 

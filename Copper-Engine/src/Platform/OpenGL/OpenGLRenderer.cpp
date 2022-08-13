@@ -31,12 +31,14 @@ namespace Copper {
 
 	}
 
-	void RendererAPI::Render(VertexArray* vao) {
+	void RendererAPI::Render(Mesh* mesh) {
 
-		vao->Bind();
+		mesh->Vao()->Bind();
 		shader->Bind();
 
-		glDrawElements(GL_TRIANGLES, vao->Count(), GL_UNSIGNED_INT, 0);
+		shader->LoadMat4("Model", mesh->transform->CreateMatrix());
+
+		glDrawElements(GL_TRIANGLES, mesh->Vao()->Count(), GL_UNSIGNED_INT, 0);
 
 	}
 

@@ -17,9 +17,9 @@ namespace Copper::Renderer {
 
 	}
 
-	void Render(VertexArray* vao) {
+	void Render(Mesh* mesh) {
 
-		api.Render(vao);
+		api.Render(mesh);
 
 	}
 

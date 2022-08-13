@@ -4,6 +4,7 @@
 #include "Engine/Utilities/FileUtils.h"
 
 #include <glad/glad.h>
+#include <GLM/gtc/type_ptr.hpp>
 
 namespace Copper {
 
@@ -72,6 +73,12 @@ namespace Copper {
 			LogError("Shader Linking Failed!\n\n{0}", infoLog);
 
 		}
+
+	}
+
+	void Shader::LoadMat4(std::string name, glm::mat4 mat) {
+
+		glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
 
 	}
 

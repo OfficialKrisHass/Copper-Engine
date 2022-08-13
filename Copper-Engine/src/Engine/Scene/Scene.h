@@ -17,6 +17,8 @@ namespace Copper {
 
 		ECS::Registry registry;
 
+		void Update();
+
 	};
 
 	template<typename ... ComponentTypes>
@@ -32,6 +34,8 @@ namespace Copper {
 			Object operator*() const {
 
 				Object obj(scene->registry.entities[index].id, scene);
+
+				obj.name = scene->registry.GetComponent<Name>(obj.id);
 
 				return obj;
 

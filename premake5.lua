@@ -118,6 +118,7 @@ project "Copper-Editor"
         "Copper-Engine/src",
         "Copper-Engine/lib/spdlog",
         "Copper-Engine/lib/ImGui",
+        "Copper-Engine/lib/GLM/include",
 
     }
 

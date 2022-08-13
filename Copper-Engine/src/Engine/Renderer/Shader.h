@@ -3,6 +3,8 @@
 #include "Engine/Core/Core.h"
 #include "cupch.h"
 
+#include <GLM/mat4x4.hpp>
+
 namespace Copper {
 
 	class Shader {
@@ -14,6 +16,8 @@ namespace Copper {
 
 		void Bind();
 		void Unbind();
+
+		void LoadMat4(std::string name, glm::mat4 mat);
 
 	private:
 		uint32_t ID;

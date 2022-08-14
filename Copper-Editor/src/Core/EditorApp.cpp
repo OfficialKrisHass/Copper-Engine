@@ -8,6 +8,7 @@
 #include "Engine/Scene/Object.h"
 
 #include "Engine/Scene/Components/Mesh.h"
+#include "Engine/Scene/Components/Camera.h"
 
 #include <ImGui/imgui.h>
 
@@ -63,6 +64,10 @@ namespace Editor {
 		data.camera = data.scene.CreateObject("Camera");
 
 		Mesh* m = data.square.AddComponent<Mesh>();
+		Camera* cam = data.camera.AddComponent<Camera>();
+
+		cam->transform->position.z = 1.0f;
+		cam->Resize(data.viewportSize);
 
 		m->vertices = vertices;
 		m->indices = indices;
@@ -75,7 +80,12 @@ namespace Editor {
 
 	void Run() {
 
-		if (data.fbo->Width() != data.viewportSize.x || data.fbo->Height() != data.viewportSize.y) { data.fbo->Resize(data.viewportSize); }
+		if (data.fbo->Width() != data.viewportSize.x || data.fbo->Height() != data.viewportSize.y) {
+			
+			data.fbo->Resize(data.viewportSize);
+			data.camera.GetComponent<Camera>()->Resize(data.viewportSize);
+		
+		}
 
 		data.fbo->Bind();
 		data.scene.Update();
@@ -150,7 +160,7 @@ namespace Editor {
 		ImGui::Begin("Viewport");
 
 		ImVec2 windowSize = ImGui::GetContentRegionAvail();
-		data.viewportSize = UVector2I(windowSize.x, windowSize.y);
+		data.viewportSize = UVector2I((uint32_t) windowSize.x, (uint32_t) windowSize.y);
 
 		uint64_t texture = data.fbo->GetColorAttachment();
 		ImGui::Image(reinterpret_cast<void*>(texture), windowSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });

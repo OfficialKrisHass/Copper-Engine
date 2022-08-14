@@ -31,12 +31,14 @@ namespace Copper {
 
 	}
 
-	void RendererAPI::Render(Mesh* mesh) {
+	void RendererAPI::Render(Mesh* mesh, Camera* cam) {
 
 		mesh->Vao()->Bind();
 		shader->Bind();
 
-		shader->LoadMat4("Model", mesh->transform->CreateMatrix());
+		shader->LoadMat4("Model",      mesh->transform->CreateMatrix());
+		shader->LoadMat4("View",       cam->CreateViewMatrix());
+		shader->LoadMat4("Projection", cam->CreateProjectionMatrix());
 
 		glDrawElements(GL_TRIANGLES, mesh->Vao()->Count(), GL_UNSIGNED_INT, 0);
 

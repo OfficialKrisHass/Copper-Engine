@@ -8,7 +8,7 @@
 
 namespace Copper {
 
-	struct Transform {
+	class Transform {
 
 	public:
 		Transform() = default;

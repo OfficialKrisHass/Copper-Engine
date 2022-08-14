@@ -27,7 +27,7 @@ namespace Copper {
 
 
 
-	IndexBuffer::IndexBuffer(std::vector<uint32_t> indices) : count(indices.size()) {
+	IndexBuffer::IndexBuffer(std::vector<uint32_t> indices) : count((uint32_t) indices.size()) {
 
 		glGenBuffers(1, &ID);
 

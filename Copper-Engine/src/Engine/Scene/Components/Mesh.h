@@ -10,7 +10,7 @@
 
 namespace Copper {
 
-	struct Mesh : public Component {
+	class Mesh : public Component {
 
 	public:
 		Mesh() = default;

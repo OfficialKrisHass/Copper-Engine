@@ -6,7 +6,7 @@
 
 namespace Copper {
 
-	struct Component {
+	class Component {
 
 	public:
 		Transform* transform;

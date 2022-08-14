@@ -362,9 +362,8 @@ namespace Copper {
 		uint32_t x;
 		uint32_t y;
 
-		inline static UVector2I Zero() { return UVector2I(0.0f); }
-		inline static UVector2I One() { return UVector2I(1.0f); }
-		inline static UVector2I MinusOne() { return UVector2I(-1.0f); }
+		inline static UVector2I Zero() { return UVector2I(0); }
+		inline static UVector2I One() { return UVector2I(1); }
 
 		inline UVector2I& operator=(const UVector2I& other) {
 
@@ -445,12 +444,6 @@ namespace Copper {
 
 		}
 
-		inline UVector2I& operator-(const UVector2I& other) {
-
-			return UVector2I(-x, -y);
-
-		}
-
 	};
 
 	struct Color {
@@ -472,184 +465,184 @@ namespace Copper {
 
 	};
 
-	inline Vector2& operator+(const Vector2& other, float scalar) {
+	inline Vector2 operator+(const Vector2& other, float scalar) {
 
 		return Vector2(other.x + scalar, other.y + scalar);
 
 	}
-	inline Vector2& operator+(const Vector2& other, const Vector2& scalar) {
+	inline Vector2 operator+(const Vector2& other, const Vector2& scalar) {
 
 		return Vector2(other.x + scalar.x, other.y + scalar.y);
 
 	}
-	inline Vector2& operator+(float scalar, const Vector2& other) {
+	inline Vector2 operator+(float scalar, const Vector2& other) {
 
 		return Vector2(scalar + other.x, scalar + other.y);
 
 	}
-	inline Vector2& operator-(const Vector2& other, float scalar) {
+	inline Vector2 operator-(const Vector2& other, float scalar) {
 
 		return Vector2(other.x - scalar, other.y - scalar);
 
 	}
-	inline Vector2& operator-(const Vector2& other, const Vector2& scalar) {
+	inline Vector2 operator-(const Vector2& other, const Vector2& scalar) {
 
 		return Vector2(other.x - scalar.x, other.y - scalar.y);
 
 	}
-	inline Vector2& operator-(float scalar, const Vector2& other) {
+	inline Vector2 operator-(float scalar, const Vector2& other) {
 
 		return Vector2(scalar - other.x, scalar - other.y);
 
 	}
-	inline Vector2& operator*(const Vector2& other, float scalar) {
+	inline Vector2 operator*(const Vector2& other, float scalar) {
 
 		return Vector2(other.x * scalar, other.y * scalar);
 
 	}
-	inline Vector2& operator*(Vector2 const& other, Vector2 const& scalar) {
+	inline Vector2 operator*(Vector2 const& other, Vector2 const& scalar) {
 
 		return Vector2(other.x * scalar.x, other.y * scalar.y);
 
 	}
-	inline Vector2& operator*(float scalar, const Vector2& other) {
+	inline Vector2 operator*(float scalar, const Vector2& other) {
 
 		return Vector2(scalar * other.x, scalar * other.y);
 
 	}
-	inline Vector2& operator/(const Vector2& other, float scalar) {
+	inline Vector2 operator/(const Vector2& other, float scalar) {
 
 		return Vector2(other.x / scalar, other.y / scalar);
 
 	}
-	inline Vector2& operator/(const Vector2& other, const Vector2& scalar) {
+	inline Vector2 operator/(const Vector2& other, const Vector2& scalar) {
 
 		return Vector2(other.x / scalar.x, other.y / scalar.y);
 
 	}
-	inline Vector2& operator/(float scalar, const Vector2& other) {
+	inline Vector2 operator/(float scalar, const Vector2& other) {
 
 		return Vector2(scalar / other.x, scalar / other.y);
 
 	}
 
-	inline Vector3& operator+(const Vector3& other, float scalar) {
+	inline Vector3 operator+(const Vector3& other, float scalar) {
 
 		return Vector3(other.x + scalar, other.y + scalar, other.z + scalar);
 
 	}
-	inline Vector3& operator+(const Vector3& other, const Vector3& scalar) {
+	inline Vector3 operator+(const Vector3& other, const Vector3& scalar) {
 
 		return Vector3(other.x + scalar.x, other.y + scalar.y, other.z + scalar.z);
 
 	}
-	inline Vector3& operator+(float scalar, const Vector3& other) {
+	inline Vector3 operator+(float scalar, const Vector3& other) {
 
 		return Vector3(scalar + other.x, scalar + other.y, scalar + other.z);
 
 	}
-	inline Vector3& operator-(const Vector3& other, float scalar) {
+	inline Vector3 operator-(const Vector3& other, float scalar) {
 
 		return Vector3(other.x - scalar, other.y - scalar, other.z - scalar);
 
 	}
-	inline Vector3& operator-(const Vector3& other, const Vector3& scalar) {
+	inline Vector3 operator-(const Vector3& other, const Vector3& scalar) {
 
 		return Vector3(other.x - scalar.x, other.y - scalar.y, other.z - scalar.z);
 
 	}
-	inline Vector3& operator-(float scalar, const Vector3& other) {
+	inline Vector3 operator-(float scalar, const Vector3& other) {
 
 		return Vector3(scalar - other.x, scalar - other.y, scalar - other.z);
 
 	}
-	inline Vector3& operator*(const Vector3& other, float scalar) {
+	inline Vector3 operator*(const Vector3& other, float scalar) {
 
 		return Vector3(other.x * scalar, other.y * scalar, other.z * scalar);
 
 	}
-	inline Vector3& operator*(Vector3 const& other, Vector3 const& scalar) {
+	inline Vector3 operator*(Vector3 const& other, Vector3 const& scalar) {
 
 		return Vector3(other.x * scalar.x, other.y * scalar.y, other.z * scalar.z);
 
 	}
-	inline Vector3& operator*(float scalar, const Vector3& other) {
+	inline Vector3 operator*(float scalar, const Vector3& other) {
 
 		return Vector3(scalar * other.x, scalar * other.y, scalar * other.z);
 
 	}
-	inline Vector3& operator/(const Vector3& other, float scalar) {
+	inline Vector3 operator/(const Vector3& other, float scalar) {
 
 		return Vector3(other.x / scalar, other.y / scalar, other.z / scalar);
 
 	}
-	inline Vector3& operator/(const Vector3& other, const Vector3& scalar) {
+	inline Vector3 operator/(const Vector3& other, const Vector3& scalar) {
 
 		return Vector3(other.x / scalar.x, other.y / scalar.y, other.z / scalar.z);
 
 	}
-	inline Vector3& operator/(float scalar, const Vector3& other) {
+	inline Vector3 operator/(float scalar, const Vector3& other) {
 
 		return Vector3(scalar / other.x, scalar / other.y, scalar / other.z);
 
 	}
 
-	inline Vector4& operator+(const Vector4& other, float scalar) {
+	inline Vector4 operator+(const Vector4& other, float scalar) {
 
 		return Vector4(other.x + scalar, other.y + scalar, other.z + scalar, other.w + scalar);
 
 	}
-	inline Vector4& operator+(const Vector4& other, const Vector4& scalar) {
+	inline Vector4 operator+(const Vector4& other, const Vector4& scalar) {
 
 		return Vector4(other.x + scalar.x, other.y + scalar.y, other.z + scalar.z, other.w + scalar.w);
 
 	}
-	inline Vector4& operator+(float scalar, const Vector4& other) {
+	inline Vector4 operator+(float scalar, const Vector4& other) {
 
 		return Vector4(scalar + other.x, scalar + other.y, scalar + other.z, scalar + other.w);
 
 	}
-	inline Vector4& operator-(const Vector4& other, float scalar) {
+	inline Vector4 operator-(const Vector4& other, float scalar) {
 
 		return Vector4(other.x - scalar, other.y - scalar, other.z - scalar, other.w - scalar);
 
 	}
-	inline Vector4& operator-(const Vector4& other, const Vector4& scalar) {
+	inline Vector4 operator-(const Vector4& other, const Vector4& scalar) {
 
 		return Vector4(other.x - scalar.x, other.y - scalar.y, other.z - scalar.z, other.w - scalar.w);
 
 	}
-	inline Vector4& operator-(float scalar, const Vector4& other) {
+	inline Vector4 operator-(float scalar, const Vector4& other) {
 
 		return Vector4(scalar - other.x, scalar - other.y, scalar - other.z, scalar - other.w);
 
 	}
-	inline Vector4& operator*(const Vector4& other, float scalar) {
+	inline Vector4 operator*(const Vector4& other, float scalar) {
 
 		return Vector4(other.x * scalar, other.y * scalar, other.z * scalar, other.w * scalar);
 
 	}
-	inline Vector4& operator*(Vector4 const& other, Vector4 const& scalar) {
+	inline Vector4 operator*(Vector4 const& other, Vector4 const& scalar) {
 
 		return Vector4(other.x * scalar.x, other.y * scalar.y, other.z * scalar.z, other.w * scalar.w);
 
 	}
-	inline Vector4& operator*(float scalar, const Vector4& other) {
+	inline Vector4 operator*(float scalar, const Vector4& other) {
 
 		return Vector4(scalar * other.x, scalar * other.y, scalar * other.z, scalar * other.w);
 
 	}
-	inline Vector4& operator/(const Vector4& other, float scalar) {
+	inline Vector4 operator/(const Vector4& other, float scalar) {
 
 		return Vector4(other.x / scalar, other.y / scalar, other.z / scalar, other.w / scalar);
 
 	}
-	inline Vector4& operator/(const Vector4& other, const Vector4& scalar) {
+	inline Vector4 operator/(const Vector4& other, const Vector4& scalar) {
 
 		return Vector4(other.x / scalar.x, other.y / scalar.y, other.z / scalar.z, other.w / scalar.w);
 
 	}
-	inline Vector4& operator/(float scalar, const Vector4& other) {
+	inline Vector4 operator/(float scalar, const Vector4& other) {
 
 		return Vector4(scalar / other.x, scalar / other.y, scalar / other.z, scalar / other.w);
 

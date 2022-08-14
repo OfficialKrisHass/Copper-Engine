@@ -17,9 +17,9 @@ namespace Copper::Renderer {
 
 	}
 
-	void Render(Mesh* mesh) {
+	void Render(Mesh* mesh, Camera* cam) {
 
-		api.Render(mesh);
+		api.Render(mesh, cam);
 
 	}
 

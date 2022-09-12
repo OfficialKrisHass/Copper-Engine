@@ -18,6 +18,7 @@ namespace Copper {
 		void Unbind();
 
 		void LoadMat4(std::string name, glm::mat4 mat);
+		void LoadVec3(std::string name, Vector3 vec);
 
 	private:
 		uint32_t ID;

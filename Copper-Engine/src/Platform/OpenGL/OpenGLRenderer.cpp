@@ -40,6 +40,9 @@ namespace Copper {
 		shader->LoadMat4("View",       cam->CreateViewMatrix());
 		shader->LoadMat4("Projection", cam->CreateProjectionMatrix());
 
+		shader->LoadVec3("lightPos", Vector3(0.0f, 0.0f, 2.0f));
+		shader->LoadVec3("camPos", cam->transform->position);
+
 		glDrawElements(GL_TRIANGLES, mesh->Vao()->Count(), GL_UNSIGNED_INT, 0);
 
 	}

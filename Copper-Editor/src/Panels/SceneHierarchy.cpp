@@ -6,11 +6,9 @@ namespace Editor {
 
 	using namespace Copper;
 
-	void SceneHierarchy::UIRender() {
+	void SceneHierarchy::UI() {
 
-		ImGui::Begin(name.c_str());
-
-		if (!scene) { return; ImGui::End(); }
+		if (!scene) return;
 
 		for (Object obj : SceneView<>(*scene)) {
 
@@ -22,8 +20,6 @@ namespace Editor {
 			if (ImGui::IsItemClicked()) { selectedObj = obj; }
 
 		}
-
-		ImGui::End();
 
 	}
 

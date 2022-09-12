@@ -5,6 +5,8 @@
 #include "Engine/Scene/ECS.h"
 #include "Engine/Scene/Object.h"
 
+#include "Components/Camera.h"
+
 namespace Copper {
 
 	class Object;
@@ -16,6 +18,7 @@ namespace Copper {
 		void DestroyObject(Object obj);
 
 		ECS::Registry registry;
+		Camera* sceneCam = nullptr;
 
 		void Update();
 

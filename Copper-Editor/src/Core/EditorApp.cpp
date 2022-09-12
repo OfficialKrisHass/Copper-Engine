@@ -1,46 +1,66 @@
 #include "EditorApp.h"
 
-#include "Panels/SceneHierarchy.h"
-
 #include "Engine/Renderer/FrameBuffer.h"
 
 #include "Engine/Scene/Scene.h"
 #include "Engine/Scene/Object.h"
 
 #include "Engine/Scene/Components/Mesh.h"
-#include "Engine/Scene/Components/Camera.h"
 
 #include <ImGui/imgui.h>
 
-namespace Editor {
+#include "ImGui/imgui_internal.h"
+#include "Panels/SceneHierarchy.h"
+#include "Panels/Properties.h"
 
+#include "Viewport/SceneCamera.h"
+
+namespace Editor {
+	
 	using namespace Copper;
 
 	std::vector<float> vertices{
+		//Position				//Color				//Normals
+		-0.5f, -0.5f,  0.0f,    1.0f, 0.0f, 0.0f,	0.0f,  0.0f, -1.0f,
+		 0.5f, -0.5f,  0.0f,    0.0f, 1.0f, 0.0f,	0.0f,  0.0f, -1.0f,
+		 0.5f,  0.5f,  0.0f,    0.0f, 0.0f, 1.0f,	0.0f,  0.0f, -1.0f,
+		-0.5f,  0.5f,  0.0f,    1.0f, 0.0f, 1.0f,	0.0f,  0.0f, -1.0f,
 
-		-0.5f, -0.5f, 0.0f,    1.0f, 0.0f, 0.0f,
-		 0.5f, -0.5f, 0.0f,    0.0f, 1.0f, 0.0f,
-		 0.5f,  0.5f, 0.0f,    0.0f, 0.0f, 1.0f,
-		-0.5f,  0.5f, 0.0f,    1.0f, 0.0f, 1.0f,
+		 // 0.5f, -0.5f,  0.0f,    1.0f, 0.0f, 0.0f,
+		 // 0.5f, -0.5f, -1.0f,    0.0f, 1.0f, 0.0f,
+		 // 0.5f,  0.5f, -1.0f,    0.0f, 0.0f, 1.0f,
+		 // 0.5f,  0.5f,  0.0f,    1.0f, 0.0f, 1.0f,
 
 	};
 
 	std::vector<uint32_t> indices{
 
 		0, 1, 2,
-		2, 3, 0
+		2, 3, 0,
+
+		4, 5, 6,
+		6, 7, 4
 
 	};
 
 	struct EditorData {
 
-		UVector2I viewportSize;
 		std::shared_ptr<FrameBuffer> fbo;
 
+		//Scene
 		Scene scene;
+		//Camera camera;
+		
+		//Viewport
+		UVector2I viewportSize;
+		bool isViewportHovered;
+		bool isViewportActive;
 
+		//Panels
 		SceneHierarchy sceneHierarchy;
-
+		Properties properties;
+		
+		//Objects
 		Object square;
 		Object camera;
 
@@ -56,18 +76,25 @@ namespace Editor {
 		data.viewportSize = UVector2I(1280, 720);
 		data.fbo = std::make_shared<FrameBuffer>(data.viewportSize);
 		
+		// data.camera = SceneCamera(data.viewportSize);
+		// data.camera.transform = new Transform(Vector3(0.0f, 0.0f, 1.0f), 0.0f, 1.0f);
+
 		data.sceneHierarchy = SceneHierarchy();
+		data.properties = Properties();
+
 		data.scene = Scene();
 		data.sceneHierarchy.SetScene(&data.scene);
 
 		data.square = data.scene.CreateObject("Square");
-		data.camera = data.scene.CreateObject("Camera");
+		data.camera = data.scene.CreateObject("SceneCam");
+
 
 		Mesh* m = data.square.AddComponent<Mesh>();
-		Camera* cam = data.camera.AddComponent<Camera>();
-
-		cam->transform->position.z = 1.0f;
+		SceneCamera* cam = data.camera.AddComponent<SceneCamera>();
+		
 		cam->Resize(data.viewportSize);
+		data.scene.sceneCam = cam;
+		data.camera.transform->position.z = 1.0f;
 
 		m->vertices = vertices;
 		m->indices = indices;
@@ -79,17 +106,21 @@ namespace Editor {
 	}
 
 	void Run() {
-
+		
+		data.camera.GetComponent<SceneCamera>()->SetCanLook(data.isViewportActive && data.isViewportHovered);
+		
 		if (data.fbo->Width() != data.viewportSize.x || data.fbo->Height() != data.viewportSize.y) {
 			
 			data.fbo->Resize(data.viewportSize);
-			data.camera.GetComponent<Camera>()->Resize(data.viewportSize);
+			data.camera.GetComponent<SceneCamera>()->Resize(data.viewportSize);
 		
 		}
 
 		data.fbo->Bind();
 		data.scene.Update();
 		data.fbo->Unbind();
+
+		data.properties.SetSelectedObject(data.sceneHierarchy.GetSelectedObject());
 
 	}
 
@@ -99,6 +130,7 @@ namespace Editor {
 		RenderViewport();
 
 		data.sceneHierarchy.UIRender();
+		data.properties.UIRender();
 
 		ImGui::End(); //Dockspace
 
@@ -158,6 +190,9 @@ namespace Editor {
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
 		ImGui::Begin("Viewport");
+
+		data.isViewportHovered = ImGui::IsWindowHovered();
+		data.isViewportActive = ImGui::IsWindowFocused();
 
 		ImVec2 windowSize = ImGui::GetContentRegionAvail();
 		data.viewportSize = UVector2I((uint32_t) windowSize.x, (uint32_t) windowSize.y);

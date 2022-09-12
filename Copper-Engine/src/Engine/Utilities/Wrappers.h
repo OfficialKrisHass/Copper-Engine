@@ -143,6 +143,14 @@ namespace Copper {
 			return *this;
 
 		}
+		inline Vector3& operator+=(const glm::vec3& other) {
+
+			this->x += other.x;
+			this->y += other.y;
+			this->z += other.z;
+			return *this;
+
+		}
 		inline Vector3& operator+=(const float& other) {
 
 			this->x += other;
@@ -217,7 +225,7 @@ namespace Copper {
 
 		}
 
-		inline Vector3& operator-(const Vector3& other) {
+		inline Vector3& operator-() {
 
 			return Vector3(-x, -y, -z);
 

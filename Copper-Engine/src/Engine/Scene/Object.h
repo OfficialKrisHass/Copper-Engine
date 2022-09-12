@@ -32,7 +32,8 @@ namespace Copper {
 		}
 		template<typename T> T* GetComponent() { return scene->registry.GetComponent<T>(id); }
 		template<typename T> void RemoveComponent() { scene->registry.RemoveComponent<T>(id); }
-
+		template<typename T> bool HasComponent() { return scene->registry.HasComponent<T>(id); }
+		
 		operator bool() const { return ECS::IsEntityValid(id); }
 		operator uint64_t() const { return            id; }
 		operator uint32_t() const { return (uint32_t) id; }

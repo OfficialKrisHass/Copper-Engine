@@ -41,6 +41,9 @@ namespace Copper::UI {
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
+		float fontSize = 18.0f;
+		io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/Fonts/open-sans.regular.ttf", fontSize);
+
 		auto& colors = ImGui::GetStyle().Colors;
 
 		colors[ImGuiCol_WindowBg] = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);

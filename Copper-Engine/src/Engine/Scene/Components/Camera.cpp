@@ -20,7 +20,9 @@ namespace Copper {
 
 		glm::mat4 ret(1.0f);
 
-		ret = glm::perspective(fov, static_cast<float>(size.x) / size.y, nearPlane, farPlane);
+		//Log(fov);
+		
+		ret = glm::perspective(glm::radians(fov), static_cast<float>(size.x) / size.y, nearPlane, farPlane);
 
 		return ret;
 

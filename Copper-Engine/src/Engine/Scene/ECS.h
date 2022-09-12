@@ -112,6 +112,16 @@ namespace Copper::ECS {
 			entities[EntityIndex(id)].cMask.reset(cID);
 
 		}
+		template<typename T> bool HasComponent(uint64_t id) {
+
+			if (entities[EntityIndex(id)].id != id) return false;
+
+			int cID = GetCID<T>();
+			if(entities[EntityIndex(id)].cMask.test(cID)) return true;
+
+			return false;
+			
+		}
 
 	public:
 		struct Entity {

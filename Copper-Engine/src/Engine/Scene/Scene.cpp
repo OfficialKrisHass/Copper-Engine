@@ -35,13 +35,7 @@ namespace Copper {
 
 		Renderer::ClearColor(0.18f, 0.18f, 0.18f);
 
-		Camera* sceneCam;
-
-		for (Object o : SceneView<Camera>(*this)) {
-
-			sceneCam = o.GetComponent<Camera>();
-
-		}
+		sceneCam->Update();
 
 		for (Object o : SceneView<Mesh>(*this)) {
 

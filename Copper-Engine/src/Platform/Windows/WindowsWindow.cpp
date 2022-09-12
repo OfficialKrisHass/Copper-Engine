@@ -37,6 +37,7 @@ namespace Copper {
 		data.wClsE += OnWindowClose;
 
 		glfwSetWindowUserPointer(WINDOW, &data);
+		glfwMaximizeWindow(WINDOW);
 
 		glfwSetWindowSizeCallback(WINDOW, [](GLFWwindow* window, int width, int height) {
 

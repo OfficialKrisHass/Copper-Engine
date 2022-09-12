@@ -2,6 +2,8 @@
 
 #include "Copper.h"
 
+#include <ImGui/imgui.h>
+
 namespace Editor {
 
 	class Panel {
@@ -12,7 +14,16 @@ namespace Editor {
 
 		std::string name;
 
-		virtual void UIRender() = 0;
+		void UIRender() {
+
+			ImGui::Begin(name.c_str());
+			UI();
+			ImGui::End();
+
+		}
+
+	private:
+		virtual void UI() = 0;
 
 	};
 

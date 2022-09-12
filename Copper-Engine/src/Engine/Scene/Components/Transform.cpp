@@ -3,6 +3,8 @@
 
 #include <GLM/glm.hpp>
 #include <GLM/ext/matrix_transform.hpp>
+#include <GLM/gtx/rotate_vector.hpp>
+#include <GLM/gtx/vector_angle.hpp>
 
 namespace Copper {
 

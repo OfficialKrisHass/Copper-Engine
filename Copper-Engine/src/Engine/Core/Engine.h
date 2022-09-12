@@ -5,6 +5,8 @@
 
 #include "Engine/Events/Event.h"
 
+#define GetGLFWwindow (GLFWwindow*) GetWindow().GetWindowPtr()
+
 namespace Copper {
 
 	void Initialize();

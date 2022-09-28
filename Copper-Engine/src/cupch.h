@@ -10,6 +10,8 @@
 #include <map>
 #include <bitset>
 
+#include <filesystem>
+
 #include "Engine/Core/Log.h"
 #include "Engine/Input/Input.h"
 #include "Engine/Utilities/Wrappers.h"

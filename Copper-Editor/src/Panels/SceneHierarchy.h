@@ -12,13 +12,14 @@ namespace Editor {
 	public:
 		SceneHierarchy() : Panel("SceneHierarchy") {}
 
-		inline void SetScene(Copper::Scene* scene) { this->scene = scene; }
+		static void SetScene(Copper::Scene* newScene) { scene = newScene; }
+		void SetSelectedObject(Copper::Object object) { selectedObj = object; }
 
-		inline Copper::Object GetSelectedObject() { return selectedObj; }
+		Copper::Object GetSelectedObject() { return selectedObj; }
 
 	private:
-		Copper::Scene* scene = nullptr;
-		Copper::Object selectedObj = { Copper::ECS::EntityID(-1, -1), nullptr };
+		static Copper::Scene* scene;
+		Copper::Object selectedObj = Copper::Object::Null();
 
 		virtual void UI() override;
 

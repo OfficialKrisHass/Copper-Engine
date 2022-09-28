@@ -17,9 +17,9 @@ namespace Copper::Renderer {
 
 	}
 
-	void Render(Mesh* mesh, Camera* cam) {
+	void Render(Mesh* mesh, Camera* cam, Light* light) {
 
-		api.Render(mesh, cam);
+		api.Render(mesh, cam, light);
 
 	}
 
@@ -28,5 +28,12 @@ namespace Copper::Renderer {
 		api.SetShader(shader);
 
 	}
+
+	Shader* GetShader() {
+
+		return api.GetShader();
+		
+	}
+
 
 }

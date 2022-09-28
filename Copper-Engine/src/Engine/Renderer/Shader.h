@@ -17,6 +17,10 @@ namespace Copper {
 		void Bind();
 		void Unbind();
 
+		void LoadInt(std::string name, int value);
+		void LoadUInt(std::string name, uint32_t value);
+		void LoadFloat(std::string name, float value);
+		
 		void LoadMat4(std::string name, glm::mat4 mat);
 		void LoadVec3(std::string name, Vector3 vec);
 

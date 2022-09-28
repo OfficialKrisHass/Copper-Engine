@@ -7,13 +7,26 @@
 
 #include "Engine/Scene/Components/Mesh.h"
 
-#include <ImGui/imgui.h>
-
-#include "ImGui/imgui_internal.h"
 #include "Panels/SceneHierarchy.h"
 #include "Panels/Properties.h"
+#include "Panels/FileBrowser.h"
 
 #include "Viewport/SceneCamera.h"
+
+#include <ImGui/imgui.h>
+
+#pragma region EntryPoint
+#include <Engine/Core/Entry.h>
+
+void AppEntryPoint() {
+
+	Editor::Initialize();
+
+	Copper::SetEditorRunFunc(Editor::Run);
+	Copper::SetEditorUIFunc(Editor::UI);
+
+}
+#pragma endregion 
 
 namespace Editor {
 	
@@ -26,11 +39,6 @@ namespace Editor {
 		 0.5f,  0.5f,  0.0f,    0.0f, 0.0f, 1.0f,	0.0f,  0.0f, -1.0f,
 		-0.5f,  0.5f,  0.0f,    1.0f, 0.0f, 1.0f,	0.0f,  0.0f, -1.0f,
 
-		 // 0.5f, -0.5f,  0.0f,    1.0f, 0.0f, 0.0f,
-		 // 0.5f, -0.5f, -1.0f,    0.0f, 1.0f, 0.0f,
-		 // 0.5f,  0.5f, -1.0f,    0.0f, 0.0f, 1.0f,
-		 // 0.5f,  0.5f,  0.0f,    1.0f, 0.0f, 1.0f,
-
 	};
 
 	std::vector<uint32_t> indices{
@@ -38,31 +46,28 @@ namespace Editor {
 		0, 1, 2,
 		2, 3, 0,
 
-		4, 5, 6,
-		6, 7, 4
-
 	};
 
 	struct EditorData {
 
 		std::shared_ptr<FrameBuffer> fbo;
+		std::string title;
 
 		//Scene
 		Scene scene;
-		//Camera camera;
+		bool changes;
 		
 		//Viewport
 		UVector2I viewportSize;
-		bool isViewportHovered;
-		bool isViewportActive;
-
+		bool canLookViewport;
+		
 		//Panels
 		SceneHierarchy sceneHierarchy;
 		Properties properties;
+		FileBrowser fileBrowser;
 		
 		//Objects
-		Object square;
-		Object camera;
+		SceneCamera sceneCam;
 
 	};
 
@@ -75,30 +80,24 @@ namespace Editor {
 
 		data.viewportSize = UVector2I(1280, 720);
 		data.fbo = std::make_shared<FrameBuffer>(data.viewportSize);
-		
-		// data.camera = SceneCamera(data.viewportSize);
-		// data.camera.transform = new Transform(Vector3(0.0f, 0.0f, 1.0f), 0.0f, 1.0f);
 
 		data.sceneHierarchy = SceneHierarchy();
 		data.properties = Properties();
-
-		data.scene = Scene();
-		data.sceneHierarchy.SetScene(&data.scene);
-
-		data.square = data.scene.CreateObject("Square");
-		data.camera = data.scene.CreateObject("SceneCam");
-
-
-		Mesh* m = data.square.AddComponent<Mesh>();
-		SceneCamera* cam = data.camera.AddComponent<SceneCamera>();
+		data.fileBrowser = FileBrowser(1);
 		
-		cam->Resize(data.viewportSize);
-		data.scene.sceneCam = cam;
-		data.camera.transform->position.z = 1.0f;
+		data.sceneCam = SceneCamera(data.viewportSize);
+		data.sceneCam.transform = new Transform(Vector3(0.0f, 0.0f, 1.0f), Vector3::Zero(), Vector3::One());
+		data.sceneCam.transform->position.z = 1.0f;
+		
+		OpenScene("assets/TestProject/Scenes/Default.copper");
 
-		m->vertices = vertices;
-		m->indices = indices;
-		m->Regenerate();
+		// std::stringstream ss;
+		// ss << "Copper Editor - TestProject: " << data.scene.name;
+		// data.title = ss.str();
+
+		data.title = "Copper Editor - TestProject: ";
+		data.title += data.scene.name;
+		Input::SetWindowTitle(data.title);
 
 		Log("Editor Succesfully Initialized");
 		Log("--------------------Editor Initialization\n");
@@ -106,13 +105,13 @@ namespace Editor {
 	}
 
 	void Run() {
-		
-		data.camera.GetComponent<SceneCamera>()->SetCanLook(data.isViewportActive && data.isViewportHovered);
+
+		data.sceneCam.SetCanLook(data.canLookViewport);
 		
 		if (data.fbo->Width() != data.viewportSize.x || data.fbo->Height() != data.viewportSize.y) {
 			
 			data.fbo->Resize(data.viewportSize);
-			data.camera.GetComponent<SceneCamera>()->Resize(data.viewportSize);
+			data.sceneCam.Resize(data.viewportSize);
 		
 		}
 
@@ -128,9 +127,11 @@ namespace Editor {
 
 		RenderDockspace();
 		RenderViewport();
-
+		RenderMenu();
+		
 		data.sceneHierarchy.UIRender();
 		data.properties.UIRender();
+		data.fileBrowser.UIRender();
 
 		ImGui::End(); //Dockspace
 
@@ -185,23 +186,149 @@ namespace Editor {
 		style.WindowMinSize.x = minWinSizeX;
 
 	}
-
 	void RenderViewport() {
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
 		ImGui::Begin("Viewport");
 
-		data.isViewportHovered = ImGui::IsWindowHovered();
-		data.isViewportActive = ImGui::IsWindowFocused();
-
 		ImVec2 windowSize = ImGui::GetContentRegionAvail();
 		data.viewportSize = UVector2I((uint32_t) windowSize.x, (uint32_t) windowSize.y);
-
+		
 		uint64_t texture = data.fbo->GetColorAttachment();
 		ImGui::Image(reinterpret_cast<void*>(texture), windowSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+
+		data.canLookViewport = ImGui::IsItemHovered();
+		
 		ImGui::End();
 		ImGui::PopStyleVar();
 
 	}
+	void RenderMenu() {
 
+		if(ImGui::BeginMenuBar()) {
+
+			if(ImGui::BeginMenu("File")) {
+
+				if(ImGui::MenuItem("New Scene", "Ctrl+N"))				NewScene();
+				if(ImGui::MenuItem("Open Scene", "Ctrl+O"))				OpenScene();
+				if(ImGui::MenuItem("Save Scene", "Ctr+S"))				SaveScene();
+				if(ImGui::MenuItem("Save Ass", "Ctrl+Shift+S"))			SaveSceneAs();
+
+				ImGui::EndMenu();
+				
+			}
+
+			if(ImGui::BeginMenu("Camera")) {
+
+				if (ImGui::DragFloat("Speed", &data.sceneCam.speed, 0.01f, 0.001f, 50.0f, "%.4f")) SetChanges(true);
+				if (ImGui::DragFloat("Sensitivity", &data.sceneCam.sensitivity, 0.1f, 1.0f, 1000.0f)) SetChanges(true);
+
+				ImGui::EndMenu();
+				
+			}
+
+			ImGui::EndMenuBar();
+			
+		}
+		
+	}
+
+	void NewScene() {
+
+		data.scene = Scene();
+		data.scene.cam = &data.sceneCam;
+		
+		data.sceneHierarchy.SetScene(&data.scene);
+		data.sceneHierarchy.SetSelectedObject(Object::Null());
+		data.properties.SetSelectedObject(Object::Null());
+		
+	}
+
+	void OpenScene() {
+
+		std::string path = Utilities::OpenDialog("Copper Scene (*.copper)\0*.copper\0");
+
+		if(path.empty()) { LogWarn("The Path Specified is empty or is not a Copper Scene File"); return; }
+
+		OpenScene(path);
+		
+	}
+	
+	void OpenScene(std::filesystem::path path) {
+
+		if(data.changes) {
+
+			switch(Input::Error::WarningPopup("Unsaved Changes", "There are Unsaved Changes, if you open another scene you will lose these Changes.")) {
+
+			case IDOK: break;
+				
+			case IDCANCEL: return;
+				
+			}
+			
+		}
+
+		data.scene = Scene();
+		data.scene.Deserialize(path);
+		data.scene.cam = &data.sceneCam;
+
+		data.changes = false;
+		data.title = "Copper Editor - TestProject: ";
+		data.title += data.scene.name;
+		Input::SetWindowTitle(data.title);
+
+		data.sceneHierarchy.SetScene(&data.scene);
+		data.sceneHierarchy.SetSelectedObject(Object::Null());
+		data.properties.SetSelectedObject(Object::Null());
+		
+	}
+	
+	void SaveScene() {
+		
+		if(!data.scene.path.empty()) {
+
+			data.scene.Serialize(data.scene.path);
+
+			data.changes = false;
+			data.title = "Copper Editor - TestProject: ";
+			data.title += data.scene.name;
+			Input::SetWindowTitle(data.title);
+			
+			return;
+			
+		}
+
+		SaveSceneAs();
+		
+	}
+
+	void SaveSceneAs() {
+
+		std::string path = Utilities::SaveDialog("Copper Scene (*.copper)\0*.copper\0");
+
+		if(!path.empty()) {
+
+			data.scene.Serialize(path);
+
+			data.changes = false;
+			data.title = "Copper Editor - TestProject: ";
+			data.title += data.scene.name;
+			Input::SetWindowTitle(data.title);
+			
+		}
+		
+	}
+
+	void SetChanges(bool value) {
+
+		data.changes = value;
+		data.title = "Copper Editor - TestProject: ";
+		data.title += data.scene.name;
+		data.title += '*';
+		Input::SetWindowTitle(data.title);
+		
+	}
+
+
+	
 }

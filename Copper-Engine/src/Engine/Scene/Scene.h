@@ -14,13 +14,21 @@ namespace Copper {
 	class Scene {
 
 	public:
+		Object CreateObject(Vector3 position, Vector3 rotation, Vector3 scale, std::string name = "Object");
+		Object CreateObject(Transform* transform, std::string name = "Object");
 		Object CreateObject(std::string name = "Object");
 		void DestroyObject(Object obj);
 
+		std::string name;
+		std::filesystem::path path;
+		
 		ECS::Registry registry;
-		Camera* sceneCam = nullptr;
+		Camera* cam;
 
 		void Update();
+
+		void Serialize(std::filesystem::path path);
+		bool Deserialize(std::filesystem::path path);
 
 	};
 
@@ -39,6 +47,7 @@ namespace Copper {
 				Object obj(scene->registry.entities[index].id, scene);
 
 				obj.name = scene->registry.GetComponent<Name>(obj.id);
+				obj.transform = scene->registry.GetComponent<Transform>(obj.id);
 
 				return obj;
 

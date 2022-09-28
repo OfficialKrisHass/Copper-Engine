@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Copper.h>
-#include <Engine/Core/Entry.h>
 
 namespace Editor {
 
@@ -12,14 +11,14 @@ namespace Editor {
 
 	void RenderDockspace();
 	void RenderViewport();
+	void RenderMenu();
 
-}
+	void NewScene();
+	void OpenScene();
+	void OpenScene(std::filesystem::path path);
+	void SaveScene();
+	void SaveSceneAs();
 
-void AppEntryPoint() {
-
-	Editor::Initialize();
-
-	Copper::SetEditorRunFunc(Editor::Run);
-	Copper::SetEditorUIFunc(Editor::UI);
+	void SetChanges(bool value);
 
 }

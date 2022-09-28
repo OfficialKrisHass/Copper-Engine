@@ -31,17 +31,19 @@ namespace Copper {
 
 	}
 
-	void RendererAPI::Render(Mesh* mesh, Camera* cam) {
+	void RendererAPI::Render(Mesh* mesh, Camera* cam, Light* light) {
 
 		mesh->Vao()->Bind();
 		shader->Bind();
+		mesh->Update();
 
 		shader->LoadMat4("Model",      mesh->transform->CreateMatrix());
 		shader->LoadMat4("View",       cam->CreateViewMatrix());
 		shader->LoadMat4("Projection", cam->CreateProjectionMatrix());
-
-		shader->LoadVec3("lightPos", Vector3(0.0f, 0.0f, 2.0f));
+		
 		shader->LoadVec3("camPos", cam->transform->position);
+		
+		shader->LoadVec3("light.position", light->transform->position);
 
 		glDrawElements(GL_TRIANGLES, mesh->Vao()->Count(), GL_UNSIGNED_INT, 0);
 

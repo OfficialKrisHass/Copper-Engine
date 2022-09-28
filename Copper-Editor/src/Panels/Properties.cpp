@@ -1,36 +1,46 @@
 #include "Properties.h"
 
+#include "Core/EditorApp.h"
+
 #include "Viewport/SceneCamera.h"
 
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_internal.h>
 #include <cstring>
 
-#ifdef _MSVC_LANG
 #define _CRT_SECURE_NO_WARNINGS
-#endif
 
 using namespace Copper;
 
 namespace Editor {
 
-	template<typename T> static void DrawComponent(const std::string& name) {
+	std::filesystem::path Properties::selectedFile = "";
+	bool Properties::wasFileLast = false;
+
+	template<typename T> static bool DrawComponent(const std::string& name) {
 
 		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
 
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2 {4, 4});
 		ImGui::VerticalSeparator();
 
-		ImGui::TreeNodeEx((void*)typeid(T).hash_code(), flags, name.c_str());
+		bool opened = ImGui::TreeNodeEx((void*) typeid(T).hash_code(), flags, name.c_str());
 
 		ImGui::PopStyleVar();
-		ImGui::TreePop();
+		if(opened) ImGui::TreePop();
+
+		return opened;
 
 	}
 
 	void Properties::UI() {
 
-		if (!selectedObj) return;
+		if ( wasFileLast && selectedFile != "") RenderFile();
+		if (!wasFileLast && selectedObj) RenderObject();
+
+	}
+
+	void Properties::RenderObject() {
 
 		char buffer[128];
 		memset(buffer, 0, sizeof(buffer));
@@ -40,46 +50,47 @@ namespace Editor {
 
 			selectedObj.GetComponent<Name>()->name = std::string(buffer);
 
+			SetChanges(true);
+
 		}
 
-		DrawComponent<Transform>("Transform");
+		ImGui::SameLine();
 
-		ShowVector3("Position:", selectedObj.GetComponent<Transform>()->position);
-		ShowVector3("Rotation:", selectedObj.GetComponent<Transform>()->rotation, 0.1f);
-		ShowVector3("Scale:", selectedObj.GetComponent<Transform>()->scale);
-
-		if(selectedObj.HasComponent<Camera>()) {
+		if(DrawComponent<Transform>("Transform")) {
 			
-			DrawComponent<Camera>("Camera");
-			ShowFloat("FOV", selectedObj.GetComponent<SceneCamera>()->fov, 0.1f);
-			ShowFloat("Near Plane", selectedObj.GetComponent<SceneCamera>()->nearPlane);
-			ShowFloat("Far Plane", selectedObj.GetComponent<SceneCamera>()->farPlane);
+			if (ShowVector3("Position:", selectedObj.GetComponent<Transform>()->position)) SetChanges(true);
+			if (ShowVector3("Rotation:", selectedObj.GetComponent<Transform>()->rotation, 0.1f)) SetChanges(true);
+			if (ShowVector3("Scale:", selectedObj.GetComponent<Transform>()->scale)) SetChanges(true);
 			
 		}
 
-		if(selectedObj.HasComponent<SceneCamera>()) {
+		if(selectedObj.HasComponent<Camera>() && DrawComponent<Camera>("Camera")) {
 			
-			DrawComponent<SceneCamera>("Scene Camera");
-			ShowFloat("FOV", selectedObj.GetComponent<SceneCamera>()->fov, 0.1f);
-			ShowFloat("Near Plane", selectedObj.GetComponent<SceneCamera>()->nearPlane);
-			ShowFloat("Far Plane", selectedObj.GetComponent<SceneCamera>()->farPlane);
-
-			ImGui::Text("Movement");
-
-			ShowFloat("Speed", selectedObj.GetComponent<SceneCamera>()->speed);
-			ShowFloat("Sensitivity", selectedObj.GetComponent<SceneCamera>()->sensitivity, 0.1f);
+			if (ShowFloat("FOV", selectedObj.GetComponent<SceneCamera>()->fov, 0.1f)) SetChanges(true);
+			if (ShowFloat("Near Plane", selectedObj.GetComponent<SceneCamera>()->nearPlane)) SetChanges(true);
+			if (ShowFloat("Far Plane", selectedObj.GetComponent<SceneCamera>()->farPlane)) SetChanges(true);
 			
 		}
+		
+	}
+	
+	void Properties::RenderFile() {
 
-		if(selectedObj.HasComponent<Mesh>()) {
+		if(selectedFile.extension() == ".mat") {
 
-			DrawComponent<Mesh>("Mesh");
+			ImGui::Text("Material File");
+			
+		} else if(selectedFile.extension() == ".txt") {
+
+			ImGui::Text("Script File");
 			
 		}
-
+		
 	}
 
-	void Properties::ShowVector3(std::string name, Vector3& vec, float speed) {
+	bool Properties::ShowVector2(std::string name, Vector2& vec, float speed) {
+
+		bool ret = false;
 
 		ImGui::PushID(name.c_str());
 
@@ -105,7 +116,7 @@ namespace Editor {
 		ImGui::PopStyleColor();
 
 		ImGui::SameLine();
-		ImGui::DragFloat("##X", &vec.x, speed, 0.0f, 0.0f, "%.2f");
+		if (ImGui::DragFloat("##X", &vec.x, speed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
@@ -117,7 +128,58 @@ namespace Editor {
 		ImGui::PopStyleColor();
 
 		ImGui::SameLine();
-		ImGui::DragFloat("##Y", &vec.y, speed, 0.0f, 0.0f, "%.2f");
+		if (ImGui::DragFloat("##Y", &vec.y, speed, 0.0f, 0.0f, "%.2f")) ret = true;
+		ImGui::PopItemWidth();
+
+		//End
+		ImGui::PopStyleVar();
+		ImGui::Columns(1);
+		ImGui::PopID();
+
+		return ret;
+		
+	}
+	bool Properties::ShowVector3(std::string name, Vector3& vec, float speed) {
+
+		bool ret = false;
+		
+		ImGui::PushID(name.c_str());
+
+		//Text
+		ImGui::Columns(2);
+		ImGui::SetColumnWidth(0, 100.0f);
+		ImGui::Text(name.c_str());
+		ImGui::NextColumn();
+
+		//Settings
+		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2 {0, 0});
+
+		//Vars
+		float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+		ImVec2 buttonSize = {lineHeight + 3.0f, lineHeight};
+
+		//X
+		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4 {0.1f, 0.1f, 0.1f, 1.0f});
+		ImGui::Button("X", buttonSize);
+		ImGui::PopItemFlag();
+		ImGui::PopStyleColor();
+
+		ImGui::SameLine();
+		if (ImGui::DragFloat("##X", &vec.x, speed, 0.0f, 0.0f, "%.2f")) ret = true;
+		ImGui::PopItemWidth();
+		ImGui::SameLine();
+
+		//Y
+		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4 {0.1f, 0.1f, 0.1f, 1.0f});
+		ImGui::Button("Y", buttonSize);
+		ImGui::PopItemFlag();
+		ImGui::PopStyleColor();
+
+		ImGui::SameLine();
+		if (ImGui::DragFloat("##Y", &vec.y, speed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
@@ -129,7 +191,7 @@ namespace Editor {
 		ImGui::PopStyleColor();
 
 		ImGui::SameLine();
-		ImGui::DragFloat("##Z", &vec.z, speed, 0.0f, 0.0f, "%.2f");
+		if (ImGui::DragFloat("##Z", &vec.z, speed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
 
 		//End
@@ -137,10 +199,114 @@ namespace Editor {
 		ImGui::Columns(1);
 		ImGui::PopID();
 
-	}
-	void Properties::ShowFloat(std::string name, float& show, float speed) {
+		return ret;
 
-		ImGui::DragFloat(name.c_str(), &show, speed);
+	}
+	bool Properties::ShowVector4(std::string name, Vector4& vec, float speed) {
+
+		bool ret = false;
+		
+		ImGui::PushID(name.c_str());
+
+		//Text
+		ImGui::Columns(2);
+		ImGui::SetColumnWidth(0, 100.0f);
+		ImGui::Text(name.c_str());
+		ImGui::NextColumn();
+
+		//Settings
+		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2 {0, 0});
+
+		//Vars
+		float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+		ImVec2 buttonSize = {lineHeight + 3.0f, lineHeight};
+
+		//X
+		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4 {0.1f, 0.1f, 0.1f, 1.0f});
+		ImGui::Button("X", buttonSize);
+		ImGui::PopItemFlag();
+		ImGui::PopStyleColor();
+
+		ImGui::SameLine();
+		if (ImGui::DragFloat("##X", &vec.x, speed, 0.0f, 0.0f, "%.2f")) ret = true;
+		ImGui::PopItemWidth();
+		ImGui::SameLine();
+
+		//Y
+		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4 {0.1f, 0.1f, 0.1f, 1.0f});
+		ImGui::Button("Y", buttonSize);
+		ImGui::PopItemFlag();
+		ImGui::PopStyleColor();
+
+		ImGui::SameLine();
+		if (ImGui::DragFloat("##Y", &vec.y, speed, 0.0f, 0.0f, "%.2f")) ret = true;
+		ImGui::PopItemWidth();
+		ImGui::SameLine();
+
+		//Z
+		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4 {0.1f, 0.1f, 0.1f, 1.0f});
+		ImGui::Button("Z", buttonSize);
+		ImGui::PopItemFlag();
+		ImGui::PopStyleColor();
+
+		ImGui::SameLine();
+		if (ImGui::DragFloat("##Z", &vec.z, speed, 0.0f, 0.0f, "%.2f")) ret = true;
+		ImGui::PopItemWidth();
+		ImGui::SameLine();
+
+		//W
+		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4 {0.1f, 0.1f, 0.1f, 1.0f});
+		ImGui::Button("W", buttonSize);
+		ImGui::PopItemFlag();
+		ImGui::PopStyleColor();
+
+		ImGui::SameLine();
+		if (ImGui::DragFloat("##W", &vec.w, speed, 0.0f, 0.0f, "%.2f")) ret = true;
+		ImGui::PopItemWidth();
+
+		//End
+		ImGui::PopStyleVar();
+		ImGui::Columns(1);
+		ImGui::PopID();
+
+		return ret;
+		
+	}
+	bool Properties::ShowColor(std::string name, Copper::Color& col, bool showAlpha) {
+
+		bool ret = false;
+		
+		ImGui::PushID(name.c_str());
+
+		ImGui::Columns(2);
+		ImGui::SetColumnWidth(0, 75.0f);
+		ImGui::Text(name.c_str());
+		ImGui::NextColumn();
+		
+		if (ImGui::ColorEdit3("##Color", &col.r)) ret = true;
+
+		ImGui::PopID();
+
+		return ret;
+		
+	}
+	bool Properties::ShowInt(std::string name, int& show, bool uint) {
+
+		return true;
+		
+	}
+	bool Properties::ShowFloat(std::string name, float& show, float speed) {
+
+		bool ret = false;
+		
+		if (ImGui::DragFloat(name.c_str(), &show, speed)) ret = true;
+
+		return ret;
 		
 	}
 

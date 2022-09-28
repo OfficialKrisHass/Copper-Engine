@@ -7,6 +7,7 @@
 
 #include "Engine/Scene/Components/Mesh.h"
 #include "Engine/Scene/Components/Camera.h"
+#include "Engine/Scene/Components/Light.h"
 
 namespace Copper {
 
@@ -15,9 +16,10 @@ namespace Copper {
 		void Initialize();
 		
 		void ClearColor(float r, float g, float b);
-		void Render(Mesh* mesh, Camera* cam);
+		void Render(Mesh* mesh, Camera* cam, Light* light);
 
 		void SetShader(Shader* shader);
+		Shader* GetShader();
 
 	}
 
@@ -27,9 +29,10 @@ namespace Copper {
 		static void Initialize();
 
 		void ClearColor(float r, float g, float b);
-		void Render(Mesh* mesh, Camera* cam);
+		void Render(Mesh* mesh, Camera* cam, Light* light);
 
-		inline void SetShader(Shader* shader) { this->shader = shader; }
+		void SetShader(Shader* shader) { this->shader = shader; }
+		Shader* GetShader() { return this->shader; }
 		
 	private:
 		Shader* shader;

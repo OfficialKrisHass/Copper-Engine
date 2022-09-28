@@ -17,69 +17,82 @@ namespace Copper {
 		float x;
 		float y;
 
-		inline static Vector2 Zero() { return Vector2(0.0f); }
-		inline static Vector2 One() { return Vector2(1.0f); }
-		inline static Vector2 MinusOne() { return Vector2(-1.0f); }
+		static Vector2 Zero() { return Vector2(0.0f); }
+		static Vector2 One() { return Vector2(1.0f); }
+		static Vector2 MinusOne() { return Vector2(-1.0f); }
 
-		inline operator glm::vec2() const { return glm::vec2(x, y); }
+		operator glm::vec2() const { return glm::vec2(x, y); }
 
-		inline Vector2& operator=(const Vector2& other) {
+		Vector2& operator+(const Vector2& other) const		{ return Vector2(x + other.x, y + other.y); }
+		Vector2& operator+(const float other) const			{ return Vector2(x + other,   y + other); }
+		Vector2& operator+(const glm::vec2& other) const	{ return Vector2(x + other.x, y + other.y); }
+		Vector2& operator-(const Vector2& other) const		{ return Vector2(x - other.x, y - other.y); }
+		Vector2& operator-(const float other) const			{ return Vector2(x - other,   y - other); }
+		Vector2& operator-(const glm::vec2& other) const	{ return Vector2(x - other.x, y - other.y); }
+		Vector2& operator*(const Vector2& other) const		{ return Vector2(x * other.x, y * other.y); }
+		Vector2& operator*(const float other) const			{ return Vector2(x * other,   y * other); }
+		Vector2& operator*(const glm::vec2& other) const	{ return Vector2(x * other.x, y * other.y); }
+		Vector2& operator/(const Vector2& other) const		{ return Vector2(x / other.x, y / other.y); }
+		Vector2& operator/(const float other) const			{ return Vector2(x / other,   y / other); }
+		Vector2& operator/(const glm::vec2& other) const	{ return Vector2(x / other.x, y / other.y); }
+
+		Vector2& operator=(const Vector2& other) {
 
 			this->x = other.x;
 			this->y = other.y;
 			return *this;
 
 		}
-		inline Vector2& operator+=(const Vector2& other) {
+		Vector2& operator+=(const Vector2& other) {
 
 			this->x += other.x;
 			this->y += other.y;
 			return *this;
 
 		}
-		inline Vector2& operator+=(const float& other) {
+		Vector2& operator+=(const float& other) {
 
 			this->x += other;
 			this->y += other;
 			return *this;
 
 		}
-		inline Vector2& operator-=(const Vector2& other) {
+		Vector2& operator-=(const Vector2& other) {
 
 			this->x -= other.x;
 			this->y -= other.y;
 			return *this;
 
 		}
-		inline Vector2& operator-=(const float& other) {
+		Vector2& operator-=(const float& other) {
 
 			this->x -= other;
 			this->y -= other;
 			return *this;
 
 		}
-		inline Vector2& operator*=(const Vector2& other) {
+		Vector2& operator*=(const Vector2& other) {
 
 			this->x *= other.x;
 			this->y *= other.y;
 			return *this;
 
 		}
-		inline Vector2& operator*=(const float& other) {
+		Vector2& operator*=(const float& other) {
 
 			this->x *= other;
 			this->y *= other;
 			return *this;
 
 		}
-		inline Vector2& operator/=(const Vector2& other) {
+		Vector2& operator/=(const Vector2& other) {
 
 			this->x /= other.x;
 			this->y /= other.y;
 			return *this;
 
 		}
-		inline Vector2& operator/=(const float& other) {
+		Vector2& operator/=(const float& other) {
 
 			this->x /= other;
 			this->y /= other;
@@ -87,14 +100,14 @@ namespace Copper {
 
 		}
 
-		inline Vector2& operator++() {
+		Vector2& operator++() {
 
 			++this->x;
 			++this->y;
 			return *this;
 
 		}
-		inline Vector2& operator--() {
+		Vector2& operator--() {
 
 			--this->x;
 			--this->y;
@@ -102,7 +115,10 @@ namespace Copper {
 
 		}
 
-		inline Vector2& operator-(const Vector2& other) {
+		bool operator==(const Vector2& other) const { return x == other.x && y == other.y; }
+		bool operator!=(const Vector2& other) const { return !(*this == other); }
+
+		Vector2& operator-() const {
 
 			return Vector2(-x, -y);
 
@@ -110,7 +126,6 @@ namespace Copper {
 
 
 	};
-
 	struct Vector3 {
 
 		Vector3() = default;
@@ -121,13 +136,26 @@ namespace Copper {
 		float y;
 		float z;
 
-		inline static Vector3 Zero() { return Vector3(0.0f); }
-		inline static Vector3 One() { return Vector3(1.0f); }
-		inline static Vector3 MinusOne() { return Vector3(-1.0f); }
+		static Vector3 Zero() { return Vector3(0.0f); }
+		static Vector3 One() { return Vector3(1.0f); }
+		static Vector3 MinusOne() { return Vector3(-1.0f); }
 
-		inline operator glm::vec3() const { return glm::vec3(x, y, z); }
+		operator glm::vec3() const { return glm::vec3(x, y, z); }
 
-		inline Vector3& operator=(const Vector3& other) {
+		Vector3& operator+(const Vector3& other) const		{ return Vector3(x + other.x, y + other.y, z + other.z); }
+		Vector3& operator+(const float other) const			{ return Vector3(x + other,   y + other,   z + other); }
+		Vector3& operator+(const glm::vec3& other) const	{ return Vector3(x + other.x, y + other.y, z + other.z); }
+		Vector3& operator-(const Vector3& other) const		{ return Vector3(x - other.x, y - other.y, z - other.z); }
+		Vector3& operator-(const float other) const			{ return Vector3(x - other,   y - other,   z - other); }
+		Vector3& operator-(const glm::vec3& other) const	{ return Vector3(x - other.x, y - other.y, z - other.z); }
+		Vector3& operator*(const Vector3& other) const		{ return Vector3(x * other.x, y * other.y, z * other.z); }
+		Vector3& operator*(const float other) const			{ return Vector3(x * other,   y * other,   z * other); }
+		Vector3& operator*(const glm::vec3& other) const	{ return Vector3(x * other.x, y * other.y, z * other.z); }
+		Vector3& operator/(const Vector3& other) const		{ return Vector3(x / other.x, y / other.y, z / other.z); }
+		Vector3& operator/(const float other) const			{ return Vector3(x / other,   y / other,   z / other); }
+		Vector3& operator/(const glm::vec3& other) const	{ return Vector3(x / other.x, y / other.y, z / other.z); }
+
+		Vector3& operator=(const Vector3& other) {
 
 			this->x = other.x;
 			this->y = other.y;
@@ -135,7 +163,7 @@ namespace Copper {
 			return *this;
 
 		}
-		inline Vector3& operator+=(const Vector3& other) {
+		Vector3& operator+=(const Vector3& other) {
 
 			this->x += other.x;
 			this->y += other.y;
@@ -143,7 +171,7 @@ namespace Copper {
 			return *this;
 
 		}
-		inline Vector3& operator+=(const glm::vec3& other) {
+		Vector3& operator+=(const glm::vec3& other) {
 
 			this->x += other.x;
 			this->y += other.y;
@@ -151,7 +179,7 @@ namespace Copper {
 			return *this;
 
 		}
-		inline Vector3& operator+=(const float& other) {
+		Vector3& operator+=(const float& other) {
 
 			this->x += other;
 			this->y += other;
@@ -159,7 +187,7 @@ namespace Copper {
 			return *this;
 
 		}
-		inline Vector3& operator-=(const Vector3& other) {
+		Vector3& operator-=(const Vector3& other) {
 
 			this->x -= other.x;
 			this->y -= other.y;
@@ -167,7 +195,7 @@ namespace Copper {
 			return *this;
 
 		}
-		inline Vector3& operator-=(const float& other) {
+		Vector3& operator-=(const float& other) {
 
 			this->x -= other;
 			this->y -= other;
@@ -175,7 +203,7 @@ namespace Copper {
 			return *this;
 
 		}
-		inline Vector3& operator*=(const Vector3& other) {
+		Vector3& operator*=(const Vector3& other) {
 
 			this->x *= other.x;
 			this->y *= other.y;
@@ -183,7 +211,7 @@ namespace Copper {
 			return *this;
 
 		}
-		inline Vector3& operator*=(const float& other) {
+		Vector3& operator*=(const float& other) {
 
 			this->x *= other;
 			this->y *= other;
@@ -191,7 +219,7 @@ namespace Copper {
 			return *this;
 
 		}
-		inline Vector3& operator/=(const Vector3& other) {
+		Vector3& operator/=(const Vector3& other) {
 
 			this->x /= other.x;
 			this->y /= other.y;
@@ -199,7 +227,7 @@ namespace Copper {
 			return *this;
 
 		}
-		inline Vector3& operator/=(const float& other) {
+		Vector3& operator/=(const float& other) {
 
 			this->x /= other;
 			this->y /= other;
@@ -208,7 +236,7 @@ namespace Copper {
 
 		}
 
-		inline Vector3& operator++() {
+		Vector3& operator++() {
 
 			++this->x;
 			++this->y;
@@ -216,7 +244,7 @@ namespace Copper {
 			return *this;
 
 		}
-		inline Vector3& operator--() {
+		Vector3& operator--() {
 
 			--this->x;
 			--this->y;
@@ -225,7 +253,10 @@ namespace Copper {
 
 		}
 
-		inline Vector3& operator-() {
+		bool operator==(const Vector3& other) const { return x == other.x && y == other.y && z == other.z; }
+		bool operator!=(const Vector3& other) const { return !(*this == other); }
+
+		Vector3& operator-() const {
 
 			return Vector3(-x, -y, -z);
 
@@ -233,7 +264,6 @@ namespace Copper {
 
 
 	};
-
 	struct Vector4 {
 
 		Vector4() = default;
@@ -245,13 +275,26 @@ namespace Copper {
 		float z;
 		float w;
 
-		inline static Vector4 Zero() { return Vector4(0.0f); }
-		inline static Vector4 One() { return Vector4(1.0f); }
-		inline static Vector4 MinusOne() { return Vector4(-1.0f); }
+		static Vector4 Zero() { return Vector4(0.0f); }
+		static Vector4 One() { return Vector4(1.0f); }
+		static Vector4 MinusOne() { return Vector4(-1.0f); }
 
-		inline operator glm::vec4() const { return glm::vec4(x, y, z, w); }
+		operator glm::vec4() const { return glm::vec4(x, y, z, w); }
 
-		inline Vector4& operator=(const Vector4& other) {
+		Vector4& operator+(const Vector4& other) const		{ return Vector4(x + other.x, y + other.y, z + other.z, w + other.w); }
+		Vector4& operator+(const float other) const			{ return Vector4(x + other,   y + other,   z + other,   w + other); }
+		Vector4& operator+(const glm::vec4& other) const	{ return Vector4(x + other.x, y + other.y, z + other.z, w + other.w); }
+		Vector4& operator-(const Vector4& other) const		{ return Vector4(x - other.x, y - other.y, z - other.z, w - other.w); }
+		Vector4& operator-(const float other) const			{ return Vector4(x - other,   y - other,   z - other,   w - other); }
+		Vector4& operator-(const glm::vec4& other) const	{ return Vector4(x - other.x, y - other.y, z - other.z, w - other.w); }
+		Vector4& operator*(const Vector4& other) const		{ return Vector4(x * other.x, y * other.y, z * other.z, w * other.w); }
+		Vector4& operator*(const float other) const			{ return Vector4(x * other,   y * other,   z * other,   w * other); }
+		Vector4& operator*(const glm::vec4& other) const	{ return Vector4(x * other.x, y * other.y, z * other.z, w * other.w); }
+		Vector4& operator/(const Vector4& other) const		{ return Vector4(x / other.x, y / other.y, z / other.z, w / other.w); }
+		Vector4& operator/(const float other) const			{ return Vector4(x / other,   y / other,   z / other,   w / other); }
+		Vector4& operator/(const glm::vec4& other) const	{ return Vector4(x / other.x, y / other.y, z / other.z, w / other.w); }
+
+		Vector4& operator=(const Vector4& other) {
 
 			this->x = other.x;
 			this->y = other.y;
@@ -260,7 +303,7 @@ namespace Copper {
 			return *this;
 
 		}
-		inline Vector4& operator+=(const Vector4& other) {
+		Vector4& operator+=(const Vector4& other) {
 
 			this->x += other.x;
 			this->y += other.y;
@@ -269,7 +312,7 @@ namespace Copper {
 			return *this;
 
 		}
-		inline Vector4& operator+=(const float& other) {
+		Vector4& operator+=(const float& other) {
 
 			this->x += other;
 			this->y += other;
@@ -278,7 +321,7 @@ namespace Copper {
 			return *this;
 
 		}
-		inline Vector4& operator-=(const Vector4& other) {
+		Vector4& operator-=(const Vector4& other) {
 
 			this->x -= other.x;
 			this->y -= other.y;
@@ -287,7 +330,7 @@ namespace Copper {
 			return *this;
 
 		}
-		inline Vector4& operator-=(const float& other) {
+		Vector4& operator-=(const float& other) {
 
 			this->x -= other;
 			this->y -= other;
@@ -296,7 +339,7 @@ namespace Copper {
 			return *this;
 
 		}
-		inline Vector4& operator*=(const Vector4& other) {
+		Vector4& operator*=(const Vector4& other) {
 
 			this->x *= other.x;
 			this->y *= other.y;
@@ -305,7 +348,7 @@ namespace Copper {
 			return *this;
 
 		}
-		inline Vector4& operator*=(const float& other) {
+		Vector4& operator*=(const float& other) {
 
 			this->x *= other;
 			this->y *= other;
@@ -314,7 +357,7 @@ namespace Copper {
 			return *this;
 
 		}
-		inline Vector4& operator/=(const Vector4& other) {
+		Vector4& operator/=(const Vector4& other) {
 
 			this->x /= other.x;
 			this->y /= other.y;
@@ -323,7 +366,7 @@ namespace Copper {
 			return *this;
 
 		}
-		inline Vector4& operator/=(const float& other) {
+		Vector4& operator/=(const float& other) {
 
 			this->x /= other;
 			this->y /= other;
@@ -333,7 +376,7 @@ namespace Copper {
 
 		}
 
-		inline Vector4& operator++() {
+		Vector4& operator++() {
 
 			++this->x;
 			++this->y;
@@ -342,7 +385,7 @@ namespace Copper {
 			return *this;
 
 		}
-		inline Vector4& operator--() {
+		Vector4& operator--() {
 
 			--this->x;
 			--this->y;
@@ -352,7 +395,10 @@ namespace Copper {
 
 		}
 
-		inline Vector4& operator-(const Vector4& other) {
+		bool operator==(const Vector4& other) const { return x == other.x && y == other.y && z == other.z && w == other.w; }
+		bool operator!=(const Vector4& other) const { return !(*this == other); }
+
+		Vector4& operator-() const {
 
 			return Vector4(-x, -y, -z, -w);
 
@@ -370,66 +416,79 @@ namespace Copper {
 		uint32_t x;
 		uint32_t y;
 
-		inline static UVector2I Zero() { return UVector2I(0); }
-		inline static UVector2I One() { return UVector2I(1); }
+		static UVector2I Zero() { return UVector2I(0); }
+		static UVector2I One() { return UVector2I(1); }
 
-		inline UVector2I& operator=(const UVector2I& other) {
+		UVector2I& operator+(const UVector2I& other) const		{ return UVector2I(x + other.x, y + other.y); }
+		UVector2I& operator+(const uint32_t other) const		{ return UVector2I(x + other,   y + other); }
+		UVector2I& operator+(const glm::uvec2& other) const		{ return UVector2I(x + other.x, y + other.y); }
+		UVector2I& operator-(const UVector2I& other) const		{ return UVector2I(x - other.x, y - other.y); }
+		UVector2I& operator-(const uint32_t other) const		{ return UVector2I(x - other,   y - other); }
+		UVector2I& operator-(const glm::uvec2& other) const		{ return UVector2I(x - other.x, y - other.y); }
+		UVector2I& operator*(const UVector2I& other) const		{ return UVector2I(x * other.x, y * other.y); }
+		UVector2I& operator*(const uint32_t other) const		{ return UVector2I(x * other,   y * other); }
+		UVector2I& operator*(const glm::uvec2& other) const		{ return UVector2I(x * other.x, y * other.y); }
+		UVector2I& operator/(const UVector2I& other) const		{ return UVector2I(x / other.x, y / other.y); }
+		UVector2I& operator/(const uint32_t other) const		{ return UVector2I(x / other,   y / other); }
+		UVector2I& operator/(const glm::uvec2& other) const		{ return UVector2I(x / other.x, y / other.y); }
+
+		UVector2I& operator=(const UVector2I& other) {
 
 			this->x = other.x;
 			this->y = other.y;
 			return *this;
 
 		}
-		inline UVector2I& operator+=(const UVector2I& other) {
+		UVector2I& operator+=(const UVector2I& other) {
 
 			this->x += other.x;
 			this->y += other.y;
 			return *this;
 
 		}
-		inline UVector2I& operator+=(const uint32_t& other) {
+		UVector2I& operator+=(const uint32_t& other) {
 
 			this->x += other;
 			this->y += other;
 			return *this;
 
 		}
-		inline UVector2I& operator-=(const UVector2I& other) {
+		UVector2I& operator-=(const UVector2I& other) {
 
 			this->x -= other.x;
 			this->y -= other.y;
 			return *this;
 
 		}
-		inline UVector2I& operator-=(const uint32_t& other) {
+		UVector2I& operator-=(const uint32_t& other) {
 
 			this->x -= other;
 			this->y -= other;
 			return *this;
 
 		}
-		inline UVector2I& operator*=(const UVector2I& other) {
+		UVector2I& operator*=(const UVector2I& other) {
 
 			this->x *= other.x;
 			this->y *= other.y;
 			return *this;
 
 		}
-		inline UVector2I& operator*=(const uint32_t& other) {
+		UVector2I& operator*=(const uint32_t& other) {
 
 			this->x *= other;
 			this->y *= other;
 			return *this;
 
 		}
-		inline UVector2I& operator/=(const UVector2I& other) {
+		UVector2I& operator/=(const UVector2I& other) {
 
 			this->x /= other.x;
 			this->y /= other.y;
 			return *this;
 
 		}
-		inline UVector2I& operator/=(const uint32_t& other) {
+		UVector2I& operator/=(const uint32_t& other) {
 
 			this->x /= other;
 			this->y /= other;
@@ -437,20 +496,23 @@ namespace Copper {
 
 		}
 
-		inline UVector2I& operator++() {
+		UVector2I& operator++() {
 
 			++this->x;
 			++this->y;
 			return *this;
 
 		}
-		inline UVector2I& operator--() {
+		UVector2I& operator--() {
 
 			--this->x;
 			--this->y;
 			return *this;
 
 		}
+
+		bool operator==(const UVector2I& other) const { return x == other.x && y == other.y; }
+		bool operator!=(const UVector2I& other) const { return !(*this == other); }
 
 	};
 
@@ -464,198 +526,34 @@ namespace Copper {
 		float g;
 		float b;
 		float a;
+		
+		operator Vector3() const { return Vector3(r, g, b); }
+		operator Vector4() const { return Vector4(r, g, b, a); }
 
-		inline static Color Red() {   return Color(1.0f, 0.0f, 0.0f); }
-		inline static Color Green() { return Color(0.0f, 1.0f, 0.0f); }
-		inline static Color Blue() {  return Color(0.0f, 0.0f, 1.0f); }
-		inline static Color White() { return Color(1.0f); }
-		inline static Color Black() { return Color(0.0f); }
+		//operator bool() const { return *this != Color(-1.0f); }
+
+		static Color Red() {   return Color(1.0f, 0.0f, 0.0f); }
+		static Color Green() { return Color(0.0f, 1.0f, 0.0f); }
+		static Color Blue() {  return Color(0.0f, 0.0f, 1.0f); }
+		static Color White() { return Color(1.0f); }
+		static Color Black() { return Color(0.0f); }
+		static Color None() { return Color(-1.0f); }
+
+		bool operator==(const Color& other) const {
+
+			if(r != other.r || g != other.g || b != other.b || a != other.a) return false;
+
+			return true;
+			
+		}
+		bool operator!=(const Color& other) const {
+
+			return !(*this == other);
+
+		}
 
 	};
-
-	inline Vector2 operator+(const Vector2& other, float scalar) {
-
-		return Vector2(other.x + scalar, other.y + scalar);
-
-	}
-	inline Vector2 operator+(const Vector2& other, const Vector2& scalar) {
-
-		return Vector2(other.x + scalar.x, other.y + scalar.y);
-
-	}
-	inline Vector2 operator+(float scalar, const Vector2& other) {
-
-		return Vector2(scalar + other.x, scalar + other.y);
-
-	}
-	inline Vector2 operator-(const Vector2& other, float scalar) {
-
-		return Vector2(other.x - scalar, other.y - scalar);
-
-	}
-	inline Vector2 operator-(const Vector2& other, const Vector2& scalar) {
-
-		return Vector2(other.x - scalar.x, other.y - scalar.y);
-
-	}
-	inline Vector2 operator-(float scalar, const Vector2& other) {
-
-		return Vector2(scalar - other.x, scalar - other.y);
-
-	}
-	inline Vector2 operator*(const Vector2& other, float scalar) {
-
-		return Vector2(other.x * scalar, other.y * scalar);
-
-	}
-	inline Vector2 operator*(Vector2 const& other, Vector2 const& scalar) {
-
-		return Vector2(other.x * scalar.x, other.y * scalar.y);
-
-	}
-	inline Vector2 operator*(float scalar, const Vector2& other) {
-
-		return Vector2(scalar * other.x, scalar * other.y);
-
-	}
-	inline Vector2 operator/(const Vector2& other, float scalar) {
-
-		return Vector2(other.x / scalar, other.y / scalar);
-
-	}
-	inline Vector2 operator/(const Vector2& other, const Vector2& scalar) {
-
-		return Vector2(other.x / scalar.x, other.y / scalar.y);
-
-	}
-	inline Vector2 operator/(float scalar, const Vector2& other) {
-
-		return Vector2(scalar / other.x, scalar / other.y);
-
-	}
-
-	inline Vector3 operator+(const Vector3& other, float scalar) {
-
-		return Vector3(other.x + scalar, other.y + scalar, other.z + scalar);
-
-	}
-	inline Vector3 operator+(const Vector3& other, const Vector3& scalar) {
-
-		return Vector3(other.x + scalar.x, other.y + scalar.y, other.z + scalar.z);
-
-	}
-	inline Vector3 operator+(float scalar, const Vector3& other) {
-
-		return Vector3(scalar + other.x, scalar + other.y, scalar + other.z);
-
-	}
-	inline Vector3 operator-(const Vector3& other, float scalar) {
-
-		return Vector3(other.x - scalar, other.y - scalar, other.z - scalar);
-
-	}
-	inline Vector3 operator-(const Vector3& other, const Vector3& scalar) {
-
-		return Vector3(other.x - scalar.x, other.y - scalar.y, other.z - scalar.z);
-
-	}
-	inline Vector3 operator-(float scalar, const Vector3& other) {
-
-		return Vector3(scalar - other.x, scalar - other.y, scalar - other.z);
-
-	}
-	inline Vector3 operator*(const Vector3& other, float scalar) {
-
-		return Vector3(other.x * scalar, other.y * scalar, other.z * scalar);
-
-	}
-	inline Vector3 operator*(Vector3 const& other, Vector3 const& scalar) {
-
-		return Vector3(other.x * scalar.x, other.y * scalar.y, other.z * scalar.z);
-
-	}
-	inline Vector3 operator*(float scalar, const Vector3& other) {
-
-		return Vector3(scalar * other.x, scalar * other.y, scalar * other.z);
-
-	}
-	inline Vector3 operator/(const Vector3& other, float scalar) {
-
-		return Vector3(other.x / scalar, other.y / scalar, other.z / scalar);
-
-	}
-	inline Vector3 operator/(const Vector3& other, const Vector3& scalar) {
-
-		return Vector3(other.x / scalar.x, other.y / scalar.y, other.z / scalar.z);
-
-	}
-	inline Vector3 operator/(float scalar, const Vector3& other) {
-
-		return Vector3(scalar / other.x, scalar / other.y, scalar / other.z);
-
-	}
-
-	inline Vector4 operator+(const Vector4& other, float scalar) {
-
-		return Vector4(other.x + scalar, other.y + scalar, other.z + scalar, other.w + scalar);
-
-	}
-	inline Vector4 operator+(const Vector4& other, const Vector4& scalar) {
-
-		return Vector4(other.x + scalar.x, other.y + scalar.y, other.z + scalar.z, other.w + scalar.w);
-
-	}
-	inline Vector4 operator+(float scalar, const Vector4& other) {
-
-		return Vector4(scalar + other.x, scalar + other.y, scalar + other.z, scalar + other.w);
-
-	}
-	inline Vector4 operator-(const Vector4& other, float scalar) {
-
-		return Vector4(other.x - scalar, other.y - scalar, other.z - scalar, other.w - scalar);
-
-	}
-	inline Vector4 operator-(const Vector4& other, const Vector4& scalar) {
-
-		return Vector4(other.x - scalar.x, other.y - scalar.y, other.z - scalar.z, other.w - scalar.w);
-
-	}
-	inline Vector4 operator-(float scalar, const Vector4& other) {
-
-		return Vector4(scalar - other.x, scalar - other.y, scalar - other.z, scalar - other.w);
-
-	}
-	inline Vector4 operator*(const Vector4& other, float scalar) {
-
-		return Vector4(other.x * scalar, other.y * scalar, other.z * scalar, other.w * scalar);
-
-	}
-	inline Vector4 operator*(Vector4 const& other, Vector4 const& scalar) {
-
-		return Vector4(other.x * scalar.x, other.y * scalar.y, other.z * scalar.z, other.w * scalar.w);
-
-	}
-	inline Vector4 operator*(float scalar, const Vector4& other) {
-
-		return Vector4(scalar * other.x, scalar * other.y, scalar * other.z, scalar * other.w);
-
-	}
-	inline Vector4 operator/(const Vector4& other, float scalar) {
-
-		return Vector4(other.x / scalar, other.y / scalar, other.z / scalar, other.w / scalar);
-
-	}
-	inline Vector4 operator/(const Vector4& other, const Vector4& scalar) {
-
-		return Vector4(other.x / scalar.x, other.y / scalar.y, other.z / scalar.z, other.w / scalar.w);
-
-	}
-	inline Vector4 operator/(float scalar, const Vector4& other) {
-
-		return Vector4(scalar / other.x, scalar / other.y, scalar / other.z, scalar / other.w);
-
-	}
-
+	
 	inline std::ostream& operator<<(std::ostream& os, const Vector2& vec) {
 
 		return os << "X: " << vec.x << ", Y: " << vec.y;
@@ -673,8 +571,8 @@ namespace Copper {
 	}
 	inline std::ostream& operator<<(std::ostream& os, const Color& col) {
 
-		return os << "R: " << col.r << ", G: " << col.g << ", B: " << col.b;
+		return os << "R: " << col.r << ", G: " << col.g << ", B: " << col.b << ", A: " << col.a;
 
 	}
-
+	
 }

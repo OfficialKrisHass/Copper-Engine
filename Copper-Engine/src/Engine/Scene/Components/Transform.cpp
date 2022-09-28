@@ -3,8 +3,7 @@
 
 #include <GLM/glm.hpp>
 #include <GLM/ext/matrix_transform.hpp>
-#include <GLM/gtx/rotate_vector.hpp>
-#include <GLM/gtx/vector_angle.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 namespace Copper {
 
@@ -24,4 +23,34 @@ namespace Copper {
 
 	}
 
+	Vector3 Transform::Forward() {
+
+		glm::quat quat = glm::quat(glm::vec3(glm::radians(-rotation.x), glm::radians(-rotation.y), glm::radians(-rotation.z)));
+		glm::vec3 forward = glm::rotate(quat, glm::vec3(0.0f, 0.0f, -1.0f));
+		Vector3 ret(forward.x, forward.y, forward.z);
+		
+		return ret;
+		
+	}
+	Vector3 Transform::Right() {
+		glm::quat quat = glm::quat(glm::vec3(glm::radians(-rotation.x), glm::radians(-rotation.y), glm::radians(-rotation.z)));
+		glm::vec3 forward = glm::rotate(quat, glm::vec3(1.0f, 0.0f, 0.0f));
+		Vector3 ret(forward.x, forward.y, forward.z);
+
+		return ret;
+		
+	}
+	Vector3 Transform::Up() {
+
+		glm::quat quat = glm::quat(glm::vec3(glm::radians(-rotation.x), glm::radians(-rotation.y), glm::radians(-rotation.z)));
+		glm::vec3 forward = glm::rotate(quat, glm::vec3(0.0f, 1.0f, 0.0f));
+		Vector3 ret(forward.x, forward.y, forward.z);
+
+		return ret;
+		
+	}
+	Vector3 Transform::Backward() { return -Forward(); }
+	Vector3 Transform::Left() { return -Right(); }
+	Vector3 Transform::Down() { return -Up(); }
+	
 }

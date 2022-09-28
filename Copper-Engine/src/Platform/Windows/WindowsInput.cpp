@@ -6,7 +6,7 @@
 #include <GLFW/glfw3.h>
 #include <ImGui/imgui.h>
 
-namespace Copper {
+namespace Copper::Input {
 	
 	//------------------------------------
 	//------Keyboard and Mouse Input------
@@ -37,6 +37,12 @@ namespace Copper {
 		glfwSetCursorPos(GetGLFWwindow, x, y);
 		
 	}
+
+	void SetWindowTitle(std::string title) {
+
+		glfwSetWindowTitle(GetGLFWwindow, title.c_str());
+		
+	}
 	
 	//-------------------
 	//------Getters------
@@ -44,6 +50,20 @@ namespace Copper {
 	void GetCursorPosition(double* x, double* y) {
 		
 		glfwGetCursorPos(GetGLFWwindow, x, y);
+		
+	}
+
+	//---------------------------------
+	//------Controlling functions------
+	//---------------------------------
+	void WrapCursor() {
+
+		float rightEdgeX = GetWindow().Width() - 5;
+		double mouseX, mouseY;
+		GetCursorPosition(&mouseX, &mouseY);
+
+		if(mouseX <= 5) { SetCursorPosition(rightEdgeX, mouseY); }
+		if(mouseY >= rightEdgeX) { SetCursorPosition(5, mouseY); }
 		
 	}
 	

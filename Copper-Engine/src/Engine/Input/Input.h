@@ -2,7 +2,7 @@
 
 #include "Engine/Core/Core.h"
 
-namespace Copper {
+namespace Copper::Input {
 
 	enum KeyCode {
 
@@ -135,13 +135,21 @@ namespace Copper {
 		Button2 = 1
 		
 	};
-	
+
+	//Input
 	bool IsKey(KeyCode key);
 	bool IsButton(MouseCode button);
 
+	//Setters
 	void SetCursorVisible(bool visible);
 	void SetCursorPosition(float x, float y);
 
+	void SetWindowTitle(std::string title);
+
+	//Getters
 	void GetCursorPosition(double* x, double* y);
+
+	//Controls
+	void WrapCursor();
 
 }

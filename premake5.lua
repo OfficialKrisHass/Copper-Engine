@@ -8,6 +8,7 @@ outputDir = "%{cfg.system}-%{cfg.architecture}-%{cfg.buildcfg}"
 include "Copper-Engine/lib/GLFW"
 include "Copper-Engine/lib/GLAD"
 include "Copper-Engine/lib/ImGui/ImGui"
+include "Copper-Engine/lib/yaml-cpp"
 
 project "Copper-Engine"
     location "Copper-Engine"
@@ -30,6 +31,8 @@ project "Copper-Engine"
 
         "%{prj.name}/src/Engine/**.h",
         "%{prj.name}/src/Engine/**.cpp",
+        
+        "%{prj.name}/lib/stb/stb/stb_image.cpp",
 
     }
 
@@ -41,7 +44,9 @@ project "Copper-Engine"
         "%{prj.name}/lib/GLFW/include",
         "%{prj.name}/lib/GLAD/include",
         "%{prj.name}/lib/GLM/include",
+        "%{prj.name}/lib/yaml-cpp/include",
         "%{prj.name}/lib/ImGui",
+        "%{prj.name}/lib/stb",
 
     }
 
@@ -50,6 +55,7 @@ project "Copper-Engine"
         "GLFW",
         "GLAD",
         "ImGui",
+        "yaml-cpp",
         "opengl32.lib"
 
     }
@@ -61,9 +67,9 @@ project "Copper-Engine"
     }
 
     postbuildcommands {
-
+    
         "{COPYDIR} assets ../Build/" .. outputDir .. "/Copper-Editor/assets",
-        "{COPYDIR} assets ../Copper-Editor/assets",
+        
 
     }
 
@@ -132,6 +138,12 @@ project "Copper-Editor"
 
         "CU_EDITOR"
 
+    }
+    
+    postbuildcommands {
+        
+        "{COPYDIR} assets ../Build/" .. outputDir .. "/Copper-Editor/assets",
+        
     }
 
     filter "system:windows"

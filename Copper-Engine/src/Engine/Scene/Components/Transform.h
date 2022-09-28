@@ -20,6 +20,13 @@ namespace Copper {
 
 		glm::mat4 CreateMatrix();
 
+		Vector3 Forward();
+		Vector3 Right();
+		Vector3 Up();
+		Vector3 Backward();
+		Vector3 Left();
+		Vector3 Down();
+
 	private:
 		//
 

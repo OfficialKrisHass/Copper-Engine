@@ -10,7 +10,7 @@ namespace Copper {
 
 		glm::mat4 ret(1.0f);
 
-		ret = glm::lookAt((glm::vec3) transform->position, (glm::vec3) (transform->position + forward), (glm::vec3) up);
+		ret = glm::lookAt((glm::vec3) transform->position, (glm::vec3) (transform->position + transform->Forward()), (glm::vec3) transform->Up());
 
 		return ret;
 
@@ -19,8 +19,6 @@ namespace Copper {
 	glm::mat4 Camera::CreateProjectionMatrix() {
 
 		glm::mat4 ret(1.0f);
-
-		//Log(fov);
 		
 		ret = glm::perspective(glm::radians(fov), static_cast<float>(size.x) / size.y, nearPlane, farPlane);
 

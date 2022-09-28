@@ -1,8 +1,7 @@
 #pragma once
 
+#include "Scene.h"
 #include "Engine/Core/Core.h"
-
-#include "Engine/Scene/Scene.h"
 
 #include "Engine/Scene/Components/Name.h"
 #include "Engine/Scene/Components/Transform.h"
@@ -33,8 +32,10 @@ namespace Copper {
 		template<typename T> T* GetComponent() { return scene->registry.GetComponent<T>(id); }
 		template<typename T> void RemoveComponent() { scene->registry.RemoveComponent<T>(id); }
 		template<typename T> bool HasComponent() { return scene->registry.HasComponent<T>(id); }
+
+		static Object Null() { return Object(ECS::EntityID(-1, -1), nullptr); }
 		
-		operator bool() const { return ECS::IsEntityValid(id); }
+		operator bool() const { return id != ECS::EntityID(-1, -1); }
 		operator uint64_t() const { return            id; }
 		operator uint32_t() const { return (uint32_t) id; }
 

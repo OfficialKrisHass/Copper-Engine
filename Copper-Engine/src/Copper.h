@@ -9,9 +9,13 @@
 #include "Engine/Events/WindowEvent.h"
 
 #include "Engine/Input/Input.h"
+#include "Engine/Input/Error.h"
 
 #include "Engine/Utilities/Wrappers.h"
 #include "Engine/Utilities/FileUtils.h"
+
+#include "Engine/Renderer/Texture.h"
+#include "Engine/Renderer/Material.h"
 
 #include "Engine/Scene/Scene.h"
 #include "Engine/Scene/Object.h"
@@ -21,4 +25,4 @@
 #include "Engine/Scene/Components/Name.h"
 #include "Engine/Scene/Components/Mesh.h"
 #include "Engine/Scene/Components/Camera.h"
-
+#include "Engine/Scene/Components/Light.h"

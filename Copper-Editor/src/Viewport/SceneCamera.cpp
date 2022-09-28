@@ -12,21 +12,21 @@ namespace Copper {
 		
 		if(!canLook) return;
 
-		if (IsKey(KeyCode::W)) { transform->position += speed *  forward; }
-		if (IsKey(KeyCode::S)) { transform->position += speed * -forward; }
-		if (IsKey(KeyCode::A)) { transform->position += speed * -glm::normalize(glm::cross((glm::vec3) forward, (glm::vec3) up)); }
-		if (IsKey(KeyCode::D)) { transform->position += speed *  glm::normalize(glm::cross((glm::vec3) forward, (glm::vec3) up)); }
-
-		if (IsKey(KeyCode::Space))       { transform->position += speed *  up; }
-		if (IsKey(KeyCode::LeftControl)) { transform->position += speed * -up; }
-
-		if (IsButton(Button1)) {
-
-			SetCursorVisible(false);
+		if (Input::IsKey(Input::W)) { transform->position +=  transform->Forward() * speed; }
+		if (Input::IsKey(Input::S)) { transform->position += -transform->Forward() * speed; }
+		if (Input::IsKey(Input::A)) { transform->position +=  speed * -glm::normalize(glm::cross((glm::vec3) transform->Forward(), (glm::vec3) transform->Up())); }
+		if (Input::IsKey(Input::D)) { transform->position +=  speed *  glm::normalize(glm::cross((glm::vec3) transform->Forward(), (glm::vec3) transform->Up())); }
+		
+		if (Input::IsKey(Input::Space))       { transform->position +=  up * speed; }
+		if (Input::IsKey(Input::LeftControl)) { transform->position += -up * speed; }
+		
+		if (Input::IsButton(Input::Button1)) {
+			
+			Input::SetCursorVisible(false);
 
 			if (firstClick) {
 
-				SetCursorPosition((float) GetWindow().Width() / 2, (float) GetWindow().Height() / 2);
+				Input::SetCursorPosition((float) GetWindow().Width() / 2, (float) GetWindow().Height() / 2);
 
 				firstClick = false;
 
@@ -35,32 +35,19 @@ namespace Copper {
 			double mouseX;
 			double mouseY;
 			
-			GetCursorPosition(&mouseX, &mouseY);
+			Input::GetCursorPosition(&mouseX, &mouseY);
 			
 			float rotX = sensitivity * (float) (mouseY - (GetWindow().Height() / 2)) / GetWindow().Height();
 			float rotY = sensitivity * (float) (mouseX - (GetWindow().Width() / 2)) / GetWindow().Width();
-			
-			glm::vec3 newOrientation = glm::rotate((glm::vec3) forward, glm::radians(-rotX), glm::normalize(glm::cross((glm::vec3) forward, (glm::vec3)up)));
-			
-			if (abs(glm::angle(newOrientation, (glm::vec3) up) - glm::radians(90.0f)) <= glm::radians(85.0f)) {
 
-				forward.x = newOrientation.x;
-				forward.y = newOrientation.y;
-				forward.z = newOrientation.z;
-
-			}
+			transform->rotation.x += rotX;
+			transform->rotation.y += rotY;
 			
-			glm::vec3 vec = glm::rotate((glm::vec3)forward, glm::radians(-rotY), (glm::vec3) up);
-
-			forward.x = vec.x;
-			forward.y = vec.y;
-			forward.z = vec.z;
-			
-			SetCursorPosition((float) GetWindow().Width() / 2, (float) GetWindow().Height() / 2);
+			Input::SetCursorPosition((float) GetWindow().Width() / 2, (float) GetWindow().Height() / 2);
 
 		} else {
 
-			SetCursorVisible(true);
+			Input::SetCursorVisible(true);
 			firstClick = true;
 
 		}

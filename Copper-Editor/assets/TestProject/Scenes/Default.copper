@@ -1,0 +1,65 @@
+Scene: Default
+Entities:
+  0:
+    Name: Square
+    Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Components:
+      Mesh:
+        Vertices:
+          - 36
+          - -0.5
+          - -0.5
+          - 0
+          - 1
+          - 0
+          - 0
+          - 0
+          - 0
+          - -1
+          - 0.5
+          - -0.5
+          - 0
+          - 0
+          - 1
+          - 0
+          - 0
+          - 0
+          - -1
+          - 0.5
+          - 0.5
+          - 0
+          - 0
+          - 0
+          - 1
+          - 0
+          - 0
+          - -1
+          - -0.5
+          - 0.5
+          - 0
+          - 1
+          - 0
+          - 1
+          - 0
+          - 0
+          - -1
+        Indices:
+          - 6
+          - 0
+          - 1
+          - 2
+          - 2
+          - 3
+          - 0
+  4294967296:
+    Name: Light
+    Transform:
+      Position: [0, 0, 1]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Components:
+      Light:
+        Color: None

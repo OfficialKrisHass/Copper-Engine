@@ -76,18 +76,11 @@ namespace Copper {
 
 	}
 
-	void Shader::LoadMat4(std::string name, glm::mat4 mat) {
-
-		glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
-
-	}
-
-	void Shader::LoadVec3(std::string name, Vector3 vec) {
-
-		glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, glm::value_ptr((glm::vec3) vec));
-		
-	}
-
+	void Shader::LoadInt(std::string name, int value) { glUniform1i(glGetUniformLocation(ID, name.c_str()), value); }
+	void Shader::LoadUInt(std::string name, uint32_t value) { glUniform1ui(glGetUniformLocation(ID, name.c_str()), value); }
+	void Shader::LoadFloat(std::string name, float value) { glUniform1f(glGetUniformLocation(ID, name.c_str()), value); }
+	void Shader::LoadMat4(std::string name, glm::mat4 mat) { glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat)); }
+	void Shader::LoadVec3(std::string name, Vector3 vec) { glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, glm::value_ptr((glm::vec3) vec)); }
 
 	void Shader::Bind() { glUseProgram(ID); }
 	void Shader::Unbind() { glUseProgram(0); }

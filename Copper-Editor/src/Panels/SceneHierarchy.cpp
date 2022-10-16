@@ -10,9 +10,9 @@ namespace Editor {
 
 	using namespace Copper;
 
-	Scene* SceneHierarchy::scene = nullptr;
-
 	void SceneHierarchy::UI() {
+
+		Scene* scene = GetScene();
 
 		if (!scene) { selectedObj = Object::Null(); }
 

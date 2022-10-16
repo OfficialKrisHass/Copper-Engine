@@ -42,8 +42,8 @@ namespace Editor {
 
 	void Properties::RenderObject() {
 
-		char buffer[128];
-		memset(buffer, 0, sizeof(buffer));
+		char buffer[128] = {};
+		// ReSharper disable once CppDeprecatedEntity
 		std::strncpy(buffer, selectedObj.GetComponent<Name>()->name.c_str(), sizeof(buffer));
 
 		if (ImGui::InputText("##Name", buffer, sizeof(buffer))) {
@@ -70,6 +70,31 @@ namespace Editor {
 			if (ShowFloat("Near Plane", selectedObj.GetComponent<SceneCamera>()->nearPlane)) SetChanges(true);
 			if (ShowFloat("Far Plane", selectedObj.GetComponent<SceneCamera>()->farPlane)) SetChanges(true);
 			
+		}
+
+		ImGui::Spacing();
+		//ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
+
+		float width = ImGui::GetWindowWidth();
+		ImVec2 size = ImVec2(125, 30);
+
+		ImGui::SetCursorPosX((width - size.x) * 0.5f);
+		if(ImGui::Button("Add Component", size)) {
+
+			ImGui::OpenPopup("##AddComponent");
+			
+		}
+
+		if(ImGui::BeginPopup("##AddComponent")) {
+				
+			if(ImGui::MenuItem("Light")) { selectedObj.AddComponent<Light>(); }
+			if(ImGui::MenuItem("Mesh")) { selectedObj.AddComponent<Mesh>(); }
+			if(ImGui::MenuItem("Camera")) { selectedObj.AddComponent<Camera>(); }
+
+			ImGui::EndPopup();
+				
 		}
 		
 	}

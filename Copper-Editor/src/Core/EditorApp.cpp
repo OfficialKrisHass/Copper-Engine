@@ -49,8 +49,7 @@ namespace Editor {
 	};
 
 	struct EditorData {
-
-		std::shared_ptr<FrameBuffer> fbo;
+		
 		std::string title;
 
 		//Scene
@@ -79,7 +78,6 @@ namespace Editor {
 		Log("Editor Initialization Started!");
 
 		data.viewportSize = UVector2I(1280, 720);
-		data.fbo = std::make_shared<FrameBuffer>(data.viewportSize);
 
 		data.sceneHierarchy = SceneHierarchy();
 		data.properties = Properties();
@@ -90,10 +88,7 @@ namespace Editor {
 		data.sceneCam.transform->position.z = 1.0f;
 		
 		OpenScene("assets/TestProject/Scenes/Default.copper");
-
-		// std::stringstream ss;
-		// ss << "Copper Editor - TestProject: " << data.scene.name;
-		// data.title = ss.str();
+		LoadScene(&data.scene);
 
 		data.title = "Copper Editor - TestProject: ";
 		data.title += data.scene.name;
@@ -105,19 +100,6 @@ namespace Editor {
 	}
 
 	void Run() {
-
-		data.sceneCam.SetCanLook(data.canLookViewport);
-		
-		if (data.fbo->Width() != data.viewportSize.x || data.fbo->Height() != data.viewportSize.y) {
-			
-			data.fbo->Resize(data.viewportSize);
-			data.sceneCam.Resize(data.viewportSize);
-		
-		}
-
-		data.fbo->Bind();
-		data.scene.Update();
-		data.fbo->Unbind();
 
 		data.properties.SetSelectedObject(data.sceneHierarchy.GetSelectedObject());
 
@@ -193,11 +175,12 @@ namespace Editor {
 
 		ImVec2 windowSize = ImGui::GetContentRegionAvail();
 		data.viewportSize = UVector2I((uint32_t) windowSize.x, (uint32_t) windowSize.y);
+		SetWindowSize(data.viewportSize);
 		
-		uint64_t texture = data.fbo->GetColorAttachment();
-		ImGui::Image(reinterpret_cast<void*>(texture), windowSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+		ImGui::Image(reinterpret_cast<void*>(GetFBOTexture()), windowSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
 		data.canLookViewport = ImGui::IsItemHovered();
+		data.sceneCam.SetCanLook(data.canLookViewport);
 		
 		ImGui::End();
 		ImGui::PopStyleVar();
@@ -238,9 +221,10 @@ namespace Editor {
 		data.scene = Scene();
 		data.scene.cam = &data.sceneCam;
 		
-		data.sceneHierarchy.SetScene(&data.scene);
 		data.sceneHierarchy.SetSelectedObject(Object::Null());
 		data.properties.SetSelectedObject(Object::Null());
+
+		LoadScene(&data.scene);
 		
 	}
 
@@ -261,7 +245,6 @@ namespace Editor {
 			switch(Input::Error::WarningPopup("Unsaved Changes", "There are Unsaved Changes, if you open another scene you will lose these Changes.")) {
 
 			case IDOK: break;
-				
 			case IDCANCEL: return;
 				
 			}
@@ -277,9 +260,10 @@ namespace Editor {
 		data.title += data.scene.name;
 		Input::SetWindowTitle(data.title);
 
-		data.sceneHierarchy.SetScene(&data.scene);
 		data.sceneHierarchy.SetSelectedObject(Object::Null());
 		data.properties.SetSelectedObject(Object::Null());
+
+		LoadScene(&data.scene);
 		
 	}
 	

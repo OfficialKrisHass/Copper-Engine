@@ -41,13 +41,13 @@ namespace Editor {
         }
 
         ImGui::SameLine();
-        ImGui::Text(currentDir.make_preferred().string().c_str());
+        ImGui::Text(currentDir.make_preferred().string().c_str());  // NOLINT(clang-diagnostic-format-security)
         ImGui::GetFont()->FontSize += 2.0f;
 
-        float padding = 16.0f;
-        float thumbnailSize = 128.0f;
-        float cellSize = thumbnailSize + padding;
-        float panelWidth = ImGui::GetContentRegionAvail().x;
+        const float padding = 16.0f;
+        const float thumbnailSize = 128.0f;
+        const float cellSize = thumbnailSize + padding;
+        const float panelWidth = ImGui::GetContentRegionAvail().x;
 
         int columns = (int) (panelWidth / cellSize);
         if(columns < 1) columns = 1;
@@ -83,7 +83,7 @@ namespace Editor {
         }
 
         for(const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(currentDir)) {
-            
+
             std::filesystem::path path = entry.path();
             std::string filename = path.filename().string();
 
@@ -91,7 +91,7 @@ namespace Editor {
 
             Texture icon = entry.is_directory() ? directoryIcon : fileIcon;
             ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-            if(ImGui::ImageButton((ImTextureID) icon.GetID(), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 }) && !entry.is_directory()) {
+            if(ImGui::ImageButton(reinterpret_cast<ImTextureID>(icon.GetID()), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 }) && !entry.is_directory()) {
 
                 Properties::SetSelectedFile(path);
                 

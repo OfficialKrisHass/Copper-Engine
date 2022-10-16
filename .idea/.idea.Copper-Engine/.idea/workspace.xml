@@ -141,6 +141,13 @@
       <workItem from="1664291613644" duration="1575000" />
       <workItem from="1664302940840" duration="1166000" />
       <workItem from="1664358528234" duration="4444000" />
+      <workItem from="1664561260791" duration="1371000" />
+      <workItem from="1664732713757" duration="596000" />
+      <workItem from="1664907520414" duration="1646000" />
+      <workItem from="1664974571516" duration="955000" />
+      <workItem from="1665167650285" duration="2783000" />
+      <workItem from="1665413226806" duration="990000" />
+      <workItem from="1665941444263" duration="1052000" />
     </task>
     <servers />
   </component>
@@ -162,5 +169,16 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/Copper-Engine/src/Platform/OpenGL/OpenGLRenderer.cpp</url>
+          <line>41</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

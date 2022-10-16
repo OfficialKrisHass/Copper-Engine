@@ -5,6 +5,8 @@
 
 #include "Engine/Events/Event.h"
 
+#include "Engine/Scene/Scene.h"
+
 #define GetGLFWwindow (GLFWwindow*) GetWindow().GetWindowPtr()
 
 namespace Copper {
@@ -12,11 +14,20 @@ namespace Copper {
 	void Initialize();
 	void Run();
 	void Shutdown();
-
-	Window GetWindow();
+	
+	void LoadScene(Scene* scene);
 
 	bool OnWindowResize(Event& e);
 	bool OnWindowClose(Event& e);
+
+	//Getters
+	Window GetWindow();
+	uint32_t GetFBOTexture();
+
+	Scene* GetScene();
+
+	//Setters
+	void SetWindowSize(UVector2I size);
 
 	void SetEditorRunFunc(void (*func)());
 	void SetEditorUIFunc(void (*func)());

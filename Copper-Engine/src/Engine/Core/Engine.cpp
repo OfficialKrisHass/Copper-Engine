@@ -11,7 +11,8 @@
 
 #include "Engine/UI/ImGui.h"
 
-#include <GLM/vec3.hpp>
+#include "Engine/Scene/Scene.h"
+
 #include <ImGui/imgui.h>
 
 namespace Copper {
@@ -19,8 +20,12 @@ namespace Copper {
 	struct EngineData {
 
 		bool running = true;
+		UVector2I windowSize;
 
+		FrameBuffer* fbo;
 		Window* window;
+
+		Scene* scene;
 
 		void (*EditorRun)();
 		void (*EditorUI)();
@@ -36,7 +41,9 @@ namespace Copper {
 		Log("--------------------Engine Initialization");
 		Log("Engine Initialiation started");
 
+		data.windowSize = UVector2I(1280, 720);
 		data.window = new Window(WindowData("Copper Engine", 1280, 720));
+		data.fbo = new FrameBuffer(data.windowSize);
 
 		Renderer::SetShader(new Shader("assets/Shaders/vertexDefault.glsl", "assets/Shaders/fragmentDefault.glsl"));
 		UI::Initialize();
@@ -52,6 +59,17 @@ namespace Copper {
 		Log("Engine Entered the Run Loop");
 
 		while (data.running) {
+
+			if (data.fbo->Width() != data.windowSize.x || data.fbo->Height() != data.windowSize.y) {
+			
+				data.fbo->Resize(data.windowSize);
+				data.scene->cam->Resize(data.windowSize);
+		
+			}
+
+			data.fbo->Bind();
+			data.scene->Update();
+			data.fbo->Unbind();
 
 			data.EditorRun();
 
@@ -82,8 +100,11 @@ namespace Copper {
 		//std::cin.get();
 
 	}
+	void LoadScene(Scene* scene) {
 
-	Window GetWindow() { return *data.window; }
+		data.scene = scene;
+		
+	}
 
 	bool OnWindowResize(Event& e) {
 
@@ -98,6 +119,15 @@ namespace Copper {
 		return true;
 
 	}
+
+	//Getters
+	Window GetWindow() { return *data.window; }
+	uint32_t GetFBOTexture() { return data.fbo->GetColorAttachment(); }
+
+	Scene* GetScene() { return data.scene; }
+
+	//Setters
+	void SetWindowSize(UVector2I size) { data.windowSize = size; }
 
 	void SetEditorRunFunc(void (*func)()) { data.EditorRun = func; }
 	void SetEditorUIFunc(void (*func)()) { data.EditorUI = func; }

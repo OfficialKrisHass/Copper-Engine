@@ -52,9 +52,9 @@ namespace Copper::UI {
 		colors[ImGuiCol_HeaderHovered] = ImVec4{ 0.25f, 0.25f, 0.25f, 1.0f };
 		colors[ImGuiCol_HeaderActive] = ImVec4{ 0.15f, 0.15f, 0.15f, 1.0f };
 
-		colors[ImGuiCol_Button] = ImVec4{ 0.05f, 0.05f, 0.05f, 1.0f };
-		colors[ImGuiCol_ButtonHovered] = ImVec4{ 0.08f, 0.08f, 0.08f, 1.0f };
-		colors[ImGuiCol_ButtonActive] = ImVec4{ 0.03f, 0.03f, 0.03f, 1.0f };
+		colors[ImGuiCol_Button] = ImVec4{ 0.07f, 0.07f, 0.07f, 1.0f };
+		colors[ImGuiCol_ButtonHovered] = ImVec4{ 0.09f, 0.09f, 0.09f, 1.0f };
+		colors[ImGuiCol_ButtonActive] = ImVec4{ 0.05f, 0.05f, 0.05f, 1.0f };
 
 		colors[ImGuiCol_FrameBg] = ImVec4{ 0.2f, 0.2f, 0.2f, 1.0f };
 		colors[ImGuiCol_FrameBgHovered] = ImVec4{ 0.25f, 0.25f, 0.25f, 1.0f };

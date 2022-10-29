@@ -11,7 +11,6 @@ using namespace Copper;
 
 namespace Editor {
 
-    //std::filesystem::path newestFolder;
     std::filesystem::path editingPath = "";
 
     FileBrowser::FileBrowser(int test) : Panel("File Browser"), currentDir("assets/TestProject") {
@@ -41,7 +40,7 @@ namespace Editor {
         }
 
         ImGui::SameLine();
-        ImGui::Text(currentDir.make_preferred().string().c_str());  // NOLINT(clang-diagnostic-format-security)
+        ImGui::Text(currentDir.make_preferred().string().c_str());
         ImGui::GetFont()->FontSize += 2.0f;
 
         const float padding = 16.0f;
@@ -67,17 +66,6 @@ namespace Editor {
                 
             }
 
-            if(ImGui::MenuItem("Material")) {
-
-                std::filesystem::path path = currentDir;
-                path += "/Material.mat";
-                
-                Material::Default().Serialize(path);
-
-                editingPath = path;
-                
-            }
-
             ImGui::EndPopup();
             
         }
@@ -96,8 +84,17 @@ namespace Editor {
                 Properties::SetSelectedFile(path);
                 
             }
-            
             ImGui::PopStyleColor();
+
+            if ((path.extension() == ".fbx" || path.extension() == ".gltf" || path.extension() == ".obj") && ImGui::BeginDragDropSource()) {
+
+                const wchar_t* itemPath = path.c_str();
+
+                ImGui::SetDragDropPayload("MODEL", itemPath, (wcslen(itemPath) + 1) * sizeof(wchar_t), ImGuiCond_Once);
+                ImGui::EndDragDropSource();
+
+            }
+            
             if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
                 
                 if (entry.is_directory()) currentDir /= path.filename();
@@ -118,6 +115,8 @@ namespace Editor {
                 
             }
 
+            if (Input::IsKey(Input::Escape)) { editingPath = ""; }
+
             if(editingPath == path) {
 
                 char buffer[128] = {};
@@ -132,7 +131,7 @@ namespace Editor {
                     rename(path, editingPath);
 
                     editingPath = "";
-                    
+
                 }
                 
             } else {

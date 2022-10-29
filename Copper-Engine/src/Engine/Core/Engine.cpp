@@ -45,6 +45,7 @@ namespace Copper {
 		data.window = new Window(WindowData("Copper Engine", 1280, 720));
 		data.fbo = new FrameBuffer(data.windowSize);
 
+		Renderer::Initialize();
 		Renderer::SetShader(new Shader("assets/Shaders/vertexDefault.glsl", "assets/Shaders/fragmentDefault.glsl"));
 		UI::Initialize();
 

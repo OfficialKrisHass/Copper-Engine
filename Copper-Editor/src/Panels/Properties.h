@@ -27,8 +27,6 @@ namespace Editor {
 		static std::filesystem::path selectedFile;
 		static bool wasFileLast;
 
-		Copper::Material mat;
-
 		virtual void UI() override;
 
 		void RenderObject();

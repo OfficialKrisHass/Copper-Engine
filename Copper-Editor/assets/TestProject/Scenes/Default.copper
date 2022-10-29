@@ -4,56 +4,35 @@ Entities:
     Name: Square
     Transform:
       Position: [0, 0, 0]
-      Rotation: [0, 0, 0]
+      Rotation: [90, 0, 0]
       Scale: [1, 1, 1]
     Components:
-      Mesh:
-        Vertices:
-          - 36
-          - -0.5
-          - -0.5
-          - 0
-          - 1
-          - 0
-          - 0
-          - 0
-          - 0
-          - -1
-          - 0.5
-          - -0.5
-          - 0
-          - 0
-          - 1
-          - 0
-          - 0
-          - 0
-          - -1
-          - 0.5
-          - 0.5
-          - 0
-          - 0
-          - 0
-          - 1
-          - 0
-          - 0
-          - -1
-          - -0.5
-          - 0.5
-          - 0
-          - 1
-          - 0
-          - 1
-          - 0
-          - 0
-          - -1
-        Indices:
-          - 6
-          - 0
-          - 1
-          - 2
-          - 2
-          - 3
-          - 0
+      Mesh Renderer:
+        Mesh:
+          Data:
+            Vertex:
+              Position: [-0.5, 0, 0.5]
+              Normal: [0, -1, 0]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [0.5, 0, 0.5]
+              Normal: [0, -1, 0]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [0.5, 0, -0.5]
+              Normal: [0, -1, 0]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [-0.5, 0, -0.5]
+              Normal: [0, -1, 0]
+              Color: [1, 1, 1, 1]
+          Indices:
+            - 0
+            - 1
+            - 2
+            - 2
+            - 3
+            - 0
   4294967296:
     Name: Light
     Transform:
@@ -63,3 +42,179 @@ Entities:
     Components:
       Light:
         Color: None
+  8589934592:
+    Name: Plane
+    Transform:
+      Position: [0, -1.5, 0]
+      Rotation: [0, 0, 0]
+      Scale: [10, 1, 10]
+    Components:
+      Mesh Renderer:
+        Mesh:
+          Data:
+            Vertex:
+              Position: [-0.5, 0, 0.5]
+              Normal: [0, -1, 0]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [0.5, 0, 0.5]
+              Normal: [0, -1, 0]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [0.5, 0, -0.5]
+              Normal: [0, -1, 0]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [-0.5, 0, -0.5]
+              Normal: [0, -1, 0]
+              Color: [1, 1, 1, 1]
+          Indices:
+            - 0
+            - 1
+            - 2
+            - 2
+            - 3
+            - 0
+  12884901888:
+    Name: Cube
+    Transform:
+      Position: [-1.91999996, -1, -0.980000019]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Components:
+      Mesh Renderer:
+        Mesh:
+          Data:
+            Vertex:
+              Position: [-0.5, -0.5, 0.5]
+              Normal: [0, 0, -1]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [0.5, -0.5, 0.5]
+              Normal: [0, 0, -1]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [0.5, 0.5, 0.5]
+              Normal: [0, 0, -1]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [-0.5, 0.5, 0.5]
+              Normal: [0, 0, -1]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [0.5, -0.5, -0.5]
+              Normal: [0, 0, 1]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [-0.5, -0.5, -0.5]
+              Normal: [0, 0, 1]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [-0.5, 0.5, -0.5]
+              Normal: [0, 0, 1]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [0.5, 0.5, -0.5]
+              Normal: [0, 0, 1]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [0.5, -0.5, 0.5]
+              Normal: [-1, 0, 0]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [0.5, -0.5, -0.5]
+              Normal: [-1, 0, 0]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [0.5, 0.5, -0.5]
+              Normal: [-1, 0, 0]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [0.5, 0.5, 0.5]
+              Normal: [-1, 0, 0]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [-0.5, -0.5, -0.5]
+              Normal: [1, 0, 0]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [-0.5, -0.5, 0.5]
+              Normal: [1, 0, 0]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [-0.5, 0.5, 0.5]
+              Normal: [1, 0, 0]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [-0.5, 0.5, -0.5]
+              Normal: [1, 0, 0]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [-0.5, 0.5, 0.5]
+              Normal: [0, -1, 0]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [0.5, 0.5, 0.5]
+              Normal: [0, -1, 0]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [0.5, 0.5, -0.5]
+              Normal: [0, -1, 0]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [-0.5, 0.5, -0.5]
+              Normal: [0, -1, 0]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [-0.5, -0.5, -0.5]
+              Normal: [0, 1, 0]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [0.5, -0.5, -0.5]
+              Normal: [0, 1, 0]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [0.5, -0.5, 0.5]
+              Normal: [0, 1, 0]
+              Color: [1, 1, 1, 1]
+            Vertex:
+              Position: [-0.5, -0.5, 0.5]
+              Normal: [0, 1, 0]
+              Color: [1, 1, 1, 1]
+          Indices:
+            - 0
+            - 1
+            - 2
+            - 2
+            - 3
+            - 0
+            - 4
+            - 5
+            - 6
+            - 6
+            - 7
+            - 4
+            - 8
+            - 9
+            - 10
+            - 10
+            - 11
+            - 8
+            - 12
+            - 13
+            - 14
+            - 14
+            - 15
+            - 12
+            - 16
+            - 17
+            - 18
+            - 18
+            - 19
+            - 16
+            - 20
+            - 21
+            - 22
+            - 22
+            - 23
+            - 20

@@ -15,14 +15,14 @@ namespace Copper {
 		void Bind();
 		void Unbind();
 
-		void SetVertexBuffer(VertexBuffer* vbo);
-		void SetIndexBuffer(IndexBuffer* ibo);
+		void SetVertexBuffer(Shared<VertexBuffer> vbo);
+		void SetIndexBuffer(Shared<IndexBuffer> ibo);
 
 		inline uint32_t Count() { return ibo->Count(); }
 
 	private:
 		uint32_t ID;
-		IndexBuffer* ibo;
+		Shared<IndexBuffer> ibo;
 
 	};
 

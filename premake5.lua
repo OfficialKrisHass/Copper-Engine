@@ -9,6 +9,7 @@ include "Copper-Engine/lib/GLFW"
 include "Copper-Engine/lib/GLAD"
 include "Copper-Engine/lib/ImGui/ImGui"
 include "Copper-Engine/lib/yaml-cpp"
+include "Copper-Engine/lib/assimp"
 
 project "Copper-Engine"
     location "Copper-Engine"
@@ -45,8 +46,9 @@ project "Copper-Engine"
         "%{prj.name}/lib/GLAD/include",
         "%{prj.name}/lib/GLM/include",
         "%{prj.name}/lib/yaml-cpp/include",
+        "%{prj.name}/lib/assimp/include",
         "%{prj.name}/lib/ImGui",
-        "%{prj.name}/lib/stb",
+        "%{prj.name}/lib/stb"
 
     }
 
@@ -56,6 +58,7 @@ project "Copper-Engine"
         "GLAD",
         "ImGui",
         "yaml-cpp",
+        "assimp",
         "opengl32.lib"
 
     }
@@ -63,13 +66,6 @@ project "Copper-Engine"
     defines {
 
         "CU_ENGINE",
-
-    }
-
-    postbuildcommands {
-    
-        "{COPYDIR} assets ../Build/" .. outputDir .. "/Copper-Editor/assets",
-        
 
     }
 
@@ -125,12 +121,14 @@ project "Copper-Editor"
         "Copper-Engine/lib/spdlog",
         "Copper-Engine/lib/ImGui",
         "Copper-Engine/lib/GLM/include",
+        "Copper-Engine/lib/assimp/include",
 
     }
 
     links {
 
-        "Copper-Engine"
+        "Copper-Engine",
+        "assimp"
 
     }
 

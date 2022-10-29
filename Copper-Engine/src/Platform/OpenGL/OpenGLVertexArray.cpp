@@ -39,7 +39,7 @@ namespace Copper {
 
 	}
 
-	void VertexArray::SetVertexBuffer(VertexBuffer* vbo) {
+	void VertexArray::SetVertexBuffer(Shared<VertexBuffer> vbo) {
 
 		uint32_t index = 0;
 
@@ -54,11 +54,8 @@ namespace Copper {
 
 	}
 
-	void VertexArray::SetIndexBuffer(IndexBuffer* ibo) {
+	void VertexArray::SetIndexBuffer(Shared<IndexBuffer> ibo) { this->ibo = ibo; }
 
-		this->ibo = ibo;
-
-	}
 
 	void VertexArray::Bind() { glBindVertexArray(ID); }
 	void VertexArray::Unbind() { glBindVertexArray(0); }

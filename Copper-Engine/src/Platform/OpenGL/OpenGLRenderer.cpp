@@ -30,22 +30,20 @@ namespace Copper {
 		glClearColor(r, g, b, 1.0f);
 
 	}
+	
+	void RendererAPI::Render(Shared<VertexArray> vao, uint32_t count, Camera* cam, Light* light) {
 
-	void RendererAPI::Render(Mesh* mesh, Camera* cam, Light* light) {
-
-		mesh->Vao()->Bind();
+		vao->Bind();
 		shader->Bind();
-		mesh->Update();
 
-		shader->LoadMat4("Model",      mesh->transform->CreateMatrix());
 		shader->LoadMat4("View",       cam->CreateViewMatrix());
 		shader->LoadMat4("Projection", cam->CreateProjectionMatrix());
 		
 		shader->LoadVec3("camPos", cam->transform->position);
 		
-		shader->LoadVec3("light.position", light->transform->position);
+		shader->LoadVec3("lightPos", light->transform->position);
 
-		glDrawElements(GL_TRIANGLES, mesh->Vao()->Count(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);
 
 	}
 

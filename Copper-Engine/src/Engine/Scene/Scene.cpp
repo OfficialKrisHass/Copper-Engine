@@ -2,11 +2,12 @@
 #include "Scene.h"
 
 #include "Engine/Renderer/Renderer.h"
+#include "Engine/Renderer/Mesh.h"
 
 #include "Engine/Scene/Object.h"
 
-#include "Engine/Scene/Components/Mesh.h"
 #include "Engine/Scene/Components/Camera.h"
+#include "Engine/Scene/Components/MeshRenderer.h"
 
 #include <fstream>
 #include <yaml-cpp/yaml.h>
@@ -221,7 +222,7 @@ namespace Copper {
 
 		cam->Update();
 
-		Light* directional;
+		Light* directional = nullptr;
 
 		for(Object o : SceneView<Light>(*this)) {
 
@@ -229,11 +230,19 @@ namespace Copper {
 			
 		}
 
-		for (Object o : SceneView<Mesh>(*this)) {
+		for (Object o : SceneView<MeshRenderer>(*this)) {
 
-			Renderer::Render(o.GetComponent<Mesh>(), cam, directional);
+			MeshRenderer* renderer = o.GetComponent<MeshRenderer>();
+
+			for (Mesh mesh : renderer->meshes) {
+
+				Renderer::AddMesh(&mesh, o.transform);
+
+			}
 
 		}
+
+		Renderer::Render(cam, directional);
 
 	}
 
@@ -283,30 +292,42 @@ namespace Copper {
 				out << YAML::EndMap;
 				
 			}
-			if(o.HasComponent<Mesh>()) {
+			if(o.HasComponent<MeshRenderer>()) {
 
-				Mesh* mesh = o.GetComponent<Mesh>();
+				MeshRenderer* renderer = o.GetComponent<MeshRenderer>();
 
-				out << YAML::Key << "Mesh" << YAML::Value << YAML::BeginMap;
+				out << YAML::Key << "Mesh Renderer" << YAML::Value << YAML::BeginMap;
 
-				out << YAML::Key << "Vertices" << YAML::Value << YAML::BeginSeq;
-				out << mesh->vertices.size();
-				for(float data : mesh->vertices) {
+				for (Mesh mesh : renderer->meshes) {
 
-					out << data;
-					
+					out << YAML::Key << "Mesh" << YAML::Value << YAML::BeginMap;
+
+					out << YAML::Key << "Data" << YAML::Value << YAML::BeginMap;
+					for (int i = 0; i < mesh.vertices.size(); i++) {
+
+						out << YAML::Key << "Vertex" << YAML::Value << YAML::BeginMap;
+
+						out << YAML::Key << "Position" << YAML::Value << mesh.vertices[i];
+						out << YAML::Key << "Normal" << YAML::Value << mesh.normals[i];
+						out << YAML::Key << "Color" << YAML::Value << mesh.colors[i];
+
+						out << YAML::EndMap;
+
+					}
+					out << YAML::EndMap;
+
+					out << YAML::Key << "Indices" << YAML::Value << YAML::BeginSeq;
+					for (int i = 0; i < mesh.indices.size(); i++) {
+
+						out << mesh.indices[i];
+
+					}
+					out << YAML::EndSeq;
+
+					out << YAML::EndMap;
+
 				}
-				out << YAML::EndSeq;
 
-				out << YAML::Key << "Indices" << YAML::Value << YAML::BeginSeq;
-				out << mesh->indices.size();
-				for(uint32_t index : mesh->indices) {
-
-					out << index;
-					
-				}
-				out << YAML::EndSeq;
-				
 				out << YAML::EndMap;
 				
 			}
@@ -332,7 +353,6 @@ namespace Copper {
 		file << out.c_str();
 		
 	}
-
 	bool Scene::Deserialize(std::filesystem::path path) {
 
 		this->path = path;
@@ -372,30 +392,37 @@ namespace Copper {
 				
 			}
 
-			YAML::Node mesh = components["Mesh"];
-			if(mesh) {
+			YAML::Node meshRenderer = components["Mesh Renderer"];
+			if(meshRenderer) {
 
-				Mesh* m = deserialized.AddComponent<Mesh>();
+				MeshRenderer* renderer = deserialized.AddComponent<MeshRenderer>();
 
-				YAML::Node vertices = mesh["Vertices"];
-				std::vector<float> verts;
-				for(int i = 1; i <= vertices[0].as<int>(); i++) {
+				for (YAML::const_iterator it = meshRenderer.begin(); it != meshRenderer.end(); ++it) {
 
-					verts.push_back(vertices[i].as<float>());
-					
+					YAML::Node mesh = it->second;
+					Mesh m;
+
+					YAML::Node meshData = mesh["Data"];
+					for (YAML::const_iterator it = meshData.begin(); it != meshData.end(); ++it) {
+
+						YAML::Node vertex = it->second;
+
+						m.vertices.push_back(vertex["Position"].as<Vector3>());
+						m.normals.push_back(vertex["Normal"].as<Vector3>());
+						m.colors.push_back(vertex["Color"].as<Color>());
+
+					}
+
+					YAML::Node indices = mesh["Indices"];
+					for (int i = 0; i < indices.size(); i++) {
+
+						m.indices.push_back(indices[i].as<uint32_t>());
+
+					}
+
+					renderer->meshes.push_back(m);
+
 				}
-
-				YAML::Node indices = mesh["Indices"];
-				std::vector<uint32_t> inds;
-				for(int i = 1; i <= indices[0].as<int>(); i++) {
-
-					inds.push_back(indices[i].as<uint32_t>());
-					
-				}
-
-				m->vertices = verts;
-				m->indices = inds;
-				m->Regenerate();
 				
 			}
 

@@ -1,10 +1,12 @@
 #include "SceneHierarchy.h"
 
 #include "Core/EditorApp.h"
+#include "Core/Utils/ModelLoader.h"
 
 #include "Engine/Renderer/Primitives.h"
 
 #include <ImGui/imgui.h>
+#include <ImGui/imgui_internal.h>
 
 namespace Editor {
 
@@ -32,12 +34,15 @@ namespace Editor {
 				if(ImGui::MenuItem("Plane")) {
 
 					selectedObj = scene->CreateObject("Plane");
-					Mesh* m = selectedObj.AddComponent<Mesh>();
+					MeshRenderer* renderer = selectedObj.AddComponent<MeshRenderer>();
 
-					m->vertices = planeVertices;
-					m->indices  = planeIndices;
-					m->material = Material::Default();
-					m->Regenerate();
+					Mesh mesh;
+					mesh.vertices = planeVertices;
+					mesh.normals = planeNormals;
+					mesh.colors = planeColors;
+					mesh.indices = planeIndices;
+
+					renderer->meshes.push_back(mesh);
 
 					SetChanges(true);
 					
@@ -45,12 +50,15 @@ namespace Editor {
 				if(ImGui::MenuItem("Cube")) {
 
 					selectedObj = scene->CreateObject("Cube");
-					Mesh* m = selectedObj.AddComponent<Mesh>();
+					MeshRenderer* renderer = selectedObj.AddComponent<MeshRenderer>();
 
-					m->vertices = cubeVertices;
-					m->indices  = cubeIndices;
-					m->material = Material::Default();
-					m->Regenerate();
+					Mesh mesh;
+					mesh.vertices = cubeVertices;
+					mesh.normals  = cubeNormals;
+					mesh.colors   = cubeColors;
+					mesh.indices  = cubeIndices;
+
+					renderer->meshes.push_back(mesh);
 
 					SetChanges(true);
 					
@@ -75,16 +83,60 @@ namespace Editor {
 
 		for (Object obj : SceneView<>(*scene)) {
 			
-			ImGui::PushID(obj.id);
-
-			std::string& name = obj.name->name;
+			std::string name = obj.name->name;
 			ImGuiTreeNodeFlags flags = ((selectedObj == obj) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
-			bool opened = ImGui::TreeNodeEx((void*) (uint64_t) (uint32_t) obj, flags, name.c_str());
 
-			if (ImGui::IsItemClicked()) { selectedObj = obj; }
-			if (opened) { ImGui::TreePop(); }
+			bool opened = ImGui::TreeNodeEx((void*) obj.id, flags, name.c_str());
 
-			ImGui::PopID();
+			if (ImGui::IsItemClicked()) selectedObj = obj;
+			if (opened) {
+
+				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
+				bool opened = ImGui::TreeNodeEx((void*) 9817239, flags, name.c_str());
+
+				if (opened) ImGui::TreePop();
+
+				ImGui::TreePop();
+
+			}
+
+			if (ImGui::BeginPopupContextItem()) {
+
+				if (ImGui::MenuItem("Delete")) {
+
+					if (selectedObj == obj) selectedObj = Object::Null();
+					
+					scene->DestroyObject(obj);
+				
+				}
+
+				ImGui::EndPopup();
+
+			}
+
+		}
+
+		const ImGuiPayload* payload = ImGui::GetDragDropPayload();
+
+		if(payload && ImGui::IsWindowHovered() && ImGui::IsMouseReleased(0)) {
+
+			std::string wantedType = "MODEL";
+			std::string payloadType = payload->DataType;
+
+			if (!(wantedType == payloadType)) return;
+
+			std::wstring ws((wchar_t*) payload->Data);
+			std::string string(ws.begin(), ws.end());
+
+			Model model;
+			model.LoadMesh(string);
+
+			selectedObj = scene->CreateObject("Model");
+			MeshRenderer* renderer = selectedObj.AddComponent<MeshRenderer>();
+
+			renderer->meshes = model.meshes;
+
+			Log(string);
 
 		}
 

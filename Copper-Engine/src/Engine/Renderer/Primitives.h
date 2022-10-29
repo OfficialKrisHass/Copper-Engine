@@ -3,13 +3,29 @@
 namespace Copper {
 
 #pragma region Plane
-    std::vector<float> planeVertices {
+    std::vector<Vector3> planeVertices {
 
-        -0.5f,  0.0f,  0.5f,    1.0f, 1.0f, 1.0f,    0.0f, -1.0f,  0.0f,
-         0.5f,  0.0f,  0.5f,    1.0f, 1.0f, 1.0f,    0.0f, -1.0f,  0.0f,
-         0.5f,  0.0f, -0.5f,    1.0f, 1.0f, 1.0f,    0.0f, -1.0f,  0.0f,
-        -0.5f,  0.0f, -0.5f,    1.0f, 1.0f, 1.0f,    0.0f, -1.0f,  0.0f,
-        
+        Vector3(-0.5f, 0.0f,  0.5f),
+        Vector3( 0.5f, 0.0f,  0.5f),
+        Vector3( 0.5f, 0.0f, -0.5f),
+        Vector3(-0.5f, 0.0f, -0.5f),
+
+    };
+    std::vector<Vector3> planeNormals {
+
+        Vector3(0.0f, -1.0f, 0.0f),
+        Vector3(0.0f, -1.0f, 0.0f),
+        Vector3(0.0f, -1.0f, 0.0f),
+        Vector3(0.0f, -1.0f, 0.0f),
+
+    };
+    std::vector<Color> planeColors {
+
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+
     };
     std::vector<uint32_t> planeIndices {
 
@@ -19,44 +35,104 @@ namespace Copper {
     };
 #pragma endregion
 #pragma region Cube
-    std::vector<float> cubeVertices {
-
+    std::vector<Vector3> cubeVertices {
         //Front
-        -0.5f, -0.5f,  0.5f,    1.0f, 1.0f, 1.0f,    0.0f,  0.0f, -1.0f,
-         0.5f, -0.5f,  0.5f,    1.0f, 1.0f, 1.0f,    0.0f,  0.0f, -1.0f,
-         0.5f,  0.5f,  0.5f,    1.0f, 1.0f, 1.0f,    0.0f,  0.0f, -1.0f,
-        -0.5f,  0.5f,  0.5f,    1.0f, 1.0f, 1.0f,    0.0f,  0.0f, -1.0f,
-
+        Vector3(-0.5f, -0.5f,  0.5f),
+        Vector3( 0.5f, -0.5f,  0.5f),
+        Vector3( 0.5f,  0.5f,  0.5f),
+        Vector3(-0.5f,  0.5f,  0.5f),
         //Back
-         0.5f, -0.5f, -0.5f,    1.0f, 1.0f, 1.0f,    0.0f,  0.0f,  1.0f,
-        -0.5f, -0.5f, -0.5f,    1.0f, 1.0f, 1.0f,    0.0f,  0.0f,  1.0f,
-        -0.5f,  0.5f, -0.5f,    1.0f, 1.0f, 1.0f,    0.0f,  0.0f,  1.0f,
-         0.5f,  0.5f, -0.5f,    1.0f, 1.0f, 1.0f,    0.0f,  0.0f,  1.0f,
-
+        Vector3( 0.5f, -0.5f, -0.5f),
+        Vector3(-0.5f, -0.5f, -0.5f),
+        Vector3(-0.5f,  0.5f, -0.5f),
+        Vector3( 0.5f,  0.5f, -0.5f),
         //Right
-         0.5f, -0.5f,  0.5f,    1.0f, 1.0f, 1.0f,   -1.0f,  0.0f,  0.0f,
-         0.5f, -0.5f, -0.5f,    1.0f, 1.0f, 1.0f,   -1.0f,  0.0f,  0.0f,
-         0.5f,  0.5f, -0.5f,    1.0f, 1.0f, 1.0f,   -1.0f,  0.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,    1.0f, 1.0f, 1.0f,   -1.0f,  0.0f,  0.0f,
-        
+        Vector3( 0.5f, -0.5f,  0.5f),
+        Vector3( 0.5f, -0.5f, -0.5f),
+        Vector3( 0.5f,  0.5f, -0.5f),
+        Vector3( 0.5f,  0.5f,  0.5f),
         //Left
-        -0.5f, -0.5f, -0.5f,    1.0f, 1.0f, 1.0f,    1.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f,  0.5f,    1.0f, 1.0f, 1.0f,    1.0f,  0.0f,  0.0f,
-        -0.5f,  0.5f,  0.5f,    1.0f, 1.0f, 1.0f,    1.0f,  0.0f,  0.0f,
-        -0.5f,  0.5f, -0.5f,    1.0f, 1.0f, 1.0f,    1.0f,  0.0f,  0.0f,
-
+        Vector3(-0.5f, -0.5f, -0.5f),
+        Vector3(-0.5f, -0.5f,  0.5f),
+        Vector3(-0.5f,  0.5f,  0.5f),
+        Vector3(-0.5f,  0.5f, -0.5f),
         //Up
-        -0.5f,  0.5f,  0.5f,    1.0f, 1.0f, 1.0f,    0.0f, -1.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,    1.0f, 1.0f, 1.0f,    0.0f, -1.0f,  0.0f,
-         0.5f,  0.5f, -0.5f,    1.0f, 1.0f, 1.0f,    0.0f, -1.0f,  0.0f,
-        -0.5f,  0.5f, -0.5f,    1.0f, 1.0f, 1.0f,    0.0f, -1.0f,  0.0f,
-
+        Vector3(-0.5f,  0.5f,  0.5f),
+        Vector3( 0.5f,  0.5f,  0.5f),
+        Vector3( 0.5f,  0.5f, -0.5f),
+        Vector3(-0.5f,  0.5f, -0.5f),
         //Down
-        -0.5f, -0.5f, -0.5f,    1.0f, 1.0f, 1.0f,    0.0f,  1.0f,  0.0f,
-         0.5f, -0.5f, -0.5f,    1.0f, 1.0f, 1.0f,    0.0f,  1.0f,  0.0f,
-         0.5f, -0.5f,  0.5f,    1.0f, 1.0f, 1.0f,    0.0f,  1.0f,  0.0f,
-        -0.5f, -0.5f,  0.5f,    1.0f, 1.0f, 1.0f,    0.0f,  1.0f,  0.0f,
-        
+        Vector3(-0.5f, -0.5f, -0.5f),
+        Vector3( 0.5f, -0.5f, -0.5f),
+        Vector3( 0.5f, -0.5f,  0.5f),
+        Vector3(-0.5f, -0.5f,  0.5f),
+
+    };
+    std::vector<Vector3> cubeNormals {
+        //Front
+        Vector3( 0.0f,  0.0f, -1.0f),
+        Vector3( 0.0f,  0.0f, -1.0f),
+        Vector3( 0.0f,  0.0f, -1.0f),
+        Vector3( 0.0f,  0.0f, -1.0f),
+        //Back
+        Vector3( 0.0f,  0.0f,  1.0f),
+        Vector3( 0.0f,  0.0f,  1.0f),
+        Vector3( 0.0f,  0.0f,  1.0f),
+        Vector3( 0.0f,  0.0f,  1.0f),
+        //Right
+        Vector3(-1.0f,  0.0f,  0.0f),
+        Vector3(-1.0f,  0.0f,  0.0f),
+        Vector3(-1.0f,  0.0f,  0.0f),
+        Vector3(-1.0f,  0.0f,  0.0f),
+        //Left
+        Vector3( 1.0f,  0.0f,  0.0f),
+        Vector3( 1.0f,  0.0f,  0.0f),
+        Vector3( 1.0f,  0.0f,  0.0f),
+        Vector3( 1.0f,  0.0f,  0.0f),
+        //Up
+        Vector3( 0.0f, -1.0f,  0.0f),
+        Vector3( 0.0f, -1.0f,  0.0f),
+        Vector3( 0.0f, -1.0f,  0.0f),
+        Vector3( 0.0f, -1.0f,  0.0f),
+        //Down
+        Vector3( 0.0f,  1.0f,  0.0f),
+        Vector3( 0.0f,  1.0f,  0.0f),
+        Vector3( 0.0f,  1.0f,  0.0f),
+        Vector3( 0.0f,  1.0f,  0.0f),
+
+    };
+    std::vector<Color> cubeColors {
+        //Front
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        //Back
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        //Right
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        //Left
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        //Up
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        //Down
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+
     };
     std::vector<uint32_t> cubeIndices {
 

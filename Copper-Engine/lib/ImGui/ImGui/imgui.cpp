@@ -9973,8 +9973,8 @@ bool ImGui::BeginDragDropTargetCustom(const ImRect& bb, ImGuiID id)
         return false;
 
     ImGuiWindow* window = g.CurrentWindow;
-    if (g.HoveredWindowUnderMovingWindow == NULL || window->RootWindow != g.HoveredWindowUnderMovingWindow->RootWindow)
-        return false;
+    /*if (g.HoveredWindowUnderMovingWindow == NULL || window->RootWindow != g.HoveredWindowUnderMovingWindow->RootWindow)
+        return false;*/
     IM_ASSERT(id != 0);
     if (!IsMouseHoveringRect(bb.Min, bb.Max) || (id == g.DragDropPayload.SourceId))
         return false;
@@ -10001,8 +10001,8 @@ bool ImGui::BeginDragDropTarget()
     ImGuiWindow* window = g.CurrentWindow;
     if (!(window->DC.LastItemStatusFlags & ImGuiItemStatusFlags_HoveredRect))
         return false;
-    if (g.HoveredWindowUnderMovingWindow == NULL || window->RootWindow != g.HoveredWindowUnderMovingWindow->RootWindow)
-        return false;
+    /*if (g.HoveredWindowUnderMovingWindow == NULL || window->RootWindow != g.HoveredWindowUnderMovingWindow->RootWindow)
+        return false;*/
 
     const ImRect& display_rect = (window->DC.LastItemStatusFlags & ImGuiItemStatusFlags_HasDisplayRect) ? window->DC.LastItemDisplayRect : window->DC.LastItemRect;
     ImGuiID id = window->DC.LastItemId;

@@ -43,7 +43,6 @@ namespace Editor {
 	void Properties::RenderObject() {
 
 		char buffer[128] = {};
-		// ReSharper disable once CppDeprecatedEntity
 		std::strncpy(buffer, selectedObj.GetComponent<Name>()->name.c_str(), sizeof(buffer));
 
 		if (ImGui::InputText("##Name", buffer, sizeof(buffer))) {
@@ -90,7 +89,7 @@ namespace Editor {
 		if(ImGui::BeginPopup("##AddComponent")) {
 				
 			if(ImGui::MenuItem("Light")) { selectedObj.AddComponent<Light>(); }
-			if(ImGui::MenuItem("Mesh")) { selectedObj.AddComponent<Mesh>(); }
+			if(ImGui::MenuItem("Mesh Renderer")) { selectedObj.AddComponent<MeshRenderer>(); }
 			if(ImGui::MenuItem("Camera")) { selectedObj.AddComponent<Camera>(); }
 
 			ImGui::EndPopup();

@@ -148,6 +148,12 @@
       <workItem from="1665167650285" duration="2783000" />
       <workItem from="1665413226806" duration="990000" />
       <workItem from="1665941444263" duration="1052000" />
+      <workItem from="1666449041240" duration="74000" />
+      <workItem from="1666449138622" duration="3210000" />
+      <workItem from="1666531891454" duration="221000" />
+      <workItem from="1666543892947" duration="391000" />
+      <workItem from="1666607686759" duration="86000" />
+      <workItem from="1666622889620" duration="626000" />
     </task>
     <servers />
   </component>
@@ -174,9 +180,9 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/Copper-Engine/src/Platform/OpenGL/OpenGLRenderer.cpp</url>
-          <line>41</line>
-          <option name="timeStamp" value="7" />
+          <url>file://$PROJECT_DIR$/Copper-Engine/src/Engine/Renderer/Primitives.h</url>
+          <line>36</line>
+          <option name="timeStamp" value="1" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

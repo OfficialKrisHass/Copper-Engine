@@ -5,13 +5,13 @@
 #include "Engine/Scene/Scene.h"
 #include "Engine/Scene/Object.h"
 
-#include "Engine/Scene/Components/Mesh.h"
-
 #include "Panels/SceneHierarchy.h"
 #include "Panels/Properties.h"
 #include "Panels/FileBrowser.h"
 
 #include "Viewport/SceneCamera.h"
+
+#include "Core/Utils/ModelLoader.h"
 
 #include <ImGui/imgui.h>
 
@@ -29,22 +29,37 @@ void AppEntryPoint() {
 #pragma endregion 
 
 namespace Editor {
-	
+
 	using namespace Copper;
 
-	std::vector<float> vertices{
-		//Position				//Color				//Normals
-		-0.5f, -0.5f,  0.0f,    1.0f, 0.0f, 0.0f,	0.0f,  0.0f, -1.0f,
-		 0.5f, -0.5f,  0.0f,    0.0f, 1.0f, 0.0f,	0.0f,  0.0f, -1.0f,
-		 0.5f,  0.5f,  0.0f,    0.0f, 0.0f, 1.0f,	0.0f,  0.0f, -1.0f,
-		-0.5f,  0.5f,  0.0f,    1.0f, 0.0f, 1.0f,	0.0f,  0.0f, -1.0f,
+	std::vector<Vector3> planeVertices {
+
+		Vector3(-0.5f, 0.0f,  0.5f),
+		Vector3(0.5f, 0.0f,  0.5f),
+		Vector3(0.5f, 0.0f, -0.5f),
+		Vector3(-0.5f, 0.0f, -0.5f),
 
 	};
+	std::vector<Vector3> planeNormals {
 
-	std::vector<uint32_t> indices{
+		Vector3(0.0f, -1.0f, 0.0f),
+		Vector3(0.0f, -1.0f, 0.0f),
+		Vector3(0.0f, -1.0f, 0.0f),
+		Vector3(0.0f, -1.0f, 0.0f),
+
+	};
+	std::vector<Color> planeColors {
+
+		Color(1.0f, 1.0f, 1.0f),
+		Color(1.0f, 1.0f, 1.0f),
+		Color(1.0f, 1.0f, 1.0f),
+		Color(1.0f, 1.0f, 1.0f),
+
+	};
+	std::vector<uint32_t> planeIndices {
 
 		0, 1, 2,
-		2, 3, 0,
+		2, 3, 0
 
 	};
 
@@ -86,9 +101,39 @@ namespace Editor {
 		data.sceneCam = SceneCamera(data.viewportSize);
 		data.sceneCam.transform = new Transform(Vector3(0.0f, 0.0f, 1.0f), Vector3::Zero(), Vector3::One());
 		data.sceneCam.transform->position.z = 1.0f;
+
+		/*data.scene = Scene();
+		data.scene.name = "Manual";
+		data.scene.path = "assets/TestProject/Test Scenes/Manual.copper";
+
+		Object square = data.scene.CreateObject(new Transform(Vector3::Zero(), Vector3(90.0f, 0.0f, 0.0f), Vector3::One()), "Square");
+		Object light = data.scene.CreateObject(new Transform(Vector3(0.0f, 0.0f, 1.0f), Vector3::Zero(), Vector3::One()), "Light");
+
+		MeshRenderer* renderer = square.AddComponent<MeshRenderer>();
+		Mesh mesh;
+
+		mesh.vertices = planeVertices;
+		mesh.normals = planeNormals;
+		mesh.colors = planeColors;
+		mesh.indices = planeIndices;
+
+		renderer->meshes.push_back(mesh);
+
+		light.AddComponent<Light>();
+
+		data.scene.cam = &data.sceneCam;
+
+		data.changes = false;
+		data.title = "Copper Editor - TestProject: ";
+		data.title += data.scene.name;
+		Input::SetWindowTitle(data.title);
+
+		data.sceneHierarchy.SetSelectedObject(Object::Null());
+		data.properties.SetSelectedObject(Object::Null());
+
+		LoadScene(&data.scene);*/
 		
 		OpenScene("assets/TestProject/Scenes/Default.copper");
-		LoadScene(&data.scene);
 
 		data.title = "Copper Editor - TestProject: ";
 		data.title += data.scene.name;
@@ -101,8 +146,6 @@ namespace Editor {
 
 	void Run() {
 
-		data.properties.SetSelectedObject(data.sceneHierarchy.GetSelectedObject());
-
 	}
 
 	void UI() {
@@ -111,9 +154,10 @@ namespace Editor {
 		RenderViewport();
 		RenderMenu();
 		
-		data.sceneHierarchy.UIRender();
-		data.properties.UIRender();
 		data.fileBrowser.UIRender();
+		data.sceneHierarchy.UIRender();
+		data.properties.SetSelectedObject(data.sceneHierarchy.GetSelectedObject());
+		data.properties.UIRender();
 
 		ImGui::End(); //Dockspace
 

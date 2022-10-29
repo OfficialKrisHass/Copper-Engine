@@ -31,7 +31,8 @@ namespace Copper {
 		windowPtr = (void*) glfwCreateWindow(data.width, data.height, data.title.c_str(), NULL, NULL);
 		glfwMakeContextCurrent(WINDOW);
 
-		Renderer::Initialize();
+		//Renderer::Initialize();
+		RendererAPI::Initialize();
 
 		data.wResE += OnWindowResize;
 		data.wClsE += OnWindowClose;

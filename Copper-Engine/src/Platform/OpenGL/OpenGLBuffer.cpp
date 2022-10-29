@@ -5,9 +5,7 @@
 
 namespace Copper {
 
-	VertexBuffer::VertexBuffer(std::vector<float> vertices, std::initializer_list<Element> elements) : elements(elements) {
-
-		CalculateStuff();
+	VertexBuffer::VertexBuffer(std::vector<float> vertices) {
 
 		glGenBuffers(1, &ID);
 
@@ -16,9 +14,25 @@ namespace Copper {
 
 	}
 
+	VertexBuffer::VertexBuffer(uint32_t size) {
+
+		glGenBuffers(1, &ID);
+
+		glBindBuffer(GL_ARRAY_BUFFER, ID);
+		glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_STATIC_DRAW);
+
+	}
+
 	VertexBuffer::~VertexBuffer() {
 
 		glDeleteBuffers(1, &ID);
+
+	}
+
+	void VertexBuffer::SetData(std::vector<float> vertices) {
+
+		glBindBuffer(GL_ARRAY_BUFFER, ID);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(float), vertices.data());
 
 	}
 
@@ -36,9 +50,25 @@ namespace Copper {
 
 	}
 
+	IndexBuffer::IndexBuffer(uint32_t size) : count(size / sizeof(uint32_t)) {
+
+		glGenBuffers(1, &ID);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ID);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, nullptr, GL_STATIC_DRAW);
+
+	}
+
 	IndexBuffer::~IndexBuffer() {
 
 		glDeleteBuffers(1, &ID);
+
+	}
+
+	void IndexBuffer::SetData(std::vector<uint32_t> indices) {
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ID);
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indices.size() * sizeof(uint32_t), indices.data());
 
 	}
 

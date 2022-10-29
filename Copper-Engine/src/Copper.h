@@ -15,7 +15,7 @@
 #include "Engine/Utilities/FileUtils.h"
 
 #include "Engine/Renderer/Texture.h"
-#include "Engine/Renderer/Material.h"
+#include "Engine/Renderer/Mesh.h"
 
 #include "Engine/Scene/Scene.h"
 #include "Engine/Scene/Object.h"
@@ -23,6 +23,6 @@
 #include "Engine/Scene/Components/Transform.h"
 #include "Engine/Scene/Components/Component.h"
 #include "Engine/Scene/Components/Name.h"
-#include "Engine/Scene/Components/Mesh.h"
 #include "Engine/Scene/Components/Camera.h"
 #include "Engine/Scene/Components/Light.h"
+#include "Engine/Scene/Components/MeshRenderer.h"

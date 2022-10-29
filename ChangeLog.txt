@@ -1,0 +1,10 @@
+29/10/2022
+
+-Added ASSIMP library to import and export models
+-Editor/src/core/Utils/ModelLoader a placeholder class for Loading models from a file on the disk
+-Fixed the Scene Hierarchy problem where the first Node would affect every other node
+-Added a Delete option when right clicking an object in the Scene Hierarchy
+-Added Mesh Renderer, a component that renderes the Mesh and now Mesh is just a class that holds the Mesh Data
+-Moved Mesh.h to Renderer folder
+-Now you can Drag and Drop a model file from the File Browser into the Scene Hierarchy
+-Changed the Scene Serialazation and Deserialization to now serialize the Mesh Renderer instead of the meshes

@@ -16,7 +16,7 @@ namespace Editor {
 
 		Scene* scene = GetScene();
 
-		if (!scene) { selectedObj = Object::Null(); }
+		if (!scene) { selectedObj = Object(); }
 
 		if (ImGui::BeginPopupContextWindow(0, 1, false)) {
 
@@ -83,10 +83,10 @@ namespace Editor {
 
 		for (Object obj : SceneView<>(*scene)) {
 			
-			std::string name = obj.name->name;
+			std::string name = obj.name;
 			ImGuiTreeNodeFlags flags = ((selectedObj == obj) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 
-			bool opened = ImGui::TreeNodeEx((void*) obj.id, flags, name.c_str());
+			bool opened = ImGui::TreeNodeEx((void*) obj.GetID(), flags, name.c_str());
 
 			if (ImGui::IsItemClicked()) selectedObj = obj;
 			if (opened) {
@@ -104,7 +104,7 @@ namespace Editor {
 
 				if (ImGui::MenuItem("Delete")) {
 
-					if (selectedObj == obj) selectedObj = Object::Null();
+					if (selectedObj == obj) selectedObj = Object();
 					
 					scene->DestroyObject(obj);
 				

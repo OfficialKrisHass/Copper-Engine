@@ -3,8 +3,6 @@
 #include "Copper.h"
 #include "Panels/Panel.h"
 
-#include "Engine/Scene/Scene.h"
-
 namespace Editor {
 
 	class SceneHierarchy : public Panel {
@@ -17,7 +15,7 @@ namespace Editor {
 		Copper::Object GetSelectedObject() { return selectedObj; }
 
 	private:
-		Copper::Object selectedObj = Copper::Object::Null();
+		Copper::Object selectedObj;
 
 		virtual void UI() override;
 

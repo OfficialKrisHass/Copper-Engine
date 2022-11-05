@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine/Scene/Components/Camera.h"
+#include "Engine/Components/Camera.h"
 
 namespace Copper {
 

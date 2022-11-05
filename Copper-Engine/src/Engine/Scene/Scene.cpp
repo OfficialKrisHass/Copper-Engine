@@ -1,18 +1,16 @@
 #include "cupch.h"
-#include "Scene.h"
 
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Renderer/Mesh.h"
 
-#include "Engine/Scene/Object.h"
-
-#include "Engine/Scene/Components/Camera.h"
-#include "Engine/Scene/Components/MeshRenderer.h"
+#include "Engine/Components/Camera.h"
+#include "Engine/Components/MeshRenderer.h"
+#include "Engine/Components/Light.h"
 
 #include <fstream>
 #include <yaml-cpp/yaml.h>
 
-#include "../../../../Copper-Editor/src/Viewport/SceneCamera.h"
+#include <CopperECS/CopperECS.h>
 
 namespace YAML {
 
@@ -31,7 +29,6 @@ namespace YAML {
 			return node;
 			
 		}
-		
 		static bool decode(const Node& node, Vector2& vec) {
 
 			if(!node.IsSequence() || node.size() != 2) return false;
@@ -58,7 +55,6 @@ namespace YAML {
 			return node;
 			
 		}
-		
 		static bool decode(const Node& node, Vector3& vec) {
 
 			if(!node.IsSequence() || node.size() != 3) return false;
@@ -87,7 +83,6 @@ namespace YAML {
 			return node;
 			
 		}
-		
 		static bool decode(const Node& node, Vector4& vec) {
 
 			if(!node.IsSequence() || node.size() != 4) return false;
@@ -117,7 +112,6 @@ namespace YAML {
 			return node;
 			
 		}
-		
 		static bool decode(const Node& node, Color& col) {
 
 			if(!node.IsSequence() || node.size() != 4) return false;
@@ -166,55 +160,16 @@ namespace Copper {
 		
 	}
 
-	int ECS::cCounter = 0;
+	int cCounter = 0;
 
 	Object Scene::CreateObject(Vector3 position, Vector3 rotation, Vector3 scale, std::string name) {
 
-		Object obj(registry.CreateEntity(), this);
-
-		obj.name = registry.AddComponent<Name>(obj.id);
-		obj.name->name = name;
-
-		obj.transform = registry.AddComponent<Transform>(obj.id);
-		obj.transform->position = position;
-		obj.transform->rotation = rotation;
-		obj.transform->scale = scale;
+		Object obj = registry.CreateObject(this, position, rotation, scale, name);
 
 		return obj;
 
 	}
-	Object Scene::CreateObject(Transform* transform, std::string name) {
-
-		Object obj(registry.CreateEntity(), this);
-
-		obj.name = registry.AddComponent<Name>(obj.id);
-		obj.name->name = name;
-
-		obj.transform = registry.AddComponent<Transform>(obj.id);
-		obj.transform->position = transform->position;
-		obj.transform->rotation = transform->rotation;
-		obj.transform->scale = transform->scale;
-
-		return obj;
-
-	}
-	Object Scene::CreateObject(std::string name) {
-
-		Object obj(registry.CreateEntity(), this);
-
-		obj.name = registry.AddComponent<Name>(obj.id);
-		obj.name->name = name;
-
-		obj.transform = registry.AddComponent<Transform>(obj.id);
-		return obj;
-
-	}
-
-	void Scene::DestroyObject(Object obj) {
-
-		registry.DestroyEntitiy(obj.id);
-
-	}
+	Object Scene::CreateObject(std::string name) { return CreateObject(Vector3::Zero(), Vector3::Zero(), Vector3::One(), name); }
 
 	void Scene::Update() {
 
@@ -263,7 +218,7 @@ namespace Copper {
 			out << YAML::Value << YAML::BeginMap;
 
 			//Name
-			out << YAML::Key << "Name" << YAML::Value << o.name->name;
+			out << YAML::Key << "Name" << YAML::Value << o.name;
 
 			//Transform
 			out << YAML::Key << "Transform";

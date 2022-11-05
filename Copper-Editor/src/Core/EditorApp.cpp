@@ -2,9 +2,6 @@
 
 #include "Engine/Renderer/FrameBuffer.h"
 
-#include "Engine/Scene/Scene.h"
-#include "Engine/Scene/Object.h"
-
 #include "Panels/SceneHierarchy.h"
 #include "Panels/Properties.h"
 #include "Panels/FileBrowser.h"
@@ -264,9 +261,6 @@ namespace Editor {
 
 		data.scene = Scene();
 		data.scene.cam = &data.sceneCam;
-		
-		data.sceneHierarchy.SetSelectedObject(Object::Null());
-		data.properties.SetSelectedObject(Object::Null());
 
 		LoadScene(&data.scene);
 		
@@ -303,9 +297,6 @@ namespace Editor {
 		data.title = "Copper Editor - TestProject: ";
 		data.title += data.scene.name;
 		Input::SetWindowTitle(data.title);
-
-		data.sceneHierarchy.SetSelectedObject(Object::Null());
-		data.properties.SetSelectedObject(Object::Null());
 
 		LoadScene(&data.scene);
 		

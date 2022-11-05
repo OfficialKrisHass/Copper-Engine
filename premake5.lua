@@ -33,6 +33,7 @@ project "Copper-Engine"
         "%{prj.name}/src/Engine/**.h",
         "%{prj.name}/src/Engine/**.cpp",
         
+        "%{prj.name}/lib/CopperECS/include/CopperECS/**.h",
         "%{prj.name}/lib/stb/stb/stb_image.cpp",
 
     }
@@ -47,6 +48,7 @@ project "Copper-Engine"
         "%{prj.name}/lib/GLM/include",
         "%{prj.name}/lib/yaml-cpp/include",
         "%{prj.name}/lib/assimp/include",
+        "%{prj.name}/lib/CopperECS/include",
         "%{prj.name}/lib/ImGui",
         "%{prj.name}/lib/stb"
 
@@ -122,6 +124,7 @@ project "Copper-Editor"
         "Copper-Engine/lib/ImGui",
         "Copper-Engine/lib/GLM/include",
         "Copper-Engine/lib/assimp/include",
+        "Copper-Engine/lib/CopperECS/include",
 
     }
 

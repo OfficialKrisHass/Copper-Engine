@@ -43,11 +43,11 @@ namespace Editor {
 	void Properties::RenderObject() {
 
 		char buffer[128] = {};
-		std::strncpy(buffer, selectedObj.GetComponent<Name>()->name.c_str(), sizeof(buffer));
+		std::strncpy(buffer, selectedObj.name.c_str(), sizeof(buffer));
 
 		if (ImGui::InputText("##Name", buffer, sizeof(buffer))) {
 
-			selectedObj.GetComponent<Name>()->name = std::string(buffer);
+			selectedObj.SetName(buffer);
 
 			SetChanges(true);
 

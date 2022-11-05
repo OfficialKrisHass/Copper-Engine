@@ -6,8 +6,8 @@
 #include "Engine/Renderer/Shader.h"
 #include "Engine/Renderer/Mesh.h"
 
-#include "Engine/Scene/Components/Camera.h"
-#include "Engine/Scene/Components/Light.h"
+#include "Engine/Components/Camera.h"
+#include "Engine/Components/Light.h"
 
 namespace Copper {
 

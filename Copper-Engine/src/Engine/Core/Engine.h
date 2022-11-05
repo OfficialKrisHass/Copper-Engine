@@ -5,7 +5,7 @@
 
 #include "Engine/Events/Event.h"
 
-#include "Engine/Scene/Scene.h"
+#include <CopperECS/CopperECS.h>
 
 #define GetGLFWwindow (GLFWwindow*) GetWindow().GetWindowPtr()
 

@@ -59,7 +59,7 @@ namespace Copper::Renderer {
 		data.vbo->SetData(data.vertices);
 		data.ibo->SetData(data.indices);
 
-		api.Render(data.vao, data.indices.size(), cam, light);
+		api.Render(data.vao, (uint32_t) data.indices.size(), cam, light);
 
 		data.vertices.clear();
 		data.indices.clear();
@@ -76,7 +76,7 @@ namespace Copper::Renderer {
 		noScale = glm::rotate(noScale, glm::radians(transform->rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 		noScale = glm::rotate(noScale, glm::radians(transform->rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
-		int numOfVertices = data.vertices.size() / 9;
+		int numOfVertices = (int) data.vertices.size() / 9;
 
 		for (int i = 0; i < mesh->vertices.size(); i++) {
 

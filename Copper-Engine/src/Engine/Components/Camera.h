@@ -2,9 +2,8 @@
 
 #include "Engine/Core/Core.h"
 
-#include "Engine/Scene/Components/Component.h"
-
-#include "GLM/mat4x4.hpp"
+#include <CopperECS/Component.h>
+#include <GLM/mat4x4.hpp>
 
 namespace Copper {
 

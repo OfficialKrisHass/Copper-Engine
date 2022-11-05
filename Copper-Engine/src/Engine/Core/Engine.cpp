@@ -11,8 +11,6 @@
 
 #include "Engine/UI/ImGui.h"
 
-#include "Engine/Scene/Scene.h"
-
 #include <ImGui/imgui.h>
 
 namespace Copper {

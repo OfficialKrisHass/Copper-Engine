@@ -1,0 +1,24 @@
+10/11/2022
+
+-Fixed a Bug where the cursor was blinking when looking around in the Viewport or the cursor was visible the entire time
+-Added Parent and Children functionality
+
+-Transform.parent is a pointer to transform of this transforms parent, If equal to nullptr it means it doesn't have a Parent
+-Transform.object a SHARED pointer to the Transforms Objects
+-Transform.NumOfChildren a int of how many Children this Transform has
+-Transform.children a PRIVATE vector of IDs of all the Children objects
+-Transform.AddChild(Transform* transform) Adds a Transform as a child of this Transform
+-Transform.RemoveChild(int index) Removes the children[index] child
+-Transform.RemoveChild(Transform* transform) Finds the Child and removes it WARNING: This Loops over all of the children, might be resource heavy if you have too many children!
+-Transform.GetChild(int index) Returns a Pointer to the Child at the index Transform
+-Transform.GlobalPosition() returns a Vector3 that is the Transforms Global Worl Position
+-Transform.position is now Local to the Parents Global Position
+
+-You Can Drag an Object and Drop it on another one which will make the first object a child of the second
+-You Can Drag Objects into the empty part of the SceneHierarchy UI making it's parent nullptr
+-When you drag an Object onto another it will change it's position so that it stay in the same Place
+
+-Bugs
+-SceneView Breaks if you have zero Objects or just one Object
+-When you Drag am Object onto a nother it won't change it's rotation
+-When an Object has a parent that has a different rotation the Transform gets funky

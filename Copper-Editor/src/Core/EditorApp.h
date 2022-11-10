@@ -19,6 +19,8 @@ namespace Editor {
 	void SaveScene();
 	void SaveSceneAs();
 
+	void ManualScene();
+
 	void SetChanges(bool value);
 
 }

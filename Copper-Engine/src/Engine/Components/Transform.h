@@ -8,7 +8,12 @@
 
 namespace Copper {
 
+	class Object;
+	class Scene;
+
 	class Transform {
+
+		friend class Scene;
 
 	public:
 		Transform() = default;
@@ -17,6 +22,10 @@ namespace Copper {
 		Vector3 position = Vector3::Zero();
 		Vector3 rotation = Vector3::Zero();
 		Vector3 scale = Vector3::One();
+
+		Shared<Object> object;
+		Transform* parent;
+		int numOfChildren;
 
 		glm::mat4 CreateMatrix();
 
@@ -27,8 +36,18 @@ namespace Copper {
 		Vector3 Left();
 		Vector3 Down();
 
+		Vector3 GlobalPosition();
+
+		Transform* GetChild(int index) const;
+
+		void AddChild(Transform* transform);
+		void RemoveChild(Transform* transform);
+		void RemoveChild(int index);
+
+		bool operator==(const Transform& other) const;
+
 	private:
-		//
+		std::vector<int32_t> children;
 
 	};
 

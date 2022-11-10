@@ -1,6 +1,10 @@
 #include "cupch.h"
 #include "Transform.h"
 
+#include "Engine/Core/Engine.h"
+
+#include <CopperECS/CopperECS.h>
+
 #include <GLM/glm.hpp>
 #include <GLM/ext/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -10,6 +14,12 @@ namespace Copper {
 	glm::mat4 Transform::CreateMatrix() {
 
 		glm::mat4 ret(1.0f);
+
+		if (parent) {
+
+			ret *= parent->CreateMatrix();
+
+		}
 
 		ret = glm::translate(ret, (glm::vec3) position);
 
@@ -52,5 +62,43 @@ namespace Copper {
 	Vector3 Transform::Backward() { return -Forward(); }
 	Vector3 Transform::Left() { return -Right(); }
 	Vector3 Transform::Down() { return -Up(); }
+
+	Vector3 Transform::GlobalPosition() {
+
+		if (parent) return position + parent->GlobalPosition();
+		else return position;
+
+	}
+
+	Transform* Transform::GetChild(int index) const { return GetScene()->registry.GetObjectFromID(children[index]).transform; }
+
+	void Transform::AddChild(Transform* transform) {
+
+		children.push_back(transform->object->GetID());
+		numOfChildren++;
+
+	}
+
+	void Transform::RemoveChild(int index) {
+
+		children.erase(children.begin() + index);
+		numOfChildren--;
+	
+	}
+	void Transform::RemoveChild(Transform* transform) {
+
+		for (int i = 0; i < numOfChildren; i++) {
+
+			if (children[i] == transform->object->GetID()) RemoveChild(i);
+
+		}
+
+	}
+
+	bool Transform::operator==(const Transform& other) const {
+
+		return *object == *other.object;
+
+	}
 	
 }

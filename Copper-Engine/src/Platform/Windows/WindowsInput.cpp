@@ -28,7 +28,7 @@ namespace Copper::Input {
 	//-------------------
 	void SetCursorVisible(bool visible) {
 		
-		glfwSetInputMode(GetGLFWwindow, GLFW_CURSOR, visible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_HIDDEN);
+		glfwSetInputMode(GetGLFWwindow, GLFW_CURSOR, visible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
 		
 	}
 

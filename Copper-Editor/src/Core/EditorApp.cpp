@@ -29,6 +29,7 @@ namespace Editor {
 
 	using namespace Copper;
 
+#pragma region Plane
 	std::vector<Vector3> planeVertices {
 
 		Vector3(-0.5f, 0.0f,  0.5f),
@@ -59,6 +60,135 @@ namespace Editor {
 		2, 3, 0
 
 	};
+#pragma endregion
+#pragma region Cube
+	std::vector<Vector3> cubeVertices {
+		//Front
+		Vector3(-0.5f, -0.5f,  0.5f),
+		Vector3(0.5f, -0.5f,  0.5f),
+		Vector3(0.5f,  0.5f,  0.5f),
+		Vector3(-0.5f,  0.5f,  0.5f),
+		//Back
+		Vector3(0.5f, -0.5f, -0.5f),
+		Vector3(-0.5f, -0.5f, -0.5f),
+		Vector3(-0.5f,  0.5f, -0.5f),
+		Vector3(0.5f,  0.5f, -0.5f),
+		//Right
+		Vector3(0.5f, -0.5f,  0.5f),
+		Vector3(0.5f, -0.5f, -0.5f),
+		Vector3(0.5f,  0.5f, -0.5f),
+		Vector3(0.5f,  0.5f,  0.5f),
+		//Left
+		Vector3(-0.5f, -0.5f, -0.5f),
+		Vector3(-0.5f, -0.5f,  0.5f),
+		Vector3(-0.5f,  0.5f,  0.5f),
+		Vector3(-0.5f,  0.5f, -0.5f),
+		//Up
+		Vector3(-0.5f,  0.5f,  0.5f),
+		Vector3(0.5f,  0.5f,  0.5f),
+		Vector3(0.5f,  0.5f, -0.5f),
+		Vector3(-0.5f,  0.5f, -0.5f),
+		//Down
+		Vector3(-0.5f, -0.5f, -0.5f),
+		Vector3(0.5f, -0.5f, -0.5f),
+		Vector3(0.5f, -0.5f,  0.5f),
+		Vector3(-0.5f, -0.5f,  0.5f),
+
+	};
+	std::vector<Vector3> cubeNormals {
+		//Front
+		Vector3(0.0f,  0.0f, -1.0f),
+		Vector3(0.0f,  0.0f, -1.0f),
+		Vector3(0.0f,  0.0f, -1.0f),
+		Vector3(0.0f,  0.0f, -1.0f),
+		//Back
+		Vector3(0.0f,  0.0f,  1.0f),
+		Vector3(0.0f,  0.0f,  1.0f),
+		Vector3(0.0f,  0.0f,  1.0f),
+		Vector3(0.0f,  0.0f,  1.0f),
+		//Right
+		Vector3(-1.0f,  0.0f,  0.0f),
+		Vector3(-1.0f,  0.0f,  0.0f),
+		Vector3(-1.0f,  0.0f,  0.0f),
+		Vector3(-1.0f,  0.0f,  0.0f),
+		//Left
+		Vector3(1.0f,  0.0f,  0.0f),
+		Vector3(1.0f,  0.0f,  0.0f),
+		Vector3(1.0f,  0.0f,  0.0f),
+		Vector3(1.0f,  0.0f,  0.0f),
+		//Up
+		Vector3(0.0f, -1.0f,  0.0f),
+		Vector3(0.0f, -1.0f,  0.0f),
+		Vector3(0.0f, -1.0f,  0.0f),
+		Vector3(0.0f, -1.0f,  0.0f),
+		//Down
+		Vector3(0.0f,  1.0f,  0.0f),
+		Vector3(0.0f,  1.0f,  0.0f),
+		Vector3(0.0f,  1.0f,  0.0f),
+		Vector3(0.0f,  1.0f,  0.0f),
+
+	};
+	std::vector<Color> cubeColors {
+		//Front
+		Color(1.0f, 1.0f, 1.0f),
+		Color(1.0f, 1.0f, 1.0f),
+		Color(1.0f, 1.0f, 1.0f),
+		Color(1.0f, 1.0f, 1.0f),
+		//Back
+		Color(1.0f, 1.0f, 1.0f),
+		Color(1.0f, 1.0f, 1.0f),
+		Color(1.0f, 1.0f, 1.0f),
+		Color(1.0f, 1.0f, 1.0f),
+		//Right
+		Color(1.0f, 1.0f, 1.0f),
+		Color(1.0f, 1.0f, 1.0f),
+		Color(1.0f, 1.0f, 1.0f),
+		Color(1.0f, 1.0f, 1.0f),
+		//Left
+		Color(1.0f, 1.0f, 1.0f),
+		Color(1.0f, 1.0f, 1.0f),
+		Color(1.0f, 1.0f, 1.0f),
+		Color(1.0f, 1.0f, 1.0f),
+		//Up
+		Color(1.0f, 1.0f, 1.0f),
+		Color(1.0f, 1.0f, 1.0f),
+		Color(1.0f, 1.0f, 1.0f),
+		Color(1.0f, 1.0f, 1.0f),
+		//Down
+		Color(1.0f, 1.0f, 1.0f),
+		Color(1.0f, 1.0f, 1.0f),
+		Color(1.0f, 1.0f, 1.0f),
+		Color(1.0f, 1.0f, 1.0f),
+
+	};
+	std::vector<uint32_t> cubeIndices {
+
+		//Front
+		0, 1, 2,
+		2, 3, 0,
+
+		//Back
+		4, 5, 6,
+		6, 7, 4,
+
+		//Right
+		8, 9, 10,
+		10, 11, 8,
+
+		//Left
+		12, 13, 14,
+		14, 15, 12,
+
+		//Up
+		16, 17, 18,
+		18, 19, 16,
+
+		//Down
+		20, 21, 22,
+		22, 23, 20
+
+	};
+#pragma endregion 
 
 	struct EditorData {
 		
@@ -98,39 +228,9 @@ namespace Editor {
 		data.sceneCam = SceneCamera(data.viewportSize);
 		data.sceneCam.transform = new Transform(Vector3(0.0f, 0.0f, 1.0f), Vector3::Zero(), Vector3::One());
 		data.sceneCam.transform->position.z = 1.0f;
-
-		/*data.scene = Scene();
-		data.scene.name = "Manual";
-		data.scene.path = "assets/TestProject/Test Scenes/Manual.copper";
-
-		Object square = data.scene.CreateObject(new Transform(Vector3::Zero(), Vector3(90.0f, 0.0f, 0.0f), Vector3::One()), "Square");
-		Object light = data.scene.CreateObject(new Transform(Vector3(0.0f, 0.0f, 1.0f), Vector3::Zero(), Vector3::One()), "Light");
-
-		MeshRenderer* renderer = square.AddComponent<MeshRenderer>();
-		Mesh mesh;
-
-		mesh.vertices = planeVertices;
-		mesh.normals = planeNormals;
-		mesh.colors = planeColors;
-		mesh.indices = planeIndices;
-
-		renderer->meshes.push_back(mesh);
-
-		light.AddComponent<Light>();
-
-		data.scene.cam = &data.sceneCam;
-
-		data.changes = false;
-		data.title = "Copper Editor - TestProject: ";
-		data.title += data.scene.name;
-		Input::SetWindowTitle(data.title);
-
-		data.sceneHierarchy.SetSelectedObject(Object::Null());
-		data.properties.SetSelectedObject(Object::Null());
-
-		LoadScene(&data.scene);*/
 		
-		OpenScene("assets/TestProject/Scenes/Default.copper");
+		//ManualScene();
+		OpenScene("assets/TestProject/Scenes/ParentAndChildrenTesting.copper");
 
 		data.title = "Copper Editor - TestProject: ";
 		data.title += data.scene.name;
@@ -275,7 +375,6 @@ namespace Editor {
 		OpenScene(path);
 		
 	}
-	
 	void OpenScene(std::filesystem::path path) {
 
 		if(data.changes) {
@@ -290,6 +389,8 @@ namespace Editor {
 		}
 
 		data.scene = Scene();
+		LoadScene(&data.scene);
+
 		data.scene.Deserialize(path);
 		data.scene.cam = &data.sceneCam;
 
@@ -297,11 +398,8 @@ namespace Editor {
 		data.title = "Copper Editor - TestProject: ";
 		data.title += data.scene.name;
 		Input::SetWindowTitle(data.title);
-
-		LoadScene(&data.scene);
 		
 	}
-	
 	void SaveScene() {
 		
 		if(!data.scene.path.empty()) {
@@ -320,7 +418,6 @@ namespace Editor {
 		SaveSceneAs();
 		
 	}
-
 	void SaveSceneAs() {
 
 		std::string path = Utilities::SaveDialog("Copper Scene (*.copper)\0*.copper\0");
@@ -338,6 +435,52 @@ namespace Editor {
 		
 	}
 
+	void ManualScene() {
+
+		data.scene = Scene();
+		data.scene.name = "Manual";
+		data.scene.path = "assets/TestProject/Test Scenes/Manual.copper";
+
+		LoadScene(&data.scene);
+
+		Object square = data.scene.CreateObject(Vector3::Zero(), Vector3(90.0f, 0.0f, 0.0f), Vector3::One(), "Square");
+		Object cube = data.scene.CreateObject(Vector3(1.5f, 0.0f, 0.0f), Vector3::Zero(), Vector3::One(), "Cube");
+		Object light = data.scene.CreateObject(Vector3(0.0f, 0.0f, 1.0f), Vector3::Zero(), Vector3::One(), "Light");
+
+		cube.transform->parent = square.transform;
+		square.transform->AddChild(cube.transform);
+
+		MeshRenderer* renderer = square.AddComponent<MeshRenderer>();
+		Mesh mesh;
+
+		mesh.vertices = planeVertices;
+		mesh.normals  = planeNormals;
+		mesh.colors   = planeColors;
+		mesh.indices  = planeIndices;
+
+		renderer->meshes.push_back(mesh);
+
+		renderer = cube.AddComponent<MeshRenderer>();
+		
+		mesh.vertices = cubeVertices;
+		mesh.normals  = cubeNormals;
+		mesh.colors   = cubeColors;
+		mesh.indices  = cubeIndices;
+
+		renderer->meshes.push_back(mesh);
+
+		light.AddComponent<Light>();
+
+		data.scene.cam = &data.sceneCam;
+
+		data.changes = false;
+		data.title = "Copper Editor - TestProject: ";
+		data.title += data.scene.name;
+		Input::SetWindowTitle(data.title);
+
+
+	}
+
 	void SetChanges(bool value) {
 
 		data.changes = value;
@@ -347,7 +490,5 @@ namespace Editor {
 		Input::SetWindowTitle(data.title);
 		
 	}
-
-
 	
 }

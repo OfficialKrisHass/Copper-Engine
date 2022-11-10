@@ -41,7 +41,7 @@ namespace Copper {
 		
 		shader->LoadVec3("camPos", cam->transform->position);
 		
-		shader->LoadVec3("lightPos", light->transform->position);
+		shader->LoadVec3("lightPos", light->transform->GlobalPosition());
 
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);
 

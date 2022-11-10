@@ -66,6 +66,48 @@ namespace Copper {
 			obj.transform->rotation = rotation;
 			obj.transform->scale = scale;
 			objects[obj.id].transform = obj.transform;
+			objects[obj.id].transform->object = CreateShared<Object>(objects[obj.id]);
+
+			return obj;
+
+		}
+		Object CreateObjectFromID(int32_t id, Scene* scene, Vector3 position, Vector3 rotation, Vector3 scale, std::string name) {
+
+			if (id > (int32_t) objects.size() - 1) {
+
+				objects.resize(id + 1, Object());
+
+				Object obj;
+				obj.id = id;
+				obj.scene = scene;
+				obj.name = name;
+
+				objects[id] = obj;
+
+				obj.transform = AddComponent<Transform>(obj);
+				obj.transform->position = position;
+				obj.transform->rotation = rotation;
+				obj.transform->scale = scale;
+				objects[obj.id].transform = obj.transform;
+				objects[obj.id].transform->object = CreateShared<Object>(objects[obj.id]);
+
+				return obj;
+
+			}
+
+			Object obj;
+			obj.id = id;
+			obj.scene = scene;
+			obj.name = name;
+
+			objects[id] = obj;
+
+			obj.transform = AddComponent<Transform>(obj);
+			obj.transform->position = position;
+			obj.transform->rotation = rotation;
+			obj.transform->scale = scale;
+			objects[obj.id].transform = obj.transform;
+			objects[obj.id].transform->object = CreateShared<Object>(objects[obj.id]);
 
 			return obj;
 
@@ -76,7 +118,7 @@ namespace Copper {
 
 			objects[obj.id] = Object();
 
-			obj.name = nullptr;
+			obj.name = "";
 			obj.scene = nullptr;
 			obj.id = -1;
 			obj.componentMask = std::bitset<maxComponents>();
@@ -133,7 +175,8 @@ namespace Copper {
 
 		}
 
-		std::vector<Object> GetObjects() const { return objects; }
+		Object GetObjectFromID(int32_t id) const { return objects[id];  }
+		int GetNumOfObjects() const { return objects.size(); }
 
 		void SetObjectName(Object obj, std::string name) { obj.name = name, objects[obj.id].name = name; }
 

@@ -63,6 +63,13 @@ namespace Editor {
 			
 		}
 
+		if (ImGui::Button("Debug Position")) {
+
+			Log("Global Position: {0}", selectedObj.transform->GlobalPosition());
+			Log("Local Position:  {0}", selectedObj.transform->position);
+
+		}
+
 		if(selectedObj.HasComponent<Camera>() && DrawComponent<Camera>("Camera")) {
 			
 			if (ShowFloat("FOV", selectedObj.GetComponent<SceneCamera>()->fov, 0.1f)) SetChanges(true);

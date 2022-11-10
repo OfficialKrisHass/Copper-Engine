@@ -16,8 +16,17 @@ namespace Editor {
 
 	private:
 		Copper::Object selectedObj;
+		Copper::Scene* scene;
+		bool anyNodeHovered = false;
 
 		virtual void UI() override;
+
+		void DrawObjectNode(Copper::Object obj);
+
+		bool CheckDropType(std::string wantedType, std::string payloadType) { return payloadType == wantedType; }
+
+		void DropModel(void* data);
+		void DropObject(void* data);
 
 	};
 

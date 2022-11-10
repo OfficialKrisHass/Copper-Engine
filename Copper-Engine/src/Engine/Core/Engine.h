@@ -25,6 +25,7 @@ namespace Copper {
 	uint32_t GetFBOTexture();
 
 	Scene* GetScene();
+	Object& GetObjectFromID(int32_t id);
 
 	//Setters
 	void SetWindowSize(UVector2I size);

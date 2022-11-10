@@ -6,6 +6,9 @@ Entities:
       Position: [0, 0, 0]
       Rotation: [90, 0, 0]
       Scale: [1, 1, 1]
+      Parent: -1
+      Children:
+        []
     Components:
       Mesh Renderer:
         Mesh:
@@ -33,21 +36,27 @@ Entities:
             - 2
             - 3
             - 0
-  4294967296:
+  1:
     Name: Light
     Transform:
       Position: [0, 0, 1]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Parent: -1
+      Children:
+        []
     Components:
       Light:
         Color: None
-  8589934592:
+  2:
     Name: Plane
     Transform:
       Position: [0, -1.5, 0]
       Rotation: [0, 0, 0]
       Scale: [10, 1, 10]
+      Parent: -1
+      Children:
+        []
     Components:
       Mesh Renderer:
         Mesh:
@@ -75,12 +84,15 @@ Entities:
             - 2
             - 3
             - 0
-  12884901888:
+  3:
     Name: Cube
     Transform:
       Position: [-1.91999996, -1, -0.980000019]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Parent: -1
+      Children:
+        []
     Components:
       Mesh Renderer:
         Mesh:

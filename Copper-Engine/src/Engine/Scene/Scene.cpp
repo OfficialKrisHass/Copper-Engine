@@ -1,5 +1,7 @@
 #include "cupch.h"
 
+#include "Engine/Core/Engine.h"
+
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Renderer/Mesh.h"
 
@@ -228,6 +230,16 @@ namespace Copper {
 			out << YAML::Key << "Rotation" << YAML::Value << o.transform->rotation;
 			out << YAML::Key << "Scale" << YAML::Value << o.transform->scale;
 
+			out << YAML::Key << "Parent" << YAML::Value;
+			if (o.transform->parent) out << o.transform->parent->object->GetID();
+			else out << -1;
+
+			out << YAML::Key << "Children" << YAML::Value << YAML::BeginSeq;
+
+			for (int i = 0; i < o.transform->numOfChildren; i++) { out << o.transform->children[i]; }
+
+			out << YAML::EndSeq;
+
 			out << YAML::EndMap;
 			
 			//Components
@@ -328,11 +340,23 @@ namespace Copper {
 			YAML::Node entity = it->second;
 			
 			std::string name = entity["Name"].as<std::string>();
-			Object deserialized = CreateObject(name);
+			int32_t id = it->first.as<int>();
+			Object deserialized = registry.CreateObjectFromID(id, this, Vector3::Zero(), Vector3::Zero(), Vector3::One(), name);
 
 			deserialized.transform->position = entity["Transform"]["Position"].as<Vector3>();
 			deserialized.transform->rotation = entity["Transform"]["Rotation"].as<Vector3>();
 			deserialized.transform->scale = entity["Transform"]["Scale"].as<Vector3>();
+
+			int32_t parentID = entity["Transform"]["Parent"].as<int>();
+
+			deserialized.transform->parent = parentID == -1 ? nullptr : registry.CreateObjectFromID(parentID, this, Vector3::Zero(), Vector3::Zero(), Vector3::One(), "Empty Parent").transform;
+
+			for (int i = 0; i < entity["Transform"]["Children"].size(); i++) {
+
+				deserialized.transform->children.push_back(entity["Transform"]["Children"][i].as<int>());
+				deserialized.transform->numOfChildren++;
+
+			}
 
 			YAML::Node components = entity["Components"];
 			

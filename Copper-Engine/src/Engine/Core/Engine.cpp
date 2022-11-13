@@ -124,6 +124,7 @@ namespace Copper {
 	uint32_t GetFBOTexture() { return data.fbo->GetColorAttachment(); }
 
 	Scene* GetScene() { return data.scene; }
+	Object GetObjectFromID(int32_t id) { return data.scene->registry.GetObjectFromID(id); }
 
 	//Setters
 	void SetWindowSize(UVector2I size) { data.windowSize = size; }

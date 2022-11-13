@@ -79,7 +79,7 @@ namespace Editor {
 
             Texture icon = entry.is_directory() ? directoryIcon : fileIcon;
             ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-            if(ImGui::ImageButton(reinterpret_cast<ImTextureID>(icon.GetID()), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 }) && !entry.is_directory()) {
+            if(ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t) icon.GetID()), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 }) && !entry.is_directory()) {
 
                 Properties::SetSelectedFile(path);
                 
@@ -88,9 +88,9 @@ namespace Editor {
 
             if ((path.extension() == ".fbx" || path.extension() == ".gltf" || path.extension() == ".obj") && ImGui::BeginDragDropSource()) {
 
-                const wchar_t* itemPath = path.c_str();
+                char* itemPath = (char*) path.c_str();
 
-                ImGui::SetDragDropPayload("MODEL", itemPath, (wcslen(itemPath) + 1) * sizeof(wchar_t), ImGuiCond_Once);
+                ImGui::SetDragDropPayload("MODEL", itemPath, (path.string().size() + 1) * sizeof(char), ImGuiCond_Once);
                 ImGui::EndDragDropSource();
 
             }

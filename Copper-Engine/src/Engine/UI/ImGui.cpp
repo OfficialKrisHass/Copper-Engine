@@ -5,7 +5,6 @@
 #include <ImGui/examples/imgui_impl_opengl3.cpp>
 #include <ImGui/examples/imgui_impl_glfw.cpp>
 
-#define IMGUI_IMPL_API
 #include <ImGui/imgui.h>
 #include <ImGui/examples/imgui_impl_opengl3.h>
 #include <ImGui/examples/imgui_impl_glfw.h>

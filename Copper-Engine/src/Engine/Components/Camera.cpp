@@ -10,7 +10,7 @@ namespace Copper {
 
 		glm::mat4 ret(1.0f);
 
-		ret = glm::lookAt((glm::vec3) transform->position, (glm::vec3) (transform->position + transform->Forward()), (glm::vec3) transform->Up());
+		ret = glm::lookAt((glm::vec3) transform->position, (glm::vec3) (transform->position + transform->forward), (glm::vec3) transform->up);
 
 		return ret;
 

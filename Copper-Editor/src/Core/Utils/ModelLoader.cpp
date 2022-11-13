@@ -34,14 +34,14 @@ namespace Editor {
 
 	void Model::ProccessNode(aiNode* node, const aiScene* scene) {
 
-		for (int i = 0; i < node->mNumMeshes; i++) {
+		for (unsigned int i = 0; i < node->mNumMeshes; i++) {
 
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 			meshes.push_back(ProccessMesh(mesh));
 
 		}
 
-		for (int i = 0; i < node->mNumChildren; i++) {
+		for (unsigned int i = 0; i < node->mNumChildren; i++) {
 
 			ProccessNode(node->mChildren[i], scene);
 
@@ -53,7 +53,7 @@ namespace Editor {
 
 		Mesh ret;
 
-		for (int i = 0; i < mesh->mNumVertices; i++) {
+		for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
 
 			const aiVector3D& position = mesh->mVertices[i];
 			const aiVector3D& normal = mesh->mNormals[i];
@@ -63,7 +63,7 @@ namespace Editor {
 
 		}
 
-		for (int i = 0; i < mesh->mNumFaces; i++) {
+		for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
 
 			aiFace& face = mesh->mFaces[i];
 
@@ -74,7 +74,7 @@ namespace Editor {
 		}
 
 		std::vector<Color> colors;
-		for (int i = 0; i < mesh->mNumVertices; i++) { colors.push_back(Color::White()); }
+		for (unsigned int i = 0; i < mesh->mNumVertices; i++) { colors.push_back(Color::white); }
 		ret.colors = colors;
 
 		return ret;

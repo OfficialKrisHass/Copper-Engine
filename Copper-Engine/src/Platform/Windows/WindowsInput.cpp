@@ -28,7 +28,7 @@ namespace Copper::Input {
 	//-------------------
 	void SetCursorVisible(bool visible) {
 		
-		glfwSetInputMode(GetGLFWwindow, GLFW_CURSOR, visible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_HIDDEN);
+		glfwSetInputMode(GetGLFWwindow, GLFW_CURSOR, visible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
 		
 	}
 
@@ -50,20 +50,6 @@ namespace Copper::Input {
 	void GetCursorPosition(double* x, double* y) {
 		
 		glfwGetCursorPos(GetGLFWwindow, x, y);
-		
-	}
-
-	//---------------------------------
-	//------Controlling functions------
-	//---------------------------------
-	void WrapCursor() {
-
-		float rightEdgeX = GetWindow().Width() - 5;
-		double mouseX, mouseY;
-		GetCursorPosition(&mouseX, &mouseY);
-
-		if(mouseX <= 5) { SetCursorPosition(rightEdgeX, mouseY); }
-		if(mouseY >= rightEdgeX) { SetCursorPosition(5, mouseY); }
 		
 	}
 	

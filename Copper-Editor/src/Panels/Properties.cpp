@@ -8,8 +8,6 @@
 #include <ImGui/imgui_internal.h>
 #include <cstring>
 
-#define _CRT_SECURE_NO_WARNINGS
-
 using namespace Copper;
 
 namespace Editor {
@@ -43,11 +41,11 @@ namespace Editor {
 	void Properties::RenderObject() {
 
 		char buffer[128] = {};
-		std::strncpy(buffer, selectedObj.name.c_str(), sizeof(buffer));
+		std::strncpy(buffer, selectedObj.tag->name.c_str(), sizeof(buffer));
 
 		if (ImGui::InputText("##Name", buffer, sizeof(buffer))) {
 
-			selectedObj.SetName(buffer);
+			selectedObj.tag->name = buffer;
 
 			SetChanges(true);
 
@@ -61,6 +59,13 @@ namespace Editor {
 			if (ShowVector3("Rotation:", selectedObj.GetComponent<Transform>()->rotation, 0.1f)) SetChanges(true);
 			if (ShowVector3("Scale:", selectedObj.GetComponent<Transform>()->scale)) SetChanges(true);
 			
+		}
+
+		if (ImGui::Button("Debug Position")) {
+
+			Log("Global Position: {0}", selectedObj.transform->GlobalPosition());
+			Log("Local Position:  {0}", selectedObj.transform->position);
+
 		}
 
 		if(selectedObj.HasComponent<Camera>() && DrawComponent<Camera>("Camera")) {

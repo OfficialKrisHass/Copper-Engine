@@ -1,0 +1,35 @@
+13/11/2022
+
+-Fixed a Bug where the cursor was blinking when looking around in the Viewport or the cursor was visible the entire time
+-Added Parent and Children functionality
+-Copper Engine now builds with nearly no Warnings (stupid shared pointers)
+-Major cleanup of some code
+
+-Transform.parent is a pointer to transform of this transforms parent, If equal to nullptr it means it doesn't have a Parent
+-Transform.object a SHARED pointer to the Transforms Objects
+-Transform.NumOfChildren an int of how many Children this Transform has
+-Transform.children a PRIVATE vector of IDs of all the Children objects
+-Transform.AddChild(Transform* transform) Adds a Transform as a child of this Transform
+-Transform.RemoveChild(int index) Removes the children[index] child
+-Transform.RemoveChild(Transform* transform) Finds the Child and removes it WARNING: This Loops over all of the children, might
+ be resource heavy if you have too many children!
+-Transform.GetChild(int index) Returns a Pointer to the Child at the index Transform
+-Transform.GlobalPosition() returns a Vector3 that is the Transforms Global Worl Position
+-Transform.position is now Local to the Parents Global Position
+
+-Vector2, 3, 4, UI and Color now have static Variables of zero, one, red, green, etc instead of functions
+-Transform now has variables for forward, right, etc instead of functions, lowering the amount of math
+
+-Scene.Update now loops through every Object instead of looping over them multiple times looking for a different Component
+-SceneCamera now doesn't calculate the Right directional vector (for some reason it did even if it didn't have to)
+
+-Drag an Object and Drop it on another one which will make the first object a child of the second
+-Drag Objects into the empty part of the SceneHierarchy UI making it's parent nullptr
+-When dragging an Object onto another it will change it's position so that it stay in the same Place
+
+-Bugs
+-When an Object has a parent that has a different rotation the Transform gets funky - FIXED
+-SceneView Breaks if there are zero or one Objects - FIXED
+-When Dragging an Object onto a nother it won't change it's rotation
+-When building Copper Engine in Release If statements with no braces containing only Log functions will result in a warning dues
+ to the Log function being empty since it's in release mode

@@ -71,10 +71,7 @@ namespace Copper::Renderer {
 		glm::mat4 mat = transform->CreateMatrix();
 		glm::mat4 noScale(1.0f);
 
-		noScale = glm::translate(noScale, (glm::vec3) transform->position);
-		noScale = glm::rotate(noScale, glm::radians(transform->rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-		noScale = glm::rotate(noScale, glm::radians(transform->rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-		noScale = glm::rotate(noScale, glm::radians(transform->rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+		noScale = glm::scale(mat, (glm::vec3) (-transform->scale));
 
 		int numOfVertices = (int) data.vertices.size() / 9;
 
@@ -85,7 +82,7 @@ namespace Copper::Renderer {
 			Color color;
 
 			position = mat * glm::vec4((glm::vec3) mesh->vertices[i], 1.0f);
-			normal = (glm::mat3) noScale * (glm::vec3) mesh->normals[i];
+			normal = (glm::mat3) mat * (glm::vec3) mesh->normals[i];
 			color = mesh->colors[i];
 
 			data.vertices.push_back(position.x); data.vertices.push_back(position.y); data.vertices.push_back(position.z);

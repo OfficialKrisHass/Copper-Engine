@@ -68,6 +68,7 @@ project "Copper-Engine"
     defines {
 
         "CU_ENGINE",
+        "_CRT_SECURE_NO_WARNINGS"
 
     }
 
@@ -137,7 +138,8 @@ project "Copper-Editor"
 
     defines {
 
-        "CU_EDITOR"
+        "CU_EDITOR",
+        "_CRT_SECURE_NO_WARNINGS"
 
     }
     
@@ -163,7 +165,23 @@ project "Copper-Editor"
         runtime "Debug"
         symbols "on"
 
+        linkoptions {
+
+            '/NODEFAULTLIB:"libcmt.lib"',
+            '/NODEFAULTLIB:"msvcrt.lib"',
+            '/NODEFAULTLIB:"msvcrtd.lib"'
+
+        }
+
     filter "configurations:Release"
         defines "CU_RELEASE"
         runtime "Release"
         optimize "on"
+
+        linkoptions {
+
+            '/NODEFAULTLIB:"msvcrt.lib"',
+            '/NODEFAULTLIB:"libcmtd.lib"',
+            '/NODEFAULTLIB:"msvcrtd.lib"'
+
+        }

@@ -33,7 +33,27 @@ namespace Copper {
 
 	}
 
-	Vector3 Transform::Forward() {
+	void Transform::Update() {
+
+		glm::quat quat = glm::quat(glm::vec3(glm::radians(-rotation.x), glm::radians(-rotation.y), glm::radians(-rotation.z)));
+
+		//glm::vec3 f = glm::rotate(quat, glm::vec3(0.0f, 0.0f, -1.0f));
+		//glm::vec3 r = glm::rotate(quat, glm::vec3(1.0f, 0.0f,  0.0f));
+		//glm::vec3 u = glm::rotate(quat, glm::vec3(0.0f, 1.0f,  0.0f));
+
+		this->forward	= glm::rotate(quat, glm::vec3(0.0f, 0.0f, -1.0f));
+		this->right		= glm::rotate(quat, glm::vec3(1.0f, 0.0f, 0.0f));
+		this->up		= glm::rotate(quat, glm::vec3(0.0f, 1.0f, 0.0f));
+		//this->forward = Vector3(f.x, f.y, f.z);
+		//this->right = Vector3(r.x, r.y, r.z);
+		//this->up = Vector3(u.x, u.y, u.z);
+		this->backward = -forward;
+		this->left = -right;
+		this->down = -up;
+
+	}
+
+	/*Vector3 Transform::Forward() {
 
 		glm::quat quat = glm::quat(glm::vec3(glm::radians(-rotation.x), glm::radians(-rotation.y), glm::radians(-rotation.z)));
 		glm::vec3 forward = glm::rotate(quat, glm::vec3(0.0f, 0.0f, -1.0f));
@@ -61,7 +81,7 @@ namespace Copper {
 	}
 	Vector3 Transform::Backward() { return -Forward(); }
 	Vector3 Transform::Left() { return -Right(); }
-	Vector3 Transform::Down() { return -Up(); }
+	Vector3 Transform::Down() { return -Up(); }*/
 
 	Vector3 Transform::GlobalPosition() {
 

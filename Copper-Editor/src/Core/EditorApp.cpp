@@ -226,11 +226,11 @@ namespace Editor {
 		data.fileBrowser = FileBrowser(1);
 		
 		data.sceneCam = SceneCamera(data.viewportSize);
-		data.sceneCam.transform = new Transform(Vector3(0.0f, 0.0f, 1.0f), Vector3::Zero(), Vector3::One());
+		data.sceneCam.transform = new Transform(Vector3(0.0f, 0.0f, 1.0f), Vector3::zero, Vector3::one);
 		data.sceneCam.transform->position.z = 1.0f;
 		
 		//ManualScene();
-		OpenScene("assets/TestProject/Scenes/ParentAndChildrenTesting.copper");
+		OpenScene("assets/TestProject/Scenes/Default.copper");
 
 		data.title = "Copper Editor - TestProject: ";
 		data.title += data.scene.name;
@@ -318,7 +318,7 @@ namespace Editor {
 		data.viewportSize = UVector2I((uint32_t) windowSize.x, (uint32_t) windowSize.y);
 		SetWindowSize(data.viewportSize);
 		
-		ImGui::Image(reinterpret_cast<void*>(GetFBOTexture()), windowSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+		ImGui::Image(reinterpret_cast<void*>((uint64_t) GetFBOTexture()), windowSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
 		data.canLookViewport = ImGui::IsItemHovered();
 		data.sceneCam.SetCanLook(data.canLookViewport);
@@ -443,9 +443,9 @@ namespace Editor {
 
 		LoadScene(&data.scene);
 
-		Object square = data.scene.CreateObject(Vector3::Zero(), Vector3(90.0f, 0.0f, 0.0f), Vector3::One(), "Square");
-		Object cube = data.scene.CreateObject(Vector3(1.5f, 0.0f, 0.0f), Vector3::Zero(), Vector3::One(), "Cube");
-		Object light = data.scene.CreateObject(Vector3(0.0f, 0.0f, 1.0f), Vector3::Zero(), Vector3::One(), "Light");
+		Object square = data.scene.CreateObject(Vector3::zero, Vector3(90.0f, 0.0f, 0.0f), Vector3::one, "Square");
+		Object cube = data.scene.CreateObject(Vector3(1.5f, 0.0f, 0.0f), Vector3::zero, Vector3::one, "Cube");
+		Object light = data.scene.CreateObject(Vector3(0.0f, 0.0f, 1.0f), Vector3::zero, Vector3::one, "Light");
 
 		cube.transform->parent = square.transform;
 		square.transform->AddChild(cube.transform);

@@ -12,10 +12,12 @@ namespace Copper {
 		
 		if(!canLook) return;
 
-		if (Input::IsKey(Input::W)) { transform->position +=  transform->Forward() * speed; }
-		if (Input::IsKey(Input::S)) { transform->position += -transform->Forward() * speed; }
-		if (Input::IsKey(Input::A)) { transform->position +=  speed * -glm::normalize(glm::cross((glm::vec3) transform->Forward(), (glm::vec3) transform->Up())); }
-		if (Input::IsKey(Input::D)) { transform->position +=  speed *  glm::normalize(glm::cross((glm::vec3) transform->Forward(), (glm::vec3) transform->Up())); }
+		if (Input::IsKey(Input::W)) { transform->position +=  transform->forward * speed; }
+		if (Input::IsKey(Input::S)) { transform->position += -transform->forward * speed; }
+		if (Input::IsKey(Input::A)) { transform->position += -transform->right * speed; }
+		if (Input::IsKey(Input::D)) { transform->position +=  transform->right * speed; }
+		//if (Input::IsKey(Input::A)) { transform->position +=  speed * -glm::normalize(glm::cross((glm::vec3) transform->forward, (glm::vec3) transform->up)); }
+		//if (Input::IsKey(Input::D)) { transform->position +=  speed *  glm::normalize(glm::cross((glm::vec3) transform->forward, (glm::vec3) transform->up)); }
 		
 		if (Input::IsKey(Input::Space))       { transform->position +=  up * speed; }
 		if (Input::IsKey(Input::LeftControl)) { transform->position += -up * speed; }

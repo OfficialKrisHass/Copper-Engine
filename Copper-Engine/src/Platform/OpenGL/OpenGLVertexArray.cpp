@@ -46,7 +46,7 @@ namespace Copper {
 		for (const Element& e : *vbo) {
 
 			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(index, e.Dimensions(), DataTypeToOpenGL(e.type), GL_FALSE, vbo->Stride(), (void*) e.offset);
+			glVertexAttribPointer(index, e.Dimensions(), DataTypeToOpenGL(e.type), GL_FALSE, vbo->Stride(), (void*) (uint64_t) e.offset);
 
 			index++;
 

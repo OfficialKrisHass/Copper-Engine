@@ -82,7 +82,7 @@ namespace Editor {
 				
 		}
 
-		for (Object obj : SceneView<>(*scene)) {
+		for (Object& obj : SceneView<>(scene)) {
 
 			if (obj.transform->parent) continue;
 			
@@ -103,10 +103,10 @@ namespace Editor {
 
 	void SceneHierarchy::DrawObjectNode(Object obj) {
 
-		std::string name = obj.name;
+		std::string name = obj.tag->name;
 		ImGuiTreeNodeFlags flags = ((selectedObj == obj) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 
-		bool opened = ImGui::TreeNodeEx((void*) obj.GetID(), flags, name.c_str());
+		bool opened = ImGui::TreeNodeEx((void*) (uint64_t) obj.GetID(), flags, name.c_str());
 
 		if (ImGui::BeginDragDropSource()) {
 
@@ -177,8 +177,7 @@ namespace Editor {
 	
 	void SceneHierarchy::DropModel(void* data) {
 
-		std::wstring ws((wchar_t*) data);
-		std::string string(ws.begin(), ws.end());
+		std::string string = (const char*) data;
 
 		Model model;
 		model.LoadMesh(string);

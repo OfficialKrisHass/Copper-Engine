@@ -32,93 +32,79 @@ namespace Copper {
 
 	class Registry {
 
+		friend class Scene;
+
 	public:
 		Object CreateObject(Scene* scene, Vector3 position, Vector3 rotation, Vector3 scale, std::string name) {
 
 			if (!gaps.empty()) {
 
-				Object obj;
-				obj.id = gaps.front();
-				obj.scene = scene;
-				obj.name = name;
+				int32_t id = gaps.front();
 
-				obj.transform = AddComponent<Transform>(obj);
-				obj.transform->position = position;
-				obj.transform->rotation = rotation;
-				obj.transform->scale = scale;
+				objects[id].id = id;
+				objects[id].scene = scene;
+				
+				objects[id].tag = AddComponent<Tag>(objects[id]);
+				objects[id].tag->name = name;
 
-				objects[obj.id] = obj;
+				objects[id].transform = AddComponent<Transform>(objects[id]);
+				objects[id].transform->position = position;
+				objects[id].transform->rotation = rotation;
+				objects[id].transform->scale = scale;
+				objects[id].transform->object = CreateShared<Object>(objects[id]);
+
 				gaps.erase(gaps.begin());
 
-				return obj;
+				return objects[id];
 
 			}
 
-			Object obj;
-			obj.id = (int32_t) objects.size();
-			obj.scene = scene;
-			obj.name = name;
+			int32_t id = (int32_t) objects.size();
 
-			objects.push_back(obj);
+			objects.push_back(Object());
 
-			obj.transform = AddComponent<Transform>(obj);
-			obj.transform->position = position;
-			obj.transform->rotation = rotation;
-			obj.transform->scale = scale;
-			objects[obj.id].transform = obj.transform;
-			objects[obj.id].transform->object = CreateShared<Object>(objects[obj.id]);
+			objects[id].id = id;
+			objects[id].scene = scene;
+			
+			objects[id].tag = AddComponent<Tag>(objects[id]);
+			objects[id].tag->name = name;
 
-			return obj;
+			objects[id].transform = AddComponent<Transform>(objects[id]);
+			objects[id].transform->position = position;
+			objects[id].transform->rotation = rotation;
+			objects[id].transform->scale = scale;
+			objects[id].transform->object = CreateShared<Object>(objects[id]);
+
+			return objects[id];
 
 		}
 		Object CreateObjectFromID(int32_t id, Scene* scene, Vector3 position, Vector3 rotation, Vector3 scale, std::string name) {
 
-			if (id > (int32_t) objects.size() - 1) {
+			if (id > (int32_t) objects.size() - 1) objects.resize(id + 1, Object());
 
-				objects.resize(id + 1, Object());
+			objects[id].id = id;
+			objects[id].scene = scene;
 
-				Object obj;
-				obj.id = id;
-				obj.scene = scene;
-				obj.name = name;
+			objects[id].tag = AddComponent<Tag>(objects[id]);
+			objects[id].tag->name = name;
 
-				objects[id] = obj;
+			objects[id].transform = AddComponent<Transform>(objects[id]);
+			objects[id].transform->position = position;
+			objects[id].transform->rotation = rotation;
+			objects[id].transform->scale = scale;
+			objects[id].transform->object = CreateShared<Object>(objects[id]);
 
-				obj.transform = AddComponent<Transform>(obj);
-				obj.transform->position = position;
-				obj.transform->rotation = rotation;
-				obj.transform->scale = scale;
-				objects[obj.id].transform = obj.transform;
-				objects[obj.id].transform->object = CreateShared<Object>(objects[obj.id]);
-
-				return obj;
-
-			}
-
-			Object obj;
-			obj.id = id;
-			obj.scene = scene;
-			obj.name = name;
-
-			objects[id] = obj;
-
-			obj.transform = AddComponent<Transform>(obj);
-			obj.transform->position = position;
-			obj.transform->rotation = rotation;
-			obj.transform->scale = scale;
-			objects[obj.id].transform = obj.transform;
-			objects[obj.id].transform->object = CreateShared<Object>(objects[obj.id]);
-
-			return obj;
+			return objects[id];
 
 		}
 		void DestroyObject(Object& obj) {
 
 			gaps.push_back(obj.id);
-
 			objects[obj.id] = Object();
 
-			obj.name = "";
+			obj.transform = nullptr;
+			obj.tag = nullptr;
+
 			obj.scene = nullptr;
 			obj.id = -1;
 			obj.componentMask = std::bitset<maxComponents>();
@@ -176,9 +162,7 @@ namespace Copper {
 		}
 
 		Object GetObjectFromID(int32_t id) const { return objects[id];  }
-		int GetNumOfObjects() const { return objects.size(); }
-
-		void SetObjectName(Object obj, std::string name) { obj.name = name, objects[obj.id].name = name; }
+		int GetNumOfObjects() const { return (int) objects.size(); }
 
 	private:
 		std::vector<Object> objects;

@@ -52,19 +52,5 @@ namespace Copper::Input {
 		glfwGetCursorPos(GetGLFWwindow, x, y);
 		
 	}
-
-	//---------------------------------
-	//------Controlling functions------
-	//---------------------------------
-	void WrapCursor() {
-
-		float rightEdgeX = GetWindow().Width() - 5;
-		double mouseX, mouseY;
-		GetCursorPosition(&mouseX, &mouseY);
-
-		if(mouseX <= 5) { SetCursorPosition(rightEdgeX, mouseY); }
-		if(mouseY >= rightEdgeX) { SetCursorPosition(5, mouseY); }
-		
-	}
 	
 }

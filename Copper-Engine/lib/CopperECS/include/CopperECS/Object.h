@@ -6,6 +6,7 @@
 //#include "Component.h"
 
 #include "Engine/Components/Transform.h"
+#include "Engine/Components/Tag.h"
 
 namespace Copper {
 
@@ -19,7 +20,7 @@ namespace Copper {
 	public:
 		Object() = default;
 
-		std::string name = "";
+		Tag* tag = nullptr;
 		Transform* transform = nullptr;
 
 		template<typename T> T* AddComponent() {
@@ -42,10 +43,8 @@ namespace Copper {
 		bool operator==(const Object& other) const { return id == other.id && scene == other.scene; }
 		bool operator!=(const Object& other) const { return !(*this == other); }
 
-		int32_t GetID() { return id; }
+		int32_t GetID() const { return id; }
 		std::bitset<maxComponents> GetComponentMask() const { return componentMask; }
-
-		void SetName(std::string name);
 
 	public:
 		int32_t id = -1;

@@ -171,34 +171,35 @@ namespace Copper {
 		return obj;
 
 	}
-	Object Scene::CreateObject(std::string name) { return CreateObject(Vector3::Zero(), Vector3::Zero(), Vector3::One(), name); }
+	Object Scene::CreateObject(std::string name) { return CreateObject(Vector3::zero, Vector3::zero, Vector3::one, name); }
 
 	void Scene::Update() {
 
 		Renderer::ClearColor(0.18f, 0.18f, 0.18f);
 
-		cam->Update();
-
 		Light* directional = nullptr;
 
-		for(Object o : SceneView<Light>(*this)) {
+		for (Object& o : SceneView<>(this)) {
 
-			directional = o.GetComponent<Light>();
-			
-		}
+			o.transform->Update();
 
-		for (Object o : SceneView<MeshRenderer>(*this)) {
+			if (o.HasComponent<Light>()) directional = o.GetComponent<Light>();
+			if (o.HasComponent<MeshRenderer>()) {
 
-			MeshRenderer* renderer = o.GetComponent<MeshRenderer>();
+				MeshRenderer* renderer = o.GetComponent<MeshRenderer>();
 
-			for (Mesh mesh : renderer->meshes) {
+				for (Mesh mesh : renderer->meshes) {
 
-				Renderer::AddMesh(&mesh, o.transform);
+					Renderer::AddMesh(&mesh, o.transform);
+
+				}
 
 			}
 
 		}
 
+		cam->transform->Update();
+		cam->Update();
 		Renderer::Render(cam, directional);
 
 	}
@@ -214,13 +215,13 @@ namespace Copper {
 		out << YAML::Key << "Scene" << YAML::Value << name;
 		out << YAML::Key << "Entities" << YAML::Value << YAML::BeginMap;
 
-		for(Object o : SceneView<>(*this)) {
+		for(Object& o : SceneView<>(this)) {
 			
 			out << YAML::Key << o.id;
 			out << YAML::Value << YAML::BeginMap;
 
 			//Name
-			out << YAML::Key << "Name" << YAML::Value << o.name;
+			out << YAML::Key << "Name" << YAML::Value << o.tag->name;
 
 			//Transform
 			out << YAML::Key << "Transform";
@@ -341,7 +342,7 @@ namespace Copper {
 			
 			std::string name = entity["Name"].as<std::string>();
 			int32_t id = it->first.as<int>();
-			Object deserialized = registry.CreateObjectFromID(id, this, Vector3::Zero(), Vector3::Zero(), Vector3::One(), name);
+			Object deserialized = registry.CreateObjectFromID(id, this, Vector3::zero, Vector3::zero, Vector3::one, name);
 
 			deserialized.transform->position = entity["Transform"]["Position"].as<Vector3>();
 			deserialized.transform->rotation = entity["Transform"]["Rotation"].as<Vector3>();
@@ -349,7 +350,7 @@ namespace Copper {
 
 			int32_t parentID = entity["Transform"]["Parent"].as<int>();
 
-			deserialized.transform->parent = parentID == -1 ? nullptr : registry.CreateObjectFromID(parentID, this, Vector3::Zero(), Vector3::Zero(), Vector3::One(), "Empty Parent").transform;
+			deserialized.transform->parent = parentID == -1 ? nullptr : registry.CreateObjectFromID(parentID, this, Vector3::zero, Vector3::zero, Vector3::one, "Empty Parent").transform;
 
 			for (int i = 0; i < entity["Transform"]["Children"].size(); i++) {
 
@@ -410,7 +411,7 @@ namespace Copper {
 
 				Light* l = deserialized.AddComponent<Light>();
 
-				l->color = Color::White();
+				l->color = Color::white;
 				l->intensity = 1.0f;
 				
 			}

@@ -7,24 +7,18 @@ namespace Copper {
 	struct SceneViewIterator {
 
 	public:
-		SceneViewIterator(Registry registry, std::bitset<maxComponents> cMask, bool all, int32_t index, int32_t endIndex)
+		SceneViewIterator(Registry* registry, std::bitset<maxComponents> cMask, bool all, int32_t index, int32_t endIndex)
 			: registry(registry), componentMask(cMask), all(all), index(index), endIndex(endIndex) {}
 
 		Object operator*() const {
 
-			return registry.GetObjectFromID(index);
-
-		}
-
-		bool operator==(const SceneViewIterator& other) const {
-
-			return index == other.index || index == registry.GetNumOfObjects();
+			return registry->GetObjectFromID(index);
 
 		}
 
 		bool operator!=(const SceneViewIterator& other) const {
 
-			return index != other.index && index != registry.GetNumOfObjects();
+			return index != other.index && ValidObject();
 
 		}
 
@@ -34,7 +28,7 @@ namespace Copper {
 
 				index++;
 
-			} while (index < endIndex && ((!all && componentMask != (componentMask & registry.GetObjectFromID(index).GetComponentMask())) || !registry.GetObjectFromID(index)));
+			} while (index < endIndex && !ValidObject());
 
 			return *this;
 
@@ -43,16 +37,22 @@ namespace Copper {
 	private:
 		int32_t index;
 		int32_t endIndex;
-		Registry registry;
+		Registry* registry;
 		std::bitset<maxComponents> componentMask;
 		bool all = false;
+
+		bool ValidObject() const {
+
+			return registry->GetObjectFromID(index) && (all || componentMask == (componentMask & registry->GetObjectFromID(index).GetComponentMask()));
+
+		}
 
 	};
 
 	template<typename ... Components> class SceneView {
 
 	public:
-		SceneView(Scene scene) : registry(scene.registry), endIndex((int32_t) registry.GetNumOfObjects()) {
+		SceneView(Scene* scene) : registry(&scene->registry), endIndex(registry->GetNumOfObjects()) {
 
 			if (sizeof...(Components) == 0) { all = true; } else {
 
@@ -66,10 +66,7 @@ namespace Copper {
 
 			}
 
-			while (beginIndex < registry.GetNumOfObjects() - 1 && (!registry.GetObjectFromID(beginIndex) || componentMask != (componentMask & registry.GetObjectFromID(beginIndex).GetComponentMask()))) { beginIndex++; }
-			/*while (endIndex >= 0 && endIndex > beginIndex && (!registry.GetObjectFromID(endIndex) || componentMask != (componentMask & registry.GetObjectFromID(endIndex).GetComponentMask()))) { endIndex--; }
-
-			endIndex++;*/
+			while (beginIndex < registry->GetNumOfObjects() - 1 && (!registry->GetObjectFromID(beginIndex) || componentMask != (componentMask & registry->GetObjectFromID(beginIndex).GetComponentMask()))) { beginIndex++; }
 
 		}
 
@@ -77,11 +74,11 @@ namespace Copper {
 		const SceneViewIterator end() const { return SceneViewIterator(registry, componentMask, all, endIndex, endIndex); }
 
 	private:
-		Registry registry = nullptr;
+		Registry* registry = nullptr;
 		std::bitset<maxComponents> componentMask;
 
-		int32_t beginIndex = 0;
-		int32_t endIndex;
+		int beginIndex = 0;
+		int endIndex;
 
 		bool all = false;
 

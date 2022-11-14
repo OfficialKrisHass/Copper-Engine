@@ -11,6 +11,8 @@
 
 #include "Engine/UI/ImGui.h"
 
+#include "Engine/Scripting/ScriptEngine.h"
+
 #include <ImGui/imgui.h>
 
 namespace Copper {
@@ -44,8 +46,10 @@ namespace Copper {
 		data.fbo = new FrameBuffer(data.windowSize);
 
 		Renderer::Initialize();
-		Renderer::SetShader(new Shader("assets/Shaders/vertexDefault.glsl", "assets/Shaders/fragmentDefault.glsl"));
+		ScriptEngine::Initialize();
 		UI::Initialize();
+		
+		Renderer::SetShader(new Shader("assets/Shaders/vertexDefault.glsl", "assets/Shaders/fragmentDefault.glsl"));
 
 		Log("Engine Succesfully Initialized");
 		Log("--------------------Engine Initialization\n");

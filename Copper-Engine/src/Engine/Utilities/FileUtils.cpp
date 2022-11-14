@@ -3,7 +3,7 @@
 
 namespace Copper::Utilities {
 
-	std::string ReadFile(std::string path) {
+	std::string ReadFile(std::string path, uint32_t* size) {
 
 		std::string ret;
 		std::ifstream file;

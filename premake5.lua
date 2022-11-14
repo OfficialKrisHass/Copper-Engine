@@ -42,15 +42,16 @@ project "Copper-Engine"
 
         "%{prj.name}/src",
 
-        "%{prj.name}/lib/spdlog",
         "%{prj.name}/lib/GLFW/include",
         "%{prj.name}/lib/GLAD/include",
         "%{prj.name}/lib/GLM/include",
         "%{prj.name}/lib/yaml-cpp/include",
         "%{prj.name}/lib/assimp/include",
         "%{prj.name}/lib/CopperECS/include",
+        "%{prj.name}/lib/mono/include",
+        "%{prj.name}/lib/spdlog",
         "%{prj.name}/lib/ImGui",
-        "%{prj.name}/lib/stb"
+        "%{prj.name}/lib/stb",
 
     }
 
@@ -61,7 +62,8 @@ project "Copper-Engine"
         "ImGui",
         "yaml-cpp",
         "assimp",
-        "opengl32.lib"
+        "%{prj.name}/lib/mono/bin/%{cfg.buildcfg}/mono-2.0-sgen.dll",
+        "opengl32.lib",
 
     }
 
@@ -132,7 +134,9 @@ project "Copper-Editor"
     links {
 
         "Copper-Engine",
-        "assimp"
+        "assimp",
+
+        "Copper-Engine/lib/mono/lib/%{cfg.buildcfg}/mono-2.0-sgen.lib",
 
     }
 
@@ -185,3 +189,26 @@ project "Copper-Editor"
             '/NODEFAULTLIB:"msvcrtd.lib"'
 
         }
+
+project "Script-Core"
+    location "Script-Core"
+    language "C#"
+    kind "SharedLib"
+    dotnetframework "4.8"
+
+    targetdir("Copper-Editor/assets/Scripts")
+    objdir("Copper-Editor/assets/Scripts/Int")
+
+    files {
+
+        "Source/**.cs"
+
+    }
+
+    filter "configurations:Debug"
+		optimize "Off"
+		symbols "Default"
+
+	filter "configurations:Release"
+		optimize "On"
+		symbols "Default"

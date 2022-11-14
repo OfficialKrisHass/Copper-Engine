@@ -1,0 +1,6 @@
+C:\Programming\Copper-Engine\Copper-Editor\assets\Scripts\Int\Debug\Script-Core.csproj.AssemblyReference.cache
+C:\Programming\Copper-Engine\Copper-Editor\assets\Scripts\Int\Debug\Script-Core.csproj.CoreCompileInputs.cache
+C:\Programming\Copper-Engine\Copper-Editor\assets\Scripts\Int\Debug\Script-Core.dll
+C:\Programming\Copper-Engine\Copper-Editor\assets\Scripts\Int\Debug\Script-Core.pdb
+C:\Programming\Copper-Engine\Copper-Editor\assets\Scripts\Script-Core.dll
+C:\Programming\Copper-Engine\Copper-Editor\assets\Scripts\Script-Core.pdb

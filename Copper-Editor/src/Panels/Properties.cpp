@@ -1,5 +1,7 @@
 #include "Properties.h"
 
+#include "Engine/Scripting/ScriptEngine.h"
+
 #include "Core/EditorApp.h"
 
 #include "Viewport/SceneCamera.h"
@@ -93,9 +95,24 @@ namespace Editor {
 
 		if(ImGui::BeginPopup("##AddComponent")) {
 				
-			if(ImGui::MenuItem("Light")) { selectedObj.AddComponent<Light>(); }
-			if(ImGui::MenuItem("Mesh Renderer")) { selectedObj.AddComponent<MeshRenderer>(); }
-			if(ImGui::MenuItem("Camera")) { selectedObj.AddComponent<Camera>(); }
+			if (ImGui::MenuItem("Light"))			{ selectedObj.AddComponent<Light>(); }
+			if (ImGui::MenuItem("Mesh Renderer"))	{ selectedObj.AddComponent<MeshRenderer>(); }
+			if (ImGui::MenuItem("Camera"))			{ selectedObj.AddComponent<Camera>(); }
+			
+			for (std::string script : ScriptEngine::GetScriptComponentNames()) {
+
+				std::string var = script;
+
+				std::string nameSpace = var.erase(script.find_last_of('.'));
+				std::string scriptName = script.substr(script.find_last_of('.') + 1);
+
+				if (ImGui::MenuItem(scriptName.c_str())) {
+
+					if (selectedObj.AddScriptComponent(nameSpace, scriptName) == nullptr) LogError("Could not Add the Script {0}", script);
+
+				}
+
+			}
 
 			ImGui::EndPopup();
 				

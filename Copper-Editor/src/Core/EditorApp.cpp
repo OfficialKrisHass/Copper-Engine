@@ -192,6 +192,7 @@ namespace Editor {
 
 	struct EditorData {
 		
+		EditorState state;
 		std::string title;
 
 		//Scene
@@ -201,6 +202,10 @@ namespace Editor {
 		//Viewport
 		UVector2I viewportSize;
 		bool canLookViewport;
+
+		//
+		Texture playIcon;
+		Texture stopIcon;
 		
 		//Panels
 		SceneHierarchy sceneHierarchy;
@@ -214,12 +219,19 @@ namespace Editor {
 
 	EditorData data;
 
+	void OnEditorRuntimeStart();
+	void OnEditorRuntimeUpdate();
+
 	void Initialize() {
 
 		Log("--------------------Editor Initialization");
 		Log("Editor Initialization Started!");
 
+		data.state = Edit;
 		data.viewportSize = UVector2I(1280, 720);
+
+		data.playIcon = Texture("assets/Icons/PlayButton.png");
+		data.stopIcon = Texture("assets/Icons/StopButton.png");
 
 		data.sceneHierarchy = SceneHierarchy();
 		data.properties = Properties();
@@ -243,6 +255,8 @@ namespace Editor {
 
 	void Run() {
 
+		if (data.state == Play) OnEditorRuntimeUpdate();
+
 	}
 
 	void UI() {
@@ -255,6 +269,34 @@ namespace Editor {
 		data.sceneHierarchy.UIRender();
 		data.properties.SetSelectedObject(data.sceneHierarchy.GetSelectedObject());
 		data.properties.UIRender();
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+
+		auto& colors = ImGui::GetStyle().Colors;
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(colors[ImGuiCol_ButtonHovered].x, colors[ImGuiCol_ButtonHovered].y, colors[ImGuiCol_ButtonHovered].z, 0.5f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(colors[ImGuiCol_ButtonActive].x, colors[ImGuiCol_ButtonActive].y, colors[ImGuiCol_ButtonActive].z, 0.5f));
+
+		ImGui::Begin("##ToolBar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+		ImVec2 buttonSize = ImVec2(25, 25);
+		ImGui::SetCursorPosX((ImGui::GetWindowSize().x - buttonSize.x) * 0.5f);
+
+		if (data.state == Edit) {
+
+			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t) data.playIcon.GetID()), buttonSize, {0, 1}, {1, 0})) OnEditorRuntimeStart();
+
+		} else if (data.state == Play) {
+
+			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t) data.stopIcon.GetID()), buttonSize, {0, 1}, {1, 0})) data.state = Edit;
+
+		}
+
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor(3);
+		ImGui::End();
 
 		ImGui::End(); //Dockspace
 
@@ -357,6 +399,18 @@ namespace Editor {
 		
 	}
 
+	void OnEditorRuntimeStart() {
+
+		data.state = Play;
+		data.scene.OnRuntimeStart();
+
+	}
+	void OnEditorRuntimeUpdate() {
+
+		data.scene.OnRuntimeUpdate();
+
+	}
+
 	void NewScene() {
 
 		data.scene = Scene();
@@ -365,7 +419,6 @@ namespace Editor {
 		LoadScene(&data.scene);
 		
 	}
-
 	void OpenScene() {
 
 		std::string path = Utilities::OpenDialog("Copper Scene (*.copper)\0*.copper\0");
@@ -435,6 +488,16 @@ namespace Editor {
 		
 	}
 
+	void SetChanges(bool value) {
+
+		data.changes = value;
+		data.title = "Copper Editor - TestProject: ";
+		data.title += data.scene.name;
+		data.title += '*';
+		Input::SetWindowTitle(data.title);
+		
+	}
+	
 	void ManualScene() {
 
 		data.scene = Scene();
@@ -481,14 +544,4 @@ namespace Editor {
 
 	}
 
-	void SetChanges(bool value) {
-
-		data.changes = value;
-		data.title = "Copper Editor - TestProject: ";
-		data.title += data.scene.name;
-		data.title += '*';
-		Input::SetWindowTitle(data.title);
-		
-	}
-	
 }

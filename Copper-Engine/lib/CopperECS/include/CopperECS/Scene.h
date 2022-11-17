@@ -26,6 +26,9 @@ namespace Copper {
 
 		void DestroyObject(Object& obj) { registry.DestroyObject(obj); }
 
+		void OnRuntimeStart();
+		void OnRuntimeUpdate();
+
 		void Update();
 
 		void Serialize(std::filesystem::path path);

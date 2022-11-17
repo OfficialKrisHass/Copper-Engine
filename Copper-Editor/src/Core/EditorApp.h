@@ -4,6 +4,12 @@
 
 namespace Editor {
 
+	enum EditorState {
+
+		Edit, Play
+
+	};
+
 	void Initialize();
 
 	void Run();

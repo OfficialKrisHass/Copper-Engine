@@ -204,6 +204,38 @@ namespace Copper {
 
 	}
 
+	void Scene::OnRuntimeStart() {
+
+		for (Object& o : SceneView<>(this)) {
+
+			if (registry.scripts.find(o.id) == registry.scripts.end()) continue;
+
+			for (int i = 0; i < registry.scripts[o.id].size(); i++) {
+
+				registry.scripts[o.id][i].OnCreate();
+
+			}
+
+		}
+
+	}
+
+	void Scene::OnRuntimeUpdate() {
+
+		for (Object& o : SceneView<>(this)) {
+
+			if (registry.scripts.find(o.id) == registry.scripts.end()) continue;
+
+			for (int i = 0; i < registry.scripts[o.id].size(); i++) {
+
+				registry.scripts[o.id][i].OnUpdate();
+
+			}
+
+		}
+
+	}
+
 	void Scene::Serialize(std::filesystem::path path) {
 
 		this->path = path;

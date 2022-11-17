@@ -190,18 +190,18 @@ project "Copper-Editor"
 
         }
 
-project "Script-Core"
-    location "Script-Core"
+project "Copper-ScriptingAPI"
+    location "Copper-ScriptingAPI"
     language "C#"
     kind "SharedLib"
     dotnetframework "4.8"
 
-    targetdir("Copper-Editor/assets/Scripts")
-    objdir("Copper-Editor/assets/Scripts/Int")
+    targetdir("Copper-Editor/assets/ScriptAPI")
+    objdir("Copper-Editor/assets/ScriptAPI/Int")
 
     files {
 
-        "Source/**.cs"
+        "%{prj.name}/Source/**.cs"
 
     }
 

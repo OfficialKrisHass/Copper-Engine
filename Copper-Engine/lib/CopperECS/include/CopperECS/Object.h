@@ -3,8 +3,7 @@
 #include <string>
 #include <bitset>
 
-//#include "Component.h"
-
+#include "Engine/Components/ScriptComponent.h"
 #include "Engine/Components/Transform.h"
 #include "Engine/Components/Tag.h"
 
@@ -36,6 +35,8 @@ namespace Copper {
 		template<typename T> T* GetComponent() { return scene->registry.GetComponent<T>(id); }
 		template<typename T> bool HasComponent() { return scene->registry.HasComponent<T>(id); }
 		template<typename T> void RemoveComponent() { scene->registry.RemoveComponent<T>(*this); }
+
+		ScriptComponent* AddScriptComponent(std::string nameSpace, std::string scriptName);
 
 		operator bool() const { return id != -1 && scene != nullptr; }
 		operator int32_t() const { return id; }

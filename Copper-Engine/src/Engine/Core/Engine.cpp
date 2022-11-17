@@ -46,8 +46,8 @@ namespace Copper {
 		data.fbo = new FrameBuffer(data.windowSize);
 
 		Renderer::Initialize();
-		ScriptEngine::Initialize();
 		UI::Initialize();
+		ScriptEngine::Initialize();
 		
 		Renderer::SetShader(new Shader("assets/Shaders/vertexDefault.glsl", "assets/Shaders/fragmentDefault.glsl"));
 
@@ -95,6 +95,8 @@ namespace Copper {
 		Log("Engine Entered the Shutdown");
 
 		UI::Shutdown();
+		ScriptEngine::Shutdown();
+
 		data.window->Shutdown();
 
 		Log("Engine Succesfully Shutdown");

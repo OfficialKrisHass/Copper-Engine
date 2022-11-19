@@ -9,10 +9,10 @@ namespace Copper {
 
 #ifdef CU_DEBUG
 
-	#define Log(...)		Copper::Logger::GetLogger()->info(__VA_ARGS__)
+	#define Log(...)		Copper::Logger::GetLogger()->trace(__VA_ARGS__)
 	#define LogWarn(...)	Copper::Logger::GetLogger()->warn(__VA_ARGS__)
-	#define LogTrace(...)	Copper::Logger::GetLogger()->trace(__VA_ARGS__)
 	#define LogError(...)	Copper::Logger::GetLogger()->error(__VA_ARGS__)
+	#define LogSuccess(...)	Copper::Logger::GetLogger()->info(__VA_ARGS__)
 
 #elif CU_RELEASE
 

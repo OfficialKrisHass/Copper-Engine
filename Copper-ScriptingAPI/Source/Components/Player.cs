@@ -4,21 +4,17 @@ namespace Copper {
 
     public class Player : Component {
 
-        public Player() {
-
-            Console.WriteLine("Constructor Called!");
-
-        }
+        public float speed = 0.001f;
 
         void OnCreate() {
 
-            Console.WriteLine("Start called!");
+            Editor.Log("Start called!!!");
 
         }
 
         void OnUpdate() {
 
-            Console.WriteLine("Update called!");
+            transform.position += new Vector3(speed, 0.0f, 0.0f);
 
         }
 
@@ -26,21 +22,15 @@ namespace Copper {
 
     public class Mesh : Component {
 
-        public Mesh() {
-
-            Console.WriteLine("Mesh-uh!");
-
-        }
-
         void OnCreate() {
 
-            Console.WriteLine("Start called! 1");
+            Editor.Log("Start called! 1");
 
         }
 
         void OnUpdate() {
 
-            Console.WriteLine("Update called! 1");
+            Editor.Log("Update called! 1");
 
         }
 

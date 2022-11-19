@@ -46,6 +46,8 @@ namespace Copper {
 
 		int32_t GetID() const { return id; }
 		std::bitset<maxComponents> GetComponentMask() const { return componentMask; }
+		ScriptComponent* GetScriptComponent(int index) const;
+		int GetNumOfScriptComponents() const;
 
 	public:
 		int32_t id = -1;

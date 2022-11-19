@@ -20,8 +20,6 @@ namespace Copper {
 		data.wResE = WindowResizeEvent(data.width, data.height);
 		data.wClsE = WindowCloseEvent();
 
-		Log("Creating Window {0}: Width {1}, Height {2}", data.title, data.width, data.height);
-
 		if (!glfwInit()) { LogError("Could not Initialize GLFW!"); }
 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);

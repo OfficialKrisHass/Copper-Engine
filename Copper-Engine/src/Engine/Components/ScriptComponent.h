@@ -4,8 +4,10 @@
 
 extern "C" {
 
+	typedef struct _MonoClass MonoClass;
 	typedef struct _MonoObject MonoObject;
 	typedef struct _MonoMethod MonoMethod;
+	typedef struct _MonoException MonoException;
 
 }
 
@@ -16,19 +18,24 @@ namespace Copper {
 	class ScriptComponent {
 
 	public:
+		ScriptComponent(std::string nameSpace, std::string name, MonoClass* klass) : nameSpace(nameSpace), scriptName(name), klass(klass) {}
 		ScriptComponent(std::string nameSpace, std::string name, Object& obj);
 
-		std::string name;
+		std::string nameSpace;
+		std::string scriptName;
+		MonoClass* klass;
 		bool valid;
 
 		void OnCreate();
 		void OnUpdate();
 
+		MonoObject* GetInstance() { return instance; }
+
 	private:
 		MonoObject* instance;
 
 		MonoMethod* onCreate;
-		MonoMethod* onUpdate;
+		void (*onUpdate) (MonoObject* obj, MonoException** exc);
 
 	};
 

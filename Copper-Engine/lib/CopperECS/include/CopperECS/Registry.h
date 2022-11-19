@@ -37,6 +37,7 @@ namespace Copper {
 	class Registry {
 
 		friend class Scene;
+		friend class Object;
 
 	public:
 		Object CreateObject(Scene* scene, Vector3 position, Vector3 rotation, Vector3 scale, std::string name) {

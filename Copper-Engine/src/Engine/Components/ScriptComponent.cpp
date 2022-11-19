@@ -9,14 +9,16 @@
 
 namespace Copper {
 
-	ScriptComponent::ScriptComponent(std::string nameSpace, std::string name, Object& obj) : name(nameSpace + '.' + name) {
+	ScriptComponent::ScriptComponent(std::string nameSpace, std::string scriptName, Object& obj) : nameSpace(nameSpace), scriptName(scriptName) {
 
-		instance = ScriptEngine::AddScriptComponent(obj, nameSpace, name);
+		instance = ScriptEngine::AddScriptComponent(obj, nameSpace, scriptName);
 		valid = instance ? true : false;
 
 		MonoClass* instanceClass = mono_object_get_class(instance);
 		onCreate = mono_class_get_method_from_name(instanceClass, "OnCreate", 0);
-		onUpdate = mono_class_get_method_from_name(instanceClass, "OnUpdate", 0);
+		MonoMethod* update = mono_class_get_method_from_name(instanceClass, "OnUpdate", 0);
+		onUpdate = (void (*) (MonoObject*, MonoException**)) mono_method_get_unmanaged_thunk(update);
+		//onUpdate = mono_class_get_method_from_name(instanceClass, "OnUpdate", 0);
 
 	}
 
@@ -33,8 +35,11 @@ namespace Copper {
 
 		if (!onUpdate) return;
 
-		MonoObject* exception = nullptr;
-		mono_runtime_invoke(onUpdate, instance, nullptr, &exception);
+		MonoException* exc;
+		onUpdate(instance, &exc);
+
+		/*MonoObject* exception = nullptr;
+		mono_runtime_invoke(onUpdate, instance, nullptr, &exception);*/
 
 	}
 

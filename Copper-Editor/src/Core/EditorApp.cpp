@@ -224,9 +224,6 @@ namespace Editor {
 
 	void Initialize() {
 
-		Log("--------------------Editor Initialization");
-		Log("Editor Initialization Started!");
-
 		data.state = Edit;
 		data.viewportSize = UVector2I(1280, 720);
 
@@ -247,9 +244,6 @@ namespace Editor {
 		data.title = "Copper Editor - TestProject: ";
 		data.title += data.scene.name;
 		Input::SetWindowTitle(data.title);
-
-		Log("Editor Succesfully Initialized");
-		Log("--------------------Editor Initialization\n");
 
 	}
 

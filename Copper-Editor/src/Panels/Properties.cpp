@@ -8,6 +8,8 @@
 
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_internal.h>
+#include <ImGui/misc/cpp/imgui_stdlib.h>
+
 #include <cstring>
 
 using namespace Copper;
@@ -22,7 +24,7 @@ namespace Editor {
 		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
 
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2 {4, 4});
-		ImGui::VerticalSeparator();
+		//ImGui::VerticalSeparator();
 
 		bool opened = ImGui::TreeNodeEx((void*) typeid(T).hash_code(), flags, name.c_str());
 
@@ -54,19 +56,122 @@ namespace Editor {
 		}
 
 		ImGui::SameLine();
+		ImGui::VerticalSeparator();
 
 		if(DrawComponent<Transform>("Transform")) {
 			
 			if (ShowVector3("Position:", selectedObj.GetComponent<Transform>()->position)) SetChanges(true);
 			if (ShowVector3("Rotation:", selectedObj.GetComponent<Transform>()->rotation, 0.1f)) SetChanges(true);
 			if (ShowVector3("Scale:", selectedObj.GetComponent<Transform>()->scale)) SetChanges(true);
+
+			ImGui::VerticalSeparator();
 			
 		}
 
-		if (ImGui::Button("Debug Position")) {
+		for (int i = 0; i < selectedObj.GetNumOfScriptComponents(); i++) {
 
-			Log("Global Position: {0}", selectedObj.transform->GlobalPosition());
-			Log("Local Position:  {0}", selectedObj.transform->position);
+			if (!DrawComponent<ScriptComponent>(selectedObj.GetScriptComponent(i)->scriptName)) continue;
+
+			std::unordered_map<std::string, std::vector<Variable>> fieldsAndProperties;
+			fieldsAndProperties = ScriptEngine::GetScriptFieldsAndProperties(selectedObj.GetScriptComponent(i)->nameSpace, selectedObj.GetScriptComponent(i)->scriptName);
+
+			for (Variable field : fieldsAndProperties["Fields"]) {
+
+				switch (field.varType) {
+
+					case VariableType::Int: {
+
+						int value;
+						field.GetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
+
+						if(ShowInt(field.name, value)) field.SetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
+						break;
+
+					}
+					case VariableType::UInt: {
+
+						unsigned int value;
+						field.GetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
+
+						if (ShowUInt(field.name, value)) field.SetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
+						break;
+
+					}
+					case VariableType::Float: {
+
+						float value;
+						field.GetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
+
+						if (ShowFloat(field.name, value)) field.SetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
+						break;
+
+					}
+					case VariableType::Double: {
+
+						double value;
+						field.GetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
+
+						if (ShowDouble(field.name, value, 1)) field.SetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
+						break;
+
+					}
+					case VariableType::String: {
+
+						std::string text = "Not Implemented yet!";
+						ShowString(field.name, text);
+
+						break;
+
+					}
+					case VariableType::Char: {
+
+						//This doesn't work :c
+						//
+						//For Some reason it tries to put more then one character into charValue
+						//
+						//Help :c
+
+						/*char charValue;
+						field.GetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &charValue);
+
+						if (ShowChar(field.name, charValue)) field.SetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &charValue);*/
+
+						std::string text = "Not Implemented yet!";
+						ShowString(field.name, text);
+
+						break;
+
+					}
+					case VariableType::Vector2: {
+
+						/*Vector2 value;
+						field.GetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
+
+						if (ShowVector2(field.name, value)) field.SetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);*/
+
+						std::string text = "Not Implemented yet!";
+						ShowString(field.name, text);
+
+						break;
+
+					}
+					case VariableType::Vector3: {
+
+						/*Vector3 value;
+						field.GetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
+
+						if (ShowVector3(field.name, value)) field.SetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);*/
+
+						std::string text = "Not Implemented yet!";
+						ShowString(field.name, text);
+
+						break;
+
+					}
+
+				}
+
+			}
 
 		}
 
@@ -99,16 +204,11 @@ namespace Editor {
 			if (ImGui::MenuItem("Mesh Renderer"))	{ selectedObj.AddComponent<MeshRenderer>(); }
 			if (ImGui::MenuItem("Camera"))			{ selectedObj.AddComponent<Camera>(); }
 			
-			for (std::string script : ScriptEngine::GetScriptComponentNames()) {
+			for (ScriptComponent script : ScriptEngine::GetScriptComponents()) {
 
-				std::string var = script;
+				if (ImGui::MenuItem(script.scriptName.c_str())) {
 
-				std::string nameSpace = var.erase(script.find_last_of('.'));
-				std::string scriptName = script.substr(script.find_last_of('.') + 1);
-
-				if (ImGui::MenuItem(scriptName.c_str())) {
-
-					if (selectedObj.AddScriptComponent(nameSpace, scriptName) == nullptr) LogError("Could not Add the Script {0}", script);
+					if (selectedObj.AddScriptComponent(script.nameSpace, script.scriptName) == nullptr) LogError("Could not Add the Script {0}", script.scriptName);
 
 				}
 
@@ -341,10 +441,22 @@ namespace Editor {
 		return ret;
 		
 	}
-	bool Properties::ShowInt(std::string name, int& show, bool uint) {
+	bool Properties::ShowInt(std::string name, int& show, int speed) {
 
-		return true;
+		bool ret = false;
+
+		if (ImGui::DragInt(name.c_str(), &show, speed)) ret = true;
+
+		return ret;
 		
+	}
+	bool Properties::ShowUInt(std::string name, unsigned int& show, int speed) {
+
+		std::string text = name + ": Not implemented yet!";
+		ImGui::Text(text.c_str());
+
+		return false;
+
 	}
 	bool Properties::ShowFloat(std::string name, float& show, float speed) {
 
@@ -355,6 +467,29 @@ namespace Editor {
 		return ret;
 		
 	}
+	bool Properties::ShowDouble(std::string name, double& show, float speed) {
 
+		std::string text = name + ": Not implemented yet!";
+		ImGui::Text(text.c_str());
+
+		return false;
+
+	}
+	bool Properties::ShowString(std::string name, std::string& show) {
+
+		std::string text = name + ": Not implemented yet!";
+		ImGui::Text(text.c_str());
+
+		return false;
+
+	}
+	bool Properties::ShowChar(std::string name, char& show) {
+
+		std::string text = name + ": Not implemented yet!";
+		ImGui::Text(text.c_str());
+
+		return false;
+
+	}
 	
 }

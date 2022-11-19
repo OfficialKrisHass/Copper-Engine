@@ -38,9 +38,6 @@ namespace Copper {
 
 		Logger::Initialize();
 
-		Log("--------------------Engine Initialization");
-		Log("Engine Initialiation started");
-
 		data.windowSize = UVector2I(1280, 720);
 		data.window = new Window(WindowData("Copper Engine", 1280, 720));
 		data.fbo = new FrameBuffer(data.windowSize);
@@ -51,15 +48,9 @@ namespace Copper {
 		
 		Renderer::SetShader(new Shader("assets/Shaders/vertexDefault.glsl", "assets/Shaders/fragmentDefault.glsl"));
 
-		Log("Engine Succesfully Initialized");
-		Log("--------------------Engine Initialization\n");
-
 	}
 
 	void Run() {
-
-		Log("--------------------Engine Run Loop");
-		Log("Engine Entered the Run Loop");
 
 		while (data.running) {
 
@@ -84,23 +75,14 @@ namespace Copper {
 
 		}
 
-		Log("Engine Succesfully Exited the Run Loop");
-		Log("--------------------Engine Run Loop\n");
-
 	}
 
 	void Shutdown() {
-
-		Log("--------------------Engine Shutdown");
-		Log("Engine Entered the Shutdown");
 
 		UI::Shutdown();
 		ScriptEngine::Shutdown();
 
 		data.window->Shutdown();
-
-		Log("Engine Succesfully Shutdown");
-		Log("--------------------Engine Shutdown\n");
 
 		//std::cin.get();
 

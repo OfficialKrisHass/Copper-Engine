@@ -1,56 +1,249 @@
 #include "cupch.h"
 #include "ScriptEngine.h"
 
+#include "Engine/Core/Engine.h"
+
 #include <CopperECS/CopperECS.h>
 
 #include <mono/jit/jit.h>
-
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/object.h>
+#include <mono/metadata/attrdefs.h>
 
+namespace Copper::Utils {
 
-namespace Copper::ScriptEngine {
+	enum class Accessibility : uint8_t {
 
-	namespace Utils {
+		None = 0,
+		Public = (1 << 0),
+		Private = (1 << 1)
 
-		char* ReadAssembly(std::string path, uint32_t* outSize) {
+	};
 
-			std::ifstream stream(path, std::ios::binary | std::ios::ate);
+	bool CheckMonoError(MonoError* error) {
 
-			if (!stream) { LogError("Failed to Read Assembly File.\nPath: {0}", path); return nullptr; }
+		bool hasError = !mono_error_ok(error);
+		if (hasError) {
 
-			std::streampos end = stream.tellg();
-			stream.seekg(0, std::ios::beg);
-			uint32_t size = end - stream.tellg();
+			unsigned short errorCode = mono_error_get_error_code(error);
+			const char* errorMessage = mono_error_get_message(error);
 
-			if (size == 0) { LogError("Assembly is empty.\nPath: {0}", path); return nullptr; }
+			LogError("Mono Error!\nCode: {0}\nError\n\n{1}", errorCode, errorMessage);
 
-			char* buffer = new char[size];
-			stream.read((char*) buffer, size);
-			stream.close();
-
-			*outSize = size;
-			return buffer;
+			mono_error_cleanup(error);
 
 		}
 
-		void LogAssemblyClasses(MonoAssembly* assembly) {
+		return hasError;
 
-			MonoImage* image = mono_assembly_get_image(assembly);
-			const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
-			int32_t numOfTypes = mono_table_info_get_rows(typeDefinitionsTable);
+	}
 
-			for (int i = 0; i < numOfTypes; i++) {
+	std::string MonoStringToString(MonoString* string) {
 
-				uint32_t cols[MONO_TYPEDEF_SIZE];
-				mono_metadata_decode_row(typeDefinitionsTable, i, cols, MONO_TYPEDEF_SIZE);
+		if (string == nullptr || mono_string_length(string) == 0) { LogError("MonoString is nullptr or empty"); return ""; }
 
-				const char* nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
-				const char* name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
+		MonoError error;
+		char* utf8 = mono_string_to_utf8_checked(string, &error);
+		if (CheckMonoError(&error)) return "";
 
-				Log("{0}.{1}", nameSpace, name);
+		std::string ret(utf8);
+		mono_free(utf8);
+
+		return ret;
+
+	}
+	MonoString* StringToMonoString(std::string string, MonoDomain* domain) {
+
+		if (string.size() == 0) { LogError("String is nullptr or empty!"); return nullptr; }
+
+		MonoString* ret = mono_string_new(domain, string.c_str());
+
+		return ret;
+
+	}
+
+	char* ReadAssembly(std::string path, uint32_t* outSize) {
+
+		std::ifstream stream(path, std::ios::binary | std::ios::ate);
+
+		if (!stream) { LogError("Failed to Read Assembly File.\nPath: {0}", path); return nullptr; }
+
+		std::streampos end = stream.tellg();
+		stream.seekg(0, std::ios::beg);
+		uint32_t size = end - stream.tellg();
+
+		if (size == 0) { LogError("Assembly is empty.\nPath: {0}", path); return nullptr; }
+
+		char* buffer = new char[size];
+		stream.read((char*) buffer, size);
+		stream.close();
+
+		*outSize = size;
+		return buffer;
+
+	}
+	void LogAssemblyClasses(MonoAssembly* assembly) {
+
+		MonoImage* image = mono_assembly_get_image(assembly);
+		const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
+		int32_t numOfTypes = mono_table_info_get_rows(typeDefinitionsTable);
+
+		for (int i = 0; i < numOfTypes; i++) {
+
+			uint32_t cols[MONO_TYPEDEF_SIZE];
+			mono_metadata_decode_row(typeDefinitionsTable, i, cols, MONO_TYPEDEF_SIZE);
+
+			const char* nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
+			const char* name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
+
+			Log("{0}.{1}", nameSpace, name);
+
+		}
+
+	}
+	void LogClassFieldsAndProperties(MonoClass* klass) {
+
+		void* iter = nullptr;
+		MonoClassField* field;
+		while (field = mono_class_get_fields(klass, &iter)) {
+
+			Log("Field: {0}", mono_field_get_name(field));
+
+		}
+
+		iter = nullptr;
+		MonoProperty* property;
+		while (property = mono_class_get_properties(klass, &iter)) {
+
+			Log("Property: {0}", mono_property_get_name(property));
+
+		}
+
+	}
+
+	uint8_t GetFieldAccssibility(MonoClassField* field) {
+
+		uint8_t ret = (uint8_t) Accessibility::None;
+		uint32_t flag = mono_field_get_flags(field) & MONO_FIELD_ATTR_FIELD_ACCESS_MASK;
+
+		switch (flag) {
+
+			case MONO_FIELD_ATTR_PRIVATE:
+			{
+
+				ret = (uint8_t) Accessibility::Private;
+				break;
 
 			}
+			case MONO_FIELD_ATTR_PUBLIC:
+			{
+
+				ret = (uint8_t) Accessibility::Public;
+				break;
+
+			}
+		}
+
+		return ret;
+
+	}
+	uint8_t GetPropertyAccessibility(MonoProperty* property) {
+
+		uint8_t ret = (uint8_t) Accessibility::None;
+
+		MonoMethod* getter = mono_property_get_get_method(property);
+		if (getter != nullptr) {
+
+			uint32_t flag = mono_method_get_flags(getter, nullptr) & MONO_METHOD_ATTR_ACCESS_MASK;
+
+			switch (flag) {
+
+				case MONO_FIELD_ATTR_PRIVATE:
+				{
+
+					ret = (uint8_t) Accessibility::Private;
+					break;
+
+				}
+				case MONO_FIELD_ATTR_PUBLIC:
+				{
+
+					ret = (uint8_t) Accessibility::Public;
+					break;
+
+				}
+
+			}
+
+		}
+
+		MonoMethod* setter = mono_property_get_set_method(property);
+		if (setter != nullptr) {
+
+			uint32_t accessFlag = mono_method_get_flags(setter, nullptr) & MONO_METHOD_ATTR_ACCESS_MASK;
+			if (accessFlag != MONO_FIELD_ATTR_PUBLIC) ret = (uint8_t) Accessibility::Private;
+
+		} else {
+
+			ret = (uint8_t) Accessibility::Private;
+
+		}
+
+		return ret;
+
+	}
+
+}
+
+namespace Copper::ScriptEngine {
+
+	namespace InternalFunctions {
+
+		static void InternalLog(MonoString* string) { Log(Utils::MonoStringToString(string)); }
+		static void InternalLogWarn(MonoString* string) { LogWarn(Utils::MonoStringToString(string)); }
+		static void InternalLogError(MonoString* string) { LogError(Utils::MonoStringToString(string)); }
+
+		static void InternalGetObject(int32_t id, Object* out) {
+
+			Scene* scene = GetScene();
+			*out = scene->registry.GetObjectFromID(id);
+
+		}
+
+		static void InternalTransformGetPosition(int32_t id, Vector3* out) {
+
+			Scene* scene = GetScene();
+			*out = scene->registry.GetObjectFromID(id).transform->position;
+
+		}
+		static void InternalTransformSetPosition(int32_t id, Vector3* value) {
+
+			Scene* scene = GetScene();
+			scene->registry.GetObjectFromID(id).transform->position = *value;
+
+		}
+		static void InternalTransformGetRotation(int32_t id, Vector3* out) {
+
+			Scene* scene = GetScene();
+			*out = scene->registry.GetObjectFromID(id).transform->rotation;
+
+		}
+		static void InternalTransformSetRotation(int32_t id, Vector3* value) {
+
+			Scene* scene = GetScene();
+			scene->registry.GetObjectFromID(id).transform->rotation = *value;
+
+		}
+		static void InternalTransformGetScale(int32_t id, Vector3* out) {
+
+			Scene* scene = GetScene();
+			*out = scene->registry.GetObjectFromID(id).transform->scale;
+
+		}
+		static void InternalTransformSetScale(int32_t id, Vector3* value) {
+
+			Scene* scene = GetScene();
+			scene->registry.GetObjectFromID(id).transform->scale = *value;
 
 		}
 
@@ -69,13 +262,16 @@ namespace Copper::ScriptEngine {
 		MonoClass* componentClass;
 
 		//List of the names of all Script Components
-		std::vector<std::string> scriptComponentNames;
+		std::vector<ScriptComponent> scriptComponents;
+		std::unordered_map<std::string, std::unordered_map<std::string, std::vector<Variable>>> scriptFieldAndProperties;
 
 	};
 
 	ScriptEngineData data;
 
 	void LoadScriptComponents();
+	void LoadScriptFieldAndProperties();
+	void InitInternalFunctions();
 
 	void InitMono();
 	void ShutdownMono();
@@ -100,48 +296,13 @@ namespace Copper::ScriptEngine {
 		//Cleanup
 		delete[] fileData;
 
-		//Load Scripts
 		data.componentClass = mono_class_from_name(image, "Copper", "Component");
+
+		//Utils::LogAssemblyClasses(data.APIAssembly);
+
 		LoadScriptComponents();
-
-		//mono_add_internal_call("Copper.InternalCalls::TestLog", TestLog);
-
-		//Get an Instance of our Class
-		MonoClass* klass = mono_class_from_name(image, "Copper", "Main");
-		if (!klass) { LogError("Failed to Get a Class Reference!"); return; }
-
-		MonoObject* instance = mono_object_new(data.app, klass);
-		if (!instance) { LogError("Failed to Create a class Instance!"); return; }
-
-		mono_runtime_object_init(instance);
-
-		//Call a parameterless Function
-		MonoClass* instanceClass = mono_object_get_class(instance);
-		MonoMethod* method = mono_class_get_method_from_name(instanceClass, "PrintMessage", 0);
-		if (!method) { LogError("Failed to get C# Method!"); return; }
-
-		MonoObject* exception = nullptr;
-		mono_runtime_invoke(method, instance, nullptr, &exception);
-
-		//Call a Function with a float parameter
-		method = mono_class_get_method_from_name(instanceClass, "PrintInt", 1);
-		if (!method) { LogError("Failed to get C# Method!"); return; }
-
-		exception = nullptr;
-
-		float test = 10.789f;
-		void* param = &test;
-
-		mono_runtime_invoke(method, instance, &param, &exception);
-
-		//Call a Function with a string parameter
-		MonoString* monoString = mono_string_new(data.app, "This A String made in C++");
-		method = mono_class_get_method_from_name(instanceClass, "PrintMessageCustom", 1);
-
-		exception = nullptr;
-		param = monoString;
-
-		mono_runtime_invoke(method, instance, &param, &exception);
+		LoadScriptFieldAndProperties();
+		InitInternalFunctions();
 
 	}
 	void Shutdown() {
@@ -188,15 +349,108 @@ namespace Copper::ScriptEngine {
 			if (script == data.componentClass) continue;
 			if (mono_class_is_subclass_of(script, data.componentClass, false)) {
 
-				std::string fullName;
-				if (strlen(nameSpace) != 0) fullName = fmt::format("{}.{}", nameSpace, name);
-				else fullName = name;
-
-				data.scriptComponentNames.push_back(fullName);
+				data.scriptComponents.push_back(ScriptComponent(nameSpace, name, script));
 
 			}
 
 		}
+
+	}
+	void LoadScriptFieldAndProperties() {
+
+		for (ScriptComponent script : data.scriptComponents) {
+
+			std::unordered_map<std::string, std::vector<Variable>> fieldAndProperties;
+
+			fieldAndProperties["Fields"] = std::vector<Variable>();
+			fieldAndProperties["Properties"] = std::vector<Variable>();
+
+			MonoImage* image = mono_assembly_get_image(data.APIAssembly);
+			MonoClass* scriptClass = mono_class_from_name(image, script.nameSpace.c_str(), script.scriptName.c_str());
+
+			void* iter = nullptr;
+			MonoClassField* field;
+			while (field = mono_class_get_fields(scriptClass, &iter)) {
+
+				if (Utils::GetFieldAccssibility(field) != (uint8_t) Utils::Accessibility::Public) continue;
+
+				fieldAndProperties["Fields"].push_back(Variable());
+				fieldAndProperties["Fields"].back().type = Type::Field;
+				fieldAndProperties["Fields"].back().name = mono_field_get_name(field);
+
+				MonoType* type = mono_field_get_type(field);
+				std::string typeName = mono_type_get_name(type);
+
+				VariableType varType = VariableType::None;
+				if (typeName == "System.Int32") varType = VariableType::Int;
+				else if (typeName == "System.UInt32") varType = VariableType::UInt;
+				else if (typeName == "System.Single") varType = VariableType::Float;
+				else if (typeName == "System.Double") varType = VariableType::Double;
+				else if (typeName == "System.String") varType = VariableType::String;
+				else if (typeName == "System.Char") varType = VariableType::Char;
+				else if (typeName == "Copper.Vector2") varType = VariableType::Vector2;
+				else if (typeName == "Copper.Vector3") varType = VariableType::Vector3;
+
+				fieldAndProperties["Fields"].back().varType = varType;
+				fieldAndProperties["Fields"].back().script = script.klass;
+
+				//Log("Field {0} Type: {1}", mono_field_get_name(field), mono_type_get_name(type));
+
+			}
+
+			iter = nullptr;
+			MonoProperty* property;
+			while (property = mono_class_get_properties(scriptClass, &iter)) {
+
+				if (Utils::GetPropertyAccessibility(property) != (uint8_t) Utils::Accessibility::Public) continue;
+
+				fieldAndProperties["Properties"].push_back(Variable());
+				fieldAndProperties["Properties"].back().type = Type::Property;
+				fieldAndProperties["Properties"].back().name = mono_property_get_name(property);
+
+				MonoMethod* getter = mono_property_get_get_method(property);
+				MonoMethodSignature* getterSignature = mono_method_get_signature(getter, 0, 0);
+				MonoType* type = mono_signature_get_return_type(getterSignature);
+				std::string typeName = mono_type_get_name(type);
+
+				VariableType varType = VariableType::None;
+				if (typeName == "System.Int32") varType = VariableType::Int;
+				else if (typeName == "System.UInt32") varType = VariableType::UInt;
+				else if (typeName == "System.Single") varType = VariableType::Float;
+				else if (typeName == "System.Double") varType = VariableType::Double;
+				else if (typeName == "System.String") varType = VariableType::String;
+				else if (typeName == "System.Char") varType = VariableType::Char;
+				else if (typeName == "Copper.Vector2") varType = VariableType::Vector2;
+				else if (typeName == "Copper.Vector3") varType = VariableType::Vector3;
+
+				fieldAndProperties["Properties"].back().varType = varType;
+
+				//Log("Property {0} Type: {1}", mono_property_get_name(property), mono_type_get_name(type));
+
+			}
+
+			data.scriptFieldAndProperties[script.nameSpace + '.' + script.scriptName] = fieldAndProperties;
+
+		}
+
+	}
+	void InitInternalFunctions() {
+
+		//Logging
+		mono_add_internal_call("Copper.InternalFunctions::Log", InternalFunctions::InternalLog);
+		mono_add_internal_call("Copper.InternalFunctions::LogWarn", InternalFunctions::InternalLogWarn);
+		mono_add_internal_call("Copper.InternalFunctions::LogError", InternalFunctions::InternalLogError);
+
+		//Object
+		mono_add_internal_call("Copper.InternalFunctions::GetObject", InternalFunctions::InternalGetObject);
+
+		//Transform
+		mono_add_internal_call("Copper.InternalFunctions::TransformGetPosition", InternalFunctions::InternalTransformGetPosition);
+		mono_add_internal_call("Copper.InternalFunctions::TransformSetPosition", InternalFunctions::InternalTransformSetPosition);
+		mono_add_internal_call("Copper.InternalFunctions::TransformGetRotation", InternalFunctions::InternalTransformGetRotation);
+		mono_add_internal_call("Copper.InternalFunctions::TransformSetRotation", InternalFunctions::InternalTransformSetRotation);
+		mono_add_internal_call("Copper.InternalFunctions::TransformGetScale", InternalFunctions::InternalTransformGetScale);
+		mono_add_internal_call("Copper.InternalFunctions::TransformSetScale", InternalFunctions::InternalTransformSetScale);
 
 	}
 
@@ -209,24 +463,81 @@ namespace Copper::ScriptEngine {
 
 		//Create a Class
 		MonoClass* script = mono_class_from_name(image, nameSpace.c_str(), scriptName.c_str());
-		if (!script) { LogError("Failed to Get a Class Reference!"); return false; }
+		if (!script) { LogError("Failed to Get a Class Reference!"); return nullptr; }
 
 		//Check if Class is a Component
 		bool isEntity = mono_class_is_subclass_of(script, data.componentClass, false);
-		if (!isEntity) { LogError("Script {0}.{1} isn't a Component!", nameSpace, scriptName); return false; }
+		if (!isEntity) { LogError("Script {0}.{1} isn't a Component!", nameSpace, scriptName); return nullptr; }
 
 		//Instantiate Class
 		MonoObject* instance = mono_object_new(data.app, script);
-		if (!instance) { LogError("Failed to Create a class Instance!"); return false; }
+		if (!instance) { LogError("Failed to Create a class Instance!"); return nullptr; }
 
 		//Call the Constructor
 		mono_runtime_object_init(instance);
+
+		MonoMethod* method = mono_class_get_method_from_name(data.componentClass, ".ctor", 1);
+		if (!method) { LogError("Failed to get Component Constructor!"); return instance; }
+
+		void* param = &obj.id;
+
+		MonoObject* exception = nullptr;
+		mono_runtime_invoke(method, instance, &param , &exception);
 
 		return instance;
 
 	}
 
-	std::vector<std::string> GetScriptComponentNames() {
-		return data.scriptComponentNames; }
+	std::vector<ScriptComponent> GetScriptComponents() { return data.scriptComponents; }
+	std::unordered_map<std::string, std::vector<Variable>> GetScriptFieldsAndProperties(std::string nameSpace, std::string name) { return data.scriptFieldAndProperties[nameSpace + '.' + name]; }
+
+}
+
+namespace Copper {
+
+	void Variable::GetValue(MonoObject* instance, void* out) {
+
+		switch (type) {
+
+			case Type::Field: {
+
+				MonoClassField* field = mono_class_get_field_from_name(script, name.c_str());
+				mono_field_get_value(instance, field, out);
+
+				break;
+
+			}
+			case Type::Property: {
+
+				MonoProperty* property = mono_class_get_property_from_name(script, name.c_str());
+				out = mono_property_get_value(property, instance, nullptr, nullptr);
+
+			}
+
+		}
+
+	}
+	void Variable::SetValue(MonoObject* instance, void* value) {
+
+		switch (type) {
+
+			case Type::Field: {
+
+				MonoClassField* field = mono_class_get_field_from_name(script, name.c_str());
+				mono_field_set_value(instance, field, value);
+				break;
+
+			}
+			case Type::Property: {
+
+				MonoProperty* property = mono_class_get_property_from_name(script, name.c_str());
+				mono_property_set_value(property, instance, &value, nullptr);
+				break;
+
+			}
+
+		}
+
+	}
 
 }

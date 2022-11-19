@@ -26,6 +26,8 @@
 -Added onUpdate to ScriptComponent.h a MonoMethod* to the scripts OnUpdate function (private)
 
 -Added APIAssembly to ScriptEngineData a MonoAssembly* to the ScriptinAPI assembly
+-Added componentClass to ScriptEngineData a MonoClass* to the C# Component class
+-Added scriptComponentNames to ScriptEnginedata a vector<string> of all of the C# component names
 
 -Added OnEditorRuntimeStart to EditorApp.cpp gets called when the Play Button is pressed
 -Added OnEditorRuntimeUpdate to EditorApp.cpp gets called each frame if the EditorState is Play
@@ -40,3 +42,7 @@
 
 -Added AddScriptComponent to ScriptEngine.h Creates the C# component specified and calls it's constructor
 -Added GetScriptComponentNames to ScriptEngine.h returns a vector of the names of all C# components
+
+-Added LoadScriptComponents to ScriptEngine.cpp a function that populates data.scriptComponentNames
+
+-Removed Most of logs, the console should now log only errors or debug stuff

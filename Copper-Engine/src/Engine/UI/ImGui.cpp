@@ -1,6 +1,8 @@
 #include "cupch.h"
 #include "ImGui.h"
 
+#include "Engine/Core/Engine.h"
+
 #define IMGUI_IMPL_OPENGL_LOADER_GLAD
 #include <ImGui/examples/imgui_impl_opengl3.cpp>
 #include <ImGui/examples/imgui_impl_glfw.cpp>
@@ -9,7 +11,7 @@
 #include <ImGui/examples/imgui_impl_opengl3.h>
 #include <ImGui/examples/imgui_impl_glfw.h>
 
-#include "Engine/Core/Engine.h"
+#include <ImGuizmo/ImGuizmo.h>
 
 namespace Copper::UI {
 
@@ -87,6 +89,7 @@ namespace Copper::UI {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
+		ImGuizmo::BeginFrame();
 
 		static bool test = true;
 		//ImGui::ShowDemoWindow(&test);

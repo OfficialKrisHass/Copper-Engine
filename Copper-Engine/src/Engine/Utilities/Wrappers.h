@@ -125,6 +125,7 @@ namespace Copper {
 	struct Vector3 {
 
 		Vector3() = default;
+		Vector3(glm::vec3 vec) : x(vec.x), y(vec.y), z(vec.z) {}
 		Vector3(float all) : x(all), y(all), z(all) {}
 		Vector3(float x, float y, float z) : x(x), y(y), z(z) {}
 

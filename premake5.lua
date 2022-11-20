@@ -36,6 +36,9 @@ project "Copper-Engine"
         "%{prj.name}/lib/CopperECS/include/CopperECS/**.h",
         "%{prj.name}/lib/stb/stb/stb_image.cpp",
 
+        "%{prj.name}/lib/ImGuizmo/ImGuizmo/ImGuizmo.h",
+        "%{prj.name}/lib/ImGuizmo/ImGuizmo/ImGuizmo.cpp",
+
     }
 
     includedirs {
@@ -51,6 +54,7 @@ project "Copper-Engine"
         "%{prj.name}/lib/mono/include",
         "%{prj.name}/lib/spdlog",
         "%{prj.name}/lib/ImGui",
+        "%{prj.name}/lib/ImGuizmo",
         "%{prj.name}/lib/stb",
 
     }
@@ -70,9 +74,13 @@ project "Copper-Engine"
     defines {
 
         "CU_ENGINE",
-        "_CRT_SECURE_NO_WARNINGS"
+        "_CRT_SECURE_NO_WARNINGS",
+        "GLM_ENABLE_EXPERIMENTAL"
 
     }
+
+    filter "files:Copper-Engine/lib/ImGuizmo/ImGuizmo/**.cpp"
+        flags { "NoPCH" }
 
     filter "system:windows"
         systemversion "latest"
@@ -80,7 +88,6 @@ project "Copper-Engine"
         defines {
 
             "CU_WINDOWS",
-            "GLM_ENABLE_EXPERIMENTAL"
 
         }
 
@@ -125,6 +132,8 @@ project "Copper-Editor"
         "Copper-Engine/src",
         "Copper-Engine/lib/spdlog",
         "Copper-Engine/lib/ImGui",
+        "Copper-Engine/lib/ImGuizmo",
+        
         "Copper-Engine/lib/GLM/include",
         "Copper-Engine/lib/assimp/include",
         "Copper-Engine/lib/CopperECS/include",

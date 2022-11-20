@@ -2,6 +2,8 @@
 
 #include "Engine/Renderer/FrameBuffer.h"
 
+#include "Engine/Utilities/Math.h"
+
 #include "Panels/SceneHierarchy.h"
 #include "Panels/Properties.h"
 #include "Panels/FileBrowser.h"
@@ -10,7 +12,10 @@
 
 #include "Core/Utils/ModelLoader.h"
 
+#include <GLM/gtc/type_ptr.hpp>
+
 #include <ImGui/imgui.h>
+#include <ImGuizmo/ImGuizmo.h>
 
 #pragma region EntryPoint
 #include <Engine/Core/Entry.h>
@@ -194,6 +199,7 @@ namespace Editor {
 		
 		EditorState state;
 		std::string title;
+		int gizmoType = -1;
 
 		//Scene
 		Scene scene;
@@ -226,6 +232,7 @@ namespace Editor {
 
 		data.state = Edit;
 		data.viewportSize = UVector2I(1280, 720);
+		data.gizmoType = ImGuizmo::TRANSLATE;
 
 		data.playIcon = Texture("assets/Icons/PlayButton.png");
 		data.stopIcon = Texture("assets/Icons/StopButton.png");
@@ -237,6 +244,7 @@ namespace Editor {
 		data.sceneCam = SceneCamera(data.viewportSize);
 		data.sceneCam.transform = new Transform(Vector3(0.0f, 0.0f, 1.0f), Vector3::zero, Vector3::one);
 		data.sceneCam.transform->position.z = 1.0f;
+		data.sceneCam.transform->parent = nullptr;
 		
 		//ManualScene();
 		OpenScene("assets/TestProject/Scenes/Default.copper");
@@ -250,6 +258,10 @@ namespace Editor {
 	void Run() {
 
 		if (data.state == Play) OnEditorRuntimeUpdate();
+
+		if (Input::IsKey(Input::Q)) data.gizmoType = ImGuizmo::TRANSLATE;
+		else if (Input::IsKey(Input::W)) data.gizmoType = ImGuizmo::ROTATE;
+		else if (Input::IsKey(Input::E)) data.gizmoType = ImGuizmo::SCALE; 
 
 	}
 
@@ -355,6 +367,52 @@ namespace Editor {
 		SetWindowSize(data.viewportSize);
 		
 		ImGui::Image(reinterpret_cast<void*>((uint64_t) GetFBOTexture()), windowSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+
+		//Gizmos that I stol... I mean, taken inspiration from The Chernos Game Engine series
+		//Yeah, I definitely didn't copy this entire chunk of code that I don't understand but
+		//magically works, naaah.
+		Object selectedObj = data.sceneHierarchy.GetSelectedObject();
+		if (selectedObj) {
+
+			ImGuizmo::SetOrthographic(false);
+			ImGuizmo::SetDrawlist();
+
+			float wWidth = (float) ImGui::GetWindowWidth();
+			float wHeight = (float) ImGui::GetWindowHeight();
+			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, wWidth, wHeight);
+
+			const glm::mat4& cameraProjection = data.sceneCam.CreateProjectionMatrix();
+			glm::mat4 cameraView = data.sceneCam.CreateViewMatrix();
+			glm::mat4 transform = selectedObj.transform->CreateMatrix();
+
+			// Snapping
+			bool snap = Input::IsKey(Input::LeftControl);
+			float snapValue = 0.5f;
+			if (data.gizmoType == ImGuizmo::OPERATION::ROTATE) snapValue = 45.0f;
+
+			float snapValues[3] = {snapValue, snapValue, snapValue};
+
+			ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
+								 (ImGuizmo::OPERATION) data.gizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
+								 nullptr, snap ? snapValues : nullptr);
+
+			if (ImGuizmo::IsUsing()) {
+
+				glm::vec3 position, rotation, scale;
+
+				Math::DecomposeTransform(transform, position, rotation, scale);
+
+				glm::vec3 deltaRotation = rotation - (glm::vec3) selectedObj.transform->rotation;
+				selectedObj.transform->position = position;
+				selectedObj.transform->rotation += deltaRotation;
+				selectedObj.transform->scale = scale;
+
+				//The rotation doesn't work for some reason, it keeps wiggling around
+				//Unfortunately I'm dum dum so this is what you get :) uwu
+
+			}
+
+		}
 
 		data.canLookViewport = ImGui::IsItemHovered();
 		data.sceneCam.SetCanLook(data.canLookViewport);

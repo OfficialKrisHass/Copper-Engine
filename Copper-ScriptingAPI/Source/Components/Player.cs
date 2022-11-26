@@ -5,6 +5,9 @@ namespace Copper {
     public class Player : Component {
 
         public float speed = 0.001f;
+        public float test = 69.420f;
+        public int id = -1;
+        public uint unsigned = 6;
 
         void OnCreate() {
 
@@ -21,6 +24,9 @@ namespace Copper {
     }
 
     public class Mesh : Component {
+
+        public float color;
+        public uint numOfVertices = 25;
 
         void OnCreate() {
 

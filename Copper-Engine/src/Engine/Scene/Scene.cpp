@@ -341,9 +341,76 @@ namespace Copper {
 				out << YAML::EndMap;
 				
 			}
+			out << YAML::EndMap; //Components
+
+			//Scripts
+			out << YAML::Key << "Scripts";
+			out << YAML::Value << YAML::BeginMap;
+
+			for (int i = 0; i < o.GetNumOfScriptComponents(); i++) {
+
+				ScriptComponent* script = o.GetScriptComponent(i);
+
+				out << YAML::Key << script->scriptName << YAML::Value << YAML::BeginMap; //Script
+
+				out << YAML::Key << "Namespace" << YAML::Value << script->nameSpace;
+				out << YAML::Key << "Fields" << YAML::Value << YAML::BeginMap; //Fields
+
+				std::unordered_map<std::string, std::vector<Variable>> scriptFieldsAndProperties = ScriptEngine::GetScriptFieldsAndProperties(script->nameSpace, script->scriptName);
+
+				for (Variable field : scriptFieldsAndProperties["Fields"]) {
+
+					out << YAML::Key << field.name << YAML::Value << YAML::BeginMap; //Field
+
+					out << YAML::Key << "Variable Type" << YAML::Value << ScriptEngine::Utils::VariableTypeToString(field.varType);
+
+					switch (field.varType) {
+
+						case VariableType::Int: {
+
+							int value;
+							field.GetValue(script->GetInstance(), &value);
+
+							out << YAML::Key << "Value" << YAML::Value << value;
+							break;
+
+						}
+						case VariableType::UInt: {
+
+							unsigned int value;
+							field.GetValue(script->GetInstance(), &value);
+
+							out << YAML::Key << "Value" << YAML::Value << value;
+							break;
+
+						}
+						case VariableType::Float: {
+
+							float value;
+							field.GetValue(script->GetInstance(), &value);
+
+							out << YAML::Key << "Value" << YAML::Value << value;
+							break;
+
+						}
+
+					}
+
+					std::string test = "Test String";
+					out << YAML::Key << "Test" << YAML::Value << test;
+
+					out << YAML::EndMap; //Field
+
+				}
+
+				out << YAML::EndMap; //Fiekds
+				out << YAML::EndMap; //Script
+
+			}
 
 			out << YAML::EndMap;
-			out << YAML::EndMap;
+
+			out << YAML::EndMap; //Object
 			
 		}
 
@@ -447,7 +514,55 @@ namespace Copper {
 				l->intensity = 1.0f;
 				
 			}
-			
+
+			YAML::Node scripts = entity["Scripts"];
+			for (YAML::const_iterator it = scripts.begin(); it != scripts.end(); ++it) {
+
+				YAML::Node script = it->second;
+				std::string scriptName = it->first.as<std::string>();
+				std::string nameSpace = script["Namespace"].as<std::string>();
+				
+				ScriptComponent* s = deserialized.AddScriptComponent(nameSpace, scriptName);
+
+				std::unordered_map<std::string, std::vector<Variable>> fieldsAndProperties = ScriptEngine::GetScriptFieldsAndProperties(nameSpace, scriptName);
+
+				for (Variable field : fieldsAndProperties["Fields"]) {
+
+					YAML::Node fieldNode = script["Fields"][field.name];
+
+					switch (field.varType) {
+
+						case VariableType::Int: {
+
+							int32_t value = fieldNode["Value"].as<int32_t>();
+							field.SetValue(s->GetInstance(), &value);
+
+							break;
+
+						}
+						case VariableType::UInt: {
+
+							unsigned int value = fieldNode["Value"].as<unsigned int>();
+							field.SetValue(s->GetInstance(), &value);
+
+							break;
+
+						}
+						case VariableType::Float: {
+
+							float value = fieldNode["Value"].as<float>();
+							field.SetValue(s->GetInstance(), &value);
+
+							break;
+
+						}
+
+					}
+
+				}
+
+			}
+
 		}
 
 		return true;

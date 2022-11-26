@@ -17,6 +17,12 @@ extern "C" {
 
 namespace Copper::ScriptEngine {
 
+	namespace Utils {
+
+		std::string VariableTypeToString(VariableType type);
+
+	}
+
 	void Initialize();
 	void Shutdown();
 

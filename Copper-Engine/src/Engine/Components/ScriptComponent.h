@@ -2,6 +2,8 @@
 
 #include "Engine/Core/Core.h"
 
+#include "Engine/Scripting/Variable.h"
+
 extern "C" {
 
 	typedef struct _MonoClass MonoClass;

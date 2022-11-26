@@ -10,151 +10,140 @@
 #include <mono/metadata/object.h>
 #include <mono/metadata/attrdefs.h>
 
-namespace Copper::Utils {
+namespace Copper::ScriptEngine {
 
-	enum class Accessibility : uint8_t {
+	namespace Utils {
 
-		None = 0,
-		Public = (1 << 0),
-		Private = (1 << 1)
+		enum class Accessibility : uint8_t {
 
-	};
+			None = 0,
+			Public = (1 << 0),
+			Private = (1 << 1)
 
-	bool CheckMonoError(MonoError* error) {
+		};
 
-		bool hasError = !mono_error_ok(error);
-		if (hasError) {
+		bool CheckMonoError(MonoError* error) {
 
-			unsigned short errorCode = mono_error_get_error_code(error);
-			const char* errorMessage = mono_error_get_message(error);
+			bool hasError = !mono_error_ok(error);
+			if (hasError) {
 
-			LogError("Mono Error!\nCode: {0}\nError\n\n{1}", errorCode, errorMessage);
+				unsigned short errorCode = mono_error_get_error_code(error);
+				const char* errorMessage = mono_error_get_message(error);
 
-			mono_error_cleanup(error);
+				LogError("Mono Error!\nCode: {0}\nError\n\n{1}", errorCode, errorMessage);
 
-		}
-
-		return hasError;
-
-	}
-
-	std::string MonoStringToString(MonoString* string) {
-
-		if (string == nullptr || mono_string_length(string) == 0) { LogError("MonoString is nullptr or empty"); return ""; }
-
-		MonoError error;
-		char* utf8 = mono_string_to_utf8_checked(string, &error);
-		if (CheckMonoError(&error)) return "";
-
-		std::string ret(utf8);
-		mono_free(utf8);
-
-		return ret;
-
-	}
-	MonoString* StringToMonoString(std::string string, MonoDomain* domain) {
-
-		if (string.size() == 0) { LogError("String is nullptr or empty!"); return nullptr; }
-
-		MonoString* ret = mono_string_new(domain, string.c_str());
-
-		return ret;
-
-	}
-
-	char* ReadAssembly(std::string path, uint32_t* outSize) {
-
-		std::ifstream stream(path, std::ios::binary | std::ios::ate);
-
-		if (!stream) { LogError("Failed to Read Assembly File.\nPath: {0}", path); return nullptr; }
-
-		std::streampos end = stream.tellg();
-		stream.seekg(0, std::ios::beg);
-		uint32_t size = end - stream.tellg();
-
-		if (size == 0) { LogError("Assembly is empty.\nPath: {0}", path); return nullptr; }
-
-		char* buffer = new char[size];
-		stream.read((char*) buffer, size);
-		stream.close();
-
-		*outSize = size;
-		return buffer;
-
-	}
-	void LogAssemblyClasses(MonoAssembly* assembly) {
-
-		MonoImage* image = mono_assembly_get_image(assembly);
-		const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
-		int32_t numOfTypes = mono_table_info_get_rows(typeDefinitionsTable);
-
-		for (int i = 0; i < numOfTypes; i++) {
-
-			uint32_t cols[MONO_TYPEDEF_SIZE];
-			mono_metadata_decode_row(typeDefinitionsTable, i, cols, MONO_TYPEDEF_SIZE);
-
-			const char* nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
-			const char* name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
-
-			Log("{0}.{1}", nameSpace, name);
-
-		}
-
-	}
-	void LogClassFieldsAndProperties(MonoClass* klass) {
-
-		void* iter = nullptr;
-		MonoClassField* field;
-		while (field = mono_class_get_fields(klass, &iter)) {
-
-			Log("Field: {0}", mono_field_get_name(field));
-
-		}
-
-		iter = nullptr;
-		MonoProperty* property;
-		while (property = mono_class_get_properties(klass, &iter)) {
-
-			Log("Property: {0}", mono_property_get_name(property));
-
-		}
-
-	}
-
-	uint8_t GetFieldAccssibility(MonoClassField* field) {
-
-		uint8_t ret = (uint8_t) Accessibility::None;
-		uint32_t flag = mono_field_get_flags(field) & MONO_FIELD_ATTR_FIELD_ACCESS_MASK;
-
-		switch (flag) {
-
-			case MONO_FIELD_ATTR_PRIVATE:
-			{
-
-				ret = (uint8_t) Accessibility::Private;
-				break;
+				mono_error_cleanup(error);
 
 			}
-			case MONO_FIELD_ATTR_PUBLIC:
-			{
 
-				ret = (uint8_t) Accessibility::Public;
-				break;
+			return hasError;
 
-			}
 		}
 
-		return ret;
+		std::string MonoStringToString(MonoString* string) {
 
-	}
-	uint8_t GetPropertyAccessibility(MonoProperty* property) {
+			if (string == nullptr || mono_string_length(string) == 0) { LogError("MonoString is nullptr or empty"); return ""; }
 
-		uint8_t ret = (uint8_t) Accessibility::None;
+			MonoError error;
+			char* utf8 = mono_string_to_utf8_checked(string, &error);
+			if (CheckMonoError(&error)) return "";
 
-		MonoMethod* getter = mono_property_get_get_method(property);
-		if (getter != nullptr) {
+			std::string ret(utf8);
+			mono_free(utf8);
 
-			uint32_t flag = mono_method_get_flags(getter, nullptr) & MONO_METHOD_ATTR_ACCESS_MASK;
+			return ret;
+
+		}
+		MonoString* StringToMonoString(std::string string, MonoDomain* domain) {
+
+			if (string.size() == 0) { LogError("String is nullptr or empty!"); return nullptr; }
+
+			MonoString* ret = mono_string_new(domain, string.c_str());
+
+			return ret;
+
+		}
+
+		std::string VariableTypeToString(VariableType type) {
+
+			switch (type) {
+
+				case VariableType::Int: { return "Int"; break; }
+				case VariableType::UInt: { return "Unsigned Int"; break; }
+				case VariableType::Float: { return "Float"; break; }
+				case VariableType::Double: { return "Double"; break; }
+				case VariableType::String: { return "String"; break; }
+				case VariableType::Char: { return "Char"; break; }
+				case VariableType::Vector2: { return "Vector2"; break; }
+				case VariableType::Vector3: { return "Vector3"; break; }
+
+			}
+
+		}
+
+		char* ReadAssembly(std::string path, uint32_t* outSize) {
+
+			std::ifstream stream(path, std::ios::binary | std::ios::ate);
+
+			if (!stream) { LogError("Failed to Read Assembly File.\nPath: {0}", path); return nullptr; }
+
+			std::streampos end = stream.tellg();
+			stream.seekg(0, std::ios::beg);
+			uint32_t size = end - stream.tellg();
+
+			if (size == 0) { LogError("Assembly is empty.\nPath: {0}", path); return nullptr; }
+
+			char* buffer = new char[size];
+			stream.read((char*) buffer, size);
+			stream.close();
+
+			*outSize = size;
+			return buffer;
+
+		}
+		void LogAssemblyClasses(MonoAssembly* assembly) {
+
+			MonoImage* image = mono_assembly_get_image(assembly);
+			const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
+			int32_t numOfTypes = mono_table_info_get_rows(typeDefinitionsTable);
+
+			for (int i = 0; i < numOfTypes; i++) {
+
+				uint32_t cols[MONO_TYPEDEF_SIZE];
+				mono_metadata_decode_row(typeDefinitionsTable, i, cols, MONO_TYPEDEF_SIZE);
+
+				const char* nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
+				const char* name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
+
+				Log("{0}.{1}", nameSpace, name);
+
+			}
+
+		}
+		void LogClassFieldsAndProperties(MonoClass* klass) {
+
+			void* iter = nullptr;
+			MonoClassField* field;
+			while (field = mono_class_get_fields(klass, &iter)) {
+
+				Log("Field: {0}", mono_field_get_name(field));
+
+			}
+
+			iter = nullptr;
+			MonoProperty* property;
+			while (property = mono_class_get_properties(klass, &iter)) {
+
+				Log("Property: {0}", mono_property_get_name(property));
+
+			}
+
+		}
+
+		uint8_t GetFieldAccssibility(MonoClassField* field) {
+
+			uint8_t ret = (uint8_t) Accessibility::None;
+			uint32_t flag = mono_field_get_flags(field) & MONO_FIELD_ATTR_FIELD_ACCESS_MASK;
 
 			switch (flag) {
 
@@ -172,30 +161,58 @@ namespace Copper::Utils {
 					break;
 
 				}
+			}
+
+			return ret;
+
+		}
+		uint8_t GetPropertyAccessibility(MonoProperty* property) {
+
+			uint8_t ret = (uint8_t) Accessibility::None;
+
+			MonoMethod* getter = mono_property_get_get_method(property);
+			if (getter != nullptr) {
+
+				uint32_t flag = mono_method_get_flags(getter, nullptr) & MONO_METHOD_ATTR_ACCESS_MASK;
+
+				switch (flag) {
+
+					case MONO_FIELD_ATTR_PRIVATE:
+					{
+
+						ret = (uint8_t) Accessibility::Private;
+						break;
+
+					}
+					case MONO_FIELD_ATTR_PUBLIC:
+					{
+
+						ret = (uint8_t) Accessibility::Public;
+						break;
+
+					}
+
+				}
 
 			}
 
+			MonoMethod* setter = mono_property_get_set_method(property);
+			if (setter != nullptr) {
+
+				uint32_t accessFlag = mono_method_get_flags(setter, nullptr) & MONO_METHOD_ATTR_ACCESS_MASK;
+				if (accessFlag != MONO_FIELD_ATTR_PUBLIC) ret = (uint8_t) Accessibility::Private;
+
+			} else {
+
+				ret = (uint8_t) Accessibility::Private;
+
+			}
+
+			return ret;
+
 		}
-
-		MonoMethod* setter = mono_property_get_set_method(property);
-		if (setter != nullptr) {
-
-			uint32_t accessFlag = mono_method_get_flags(setter, nullptr) & MONO_METHOD_ATTR_ACCESS_MASK;
-			if (accessFlag != MONO_FIELD_ATTR_PUBLIC) ret = (uint8_t) Accessibility::Private;
-
-		} else {
-
-			ret = (uint8_t) Accessibility::Private;
-
-		}
-
-		return ret;
 
 	}
-
-}
-
-namespace Copper::ScriptEngine {
 
 	namespace InternalFunctions {
 

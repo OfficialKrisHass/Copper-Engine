@@ -38,9 +38,6 @@ namespace Copper {
 		MonoException* exc;
 		onUpdate(instance, &exc);
 
-		/*MonoObject* exception = nullptr;
-		mono_runtime_invoke(onUpdate, instance, nullptr, &exception);*/
-
 	}
 
 }

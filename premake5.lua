@@ -135,7 +135,9 @@ project "Copper-Editor"
         "Copper-Engine/lib/ImGuizmo",
         
         "Copper-Engine/lib/GLM/include",
+        "Copper-Engine/lib/yaml-cpp/include",
         "Copper-Engine/lib/assimp/include",
+        
         "Copper-Engine/lib/CopperECS/include",
 
     }
@@ -143,6 +145,7 @@ project "Copper-Editor"
     links {
 
         "Copper-Engine",
+        "yaml-cpp",
         "assimp",
 
         "Copper-Engine/lib/mono/lib/%{cfg.buildcfg}/mono-2.0-sgen.lib",

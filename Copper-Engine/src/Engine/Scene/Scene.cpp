@@ -219,7 +219,6 @@ namespace Copper {
 		}
 
 	}
-
 	void Scene::OnRuntimeUpdate() {
 
 		for (Object& o : SceneView<>(this)) {
@@ -425,13 +424,13 @@ namespace Copper {
 		this->path = path;
 
 		YAML::Node data;
-
 		try { data = YAML::LoadFile(path.string()); } catch(YAML::ParserException e) {
 
 			LogError("Failed to Read .scene file. {0}\n    {1}", path.string(), e.what());
 			return false;
 			
 		}
+
 		name = data["Scene"].as<std::string>();
 
 		YAML::Node entities = data["Entities"];

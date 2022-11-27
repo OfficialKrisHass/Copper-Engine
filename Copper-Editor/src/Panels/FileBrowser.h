@@ -11,7 +11,9 @@ namespace Editor {
         
     public:
         FileBrowser() = default;
-        FileBrowser(int test);
+        FileBrowser(std::filesystem::path initialDir);
+
+        void SetCurrentDir(std::filesystem::path value) { currentDir = value; }
 
     private:
         std::filesystem::path currentDir;

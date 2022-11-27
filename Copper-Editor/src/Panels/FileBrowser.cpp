@@ -13,7 +13,7 @@ namespace Editor {
 
     std::filesystem::path editingPath = "";
 
-    FileBrowser::FileBrowser(int test) : Panel("File Browser"), currentDir("assets/TestProject") {
+    FileBrowser::FileBrowser(std::filesystem::path initialDir) : Panel("File Browser"), currentDir(initialDir) {
         
         directoryIcon = Texture("assets/Icons/FileBrowser/DirectoryIcon.png");
         fileIcon = Texture("assets/Icons/FileBrowser/FileIcon.png");
@@ -40,7 +40,7 @@ namespace Editor {
         }
 
         ImGui::SameLine();
-        ImGui::Text(currentDir.make_preferred().string().c_str());
+        ImGui::Text(std::filesystem::relative(currentDir, Editor::GetProjectPath()).string().c_str());
         ImGui::GetFont()->FontSize += 2.0f;
 
         const float padding = 16.0f;

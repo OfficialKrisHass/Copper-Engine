@@ -8,7 +8,9 @@ namespace Copper::Utilities {
 
 	std::string ReadFile(std::string path, uint32_t* size = nullptr);
 
-	std::string SaveDialog(const char* filter);
-	std::string OpenDialog(const char* filter);
+	std::string SaveDialog(const char* filter, std::filesystem::path initialDir);
+	std::string OpenDialog(const char* filter, std::filesystem::path initialDir);
+
+	std::string FolderOpenDialog();
 
 }

@@ -15,9 +15,20 @@ namespace Editor {
 	void Run();
 	void UI();
 
+	void Shutdown();
+
 	void RenderDockspace();
 	void RenderViewport();
+	void RenderToolbar();
 	void RenderMenu();
+
+	void SaveEditorData();
+	void LoadEditorData();
+	void SaveProjectData();
+	void LoadProjectData();
+
+	void NewProject();
+	void OpenProject();
 
 	void NewScene();
 	void OpenScene();
@@ -26,6 +37,8 @@ namespace Editor {
 	void SaveSceneAs();
 
 	void ManualScene();
+
+	std::filesystem::path GetProjectPath();
 
 	void SetChanges(bool value);
 

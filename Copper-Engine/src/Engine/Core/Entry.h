@@ -3,6 +3,7 @@
 #include "Engine/Core/Engine.h"
 
 extern void AppEntryPoint();
+extern void AppShutdown();
 
 int main() {
 
@@ -10,6 +11,7 @@ int main() {
 	AppEntryPoint();
 	Copper::Run();
 	Copper::Shutdown();
+	AppShutdown();
 
 	return 0;
 

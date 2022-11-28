@@ -36,6 +36,9 @@ namespace Editor {
 	void SaveScene();
 	void SaveSceneAs();
 
+	bool OnKeyPressed(Copper::Event& e);
+	bool OnWindowClose(Copper::Event& e);
+
 	void ManualScene();
 
 	std::filesystem::path GetProjectPath();

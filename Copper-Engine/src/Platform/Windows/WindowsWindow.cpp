@@ -20,6 +20,8 @@ namespace Copper {
 		data.wResE = WindowResizeEvent(data.width, data.height);
 		data.wClsE = WindowCloseEvent();
 
+		data.kPrsE = KeyPresedEvent();
+
 		if (!glfwInit()) { LogError("Could not Initialize GLFW!"); }
 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -34,6 +36,7 @@ namespace Copper {
 
 		data.wResE += OnWindowResize;
 		data.wClsE += OnWindowClose;
+		data.kPrsE += OnKeyPressed;
 
 		glfwSetWindowUserPointer(WINDOW, &data);
 		glfwMaximizeWindow(WINDOW);
@@ -44,17 +47,35 @@ namespace Copper {
 
 			data.wResE.width = width; data.width = width;
 			data.wResE.height = height; data.height = height;
+
 			data.wResE.Call();
 			data.wResE.Clear();
 
 		});
-
 		glfwSetWindowCloseCallback(WINDOW, [](GLFWwindow* window) {
 
 			WindowData& data = GETWINDATA;
 
 			data.wClsE.Call();
 			data.wClsE.Clear();
+
+		});
+		glfwSetKeyCallback(WINDOW, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+
+			WindowData& data = GETWINDATA;
+
+			switch (action) {
+
+				case GLFW_PRESS: {
+
+					data.kPrsE.key = (KeyCode) key;
+
+					data.kPrsE.Call();
+					data.kPrsE.Clear();
+
+				}
+
+			}
 
 		});
 
@@ -68,8 +89,6 @@ namespace Copper {
 	}
 
 	void Window::Shutdown() {
-
-		Log("Closing Window {0}", data.title);
 
 		glfwDestroyWindow(WINDOW);
 		glfwTerminate();

@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Engine/Core/Core.h"
+
 #include "Engine/Events/WindowEvent.h"
+#include "Engine/Events/KeyEvent.h"
 
 namespace Copper {
 
@@ -13,6 +15,8 @@ namespace Copper {
 
 		WindowResizeEvent wResE;
 		WindowCloseEvent wClsE;
+
+		KeyPresedEvent kPrsE;
 
 		WindowData() = default;
 		WindowData(std::string title, uint32_t width, uint32_t height) : title(title), width(width), height(height) {}

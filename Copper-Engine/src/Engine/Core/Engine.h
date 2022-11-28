@@ -19,6 +19,7 @@ namespace Copper {
 
 	bool OnWindowResize(Event& e);
 	bool OnWindowClose(Event& e);
+	bool OnKeyPressed(Event& e);
 
 	//Getters
 	Window GetWindow();
@@ -32,5 +33,8 @@ namespace Copper {
 
 	void SetEditorRunFunc(void (*func)());
 	void SetEditorUIFunc(void (*func)());
+
+	void SetEditorOnKeyPressedFunc(bool (*func)(Event&));
+	void SetEditorOnWindowCloseFunc(bool (*func)(Event&));
 
 }

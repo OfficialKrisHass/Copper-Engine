@@ -13,7 +13,7 @@ namespace Copper::Input {
 	//------------------------------------
 	bool IsKey(KeyCode key) {
 
-		return glfwGetKey(GetGLFWwindow, key) == GLFW_PRESS ? true : false;
+		return glfwGetKey(GetGLFWwindow, (int) key) == GLFW_PRESS ? true : false;
 
 	}
 	

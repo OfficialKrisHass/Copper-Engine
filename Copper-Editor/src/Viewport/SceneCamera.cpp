@@ -14,13 +14,13 @@ namespace Copper {
 
 		if (Input::IsButton(Input::Button2)) {
 
-			if (Input::IsKey(Input::W)) { transform->position +=  transform->forward * speed; }
-			if (Input::IsKey(Input::S)) { transform->position += -transform->forward * speed; }
-			if (Input::IsKey(Input::A)) { transform->position += -transform->right * speed; }
-			if (Input::IsKey(Input::D)) { transform->position +=  transform->right * speed; }
+			if (Input::IsKey(KeyCode::W)) { transform->position +=  transform->forward * speed; }
+			if (Input::IsKey(KeyCode::S)) { transform->position += -transform->forward * speed; }
+			if (Input::IsKey(KeyCode::A)) { transform->position += -transform->right * speed; }
+			if (Input::IsKey(KeyCode::D)) { transform->position +=  transform->right * speed; }
 		
-			if (Input::IsKey(Input::Space))       { transform->position +=  up * speed; }
-			if (Input::IsKey(Input::LeftControl)) { transform->position += -up * speed; }
+			if (Input::IsKey(KeyCode::Space))       { transform->position +=  up * speed; }
+			if (Input::IsKey(KeyCode::LeftControl)) { transform->position += -up * speed; }
 			
 			Input::SetCursorVisible(false);
 

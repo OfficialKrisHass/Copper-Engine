@@ -115,14 +115,14 @@ namespace Editor {
                 
             }
 
-            if (Input::IsKey(Input::Escape)) { editingPath = ""; }
+            if (Input::IsKey(KeyCode::Escape)) { editingPath = ""; }
 
             if(editingPath == path) {
 
                 char buffer[128] = {};
                 std::strncpy(buffer, path.filename().string().c_str(), sizeof(buffer));
 
-                if (ImGui::InputText("##Edit Name", buffer, sizeof(buffer)) && (Input::IsKey(Input::Enter) || Input::IsButton(Input::Button1))) {
+                if (ImGui::InputText("##Edit Name", buffer, sizeof(buffer)) && (Input::IsKey(KeyCode::Enter) || Input::IsButton(Input::Button1))) {
 
                     editingPath = editingPath.parent_path();
                     editingPath += "/";

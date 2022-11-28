@@ -1,7 +1,5 @@
 #include "EditorApp.h"
 
-#include "Engine/Renderer/FrameBuffer.h"
-
 #include "Engine/Utilities/Math.h"
 
 #include "Panels/SceneHierarchy.h"
@@ -28,6 +26,9 @@ void AppEntryPoint() {
 
 	Copper::SetEditorRunFunc(Editor::Run);
 	Copper::SetEditorUIFunc(Editor::UI);
+
+	Copper::SetEditorOnKeyPressedFunc(Editor::OnKeyPressed);
+	Copper::SetEditorOnWindowCloseFunc(Editor::OnWindowClose);
 
 }
 void AppShutdown() {
@@ -273,9 +274,9 @@ namespace Editor {
 
 		if (data.state == Play) OnEditorRuntimeUpdate();
 
-		if (Input::IsKey(Input::Q) && !Input::IsButton(Input::Button2)) data.gizmoType = ImGuizmo::TRANSLATE;
-		else if (Input::IsKey(Input::W) && !Input::IsButton(Input::Button2)) data.gizmoType = ImGuizmo::ROTATE;
-		else if (Input::IsKey(Input::E) && !Input::IsButton(Input::Button2)) data.gizmoType = ImGuizmo::SCALE;
+		if (Input::IsKey(KeyCode::Q) && !Input::IsButton(Input::Button2)) data.gizmoType = ImGuizmo::TRANSLATE;
+		else if (Input::IsKey(KeyCode::W) && !Input::IsButton(Input::Button2)) data.gizmoType = ImGuizmo::ROTATE;
+		else if (Input::IsKey(KeyCode::E) && !Input::IsButton(Input::Button2)) data.gizmoType = ImGuizmo::SCALE;
 
 	}
 
@@ -297,7 +298,7 @@ namespace Editor {
 
 	void Shutdown() {
 
-		SaveEditorData();
+		SaveProjectData();
 
 	}
 
@@ -379,7 +380,7 @@ namespace Editor {
 			glm::mat4 transform = selectedObj.transform->CreateMatrix();
 
 			// Snapping
-			bool snap = Input::IsKey(Input::LeftControl);
+			bool snap = Input::IsKey(KeyCode::LeftControl);
 			float snapValue = 0.5f;
 			if (data.gizmoType == ImGuizmo::OPERATION::ROTATE) snapValue = 45.0f;
 
@@ -453,7 +454,7 @@ namespace Editor {
 
 				if (ImGui::MenuItem("New Project")) NewProject();
 				if (ImGui::MenuItem("Open Project")) OpenProject();
-				if (ImGui::MenuItem("Save Project")) SaveProjectData();
+				if (ImGui::MenuItem("Save Project", "Ctrl+Shift+S")) { SaveProjectData(); SaveScene(); }
 
 				ImGui::EndMenu();
 
@@ -461,10 +462,10 @@ namespace Editor {
 
 			if(ImGui::BeginMenu("File")) {
 
-				if(ImGui::MenuItem("New Scene", "Ctrl+N"))				NewScene();
-				if(ImGui::MenuItem("Open Scene", "Ctrl+O"))				OpenScene();
-				if(ImGui::MenuItem("Save Scene", "Ctr+S"))				SaveScene();
-				if(ImGui::MenuItem("Save Ass", "Ctrl+Shift+S"))			SaveSceneAs();
+				if(ImGui::MenuItem("New Scene"))				NewScene();
+				if(ImGui::MenuItem("Open Scene"))				OpenScene();
+				if(ImGui::MenuItem("Save Scene", "Ctr+S"))		SaveScene();
+				if(ImGui::MenuItem("Save Ass", "Ctrl+Alt+S"))	SaveSceneAs();
 
 				ImGui::EndMenu();
 				
@@ -685,7 +686,7 @@ namespace Editor {
 			data.scene.Serialize(data.scene.path);
 
 			data.changes = false;
-			data.title = "Copper Editor - TestProject: ";
+			data.title = "Copper Editor - " + data.projectName + ": ";
 			data.title += data.scene.name;
 			Input::SetWindowTitle(data.title);
 			
@@ -718,7 +719,7 @@ namespace Editor {
 			data.scene.Serialize(path);
 
 			data.changes = false;
-			data.title = "Copper Editor - TestProject: ";
+			data.title = "Copper Editor - " + data.projectName + ": ";
 			data.title += data.scene.name;
 			Input::SetWindowTitle(data.title);
 			
@@ -726,12 +727,52 @@ namespace Editor {
 		
 	}
 
+	bool OnKeyPressed(Event& e) {
+
+		bool control = Input::IsKey(KeyCode::LeftControl) || Input::IsKey(KeyCode::RightControl);
+		bool shift = Input::IsKey(KeyCode::LeftShift) || Input::IsKey(KeyCode::RightShift);
+		bool alt = Input::IsKey(KeyCode::LeftAlt) || Input::IsKey(KeyCode::RightAlt);
+
+		KeyPresedEvent event = *(KeyPresedEvent*) &e;
+
+		switch (event.key) {
+
+			case KeyCode::S: {
+
+				if (control && shift) { SaveProjectData(); break; }
+				if (control && alt) { SaveSceneAs(); break; }
+				if (control) { SaveScene(); break; }
+
+			}
+
+		}
+
+		return true;
+
+	}
+	bool OnWindowClose(Event& e) {
+
+		if (data.changes) {
+
+			switch (Input::Error::WarningPopup("Unsaved Changes", "There are Unsaved Changes, if you close the Editor your changes will be lost. Are you Sure you want to Close the Editor ?")) {
+
+				case IDOK: break;
+				case IDCANCEL: return false;
+
+			}
+
+		}
+
+		return true;
+
+	}
+
 	std::filesystem::path GetProjectPath() { return data.projectPath; }
 
 	void SetChanges(bool value) {
 
 		data.changes = value;
-		data.title = "Copper Editor - TestProject: ";
+		data.title = "Copper Editor - " + data.projectName + ": ";
 		data.title += data.scene.name;
 		data.title += '*';
 		Input::SetWindowTitle(data.title);

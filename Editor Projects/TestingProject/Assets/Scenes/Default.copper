@@ -42,7 +42,7 @@ Entities:
         Fields:
           speed:
             Variable Type: Float
-            Value: 0.0309999995
+            Value: 0.100000001
             Test: Test String
           test:
             Variable Type: Float
@@ -62,6 +62,17 @@ Entities:
           color:
             Variable Type: Float
             Value: 0.0500000007
+            Test: Test String
+          numOfVertices:
+            Variable Type: Unsigned Int
+            Value: 25
+            Test: Test String
+      Mesh:
+        Namespace: Copper
+        Fields:
+          color:
+            Variable Type: Float
+            Value: 0
             Test: Test String
           numOfVertices:
             Variable Type: Unsigned Int

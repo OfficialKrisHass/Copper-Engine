@@ -84,7 +84,13 @@ namespace Editor {
 						int value;
 						field.GetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
 
-						if(ShowInt(field.name, value)) field.SetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
+						if (ShowInt(field.name, value)) {
+
+							field.SetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
+							Editor::SetChanges(true);
+
+						}
+
 						break;
 
 					}
@@ -93,7 +99,13 @@ namespace Editor {
 						unsigned int value;
 						field.GetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
 
-						if (ShowUInt(field.name, value)) field.SetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
+						if (ShowUInt(field.name, value)) {
+
+							field.SetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
+							Editor::SetChanges(true);
+
+						}
+
 						break;
 
 					}
@@ -102,7 +114,13 @@ namespace Editor {
 						float value;
 						field.GetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
 
-						if (ShowFloat(field.name, value)) field.SetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
+						if (ShowFloat(field.name, value)) {
+
+							field.SetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
+							Editor::SetChanges(true);
+
+						}
+						
 						break;
 
 					}
@@ -111,7 +129,13 @@ namespace Editor {
 						double value;
 						field.GetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
 
-						if (ShowDouble(field.name, value, 1)) field.SetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
+						if (ShowDouble(field.name, value, 1)) {
+
+							field.SetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
+							Editor::SetChanges(true);
+
+						}
+
 						break;
 
 					}
@@ -200,15 +224,16 @@ namespace Editor {
 
 		if(ImGui::BeginPopup("##AddComponent")) {
 				
-			if (ImGui::MenuItem("Light"))			{ selectedObj.AddComponent<Light>(); }
-			if (ImGui::MenuItem("Mesh Renderer"))	{ selectedObj.AddComponent<MeshRenderer>(); }
-			if (ImGui::MenuItem("Camera"))			{ selectedObj.AddComponent<Camera>(); }
+			if (ImGui::MenuItem("Light"))			{ selectedObj.AddComponent<Light>(); Editor::SetChanges(true); }
+			if (ImGui::MenuItem("Mesh Renderer"))	{ selectedObj.AddComponent<MeshRenderer>(); Editor::SetChanges(true); }
+			if (ImGui::MenuItem("Camera"))			{ selectedObj.AddComponent<Camera>(); Editor::SetChanges(true); }
 			
 			for (ScriptComponent script : ScriptEngine::GetScriptComponents()) {
 
 				if (ImGui::MenuItem(script.scriptName.c_str())) {
 
 					if (selectedObj.AddScriptComponent(script.nameSpace, script.scriptName) == nullptr) LogError("Could not Add the Script {0}", script.scriptName);
+					Editor::SetChanges(true);
 
 				}
 

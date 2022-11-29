@@ -395,9 +395,6 @@ namespace Copper {
 
 					}
 
-					std::string test = "Test String";
-					out << YAML::Key << "Test" << YAML::Value << test;
-
 					out << YAML::EndMap; //Field
 
 				}

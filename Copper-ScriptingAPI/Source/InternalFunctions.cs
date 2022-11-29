@@ -22,6 +22,12 @@ namespace Copper {
         [MethodImpl(MethodImplOptions.InternalCall)]
         public extern static void SetObjectName(int id, ref string name);
 
+        //Components
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        public extern static bool HasComponent(int id, Type componentType);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        public extern static void GetComponent(int id, Type componentType, Component component);
+
         //Transform
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void TransformGetPosition(int id, out Vector3 position);

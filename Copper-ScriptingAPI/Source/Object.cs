@@ -4,7 +4,7 @@ namespace Copper {
 
     public class Object {
 
-        public readonly int ID;
+        private readonly int ID;
         public string name {
 
             get {
@@ -15,6 +15,22 @@ namespace Copper {
                 InternalFunctions.SetObjectName(ID, ref value);
             }
 
+        }
+
+        public bool HasComponent<T>() where T : Component, new() {
+
+            Type cType = typeof(T);
+            return InternalFunctions.HasComponent(ID, cType);
+
+        }
+        public T GetComponent<T>() where T : Component, new() {
+
+            T ret = new T() { objID = ID };
+
+            Type cType = typeof(T);
+            InternalFunctions.GetComponent(ID, cType, ret);
+
+            return ret;
         }
 
     }

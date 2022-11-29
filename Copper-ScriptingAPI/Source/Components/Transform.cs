@@ -4,7 +4,7 @@ namespace Copper {
 
     public class Transform {
 
-        private int objID;
+        public int objID;
 
         public Transform(int id) {
 

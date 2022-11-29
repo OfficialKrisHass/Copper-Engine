@@ -179,6 +179,28 @@ namespace Copper {
 			return &scripts[obj.id][index];
 
 		}
+		ScriptComponent* GetScriptComponent(int32_t id, std::string nameSpace, std::string scriptName) {
+
+			for (int i = 0; i < scripts[id].size(); i++) {
+
+				if (scripts[id][i].nameSpace == nameSpace && scripts[id][i].scriptName == scriptName) return &scripts[id][i];
+
+			}
+
+			return nullptr;
+
+		}
+		bool HasScriptComponent(int32_t id, std::string nameSpace, std::string scriptName) {
+
+			for (ScriptComponent script : scripts[id]) {
+
+				if (script.nameSpace == nameSpace && script.scriptName == scriptName) return true;
+
+			}
+
+			return false;
+
+		}
 
 		Object GetObjectFromID(int32_t id) const { return objects[id];  }
 		int GetNumOfObjects() const { return (int) objects.size(); }

@@ -4,7 +4,7 @@ namespace Copper {
 
     public class Component {
 
-        private int objID;
+        public int objID;
         public Transform transform;
 
         protected Component() { }
@@ -22,6 +22,23 @@ namespace Copper {
                 InternalFunctions.GetObject(objID, out Object result);
                 return result;
             }
+
+        }
+
+        public bool HasComponent<T>() where T : Component, new() {
+
+            Type cType = typeof(T);
+            return InternalFunctions.HasComponent(objID, cType);
+
+        }
+        public T GetComponent<T>() where T : Component, new() {
+
+            T ret = new T() { objID = objID };
+
+            Type cType = typeof(T);
+            InternalFunctions.GetComponent(objID, cType, ret);
+
+            return ret;
 
         }
 

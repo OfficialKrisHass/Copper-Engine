@@ -3,6 +3,9 @@
 
 #include "Engine/Core/Engine.h"
 
+#include "Engine/Components/Light.h"
+#include "Engine/Components/MeshRenderer.h"
+
 #include <CopperECS/CopperECS.h>
 
 #include <mono/jit/jit.h>
@@ -78,6 +81,8 @@ namespace Copper::ScriptEngine {
 				case VariableType::Vector3: { return "Vector3"; break; }
 
 			}
+
+			return "";
 
 		}
 
@@ -214,12 +219,58 @@ namespace Copper::ScriptEngine {
 
 	}
 
+	struct ScriptEngineData {
+
+		//Domains
+		MonoDomain* root;
+		MonoDomain* app;
+
+		//Scripting API Assembly
+		MonoAssembly* APIAssembly;
+
+		//The Base Component Class Reference
+		MonoClass* componentClass;
+
+		//List of the names of all Script Components
+		std::vector<ScriptComponent> scriptComponents;
+		std::unordered_map<std::string, std::unordered_map<std::string, std::vector<Variable>>> scriptFieldAndProperties;
+
+	};
+
+	ScriptEngineData data;
+
 	namespace InternalFunctions {
 
+		static std::unordered_map<MonoType*, std::function<bool(Object)>> componentHasFunctions;
+		static std::unordered_map<MonoType*, std::function<bool(Object, std::string, std::string)>> scriptComponentHasFunctions;
+
+		template<typename T> static void RegisterCoreComponent() {
+
+			std::string typeName = typeid(T).name();
+			std::string name = fmt::format("Copper.{}", typeName.substr(typeName.find_last_of(':') + 1));
+
+			MonoType* type = mono_reflection_type_from_name(name.data(), ScriptEngine::GetAssemblyImage());
+			if (!type) { LogError("Could not find Component {0}", name); return; }
+
+			componentHasFunctions[type] = [](Object obj) { return obj.HasComponent<T>(); };
+
+		}
+		static void RegisterScriptComponent(std::string nameSpace, std::string name) {
+
+			std::string fullName = fmt::format("{}.{}", nameSpace, name);
+			MonoType* type = mono_reflection_type_from_name(fullName.data(), ScriptEngine::GetAssemblyImage());
+			if (!type) { LogError("Could not find Component {0}", name); return; }
+
+			scriptComponentHasFunctions[type] = [](Object obj, std::string nameSpace, std::string name) { return obj.HasScriptComponent(nameSpace, name); };
+
+		}
+
+		//Logging
 		static void InternalLog(MonoString* string) { Log(Utils::MonoStringToString(string)); }
 		static void InternalLogWarn(MonoString* string) { LogWarn(Utils::MonoStringToString(string)); }
 		static void InternalLogError(MonoString* string) { LogError(Utils::MonoStringToString(string)); }
 
+		//Object
 		static void InternalGetObject(int32_t id, Object* out) {
 
 			Scene* scene = GetScene();
@@ -227,6 +278,61 @@ namespace Copper::ScriptEngine {
 
 		}
 
+		//Components
+		static bool InternalHasComponent(int32_t id, MonoReflectionType* componentType) {
+
+			Object obj = GetScene()->registry.GetObjectFromID(id);
+			MonoType* managedType = mono_reflection_type_get_type(componentType);
+
+			bool scriptComponent = scriptComponentHasFunctions.find(managedType) != scriptComponentHasFunctions.end();
+			if (componentHasFunctions.find(managedType) == componentHasFunctions.end() &&
+				!scriptComponent) {
+
+				LogError("HasComponent couldn't find the Component Has Function");
+
+			}
+
+			if (scriptComponent) {
+
+				std::string name = mono_type_get_name(managedType);
+				std::string nameSpace = name.substr(0, name.find_last_of('.'));
+				std::string scriptName = name.substr(name.find_last_of('.') + 1);
+
+				return scriptComponentHasFunctions.at(managedType)(obj, nameSpace, scriptName);
+
+			}
+
+			return componentHasFunctions.at(managedType)(obj);
+
+		}
+		static void InternalGetComponent(int32_t id, MonoReflectionType* cType, MonoObject* out) {
+
+			//This seems primitive but actually I can't find another way on how to do this.
+			//This was my first idea and it actually works, however there definitely is a better way
+			//But I'm happy for now
+
+			Object obj = GetScene()->registry.GetObjectFromID(id);
+			MonoType* type = mono_reflection_type_get_type(cType);
+
+			std::string name = mono_type_get_name(type);
+			std::string nameSpace = name.substr(0, name.find_last_of('.'));
+			std::string scriptName = name.substr(name.find_last_of('.') + 1);
+			ScriptComponent* script = obj.GetScriptComponent(nameSpace, scriptName);
+
+			if (script == nullptr) { LogError("Failed to Get the Script Component {0}.{1}", nameSpace, scriptName); return; }
+
+			std::unordered_map<std::string, std::vector<Variable>> fieldsAndProperties = ScriptEngine::GetScriptFieldsAndProperties(nameSpace, scriptName);
+			for (Variable field : fieldsAndProperties["Fields"]) {
+
+				int tmp;
+				field.GetValue(script->GetInstance(), &tmp);
+				field.SetValue(out, &tmp);
+
+			}
+
+		}
+
+		//Transform
 		static void InternalTransformGetPosition(int32_t id, Vector3* out) {
 
 			Scene* scene = GetScene();
@@ -266,32 +372,15 @@ namespace Copper::ScriptEngine {
 
 	}
 
-	struct ScriptEngineData {
+	void InitMono();
+	void ShutdownMono();
 
-		//Domains
-		MonoDomain* root;
-		MonoDomain* app;
+	void InitInternalFunctions();
 
-		//Scripting API Assembly
-		MonoAssembly* APIAssembly;
-
-		//The Base Component Class Reference
-		MonoClass* componentClass;
-
-		//List of the names of all Script Components
-		std::vector<ScriptComponent> scriptComponents;
-		std::unordered_map<std::string, std::unordered_map<std::string, std::vector<Variable>>> scriptFieldAndProperties;
-
-	};
-
-	ScriptEngineData data;
+	void RegisterCoreComponents();
 
 	void LoadScriptComponents();
 	void LoadScriptFieldAndProperties();
-	void InitInternalFunctions();
-
-	void InitMono();
-	void ShutdownMono();
 
 	void Initialize() {
 
@@ -315,11 +404,12 @@ namespace Copper::ScriptEngine {
 
 		data.componentClass = mono_class_from_name(image, "Copper", "Component");
 
-		//Utils::LogAssemblyClasses(data.APIAssembly);
+		InitInternalFunctions();
+
+		RegisterCoreComponents();
 
 		LoadScriptComponents();
 		LoadScriptFieldAndProperties();
-		InitInternalFunctions();
 
 	}
 	void Shutdown() {
@@ -345,6 +435,15 @@ namespace Copper::ScriptEngine {
 
 	}
 
+	void RegisterCoreComponents() {
+
+		InternalFunctions::RegisterCoreComponent<Transform>();
+		InternalFunctions::RegisterCoreComponent<Camera>();
+		InternalFunctions::RegisterCoreComponent<Light>();
+		InternalFunctions::RegisterCoreComponent<MeshRenderer>();
+
+	}
+
 	void LoadScriptComponents() {
 
 		MonoImage* image = mono_assembly_get_image(data.APIAssembly);
@@ -367,6 +466,7 @@ namespace Copper::ScriptEngine {
 			if (mono_class_is_subclass_of(script, data.componentClass, false)) {
 
 				data.scriptComponents.push_back(ScriptComponent(nameSpace, name, script));
+				InternalFunctions::RegisterScriptComponent(nameSpace, name);
 
 			}
 
@@ -461,6 +561,10 @@ namespace Copper::ScriptEngine {
 		//Object
 		mono_add_internal_call("Copper.InternalFunctions::GetObject", InternalFunctions::InternalGetObject);
 
+		//Components
+		mono_add_internal_call("Copper.InternalFunctions::HasComponent", InternalFunctions::InternalHasComponent);
+		mono_add_internal_call("Copper.InternalFunctions::GetComponent", InternalFunctions::InternalGetComponent);
+
 		//Transform
 		mono_add_internal_call("Copper.InternalFunctions::TransformGetPosition", InternalFunctions::InternalTransformGetPosition);
 		mono_add_internal_call("Copper.InternalFunctions::TransformSetPosition", InternalFunctions::InternalTransformSetPosition);
@@ -504,6 +608,8 @@ namespace Copper::ScriptEngine {
 		return instance;
 
 	}
+
+	MonoImage* GetAssemblyImage() { return mono_assembly_get_image(data.APIAssembly); }
 
 	std::vector<ScriptComponent> GetScriptComponents() { return data.scriptComponents; }
 	std::unordered_map<std::string, std::vector<Variable>> GetScriptFieldsAndProperties(std::string nameSpace, std::string name) { return data.scriptFieldAndProperties[nameSpace + '.' + name]; }

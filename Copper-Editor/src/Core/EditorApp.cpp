@@ -243,6 +243,7 @@ namespace Editor {
 
 	void OnEditorRuntimeStart();
 	void OnEditorRuntimeUpdate();
+	void OnEditorRuntimeStop();
 
 	void Initialize() {
 
@@ -437,7 +438,7 @@ namespace Editor {
 
 		} else if (data.state == Play) {
 
-			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t) data.stopIcon.GetID()), buttonSize, {0, 1}, {1, 0})) data.state = Edit;
+			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t) data.stopIcon.GetID()), buttonSize, {0, 1}, {1, 0})) OnEditorRuntimeStop();
 
 		}
 
@@ -495,6 +496,17 @@ namespace Editor {
 	void OnEditorRuntimeUpdate() {
 
 		data.scene.OnRuntimeUpdate();
+
+	}
+	void OnEditorRuntimeStop() {
+
+		data.state = Edit;
+
+		std::filesystem::path savedPath = data.scene.path;
+
+		data.scene = Scene();
+		data.scene.Deserialize(savedPath);
+		data.scene.cam = &data.sceneCam;
 
 	}
 
@@ -728,6 +740,8 @@ namespace Editor {
 	}
 
 	bool OnKeyPressed(Event& e) {
+
+		if (data.state == Play) return true;
 
 		bool control = Input::IsKey(KeyCode::LeftControl) || Input::IsKey(KeyCode::RightControl);
 		bool shift = Input::IsKey(KeyCode::LeftShift) || Input::IsKey(KeyCode::RightShift);

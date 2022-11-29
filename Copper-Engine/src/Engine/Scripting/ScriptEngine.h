@@ -12,6 +12,7 @@ extern "C" {
 
 	typedef struct _MonoObject MonoObject;
 	typedef struct _MonoMethod MonoMethod;
+	typedef struct _MonoImage MonoImage;
 
 }
 
@@ -27,6 +28,8 @@ namespace Copper::ScriptEngine {
 	void Shutdown();
 
 	MonoObject* AddScriptComponent(Copper::Object& obj, std::string nameSpace, std::string scriptName);
+
+	MonoImage* GetAssemblyImage();
 
 	std::vector<ScriptComponent> GetScriptComponents();
 	std::unordered_map<std::string, std::vector<Variable>> GetScriptFieldsAndProperties(std::string nameSpace, std::string name);

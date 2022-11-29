@@ -37,6 +37,9 @@ namespace Copper {
 		template<typename T> void RemoveComponent() { scene->registry.RemoveComponent<T>(*this); }
 
 		ScriptComponent* AddScriptComponent(std::string nameSpace, std::string scriptName);
+		ScriptComponent* GetScriptComponent(std::string nameSpace, std::string scriptName);
+		ScriptComponent* GetScriptComponent(int index) const;
+		bool HasScriptComponent(std::string nameSpace, std::string scriptName);
 
 		operator bool() const { return id != -1 && scene != nullptr; }
 		operator int32_t() const { return id; }
@@ -46,7 +49,6 @@ namespace Copper {
 
 		int32_t GetID() const { return id; }
 		std::bitset<maxComponents> GetComponentMask() const { return componentMask; }
-		ScriptComponent* GetScriptComponent(int index) const;
 		int GetNumOfScriptComponents() const;
 
 	public:

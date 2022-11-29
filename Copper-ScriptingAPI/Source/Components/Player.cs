@@ -11,7 +11,9 @@ namespace Copper {
 
         void OnCreate() {
 
-            Editor.Log("Start called!!!");
+            Light light = GetComponent<Light>();
+
+            Editor.Log("Light color: " + light.Color.ToString());
 
         }
 
@@ -27,18 +29,6 @@ namespace Copper {
 
         public float color;
         public uint numOfVertices = 25;
-
-        void OnCreate() {
-
-            Editor.Log("Start called! 1");
-
-        }
-
-        void OnUpdate() {
-
-            Editor.Log("Update called! 1");
-
-        }
 
     }
 

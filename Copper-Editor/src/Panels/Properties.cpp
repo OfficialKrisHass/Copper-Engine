@@ -206,6 +206,12 @@ namespace Editor {
 			if (ShowFloat("Far Plane", selectedObj.GetComponent<SceneCamera>()->farPlane)) SetChanges(true);
 			
 		}
+		if (selectedObj.HasComponent<Light>() && DrawComponent<Light>("Light")) {
+
+			if (ShowColor("Color", selectedObj.GetComponent<Light>()->color, false)) SetChanges(true);
+			if (ShowFloat("Intensity", selectedObj.GetComponent<Light>()->intensity)) SetChanges(true);
+
+		}
 
 		ImGui::Spacing();
 		//ImGui::Spacing();
@@ -459,7 +465,25 @@ namespace Editor {
 		ImGui::Text(name.c_str());
 		ImGui::NextColumn();
 		
-		if (ImGui::ColorEdit3("##Color", &col.r)) ret = true;
+		float colors[] {
+
+			col.r,
+			col.g,
+			col.b
+
+		};
+		//Log("Before: {0}", col);
+		if (ImGui::ColorEdit3("##Color", colors)) ret = true;
+
+		if (ret) {
+
+			col.r = colors[0];
+			col.g = colors[1];
+			col.b = colors[2];
+
+			//Log("After: {0}", col);
+
+		}
 
 		ImGui::PopID();
 

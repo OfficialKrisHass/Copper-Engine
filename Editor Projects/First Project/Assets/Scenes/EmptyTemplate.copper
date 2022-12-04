@@ -1,0 +1,16 @@
+Scene: EmptyTemplate
+Entities:
+  0:
+    Name: Light
+    Transform:
+      Position: [0, 1, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent: -1
+      Children:
+        []
+    Components:
+      Light:
+        Color: None
+    Scripts:
+      {}

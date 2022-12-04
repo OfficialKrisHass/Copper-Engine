@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
-    <ProjectGuid>{C84F0251-34B1-DF5E-BD1E-2611297F161E}</ProjectGuid>
+    <ProjectGuid>{E1057166-CDD2-CB71-F6EB-B919E2170100}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Copper-ScriptingAPI</RootNamespace>
-    <AssemblyName>Copper-ScriptingAPI</AssemblyName>
+    <RootNamespace>DevProject</RootNamespace>
+    <AssemblyName>DevProject</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -18,8 +18,8 @@
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <Optimize>false</Optimize>
-    <OutputPath>..\Copper-Editor\assets\ScriptAPI\</OutputPath>
-    <BaseIntermediateOutputPath>..\Copper-Editor\assets\ScriptAPI\Int\Debug\</BaseIntermediateOutputPath>
+    <OutputPath>Binaries\</OutputPath>
+    <BaseIntermediateOutputPath>Objs\Debug\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
     <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -30,28 +30,30 @@
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <Optimize>true</Optimize>
-    <OutputPath>..\Copper-Editor\assets\ScriptAPI\</OutputPath>
-    <BaseIntermediateOutputPath>..\Copper-Editor\assets\ScriptAPI\Int\Release\</BaseIntermediateOutputPath>
+    <OutputPath>Binaries\</OutputPath>
+    <BaseIntermediateOutputPath>Objs\Release\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
     <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <Reference Include="Copper-ScriptingAPI">
+      <HintPath>Binaries\Copper-ScriptingAPI.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <Reference Include="Copper-ScriptingAPI">
+      <HintPath>Binaries\Copper-ScriptingAPI.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Source\Components\Component.cs" />
-    <Compile Include="Source\Components\Light.cs" />
-    <Compile Include="Source\Components\Player.cs" />
-    <Compile Include="Source\Components\Transform.cs" />
-    <Compile Include="Source\Editor.cs" />
-    <Compile Include="Source\InternalFunctions.cs" />
-    <Compile Include="Source\Math\Vector.cs" />
-    <Compile Include="Source\Object.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Assets\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="**\*.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

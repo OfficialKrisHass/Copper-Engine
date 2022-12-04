@@ -29,6 +29,7 @@ namespace Editor {
 
 	void NewProject();
 	void OpenProject();
+	void RebuildCSharpProject();
 
 	void NewScene();
 	void OpenScene();

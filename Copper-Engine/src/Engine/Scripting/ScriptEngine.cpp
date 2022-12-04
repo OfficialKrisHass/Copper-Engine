@@ -106,6 +106,26 @@ namespace Copper::ScriptEngine {
 			return buffer;
 
 		}
+		MonoAssembly* LoadAssembly(std::filesystem::path path) {
+
+			uint32_t fileSize = 0;
+			char* fileData = Utils::ReadAssembly(path.string(), &fileSize);
+
+			MonoImageOpenStatus status;
+			MonoImage* image = mono_image_open_from_data_full(fileData, fileSize, 1, &status, 0);
+
+			if (status != MONO_IMAGE_OK) { LogError("Failed to Read Assembly.\n\n{0}", mono_image_strerror(status)); return nullptr; }
+
+			MonoAssembly* assembly = mono_assembly_load_from_full(image, path.string().c_str(), &status, 0);
+			mono_image_close(image);
+
+			//Cleanup
+			delete[] fileData;
+
+			return assembly;
+
+		}
+
 		void LogAssemblyClasses(MonoAssembly* assembly) {
 
 			MonoImage* image = mono_assembly_get_image(assembly);
@@ -227,6 +247,7 @@ namespace Copper::ScriptEngine {
 
 		//Scripting API Assembly
 		MonoAssembly* APIAssembly;
+		MonoImage* APIAssemblyImage;
 
 		//The Base Component Class Reference
 		MonoClass* componentClass;
@@ -387,22 +408,13 @@ namespace Copper::ScriptEngine {
 		InitMono();
 
 		//Load Assembly
-		uint32_t fileSize = 0;
-		char* fileData = Utils::ReadAssembly("assets/ScriptAPI/Copper-ScriptingAPI.dll", &fileSize);
+		data.app = mono_domain_create_appdomain("CopperAppDomain", nullptr);
+		mono_domain_set(data.app, true);
 
-		MonoImageOpenStatus status;
-		MonoImage* image = mono_image_open_from_data_full(fileData, fileSize, 1, &status, 0);
+		data.APIAssembly = Utils::LoadAssembly("assets/ScriptAPI/Copper-ScriptingAPI.dll");
+		data.APIAssemblyImage = mono_assembly_get_image(data.APIAssembly);
 
-		if (status != MONO_IMAGE_OK) { LogError("Failed to Read Assembly.\n\n{0}", mono_image_strerror(status)); return; }
-
-		MonoAssembly* assembly = mono_assembly_load_from_full(image, "assets/Scripts/Script-Core.dll", &status, 0);
-		mono_image_close(image);
-		data.APIAssembly = assembly;
-
-		//Cleanup
-		delete[] fileData;
-
-		data.componentClass = mono_class_from_name(image, "Copper", "Component");
+		data.componentClass = mono_class_from_name(data.APIAssemblyImage, "Copper", "Component");
 
 		InitInternalFunctions();
 
@@ -422,11 +434,8 @@ namespace Copper::ScriptEngine {
 
 		mono_set_assemblies_path("lib/mono/lib");
 
-		data.root = mono_jit_init("CopperScriptRuntime");
+		data.root = mono_jit_init("CopperJitRuntime");
 		if (!data.root) { LogError("Mono Failed to Initialize Root Domain"); return; }
-
-		data.app = mono_domain_create_appdomain("CopperAppDomain", nullptr);
-		mono_domain_set(data.app, true);
 
 	}
 	void ShutdownMono() {
@@ -446,6 +455,8 @@ namespace Copper::ScriptEngine {
 
 	void LoadScriptComponents() {
 
+		data.scriptComponents.clear();
+
 		MonoImage* image = mono_assembly_get_image(data.APIAssembly);
 		const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
 		int32_t numOfTypes = mono_table_info_get_rows(typeDefinitionsTable);
@@ -458,11 +469,11 @@ namespace Copper::ScriptEngine {
 			const char* nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
 			const char* name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
 
-			if (name == "<Module>") continue;
+			if (std::string(name) == "<Module>") continue;
+			if (std::string(name) == "Component") continue;
 
 			MonoClass* script = mono_class_from_name(image, nameSpace, name);
 
-			if (script == data.componentClass) continue;
 			if (mono_class_is_subclass_of(script, data.componentClass, false)) {
 
 				data.scriptComponents.push_back(ScriptComponent(nameSpace, name, script));

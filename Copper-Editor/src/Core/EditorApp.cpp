@@ -110,25 +110,25 @@ namespace Editor {
 	};
 	std::vector<Vector3> cubeNormals {
 		//Front
-		Vector3(0.0f,  0.0f, -1.0f),
-		Vector3(0.0f,  0.0f, -1.0f),
-		Vector3(0.0f,  0.0f, -1.0f),
-		Vector3(0.0f,  0.0f, -1.0f),
+		Vector3( 0.0f,  0.0f,  1.0f),
+		Vector3( 0.0f,  0.0f,  1.0f),
+		Vector3( 0.0f,  0.0f,  1.0f),
+		Vector3( 0.0f,  0.0f,  1.0f),
 		//Back
-		Vector3(0.0f,  0.0f,  1.0f),
-		Vector3(0.0f,  0.0f,  1.0f),
-		Vector3(0.0f,  0.0f,  1.0f),
-		Vector3(0.0f,  0.0f,  1.0f),
+		Vector3( 0.0f,  0.0f, -1.0f),
+		Vector3( 0.0f,  0.0f, -1.0f),
+		Vector3( 0.0f,  0.0f, -1.0f),
+		Vector3( 0.0f,  0.0f, -1.0f),
 		//Right
-		Vector3(-1.0f,  0.0f,  0.0f),
-		Vector3(-1.0f,  0.0f,  0.0f),
-		Vector3(-1.0f,  0.0f,  0.0f),
-		Vector3(-1.0f,  0.0f,  0.0f),
+		Vector3( 1.0f,  0.0f,  0.0f),
+		Vector3( 1.0f,  0.0f,  0.0f),
+		Vector3( 1.0f,  0.0f,  0.0f),
+		Vector3( 1.0f,  0.0f,  0.0f),
 		//Left
-		Vector3(1.0f,  0.0f,  0.0f),
-		Vector3(1.0f,  0.0f,  0.0f),
-		Vector3(1.0f,  0.0f,  0.0f),
-		Vector3(1.0f,  0.0f,  0.0f),
+		Vector3(-1.0f,  0.0f,  0.0f),
+		Vector3(-1.0f,  0.0f,  0.0f),
+		Vector3(-1.0f,  0.0f,  0.0f),
+		Vector3(-1.0f,  0.0f,  0.0f),
 		//Up
 		Vector3(0.0f, -1.0f,  0.0f),
 		Vector3(0.0f, -1.0f,  0.0f),
@@ -457,6 +457,9 @@ namespace Editor {
 				if (ImGui::MenuItem("Open Project")) OpenProject();
 				if (ImGui::MenuItem("Save Project", "Ctrl+Shift+S")) { SaveProjectData(); SaveScene(); }
 
+				ImGui::Separator();
+				if (ImGui::MenuItem("Rebuild C# Solution")) RebuildCSharpProject();
+
 				ImGui::EndMenu();
 
 			}
@@ -581,6 +584,11 @@ namespace Editor {
 
 		std::filesystem::path path = Utilities::FolderOpenDialog();
 		if (path.empty()) { LogWarn("Path is Invalid or empty"); return; }
+		//std::filesystem::path path = "C:\\Programming\\Copper-Engine\\Editor Projects\\First Project";
+
+		std::filesystem::create_directories(path.string() + "/Binaries");
+		std::filesystem::create_directories(path.string() + "/Objs");
+
 
 		//Set the Project stuff
 		data.projectPath = path;
@@ -617,6 +625,16 @@ namespace Editor {
 		data.title += data.scene.name;
 		Input::SetWindowTitle(data.title);
 
+		//Coppy the dll
+		std::ifstream dllSrc("assets/Projects/EmptyTemplate/Binaries/Copper-ScriptingAPI.dll");
+		std::fstream dllDst;
+
+		RebuildCSharpProject();
+
+		dllDst.open(data.projectPath.string() + "/Binaries/Copper-ScriptingAPI.dll", std::ios::out);
+		dllDst << dllSrc.rdbuf();
+		dllDst.close();
+
 		//Create the Project.cu file
 		SaveProjectData();
 
@@ -631,6 +649,69 @@ namespace Editor {
 		data.fileBrowser.SetCurrentDir(data.assetsPath);
 
 		OpenScene(data.lastOpenedScene);
+
+	}
+	void RebuildCSharpProject() {
+
+		//Copy the visual studio project files
+		std::ifstream templateSln("assets/Projects/EmptyTemplate/Template.sln");
+		std::fstream projectSln;
+		std::string line;
+
+		std::string projectSlnPath = data.projectPath.string() + "\\" + data.projectName + ".sln";
+		projectSln.open(projectSlnPath, std::ios::out);
+		while (std::getline(templateSln, line)) {
+
+			size_t pos = line.find(':');
+			while (pos != std::string::npos && line[pos + 1] == '{') {
+
+				size_t end = line.find_first_of('}', pos);
+				std::string var = line.substr(pos + 2, end - (pos + 2));
+
+				if (var == "ProjectName") {
+
+					line.erase(pos, (end - pos) + 1);
+					line.insert(pos, data.projectName);
+
+				}
+
+				pos = line.find(':', pos + 1);
+
+			}
+
+			projectSln << line << "\n";
+
+		}
+		projectSln.close();
+
+		std::ifstream templateCsproj("assets/Projects/EmptyTemplate/Template.csproj");
+		std::fstream projectCsproj;
+		line = "";
+
+		projectCsproj.open(data.projectPath.string() + "\\" + data.projectName + ".csproj", std::ios::out);
+		while (std::getline(templateCsproj, line)) {
+
+			size_t pos = line.find(':');
+			while (pos != std::string::npos && line[pos + 1] == '{') {
+
+				size_t end = line.find_first_of('}', pos);
+				std::string var = line.substr(pos + 2, end - (pos + 2));
+
+				if (var == "ProjectName") {
+
+					line.erase(pos, (end - pos) + 1);
+					line.insert(pos, data.projectName);
+
+				}
+
+				pos = line.find(':', pos + 1);
+
+			}
+
+			projectCsproj << line << "\n";
+
+		}
+		projectCsproj.close();
 
 	}
 

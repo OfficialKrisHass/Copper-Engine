@@ -177,13 +177,13 @@ namespace Copper {
 
 		Renderer::ClearColor(0.18f, 0.18f, 0.18f);
 
-		Light* directional = nullptr;
+		Light* light;
 
 		for (Object& o : SceneView<>(this)) {
 
 			o.transform->Update();
 
-			if (o.HasComponent<Light>()) directional = o.GetComponent<Light>();
+			if (o.HasComponent<Light>()) light = o.GetComponent<Light>();
 			if (o.HasComponent<MeshRenderer>()) {
 
 				MeshRenderer* renderer = o.GetComponent<MeshRenderer>();
@@ -200,7 +200,7 @@ namespace Copper {
 
 		cam->transform->Update();
 		cam->Update();
-		Renderer::Render(cam, directional);
+		Renderer::Render(cam, light);
 
 	}
 
@@ -335,7 +335,9 @@ namespace Copper {
 				Light* light = o.GetComponent<Light>();
 
 				out << YAML::Key << "Light" << YAML::Value << YAML::BeginMap;
-				out << YAML::Key << "Color" << YAML::Value << "None";
+
+				out << YAML::Key << "Color" << YAML::Value << light->color;
+				out << YAML::Key << "Intensity" << YAML::Value << light->intensity;
 
 				out << YAML::EndMap;
 				
@@ -506,8 +508,8 @@ namespace Copper {
 
 				Light* l = deserialized.AddComponent<Light>();
 
-				l->color = Color::white;
-				l->intensity = 1.0f;
+				l->color = light["Color"].as<Color>();
+				l->intensity = light["Intensity"].as<float>();
 				
 			}
 

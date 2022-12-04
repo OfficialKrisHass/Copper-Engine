@@ -5,11 +5,13 @@ workspace "Copper-Engine"
 
 outputDir = "%{cfg.system}-%{cfg.architecture}-%{cfg.buildcfg}"
 
-include "Copper-Engine/lib/GLFW"
-include "Copper-Engine/lib/GLAD"
-include "Copper-Engine/lib/ImGui/ImGui"
-include "Copper-Engine/lib/yaml-cpp"
-include "Copper-Engine/lib/assimp"
+group "Libraries"
+    include "Copper-Engine/lib/GLFW"
+    include "Copper-Engine/lib/GLAD"
+    include "Copper-Engine/lib/ImGui/ImGui"
+    include "Copper-Engine/lib/yaml-cpp"
+    include "Copper-Engine/lib/assimp"
+group ""
 
 project "Copper-Engine"
     location "Copper-Engine"
@@ -218,9 +220,9 @@ project "Copper-ScriptingAPI"
     }
 
     filter "configurations:Debug"
-		optimize "Off"
-		symbols "Default"
+        optimize "Off"
+        symbols "Default"
 
-	filter "configurations:Release"
-		optimize "On"
-		symbols "Default"
+    filter "configurations:Release"
+        optimize "On"
+        symbols "Default"

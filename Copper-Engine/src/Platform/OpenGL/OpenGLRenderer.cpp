@@ -36,12 +36,16 @@ namespace Copper {
 		vao->Bind();
 		shader->Bind();
 
-		shader->LoadMat4("View",       cam->CreateViewMatrix());
-		shader->LoadMat4("Projection", cam->CreateProjectionMatrix());
-		
+		shader->LoadMat4("ProjectionView", cam->CreateProjectionMatrix() * cam->CreateViewMatrix());
 		shader->LoadVec3("camPos", cam->transform->position);
-		
-		shader->LoadVec3("lightPos", light->transform->GlobalPosition());
+
+		if (light) {
+
+			shader->LoadVec3("light.position", light->transform->GlobalPosition());
+			shader->LoadVec3("light.color", light->color);
+			shader->LoadFloat("light.intensity", light->intensity);
+
+		}
 
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);
 

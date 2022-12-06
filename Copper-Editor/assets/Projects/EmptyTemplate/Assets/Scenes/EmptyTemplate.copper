@@ -1,116 +1,9 @@
-Scene: Default
+Scene: EmptyTemplate
 Entities:
   0:
-    Name: Square
-    Transform:
-      Position: [0, 0, 0]
-      Rotation: [90, 0, 0]
-      Scale: [1, 1, 1]
-      Parent: -1
-      Children:
-        []
-    Components:
-      Mesh Renderer:
-        Mesh:
-          Data:
-            Vertex:
-              Position: [-0.5, 0, 0.5]
-              Normal: [0, -1, 0]
-              Color: [1, 1, 1, 1]
-            Vertex:
-              Position: [0.5, 0, 0.5]
-              Normal: [0, -1, 0]
-              Color: [1, 1, 1, 1]
-            Vertex:
-              Position: [0.5, 0, -0.5]
-              Normal: [0, -1, 0]
-              Color: [1, 1, 1, 1]
-            Vertex:
-              Position: [-0.5, 0, -0.5]
-              Normal: [0, -1, 0]
-              Color: [1, 1, 1, 1]
-          Indices:
-            - 0
-            - 1
-            - 2
-            - 2
-            - 3
-            - 0
-    Scripts:
-      Player:
-        Namespace: Copper
-        Fields:
-          speed:
-            Variable Type: Float
-            Value: 0.00999999978
-          test:
-            Variable Type: Float
-            Value: 69.4199982
-          id:
-            Variable Type: Int
-            Value: 4
-          unsigned:
-            Variable Type: Unsigned Int
-            Value: 6
-      Mesh:
-        Namespace: Copper
-        Fields:
-          color:
-            Variable Type: Float
-            Value: 0.0500000007
-          numOfVertices:
-            Variable Type: Unsigned Int
-            Value: 25
-  1:
-    Name: Plane
-    Transform:
-      Position: [0, -1, 0]
-      Rotation: [0, 0, 0]
-      Scale: [10, 1, 10]
-      Parent: -1
-      Children:
-        []
-    Components:
-      Mesh Renderer:
-        Mesh:
-          Data:
-            Vertex:
-              Position: [-0.5, 0, 0.5]
-              Normal: [0, -1, 0]
-              Color: [1, 1, 1, 1]
-            Vertex:
-              Position: [0.5, 0, 0.5]
-              Normal: [0, -1, 0]
-              Color: [1, 1, 1, 1]
-            Vertex:
-              Position: [0.5, 0, -0.5]
-              Normal: [0, -1, 0]
-              Color: [1, 1, 1, 1]
-            Vertex:
-              Position: [-0.5, 0, -0.5]
-              Normal: [0, -1, 0]
-              Color: [1, 1, 1, 1]
-          Indices:
-            - 0
-            - 1
-            - 2
-            - 2
-            - 3
-            - 0
-    Scripts:
-      Mesh:
-        Namespace: Copper
-        Fields:
-          color:
-            Variable Type: Float
-            Value: -0.0700000003
-          numOfVertices:
-            Variable Type: Unsigned Int
-            Value: 25
-  2:
     Name: Light
     Transform:
-      Position: [0, 0, 1]
+      Position: [0, 1, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
       Parent: -1
@@ -118,13 +11,12 @@ Entities:
         []
     Components:
       Light:
-        Color: None
-    Scripts:
-      {}
-  3:
+        Color: [1, 0.999989986, 0.999989986, 0]
+        Intensity: 1
+  1:
     Name: Cube
     Transform:
-      Position: [-1.79030335, -0.56935209, -1.42292166]
+      Position: [-1.45040798, -0.907962322, -2.5618186]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
       Parent: -1
@@ -267,5 +159,3 @@ Entities:
             - 22
             - 23
             - 20
-    Scripts:
-      {}

@@ -5,10 +5,6 @@
 
 #include "Object.h"
 
-#include "Engine/Components/ScriptComponent.h"
-
-#include "Engine/Scripting/ScriptEngine.h"
-
 namespace Copper {
 
 	extern int cCounter;
@@ -166,42 +162,6 @@ namespace Copper {
 
 		}
 
-		ScriptComponent* AddScriptComponent(Object& obj, std::string nameSpace, std::string scriptName) {
-
-			if (scripts.find(obj.id) == scripts.end()) scripts[obj.id] = std::vector<ScriptComponent>();
-
-			int index = (int) scripts[obj.id].size();
-
-			scripts[obj.id].push_back(ScriptComponent(nameSpace, scriptName, obj));
-
-			if (!scripts[obj.id][index].valid) return nullptr;
-
-			return &scripts[obj.id][index];
-
-		}
-		ScriptComponent* GetScriptComponent(int32_t id, std::string nameSpace, std::string scriptName) {
-
-			for (int i = 0; i < scripts[id].size(); i++) {
-
-				if (scripts[id][i].nameSpace == nameSpace && scripts[id][i].scriptName == scriptName) return &scripts[id][i];
-
-			}
-
-			return nullptr;
-
-		}
-		bool HasScriptComponent(int32_t id, std::string nameSpace, std::string scriptName) {
-
-			for (ScriptComponent script : scripts[id]) {
-
-				if (script.nameSpace == nameSpace && script.scriptName == scriptName) return true;
-
-			}
-
-			return false;
-
-		}
-
 		Object GetObjectFromID(int32_t id) const { return objects[id];  }
 		int GetNumOfObjects() const { return (int) objects.size(); }
 
@@ -209,8 +169,6 @@ namespace Copper {
 		std::vector<Object> objects;
 		std::vector<uint32_t> gaps;
 		std::vector<ComponentPool*> pools;
-
-		std::unordered_map<int32_t, std::vector<ScriptComponent>> scripts;
 
 	};
 

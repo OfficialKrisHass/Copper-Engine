@@ -28,6 +28,8 @@ project "Template"
         optimize "Off"
         symbols "Default"
 
+        debugformat "c7"
+
     filter "configurations:Release"
         optimize "On"
-        symbols "Default"
+        symbols "Off"

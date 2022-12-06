@@ -2,6 +2,8 @@
 
 #include "Engine/Utilities/Math.h"
 
+#include "Engine/Scripting/ScriptingCore.h"
+
 #include "Panels/SceneHierarchy.h"
 #include "Panels/Properties.h"
 #include "Panels/FileBrowser.h"
@@ -241,9 +243,10 @@ namespace Editor {
 
 	EditorData data;
 
-	void OnEditorRuntimeStart();
-	void OnEditorRuntimeUpdate();
-	void OnEditorRuntimeStop();
+	void StartEditorRuntime();
+	void StopEditorRuntime();
+
+	void BuildVSProject();
 
 	void Initialize() {
 
@@ -252,7 +255,6 @@ namespace Editor {
 
 		data.state = Edit;
 		data.viewportSize = UVector2I(1280, 720);
-		//data.gizmoType = ImGuizmo::TRANSLATE;
 
 		data.playIcon = Texture("assets/Icons/PlayButton.png");
 		data.stopIcon = Texture("assets/Icons/StopButton.png");
@@ -273,7 +275,7 @@ namespace Editor {
 
 	void Run() {
 
-		if (data.state == Play) OnEditorRuntimeUpdate();
+		if (data.state == Play) data.scene.RuntimeUpdate();
 
 		if (Input::IsKey(KeyCode::Q) && !Input::IsButton(Input::Button2)) data.gizmoType = ImGuizmo::TRANSLATE;
 		else if (Input::IsKey(KeyCode::W) && !Input::IsButton(Input::Button2)) data.gizmoType = ImGuizmo::ROTATE;
@@ -434,11 +436,11 @@ namespace Editor {
 
 		if (data.state == Edit) {
 
-			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t) data.playIcon.GetID()), buttonSize, {0, 1}, {1, 0})) OnEditorRuntimeStart();
+			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t) data.playIcon.GetID()), buttonSize, {0, 1}, {1, 0})) StartEditorRuntime();
 
 		} else if (data.state == Play) {
 
-			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t) data.stopIcon.GetID()), buttonSize, {0, 1}, {1, 0})) OnEditorRuntimeStop();
+			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t) data.stopIcon.GetID()), buttonSize, {0, 1}, {1, 0})) StopEditorRuntime();
 
 		}
 
@@ -458,6 +460,7 @@ namespace Editor {
 				if (ImGui::MenuItem("Save Project", "Ctrl+Shift+S")) { SaveProjectData(); SaveScene(); }
 
 				ImGui::Separator();
+				if (ImGui::MenuItem("Build Solution", "Ctrl+B")) BuildVSProject();
 				if (ImGui::MenuItem("Rebuild C# Solution")) RebuildCSharpProject();
 
 				ImGui::EndMenu();
@@ -490,18 +493,13 @@ namespace Editor {
 		
 	}
 
-	void OnEditorRuntimeStart() {
+	void StartEditorRuntime() {
 
 		data.state = Play;
-		data.scene.OnRuntimeStart();
+		data.scene.RuntimeStart();
 
 	}
-	void OnEditorRuntimeUpdate() {
-
-		data.scene.OnRuntimeUpdate();
-
-	}
-	void OnEditorRuntimeStop() {
+	void StopEditorRuntime() {
 
 		data.state = Edit;
 
@@ -577,6 +575,8 @@ namespace Editor {
 
 		data.title = "Copper Editor - " + data.projectName + ": ";
 		Input::SetWindowTitle(data.title);
+		
+		Scripting::LoadProjectAssembly(data.projectPath.string() + "\\Binaries\\" + data.projectName + ".dll");
 
 	}
 
@@ -634,6 +634,11 @@ namespace Editor {
 		dllDst.open(data.projectPath.string() + "/Binaries/Copper-ScriptingAPI.dll", std::ios::out);
 		dllDst << dllSrc.rdbuf();
 		dllDst.close();
+
+		BuildVSProject();
+
+		Scripting::LoadProjectAssembly(data.projectPath.string() + "\\Binaries\\" + data.projectName + ".dll");
+		Scripting::Reload(true);
 
 		//Create the Project.cu file
 		SaveProjectData();
@@ -712,6 +717,29 @@ namespace Editor {
 
 		}
 		projectCsproj.close();
+
+	}
+
+	void BuildVSProject() {
+
+		std::string cmd = "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\MSBuild.exe ";
+
+		size_t pos = data.projectPath.string().find_first_of(' ');
+		std::string newPath = data.projectPath.string();
+		while (pos != std::string::npos) {
+
+			newPath.erase(pos, 1);
+			newPath.insert(pos, "\" \"");
+			pos = newPath.find_first_of(' ', pos + 3);
+
+		}
+
+		cmd += newPath + "\\" + data.projectName + ".csproj";
+		cmd += " -nologo";
+
+		system(cmd.c_str());
+
+		Scripting::Reload();
 
 	}
 
@@ -834,9 +862,18 @@ namespace Editor {
 
 			case KeyCode::S: {
 
-				if (control && shift) { SaveProjectData(); break; }
-				if (control && alt) { SaveSceneAs(); break; }
-				if (control) { SaveScene(); break; }
+				if (control && shift) SaveProjectData();
+				if (control && alt) SaveSceneAs();
+				if (control) SaveScene();
+
+				break;
+
+			}
+			case KeyCode::B: {
+
+				if (control) BuildVSProject();
+
+				break;
 
 			}
 

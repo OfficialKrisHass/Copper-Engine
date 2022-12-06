@@ -1,7 +1,5 @@
 #include "Properties.h"
 
-#include "Engine/Scripting/ScriptEngine.h"
-
 #include "Core/EditorApp.h"
 
 #include "Viewport/SceneCamera.h"
@@ -68,142 +66,11 @@ namespace Editor {
 			
 		}
 
-		for (int i = 0; i < selectedObj.GetNumOfScriptComponents(); i++) {
-
-			if (!DrawComponent<ScriptComponent>(selectedObj.GetScriptComponent(i)->scriptName)) continue;
-
-			std::unordered_map<std::string, std::vector<Variable>> fieldsAndProperties;
-			fieldsAndProperties = ScriptEngine::GetScriptFieldsAndProperties(selectedObj.GetScriptComponent(i)->nameSpace, selectedObj.GetScriptComponent(i)->scriptName);
-
-			for (Variable field : fieldsAndProperties["Fields"]) {
-
-				switch (field.varType) {
-
-					case VariableType::Int: {
-
-						int value;
-						field.GetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
-
-						if (ShowInt(field.name, value)) {
-
-							field.SetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
-							Editor::SetChanges(true);
-
-						}
-
-						break;
-
-					}
-					case VariableType::UInt: {
-
-						unsigned int value;
-						field.GetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
-
-						if (ShowUInt(field.name, value)) {
-
-							field.SetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
-							Editor::SetChanges(true);
-
-						}
-
-						break;
-
-					}
-					case VariableType::Float: {
-
-						float value;
-						field.GetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
-
-						if (ShowFloat(field.name, value)) {
-
-							field.SetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
-							Editor::SetChanges(true);
-
-						}
-						
-						break;
-
-					}
-					case VariableType::Double: {
-
-						double value;
-						field.GetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
-
-						if (ShowDouble(field.name, value, 1)) {
-
-							field.SetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
-							Editor::SetChanges(true);
-
-						}
-
-						break;
-
-					}
-					case VariableType::String: {
-
-						std::string text = "Not Implemented yet!";
-						ShowString(field.name, text);
-
-						break;
-
-					}
-					case VariableType::Char: {
-
-						//This doesn't work :c
-						//
-						//For Some reason it tries to put more then one character into charValue
-						//
-						//Help :c
-
-						/*char charValue;
-						field.GetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &charValue);
-
-						if (ShowChar(field.name, charValue)) field.SetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &charValue);*/
-
-						std::string text = "Not Implemented yet!";
-						ShowString(field.name, text);
-
-						break;
-
-					}
-					case VariableType::Vector2: {
-
-						/*Vector2 value;
-						field.GetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
-
-						if (ShowVector2(field.name, value)) field.SetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);*/
-
-						std::string text = "Not Implemented yet!";
-						ShowString(field.name, text);
-
-						break;
-
-					}
-					case VariableType::Vector3: {
-
-						/*Vector3 value;
-						field.GetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);
-
-						if (ShowVector3(field.name, value)) field.SetValue(selectedObj.GetScriptComponent(i)->GetInstance(), &value);*/
-
-						std::string text = "Not Implemented yet!";
-						ShowString(field.name, text);
-
-						break;
-
-					}
-
-				}
-
-			}
-
-		}
-
 		if(selectedObj.HasComponent<Camera>() && DrawComponent<Camera>("Camera")) {
 			
-			if (ShowFloat("FOV", selectedObj.GetComponent<SceneCamera>()->fov, 0.1f)) SetChanges(true);
-			if (ShowFloat("Near Plane", selectedObj.GetComponent<SceneCamera>()->nearPlane)) SetChanges(true);
-			if (ShowFloat("Far Plane", selectedObj.GetComponent<SceneCamera>()->farPlane)) SetChanges(true);
+			if (ShowFloat("FOV", selectedObj.GetComponent<Camera>()->fov, 0.1f)) SetChanges(true);
+			if (ShowFloat("Near Plane", selectedObj.GetComponent<Camera>()->nearPlane)) SetChanges(true);
+			if (ShowFloat("Far Plane", selectedObj.GetComponent<Camera>()->farPlane)) SetChanges(true);
 			
 		}
 		if (selectedObj.HasComponent<Light>() && DrawComponent<Light>("Light")) {
@@ -233,17 +100,6 @@ namespace Editor {
 			if (ImGui::MenuItem("Light"))			{ selectedObj.AddComponent<Light>(); Editor::SetChanges(true); }
 			if (ImGui::MenuItem("Mesh Renderer"))	{ selectedObj.AddComponent<MeshRenderer>(); Editor::SetChanges(true); }
 			if (ImGui::MenuItem("Camera"))			{ selectedObj.AddComponent<Camera>(); Editor::SetChanges(true); }
-			
-			for (ScriptComponent script : ScriptEngine::GetScriptComponents()) {
-
-				if (ImGui::MenuItem(script.scriptName.c_str())) {
-
-					if (selectedObj.AddScriptComponent(script.nameSpace, script.scriptName) == nullptr) LogError("Could not Add the Script {0}", script.scriptName);
-					Editor::SetChanges(true);
-
-				}
-
-			}
 
 			ImGui::EndPopup();
 				
@@ -457,14 +313,6 @@ namespace Editor {
 	bool Properties::ShowColor(std::string name, Copper::Color& col, bool showAlpha) {
 
 		bool ret = false;
-		
-		ImGui::PushID(name.c_str());
-
-		ImGui::Columns(2);
-		ImGui::SetColumnWidth(0, 75.0f);
-		ImGui::Text(name.c_str());
-		ImGui::NextColumn();
-		
 		float colors[] {
 
 			col.r,
@@ -472,8 +320,10 @@ namespace Editor {
 			col.b
 
 		};
-		//Log("Before: {0}", col);
+
 		if (ImGui::ColorEdit3("##Color", colors)) ret = true;
+		ImGui::SameLine();
+		ImGui::Text(name.c_str());
 
 		if (ret) {
 
@@ -481,11 +331,7 @@ namespace Editor {
 			col.g = colors[1];
 			col.b = colors[2];
 
-			//Log("After: {0}", col);
-
 		}
-
-		ImGui::PopID();
 
 		return ret;
 		
@@ -493,7 +339,6 @@ namespace Editor {
 	bool Properties::ShowInt(std::string name, int& show, int speed) {
 
 		bool ret = false;
-
 		if (ImGui::DragInt(name.c_str(), &show, speed)) ret = true;
 
 		return ret;
@@ -501,16 +346,16 @@ namespace Editor {
 	}
 	bool Properties::ShowUInt(std::string name, unsigned int& show, int speed) {
 
-		std::string text = name + ": Not implemented yet!";
-		ImGui::Text(text.c_str());
+		bool ret = false;
+		if (ImGui::DragInt(name.c_str(), (int*) &show, speed)) ret = true;
+		if (show < 0) show = 0;
 
-		return false;
+		return ret;
 
 	}
 	bool Properties::ShowFloat(std::string name, float& show, float speed) {
 
 		bool ret = false;
-		
 		if (ImGui::DragFloat(name.c_str(), &show, speed)) ret = true;
 
 		return ret;
@@ -518,26 +363,26 @@ namespace Editor {
 	}
 	bool Properties::ShowDouble(std::string name, double& show, float speed) {
 
-		std::string text = name + ": Not implemented yet!";
-		ImGui::Text(text.c_str());
+		bool ret = false;
+		if (ImGui::DragFloat(name.c_str(), (float*) &show, speed)) ret = true;
 
-		return false;
+		return ret;
 
 	}
 	bool Properties::ShowString(std::string name, std::string& show) {
 
-		std::string text = name + ": Not implemented yet!";
-		ImGui::Text(text.c_str());
+		bool ret = false;
+		if (ImGui::InputText(name.c_str(), &show)) ret = true;
 
-		return false;
+		return ret;
 
 	}
 	bool Properties::ShowChar(std::string name, char& show) {
 
-		std::string text = name + ": Not implemented yet!";
-		ImGui::Text(text.c_str());
+		bool ret;
+		if (ImGui::InputText(name.c_str(), &show, sizeof(char))) ret = true;
 
-		return false;
+		return ret;
 
 	}
 	

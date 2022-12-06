@@ -9,9 +9,9 @@
 #include "Engine/Renderer/FrameBuffer.h"
 #include "Engine/Renderer/Shader.h"
 
-#include "Engine/UI/ImGui.h"
+#include "Engine/Scripting/ScriptingCore.h"
 
-#include "Engine/Scripting/ScriptEngine.h"
+#include "Engine/UI/ImGui.h"
 
 #include <ImGui/imgui.h>
 
@@ -47,7 +47,7 @@ namespace Copper {
 
 		Renderer::Initialize();
 		UI::Initialize();
-		ScriptEngine::Initialize();
+		Scripting::Initialize();
 		
 		Renderer::SetShader(new Shader("assets/Shaders/vertexDefault.glsl", "assets/Shaders/fragmentDefault.glsl"));
 
@@ -83,8 +83,6 @@ namespace Copper {
 	void Shutdown() {
 
 		UI::Shutdown();
-		ScriptEngine::Shutdown();
-
 		data.window->Shutdown();
 
 		//std::cin.get();

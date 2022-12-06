@@ -31,7 +31,6 @@ namespace Copper {
         public static Vector2 operator /(Vector2 lhs, Vector2 rhs) { return new Vector2(lhs.x / rhs.x, lhs.y / rhs.y); }
 
     }
-
     public struct Vector3 {
 
         public Vector3(float x, float y, float z) {

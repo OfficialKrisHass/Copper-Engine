@@ -26,8 +26,8 @@ namespace Copper {
 
 		void DestroyObject(Object& obj) { registry.DestroyObject(obj); }
 
-		void OnRuntimeStart();
-		void OnRuntimeUpdate();
+		void RuntimeStart();
+		void RuntimeUpdate();
 
 		void Update();
 

@@ -43,7 +43,7 @@ namespace Editor {
 	void Project::CreateSolution() {
 
 		//Copy the visual studio project files
-		std::ifstream templateSln("assets/Projects/EmptyTemplate/Template.sln");
+		std::ifstream templateSln("assets/Projects/EmptyTemplate/Template.sln.cut");
 		std::fstream projectSln;
 		projectSln.open(path.string() + "\\" + name + ".sln", std::ios::out);
 
@@ -72,7 +72,7 @@ namespace Editor {
 		}
 		projectSln.close();
 
-		std::ifstream templateCsproj("assets/Projects/EmptyTemplate/Template.csproj");
+		std::ifstream templateCsproj("assets/Projects/EmptyTemplate/Template.csproj.cut");
 		std::fstream projectCsproj;
 		projectCsproj.open(path.string() + "\\" + name + ".csproj", std::ios::out);
 

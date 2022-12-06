@@ -476,10 +476,15 @@ namespace Editor {
 
 				if (ImGui::MenuItem("New Project")) NewProject();
 				if (ImGui::MenuItem("Open Project")) OpenProject();
+				if(ImGui::MenuItem("Save Project", "Ctrl+Shift+S")) { data.project.Save(); SaveEditorData(); SaveScene(); }
 
 				ImGui::Separator();
 
 				if (ImGui::MenuItem("Build Solution", "Ctrl+B")) data.project.BuildSolution();
+				
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("Create Solution Files")) data.project.CreateSolution();
 
 				ImGui::EndMenu();
 
@@ -535,8 +540,6 @@ namespace Editor {
 		//TODO : Either make our own Folder Open Dialog or Start using the Windows new System
 		std::filesystem::path path = Utilities::FolderOpenDialog();
 		if (path.empty()) { LogWarn("Path is Invalid or Empty"); return; }
-
-		//std::filesystem::path path = L"C:\\Programming\\Copper-Engine\\Editor Projects\\First Project";
 
 		//Create the Project
 		data.project = Project(path.string().substr(path.string().find_last_of('\\') + 1), path);
@@ -594,6 +597,9 @@ namespace Editor {
 
 		OpenScene(data.project.lastOpenedScene);
 
+		Scripting::LoadProjectAssembly(data.project.path.string() + "\\Binaries\\" + data.project.name + ".dll");
+		Scripting::Reload();
+
 	}
 	void OpenProject() {
 
@@ -647,7 +653,7 @@ namespace Editor {
 			
 		}
 
-		data.project.lastOpenedScene = std::filesystem::relative(path, data.project.path);
+		data.project.lastOpenedScene = std::filesystem::relative(path, data.project.assetsPath);
 
 		data.scene = Scene();
 		LoadScene(&data.scene);
@@ -725,7 +731,7 @@ namespace Editor {
 
 			case KeyCode::S: {
 
-				if (control && shift); { data.project.Save(); SaveEditorData(); }
+				if (control && shift); { data.project.Save(); SaveEditorData(); SaveScene(); }
 				if (control && alt) SaveSceneAs();
 				if (control) SaveScene();
 

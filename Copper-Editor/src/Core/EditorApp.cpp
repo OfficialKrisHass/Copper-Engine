@@ -209,15 +209,9 @@ namespace Editor {
 		
 		EditorState state;
 		std::string title;
-		int gizmoType = -1;
 
 		//Project
-		std::string projectName;
-
-		std::filesystem::path projectPath;
-		std::filesystem::path assetsPath;
-
-		std::filesystem::path lastOpenedScene;
+		Project project;
 
 		//Scene
 		Scene scene;
@@ -243,15 +237,19 @@ namespace Editor {
 
 	EditorData data;
 
+	void SaveEditorData();
+	void LoadEditorData();
+
+	void NewProject();
+	void OpenProject(std::filesystem::path path);
+	void OpenProject();
+
 	void StartEditorRuntime();
 	void StopEditorRuntime();
-
-	void BuildVSProject();
 
 	void Initialize() {
 
 		LoadEditorData();
-		LoadProjectData();
 
 		data.state = Edit;
 		data.viewportSize = UVector2I(1280, 720);
@@ -261,25 +259,52 @@ namespace Editor {
 
 		data.sceneHierarchy = SceneHierarchy();
 		data.properties = Properties();
-		data.fileBrowser = FileBrowser(data.assetsPath);
+		data.fileBrowser = FileBrowser(data.project.assetsPath);
 		
 		data.sceneCam = SceneCamera(data.viewportSize);
 		data.sceneCam.transform = new Transform(Vector3(0.0f, 0.0f, 1.0f), Vector3::zero, Vector3::one);
 		data.sceneCam.transform->position.z = 1.0f;
 		data.sceneCam.transform->parent = nullptr;
-		
-		//ManualScene();
-		OpenScene(data.lastOpenedScene);
 
 	}
-
 	void Run() {
 
 		if (data.state == Play) data.scene.RuntimeUpdate();
 
-		if (Input::IsKey(KeyCode::Q) && !Input::IsButton(Input::Button2)) data.gizmoType = ImGuizmo::TRANSLATE;
-		else if (Input::IsKey(KeyCode::W) && !Input::IsButton(Input::Button2)) data.gizmoType = ImGuizmo::ROTATE;
-		else if (Input::IsKey(KeyCode::E) && !Input::IsButton(Input::Button2)) data.gizmoType = ImGuizmo::SCALE;
+	}
+	void Shutdown() {
+
+		SaveEditorData();
+
+	}
+
+	void SaveEditorData() {
+
+		YAML::Emitter out;
+
+		out << YAML::BeginMap; //Start
+
+		out << YAML::Key << "Last Project" << YAML::Value << data.project.path.string();
+
+		out << YAML::EndMap; //End
+
+		std::ofstream file("assets/EditorData.cu");
+		file << out.c_str();
+
+		data.project.Save();
+
+	}
+	void LoadEditorData() {
+
+		YAML::Node main;
+		try { main = YAML::LoadFile("assets/EditorData.cu"); } catch (YAML::ParserException e) {
+
+			LogError("Failed to Read The Editor Data save file\n    {1}", e.what());
+			return;
+
+		}
+
+		OpenProject(main["Last Project"].as<std::string>());
 
 	}
 
@@ -296,12 +321,6 @@ namespace Editor {
 		data.properties.UIRender();
 
 		ImGui::End(); //Dockspace
-
-	}
-
-	void Shutdown() {
-
-		SaveProjectData();
 
 	}
 
@@ -385,12 +404,12 @@ namespace Editor {
 			// Snapping
 			bool snap = Input::IsKey(KeyCode::LeftControl);
 			float snapValue = 0.5f;
-			if (data.gizmoType == ImGuizmo::OPERATION::ROTATE) snapValue = 45.0f;
+			if (data.project.gizmoType == ImGuizmo::OPERATION::ROTATE) snapValue = 45.0f;
 
 			float snapValues[3] = {snapValue, snapValue, snapValue};
 
 			ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
-								 (ImGuizmo::OPERATION) data.gizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
+								 (ImGuizmo::OPERATION) data.project.gizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
 								 nullptr, snap ? snapValues : nullptr);
 
 			if (ImGuizmo::IsUsing()) {
@@ -457,11 +476,10 @@ namespace Editor {
 
 				if (ImGui::MenuItem("New Project")) NewProject();
 				if (ImGui::MenuItem("Open Project")) OpenProject();
-				if (ImGui::MenuItem("Save Project", "Ctrl+Shift+S")) { SaveProjectData(); SaveScene(); }
 
 				ImGui::Separator();
-				if (ImGui::MenuItem("Build Solution", "Ctrl+B")) BuildVSProject();
-				if (ImGui::MenuItem("Rebuild C# Solution")) RebuildCSharpProject();
+
+				if (ImGui::MenuItem("Build Solution", "Ctrl+B")) data.project.BuildSolution();
 
 				ImGui::EndMenu();
 
@@ -511,235 +529,78 @@ namespace Editor {
 
 	}
 
-	void SaveEditorData() {
-
-		YAML::Emitter out;
-
-		out << YAML::BeginMap; //Start
-
-		out << YAML::Key << "Last Project" << YAML::Value << data.projectPath.string();
-
-		out << YAML::EndMap; //End
-
-		std::ofstream file("assets/EditorData.cu");
-		file << out.c_str();
-
-	}
-	void LoadEditorData() {
-
-		YAML::Node main;
-		try { main = YAML::LoadFile("assets/EditorData.cu"); } catch (YAML::ParserException e) {
-
-			LogError("Failed to Read The Editor Data save file\n    {1}", e.what());
-			return;
-
-		}
-
-		data.projectPath = main["Last Project"].as<std::string>();
-
-	}
-	void SaveProjectData() {
-
-		SaveEditorData();
-
-		YAML::Emitter out;
-
-		out << YAML::BeginMap;
-
-		out << YAML::Key << "Name" << YAML::Value << data.projectName;
-		out << YAML::Key << "Last Scene" << YAML::Value << data.lastOpenedScene.string();
-		out << YAML::Key << "Gizmo" << YAML::Value << data.gizmoType;
-
-		out << YAML::EndMap;
-
-		std::ofstream file(data.projectPath.string() + "/Project.cu");
-		file << out.c_str();
-
-	}
-	void LoadProjectData() {
-
-		YAML::Node main;
-		try { main = YAML::LoadFile(data.projectPath.string() + "/Project.cu"); } catch (YAML::ParserException e) {
-
-			LogError("Failed to Read The Editor Data save file\n    {1}", e.what());
-			return;
-
-		}
-
-		data.assetsPath = data.projectPath.string() + "/Assets";
-		data.projectName = main["Name"].as<std::string>();
-		data.lastOpenedScene = data.assetsPath.string() + '/' + main["Last Scene"].as<std::string>();
-
-		int gizmoType = main["Gizmo"].as<int>();
-		data.gizmoType = gizmoType;
-
-		data.title = "Copper Editor - " + data.projectName + ": ";
-		Input::SetWindowTitle(data.title);
-		
-		Scripting::LoadProjectAssembly(data.projectPath.string() + "\\Binaries\\" + data.projectName + ".dll");
-
-	}
-
 	void NewProject() {
 
+		//Open the Folder Dialog
+		//TODO : Either make our own Folder Open Dialog or Start using the Windows new System
 		std::filesystem::path path = Utilities::FolderOpenDialog();
-		if (path.empty()) { LogWarn("Path is Invalid or empty"); return; }
-		//std::filesystem::path path = "C:\\Programming\\Copper-Engine\\Editor Projects\\First Project";
+		if (path.empty()) { LogWarn("Path is Invalid or Empty"); return; }
 
-		std::filesystem::create_directories(path.string() + "/Binaries");
-		std::filesystem::create_directories(path.string() + "/Objs");
+		//std::filesystem::path path = L"C:\\Programming\\Copper-Engine\\Editor Projects\\First Project";
 
+		//Create the Project
+		data.project = Project(path.string().substr(path.string().find_last_of('\\') + 1), path);
 
-		//Set the Project stuff
-		data.projectPath = path;
-		data.projectName = path.string().substr(path.string().find_last_of('\\') + 1);
+		//Create the Directioes
+		std::filesystem::create_directories(path.string() + "\\Assets\\Scenes");
+		std::filesystem::create_directories(path.string() + "\\Binaries");
+		std::filesystem::create_directories(path.string() + "\\Objs");
 
-		//Setup the Assets path and folder
-		data.assetsPath = path.string() + "/Assets";
-		std::filesystem::create_directories(data.assetsPath.string() + "/Scenes");
-		data.fileBrowser.SetCurrentDir(data.assetsPath);
+		//Setup the FileBrowser
+		data.fileBrowser.SetCurrentDir(data.project.assetsPath);
 
-		//Create the Empty Template Scene
-		data.scene = Scene();
-		data.scene.name = "EmptyTemplate";
+		//Copy the Template scene
+		std::ifstream templateScene("assets/Projects/EmptyTemplate/Assets/Scenes/EmptyTemplate.copper");
+		std::fstream projectScene;
 
-		LoadScene(&data.scene);
+		projectScene.open(data.project.assetsPath.string() + "\\Scenes\\EmptyTemplate.copper", std::ios::out);
+		projectScene << templateScene.rdbuf();
+		projectScene.close();
+		data.project.lastOpenedScene = "Scenes\\EmptyTemplate.copper";
 
-		Object light = data.scene.CreateObject("Light");
-		light.transform->position.y = 1.0f;
-		light.AddComponent<Light>();
-
-		data.scene.cam = &data.sceneCam;
-
-		//Finalize the Template Scene by Serializing it
-		data.scene.Serialize(data.assetsPath.string() + "/Scenes/EmptyTemplate.copper");
-
-		//Set the Last opened Scene path
-		//TODO : There isn't really a reason why we need the LastOpenedScene path since it's in the
-		//Project.cu file, but It's 11PM and I'm too lazy to change it now :)
-		data.lastOpenedScene = std::filesystem::relative(data.scene.path, data.assetsPath);
-
-		//Change the Title
-		//TODO : Why is this here ? Am I always writing code at 11PM completely dead and insane ?
-		data.title = "Copper Editor - " + data.projectName + ": ";
-		data.title += data.scene.name;
-		Input::SetWindowTitle(data.title);
-
-		//Coppy the dll
+		//Copy the ScriptingAPI dll
 		std::ifstream dllSrc("assets/Projects/EmptyTemplate/Binaries/Copper-ScriptingAPI.dll");
 		std::fstream dllDst;
 
-		RebuildCSharpProject();
-
-		dllDst.open(data.projectPath.string() + "/Binaries/Copper-ScriptingAPI.dll", std::ios::out);
+		dllDst.open(path.string() + "/Binaries/Copper-ScriptingAPI.dll", std::ios::out);
 		dllDst << dllSrc.rdbuf();
 		dllDst.close();
 
-		BuildVSProject();
+		//Create, Build and Load the Solution and Assembly
+		data.project.CreateSolution();
+		data.project.BuildSolution(false);
 
-		Scripting::LoadProjectAssembly(data.projectPath.string() + "\\Binaries\\" + data.projectName + ".dll");
-		Scripting::Reload(true);
+		Scripting::LoadProjectAssembly(data.project.path.string() + "\\Binaries\\" + data.project.name + ".dll");
+		Scripting::Reload();
 
-		//Create the Project.cu file
-		SaveProjectData();
+		//Lastly Save the Project into the Project.cu file
+		data.project.Save();
+
+		data.changes = false;
+		data.title = "Copper Editor - " + data.project.name + ": ";
+		Input::SetWindowTitle(data.title);
+
+	}
+	void OpenProject(std::filesystem::path path) {
+
+		data.project = Project("", path);
+		data.project.Load();
+
+		data.fileBrowser.SetCurrentDir(data.project.assetsPath);
+
+		data.changes = false;
+		data.title = "Copper Editor - " + data.project.name + ": ";
+		Input::SetWindowTitle(data.title);
+
+		OpenScene(data.project.lastOpenedScene);
 
 	}
 	void OpenProject() {
 
 		std::filesystem::path path = Utilities::FolderOpenDialog();
-		if (path.empty()) { LogWarn("Path is Invalid or empty"); return; }
+		if (path.empty()) { LogWarn("path is Invalid or empty"); return; }
 
-		data.projectPath = path;
-		LoadProjectData();
-		data.fileBrowser.SetCurrentDir(data.assetsPath);
-
-		OpenScene(data.lastOpenedScene);
-
-	}
-	void RebuildCSharpProject() {
-
-		//Copy the visual studio project files
-		std::ifstream templateSln("assets/Projects/EmptyTemplate/Template.sln");
-		std::fstream projectSln;
-		std::string line;
-
-		std::string projectSlnPath = data.projectPath.string() + "\\" + data.projectName + ".sln";
-		projectSln.open(projectSlnPath, std::ios::out);
-		while (std::getline(templateSln, line)) {
-
-			size_t pos = line.find(':');
-			while (pos != std::string::npos && line[pos + 1] == '{') {
-
-				size_t end = line.find_first_of('}', pos);
-				std::string var = line.substr(pos + 2, end - (pos + 2));
-
-				if (var == "ProjectName") {
-
-					line.erase(pos, (end - pos) + 1);
-					line.insert(pos, data.projectName);
-
-				}
-
-				pos = line.find(':', pos + 1);
-
-			}
-
-			projectSln << line << "\n";
-
-		}
-		projectSln.close();
-
-		std::ifstream templateCsproj("assets/Projects/EmptyTemplate/Template.csproj");
-		std::fstream projectCsproj;
-		line = "";
-
-		projectCsproj.open(data.projectPath.string() + "\\" + data.projectName + ".csproj", std::ios::out);
-		while (std::getline(templateCsproj, line)) {
-
-			size_t pos = line.find(':');
-			while (pos != std::string::npos && line[pos + 1] == '{') {
-
-				size_t end = line.find_first_of('}', pos);
-				std::string var = line.substr(pos + 2, end - (pos + 2));
-
-				if (var == "ProjectName") {
-
-					line.erase(pos, (end - pos) + 1);
-					line.insert(pos, data.projectName);
-
-				}
-
-				pos = line.find(':', pos + 1);
-
-			}
-
-			projectCsproj << line << "\n";
-
-		}
-		projectCsproj.close();
-
-	}
-
-	void BuildVSProject() {
-
-		std::string cmd = "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\MSBuild.exe ";
-
-		size_t pos = data.projectPath.string().find_first_of(' ');
-		std::string newPath = data.projectPath.string();
-		while (pos != std::string::npos) {
-
-			newPath.erase(pos, 1);
-			newPath.insert(pos, "\" \"");
-			pos = newPath.find_first_of(' ', pos + 3);
-
-		}
-
-		cmd += newPath + "\\" + data.projectName + ".csproj";
-		cmd += " -nologo";
-
-		system(cmd.c_str());
-
-		Scripting::Reload();
+		OpenProject(path);
 
 	}
 
@@ -753,11 +614,11 @@ namespace Editor {
 	}
 	void OpenScene() {
 
-		std::filesystem::path path = Utilities::OpenDialog("Copper Scene (*.copper)\0*.copper\0", data.assetsPath);
+		std::filesystem::path path = Utilities::OpenDialog("Copper Scene (*.copper)\0*.copper\0", "assets/Projects/DevProject/Assets");
 
 		if(path.empty()) { LogWarn("The Path Specified is empty or is not a Copper Scene File"); return; }
 
-		std::filesystem::path relativeToProjectAssets = std::filesystem::relative(path, data.assetsPath);
+		std::filesystem::path relativeToProjectAssets = std::filesystem::relative(path, "assets/Projects/DevProject/Assets");
 		if (relativeToProjectAssets.string()[0] == '.' && relativeToProjectAssets.string()[1] == '.') {
 
 			switch (Input::Error::ErrorPopup("Invalid Scene", "The Scene you have selected is outside your project, or in a folder starting with '..'")) {
@@ -786,7 +647,7 @@ namespace Editor {
 			
 		}
 
-		data.lastOpenedScene = std::filesystem::relative(path, data.assetsPath);
+		data.project.lastOpenedScene = std::filesystem::relative(path, data.project.path);
 
 		data.scene = Scene();
 		LoadScene(&data.scene);
@@ -795,7 +656,7 @@ namespace Editor {
 		data.scene.cam = &data.sceneCam;
 
 		data.changes = false;
-		data.title = "Copper Editor - " + data.projectName + ": ";
+		data.title = "Copper Editor - " + data.project.name + ": ";
 		data.title += data.scene.name;
 		Input::SetWindowTitle(data.title);
 		
@@ -807,7 +668,7 @@ namespace Editor {
 			data.scene.Serialize(data.scene.path);
 
 			data.changes = false;
-			data.title = "Copper Editor - " + data.projectName + ": ";
+			data.title = "Copper Editor - TestProject: ";
 			data.title += data.scene.name;
 			Input::SetWindowTitle(data.title);
 			
@@ -820,11 +681,11 @@ namespace Editor {
 	}
 	void SaveSceneAs() {
 
-		std::string path = Utilities::SaveDialog("Copper Scene (*.copper)\0*.copper\0", data.assetsPath);
+		std::string path = Utilities::SaveDialog("Copper Scene (*.copper)\0*.copper\0", "assets/Projects/DevProject/Assets");
 
 		if(!path.empty()) {
 
-			std::filesystem::path relativeToProjectAssets = std::filesystem::relative(path, data.assetsPath);
+			std::filesystem::path relativeToProjectAssets = std::filesystem::relative(path, "assets/Projects/DevProject/Assets");
 			if (relativeToProjectAssets.string()[0] == '.' && relativeToProjectAssets.string()[1] == '.') {
 
 				switch (Input::Error::ErrorPopup("Invalid Scene", "The Place you want to save this scene is outside of this Project or starts with '..'")) {
@@ -840,7 +701,7 @@ namespace Editor {
 			data.scene.Serialize(path);
 
 			data.changes = false;
-			data.title = "Copper Editor - " + data.projectName + ": ";
+			data.title = "Copper Editor - TestProject: ";
 			data.title += data.scene.name;
 			Input::SetWindowTitle(data.title);
 			
@@ -856,13 +717,15 @@ namespace Editor {
 		bool shift = Input::IsKey(KeyCode::LeftShift) || Input::IsKey(KeyCode::RightShift);
 		bool alt = Input::IsKey(KeyCode::LeftAlt) || Input::IsKey(KeyCode::RightAlt);
 
+		bool rightClick = Input::IsButton(Input::Button2);
+
 		KeyPresedEvent event = *(KeyPresedEvent*) &e;
 
 		switch (event.key) {
 
 			case KeyCode::S: {
 
-				if (control && shift) SaveProjectData();
+				if (control && shift); { data.project.Save(); SaveEditorData(); }
 				if (control && alt) SaveSceneAs();
 				if (control) SaveScene();
 
@@ -871,12 +734,32 @@ namespace Editor {
 			}
 			case KeyCode::B: {
 
-				if (control) BuildVSProject();
+				if (control) data.project.BuildSolution();
 
 				break;
 
 			}
+			case KeyCode::Q: {
 
+				if (!rightClick) data.project.gizmoType = ImGuizmo::TRANSLATE;
+
+				break;
+
+			}
+			case KeyCode::W: {
+
+				if (!rightClick) data.project.gizmoType = ImGuizmo::ROTATE;
+
+				break;
+
+			}
+			case KeyCode::E: {
+
+				if (!rightClick) data.project.gizmoType = ImGuizmo::SCALE;
+
+				break;
+
+			}
 		}
 
 		return true;
@@ -899,12 +782,10 @@ namespace Editor {
 
 	}
 
-	std::filesystem::path GetProjectPath() { return data.projectPath; }
-
 	void SetChanges(bool value) {
 
 		data.changes = value;
-		data.title = "Copper Editor - " + data.projectName + ": ";
+		data.title = "Copper Editor - TestProject: ";
 		data.title += data.scene.name;
 		data.title += '*';
 		Input::SetWindowTitle(data.title);
@@ -956,5 +837,7 @@ namespace Editor {
 
 
 	}
+
+	Project GetProject() { return data.project; }
 
 }

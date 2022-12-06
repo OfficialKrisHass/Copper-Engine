@@ -2,6 +2,8 @@
 
 #include <Copper.h>
 
+#include "Core/Project.h"
+
 namespace Editor {
 
 	enum EditorState {
@@ -13,23 +15,16 @@ namespace Editor {
 	void Initialize();
 
 	void Run();
+	void Shutdown();
+
 	void UI();
 
-	void Shutdown();
+	Project GetProject();
 
 	void RenderDockspace();
 	void RenderViewport();
 	void RenderToolbar();
 	void RenderMenu();
-
-	void SaveEditorData();
-	void LoadEditorData();
-	void SaveProjectData();
-	void LoadProjectData();
-
-	void NewProject();
-	void OpenProject();
-	void RebuildCSharpProject();
 
 	void NewScene();
 	void OpenScene();
@@ -41,8 +36,6 @@ namespace Editor {
 	bool OnWindowClose(Copper::Event& e);
 
 	void ManualScene();
-
-	std::filesystem::path GetProjectPath();
 
 	void SetChanges(bool value);
 

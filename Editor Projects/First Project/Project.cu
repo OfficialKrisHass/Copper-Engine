@@ -1,3 +1,3 @@
 Name: First Project
-Last Scene: Scenes\EmptyTemplate.copper
+Last Scene: Assets\Scenes\EmptyTemplate.copper
 Gizmo: 0

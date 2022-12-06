@@ -4,6 +4,7 @@
 #include "Engine/Utilities/FileUtils.h"
 
 #include "Engine/Scripting/MonoUtils.h"
+#include "Engine/Scripting/InternalCalls.cpp"
 
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>

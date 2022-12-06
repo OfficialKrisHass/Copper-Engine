@@ -40,7 +40,7 @@ namespace Editor {
         }
 
         ImGui::SameLine();
-        ImGui::Text(std::filesystem::relative(currentDir, Editor::GetProjectPath()).string().c_str());
+        ImGui::Text(std::filesystem::relative(currentDir, GetProject().assetsPath).string().c_str());
         ImGui::GetFont()->FontSize += 2.0f;
 
         const float padding = 16.0f;

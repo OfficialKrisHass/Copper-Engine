@@ -2,37 +2,30 @@
 
 namespace Copper {
 
-    public class Object {
+    public class Component {
 
         protected int objID;
 
-        public Object(int objID) {
+        protected Component() { }
+        protected Component(int objID) {
 
             this.objID = objID;
 
         }
 
-        public string name {
+        public Object obj {
 
             get {
 
-                return InternalCalls.GetObjectName(objID);
-
-            }
-            set {
-
-                InternalCalls.SetObjectName(objID, value);
+                return new Object(objID);
 
             }
 
         }
-
         public Transform transform {
 
             get {
-
                 return new Transform(objID);
-
             }
 
         }

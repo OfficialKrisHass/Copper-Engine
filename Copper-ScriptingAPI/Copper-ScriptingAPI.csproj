@@ -47,6 +47,8 @@
     <Compile Include="Source\Editor\Editor.cs" />
     <Compile Include="Source\Core\InternalCalls.cs" />
     <Compile Include="Source\Math\Vector.cs" />
+    <Compile Include="Source\Scene\Component.cs" />
+    <Compile Include="Source\Scene\Components\Transform.cs" />
     <Compile Include="Source\Scene\Object.cs" />
   </ItemGroup>
   <ItemGroup>

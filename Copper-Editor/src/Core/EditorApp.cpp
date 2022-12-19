@@ -244,6 +244,8 @@ namespace Editor {
 	void OpenProject(std::filesystem::path path);
 	void OpenProject();
 
+	void CopyScriptingAPI();
+
 	void StartEditorRuntime();
 	void StopEditorRuntime();
 
@@ -269,7 +271,6 @@ namespace Editor {
 	}
 	void Run() {
 
-		if (data.state == Play) data.scene.RuntimeUpdate();
 
 	}
 	void Shutdown() {
@@ -486,6 +487,10 @@ namespace Editor {
 
 				if (ImGui::MenuItem("Create Solution Files")) data.project.CreateSolution();
 
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("Copy Copper Scripting API")) CopyScriptingAPI();
+
 				ImGui::EndMenu();
 
 			}
@@ -519,7 +524,7 @@ namespace Editor {
 	void StartEditorRuntime() {
 
 		data.state = Play;
-		data.scene.RuntimeStart();
+		data.scene.StartRuntime();
 
 	}
 	void StopEditorRuntime() {
@@ -562,12 +567,7 @@ namespace Editor {
 		data.project.lastOpenedScene = "Scenes\\EmptyTemplate.copper";
 
 		//Copy the ScriptingAPI dll
-		std::ifstream dllSrc("assets/Projects/EmptyTemplate/Binaries/Copper-ScriptingAPI.dll");
-		std::fstream dllDst;
-
-		dllDst.open(path.string() + "/Binaries/Copper-ScriptingAPI.dll", std::ios::out);
-		dllDst << dllSrc.rdbuf();
-		dllDst.close();
+		CopyScriptingAPI();
 
 		//Create, Build and Load the Solution and Assembly
 		data.project.CreateSolution();
@@ -607,6 +607,17 @@ namespace Editor {
 		if (path.empty()) { LogWarn("path is Invalid or empty"); return; }
 
 		OpenProject(path);
+
+	}
+
+	void CopyScriptingAPI() {
+
+		std::ifstream dllSrc("assets/ScriptAPI/Copper-ScriptingAPI.dll", std::ios::binary);
+		std::fstream dllDst;
+
+		dllDst.open(data.project.path.string() + "/Binaries/Copper-ScriptingAPI.dll", std::ios::out | std::ios::binary);
+		dllDst << dllSrc.rdbuf();
+		dllDst.close();
 
 	}
 

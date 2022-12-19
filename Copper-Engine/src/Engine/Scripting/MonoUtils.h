@@ -17,6 +17,8 @@ namespace Copper::Scripting::MonoUtils {
 	MonoAssembly* LoadAssembly(std::filesystem::path path);
 
 	std::string MonoToString(MonoString* string);
-	MonoString* StringToMono(std::string string, MonoDomain* domain);
+	MonoString* StringToMono(std::string string);
+
+	std::string RemoveNamespace(std::string& name);
 
 }

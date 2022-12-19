@@ -37,3 +37,4 @@
 #include "Engine/Components/Camera.h"
 #include "Engine/Components/Light.h"
 #include "Engine/Components/MeshRenderer.h"
+#include "Engine/Components/ScriptComponent.h"

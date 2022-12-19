@@ -26,13 +26,16 @@ namespace Copper {
 
 		void DestroyObject(Object& obj) { registry.DestroyObject(obj); }
 
-		void RuntimeStart();
-		void RuntimeUpdate();
+		void StartRuntime();
 
 		void Update();
 
 		void Serialize(std::filesystem::path path);
 		bool Deserialize(std::filesystem::path path);
+
+	private:
+		bool runtimeRunning = false;
+		bool runtimeStarted = false;
 
 	};
 

@@ -1,5 +1,7 @@
 #include "Properties.h"
 
+#include "Engine/Scripting/ScriptingCore.h"
+
 #include "Core/EditorApp.h"
 
 #include "Viewport/SceneCamera.h"
@@ -66,6 +68,12 @@ namespace Editor {
 			
 		}
 
+		ScriptComponent* script = selectedObj.GetComponent<ScriptComponent>();
+		if (script && DrawComponent<ScriptComponent>(script->name)) {
+
+			
+
+		}
 		if(selectedObj.HasComponent<Camera>() && DrawComponent<Camera>("Camera")) {
 			
 			if (ShowFloat("FOV", selectedObj.GetComponent<Camera>()->fov, 0.1f)) SetChanges(true);
@@ -100,6 +108,18 @@ namespace Editor {
 			if (ImGui::MenuItem("Light"))			{ selectedObj.AddComponent<Light>(); Editor::SetChanges(true); }
 			if (ImGui::MenuItem("Mesh Renderer"))	{ selectedObj.AddComponent<MeshRenderer>(); Editor::SetChanges(true); }
 			if (ImGui::MenuItem("Camera"))			{ selectedObj.AddComponent<Camera>(); Editor::SetChanges(true); }
+
+			for (std::string scriptName : Scripting::GetScriptComponents()) {
+
+				if (ImGui::MenuItem(scriptName.c_str())) {
+					
+					ScriptComponent* script = selectedObj.AddComponent<ScriptComponent>();
+
+					script->Init(selectedObj.id, scriptName);
+						
+				}
+
+			}
 
 			ImGui::EndPopup();
 				

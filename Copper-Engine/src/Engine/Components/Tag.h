@@ -7,7 +7,7 @@ namespace Copper {
 	struct Tag {
 
 	public:
-		std::string name;
+		std::string name = "Object";
 
 	};
 

@@ -2,7 +2,7 @@
 
 namespace Copper {
 
-    public class Vector2 {
+    public struct Vector2 {
 
 
         public Vector2(float x, float y) {

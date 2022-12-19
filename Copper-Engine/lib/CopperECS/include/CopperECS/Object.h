@@ -5,6 +5,7 @@
 
 #include "Engine/Components/Transform.h"
 #include "Engine/Components/Tag.h"
+#include "Engine/Components/ScriptComponent.h"
 
 namespace Copper {
 

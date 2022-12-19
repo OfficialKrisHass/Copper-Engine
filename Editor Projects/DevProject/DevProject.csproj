@@ -53,14 +53,16 @@
     <None Include="Assets\Scenes\EmptyTemplate.copper" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\Test.cs" />
+    <Compile Include="Assets\**\*.cs">
+      <Compile>Assets\%(RecursiveDir)/%(FileName)%(Extension)</Compile>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
-  <Target Name="AfterBuild">
+  <Target Name="AfterBuild"><Compile Include="Assets\Scripts\Test.cs" />
   </Target>
   -->
 </Project>

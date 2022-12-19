@@ -3,6 +3,8 @@
 
 #include "Engine/Utilities/FileUtils.h"
 
+#include "Engine/Scripting/ScriptingCore.h"
+
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
 
@@ -39,13 +41,25 @@ namespace Copper::Scripting::MonoUtils {
 		return ret;
 
 	}
-	MonoString* StringToMono(std::string string, MonoDomain* domain) {
+	MonoString* StringToMono(std::string string) {
 
 		if (string.size() == 0) { LogError("String can't be Invalid"); return nullptr; }
 
-		MonoString* ret = mono_string_new(domain, string.c_str());
+		MonoString* ret = mono_string_new(Scripting::GetAppDomain(), string.c_str());
 
 		return ret;
+
+	}
+
+	std::string RemoveNamespace(std::string& name) {
+
+		size_t pos = name.find_last_of('.');
+		if (pos == std::string::npos) return ""; //Name doesn't have a Namespace
+
+		std::string nameSpace = name.substr(0, pos);
+		name.erase(0, pos + 1);
+
+		return nameSpace;
 
 	}
 

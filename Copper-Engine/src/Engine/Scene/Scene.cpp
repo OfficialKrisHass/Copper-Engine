@@ -195,8 +195,16 @@ namespace Copper {
 				}
 
 			}
+			if (runtimeRunning && o.HasComponent<ScriptComponent>()) {
+
+				if (!runtimeStarted) o.GetComponent<ScriptComponent>()->InvokeCreate(); 
+				o.GetComponent<ScriptComponent>()->InvokeUpdate();
+
+			}
 
 		}
+
+		if (runtimeRunning && !runtimeStarted) runtimeStarted = true;
 
 		cam->transform->Update();
 		cam->Update();
@@ -204,14 +212,9 @@ namespace Copper {
 
 	}
 
-	void Scene::RuntimeStart() {
+	void Scene::StartRuntime() {
 
-		//
-
-	}
-	void Scene::RuntimeUpdate() {
-
-		//
+		runtimeRunning = true;
 
 	}
 

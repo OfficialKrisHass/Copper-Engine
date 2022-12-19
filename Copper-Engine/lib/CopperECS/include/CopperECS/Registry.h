@@ -5,6 +5,11 @@
 
 #include "Object.h"
 
+#include "Engine/Components/ScriptComponent.h"
+
+#include "Engine/Scripting/ScriptingCore.h"
+#include "Engine/Scripting/MonoUtils.h"
+
 namespace Copper {
 
 	extern int cCounter;
@@ -118,10 +123,13 @@ namespace Copper {
 			if (!objects[obj.id]) return nullptr;
 
 			int cID = GetCID<T>();
+			if (objects[obj.id].componentMask.test(cID)) return nullptr;
 
 			if (pools.size() <= cID) pools.resize(cID + 1, nullptr);
 			if (pools[cID] == nullptr) pools[cID] = new ComponentPool(sizeof(T));
 
+			/*T* component = (T*) pools[cID]->Get(obj.id);
+			*component = T();*/
 			T* component = new (pools[cID]->Get(obj.id)) T();
 			objects[obj.id].componentMask.set(cID);
 			obj.componentMask.set(cID);

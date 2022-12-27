@@ -37,6 +37,12 @@ namespace Copper {
 
         }
 
+        public bool HasComponent<T>() where T : Component, new() {
+
+            return InternalCalls.HasComponent(objID, typeof(T));
+
+        }
+
     }
 
 }

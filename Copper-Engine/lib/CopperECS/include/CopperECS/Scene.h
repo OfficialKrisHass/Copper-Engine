@@ -14,7 +14,6 @@ namespace Copper {
 		friend class Object;
 
 	public:
-		Registry registry;
 
 		std::string name;
 		std::filesystem::path path;
@@ -33,7 +32,12 @@ namespace Copper {
 		void Serialize(std::filesystem::path path);
 		bool Deserialize(std::filesystem::path path);
 
+		Registry* GetRegistry() { return &registry; }
+		Object& GetObjectFromID(int32_t id) { return registry.GetObjectFromID(id); }
+
 	private:
+		Registry registry;
+
 		bool runtimeRunning = false;
 		bool runtimeStarted = false;
 

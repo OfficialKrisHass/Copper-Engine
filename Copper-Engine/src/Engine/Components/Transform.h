@@ -10,10 +10,12 @@ namespace Copper {
 
 	class Object;
 	class Scene;
+	class Registry;
 
 	class Transform {
 
 		friend class Scene;
+		friend class Registry;
 
 	public:
 		Transform() = default;
@@ -31,6 +33,8 @@ namespace Copper {
 		Vector3 right;
 
 		Shared<Object> object;
+		uint32_t index = 0;
+
 		Transform* parent;
 		int numOfChildren;
 
@@ -48,7 +52,11 @@ namespace Copper {
 		bool operator==(const Transform& other) const;
 
 	private:
+		const static bool multipleOnOneObject = false;
+		bool valid;
+
 		std::vector<int32_t> children;
+
 
 	};
 

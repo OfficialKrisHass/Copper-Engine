@@ -50,7 +50,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Scenes\EmptyTemplate.copper" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\**\*.cs">

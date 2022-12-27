@@ -595,10 +595,10 @@ namespace Editor {
 		data.title = "Copper Editor - " + data.project.name + ": ";
 		Input::SetWindowTitle(data.title);
 
-		OpenScene(data.project.lastOpenedScene);
-
 		Scripting::LoadProjectAssembly(data.project.path.string() + "\\Binaries\\" + data.project.name + ".dll");
 		Scripting::Reload();
+
+		OpenScene(data.project.lastOpenedScene);
 
 	}
 	void OpenProject() {
@@ -702,7 +702,7 @@ namespace Editor {
 
 		if(!path.empty()) {
 
-			std::filesystem::path relativeToProjectAssets = std::filesystem::relative(path, "assets/Projects/DevProject/Assets");
+			std::filesystem::path relativeToProjectAssets = std::filesystem::relative(path, data.project.assetsPath);
 			if (relativeToProjectAssets.string()[0] == '.' && relativeToProjectAssets.string()[1] == '.') {
 
 				switch (Input::Error::ErrorPopup("Invalid Scene", "The Place you want to save this scene is outside of this Project or starts with '..'")) {
@@ -742,7 +742,7 @@ namespace Editor {
 
 			case KeyCode::S: {
 
-				if (control && shift); { data.project.Save(); SaveEditorData(); SaveScene(); }
+				if (control && shift) { data.project.Save(); SaveEditorData(); SaveScene(); }
 				if (control && alt) SaveSceneAs();
 				if (control) SaveScene();
 

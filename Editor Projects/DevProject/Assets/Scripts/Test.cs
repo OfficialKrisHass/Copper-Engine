@@ -2,17 +2,22 @@
 
 using Copper;
 
-class Test : Component {
+namespace Testing {
 
-    void Create() {
+    class Test : Component {
 
-        transform.position = new Vector3(1.0f, 0.0f, -0.5f);
+        void Create() {
 
-    }
+            Editor.Log("Has Test: " + HasComponent<Test>().ToString());
+            Editor.Log("Has Player: " + HasComponent<Player>().ToString());
 
-    void Update() {
+        }
 
-        transform.rotation += new Vector3(0.0f, 0.1f, 0.0f);
+        void Update() {
+
+            //
+
+        }
 
     }
 

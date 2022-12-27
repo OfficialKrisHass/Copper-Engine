@@ -19,7 +19,7 @@ namespace Editor {
 	std::filesystem::path Properties::selectedFile = "";
 	bool Properties::wasFileLast = false;
 
-	template<typename T> static bool DrawComponent(const std::string& name) {
+	template<typename T> static bool DrawComponent(const std::string& name, bool& removed) {
 
 		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
 
@@ -27,6 +27,14 @@ namespace Editor {
 		//ImGui::VerticalSeparator();
 
 		bool opened = ImGui::TreeNodeEx((void*) typeid(T).hash_code(), flags, name.c_str());
+
+		if (opened && ImGui::BeginPopupContextItem()) {
+
+			if (ImGui::MenuItem("Remove Component")) removed = true;
+
+			ImGui::EndPopup();
+
+		}
 
 		ImGui::PopStyleVar();
 		if(opened) ImGui::TreePop();
@@ -58,33 +66,69 @@ namespace Editor {
 		ImGui::SameLine();
 		ImGui::VerticalSeparator();
 
-		if(DrawComponent<Transform>("Transform")) {
+		bool removed = false;
+		if(DrawComponent<Transform>("Transform", removed)) {
 			
-			if (ShowVector3("Position:", selectedObj.GetComponent<Transform>()->position)) SetChanges(true);
-			if (ShowVector3("Rotation:", selectedObj.GetComponent<Transform>()->rotation, 0.1f)) SetChanges(true);
-			if (ShowVector3("Scale:", selectedObj.GetComponent<Transform>()->scale)) SetChanges(true);
+			if (ShowVector3("Position:", selectedObj.transform->position)) SetChanges(true);
+			if (ShowVector3("Rotation:", selectedObj.transform->rotation, 0.1f)) SetChanges(true);
+			if (ShowVector3("Scale:", selectedObj.transform->scale)) SetChanges(true);
 
 			ImGui::VerticalSeparator();
+
+			removed = false;
 			
 		}
 
-		ScriptComponent* script = selectedObj.GetComponent<ScriptComponent>();
-		if (script && DrawComponent<ScriptComponent>(script->name)) {
+		for (ScriptComponent* script : selectedObj.GetComponents<ScriptComponent>()) {
 
-			
+			ImGui::PushID(script->index);
+
+			if (!DrawComponent<ScriptComponent>(script->name, removed)) { ImGui::PopID(); continue; }
+			if (removed) {
+
+				selectedObj.RemoveComponent<ScriptComponent>(script->index);
+
+				removed = false;
+				SetChanges(true);
+
+				ImGui::PopID();
+				continue;
+
+			}
+
+			ImGui::PopID();
 
 		}
-		if(selectedObj.HasComponent<Camera>() && DrawComponent<Camera>("Camera")) {
-			
-			if (ShowFloat("FOV", selectedObj.GetComponent<Camera>()->fov, 0.1f)) SetChanges(true);
-			if (ShowFloat("Near Plane", selectedObj.GetComponent<Camera>()->nearPlane)) SetChanges(true);
-			if (ShowFloat("Far Plane", selectedObj.GetComponent<Camera>()->farPlane)) SetChanges(true);
-			
-		}
-		if (selectedObj.HasComponent<Light>() && DrawComponent<Light>("Light")) {
+		for (Light* light : selectedObj.GetComponents<Light>()) {
 
-			if (ShowColor("Color", selectedObj.GetComponent<Light>()->color, false)) SetChanges(true);
-			if (ShowFloat("Intensity", selectedObj.GetComponent<Light>()->intensity)) SetChanges(true);
+			ImGui::PushID(light->index);
+
+			if (!DrawComponent<Light>("Light", removed)) { ImGui::PopID(); continue; }
+			if (removed) {
+				
+				selectedObj.RemoveComponent<Light>(light->index);
+
+				removed = false;
+				SetChanges(true);
+
+				ImGui::PopID();
+				continue;
+			
+			}
+
+			if (ShowColor("Color", light->color, false)) SetChanges(true);
+			if (ShowFloat("Intensity", light->intensity)) SetChanges(true);
+
+			ImGui::PopID();
+
+		}
+		for (Camera* camera : selectedObj.GetComponents<Camera>()) {
+
+			if (!DrawComponent<Camera>("Camera", removed)) continue;
+
+			if (ShowFloat("FOV", camera->fov, 0.1f)) SetChanges(true);
+			if (ShowFloat("Near Plane", camera->nearPlane)) SetChanges(true);
+			if (ShowFloat("Far Plane", camera->farPlane)) SetChanges(true);
 
 		}
 
@@ -105,7 +149,7 @@ namespace Editor {
 
 		if(ImGui::BeginPopup("##AddComponent")) {
 				
-			if (ImGui::MenuItem("Light"))			{ selectedObj.AddComponent<Light>(); Editor::SetChanges(true); }
+			if (ImGui::MenuItem("Light"))			{ selectedObj.AddComponent<Light>()->color.r = 0.5f; Editor::SetChanges(true); }
 			if (ImGui::MenuItem("Mesh Renderer"))	{ selectedObj.AddComponent<MeshRenderer>(); Editor::SetChanges(true); }
 			if (ImGui::MenuItem("Camera"))			{ selectedObj.AddComponent<Camera>(); Editor::SetChanges(true); }
 
@@ -115,7 +159,7 @@ namespace Editor {
 					
 					ScriptComponent* script = selectedObj.AddComponent<ScriptComponent>();
 
-					script->Init(selectedObj.id, scriptName);
+					script->Init(selectedObj.GetID(), scriptName);
 						
 				}
 
@@ -332,6 +376,8 @@ namespace Editor {
 	}
 	bool Properties::ShowColor(std::string name, Copper::Color& col, bool showAlpha) {
 
+		ImGui::PushID(name.c_str());
+
 		bool ret = false;
 		float colors[] {
 
@@ -352,6 +398,8 @@ namespace Editor {
 			col.b = colors[2];
 
 		}
+
+		ImGui::PopID();
 
 		return ret;
 		

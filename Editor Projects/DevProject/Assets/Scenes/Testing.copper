@@ -1,4 +1,4 @@
-Scene: EmptyTemplate
+Scene: Testing
 Entities:
   0:
     Name: Light
@@ -13,6 +13,10 @@ Entities:
       Light:
         Color: [1, 0.999989986, 0.999989986, 0]
         Intensity: 1
+      Script Component:
+        Name: Testing.Test
+      Script Component:
+        Name: Player
   1:
     Name: Cube
     Transform:

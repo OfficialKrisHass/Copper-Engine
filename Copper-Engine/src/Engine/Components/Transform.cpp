@@ -53,7 +53,7 @@ namespace Copper {
 
 	}
 
-	Transform* Transform::GetChild(int index) const { return GetScene()->registry.GetObjectFromID(children[index]).transform; }
+	Transform* Transform::GetChild(int index) const { return GetScene()->GetRegistry()->GetObjectFromID(children[index]).transform; }
 
 	void Transform::AddChild(Transform* transform) {
 

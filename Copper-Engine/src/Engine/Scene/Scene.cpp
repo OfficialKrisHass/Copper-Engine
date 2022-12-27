@@ -177,7 +177,7 @@ namespace Copper {
 
 		Renderer::ClearColor(0.18f, 0.18f, 0.18f);
 
-		Light* light;
+		Light* light = nullptr;
 
 		for (Object& o : SceneView<>(this)) {
 
@@ -198,6 +198,7 @@ namespace Copper {
 			if (runtimeRunning && o.HasComponent<ScriptComponent>()) {
 
 				if (!runtimeStarted) o.GetComponent<ScriptComponent>()->InvokeCreate(); 
+
 				o.GetComponent<ScriptComponent>()->InvokeUpdate();
 
 			}
@@ -261,9 +262,17 @@ namespace Copper {
 			out << YAML::Key << "Components";
 			out << YAML::Value << YAML::BeginMap;
 
-			if(o.HasComponent<Camera>()) {
+			for (Light* light : o.GetComponents<Light>()) {
 
-				Camera* cam = o.GetComponent<Camera>();
+				out << YAML::Key << "Light" << YAML::Value << YAML::BeginMap;
+
+				out << YAML::Key << "Color" << YAML::Value << light->color;
+				out << YAML::Key << "Intensity" << YAML::Value << light->intensity;
+
+				out << YAML::EndMap;
+				
+			}
+			for (Camera* cam : o.GetComponents<Camera>()) {
 
 				out << YAML::Key << "Camera" << YAML::Value << YAML::BeginMap;
 
@@ -274,9 +283,7 @@ namespace Copper {
 				out << YAML::EndMap;
 				
 			}
-			if(o.HasComponent<MeshRenderer>()) {
-
-				MeshRenderer* renderer = o.GetComponent<MeshRenderer>();
+			for (MeshRenderer* renderer : o.GetComponents<MeshRenderer>()) {
 
 				out << YAML::Key << "Mesh Renderer" << YAML::Value << YAML::BeginMap;
 
@@ -311,19 +318,17 @@ namespace Copper {
 				}
 
 				out << YAML::EndMap;
-				
-			}
-			if(o.HasComponent<Light>()) {
-
-				Light* light = o.GetComponent<Light>();
-
-				out << YAML::Key << "Light" << YAML::Value << YAML::BeginMap;
-
-				out << YAML::Key << "Color" << YAML::Value << light->color;
-				out << YAML::Key << "Intensity" << YAML::Value << light->intensity;
-
 				out << YAML::EndMap;
 				
+			}
+			for (ScriptComponent* script : o.GetComponents<ScriptComponent>()) {
+
+				out << YAML::Key << "Script Component" << YAML::Value << YAML::BeginMap;
+
+				out << YAML::Key << "Name" << YAML::Value << script->name;
+
+				out << YAML::EndMap;
+
 			}
 			out << YAML::EndMap; //Components
 
@@ -376,60 +381,69 @@ namespace Copper {
 			}
 
 			YAML::Node components = entity["Components"];
-			
-			YAML::Node camera = components["Camera"];
-			if(camera) {
 
-				Camera* cam = deserialized.AddComponent<Camera>();
+			for (YAML::const_iterator it = components.begin(); it != components.end(); ++it) {
 
-				cam->fov = camera["Fov"].as<float>();
-				cam->nearPlane = camera["Near Plane"].as<float>();
-				cam->farPlane = camera["Far Plane"].as<float>();
-				
-			}
+				YAML::Node component = it->second;
+				std::string cName = it->first.as<std::string>();
 
-			YAML::Node meshRenderer = components["Mesh Renderer"];
-			if(meshRenderer) {
+				if (cName == "Light") {
 
-				MeshRenderer* renderer = deserialized.AddComponent<MeshRenderer>();
+					Light* l = deserialized.AddComponent<Light>();
 
-				for (YAML::const_iterator it = meshRenderer.begin(); it != meshRenderer.end(); ++it) {
-
-					YAML::Node mesh = it->second;
-					Mesh m;
-
-					YAML::Node meshData = mesh["Data"];
-					for (YAML::const_iterator it = meshData.begin(); it != meshData.end(); ++it) {
-
-						YAML::Node vertex = it->second;
-
-						m.vertices.push_back(vertex["Position"].as<Vector3>());
-						m.normals.push_back(vertex["Normal"].as<Vector3>());
-						m.colors.push_back(vertex["Color"].as<Color>());
-
-					}
-
-					YAML::Node indices = mesh["Indices"];
-					for (int i = 0; i < indices.size(); i++) {
-
-						m.indices.push_back(indices[i].as<uint32_t>());
-
-					}
-
-					renderer->meshes.push_back(m);
+					l->color = component["Color"].as<Color>();
+					l->intensity = component["Intensity"].as<float>();
 
 				}
-				
-			}
+				if (cName == "Camera") {
 
-			YAML::Node light = components["Light"];
-			if(light) {
+					Camera* cam = deserialized.AddComponent<Camera>();
 
-				Light* l = deserialized.AddComponent<Light>();
+					cam->fov = component["Fov"].as<float>();
+					cam->nearPlane = component["Near Plane"].as<float>();
+					cam->farPlane = component["Far Plane"].as<float>();
 
-				l->color = light["Color"].as<Color>();
-				l->intensity = light["Intensity"].as<float>();
-				
+				}
+				if (cName == "Mesh Renderer") {
+
+					MeshRenderer* renderer = deserialized.AddComponent<MeshRenderer>();
+
+					for (YAML::const_iterator it = component.begin(); it != component.end(); ++it) {
+
+						YAML::Node mesh = it->second;
+						Mesh m;
+
+						YAML::Node meshData = mesh["Data"];
+						for (YAML::const_iterator it = meshData.begin(); it != meshData.end(); ++it) {
+
+							YAML::Node vertex = it->second;
+
+							m.vertices.push_back(vertex["Position"].as<Vector3>());
+							m.normals.push_back(vertex["Normal"].as<Vector3>());
+							m.colors.push_back(vertex["Color"].as<Color>());
+
+						}
+
+						YAML::Node indices = mesh["Indices"];
+						for (int i = 0; i < indices.size(); i++) {
+
+							m.indices.push_back(indices[i].as<uint32_t>());
+
+						}
+
+						renderer->meshes.push_back(m);
+
+					}
+
+				}
+				if (cName == "Script Component") {
+
+					ScriptComponent* s = deserialized.AddComponent<ScriptComponent>();
+
+					s->Init(deserialized.id, component["Name"].as<std::string>());
+
+				}
+
 			}
 
 		}

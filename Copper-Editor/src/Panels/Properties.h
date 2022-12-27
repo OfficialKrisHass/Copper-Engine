@@ -22,6 +22,8 @@ namespace Editor {
 		}
 		static void SetSelectedFile(std::filesystem::path file) { selectedFile = file;  wasFileLast = true; }
 
+		void Test(Copper::Light* light);
+
 	private:
 		Copper::Object selectedObj;
 		static std::filesystem::path selectedFile;

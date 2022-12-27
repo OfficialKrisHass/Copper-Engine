@@ -2,13 +2,10 @@
 
 #include <vector>
 #include <bitset>
+#include <unordered_map>
 
 #include "Object.h"
-
-#include "Engine/Components/ScriptComponent.h"
-
-#include "Engine/Scripting/ScriptingCore.h"
-#include "Engine/Scripting/MonoUtils.h"
+#include "ComponentList.h"
 
 namespace Copper {
 
@@ -24,14 +21,30 @@ namespace Copper {
 	struct ComponentPool {
 
 	public:
-		ComponentPool(size_t size) : size(size), data(new char[maxComponents * size]) {}
+		ComponentPool() = default;
+		ComponentPool(size_t size) : size(size), data(new char[maxComponents * size]), count(0) {}
 		~ComponentPool() { delete data; }
 
+		void* Add(int32_t objID) {
+
+			componentIndexes[objID].push_back(count);
+			count++;
+
+			return data + (count - 1) * size;
+
+		}
 		void* Get(uint32_t index) { return data + index * size; }
+		void* Get(int32_t objID, uint32_t index = 0) { return data + componentIndexes[objID][index] * size; }
+
+		uint32_t GetCount() const { return count; }
+		uint32_t GetCount(int32_t objID) { return (uint32_t) componentIndexes[objID].size(); }
 
 	private:
-		size_t size;
 		char* data = nullptr;
+		std::unordered_map<int32_t, std::vector<uint32_t>> componentIndexes;
+
+		size_t size;
+		uint32_t count;
 
 	};
 
@@ -41,7 +54,7 @@ namespace Copper {
 		friend class Object;
 
 	public:
-		Object CreateObject(Scene* scene, Vector3 position, Vector3 rotation, Vector3 scale, std::string name) {
+		Object CreateObject(Scene* scene, Vector3 position, Vector3 rotation, Vector3 scale, const std::string& name) {
 
 			if (!gaps.empty()) {
 
@@ -84,7 +97,7 @@ namespace Copper {
 			return objects[id];
 
 		}
-		Object CreateObjectFromID(int32_t id, Scene* scene, Vector3 position, Vector3 rotation, Vector3 scale, std::string name) {
+		Object CreateObjectFromID(int32_t id, Scene* scene, Vector3 position, Vector3 rotation, Vector3 scale, const std::string& name) {
 
 			if (id > (int32_t) objects.size() - 1) objects.resize(id + 1, Object());
 
@@ -113,7 +126,7 @@ namespace Copper {
 
 			obj.scene = nullptr;
 			obj.id = -1;
-			obj.componentMask = std::bitset<maxComponents>();
+			obj.componentMask.clear();
 
 		}
 
@@ -123,28 +136,33 @@ namespace Copper {
 			if (!objects[obj.id]) return nullptr;
 
 			int cID = GetCID<T>();
-			if (objects[obj.id].componentMask.test(cID)) return nullptr;
+			
+			if (obj.componentMask.size() <= cID) { obj.componentMask.resize(cID + 1, 0); objects[obj.id].componentMask.resize(cID + 1, 0); }
+			if (obj.componentMask[cID] == 1 && !T::multipleOnOneObject) {
+				LogError("Can't Add Component to Object {} because there already is one", obj.tag->name); return nullptr; }
 
 			if (pools.size() <= cID) pools.resize(cID + 1, nullptr);
-			if (pools[cID] == nullptr) pools[cID] = new ComponentPool(sizeof(T));
+			if (!pools[cID]) pools[cID] = new ComponentPool(sizeof(T));
 
-			/*T* component = (T*) pools[cID]->Get(obj.id);
-			*component = T();*/
-			T* component = new (pools[cID]->Get(obj.id)) T();
-			objects[obj.id].componentMask.set(cID);
-			obj.componentMask.set(cID);
+			T* component = new (pools[cID]->Add(obj.id)) T();
+			component->valid = true;
+			component->index = pools[cID]->GetCount(obj.id) - 1;
+
+			objects[obj.id].componentMask[cID]++;
+			obj.componentMask[cID]++;
 
 			return component;
 
 		}
-		template<typename T> T* GetComponent(int32_t id) {
+		template<typename T> T* GetComponent(int32_t id, uint32_t index = 0) {
 
 			if (!objects[id]) return nullptr;
 
 			int cID = GetCID<T>();
-			if (!objects[id].componentMask.test(cID)) return nullptr;
 
-			T* component = static_cast<T*>(pools[cID]->Get(id));
+			if (objects[id].componentMask.size() <= cID || objects[id].componentMask[cID] <= 0) return nullptr;
+
+			T* component = static_cast<T*>(pools[cID]->Get(id, index));
 			return component;
 
 		}
@@ -154,24 +172,47 @@ namespace Copper {
 
 			int cID = GetCID<T>();
 
-			return objects[id].componentMask.test(cID);
+			if (objects[id].componentMask.size() <= cID) return false;
+			return objects[id].componentMask[cID] >= 1;
 
 		}
-		template<typename T> void RemoveComponent(Object& obj) {
+		template<typename T> void RemoveComponent(Object& obj, uint32_t index = 0) {
 
 			if (!obj) return;
 			if (!objects[obj.id]) return;
 
 			int cID = GetCID<T>();
-			if (!objects[obj.id].componentMask.test(cID)) return;
+			
+			if (objects[obj.id].componentMask.size() <= cID || objects[obj.id].componentMask[cID] == 0) return;
+			if (!((T*) pools[cID]->Get(obj.id, index))->valid) return;
 
-			objects[obj.id].componentMask.reset(cID);
-			obj.componentMask.reset(cID);
+			objects[obj.id].componentMask[cID]--;
+			obj.componentMask[cID]--;
+
+			((T*) pools[cID]->Get(obj.id, index))->valid = false;
 
 		}
 
-		Object GetObjectFromID(int32_t id) const { return objects[id];  }
+		template<typename T> ComponentList<T> GetComponents(Scene* scene, int32_t id) {
+
+			if (!objects[id]) return ComponentList<T>(); //Empty constructor = invalid ComponentList
+
+			int cID = GetCID<T>();
+			if (objects[id].componentMask.size() <= cID || objects[id].componentMask[cID] <= 0) return ComponentList<T>(); //Empty constructor = invalid ComponentList
+
+			return ComponentList<T>(scene, id, cID);
+
+		}
+
 		int GetNumOfObjects() const { return (int) objects.size(); }
+
+		Object& GetObjectFromID(int32_t id) {
+			
+			return objects[id];
+		
+		}
+
+		ComponentPool* GetComponentPool(uint32_t cID) { return pools[cID]; }
 
 	private:
 		std::vector<Object> objects;

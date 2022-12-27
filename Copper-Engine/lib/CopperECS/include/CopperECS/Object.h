@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <bitset>
+#include <vector>
 
 #include "Engine/Components/Transform.h"
 #include "Engine/Components/Tag.h"
@@ -10,6 +10,8 @@
 namespace Copper {
 
 	const int maxComponents = 32;
+
+	template<typename T> class ComponentList;
 
 	class Object {
 
@@ -25,6 +27,7 @@ namespace Copper {
 		template<typename T> T* AddComponent() {
 
 			T* component = scene->registry.AddComponent<T>(*this);
+			if (!component) return nullptr;
 
 			component->object = this;
 			component->transform = transform;
@@ -32,9 +35,11 @@ namespace Copper {
 			return component;
 
 		}
-		template<typename T> T* GetComponent() { return scene->registry.GetComponent<T>(id); }
-		template<typename T> bool HasComponent() { return scene->registry.HasComponent<T>(id); }
-		template<typename T> void RemoveComponent() { scene->registry.RemoveComponent<T>(*this); }
+		template<typename T> T* GetComponent(uint32_t index = 0) const { return scene->registry.GetComponent<T>(id); }
+		template<typename T> bool HasComponent() const { return scene->registry.HasComponent<T>(id); }
+		template<typename T> void RemoveComponent(uint32_t index = 0) { scene->registry.RemoveComponent<T>(*this, index); }
+
+		template<typename T> ComponentList<T> GetComponents() { return scene->registry.GetComponents<T>(scene, id); }
 
 		operator bool() const { return id != -1 && scene != nullptr; }
 		operator int32_t() const { return id; }
@@ -44,11 +49,11 @@ namespace Copper {
 
 		int32_t GetID() const { return id; }
 
-		std::bitset<maxComponents> GetComponentMask() const { return componentMask; }
+		std::vector<uint32_t> GetComponentMask() const { return componentMask; }
 
-	public:
+	private:
 		int32_t id = -1;
-		std::bitset<maxComponents> componentMask;
+		std::vector<uint32_t> componentMask;
 
 		Scene* scene = nullptr;
 

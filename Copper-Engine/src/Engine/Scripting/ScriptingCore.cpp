@@ -87,6 +87,7 @@ namespace Copper::Scripting {
 		if (!projectAlreadyLoaded) LoadProjectAssembly(data.projectPath);
 
 		InitScriptComponents();
+		InternalCalls::Initialize();
 
 	}
 
@@ -100,6 +101,9 @@ namespace Copper::Scripting {
 		//Object
 		mono_add_internal_call("Copper.InternalCalls::GetObjectName", InternalCalls::GetObjectName);
 		mono_add_internal_call("Copper.InternalCalls::SetObjectName", InternalCalls::SetObjectName);
+
+		//Components
+		mono_add_internal_call("Copper.InternalCalls::HasComponent", InternalCalls::HasComponent);
 
 		//Transform
 		mono_add_internal_call("Copper.InternalCalls::GetPosition", InternalCalls::GetPosition);

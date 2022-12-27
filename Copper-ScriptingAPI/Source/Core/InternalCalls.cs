@@ -16,6 +16,9 @@ namespace Copper {
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static string GetObjectName(int objID);
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetObjectName(int objID, string name);
 
+        //Components
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool HasComponent(int objID, Type type);
+
         //Transform
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetPosition(int objID, out Vector3 position);
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetRotation(int objID, out Vector3 rotation);

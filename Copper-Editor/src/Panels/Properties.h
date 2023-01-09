@@ -11,7 +11,7 @@ namespace Editor {
 	class Properties : public Panel {
 
 	public:
-		Properties() : Panel("Properties") {}
+		Properties();
 
 		void SetSelectedObject(Copper::Object obj) {
 			if(selectedObj == obj) return;
@@ -22,8 +22,6 @@ namespace Editor {
 		}
 		static void SetSelectedFile(std::filesystem::path file) { selectedFile = file;  wasFileLast = true; }
 
-		void Test(Copper::Light* light);
-
 	private:
 		Copper::Object selectedObj;
 		static std::filesystem::path selectedFile;
@@ -33,6 +31,9 @@ namespace Editor {
 
 		void RenderObject();
 		void RenderFile();
+
+		bool OnComponentAdded(const Copper::Event& e);
+		bool OnComponentRemoved(const Copper::Event& e);
 
 		bool ShowVector2(std::string name, Copper::Vector2& vec, float speed = 0.01f);
 		bool ShowVector3(std::string name, Copper::Vector3& vec, float speed = 0.01f);

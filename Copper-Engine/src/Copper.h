@@ -14,6 +14,7 @@
 #include "Engine/Events/Event.h"
 #include "Engine/Events/WindowEvent.h"
 #include "Engine/Events/KeyEvent.h"
+#include "Engine/Events/RegistryEvent.h"
 
 //Input
 #include "Engine/Input/Input.h"

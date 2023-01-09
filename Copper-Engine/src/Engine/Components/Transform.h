@@ -35,7 +35,7 @@ namespace Copper {
 		Shared<Object> object;
 		uint32_t index = 0;
 
-		Transform* parent;
+		Transform* parent = nullptr;
 		int numOfChildren;
 
 		glm::mat4 CreateMatrix();

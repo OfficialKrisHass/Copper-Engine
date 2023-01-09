@@ -53,26 +53,35 @@ namespace Copper {
 
 	}
 
-	Transform* Transform::GetChild(int index) const { return GetScene()->GetRegistry()->GetObjectFromID(children[index]).transform; }
+	Transform* Transform::GetChild(int index) const { return GetObjectFromID(children[index]).transform; }
 
 	void Transform::AddChild(Transform* transform) {
 
 		children.push_back(transform->object->GetID());
 		numOfChildren++;
 
+		transform->position -= GlobalPosition();
+		transform->parent = this;
+
 	}
 
 	void Transform::RemoveChild(int index) {
 
+		Transform* child = GetObjectFromID(children[index]).transform;
+
+		child->position += GlobalPosition();
+		child->parent = nullptr;
+
 		children.erase(children.begin() + index);
 		numOfChildren--;
+
 	
 	}
 	void Transform::RemoveChild(Transform* transform) {
 
 		for (int i = 0; i < numOfChildren; i++) {
 
-			if (children[i] == transform->object->GetID()) RemoveChild(i);
+			if (children[i] == transform->object->GetID()) { RemoveChild(i); return; }
 
 		}
 

@@ -4,6 +4,8 @@
 
 #include "Engine/Core/Core.h"
 
+#define BindEventFunc(func) std::bind(&func, this, std::placeholders::_1)
+
 namespace Copper {
 
 	class Event {
@@ -23,11 +25,11 @@ namespace Copper {
 
 		void Clear() { handled = false; }
 
-		inline Event& operator+=(bool (*func)(Event&)) { callbacks.push_back(func); return *this; }
-		virtual std::string ToString() const = 0;
+		inline Event& operator+=(std::function<bool(const Event&)> func) { callbacks.push_back(func); return *this; }
+		virtual std::string ToString() const { return "Event"; };
 
 	private:
-		std::vector<bool (*) (Event&)> callbacks;
+		std::vector<std::function<bool(const Event&)>> callbacks;
 		bool handled = false;
 
 	};

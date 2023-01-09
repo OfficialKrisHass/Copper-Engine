@@ -1,48 +1,18 @@
-17/11/2022
+09/01/2023
 
--Added Mono as a dynamic library
--Added Mono Include dir
+-Added Meta Files, these files store informaton about other files that are only needed by the Editor
+-The Meta Files have are ignored by the File Browser
 
--Added PlayButton.png and StopButton.png
+-File Browser now finally doesn't show the Extension, so you can safely edit a file without caring about
+ the extension
 
--Play/Stop feature in The Editor
--enum EditorState that holds the Current State of the Editor (Edit or Play)
--ToolBar window that is docked on the top of the Window
--The AddComponent Button in the Properties Panel now display every C# Component
+-Added the ability to change the order of objects in the Scene Hierarchy Window, this does not affect
+ The Scene or Objects themself, this is all purely on the Editor Side of code
+-The Order of objects are stored in Scene Meta files
 
--ScriptingAPI C# Project that builds as a .dll and will hold the Copper C# API
+-Added Object and Component Events, these events are simply holding an Object pointer or a Component pointer
+-You can also subscribe to ObjectCreated/-Removed and ComponentAdded/-Removed events with their functions
+ that are defined in Registry.h
 
--Script Engine is going to handle scripts (obviously)
--ScriptComponents is a C++ handler of the C# component (specified by it's name)
-
--Component.cs a Base class that ALL C# components need to inherit from
-
--Added scripts to Registry.h an unordered map with key of int32_t (object ID) and value vector of SriptComponent (C# components
- on this object)
-
--Added valid to ScriptComponent.h if the script is valid (exists or was built without a problem)
--Added instance to ScriptComponent.h a MonoObject* to the Scripts instance (private)
--Added onCreate to ScriptComponent.h a MonoMethod* to the scripts OnCreate function (private)
--Added onUpdate to ScriptComponent.h a MonoMethod* to the scripts OnUpdate function (private)
-
--Added APIAssembly to ScriptEngineData a MonoAssembly* to the ScriptinAPI assembly
--Added componentClass to ScriptEngineData a MonoClass* to the C# Component class
--Added scriptComponentNames to ScriptEnginedata a vector<string> of all of the C# component names
-
--Added OnEditorRuntimeStart to EditorApp.cpp gets called when the Play Button is pressed
--Added OnEditorRuntimeUpdate to EditorApp.cpp gets called each frame if the EditorState is Play
-
--Added AddScriptComponent to Object.h Adds the specified C# component and calls its constructor
-
--Added OnRuntimeStart to Scene.h Starts the Scene, calls the Start function (if there is one) of all C# components in the scene
--Added OnRuntimeUpdate to Scene.h Updates the Scene, calls the Update function (if there is one) of all C# components in the scene
-
--Added OnCreate to ScriptComponent.h calls the Scripts OnCreate method
--Added OnUpdate to ScriptComponent.h calls the Scripts OnUpdate method
-
--Added AddScriptComponent to ScriptEngine.h Creates the C# component specified and calls it's constructor
--Added GetScriptComponentNames to ScriptEngine.h returns a vector of the names of all C# components
-
--Added LoadScriptComponents to ScriptEngine.cpp a function that populates data.scriptComponentNames
-
--Removed Most of logs, the console should now log only errors or debug stuff
+-Transform functions regarding children have been modified to automatically asign the child's parent
+ So the process of Adding/removing a child to a transform is now with one single function

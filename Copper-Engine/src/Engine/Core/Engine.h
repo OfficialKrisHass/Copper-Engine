@@ -17,9 +17,9 @@ namespace Copper {
 	
 	void LoadScene(Scene* scene);
 
-	bool OnWindowResize(Event& e);
-	bool OnWindowClose(Event& e);
-	bool OnKeyPressed(Event& e);
+	bool OnWindowResize(const Event& e);
+	bool OnWindowClose(const Event& e);
+	bool OnKeyPressed(const Event& e);
 
 	//Getters
 	Window GetWindow();
@@ -34,7 +34,7 @@ namespace Copper {
 	void SetEditorRunFunc(void (*func)());
 	void SetEditorUIFunc(void (*func)());
 
-	void SetEditorOnKeyPressedFunc(bool (*func)(Event&));
-	void SetEditorOnWindowCloseFunc(bool (*func)(Event&));
+	void SetEditorOnKeyPressedFunc(bool (*func)(const Event&));
+	void SetEditorOnWindowCloseFunc(bool (*func)(const Event&));
 
 }

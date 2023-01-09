@@ -7,9 +7,21 @@
 #include "Object.h"
 #include "ComponentList.h"
 
+#include "Engine/Events/RegistryEvent.h"
+
 namespace Copper {
 
 	extern int cCounter;
+
+	extern ObjectEvent oce;
+	extern ObjectEvent ode;
+	extern ComponentEvent cae;
+	extern ComponentEvent cre;
+
+	void AddObjectCreatedEventFunc(std::function<bool(const Event&)> func);
+	void AddObjectDestroyedEventFunc(std::function<bool(const Event&)> func);
+	void AddComponentAddedEventFunc(std::function<bool(const Event&)> func);
+	void AddComponentRemovedEventFunc(std::function<bool(const Event&)> func);
 
 	template<typename T> int GetCID() {
 
@@ -63,6 +75,7 @@ namespace Copper {
 				objects[id].id = id;
 				objects[id].scene = scene;
 				
+				callCAE = false;
 				objects[id].tag = AddComponent<Tag>(objects[id]);
 				objects[id].tag->name = name;
 
@@ -71,8 +84,13 @@ namespace Copper {
 				objects[id].transform->rotation = rotation;
 				objects[id].transform->scale = scale;
 				objects[id].transform->object = CreateShared<Object>(objects[id]);
+				callCAE = true;
 
 				gaps.erase(gaps.begin());
+
+				oce.obj = &objects[id];
+				oce.Call();
+				oce.Clear();
 
 				return objects[id];
 
@@ -85,6 +103,7 @@ namespace Copper {
 			objects[id].id = id;
 			objects[id].scene = scene;
 			
+			callCAE = false;
 			objects[id].tag = AddComponent<Tag>(objects[id]);
 			objects[id].tag->name = name;
 
@@ -93,6 +112,11 @@ namespace Copper {
 			objects[id].transform->rotation = rotation;
 			objects[id].transform->scale = scale;
 			objects[id].transform->object = CreateShared<Object>(objects[id]);
+			callCAE = true;
+
+			oce.obj = &objects[id];
+			oce.Call();
+			oce.Clear();
 
 			return objects[id];
 
@@ -100,10 +124,27 @@ namespace Copper {
 		Object CreateObjectFromID(int32_t id, Scene* scene, Vector3 position, Vector3 rotation, Vector3 scale, const std::string& name) {
 
 			if (id > (int32_t) objects.size() - 1) objects.resize(id + 1, Object());
+			else {
+
+				objects[id].tag->name = name;
+
+				objects[id].transform->position = position;
+				objects[id].transform->rotation = rotation;
+				objects[id].transform->scale = scale;
+				objects[id].transform->object = CreateShared<Object>(objects[id]);
+
+				oce.obj = &objects[id];
+				oce.Call();
+				oce.Clear();
+
+				return objects[id];
+
+			}
 
 			objects[id].id = id;
 			objects[id].scene = scene;
 
+			callCAE = false;
 			objects[id].tag = AddComponent<Tag>(objects[id]);
 			objects[id].tag->name = name;
 
@@ -112,11 +153,20 @@ namespace Copper {
 			objects[id].transform->rotation = rotation;
 			objects[id].transform->scale = scale;
 			objects[id].transform->object = CreateShared<Object>(objects[id]);
+			callCAE = true;
+
+			oce.obj = &objects[id];
+			oce.Call();
+			oce.Clear();
 
 			return objects[id];
 
 		}
 		void DestroyObject(Object& obj) {
+
+			ode.obj = &objects[obj.id];
+			ode.Call();
+			ode.Clear();
 
 			gaps.push_back(obj.id);
 			objects[obj.id] = Object();
@@ -149,7 +199,13 @@ namespace Copper {
 			component->index = pools[cID]->GetCount(obj.id) - 1;
 
 			objects[obj.id].componentMask[cID]++;
-			obj.componentMask[cID]++;
+			if (obj.componentMask[cID] != objects[obj.id].componentMask[cID]) obj.componentMask[cID] = objects[obj.id].componentMask[cID];
+
+			if (!callCAE) return component;
+
+			cae.component = (Component*) component;
+			cae.Call();
+			cae.Clear();
 
 			return component;
 
@@ -184,12 +240,18 @@ namespace Copper {
 			int cID = GetCID<T>();
 			
 			if (objects[obj.id].componentMask.size() <= cID || objects[obj.id].componentMask[cID] == 0) return;
-			if (!((T*) pools[cID]->Get(obj.id, index))->valid) return;
+
+			T* component = (T*) pools[cID]->Get(obj.id, index);
+			if (!component->valid) return;
 
 			objects[obj.id].componentMask[cID]--;
 			obj.componentMask[cID]--;
 
-			((T*) pools[cID]->Get(obj.id, index))->valid = false;
+			component->valid = false;
+
+			cre.component = (Component*) component;
+			cre.Call();
+			cre.Clear();
 
 		}
 
@@ -218,6 +280,8 @@ namespace Copper {
 		std::vector<Object> objects;
 		std::vector<uint32_t> gaps;
 		std::vector<ComponentPool*> pools;
+
+		bool callCAE;
 
 	};
 

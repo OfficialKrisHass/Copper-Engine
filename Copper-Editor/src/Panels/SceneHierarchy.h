@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Copper.h"
+
+#include "Core/MetaFileSerialization.h"
+
 #include "Panels/Panel.h"
 
 namespace Editor {
@@ -8,25 +11,32 @@ namespace Editor {
 	class SceneHierarchy : public Panel {
 
 	public:
-		SceneHierarchy() : Panel("SceneHierarchy") {}
-		
-		void SetSelectedObject(Copper::Object object) { selectedObj = object; }
+		SceneHierarchy();
 
-		Copper::Object GetSelectedObject() { return selectedObj; }
+		void SaveSceneMeta();
+		void LoadSceneMeta();
+		
+		inline void SetSelectedObject(Copper::Object& object) { selectedObj = object; }
+		inline Copper::Object& GetSelectedObject() { return selectedObj; }
+
+		inline void SetScene(Copper::Scene* scene) { this->scene = scene; }
 
 	private:
 		Copper::Object selectedObj;
 		Copper::Scene* scene;
-		bool anyNodeHovered = false;
 
 		virtual void UI() override;
 
-		void DrawObjectNode(Copper::Object obj);
+		void DrawObjectNode(uint32_t& objIDIndex);
+		void RemoveObjectNode(uint32_t objIDIndex);
+		void MoveObjectNode(uint32_t& objIDIndex, uint32_t objToMoveIDIndex);
 
-		bool CheckDropType(std::string wantedType, std::string payloadType) { return payloadType == wantedType; }
+		void PopupWindow();
 
-		void DropModel(void* data);
-		void DropObject(void* data);
+		void RemoveParent(uint32_t objIDIndex);
+
+		bool OnObjectCreated(const Copper::Event& e);
+		bool OnObjectDestroyed(const Copper::Event& e);
 
 	};
 

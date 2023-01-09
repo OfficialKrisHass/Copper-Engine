@@ -32,8 +32,8 @@ namespace Editor {
 	void SaveScene();
 	void SaveSceneAs();
 
-	bool OnKeyPressed(Copper::Event& e);
-	bool OnWindowClose(Copper::Event& e);
+	bool OnKeyPressed(const Copper::Event& e);
+	bool OnWindowClose(const Copper::Event& e);
 
 	void ManualScene();
 

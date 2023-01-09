@@ -4,6 +4,9 @@
 
 #include "Engine/Scripting/ScriptingCore.h"
 
+#include "Core/Project.h"
+#include "Core/MetaFileSerialization.h"
+
 #include "Panels/SceneHierarchy.h"
 #include "Panels/Properties.h"
 #include "Panels/FileBrowser.h"
@@ -251,17 +254,17 @@ namespace Editor {
 
 	void Initialize() {
 
-		LoadEditorData();
-
 		data.state = Edit;
 		data.viewportSize = UVector2I(1280, 720);
-
+		
 		data.playIcon = Texture("assets/Icons/PlayButton.png");
 		data.stopIcon = Texture("assets/Icons/StopButton.png");
-
+		
 		data.sceneHierarchy = SceneHierarchy();
 		data.properties = Properties();
 		data.fileBrowser = FileBrowser(data.project.assetsPath);
+
+		LoadEditorData();
 		
 		data.sceneCam = SceneCamera(data.viewportSize);
 		data.sceneCam.transform = new Transform(Vector3(0.0f, 0.0f, 1.0f), Vector3::zero, Vector3::one);
@@ -270,6 +273,7 @@ namespace Editor {
 
 	}
 	void Run() {
+
 
 
 	}
@@ -627,6 +631,7 @@ namespace Editor {
 		data.scene.cam = &data.sceneCam;
 
 		LoadScene(&data.scene);
+		data.sceneHierarchy.SetScene(&data.scene);
 		
 	}
 	void OpenScene() {
@@ -671,6 +676,8 @@ namespace Editor {
 
 		data.scene.Deserialize(path);
 		data.scene.cam = &data.sceneCam;
+		data.sceneHierarchy.SetScene(&data.scene);
+		data.sceneHierarchy.LoadSceneMeta();
 
 		data.changes = false;
 		data.title = "Copper Editor - " + data.project.name + ": ";
@@ -683,6 +690,7 @@ namespace Editor {
 		if(!data.scene.path.empty()) {
 
 			data.scene.Serialize(data.scene.path);
+			data.sceneHierarchy.SaveSceneMeta();
 
 			data.changes = false;
 			data.title = "Copper Editor - TestProject: ";
@@ -716,6 +724,7 @@ namespace Editor {
 			}
 
 			data.scene.Serialize(path);
+			data.sceneHierarchy.SaveSceneMeta();
 
 			data.changes = false;
 			data.title = "Copper Editor - TestProject: ";
@@ -726,7 +735,7 @@ namespace Editor {
 		
 	}
 
-	bool OnKeyPressed(Event& e) {
+	bool OnKeyPressed(const Event& e) {
 
 		if (data.state == Play) return true;
 
@@ -782,7 +791,7 @@ namespace Editor {
 		return true;
 
 	}
-	bool OnWindowClose(Event& e) {
+	bool OnWindowClose(const Event& e) {
 
 		if (data.changes) {
 

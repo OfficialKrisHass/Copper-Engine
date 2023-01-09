@@ -187,7 +187,6 @@ namespace Copper {
 			if (o.HasComponent<MeshRenderer>()) {
 
 				MeshRenderer* renderer = o.GetComponent<MeshRenderer>();
-
 				for (Mesh mesh : renderer->meshes) {
 
 					Renderer::AddMesh(&mesh, o.transform);
@@ -317,7 +316,7 @@ namespace Copper {
 
 				}
 
-				out << YAML::EndMap;
+				//out << YAML::EndMap;
 				out << YAML::EndMap;
 				
 			}
@@ -371,7 +370,9 @@ namespace Copper {
 
 			int32_t parentID = entity["Transform"]["Parent"].as<int>();
 
-			deserialized.transform->parent = parentID == -1 ? nullptr : registry.CreateObjectFromID(parentID, this, Vector3::zero, Vector3::zero, Vector3::one, "Empty Parent").transform;
+			if (parentID == -1)  deserialized.transform->parent = nullptr;
+			else if (id > parentID) deserialized.transform->parent = registry.GetObjectFromID(parentID).transform;
+			else if (id < parentID) deserialized.transform->parent = registry.CreateObjectFromID(parentID, this, Vector3::zero, Vector3::zero, Vector3::one, "Empty Parent").transform;
 
 			for (int i = 0; i < entity["Transform"]["Children"].size(); i++) {
 

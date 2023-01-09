@@ -30,8 +30,8 @@ namespace Copper {
 		void (*EditorRun)();
 		void (*EditorUI)();
 
-		bool (*EditorOnKeyPressed)(Event&);
-		bool (*EditorOnWindowClose)(Event&);
+		bool (*EditorOnKeyPressed)(const Event&);
+		bool (*EditorOnWindowClose)(const Event&);
 			
 	};
 
@@ -94,12 +94,12 @@ namespace Copper {
 		
 	}
 
-	bool OnWindowResize(Event& e) {
+	bool OnWindowResize(const Event& e) {
 
 		return true;
 
 	}
-	bool OnWindowClose(Event& e) {
+	bool OnWindowClose(const Event& e) {
 
 		if (!data.EditorOnWindowClose(e)) return false;
 
@@ -109,7 +109,7 @@ namespace Copper {
 
 	}
 
-	bool OnKeyPressed(Event& e) {
+	bool OnKeyPressed(const Event& e) {
 
 		data.EditorOnKeyPressed(e);
 
@@ -130,7 +130,7 @@ namespace Copper {
 	void SetEditorRunFunc(void (*func)()) { data.EditorRun = func; }
 	void SetEditorUIFunc(void (*func)()) { data.EditorUI = func; }
 
-	void SetEditorOnKeyPressedFunc(bool (*func)(Event&)) { data.EditorOnKeyPressed = func; }
-	void SetEditorOnWindowCloseFunc(bool (*func)(Event&)) { data.EditorOnWindowClose = func; }
+	void SetEditorOnKeyPressedFunc(bool (*func)(const Event&)) { data.EditorOnKeyPressed = func; }
+	void SetEditorOnWindowCloseFunc(bool (*func)(const Event&)) { data.EditorOnWindowClose = func; }
 
 }

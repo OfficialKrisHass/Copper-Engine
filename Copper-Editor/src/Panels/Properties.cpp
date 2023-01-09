@@ -43,6 +43,13 @@ namespace Editor {
 
 	}
 
+	Properties::Properties() : Panel("Properties") {
+
+		AddComponentAddedEventFunc(BindEventFunc(Properties::OnComponentAdded));
+		AddComponentRemovedEventFunc(BindEventFunc(Properties::OnComponentRemoved));
+
+	}
+
 	void Properties::UI() {
 
 		if ( wasFileLast && selectedFile != "") RenderFile();
@@ -81,7 +88,7 @@ namespace Editor {
 
 		for (ScriptComponent* script : selectedObj.GetComponents<ScriptComponent>()) {
 
-			ImGui::PushID(script->index);
+			ImGui::PushID((int64_t) script);
 
 			if (!DrawComponent<ScriptComponent>(script->name, removed)) { ImGui::PopID(); continue; }
 			if (removed) {
@@ -101,7 +108,7 @@ namespace Editor {
 		}
 		for (Light* light : selectedObj.GetComponents<Light>()) {
 
-			ImGui::PushID(light->index);
+			ImGui::PushID((int64_t) light);
 
 			if (!DrawComponent<Light>("Light", removed)) { ImGui::PopID(); continue; }
 			if (removed) {
@@ -124,11 +131,15 @@ namespace Editor {
 		}
 		for (Camera* camera : selectedObj.GetComponents<Camera>()) {
 
-			if (!DrawComponent<Camera>("Camera", removed)) continue;
+			ImGui::PushID((int64_t) camera);
+
+			if (!DrawComponent<Camera>("Camera", removed)) { ImGui::PopID(); continue; }
 
 			if (ShowFloat("FOV", camera->fov, 0.1f)) SetChanges(true);
 			if (ShowFloat("Near Plane", camera->nearPlane)) SetChanges(true);
 			if (ShowFloat("Far Plane", camera->farPlane)) SetChanges(true);
+
+			ImGui::PopID();
 
 		}
 
@@ -183,6 +194,20 @@ namespace Editor {
 			
 		}
 		
+	}
+
+	bool Properties::OnComponentAdded(const Event& e) {
+
+		return false;
+
+	}
+
+	bool Properties::OnComponentRemoved(const Event& e) {
+
+
+
+		return false;
+
 	}
 
 	bool Properties::ShowVector2(std::string name, Vector2& vec, float speed) {

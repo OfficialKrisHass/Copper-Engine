@@ -74,6 +74,9 @@ namespace Editor {
 
             std::filesystem::path path = entry.path();
             std::string filename = path.filename().string();
+            if(!entry.is_directory()) filename.erase(filename.find_last_of('.'));
+
+            if (path.extension() == ".meta") continue;
 
             ImGui::PushID(filename.c_str());
 
@@ -120,13 +123,14 @@ namespace Editor {
             if(editingPath == path) {
 
                 char buffer[128] = {};
-                std::strncpy(buffer, path.filename().string().c_str(), sizeof(buffer));
+                std::strncpy(buffer, filename.c_str(), sizeof(buffer));
 
                 if (ImGui::InputText("##Edit Name", buffer, sizeof(buffer)) && (Input::IsKey(KeyCode::Enter) || Input::IsButton(Input::Button1))) {
 
                     editingPath = editingPath.parent_path();
-                    editingPath += "/";
+                    editingPath += "\\";
                     editingPath += buffer;
+                    editingPath += path.extension();
 
                     rename(path, editingPath);
 
@@ -135,7 +139,7 @@ namespace Editor {
                 }
                 
             } else {
-                
+
                 ImGui::TextWrapped(filename.c_str());
                 
             }

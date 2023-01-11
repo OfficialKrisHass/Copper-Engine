@@ -10,6 +10,7 @@
 #include "Panels/SceneHierarchy.h"
 #include "Panels/Properties.h"
 #include "Panels/FileBrowser.h"
+#include "Panels/Console.h"
 
 #include "Viewport/SceneCamera.h"
 
@@ -232,6 +233,7 @@ namespace Editor {
 		SceneHierarchy sceneHierarchy;
 		Properties properties;
 		FileBrowser fileBrowser;
+		Console console;
 		
 		//Objects
 		SceneCamera sceneCam;
@@ -263,6 +265,7 @@ namespace Editor {
 		data.sceneHierarchy = SceneHierarchy();
 		data.properties = Properties();
 		data.fileBrowser = FileBrowser(data.project.assetsPath);
+		data.console = Console();
 
 		LoadEditorData();
 		
@@ -324,6 +327,7 @@ namespace Editor {
 		data.sceneHierarchy.UIRender();
 		data.properties.SetSelectedObject(data.sceneHierarchy.GetSelectedObject());
 		data.properties.UIRender();
+		data.console.UIRender();
 
 		ImGui::End(); //Dockspace
 

@@ -1,18 +1,10 @@
-09/01/2023
+10/01/2023 (my birthday yay)
 
--Added Meta Files, these files store informaton about other files that are only needed by the Editor
--The Meta Files have are ignored by the File Browser
+-The Logger now has 2 sinks, the default stdou_color sink and the ringbuffer sink for getting
+ the last messages
+-Added GetLastLogMessages function to Logger.h, returns a vector of the last messages Logged
+ (includes C# Scripts calling Log functions)
+-The Format of the LastLogMessages is "level:message"
 
--File Browser now finally doesn't show the Extension, so you can safely edit a file without caring about
- the extension
-
--Added the ability to change the order of objects in the Scene Hierarchy Window, this does not affect
- The Scene or Objects themself, this is all purely on the Editor Side of code
--The Order of objects are stored in Scene Meta files
-
--Added Object and Component Events, these events are simply holding an Object pointer or a Component pointer
--You can also subscribe to ObjectCreated/-Removed and ComponentAdded/-Removed events with their functions
- that are defined in Registry.h
-
--Transform functions regarding children have been modified to automatically asign the child's parent
- So the process of Adding/removing a child to a transform is now with one single function
+-Added the Console Window, Displays the Log messages and also colors them accordingly
+ based on their level

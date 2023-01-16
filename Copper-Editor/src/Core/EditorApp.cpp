@@ -4,6 +4,9 @@
 
 #include "Engine/Scripting/ScriptingCore.h"
 
+#include "Engine/Renderer/FrameBuffer.h"
+#include "Engine/Renderer/Renderer.h"
+
 #include "Core/Project.h"
 #include "Core/MetaFileSerialization.h"
 
@@ -23,6 +26,8 @@
 
 #include <yaml-cpp/yaml.h>
 
+using namespace Copper;
+
 #pragma region EntryPoint & Shutdown
 #include <Engine/Core/Entry.h>
 
@@ -30,11 +35,11 @@ void AppEntryPoint() {
 
 	Editor::Initialize();
 
-	Copper::SetEditorRunFunc(Editor::Run);
-	Copper::SetEditorUIFunc(Editor::UI);
+	SetEditorRunFunc(Editor::Run);
+	SetEditorUIFunc(Editor::UI);
 
-	Copper::SetEditorOnKeyPressedFunc(Editor::OnKeyPressed);
-	Copper::SetEditorOnWindowCloseFunc(Editor::OnWindowClose);
+	SetEditorOnKeyPressedFunc(Editor::OnKeyPressed);
+	SetEditorOnWindowCloseFunc(Editor::OnWindowClose);
 
 }
 void AppShutdown() {
@@ -45,8 +50,6 @@ void AppShutdown() {
 #pragma endregion 
 
 namespace Editor {
-
-	using namespace Copper;
 
 #pragma region Plane
 	std::vector<Vector3> planeVertices {
@@ -210,7 +213,7 @@ namespace Editor {
 #pragma endregion 
 
 	struct EditorData {
-		
+
 		EditorState state;
 		std::string title;
 
@@ -223,9 +226,13 @@ namespace Editor {
 		
 		//Viewport
 		UVector2I viewportSize;
+		FrameBuffer viewportFBO;
 		bool canLookViewport;
 
-		//
+		//Game Panel
+		UVector2I gamePanelSize;
+
+		//Icons
 		Texture playIcon;
 		Texture stopIcon;
 		
@@ -234,9 +241,6 @@ namespace Editor {
 		Properties properties;
 		FileBrowser fileBrowser;
 		Console console;
-		
-		//Objects
-		SceneCamera sceneCam;
 
 	};
 
@@ -258,6 +262,8 @@ namespace Editor {
 
 		data.state = Edit;
 		data.viewportSize = UVector2I(1280, 720);
+		data.gamePanelSize = UVector2I(1280, 720);
+		data.viewportFBO = FrameBuffer(data.viewportSize);
 		
 		data.playIcon = Texture("assets/Icons/PlayButton.png");
 		data.stopIcon = Texture("assets/Icons/StopButton.png");
@@ -266,13 +272,8 @@ namespace Editor {
 		data.properties = Properties();
 		data.fileBrowser = FileBrowser(data.project.assetsPath);
 		data.console = Console();
-
-		LoadEditorData();
 		
-		data.sceneCam = SceneCamera(data.viewportSize);
-		data.sceneCam.transform = new Transform(Vector3(0.0f, 0.0f, 1.0f), Vector3::zero, Vector3::one);
-		data.sceneCam.transform->position.z = 1.0f;
-		data.sceneCam.transform->parent = nullptr;
+		LoadEditorData();
 
 	}
 	void Run() {
@@ -319,15 +320,16 @@ namespace Editor {
 	void UI() {
 
 		RenderDockspace();
-		RenderViewport();
 		RenderToolbar();
 		RenderMenu();
 		
+		data.console.UIRender();
 		data.fileBrowser.UIRender();
 		data.sceneHierarchy.UIRender();
 		data.properties.SetSelectedObject(data.sceneHierarchy.GetSelectedObject());
 		data.properties.UIRender();
-		data.console.UIRender();
+		RenderGamePanel();
+		RenderViewport();
 
 		ImGui::End(); //Dockspace
 
@@ -382,16 +384,83 @@ namespace Editor {
 		style.WindowMinSize.x = minWinSizeX;
 
 	}
+	void RenderGamePanel() {
+
+		//Imgui::Begin returns a bool based on if the Window is visible/open
+		//So, we store that and then Render the scene and window Only if it's visible
+		//to save some performance
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2 {0, 0});
+		bool open = ImGui::Begin("Game");
+		SetRenderScene(open);
+
+		if (!open) {
+
+			ImGui::End();
+			ImGui::PopStyleVar();
+
+			return;
+
+		}
+		if (!data.scene.cam) {
+
+			ImGui::Text("No Camera Available!");
+
+			ImGui::End();
+			ImGui::PopStyleVar();
+
+			return;
+
+		}
+
+		ImVec2 windowSize = ImGui::GetContentRegionAvail();
+		data.gamePanelSize = UVector2I((uint32_t) windowSize.x, (uint32_t) windowSize.y);
+
+		SetWindowSize(data.gamePanelSize);
+
+		ImGui::Image(reinterpret_cast<void*>((uint64_t) GetFBOTexture()), windowSize, ImVec2 {0, 1}, ImVec2 {1, 0});
+
+		ImGui::End();
+		ImGui::PopStyleVar();
+
+	}
 	void RenderViewport() {
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
-		ImGui::Begin("Viewport");
+		bool open = ImGui::Begin("Viewport");
+		if (!open) {
 
+			ImGui::End();
+			ImGui::PopStyleVar();
+
+			return;
+
+		}
+
+		//TODO: Either Change ImGui To use UVector2I or edit Copper Code to use ImVec2
+		//      so that we don't have to allocate memory for the UVector2I
 		ImVec2 windowSize = ImGui::GetContentRegionAvail();
 		data.viewportSize = UVector2I((uint32_t) windowSize.x, (uint32_t) windowSize.y);
-		SetWindowSize(data.viewportSize);
-		
-		ImGui::Image(reinterpret_cast<void*>((uint64_t) GetFBOTexture()), windowSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+
+		if (data.viewportFBO.Width() != data.viewportSize.x || data.viewportFBO.Height() != data.viewportSize.y) {
+
+			//We don't need to Call SetWindowSize because if the Viewport size is changed
+			//it only affects the Viewport, not the Actualy Game Engine and the Main Game Panel
+			data.viewportFBO.Resize(data.viewportSize);
+			data.project.sceneCam.Resize(data.viewportSize);
+
+		}
+
+		//We need to Clear the Color because if we don't we just get a black image
+		data.viewportFBO.Bind();
+		Renderer::ClearColor(0.18f, 0.18f, 0.18f);
+
+		data.project.sceneCam.Update();
+		data.scene.Render(&data.project.sceneCam);
+
+		//After we are done rendering we are safe to unbind the FBO unless we want to modify it any way
+		data.viewportFBO.Unbind();
+
+		ImGui::Image(reinterpret_cast<void*>((uint64_t) data.viewportFBO.GetColorAttachment()), windowSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
 		//Gizmos that I stol... I mean, taken inspiration from The Chernos Game Engine series
 		//Yeah, I definitely didn't copy this entire chunk of code that I don't understand but
@@ -406,8 +475,8 @@ namespace Editor {
 			float wHeight = (float) ImGui::GetWindowHeight();
 			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, wWidth, wHeight);
 
-			const glm::mat4& cameraProjection = data.sceneCam.CreateProjectionMatrix();
-			glm::mat4 cameraView = data.sceneCam.CreateViewMatrix();
+			const glm::mat4& cameraProjection = data.project.sceneCam.CreateProjectionMatrix();
+			glm::mat4 cameraView = data.project.sceneCam.CreateViewMatrix();
 			glm::mat4 transform = selectedObj.transform->CreateMatrix();
 
 			// Snapping
@@ -440,7 +509,7 @@ namespace Editor {
 		}
 
 		data.canLookViewport = ImGui::IsItemHovered();
-		data.sceneCam.SetCanLook(data.canLookViewport);
+		data.project.sceneCam.SetCanLook(data.canLookViewport);
 		
 		ImGui::End();
 		ImGui::PopStyleVar();
@@ -516,8 +585,8 @@ namespace Editor {
 
 			if(ImGui::BeginMenu("Camera")) {
 
-				if (ImGui::DragFloat("Speed", &data.sceneCam.speed, 0.01f, 0.001f, 50.0f, "%.4f")) SetChanges(true);
-				if (ImGui::DragFloat("Sensitivity", &data.sceneCam.sensitivity, 0.1f, 1.0f, 1000.0f)) SetChanges(true);
+				if (ImGui::DragFloat("Speed", &data.project.sceneCam.speed, 0.01f, 0.001f, 50.0f, "%.4f")) SetChanges(true);
+				if (ImGui::DragFloat("Sensitivity", &data.project.sceneCam.sensitivity, 0.1f, 1.0f, 1000.0f)) SetChanges(true);
 
 				ImGui::EndMenu();
 				
@@ -543,7 +612,7 @@ namespace Editor {
 
 		data.scene = Scene();
 		data.scene.Deserialize(savedPath);
-		data.scene.cam = &data.sceneCam;
+		data.scene.cam = &data.project.sceneCam;
 
 	}
 
@@ -632,7 +701,6 @@ namespace Editor {
 	void NewScene() {
 
 		data.scene = Scene();
-		data.scene.cam = &data.sceneCam;
 
 		LoadScene(&data.scene);
 		data.sceneHierarchy.SetScene(&data.scene);
@@ -679,7 +747,6 @@ namespace Editor {
 		LoadScene(&data.scene);
 
 		data.scene.Deserialize(path);
-		data.scene.cam = &data.sceneCam;
 		data.sceneHierarchy.SetScene(&data.scene);
 		data.sceneHierarchy.LoadSceneMeta();
 
@@ -822,6 +889,10 @@ namespace Editor {
 		
 	}
 	
+	Project GetProject() { return data.project; }
+
+	UVector2I GetViewportSize() { return data.viewportSize; }
+
 	void ManualScene() {
 
 		data.scene = Scene();
@@ -858,8 +929,6 @@ namespace Editor {
 
 		light.AddComponent<Light>();
 
-		data.scene.cam = &data.sceneCam;
-
 		data.changes = false;
 		data.title = "Copper Editor - TestProject: ";
 		data.title += data.scene.name;
@@ -867,7 +936,5 @@ namespace Editor {
 
 
 	}
-
-	Project GetProject() { return data.project; }
 
 }

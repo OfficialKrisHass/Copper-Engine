@@ -26,6 +26,7 @@ namespace Copper {
 		Window* window;
 
 		Scene* scene;
+		bool renderScene = false;
 
 		void (*EditorRun)();
 		void (*EditorUI)();
@@ -57,15 +58,9 @@ namespace Copper {
 
 		while (data.running) {
 
-			if (data.fbo->Width() != data.windowSize.x || data.fbo->Height() != data.windowSize.y) {
-			
-				data.fbo->Resize(data.windowSize);
-				data.scene->cam->Resize(data.windowSize);
-		
-			}
-
+			//Frame Begin
 			data.fbo->Bind();
-			data.scene->Update();
+			data.scene->Update(data.renderScene);
 			data.fbo->Unbind();
 
 			data.EditorRun();
@@ -74,6 +69,8 @@ namespace Copper {
 			data.EditorUI();
 			UI::End();
 
+			//Frame End
+			Renderer::EndFrame();
 			data.window->Update();
 
 		}
@@ -119,13 +116,26 @@ namespace Copper {
 
 	//Getters
 	Window GetWindow() { return *data.window; }
+	UVector2I GetWindowSize() { return data.windowSize; }
+
 	uint32_t GetFBOTexture() { return data.fbo->GetColorAttachment(); }
 
 	Scene* GetScene() { return data.scene; }
 	Object GetObjectFromID(int32_t id) { return data.scene->GetRegistry()->GetObjectFromID(id); }
 
 	//Setters
-	void SetWindowSize(UVector2I size) { data.windowSize = size; }
+	void SetWindowSize(UVector2I size) {
+
+		if (size.x == data.windowSize.x && size.y == data.windowSize.y) return;
+		
+		data.windowSize = size;
+
+		data.fbo->Resize(data.windowSize);
+		if (data.scene->cam) data.scene->cam->Resize(data.windowSize);
+	
+	}
+
+	void SetRenderScene(bool value) { data.renderScene = value; }
 
 	void SetEditorRunFunc(void (*func)()) { data.EditorRun = func; }
 	void SetEditorUIFunc(void (*func)()) { data.EditorUI = func; }

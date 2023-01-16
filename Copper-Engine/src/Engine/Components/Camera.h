@@ -18,8 +18,6 @@ namespace Copper {
 
 		inline void Resize(UVector2I size) { this->size = size; }
 
-		virtual void Update() {}
-
 		float fov = 90.0f;
 		float nearPlane = 0.1f;
 		float farPlane = 1000.0f;

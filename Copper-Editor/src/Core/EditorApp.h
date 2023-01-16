@@ -19,9 +19,9 @@ namespace Editor {
 
 	void UI();
 
-	Project GetProject();
 
 	void RenderDockspace();
+	void RenderGamePanel();
 	void RenderViewport();
 	void RenderToolbar();
 	void RenderMenu();
@@ -34,6 +34,10 @@ namespace Editor {
 
 	bool OnKeyPressed(const Copper::Event& e);
 	bool OnWindowClose(const Copper::Event& e);
+
+	Project GetProject();
+
+	Copper::UVector2I GetViewportSize();
 
 	void ManualScene();
 

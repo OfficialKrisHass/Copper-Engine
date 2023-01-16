@@ -35,7 +35,16 @@ namespace Copper {
 			return component;
 
 		}
-		template<typename T> T* GetComponent(uint32_t index = 0) const { return scene->registry.GetComponent<T>(id); }
+		template<typename T> T* GetComponent(uint32_t index = 0) {
+			
+			T* component = scene->registry.GetComponent<T>(id);
+			if (!component) return nullptr;
+
+			component->object = this;
+
+			return component;
+		
+		}
 		template<typename T> bool HasComponent() const { return scene->registry.HasComponent<T>(id); }
 		template<typename T> void RemoveComponent(uint32_t index = 0) { scene->registry.RemoveComponent<T>(*this, index); }
 

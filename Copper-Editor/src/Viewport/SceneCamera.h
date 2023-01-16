@@ -2,15 +2,15 @@
 
 #include "Engine/Components/Camera.h"
 
-namespace Copper {
+namespace Editor {
 
-	class SceneCamera : public Camera {
+	class SceneCamera : public Copper::Camera {
 
 	public:
 		SceneCamera() = default;
-		SceneCamera(UVector2I size) : Camera(size) {}
+		SceneCamera(Copper::UVector2I size) : Camera(size) {}
 
-		virtual void Update() override;
+		void Update();
 		
 		inline void SetCanLook(bool can) {this->canLook = can;}
 		

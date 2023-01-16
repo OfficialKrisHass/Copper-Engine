@@ -88,7 +88,7 @@ namespace Editor {
 
 		for (ScriptComponent* script : selectedObj.GetComponents<ScriptComponent>()) {
 
-			ImGui::PushID((int64_t) script);
+			ImGui::PushID((int) (int64_t) script);
 
 			if (!DrawComponent<ScriptComponent>(script->name, removed)) { ImGui::PopID(); continue; }
 			if (removed) {
@@ -108,7 +108,7 @@ namespace Editor {
 		}
 		for (Light* light : selectedObj.GetComponents<Light>()) {
 
-			ImGui::PushID((int64_t) light);
+			ImGui::PushID((int) (int64_t) light);
 
 			if (!DrawComponent<Light>("Light", removed)) { ImGui::PopID(); continue; }
 			if (removed) {
@@ -131,7 +131,7 @@ namespace Editor {
 		}
 		for (Camera* camera : selectedObj.GetComponents<Camera>()) {
 
-			ImGui::PushID((int64_t) camera);
+			ImGui::PushID((int) (int64_t) camera);
 
 			if (!DrawComponent<Camera>("Camera", removed)) { ImGui::PopID(); continue; }
 
@@ -432,7 +432,7 @@ namespace Editor {
 	bool Properties::ShowInt(std::string name, int& show, int speed) {
 
 		bool ret = false;
-		if (ImGui::DragInt(name.c_str(), &show, speed)) ret = true;
+		if (ImGui::DragInt(name.c_str(), &show, (float) speed)) ret = true;
 
 		return ret;
 		
@@ -440,7 +440,7 @@ namespace Editor {
 	bool Properties::ShowUInt(std::string name, unsigned int& show, int speed) {
 
 		bool ret = false;
-		if (ImGui::DragInt(name.c_str(), (int*) &show, speed)) ret = true;
+		if (ImGui::DragInt(name.c_str(), (int*) &show, (float) speed)) ret = true;
 		if (show < 0) show = 0;
 
 		return ret;

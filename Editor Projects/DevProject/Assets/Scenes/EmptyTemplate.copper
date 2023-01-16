@@ -222,5 +222,5 @@ Entities:
         []
     Components:
       Light:
-        Color: [0, 0, 0, 0]
+        Color: [1, 0.999989986, 0.999989986, 0]
         Intensity: 1

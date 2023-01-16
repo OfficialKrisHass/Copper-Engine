@@ -2,6 +2,8 @@
 
 #include <Copper.h>
 
+#include "Viewport/SceneCamera.h"
+
 namespace Editor {
 
 	struct Project {
@@ -12,10 +14,12 @@ namespace Editor {
 		std::filesystem::path assetsPath;
 		std::filesystem::path lastOpenedScene;
 
+		SceneCamera sceneCam;
+
 		int gizmoType = 0;
 
 		Project() : name(""), path(""), assetsPath("") {}
-		Project(std::string name, std::filesystem::path path) : name(name), path(path), assetsPath(path.string() + "\\Assets") {}
+		Project(std::string name, std::filesystem::path path);
 
 		void Save();
 		void Load();

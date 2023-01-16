@@ -54,16 +54,20 @@ namespace Copper::Renderer {
 
 	}
 
-	void Render(Camera* cam, Light* light) {
+	void RenderFrame(Camera* cam, Light* light) {
 
 		data.vbo->SetData(data.vertices);
 		data.ibo->SetData(data.indices);
 
 		api.Render(data.vao, (uint32_t) data.indices.size(), cam, light);
+		
+		
+	}
+	void EndFrame() {
 
 		data.vertices.clear();
 		data.indices.clear();
-		
+
 	}
 
 	void AddMesh(Mesh* mesh, Transform* transform) {

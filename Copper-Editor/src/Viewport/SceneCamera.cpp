@@ -6,10 +6,14 @@
 #include <GLM/gtx/rotate_vector.hpp>
 #include <GLM/gtx/vector_angle.hpp>
 
-namespace Copper {
+using namespace Copper;
+
+namespace Editor {
 
 	void SceneCamera::Update() {
 		
+		transform->Update();
+
 		if(!canLook) return;
 
 		if (Input::IsButton(Input::Button2)) {

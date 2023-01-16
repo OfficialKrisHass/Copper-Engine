@@ -8,6 +8,7 @@ namespace Copper {
 	class FrameBuffer {
 
 	public:
+		FrameBuffer() = default;
 		FrameBuffer(UVector2I size);
 		~FrameBuffer();
 

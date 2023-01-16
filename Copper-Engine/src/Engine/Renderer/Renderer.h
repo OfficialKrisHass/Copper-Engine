@@ -16,7 +16,9 @@ namespace Copper {
 		void Initialize();
 		
 		void ClearColor(float r, float g, float b);
-		void Render(Camera* cam, Light* light);
+
+		void RenderFrame(Camera* cam, Light* light);
+		void EndFrame();
 
 		void AddMesh(Mesh* mesh, Transform* transform);
 

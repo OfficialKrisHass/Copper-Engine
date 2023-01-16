@@ -23,6 +23,8 @@ namespace Copper {
 
 	//Getters
 	Window GetWindow();
+	UVector2I GetWindowSize();
+
 	uint32_t GetFBOTexture();
 
 	Scene* GetScene();
@@ -30,6 +32,8 @@ namespace Copper {
 
 	//Setters
 	void SetWindowSize(UVector2I size);
+
+	void SetRenderScene(bool value);
 
 	void SetEditorRunFunc(void (*func)());
 	void SetEditorUIFunc(void (*func)());

@@ -1,3 +1,31 @@
 20/01/2023
 
--
+-When you Start the Runtime in the Editor the scene is Saved so that when you stop the runtime, the scene is as it was before you
+ started the runtime.
+
+-Changed the Scripting::Reload function to now take in the path of the project (by default empty = Reloads current Project) and
+ a bool to Initialize the Script Components (true by default = ScriptComponent::Init is called)
+-Fixed a bug where if you Rebuilt the Project during runtime and Start Editor Runtime Mono will crash because the create and Update
+ methods are now invalid (they weren't set after the Reload)
+
+-Added Field Support for script components, currently only int, unsigned int and float are supported but you can see your script
+ fields and edit them
+-Scripting::GetScriptFields(const std::string& scriptName) returns a std::vector of ScriptFields on the specified Script
+-Added GetFieldAccessibility which returns an enum object of the specified Fields accessibility (currently Public, Private or
+ None) and Only fields with Public accessibility will be registered.
+-Scene now also is able to Serialize and Deserialize Fields
+-Added Set/GetFieldValue to ScriptComponent. You NEED to pass in a ScriptField and it needs to be called from the Script Component
+ pointer you want to Set/Get the value
+
+-Added ScriptComponent::CopyTo(MonoObject* other), this just copies this Script Components field values into another Script Component
+ OF THE SAME TYPE.
+
+-Found a Bug with Component::object, for some weird reason the pointer is invalid however the Transform's object pointer
+ is completely okay, maybe for some random reason it gets destroyed ?
+-A simple "fix" was implemented by adding Component::Object() fucntion which returns a std::shared_ptr of the components transform
+ object pointer.
+
+-Added Add/GetComponent to the C# Scripting API and also connected it to C++. These functions are available from both C# Component
+ class (this does the action on The object of the component this function was called on) and Object class (this does the action on
+ the Object it was called on)
+-Added Camera Component class to the C# Scriptint API

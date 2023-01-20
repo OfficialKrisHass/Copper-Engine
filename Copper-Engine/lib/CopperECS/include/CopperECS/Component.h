@@ -17,6 +17,8 @@ namespace Copper {
 
 		uint32_t index = 0;
 
+		std::shared_ptr<Object> Object() { return transform->object; }
+
 		bool Valid() const { return valid; }
 
 	private:

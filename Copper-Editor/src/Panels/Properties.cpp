@@ -12,6 +12,8 @@
 
 #include <cstring>
 
+#define BindShowFunc(func) [this](auto&&... args) -> decltype(auto) { return this->func(std::forward<decltype(args)>(args)...); }
+
 using namespace Copper;
 
 namespace Editor {
@@ -45,8 +47,7 @@ namespace Editor {
 
 	Properties::Properties() : Panel("Properties") {
 
-		AddComponentAddedEventFunc(BindEventFunc(Properties::OnComponentAdded));
-		AddComponentRemovedEventFunc(BindEventFunc(Properties::OnComponentRemoved));
+		
 
 	}
 
@@ -76,9 +77,9 @@ namespace Editor {
 		bool removed = false;
 		if(DrawComponent<Transform>("Transform", removed)) {
 			
-			if (ShowVector3("Position:", selectedObj.transform->position)) SetChanges(true);
-			if (ShowVector3("Rotation:", selectedObj.transform->rotation, 0.1f)) SetChanges(true);
-			if (ShowVector3("Scale:", selectedObj.transform->scale)) SetChanges(true);
+			ShowVector3("Position:", selectedObj.transform->position);
+			ShowVector3("Rotation:", selectedObj.transform->rotation, 0.1f);
+			ShowVector3("Scale:", selectedObj.transform->scale);
 
 			ImGui::VerticalSeparator();
 
@@ -103,6 +104,18 @@ namespace Editor {
 
 			}
 
+			for (ScriptField& field : Scripting::GetScriptFields(script->name)) {
+
+				switch (field.type) {
+
+					case ScriptField::Type::Int: { ShowScriptField<int>(script, field, BindShowFunc(ShowInt)); break; }
+					case ScriptField::Type::UInt: { ShowScriptField<unsigned int>(script, field, BindShowFunc(ShowUInt)); break; }
+					case ScriptField::Type::Float: { ShowScriptField<float>(script, field, BindShowFunc(ShowFloat)); break; }
+
+				}
+
+			}
+
 			ImGui::PopID();
 
 		}
@@ -123,8 +136,8 @@ namespace Editor {
 			
 			}
 
-			if (ShowColor("Color", light->color, false)) SetChanges(true);
-			if (ShowFloat("Intensity", light->intensity)) SetChanges(true);
+			ShowColor("Color", light->color, false);
+			ShowFloat("Intensity", light->intensity);
 
 			ImGui::PopID();
 
@@ -134,10 +147,21 @@ namespace Editor {
 			ImGui::PushID((int) (int64_t) camera);
 
 			if (!DrawComponent<Camera>("Camera", removed)) { ImGui::PopID(); continue; }
+			if (removed) {
 
-			if (ShowFloat("FOV", camera->fov, 0.1f)) SetChanges(true);
-			if (ShowFloat("Near Plane", camera->nearPlane)) SetChanges(true);
-			if (ShowFloat("Far Plane", camera->farPlane)) SetChanges(true);
+				selectedObj.RemoveComponent<Camera>(camera->index);
+
+				removed = false;
+				SetChanges(true);
+
+				ImGui::PopID();
+				continue;
+
+			}
+
+			ShowFloat("FOV", camera->fov, 0.1f);
+			ShowFloat("Near Plane", camera->nearPlane);
+			ShowFloat("Far Plane", camera->farPlane);
 
 			ImGui::PopID();
 
@@ -196,17 +220,13 @@ namespace Editor {
 		
 	}
 
-	bool Properties::OnComponentAdded(const Event& e) {
+	template<typename T, typename F> void Properties::ShowScriptField(ScriptComponent* script, const ScriptField& field, F showFunc) {
 
-		return false;
+		T tmp;
+		script->GetFieldValue(field, &tmp);
 
-	}
-
-	bool Properties::OnComponentRemoved(const Event& e) {
-
-
-
-		return false;
+		bool changed = showFunc(field.name, static_cast<T&>(tmp));
+		if (changed) script->SetFieldValue(field, &tmp);
 
 	}
 
@@ -258,6 +278,7 @@ namespace Editor {
 		ImGui::Columns(1);
 		ImGui::PopID();
 
+		if (ret) SetChanges(true);
 		return ret;
 		
 	}
@@ -321,6 +342,7 @@ namespace Editor {
 		ImGui::Columns(1);
 		ImGui::PopID();
 
+		if(ret) SetChanges(true);
 		return ret;
 
 	}
@@ -396,10 +418,11 @@ namespace Editor {
 		ImGui::Columns(1);
 		ImGui::PopID();
 
+		if (ret) SetChanges(true);
 		return ret;
 		
 	}
-	bool Properties::ShowColor(std::string name, Copper::Color& col, bool showAlpha) {
+	bool Properties::ShowColor(std::string name, Copper::Color& col, float speed) {
 
 		ImGui::PushID(name.c_str());
 
@@ -426,23 +449,26 @@ namespace Editor {
 
 		ImGui::PopID();
 
+		if (ret) SetChanges(true);
 		return ret;
 		
 	}
-	bool Properties::ShowInt(std::string name, int& show, int speed) {
+	bool Properties::ShowInt(std::string name, int& show, float speed) {
 
 		bool ret = false;
-		if (ImGui::DragInt(name.c_str(), &show, (float) speed)) ret = true;
+		if (ImGui::DragInt(name.c_str(), &show, speed)) ret = true;
 
+		if (ret) SetChanges(true);
 		return ret;
 		
 	}
-	bool Properties::ShowUInt(std::string name, unsigned int& show, int speed) {
+	bool Properties::ShowUInt(std::string name, unsigned int& show, float speed) {
 
 		bool ret = false;
-		if (ImGui::DragInt(name.c_str(), (int*) &show, (float) speed)) ret = true;
+		if (ImGui::DragInt(name.c_str(), (int*) &show, speed)) ret = true;
 		if (show < 0) show = 0;
 
+		if (ret) SetChanges(true);
 		return ret;
 
 	}
@@ -451,6 +477,7 @@ namespace Editor {
 		bool ret = false;
 		if (ImGui::DragFloat(name.c_str(), &show, speed)) ret = true;
 
+		if (ret) SetChanges(true);
 		return ret;
 		
 	}
@@ -459,6 +486,7 @@ namespace Editor {
 		bool ret = false;
 		if (ImGui::DragFloat(name.c_str(), (float*) &show, speed)) ret = true;
 
+		if (ret) SetChanges(true);
 		return ret;
 
 	}
@@ -467,14 +495,16 @@ namespace Editor {
 		bool ret = false;
 		if (ImGui::InputText(name.c_str(), &show)) ret = true;
 
+		if (ret) SetChanges(true);
 		return ret;
 
 	}
 	bool Properties::ShowChar(std::string name, char& show) {
 
-		bool ret;
+		bool ret = false;
 		if (ImGui::InputText(name.c_str(), &show, sizeof(char))) ret = true;
 
+		if (ret) SetChanges(true);
 		return ret;
 
 	}

@@ -2,6 +2,8 @@
 
 #include "Engine/Core/Core.h"
 
+#include "Engine/Scripting/Field.h"
+
 extern "C" {
 
 	typedef struct _MonoObject MonoObject;
@@ -15,11 +17,12 @@ namespace Copper::Scripting {
 	void Shutdown();
 
 	void LoadProjectAssembly(std::filesystem::path path);
-	void Reload(bool projectAlreadyLoaded = false);
+	void Reload(std::filesystem::path path = "", bool initScriptComponents = true);
 
 	MonoObject* AddScriptComponent(int32_t obj, const std::string& name);
 
 	std::vector<std::string> GetScriptComponents();
+	std::vector<ScriptField> GetScriptFields(std::string scriptName);
 
 	MonoDomain* GetRootDomain();
 	MonoDomain* GetAppDomain();

@@ -13,10 +13,6 @@ Entities:
       Light:
         Color: [1, 0.999989986, 0.999989986, 0]
         Intensity: 1
-      Script Component:
-        Name: Testing.Test
-      Script Component:
-        Name: Player
   1:
     Name: Cube
     Transform:
@@ -174,7 +170,10 @@ Entities:
         - 1
         - 3
     Components:
-      {}
+      Script Component:
+        Name: Player
+        Fields:
+          {}
   3:
     Name: Plane
     Transform:
@@ -224,3 +223,26 @@ Entities:
       Light:
         Color: [1, 0.999989986, 0.999989986, 0]
         Intensity: 1
+  5:
+    Name: Camera
+    Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent: -1
+      Children:
+        []
+    Components:
+      Camera:
+        Fov: 90
+        Near Plane: 0.100000001
+        Far Plane: 1000
+      Script Component:
+        Name: Test
+        Fields:
+          speed:
+            Type: 3
+            Value: 2
+          objToMoveID:
+            Type: 1
+            Value: 2

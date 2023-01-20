@@ -9,6 +9,8 @@
 #include "Engine/Components/MeshRenderer.h"
 #include "Engine/Components/Light.h"
 
+#include "Engine/Scripting/ScriptingCore.h"
+
 #include <fstream>
 #include <yaml-cpp/yaml.h>
 
@@ -184,11 +186,25 @@ namespace Copper {
 			}
 			for (ScriptComponent* script : o.GetComponents<ScriptComponent>()) {
 
-				out << YAML::Key << "Script Component" << YAML::Value << YAML::BeginMap;
+				out << YAML::Key << "Script Component" << YAML::Value << YAML::BeginMap; //Script Component
 
 				out << YAML::Key << "Name" << YAML::Value << script->name;
 
-				out << YAML::EndMap;
+				out << YAML::Key << "Fields" << YAML::Value << YAML::BeginMap; //Fields
+				for (ScriptField& field : Scripting::GetScriptFields(script->name)) {
+
+					switch (field.type) {
+
+						case ScriptField::Type::Int: { WriteField<int>(out, field, script); break; }
+						case ScriptField::Type::UInt: { WriteField<unsigned int>(out, field, script); break; }
+						case ScriptField::Type::Float: { WriteField<float>(out, field, script); break; }
+
+					}
+
+				}
+				out << YAML::EndMap; //Fields
+				
+				out << YAML::EndMap; //Script Component
 
 			}
 			out << YAML::EndMap; //Components
@@ -302,8 +318,20 @@ namespace Copper {
 				if (cName == "Script Component") {
 
 					ScriptComponent* s = deserialized.AddComponent<ScriptComponent>();
-
 					s->Init(deserialized.id, component["Name"].as<std::string>());
+
+					YAML::Node fields = component["Fields"];
+					for (ScriptField& field : Scripting::GetScriptFields(s->name)) {
+
+						switch (field.type) {
+
+							case ScriptField::Type::Int: { ReadField<int>(fields[field.name]["Value"], field, s); break; }
+							case ScriptField::Type::UInt: { ReadField<unsigned int>(fields[field.name]["Value"], field, s); break; }
+							case ScriptField::Type::Float: { ReadField<float>(fields[field.name]["Value"], field, s); break; }
+
+						}
+
+					}
 
 				}
 
@@ -313,6 +341,26 @@ namespace Copper {
 
 		return true;
 		
+	}
+
+	template<typename T> void Scene::WriteField(YAML::Emitter& out, ScriptField& field, ScriptComponent* scriptInstance) {
+
+		T tmp;
+		scriptInstance->GetFieldValue(field, &tmp);
+
+		out << YAML::Key << field.name << YAML::Value << YAML::BeginMap; //Field
+
+		out << YAML::Key << "Type" << YAML::Value << (int) field.type;
+		out << YAML::Key << "Value" << YAML::Value << tmp;
+
+		out << YAML::EndMap; //Field
+
+	}
+	template<typename T> void Scene::ReadField(YAML::Node& value, ScriptField& field, ScriptComponent* scriptInstance) {
+
+		T tmp = value.as<T>();
+		scriptInstance->SetFieldValue(field, &tmp);
+
 	}
 
 }

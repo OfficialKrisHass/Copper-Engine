@@ -21,6 +21,20 @@ namespace Copper {
 
 	}
 
+	void ScriptComponent::CopyTo(MonoObject* other) {
+
+		if (instance == other) return;
+
+		for (ScriptField& field : Scripting::GetScriptFields(name)) {
+
+			int tmp;
+			GetFieldValue(field, &tmp);
+			mono_field_set_value(other, field.field, &tmp);
+
+		}
+
+	}
+
 	void ScriptComponent::InvokeCreate() {
 
 		if (!create) return;
@@ -35,6 +49,17 @@ namespace Copper {
 
 		MonoException* exc;
 		update(instance, &exc);
+
+	}
+
+	void ScriptComponent::GetFieldValue(const ScriptField& field, void* out) {
+
+		mono_field_get_value(instance, field.field, out);
+
+	}
+	void ScriptComponent::SetFieldValue(const ScriptField& field, void* value) {
+
+		mono_field_set_value(instance, field.field, value);
 
 	}
 

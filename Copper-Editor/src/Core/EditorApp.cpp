@@ -601,6 +601,8 @@ namespace Editor {
 	void StartEditorRuntime() {
 
 		data.state = Play;
+
+		data.scene.Serialize(data.scene.path);
 		data.scene.StartRuntime();
 
 	}
@@ -612,7 +614,7 @@ namespace Editor {
 
 		data.scene = Scene();
 		data.scene.Deserialize(savedPath);
-		data.scene.cam = &data.project.sceneCam;
+		data.sceneHierarchy.LoadSceneMeta();
 
 	}
 
@@ -650,8 +652,7 @@ namespace Editor {
 		data.project.CreateSolution();
 		data.project.BuildSolution(false);
 
-		Scripting::LoadProjectAssembly(data.project.path.string() + "\\Binaries\\" + data.project.name + ".dll");
-		Scripting::Reload();
+		Scripting::Reload(data.project.path.string() + "\\Binaries\\" + data.project.name + ".dll", false);
 
 		//Lastly Save the Project into the Project.cu file
 		data.project.Save();
@@ -672,8 +673,7 @@ namespace Editor {
 		data.title = "Copper Editor - " + data.project.name + ": ";
 		Input::SetWindowTitle(data.title);
 
-		Scripting::LoadProjectAssembly(data.project.path.string() + "\\Binaries\\" + data.project.name + ".dll");
-		Scripting::Reload();
+		Scripting::Reload(data.project.path.string() + "\\Binaries\\" + data.project.name + ".dll", false);
 
 		OpenScene(data.project.lastOpenedScene);
 

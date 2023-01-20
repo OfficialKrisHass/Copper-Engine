@@ -50,6 +50,9 @@ namespace Copper {
 		bool runtimeRunning = false;
 		bool runtimeStarted = false;
 
+		template<typename T> void WriteField(YAML::Emitter& out, ScriptField& field, ScriptComponent* scriptInstance);
+		template<typename T> void ReadField(YAML::Node& value, ScriptField& field, ScriptComponent* scriptInstance);
+
 	};
 
 }

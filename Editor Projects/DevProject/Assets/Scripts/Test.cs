@@ -1,23 +1,24 @@
 ﻿using System;
-
 using Copper;
 
-namespace Testing {
+class Test : Component {
 
-    class Test : Component {
+    public Player player;
+    public float speed = 1.0f;
+    public int objToMoveID = 2;
 
-        void Create() {
+    void Create() {
 
-            Editor.Log("Has Test: " + HasComponent<Test>().ToString());
-            Editor.Log("Has Player: " + HasComponent<Player>().ToString());
+        Copper.Object obj = new Copper.Object(objToMoveID);
+        player = obj.GetComponent<Player>();
 
-        }
+    }
 
-        void Update() {
+    void Update() {
 
-            //
+        if (player == null) return;
 
-        }
+        player.transform.position += new Vector3(speed / 100, 0.0f, 0.0f);
 
     }
 

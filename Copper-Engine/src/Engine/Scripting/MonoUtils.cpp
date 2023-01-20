@@ -7,6 +7,7 @@
 
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
+#include <mono/metadata/attrdefs.h>
 
 namespace Copper::Scripting::MonoUtils {
 
@@ -41,7 +42,7 @@ namespace Copper::Scripting::MonoUtils {
 		return ret;
 
 	}
-	MonoString* StringToMono(std::string string) {
+	MonoString* StringToMono(const std::string& string) {
 
 		if (string.size() == 0) { LogError("String can't be Invalid"); return nullptr; }
 
@@ -60,6 +61,21 @@ namespace Copper::Scripting::MonoUtils {
 		name.erase(0, pos + 1);
 
 		return nameSpace;
+
+	}
+
+	FieldAccessibility GetFieldAccessibility(MonoClassField* field) {
+
+		return (mono_field_get_flags(field) & MONO_FIELD_ATTR_FIELD_ACCESS_MASK) == MONO_FIELD_ATTR_PUBLIC ? FieldAccessibility::Public : FieldAccessibility::Private;
+
+	}
+	ScriptField::Type TypeFromString(const std::string& string) {
+
+		if      (string == "System.Int32")   return ScriptField::Type::Int;
+		else if (string == "System.UInt32")  return ScriptField::Type::UInt;
+		else if (string == "System.Single")  return ScriptField::Type::Float;
+
+		return ScriptField::Type::None;
 
 	}
 

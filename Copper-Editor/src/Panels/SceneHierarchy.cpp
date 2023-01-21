@@ -3,6 +3,8 @@
 #include "Core/EditorApp.h"
 #include "Core/Utils/ModelLoader.h"
 
+#include "Panels/Properties.h"
+
 #include "Engine/Renderer/Primitives.h"
 
 #include <ImGui/imgui.h>
@@ -13,6 +15,7 @@ using namespace Copper;
 namespace Editor {
 
 	MetaFile::SceneMeta sceneMeta;
+	int clickedObjID = -1;
 
 	SceneHierarchy::SceneHierarchy() : Panel("Scene Hierarchy"), scene(scene) {
 
@@ -108,7 +111,14 @@ namespace Editor {
 
 		}
 
-		if (ImGui::IsItemClicked()) selectedObj = obj;
+		if (ImGui::IsItemClicked()) clickedObjID = obj.GetID();
+		if (ImGui::IsMouseReleased(0) && obj.GetID() == clickedObjID) {
+
+			if (Properties::IsDragDropTargetHovered()) clickedObjID = -1;
+			else  selectedObj = obj;
+
+		}
+
 		if (opened) {
 
 			uint32_t childIndex;
@@ -264,6 +274,12 @@ namespace Editor {
 	void SceneHierarchy::LoadSceneMeta() {
 
 		sceneMeta.Deserialize(scene);
+
+	}
+
+	MetaFile::SceneMeta* SceneHierarchy::GetSceneMetaPointer() {
+
+		return &sceneMeta;
 
 	}
 

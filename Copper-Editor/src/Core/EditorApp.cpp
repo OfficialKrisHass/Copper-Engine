@@ -325,9 +325,9 @@ namespace Editor {
 		
 		data.console.UIRender();
 		data.fileBrowser.UIRender();
-		data.sceneHierarchy.UIRender();
 		data.properties.SetSelectedObject(data.sceneHierarchy.GetSelectedObject());
 		data.properties.UIRender();
+		data.sceneHierarchy.UIRender();
 		RenderGamePanel();
 		RenderViewport();
 

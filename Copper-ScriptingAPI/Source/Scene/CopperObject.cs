@@ -2,11 +2,17 @@
 
 namespace Copper {
 
-    public class Object {
+    public class CopperObject {
 
         protected int objID;
 
-        public Object(int objID) {
+        public CopperObject() {
+
+            objID = -1;
+            Editor.Log("Default Constructor!");
+
+        }
+        public CopperObject(int objID) {
 
             this.objID = objID;
 

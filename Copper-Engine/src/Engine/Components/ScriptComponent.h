@@ -32,7 +32,9 @@ namespace Copper {
 		void InvokeUpdate();
 
 		void GetFieldValue(const ScriptField& field, void* out);
+		void GetFieldValue(const ScriptField& field, Object* out);
 		void SetFieldValue(const ScriptField& field, void* value);
+		void SetFieldValue(const ScriptField& field, Object* value);
 
 	private:
 		MonoObject* instance = nullptr;

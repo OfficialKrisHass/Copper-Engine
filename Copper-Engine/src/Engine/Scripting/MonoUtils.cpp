@@ -74,6 +74,7 @@ namespace Copper::Scripting::MonoUtils {
 		if      (string == "System.Int32")   return ScriptField::Type::Int;
 		else if (string == "System.UInt32")  return ScriptField::Type::UInt;
 		else if (string == "System.Single")  return ScriptField::Type::Float;
+		else if (string == "Copper.CopperObject")  return ScriptField::Type::CopperObject;
 
 		return ScriptField::Type::None;
 

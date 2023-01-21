@@ -16,9 +16,43 @@
 
 #include <CopperECS/CopperECS.h>
 
+namespace YAML {
+
+	using namespace Copper;
+
+	template<> struct convert<Object> {
+
+		static Node encode(const Object& obj) {
+
+			Node node;
+
+			node.push_back(obj.GetID());
+
+			return node;
+
+		}
+		static bool decode(const Node& node, Object& obj) {
+
+			obj = GetObjectFromID(node.as<int>());
+
+			return true;
+
+		}
+
+	};
+
+}
+
 namespace Copper {
 
 	int cCounter = 0;
+
+	inline YAML::Emitter& operator<<(YAML::Emitter& out, const Object& obj) {
+
+		out << obj.GetID();
+		return out;
+
+	}
 
 	Object Scene::CreateObject(Vector3 position, Vector3 rotation, Vector3 scale, std::string name) {
 
@@ -198,6 +232,9 @@ namespace Copper {
 						case ScriptField::Type::Int: { WriteField<int>(out, field, script); break; }
 						case ScriptField::Type::UInt: { WriteField<unsigned int>(out, field, script); break; }
 						case ScriptField::Type::Float: { WriteField<float>(out, field, script); break; }
+						case ScriptField::Type::CopperObject: {
+							WriteField<Object>(out, field, script);
+							break; }
 
 					}
 
@@ -328,6 +365,7 @@ namespace Copper {
 							case ScriptField::Type::Int: { ReadField<int>(fields[field.name]["Value"], field, s); break; }
 							case ScriptField::Type::UInt: { ReadField<unsigned int>(fields[field.name]["Value"], field, s); break; }
 							case ScriptField::Type::Float: { ReadField<float>(fields[field.name]["Value"], field, s); break; }
+							case ScriptField::Type::CopperObject: { ReadField<Object>(fields[field.name]["Value"], field, s); break; }
 
 						}
 

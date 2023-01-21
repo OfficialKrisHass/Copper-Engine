@@ -26,6 +26,7 @@ namespace Copper::Scripting {
 		MonoImage* projectAssemblyImage;
 
 		MonoClass* componentClass;
+		MonoClass* copperObjectClass;
 
 		std::vector<std::string> scriptComponents;
 
@@ -38,6 +39,7 @@ namespace Copper::Scripting {
 	void SetupInternalCalls();
 
 	void InitScriptComponents();
+	void InitScriptFields(const std::string& fullName, MonoClass* scriptClass);
 
 	void Initialize() {
 
@@ -53,6 +55,7 @@ namespace Copper::Scripting {
 		data.apiAssemblyImage = mono_assembly_get_image(data.apiAssembly);
 
 		data.componentClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Component");
+		data.copperObjectClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "CopperObject");
 
 		//Setup ScriptingAPI
 		SetupInternalCalls();
@@ -85,7 +88,9 @@ namespace Copper::Scripting {
 
 		data.apiAssembly = MonoUtils::LoadAssembly("assets/ScriptAPI/Copper-ScriptingAPI.dll");
 		data.apiAssemblyImage = mono_assembly_get_image(data.apiAssembly);
+
 		data.componentClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Component");
+		data.copperObjectClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "CopperObject");
 
 		//Load the Project Assembly
 		LoadProjectAssembly(data.projectPath);
@@ -97,7 +102,7 @@ namespace Copper::Scripting {
 		for (Component* component : ComponentView<ScriptComponent>(GetScene())) {
 
 			ScriptComponent* script = (ScriptComponent*) component;
-			script->Init(script->Object()->GetID(), script->name);
+			script->Init(script->GetTransformObject()->GetID(), script->name);
 
 		}
 
@@ -166,27 +171,29 @@ namespace Copper::Scripting {
 				else fullName = name;
 
 				data.scriptComponents.push_back(fullName);
-				//data.scriptFields[fullName] = std::vector<ScriptField>();
-
-				void* iter = nullptr;
-				MonoClassField* field;
-				while (field = mono_class_get_fields(scriptClass, &iter)) {
-
-					if (MonoUtils::GetFieldAccessibility(field) != MonoUtils::FieldAccessibility::Public) continue;
-
-					MonoType* type = mono_field_get_type(field);
-
-					data.scriptFields[fullName].push_back(ScriptField());
-					ScriptField& scriptField = data.scriptFields[fullName].back();
-					scriptField.SetMonoField(field);
-
-					scriptField.name = mono_field_get_name(field);
-					scriptField.type = MonoUtils::TypeFromString(mono_type_get_name(type));
-
-
-				}
+				InitScriptFields(fullName, scriptClass);
 
 			}
+
+		}
+
+	}
+	void InitScriptFields(const std::string& fullName, MonoClass* scriptClass) {
+
+		void* iter = nullptr;
+		MonoClassField* field;
+		while (field = mono_class_get_fields(scriptClass, &iter)) {
+
+			if (MonoUtils::GetFieldAccessibility(field) != MonoUtils::FieldAccessibility::Public) continue;
+
+			MonoType* type = mono_field_get_type(field);
+
+			data.scriptFields[fullName].push_back(ScriptField());
+			ScriptField& scriptField = data.scriptFields[fullName].back();
+			scriptField.SetMonoField(field);
+
+			scriptField.name = mono_field_get_name(field);
+			scriptField.type = MonoUtils::TypeFromString(mono_type_get_name(type));
 
 		}
 
@@ -218,6 +225,8 @@ namespace Copper::Scripting {
 
 	std::vector<std::string> GetScriptComponents() { return data.scriptComponents; }
 	std::vector<ScriptField> GetScriptFields(std::string scriptName) { return data.scriptFields[scriptName]; }
+
+	MonoClass* GetCopperObjectClass() { return data.copperObjectClass; }
 
 	MonoDomain* GetRootDomain() { return data.root; }
 	MonoDomain* GetAppDomain() { return data.app; }

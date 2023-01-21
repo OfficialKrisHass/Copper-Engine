@@ -50,7 +50,7 @@
     <Compile Include="Source\Scene\Component.cs" />
     <Compile Include="Source\Scene\Components\Camera.cs" />
     <Compile Include="Source\Scene\Components\Transform.cs" />
-    <Compile Include="Source\Scene\Object.cs" />
+    <Compile Include="Source\Scene\CopperObject.cs" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>

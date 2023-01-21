@@ -11,7 +11,7 @@ namespace Copper {
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void LogError(string msg);
 
         //Object
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetObject(int objID, out Object obj);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetObject(int objID, out CopperObject obj);
 
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static string GetObjectName(int objID);
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetObjectName(int objID, string name);

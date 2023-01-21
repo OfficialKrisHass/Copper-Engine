@@ -8,6 +8,7 @@ extern "C" {
 
 	typedef struct _MonoObject MonoObject;
 	typedef struct _MonoDomain MonoDomain;
+	typedef struct _MonoClass MonoClass;
 
 }
 
@@ -23,6 +24,8 @@ namespace Copper::Scripting {
 
 	std::vector<std::string> GetScriptComponents();
 	std::vector<ScriptField> GetScriptFields(std::string scriptName);
+
+	MonoClass* GetCopperObjectClass();
 
 	MonoDomain* GetRootDomain();
 	MonoDomain* GetAppDomain();

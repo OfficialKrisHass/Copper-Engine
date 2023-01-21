@@ -16,9 +16,13 @@ namespace Editor {
 		void SaveSceneMeta();
 		void LoadSceneMeta();
 		
-		inline void SetSelectedObject(Copper::Object& object) { selectedObj = object; }
+		//Getters
 		inline Copper::Object& GetSelectedObject() { return selectedObj; }
 
+		static MetaFile::SceneMeta* GetSceneMetaPointer();
+
+		//Setters
+		inline void SetSelectedObject(Copper::Object& object) { selectedObj = object; }
 		inline void SetScene(Copper::Scene* scene) { this->scene = scene; }
 
 	private:

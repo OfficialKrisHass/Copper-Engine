@@ -20,6 +20,7 @@ namespace Copper {
 			Int,
 			UInt,
 			Float,
+			CopperObject
 
 
 		};

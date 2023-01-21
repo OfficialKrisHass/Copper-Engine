@@ -240,9 +240,9 @@ Entities:
       Script Component:
         Name: Test
         Fields:
+          objects:
+            Type: 4
+            Value: 2
           speed:
             Type: 3
-            Value: 2
-          objToMoveID:
-            Type: 1
-            Value: 2
+            Value: 1

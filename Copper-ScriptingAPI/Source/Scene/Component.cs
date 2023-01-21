@@ -13,11 +13,11 @@ namespace Copper {
 
         }
 
-        public Object obj {
+        public CopperObject obj {
 
             get {
 
-                return new Object(objID);
+                return new CopperObject(objID);
 
             }
 

@@ -3,6 +3,9 @@
 #include "Engine/Scripting/ScriptingCore.h"
 
 #include "Core/EditorApp.h"
+#include "Core/MetaFileSerialization.h"
+
+#include "Panels/SceneHierarchy.h"
 
 #include "Viewport/SceneCamera.h"
 
@@ -20,6 +23,9 @@ namespace Editor {
 
 	std::filesystem::path Properties::selectedFile = "";
 	bool Properties::wasFileLast = false;
+	bool Properties::dragDropTargetHovered = false;
+
+	MetaFile::SceneMeta* sceneMeta;
 
 	template<typename T> static bool DrawComponent(const std::string& name, bool& removed) {
 
@@ -47,7 +53,7 @@ namespace Editor {
 
 	Properties::Properties() : Panel("Properties") {
 
-		
+		sceneMeta = SceneHierarchy::GetSceneMetaPointer();
 
 	}
 
@@ -108,9 +114,10 @@ namespace Editor {
 
 				switch (field.type) {
 
-					case ScriptField::Type::Int: { ShowScriptField<int>(script, field, BindShowFunc(ShowInt)); break; }
-					case ScriptField::Type::UInt: { ShowScriptField<unsigned int>(script, field, BindShowFunc(ShowUInt)); break; }
-					case ScriptField::Type::Float: { ShowScriptField<float>(script, field, BindShowFunc(ShowFloat)); break; }
+					case ScriptField::Type::Int: { RenderScriptField<int>(script, field, BindShowFunc(ShowInt)); break; }
+					case ScriptField::Type::UInt: { RenderScriptField<unsigned int>(script, field, BindShowFunc(ShowUInt)); break; }
+					case ScriptField::Type::Float: { RenderScriptField<float>(script, field, BindShowFunc(ShowFloat)); break; }
+					case ScriptField::Type::CopperObject: { RenderScriptField<Object>(script, field, BindShowFunc(ShowObject)); break; }
 
 				}
 
@@ -205,7 +212,6 @@ namespace Editor {
 		}
 		
 	}
-	
 	void Properties::RenderFile() {
 
 		if(selectedFile.extension() == ".mat") {
@@ -220,7 +226,7 @@ namespace Editor {
 		
 	}
 
-	template<typename T, typename F> void Properties::ShowScriptField(ScriptComponent* script, const ScriptField& field, F showFunc) {
+	template<typename T, typename F> void Properties::RenderScriptField(ScriptComponent* script, const ScriptField& field, F showFunc) {
 
 		T tmp;
 		script->GetFieldValue(field, &tmp);
@@ -230,7 +236,63 @@ namespace Editor {
 
 	}
 
-	bool Properties::ShowVector2(std::string name, Vector2& vec, float speed) {
+	bool Properties::ShowInt(const std::string& name, int& show, float speed) {
+
+		bool ret = false;
+		if (ImGui::DragInt(name.c_str(), &show, speed)) ret = true;
+
+		if (ret) SetChanges(true);
+		return ret;
+		
+	}
+	bool Properties::ShowUInt(const std::string& name, unsigned int& show, float speed) {
+
+		bool ret = false;
+		if (ImGui::DragInt(name.c_str(), (int*) &show, speed)) ret = true;
+		if (show < 0) show = 0;
+
+		if (ret) SetChanges(true);
+		return ret;
+
+	}
+	bool Properties::ShowFloat(const std::string& name, float& show, float speed) {
+
+		bool ret = false;
+		if (ImGui::DragFloat(name.c_str(), &show, speed)) ret = true;
+
+		if (ret) SetChanges(true);
+		return ret;
+		
+	}
+	bool Properties::ShowDouble(const std::string& name, double& show, float speed) {
+
+		bool ret = false;
+		if (ImGui::DragFloat(name.c_str(), (float*) &show, speed)) ret = true;
+
+		if (ret) SetChanges(true);
+		return ret;
+
+	}
+	bool Properties::ShowString(const std::string& name, std::string& show) {
+
+		bool ret = false;
+		if (ImGui::InputText(name.c_str(), &show)) ret = true;
+
+		if (ret) SetChanges(true);
+		return ret;
+
+	}
+	bool Properties::ShowChar(const std::string& name, char& show) {
+
+		bool ret = false;
+		if (ImGui::InputText(name.c_str(), &show, sizeof(char))) ret = true;
+
+		if (ret) SetChanges(true);
+		return ret;
+
+	}
+	
+	bool Properties::ShowVector2(const std::string& name, Vector2& vec, float speed) {
 
 		bool ret = false;
 
@@ -282,7 +344,7 @@ namespace Editor {
 		return ret;
 		
 	}
-	bool Properties::ShowVector3(std::string name, Vector3& vec, float speed) {
+	bool Properties::ShowVector3(const std::string& name, Vector3& vec, float speed) {
 
 		bool ret = false;
 		
@@ -346,7 +408,7 @@ namespace Editor {
 		return ret;
 
 	}
-	bool Properties::ShowVector4(std::string name, Vector4& vec, float speed) {
+	bool Properties::ShowVector4(const std::string& name, Vector4& vec, float speed) {
 
 		bool ret = false;
 		
@@ -422,7 +484,7 @@ namespace Editor {
 		return ret;
 		
 	}
-	bool Properties::ShowColor(std::string name, Copper::Color& col, float speed) {
+	bool Properties::ShowColor(const std::string& name, Color& col, float speed) {
 
 		ImGui::PushID(name.c_str());
 
@@ -453,60 +515,42 @@ namespace Editor {
 		return ret;
 		
 	}
-	bool Properties::ShowInt(std::string name, int& show, float speed) {
+
+	bool Properties::ShowObject(const std::string& name, Object& obj) {
 
 		bool ret = false;
-		if (ImGui::DragInt(name.c_str(), &show, speed)) ret = true;
+		std::string test;
 
-		if (ret) SetChanges(true);
-		return ret;
+		if (obj) test = obj.tag->name;
+		else test = "None";
+		test += " (Copper Object)";
+
+		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+		if (dragDropTargetHovered) ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4 {0.25f, 0.25f, 0.25f, 1.0f});
+
+		ImGui::InputText(name.c_str(), &test, ImGuiInputTextFlags_ReadOnly);
 		
-	}
-	bool Properties::ShowUInt(std::string name, unsigned int& show, float speed) {
+		ImGui::PopItemFlag();
+		if (dragDropTargetHovered) ImGui::PopStyleColor();
 
-		bool ret = false;
-		if (ImGui::DragInt(name.c_str(), (int*) &show, speed)) ret = true;
-		if (show < 0) show = 0;
+		dragDropTargetHovered = ImGui::IsItemHovered();
+		if (ImGui::BeginDragDropTarget()) {
 
-		if (ret) SetChanges(true);
-		return ret;
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_OBJECT_NODE")) {
 
-	}
-	bool Properties::ShowFloat(std::string name, float& show, float speed) {
+				dragDropTargetHovered = true;
+				ret = true;
+				obj = GetObjectFromID(sceneMeta->objectIDs[*(int32_t*) payload->Data]);
 
-		bool ret = false;
-		if (ImGui::DragFloat(name.c_str(), &show, speed)) ret = true;
+			}
 
-		if (ret) SetChanges(true);
-		return ret;
-		
-	}
-	bool Properties::ShowDouble(std::string name, double& show, float speed) {
+			ImGui::EndDragDropTarget();
 
-		bool ret = false;
-		if (ImGui::DragFloat(name.c_str(), (float*) &show, speed)) ret = true;
+		}
 
 		if (ret) SetChanges(true);
 		return ret;
 
 	}
-	bool Properties::ShowString(std::string name, std::string& show) {
 
-		bool ret = false;
-		if (ImGui::InputText(name.c_str(), &show)) ret = true;
-
-		if (ret) SetChanges(true);
-		return ret;
-
-	}
-	bool Properties::ShowChar(std::string name, char& show) {
-
-		bool ret = false;
-		if (ImGui::InputText(name.c_str(), &show, sizeof(char))) ret = true;
-
-		if (ret) SetChanges(true);
-		return ret;
-
-	}
-	
 }

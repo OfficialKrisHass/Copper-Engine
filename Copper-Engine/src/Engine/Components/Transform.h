@@ -26,7 +26,7 @@ namespace Copper {
 		Vector3 scale = Vector3::one;
 
 		Vector3 forward;
-		Vector3 backward;
+		Vector3 back;
 		Vector3 up;
 		Vector3 down;
 		Vector3 left;

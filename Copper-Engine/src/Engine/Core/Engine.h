@@ -18,6 +18,7 @@ namespace Copper {
 	void LoadScene(Scene* scene);
 
 	bool OnWindowResize(const Event& e);
+	bool OnWindowFocused(const Event& e);
 	bool OnWindowClose(const Event& e);
 	bool OnKeyPressed(const Event& e);
 
@@ -28,7 +29,12 @@ namespace Copper {
 	uint32_t GetFBOTexture();
 
 	Scene* GetScene();
-	Object GetObjectFromID(int32_t id);
+	uint32_t GetNumOfObjects();
+
+	Object& GetObjectFromID(int32_t id);
+	Object& CreateObjectFromID(int32_t id, ObjectDefaultParams);
+
+	bool IsRuntimeRunning();
 
 	//Setters
 	void SetWindowSize(UVector2I size);
@@ -40,5 +46,6 @@ namespace Copper {
 
 	void SetEditorOnKeyPressedFunc(bool (*func)(const Event&));
 	void SetEditorOnWindowCloseFunc(bool (*func)(const Event&));
+	void SetEditorOnWindowFocusedFunc(std::function<bool(const Event&)> func);
 
 }

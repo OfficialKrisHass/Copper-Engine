@@ -35,6 +35,7 @@ namespace Copper {
 		RendererAPI::Initialize();
 
 		data.wResE += OnWindowResize;
+		data.wFocE += OnWindowFocused;
 		data.wClsE += OnWindowClose;
 		data.kPrsE += OnKeyPressed;
 
@@ -76,6 +77,15 @@ namespace Copper {
 				}
 
 			}
+
+		});
+		glfwSetWindowFocusCallback(WINDOW, [](GLFWwindow* window, int focused) {
+
+			WindowData& data = GETWINDATA;
+			
+			data.wFocE.focused = focused;
+			data.wFocE.Call();
+			data.wFocE.Clear();
 
 		});
 

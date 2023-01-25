@@ -1,15 +1,18 @@
-21/01/2023
+25/01/2023
 
--Renamed the Object class in the C# Scripting API to CopperObject. Before there were problems with the built
- in object keyword (for some reason even though one starts with Uppercase, C# would confuse the two types)
+-CopperObject constructor is now private.
+-If you want to get the CopperObject from an id, do it through InternalCalls.GetObject(int objID)
 
--Added a pointer to the SceneMeta to Properties.cpp
+-Added the Input system to the C# Scripting API
 
--Made some changes to the Show functions in Properties
--Added ShowObject to show a field that can accept the Drag Drop Payload
+-Added right, left, up, down, forward and back Vector3 properties to the C# Transform component
+-Made a simple Movement system in the DevProject
 
--Added function overloads to Set and Get fields from Scripts that have the type CopperObject (and also correctly convert
- it into the C++ Object class)
--Added Serialization and Deserialization for Script Fields of CopperObject type
+-Added a OnWindowFocused event and function to the Editor. This function is called whenever the Window
+ loses focus or becomes focused again
 
--Fixed the problem where if you started dragging a node in the Scene Hierarchy it would automatically select that node
+-Added a FileWatch library to the Editor
+-Added ProjectFileWatcher File. a group of functions that watch for changes in the specified directory
+ and call the specified Callbacks.
+-When there is any sort of change in the current Project, a bool is set and once the Window becomes
+ focused again the Editor will automatically Hot reload the Project (FINALLY)

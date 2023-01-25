@@ -3,19 +3,24 @@ using Copper;
 
 class Test : Component {
 
-    public CopperObject objects = new CopperObject(2);
-    public Player player;
-    public float speed = 1.0f;
+    public CopperObject objects;
+    public float speed = 0.1f;
+
+    Vector3 test;
 
     void Create() {
 
-        Editor.Log(objects.name);
+        test = Vector3.zero;
 
     }
 
     void Update() {
 
-        objects.transform.position += new Vector3(speed / 100, 0.0f, 0.0f);
+        float ws = Input.GetAxis("Keys_WS") * speed;
+        float ad = Input.GetAxis("Keys_DA") * speed;
+
+        test = transform.forward * ws + transform.right * ad;
+        transform.position += test;
 
     }
 

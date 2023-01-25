@@ -57,9 +57,13 @@ namespace Copper {
         public static Vector3 minusOne = new Vector3(-1.0f);
 
         public static Vector3 operator+(Vector3 lhs, Vector3 rhs) { return new Vector3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z); }
+        public static Vector3 operator+(Vector3 lhs, float scalar) { return new Vector3(lhs.x + scalar, lhs.y + scalar, lhs.z + scalar); }
         public static Vector3 operator-(Vector3 lhs, Vector3 rhs) { return new Vector3(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z); }
+        public static Vector3 operator-(Vector3 lhs, float scalar) { return new Vector3(lhs.x - scalar, lhs.y - scalar, lhs.z - scalar); }
         public static Vector3 operator*(Vector3 lhs, Vector3 rhs) { return new Vector3(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z); }
+        public static Vector3 operator*(Vector3 lhs, float scalar) { return new Vector3(lhs.x * scalar, lhs.y * scalar, lhs.z * scalar); }
         public static Vector3 operator/(Vector3 lhs, Vector3 rhs) { return new Vector3(lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z); }
+        public static Vector3 operator/(Vector3 lhs, float scalar) { return new Vector3(lhs.x / scalar, lhs.y / scalar, lhs.z / scalar); }
 
     }
 

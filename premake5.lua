@@ -142,6 +142,8 @@ project "Copper-Editor"
         
         "Copper-Engine/lib/CopperECS/include",
 
+        "%{prj.name}/lib/FileWatch",
+
     }
 
     links {

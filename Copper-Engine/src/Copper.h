@@ -18,6 +18,7 @@
 
 //Input
 #include "Engine/Input/Input.h"
+#include "Engine/Input/AxisManager.h"
 #include "Engine/Input/Error.h"
 
 //Utilities

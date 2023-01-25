@@ -115,9 +115,16 @@ namespace Copper::Scripting {
 		mono_add_internal_call("Copper.InternalCalls::LogWarn", InternalCalls::EditorLogWarn);
 		mono_add_internal_call("Copper.InternalCalls::LogError", InternalCalls::EditorLogError);
 
+		//Input
+		mono_add_internal_call("Copper.InternalCalls::IsKey", InternalCalls::IsKey);
+
+		mono_add_internal_call("Copper.InternalCalls::GetAxis", InternalCalls::GetAxis);
+
 		//Object
 		mono_add_internal_call("Copper.InternalCalls::GetObjectName", InternalCalls::GetObjectName);
 		mono_add_internal_call("Copper.InternalCalls::SetObjectName", InternalCalls::SetObjectName);
+
+		mono_add_internal_call("Copper.InternalCalls::GetObject", InternalCalls::GetCopperObject);
 
 		//Components
 		mono_add_internal_call("Copper.InternalCalls::AddComponent", InternalCalls::AddComponent);
@@ -133,6 +140,13 @@ namespace Copper::Scripting {
 		mono_add_internal_call("Copper.InternalCalls::SetPosition", InternalCalls::SetPosition);
 		mono_add_internal_call("Copper.InternalCalls::SetRotation", InternalCalls::SetRotation);
 		mono_add_internal_call("Copper.InternalCalls::SetScale", InternalCalls::SetScale);
+
+		mono_add_internal_call("Copper.InternalCalls::GetForward", InternalCalls::GetForward);
+		mono_add_internal_call("Copper.InternalCalls::GetBack",  InternalCalls::GetBack);
+		mono_add_internal_call("Copper.InternalCalls::GetRight", InternalCalls::GetRight);
+		mono_add_internal_call("Copper.InternalCalls::GetLeft",  InternalCalls::GetLeft);
+		mono_add_internal_call("Copper.InternalCalls::GetUp",    InternalCalls::GetUp);
+		mono_add_internal_call("Copper.InternalCalls::GetDown",  InternalCalls::GetDown);
 
 		//Camera
 		mono_add_internal_call("Copper.InternalCalls::CameraGetFOV", InternalCalls::CameraGetFOV);

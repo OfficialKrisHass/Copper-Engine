@@ -5,7 +5,6 @@
 #include "KeyCodes.h"
 
 namespace Copper::Input {
-
 	
 	enum MouseCode {
 		
@@ -23,6 +22,8 @@ namespace Copper::Input {
 	void SetCursorPosition(float x, float y);
 
 	void SetWindowTitle(std::string title);
+
+	void SetAcceptInputDuringRuntime(bool value);
 
 	//Getters
 	void GetCursorPosition(double* x, double* y);

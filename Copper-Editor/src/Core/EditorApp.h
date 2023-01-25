@@ -34,6 +34,7 @@ namespace Editor {
 
 	bool OnKeyPressed(const Copper::Event& e);
 	bool OnWindowClose(const Copper::Event& e);
+	bool OnWindowFocused(const Copper::Event& e);
 
 	Project GetProject();
 

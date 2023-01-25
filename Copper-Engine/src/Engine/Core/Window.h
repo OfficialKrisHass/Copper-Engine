@@ -13,8 +13,9 @@ namespace Copper {
 		uint32_t height;
 		std::string title;
 
-		WindowResizeEvent wResE;
 		WindowCloseEvent wClsE;
+		WindowFocusedEvent wFocE;
+		WindowResizeEvent wResE;
 
 		KeyPresedEvent kPrsE;
 

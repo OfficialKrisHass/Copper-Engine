@@ -2,8 +2,8 @@ Name: DevProject
 Last Scene: Scenes\EmptyTemplate.copper
 Gizmo: 0
 Scene Camera:
-  Position: [3.1030407, 2.39817262, 3.19652033]
-  Rotation: [13.0556192, -34.84375, 0]
+  Position: [-3.8464911, 1.2569176, 0.315816969]
+  Rotation: [24.4445667, 88.671875, 0]
   Fov: 90
   Near Plane: 0.100000001
   Far Plane: 1000

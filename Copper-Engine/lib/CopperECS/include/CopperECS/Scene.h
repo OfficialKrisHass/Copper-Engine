@@ -8,6 +8,8 @@
 #include "Engine/Components/Camera.h"
 #include "Engine/Components/Light.h"
 
+#define ObjectDefaultParams Vector3 position = Vector3::zero, Vector3 rotation = Vector3::zero, Vector3 scale = Vector3::one, const std::string& name = "Object"
+
 namespace Copper {
 
 	class Scene {
@@ -22,9 +24,9 @@ namespace Copper {
 		Camera* cam;
 
 		//Objects
-		Object CreateObject(Vector3 position, Vector3 rotation, Vector3 scale, std::string name = "Object");
-		Object CreateObject(std::string name = "Object");
-
+		Object CreateObject(ObjectDefaultParams);
+		Object CreateObject(const std::string& name = "Object");
+		
 		void DestroyObject(Object& obj) { registry.DestroyObject(obj); }
 
 		//Runtime
@@ -40,7 +42,13 @@ namespace Copper {
 
 		//Getters
 		Registry* GetRegistry() { return &registry; }
+
 		Object& GetObjectFromID(int32_t id) { return registry.GetObjectFromID(id); }
+		Object& CreateObjectFromID(int32_t id, ObjectDefaultParams) { return registry.CreateObjectFromID(id, this, position, rotation, scale, name); }
+
+		uint32_t GetNumOfObjects() { return (uint32_t) registry.objects.size(); }
+
+		bool IsRuntimeRunning() { return runtimeRunning; }
 
 	private:
 		Registry registry;

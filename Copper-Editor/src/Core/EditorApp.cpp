@@ -9,6 +9,9 @@
 
 #include "Core/Project.h"
 #include "Core/MetaFileSerialization.h"
+#include "Core/ProjectFileWatcher.h"
+
+#include "Core/Utils/ModelLoader.h"
 
 #include "Panels/SceneHierarchy.h"
 #include "Panels/Properties.h"
@@ -16,8 +19,6 @@
 #include "Panels/Console.h"
 
 #include "Viewport/SceneCamera.h"
-
-#include "Core/Utils/ModelLoader.h"
 
 #include <GLM/gtc/type_ptr.hpp>
 
@@ -40,6 +41,7 @@ void AppEntryPoint() {
 
 	SetEditorOnKeyPressedFunc(Editor::OnKeyPressed);
 	SetEditorOnWindowCloseFunc(Editor::OnWindowClose);
+	SetEditorOnWindowFocusedFunc(Editor::OnWindowFocused);
 
 }
 void AppShutdown() {
@@ -219,6 +221,7 @@ namespace Editor {
 
 		//Project
 		Project project;
+		bool scriptChanges;
 
 		//Scene
 		Scene scene;
@@ -231,6 +234,7 @@ namespace Editor {
 
 		//Game Panel
 		UVector2I gamePanelSize;
+		bool gamePanelFocused;
 
 		//Icons
 		Texture playIcon;
@@ -249,6 +253,8 @@ namespace Editor {
 	void SaveEditorData();
 	void LoadEditorData();
 
+	void GamePanelFocused();
+
 	void NewProject();
 	void OpenProject(std::filesystem::path path);
 	void OpenProject();
@@ -257,6 +263,8 @@ namespace Editor {
 
 	void StartEditorRuntime();
 	void StopEditorRuntime();
+
+	void FileChangedCallback(const std::filesystem::path& path, const ProjectFileWatcher::FileChangeType& changeType);
 
 	void Initialize() {
 
@@ -272,13 +280,16 @@ namespace Editor {
 		data.properties = Properties();
 		data.fileBrowser = FileBrowser(data.project.assetsPath);
 		data.console = Console();
+
+		ProjectFileWatcher::AddFilter(".cs");
+		ProjectFileWatcher::AddFileChangeCallback(FileChangedCallback);
 		
 		LoadEditorData();
 
 	}
 	void Run() {
 
-
+		if (data.gamePanelFocused) GamePanelFocused();
 
 	}
 	void Shutdown() {
@@ -418,6 +429,14 @@ namespace Editor {
 		SetWindowSize(data.gamePanelSize);
 
 		ImGui::Image(reinterpret_cast<void*>((uint64_t) GetFBOTexture()), windowSize, ImVec2 {0, 1}, ImVec2 {1, 0});
+		if (ImGui::IsItemClicked() && data.state == Play) {
+			
+			data.gamePanelFocused = true;
+			
+			Input::SetCursorVisible(false);
+			Input::SetAcceptInputDuringRuntime(true);
+		
+		}
 
 		ImGui::End();
 		ImGui::PopStyleVar();
@@ -454,8 +473,10 @@ namespace Editor {
 		data.viewportFBO.Bind();
 		Renderer::ClearColor(0.18f, 0.18f, 0.18f);
 
+		if (data.state == Play) { Input::SetAcceptInputDuringRuntime(true); }
 		data.project.sceneCam.Update();
 		data.scene.Render(&data.project.sceneCam);
+		if (data.state == Play) { Input::SetAcceptInputDuringRuntime(false); }
 
 		//After we are done rendering we are safe to unbind the FBO unless we want to modify it any way
 		data.viewportFBO.Unbind();
@@ -598,6 +619,23 @@ namespace Editor {
 		
 	}
 
+	void GamePanelFocused() {
+
+		if (Input::IsKey(KeyCode::Escape)) {
+			
+			data.gamePanelFocused = false;
+			
+			Input::SetCursorVisible(true);
+			Input::SetAcceptInputDuringRuntime(false);
+			
+			return;
+		
+		}
+
+		Input::SetCursorPosition((float) GetWindow().Width() / 2, (float) GetWindow().Height() / 2);
+
+	}
+
 	void StartEditorRuntime() {
 
 		data.state = Play;
@@ -610,11 +648,28 @@ namespace Editor {
 
 		data.state = Edit;
 
+		if (data.gamePanelFocused) {
+
+			data.gamePanelFocused = false;
+
+			Input::SetCursorVisible(true);
+			Input::SetAcceptInputDuringRuntime(false);
+
+			return;
+
+		}
+
 		std::filesystem::path savedPath = data.scene.path;
 
 		data.scene = Scene();
 		data.scene.Deserialize(savedPath);
 		data.sceneHierarchy.LoadSceneMeta();
+
+	}
+
+	void FileChangedCallback(const std::filesystem::path& path, const ProjectFileWatcher::FileChangeType& changeType) {
+
+		data.scriptChanges = true;
 
 	}
 
@@ -668,6 +723,9 @@ namespace Editor {
 		data.project.Load();
 
 		data.fileBrowser.SetCurrentDir(data.project.assetsPath);
+		ProjectFileWatcher::Stop();
+		ProjectFileWatcher::SetDirectory(data.project.assetsPath);
+		ProjectFileWatcher::Start();
 
 		data.changes = false;
 		data.title = "Copper Editor - " + data.project.name + ": ";
@@ -876,6 +934,19 @@ namespace Editor {
 		}
 
 		return true;
+
+	}
+	bool OnWindowFocused(const Event& e) {
+
+		WindowFocusedEvent* event = (WindowFocusedEvent*) & e;
+
+		if (event->focused && data.scriptChanges) {
+
+			data.project.BuildSolution();
+
+		}
+
+		return false;
 
 	}
 

@@ -11,6 +11,15 @@ namespace Copper {
 
 	};
 
+	class WindowFocusedEvent : public Event {
+
+	public:
+		WindowFocusedEvent() = default;
+
+		bool focused;
+
+	};
+
 	class WindowResizeEvent : public Event {
 
 	public:

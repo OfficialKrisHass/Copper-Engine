@@ -9,6 +9,8 @@
 #include "Engine/Renderer/FrameBuffer.h"
 #include "Engine/Renderer/Shader.h"
 
+#include "Engine/Input/AxisManager.h"
+
 #include "Engine/Scripting/ScriptingCore.h"
 
 #include "Engine/UI/ImGui.h"
@@ -33,6 +35,8 @@ namespace Copper {
 
 		bool (*EditorOnKeyPressed)(const Event&);
 		bool (*EditorOnWindowClose)(const Event&);
+
+		std::function<bool(const Event&)> EditorOnWindowFocused;
 			
 	};
 
@@ -51,6 +55,9 @@ namespace Copper {
 		Scripting::Initialize();
 		
 		Renderer::SetShader(new Shader("assets/Shaders/vertexDefault.glsl", "assets/Shaders/fragmentDefault.glsl"));
+
+		Input::AddAxis("Keys_WS", KeyCode::W, KeyCode::S);
+		Input::AddAxis("Keys_DA", KeyCode::D, KeyCode::A);
 
 	}
 
@@ -96,6 +103,13 @@ namespace Copper {
 		return true;
 
 	}
+	bool OnWindowFocused(const Event& e) {
+
+		data.EditorOnWindowFocused(e);
+
+		return false;
+
+	}
 	bool OnWindowClose(const Event& e) {
 
 		if (!data.EditorOnWindowClose(e)) return false;
@@ -121,7 +135,12 @@ namespace Copper {
 	uint32_t GetFBOTexture() { return data.fbo->GetColorAttachment(); }
 
 	Scene* GetScene() { return data.scene; }
-	Object GetObjectFromID(int32_t id) { return data.scene->GetRegistry()->GetObjectFromID(id); }
+	uint32_t GetNumOfObjects() { return data.scene->GetNumOfObjects(); }
+
+	Object& GetObjectFromID(int32_t id) { return data.scene->GetObjectFromID(id); }
+	Object& CreateObjectFromID(int32_t id, Vector3 position, Vector3 rotation, Vector3 scale, const std::string& name) { return data.scene->CreateObjectFromID(id, position, rotation, scale, name); }
+
+	bool IsRuntimeRunning() { return data.scene->IsRuntimeRunning(); }
 
 	//Setters
 	void SetWindowSize(UVector2I size) {
@@ -142,5 +161,6 @@ namespace Copper {
 
 	void SetEditorOnKeyPressedFunc(bool (*func)(const Event&)) { data.EditorOnKeyPressed = func; }
 	void SetEditorOnWindowCloseFunc(bool (*func)(const Event&)) { data.EditorOnWindowClose = func; }
+	void SetEditorOnWindowFocusedFunc(std::function<bool(const Event&)> func) { data.EditorOnWindowFocused = func; }
 
 }

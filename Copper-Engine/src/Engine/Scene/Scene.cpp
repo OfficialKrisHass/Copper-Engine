@@ -33,6 +33,11 @@ namespace YAML {
 		}
 		static bool decode(const Node& node, Object& obj) {
 
+			int objID = node.as<int>();
+
+			if (objID <= -1) { return true; } //we need to return true because if we don't, YAML crashes
+			if (objID >= GetNumOfObjects()) { obj = CreateObjectFromID(objID); return true; }
+
 			obj = GetObjectFromID(node.as<int>());
 
 			return true;
@@ -54,14 +59,14 @@ namespace Copper {
 
 	}
 
-	Object Scene::CreateObject(Vector3 position, Vector3 rotation, Vector3 scale, std::string name) {
+	Object Scene::CreateObject(Vector3 position, Vector3 rotation, Vector3 scale, const std::string& name) {
 
 		Object obj = registry.CreateObject(this, position, rotation, scale, name);
 
 		return obj;
 
 	}
-	Object Scene::CreateObject(std::string name) { return CreateObject(Vector3::zero, Vector3::zero, Vector3::one, name); }
+	Object Scene::CreateObject(const std::string& name) { return CreateObject(Vector3::zero, Vector3::zero, Vector3::one, name); }
 
 	void Scene::StartRuntime() {
 
@@ -232,9 +237,7 @@ namespace Copper {
 						case ScriptField::Type::Int: { WriteField<int>(out, field, script); break; }
 						case ScriptField::Type::UInt: { WriteField<unsigned int>(out, field, script); break; }
 						case ScriptField::Type::Float: { WriteField<float>(out, field, script); break; }
-						case ScriptField::Type::CopperObject: {
-							WriteField<Object>(out, field, script);
-							break; }
+						case ScriptField::Type::CopperObject: { WriteField<Object>(out, field, script); break; }
 
 					}
 

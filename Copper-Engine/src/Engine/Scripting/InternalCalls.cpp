@@ -2,6 +2,9 @@
 
 #include "Engine/Core/Engine.h"
 
+#include "Engine/Input/AxisManager.h"
+
+#include "Engine/Scripting/ScriptingCore.h"
 #include "Engine/Scripting/MonoUtils.h"
 
 #include <CopperECS/CopperECS.h>
@@ -27,6 +30,15 @@ namespace Copper::Scripting::InternalCalls {
 	static void EditorLogWarn(MonoString* msg) { LogWarn(MonoUtils::MonoToString(msg)); }
 	static void EditorLogError(MonoString* msg) { LogError(MonoUtils::MonoToString(msg)); }
 
+	//Input
+	static bool IsKey(int keyCode) { return Input::IsKey((KeyCode) keyCode); }
+
+	static float GetAxis(MonoString* axisName) {
+
+		return Input::GetAxis(MonoUtils::MonoToString(axisName));
+
+	}
+
 	//Object
 	static MonoString* GetObjectName(int objID) {
 
@@ -40,6 +52,18 @@ namespace Copper::Scripting::InternalCalls {
 		const Object& obj = GetScene()->GetObjectFromID(objID);
 
 		obj.tag->name = MonoUtils::MonoToString(out);
+
+	}
+
+	static MonoObject* GetCopperObject(int objID) {
+
+		MonoObject* ret = mono_object_new(Scripting::GetAppDomain(), Scripting::GetCopperObjectClass());
+		mono_runtime_object_init(ret);
+
+		MonoClassField* objIDField = mono_class_get_field_from_name(Scripting::GetCopperObjectClass(), "objID");
+		mono_field_set_value(ret, objIDField, &objID);
+
+		return ret;
 
 	}
 
@@ -159,6 +183,13 @@ namespace Copper::Scripting::InternalCalls {
 		GetScene()->GetObjectFromID(objID).transform->scale = *value;
 
 	}
+
+	static void GetForward(int objID, Vector3* out) { *out = GetObjectFromID(objID).transform->forward; }
+	static void GetBack(int objID, Vector3* out) { *out = GetObjectFromID(objID).transform->back; }
+	static void GetRight(int objID, Vector3* out) { *out = GetObjectFromID(objID).transform->right; }
+	static void GetLeft(int objID, Vector3* out) { *out = GetObjectFromID(objID).transform->left; }
+	static void GetUp(int objID, Vector3* out) { *out = GetObjectFromID(objID).transform->up; }
+	static void GetDown(int objID, Vector3* out) { *out = GetObjectFromID(objID).transform->down; }
 
 	//Camera
 	static float CameraGetFOV(int objID) {

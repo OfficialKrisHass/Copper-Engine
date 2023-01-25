@@ -8,17 +8,21 @@
 
 namespace Copper::Input {
 	
+	bool acceptInputDuringRuntime = true;
+
 	//------------------------------------
 	//------Keyboard and Mouse Input------
 	//------------------------------------
 	bool IsKey(KeyCode key) {
 
+		if (IsRuntimeRunning() && !acceptInputDuringRuntime) return false;
 		return glfwGetKey(GetGLFWwindow, (int) key) == GLFW_PRESS ? true : false;
 
 	}
 	
 	bool IsButton(MouseCode button) {
 		
+		if (IsRuntimeRunning() && !acceptInputDuringRuntime) return false;
 		return glfwGetMouseButton(GetGLFWwindow, button) == GLFW_PRESS ? true : false;
 
 	}
@@ -42,6 +46,12 @@ namespace Copper::Input {
 
 		glfwSetWindowTitle(GetGLFWwindow, title.c_str());
 		
+	}
+
+	void SetAcceptInputDuringRuntime(bool value) {
+
+		acceptInputDuringRuntime = value;
+
 	}
 	
 	//-------------------

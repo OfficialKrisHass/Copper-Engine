@@ -17,7 +17,7 @@ namespace Copper {
 
             get {
 
-                return new CopperObject(objID);
+                return InternalCalls.GetObject(objID);
 
             }
 

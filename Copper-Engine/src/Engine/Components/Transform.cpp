@@ -40,7 +40,7 @@ namespace Copper {
 		this->forward	= glm::rotate(quat, glm::vec3(0.0f, 0.0f, -1.0f));
 		this->right		= glm::rotate(quat, glm::vec3(1.0f, 0.0f, 0.0f));
 		this->up		= glm::rotate(quat, glm::vec3(0.0f, 1.0f, 0.0f));
-		this->backward = -forward;
+		this->back = -forward;
 		this->left = -right;
 		this->down = -up;
 

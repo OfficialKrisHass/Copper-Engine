@@ -52,9 +52,11 @@ namespace Copper {
 
 		Renderer::Initialize();
 		UI::Initialize();
-		Scripting::Initialize();
-		
 		Renderer::SetShader(new Shader("assets/Shaders/vertexDefault.glsl", "assets/Shaders/fragmentDefault.glsl"));
+
+		Input::Init();
+
+		Scripting::Initialize();
 
 		Input::AddAxis("Keys_WS", KeyCode::W, KeyCode::S);
 		Input::AddAxis("Keys_DA", KeyCode::D, KeyCode::A);
@@ -124,12 +126,12 @@ namespace Copper {
 
 		data.EditorOnKeyPressed(e);
 
-		return true;
+		return false;
 
 	}
 
 	//Getters
-	Window GetWindow() { return *data.window; }
+	Window& GetWindow() { return *data.window; }
 	UVector2I GetWindowSize() { return data.windowSize; }
 
 	uint32_t GetFBOTexture() { return data.fbo->GetColorAttachment(); }

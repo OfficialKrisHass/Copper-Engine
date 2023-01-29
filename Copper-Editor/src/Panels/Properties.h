@@ -29,12 +29,13 @@ namespace Editor {
 		bool ShowString(const std::string& name, std::string& show);
 		bool ShowChar(const std::string& name, char& show);
 
-		bool ShowVector2(const std::string& name, Copper::Vector2& vec, float speed = 0.01f);
-		bool ShowVector3(const std::string& name, Copper::Vector3& vec, float speed = 0.01f);
-		bool ShowVector4(const std::string& name, Copper::Vector4& vec, float speed = 0.01f);
+		bool ShowVector2(const std::string& name, Copper::Vector2& vec, float speed = 0.01f, bool verticalSpacing = true);
+		bool ShowVector3(const std::string& name, Copper::Vector3& vec, float speed = 0.01f, bool verticalSpacing = true);
+		bool ShowVector4(const std::string& name, Copper::Vector4& vec, float speed = 0.01f, bool verticalSpacing = true);
 		bool ShowColor(const std::string& name, Copper::Color& col, float speed = 0.01f);
 
 		bool ShowObject(const std::string& name, Copper::Object& obj);
+		bool ShowComponent(const std::string& name, Copper::Component* component);
 
 		static bool IsDragDropTargetHovered() { return dragDropTargetHovered; }
 	

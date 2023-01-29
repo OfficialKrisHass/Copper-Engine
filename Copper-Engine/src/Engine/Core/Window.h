@@ -17,7 +17,8 @@ namespace Copper {
 		WindowFocusedEvent wFocE;
 		WindowResizeEvent wResE;
 
-		KeyPresedEvent kPrsE;
+		KeyEvent kPrsE;
+		KeyEvent kRlsE;
 
 		WindowData() = default;
 		WindowData(std::string title, uint32_t width, uint32_t height) : title(title), width(width), height(height) {}
@@ -36,6 +37,9 @@ namespace Copper {
 		inline uint32_t Height() { return data.height; }
 
 		inline void* GetWindowPtr() { return windowPtr; }
+
+		void AddKeyPressedEventFunc(std::function<bool(const Event&)> func);
+		void AddKeyReleasedEventFunc(std::function<bool(const Event&)> func);
 
 	private:
 		WindowData data;

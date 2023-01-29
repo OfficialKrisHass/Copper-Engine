@@ -56,9 +56,11 @@ namespace Copper {
 
             Type type = typeof(T);
             if (type == typeof(Camera) || type == typeof(Transform)) {
-                
+
+                if (!HasComponent<T>()) return null;
+
                 InternalCalls.SetComponentObjID(type, ret, objID); //We have to set the Component ID from C++ since
-                return ret;                                        //Component.objID is private (no I Can't change it)
+                return ret;                                        //Component.objID is private (no I Can't make it public)
             
             }
 

@@ -6,11 +6,11 @@
 
 namespace Copper {
 
-	class KeyPresedEvent : public Event {
+	class KeyEvent : public Event {
 
 	public:
-		KeyPresedEvent() = default;
-		KeyPresedEvent(KeyCode key) : key(key) {}
+		KeyEvent() = default;
+		KeyEvent(KeyCode key) : key(key) {}
 
 		virtual std::string ToString() const override {
 

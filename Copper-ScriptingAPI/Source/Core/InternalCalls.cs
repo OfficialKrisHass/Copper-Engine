@@ -12,6 +12,8 @@ namespace Copper {
 
         //Input
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool IsKey(int keyCode);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool IsKeyDown(int keyCode);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool IsKeyReleased(int keyCode);
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static float GetAxis(string axisName);
 
         //Object

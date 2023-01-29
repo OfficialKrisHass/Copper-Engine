@@ -26,6 +26,8 @@ namespace Copper::Scripting {
 		MonoImage* projectAssemblyImage;
 
 		MonoClass* componentClass;
+		MonoClass* vector2Class;
+		MonoClass* vector3Class;
 		MonoClass* copperObjectClass;
 
 		std::vector<std::string> scriptComponents;
@@ -55,6 +57,8 @@ namespace Copper::Scripting {
 		data.apiAssemblyImage = mono_assembly_get_image(data.apiAssembly);
 
 		data.componentClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Component");
+		data.vector2Class = mono_class_from_name(data.apiAssemblyImage, "Copper", "Vector2");
+		data.vector3Class = mono_class_from_name(data.apiAssemblyImage, "Copper", "Vector3");
 		data.copperObjectClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "CopperObject");
 
 		//Setup ScriptingAPI
@@ -90,6 +94,8 @@ namespace Copper::Scripting {
 		data.apiAssemblyImage = mono_assembly_get_image(data.apiAssembly);
 
 		data.componentClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Component");
+		data.vector2Class = mono_class_from_name(data.apiAssemblyImage, "Copper", "Vector2");
+		data.vector3Class = mono_class_from_name(data.apiAssemblyImage, "Copper", "Vector3");
 		data.copperObjectClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "CopperObject");
 
 		//Load the Project Assembly
@@ -117,6 +123,8 @@ namespace Copper::Scripting {
 
 		//Input
 		mono_add_internal_call("Copper.InternalCalls::IsKey", InternalCalls::IsKey);
+		mono_add_internal_call("Copper.InternalCalls::IsKeyDown", InternalCalls::IsKeyDown);
+		mono_add_internal_call("Copper.InternalCalls::IsKeyReleased", InternalCalls::IsKeyReleased);
 
 		mono_add_internal_call("Copper.InternalCalls::GetAxis", InternalCalls::GetAxis);
 
@@ -178,16 +186,14 @@ namespace Copper::Scripting {
 			if (std::string(name) == "<Module>") continue;
 
 			MonoClass* scriptClass = mono_class_from_name(data.projectAssemblyImage, nameSpace, name);
-			if (mono_class_is_subclass_of(scriptClass, data.componentClass, false)) {
+			if (!mono_class_is_subclass_of(scriptClass, data.componentClass, false)) continue;
 
-				std::string fullName;
-				if (strlen(nameSpace) != 0) fullName = fmt::format("{}.{}", nameSpace, name);
-				else fullName = name;
+			std::string fullName;
+			if (strlen(nameSpace) != 0) fullName = fmt::format("{}.{}", nameSpace, name);
+			else fullName = name;
 
-				data.scriptComponents.push_back(fullName);
-				InitScriptFields(fullName, scriptClass);
-
-			}
+			data.scriptComponents.push_back(fullName);
+			InitScriptFields(fullName, scriptClass);
 
 		}
 
@@ -201,6 +207,20 @@ namespace Copper::Scripting {
 			if (MonoUtils::GetFieldAccessibility(field) != MonoUtils::FieldAccessibility::Public) continue;
 
 			MonoType* type = mono_field_get_type(field);
+			MonoClass* fieldClass = mono_class_from_mono_type(type);
+			if (mono_class_is_subclass_of(fieldClass, data.componentClass, false)) {
+
+				data.scriptFields[fullName].push_back(ComponentScriptField());
+				ComponentScriptField& scriptField = *(ComponentScriptField*) &data.scriptFields[fullName].back();
+				scriptField.SetMonoField(field);
+
+				scriptField.name = mono_field_get_name(field);
+				scriptField.type = ScriptField::Type::Component;
+
+				scriptField.componentName = mono_type_get_name(type);
+				scriptField.isBuiltinComponent = MonoUtils::IsBuiltinComponentField(mono_type_get_name(type));
+
+			}
 
 			data.scriptFields[fullName].push_back(ScriptField());
 			ScriptField& scriptField = data.scriptFields[fullName].back();
@@ -240,7 +260,10 @@ namespace Copper::Scripting {
 	std::vector<std::string> GetScriptComponents() { return data.scriptComponents; }
 	std::vector<ScriptField> GetScriptFields(std::string scriptName) { return data.scriptFields[scriptName]; }
 
-	MonoClass* GetCopperObjectClass() { return data.copperObjectClass; }
+	MonoClass* GetVector2MonoClass() { return data.vector2Class; }
+	MonoClass* GetVector3MonoClass() { return data.vector3Class; }
+
+	MonoClass* GetCopperObjectMonoClass() { return data.copperObjectClass; }
 
 	MonoDomain* GetRootDomain() { return data.root; }
 	MonoDomain* GetAppDomain() { return data.app; }

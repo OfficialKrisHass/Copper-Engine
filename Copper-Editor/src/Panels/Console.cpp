@@ -10,7 +10,9 @@ namespace Editor {
 
 		ImGui::GetFont()->FontSize -= 2.0f;
 
-		for (std::string msg : Logger::GetLastLogMessages()) {
+		for (int i = Logger::GetLastLogMessages().size() - 1; i >= 0; i--) {
+
+			std::string msg = Logger::GetLastLogMessages()[i];
 
 			size_t endOfLevel = msg.find_first_of(':');
 			std::string level = msg.substr(0, endOfLevel);

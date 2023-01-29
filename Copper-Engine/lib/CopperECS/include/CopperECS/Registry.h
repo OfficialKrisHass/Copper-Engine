@@ -188,8 +188,7 @@ namespace Copper {
 			int cID = GetCID<T>();
 			
 			if (obj.componentMask.size() <= cID) { obj.componentMask.resize(cID + 1, 0); objects[obj.id].componentMask.resize(cID + 1, 0); }
-			if (obj.componentMask[cID] == 1 && !T::multipleOnOneObject) {
-				LogError("Can't Add Component to Object {} because there already is one", obj.tag->name); return nullptr; }
+			if (obj.componentMask[cID] == 1 && !T::multipleOnOneObject) { LogError("Can't Add Component to Object {} because there already is one", obj.tag->name); return nullptr; }
 
 			if (pools.size() <= cID) pools.resize(cID + 1, nullptr);
 			if (!pools[cID]) pools[cID] = new ComponentPool(sizeof(T));

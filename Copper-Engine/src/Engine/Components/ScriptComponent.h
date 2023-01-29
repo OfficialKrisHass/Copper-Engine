@@ -33,8 +33,11 @@ namespace Copper {
 
 		void GetFieldValue(const ScriptField& field, void* out);
 		void GetFieldValue(const ScriptField& field, Object* out);
+		void GetFieldValue(const ScriptField& field, Component* out);
+
 		void SetFieldValue(const ScriptField& field, void* value);
 		void SetFieldValue(const ScriptField& field, Object* value);
+		void SetFieldValue(const ScriptField& field, Component* value);
 
 	private:
 		MonoObject* instance = nullptr;

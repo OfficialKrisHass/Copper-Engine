@@ -83,11 +83,9 @@ namespace Editor {
 		bool removed = false;
 		if(DrawComponent<Transform>("Transform", removed)) {
 			
-			ShowVector3("Position:", selectedObj.transform->position);
-			ShowVector3("Rotation:", selectedObj.transform->rotation, 0.1f);
-			ShowVector3("Scale:", selectedObj.transform->scale);
-
-			ImGui::VerticalSeparator();
+			ShowVector3("Position", selectedObj.transform->position, 0.01f, false);
+			ShowVector3("Rotation", selectedObj.transform->rotation, 0.1f, false);
+			ShowVector3("Scale", selectedObj.transform->scale);
 
 			removed = false;
 			
@@ -114,10 +112,25 @@ namespace Editor {
 
 				switch (field.type) {
 
-					case ScriptField::Type::Int: { RenderScriptField<int>(script, field, BindShowFunc(ShowInt)); break; }
-					case ScriptField::Type::UInt: { RenderScriptField<unsigned int>(script, field, BindShowFunc(ShowUInt)); break; }
-					case ScriptField::Type::Float: { RenderScriptField<float>(script, field, BindShowFunc(ShowFloat)); break; }
-					case ScriptField::Type::CopperObject: { RenderScriptField<Object>(script, field, BindShowFunc(ShowObject)); break; }
+					case ScriptField::Type::Int:			RenderScriptField<int>(script, field, BindShowFunc(ShowInt)); break;
+					case ScriptField::Type::UInt:			RenderScriptField<unsigned int>(script, field, BindShowFunc(ShowUInt)); break;
+					case ScriptField::Type::Float:			RenderScriptField<float>(script, field, BindShowFunc(ShowFloat)); break;
+
+					case ScriptField::Type::Vector2:		RenderScriptField<Vector2>(script, field, BindShowFunc(ShowVector2)); break;
+					case ScriptField::Type::Vector3:		RenderScriptField<Vector3>(script, field, BindShowFunc(ShowVector3)); break;
+
+					case ScriptField::Type::CopperObject:	RenderScriptField<Object>(script, field, BindShowFunc(ShowObject)); break;
+					case ScriptField::Type::Component: {
+
+						ComponentScriptField* componentField = (ComponentScriptField*) &field;
+						if (componentField->isBuiltinComponent) { break; } //Not Implemented yet
+
+						ScriptComponent* tmp = nullptr;
+						script->GetFieldValue(field, tmp);
+
+						break;
+
+					}
 
 				}
 
@@ -292,20 +305,14 @@ namespace Editor {
 
 	}
 	
-	bool Properties::ShowVector2(const std::string& name, Vector2& vec, float speed) {
+	bool Properties::ShowVector2(const std::string& name, Vector2& vec, float speed, bool verticalSpacing) {
 
 		bool ret = false;
 
 		ImGui::PushID(name.c_str());
 
-		//Text
-		ImGui::Columns(2);
-		ImGui::SetColumnWidth(0, 100.0f);
-		ImGui::Text(name.c_str());
-		ImGui::NextColumn();
-
 		//Settings
-		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+		ImGui::PushMultiItemsWidths(4, ImGui::CalcItemWidth());
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2 {0, 0});
 
 		//Vars
@@ -335,6 +342,8 @@ namespace Editor {
 		if (ImGui::DragFloat("##Y", &vec.y, speed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
 
+		if (verticalSpacing) ImGui::VerticalSeparator();
+
 		//End
 		ImGui::PopStyleVar();
 		ImGui::Columns(1);
@@ -344,25 +353,19 @@ namespace Editor {
 		return ret;
 		
 	}
-	bool Properties::ShowVector3(const std::string& name, Vector3& vec, float speed) {
+	bool Properties::ShowVector3(const std::string& name, Vector3& vec, float speed, bool verticalSpacing) {
 
 		bool ret = false;
 		
 		ImGui::PushID(name.c_str());
 
-		//Text
-		ImGui::Columns(2);
-		ImGui::SetColumnWidth(0, 100.0f);
-		ImGui::Text(name.c_str());
-		ImGui::NextColumn();
-
 		//Settings
-		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+		ImGui::PushMultiItemsWidths(4, ImGui::CalcItemWidth());
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2 {0, 0});
 
 		//Vars
 		float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
-		ImVec2 buttonSize = {lineHeight + 3.0f, lineHeight};
+		ImVec2 buttonSize = {lineHeight, lineHeight};
 
 		//X
 		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
@@ -398,27 +401,28 @@ namespace Editor {
 		ImGui::SameLine();
 		if (ImGui::DragFloat("##Z", &vec.z, speed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
+		ImGui::SameLine(0.0f, 7.0f);
+
+		//Text
+		ImGui::Text(name.c_str());
+		ImGui::PopItemWidth();
+
 
 		//End
 		ImGui::PopStyleVar();
-		ImGui::Columns(1);
 		ImGui::PopID();
+
+		if (verticalSpacing) ImGui::VerticalSeparator();
 
 		if(ret) SetChanges(true);
 		return ret;
 
 	}
-	bool Properties::ShowVector4(const std::string& name, Vector4& vec, float speed) {
+	bool Properties::ShowVector4(const std::string& name, Vector4& vec, float speed, bool verticalSpacing) {
 
 		bool ret = false;
 		
 		ImGui::PushID(name.c_str());
-
-		//Text
-		ImGui::Columns(2);
-		ImGui::SetColumnWidth(0, 100.0f);
-		ImGui::Text(name.c_str());
-		ImGui::NextColumn();
 
 		//Settings
 		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
@@ -475,6 +479,8 @@ namespace Editor {
 		if (ImGui::DragFloat("##W", &vec.w, speed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
 
+		if (verticalSpacing) ImGui::VerticalSeparator();
+
 		//End
 		ImGui::PopStyleVar();
 		ImGui::Columns(1);
@@ -519,16 +525,16 @@ namespace Editor {
 	bool Properties::ShowObject(const std::string& name, Object& obj) {
 
 		bool ret = false;
-		std::string test;
+		std::string nodeText;
 
-		if (obj) test = obj.tag->name;
-		else test = "None";
-		test += " (Copper Object)";
+		if (obj) nodeText = obj.tag->name;
+		else nodeText = "None";
+		nodeText += " (Copper Object)";
 
 		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 		if (dragDropTargetHovered) ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4 {0.25f, 0.25f, 0.25f, 1.0f});
 
-		ImGui::InputText(name.c_str(), &test, ImGuiInputTextFlags_ReadOnly);
+		ImGui::InputText(name.c_str(), &nodeText, ImGuiInputTextFlags_ReadOnly);
 		
 		ImGui::PopItemFlag();
 		if (dragDropTargetHovered) ImGui::PopStyleColor();
@@ -549,6 +555,26 @@ namespace Editor {
 		}
 
 		if (ret) SetChanges(true);
+		return ret;
+
+	}
+	bool Properties::ShowComponent(const std::string& name, Component* component) {
+
+		bool ret = false;
+		std::string nodeText;
+
+		if (component) nodeText = component->GetTransformObject()->tag->name;
+		else nodeText = "None";
+		nodeText += " (Component)";
+
+		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+		if (dragDropTargetHovered) ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4 {0.25f, 0.25f, 0.25f, 1.0f});
+
+		ImGui::InputText(name.c_str(), &nodeText, ImGuiInputTextFlags_ReadOnly);
+
+		ImGui::PopItemFlag();
+		if (dragDropTargetHovered) ImGui::PopStyleColor();
+
 		return ret;
 
 	}

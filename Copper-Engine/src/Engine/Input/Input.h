@@ -14,7 +14,12 @@ namespace Copper::Input {
 	};
 
 	//Input
+	void Init();
+
 	bool IsKey(KeyCode key);
+	bool IsKeyDown(KeyCode key);
+	bool IsKeyReleased(KeyCode key);
+
 	bool IsButton(MouseCode button);
 
 	//Setters
@@ -22,8 +27,6 @@ namespace Copper::Input {
 	void SetCursorPosition(float x, float y);
 
 	void SetWindowTitle(std::string title);
-
-	void SetAcceptInputDuringRuntime(bool value);
 
 	//Getters
 	void GetCursorPosition(double* x, double* y);

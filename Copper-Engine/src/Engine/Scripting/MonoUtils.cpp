@@ -29,6 +29,7 @@ namespace Copper::Scripting::MonoUtils {
 
 	}
 
+	//Strings
 	std::string MonoToString(MonoString* string) {
 
 		if (string == nullptr || mono_string_length(string) == 0) { LogError("MonoString Can't be invalid"); return ""; }
@@ -64,6 +65,7 @@ namespace Copper::Scripting::MonoUtils {
 
 	}
 
+	//Fileds
 	FieldAccessibility GetFieldAccessibility(MonoClassField* field) {
 
 		return (mono_field_get_flags(field) & MONO_FIELD_ATTR_FIELD_ACCESS_MASK) == MONO_FIELD_ATTR_PUBLIC ? FieldAccessibility::Public : FieldAccessibility::Private;
@@ -71,12 +73,44 @@ namespace Copper::Scripting::MonoUtils {
 	}
 	ScriptField::Type TypeFromString(const std::string& string) {
 
-		if      (string == "System.Int32")   return ScriptField::Type::Int;
+		if		(string == "System.Int32")   return ScriptField::Type::Int;
 		else if (string == "System.UInt32")  return ScriptField::Type::UInt;
 		else if (string == "System.Single")  return ScriptField::Type::Float;
+
+		else if (string == "Copper.Vector2") return ScriptField::Type::Vector2;
+		else if (string == "Copper.Vector3") return ScriptField::Type::Vector3;
+
 		else if (string == "Copper.CopperObject")  return ScriptField::Type::CopperObject;
 
 		return ScriptField::Type::None;
+
+	}
+
+	bool IsBuiltinComponentField(const std::string& name) {
+
+			 if (name == "Copper.Component")	return true;
+		else if (name == "Copper.Transform")	return true;
+		else if (name == "Copper.Camera")		return true;
+
+		return false;
+
+	}
+
+	//Scripts
+	void PrintExceptionDetails(MonoObject* exc) {
+
+		MonoClass* excClass = mono_object_get_class(exc);
+		if (!excClass) { LogError("Couldn't get Exception Class!"); return; }
+
+		MonoString* excString = nullptr;
+		MonoString* excStackTrace = nullptr;
+
+		MonoProperty* stringProperty = mono_class_get_property_from_name(excClass, "Message");
+		MonoProperty* stackTraceProperty = mono_class_get_property_from_name(excClass, "StackTrace");
+		excString = (MonoString*) mono_runtime_invoke(mono_property_get_get_method(stringProperty), exc, NULL, NULL);
+		excStackTrace = (MonoString*) mono_runtime_invoke(mono_property_get_get_method(stackTraceProperty), exc, NULL, NULL);
+
+		LogError("Script unhandled exception: {}\n\nStackTrace:\n{}", MonoToString(excString), MonoToString(excStackTrace));
 
 	}
 

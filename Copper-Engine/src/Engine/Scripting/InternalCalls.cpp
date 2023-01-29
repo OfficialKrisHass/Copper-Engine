@@ -10,28 +10,46 @@
 #include <CopperECS/CopperECS.h>
 
 #include <mono/jit/jit.h>
+#include <mono/metadata/exception.h>
+
+#define CauseExceptionInvalid(argument) mono_raise_exception(mono_get_exception_argument_null(argument))
+#define CauseException(message, argument)  mono_raise_exception(mono_get_exception_argument(argument, message))
 
 namespace Copper::Scripting::InternalCalls {
 
 	static std::unordered_map<std::string, std::function<bool(const Object&)>> hasComponentFuncs;
-	static std::unordered_map<std::string, std::function<void(Object&)>> addComponentFuncs;
+	static std::unordered_map<std::string, std::function<bool(Object&)>> addComponentFuncs;
 
 	void Initialize() {
 
 		hasComponentFuncs["Transform"] = [](const Object& obj) { return true; };
 		hasComponentFuncs["Camera"] =    [](const Object& obj) { return obj.HasComponent<Camera>(); };
 
-		addComponentFuncs["Camera"] = [](Object& obj) { obj.AddComponent<Camera>(); };
+		addComponentFuncs["Camera"] = [](Object& obj) { return obj.AddComponent<Camera>() != nullptr ? true : false; };
 
 	}
 
 	//Logging
-	static void EditorLog(MonoString* msg) { Log(MonoUtils::MonoToString(msg)); }
-	static void EditorLogWarn(MonoString* msg) { LogWarn(MonoUtils::MonoToString(msg)); }
-	static void EditorLogError(MonoString* msg) { LogError(MonoUtils::MonoToString(msg)); }
+	static void EditorLog(MonoString* msg) {
+		
+		Log(MonoUtils::MonoToString(msg));
+
+	}
+	static void EditorLogWarn(MonoString* msg) {
+		
+		LogWarn(MonoUtils::MonoToString(msg));
+	
+	}
+	static void EditorLogError(MonoString* msg) {
+		
+		LogError(MonoUtils::MonoToString(msg));
+
+	}
 
 	//Input
 	static bool IsKey(int keyCode) { return Input::IsKey((KeyCode) keyCode); }
+	static bool IsKeyDown(int keyCode) { return Input::IsKeyDown((KeyCode) keyCode); }
+	static bool IsKeyReleased(int keyCode) { return Input::IsKeyReleased((KeyCode) keyCode); }
 
 	static float GetAxis(MonoString* axisName) {
 
@@ -57,10 +75,10 @@ namespace Copper::Scripting::InternalCalls {
 
 	static MonoObject* GetCopperObject(int objID) {
 
-		MonoObject* ret = mono_object_new(Scripting::GetAppDomain(), Scripting::GetCopperObjectClass());
+		MonoObject* ret = mono_object_new(Scripting::GetAppDomain(), Scripting::GetCopperObjectMonoClass());
 		mono_runtime_object_init(ret);
 
-		MonoClassField* objIDField = mono_class_get_field_from_name(Scripting::GetCopperObjectClass(), "objID");
+		MonoClassField* objIDField = mono_class_get_field_from_name(Scripting::GetCopperObjectMonoClass(), "objID");
 		mono_field_set_value(ret, objIDField, &objID);
 
 		return ret;
@@ -69,6 +87,8 @@ namespace Copper::Scripting::InternalCalls {
 
 	//Components
 	static void AddComponent(int objID, MonoReflectionType* type, MonoObject* ret) {
+
+		if (objID == -1) { CauseExceptionInvalid("Copper Object"); return; }
 
 		MonoType* managedType = mono_reflection_type_get_type(type);
 		std::string typeName = mono_type_get_name(managedType);
@@ -83,8 +103,9 @@ namespace Copper::Scripting::InternalCalls {
 
 		if (addComponentFuncs.find(scriptName) != addComponentFuncs.end()) {
 
-			addComponentFuncs[scriptName](obj);
-
+			if (addComponentFuncs[scriptName](obj)) return;
+			CauseException("Only one component of this type can be on a single object. Type", scriptName.c_str());
+			
 		} else {
 
 			ScriptComponent* script = obj.AddComponent<ScriptComponent>();
@@ -94,6 +115,8 @@ namespace Copper::Scripting::InternalCalls {
 
 	}
 	static bool GetComponent(int objID, MonoReflectionType* type, MonoObject* ret) {
+
+		if (objID == -1) { CauseExceptionInvalid("Copper Object"); return false; }
 
 		Object& obj = GetObjectFromID(objID);
 
@@ -117,6 +140,8 @@ namespace Copper::Scripting::InternalCalls {
 
 	}
 	static bool HasComponent(int objID, MonoReflectionType* type) {
+
+		if (objID == -1) { CauseExceptionInvalid("Copper Object"); return false; }
 
 		MonoType* managedType = mono_reflection_type_get_type(type);
 		std::string typeName = mono_type_get_name(managedType);
@@ -155,31 +180,37 @@ namespace Copper::Scripting::InternalCalls {
 	//Transform
 	static void GetPosition(int objID, Vector3* out) {
 
+		if (objID == -1) { CauseExceptionInvalid("Copper Object"); return; }
 		*out = GetScene()->GetObjectFromID(objID).transform->position;
 
 	}
 	static void GetRotation(int objID, Vector3* out) {
 
+		if (objID == -1) { CauseExceptionInvalid("Copper Object"); return; }
 		*out = GetScene()->GetObjectFromID(objID).transform->rotation;
 
 	}
 	static void GetScale(int objID, Vector3* out) {
 
+		if (objID == -1) { CauseExceptionInvalid("Copper Object"); return; }
 		*out = GetScene()->GetObjectFromID(objID).transform->scale;
 
 	}
 	static void SetPosition(int objID, Vector3* value) {
 
+		if (objID == -1) { CauseExceptionInvalid("Copper Object"); return; }
 		GetScene()->GetObjectFromID(objID).transform->position = *value;
 
 	}
 	static void SetRotation(int objID, Vector3* value) {
 
+		if (objID == -1) { CauseExceptionInvalid("Copper Object"); return; }
 		GetScene()->GetObjectFromID(objID).transform->rotation = *value;
 
 	}
 	static void SetScale(int objID, Vector3* value) {
 
+		if (objID == -1) { CauseExceptionInvalid("Copper Object"); return; }
 		GetScene()->GetObjectFromID(objID).transform->scale = *value;
 
 	}

@@ -23,7 +23,7 @@ namespace Copper {
 	bool OnKeyPressed(const Event& e);
 
 	//Getters
-	Window GetWindow();
+	Window& GetWindow();
 	UVector2I GetWindowSize();
 
 	uint32_t GetFBOTexture();

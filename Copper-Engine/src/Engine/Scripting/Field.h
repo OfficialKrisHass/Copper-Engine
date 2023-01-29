@@ -20,8 +20,12 @@ namespace Copper {
 			Int,
 			UInt,
 			Float,
-			CopperObject
 
+			Vector2,
+			Vector3,
+
+			CopperObject,
+			Component
 
 		};
 
@@ -33,6 +37,14 @@ namespace Copper {
 	private:
 		MonoClassField* field;
 
+
+	};
+	struct ComponentScriptField : public ScriptField {
+
+		friend class ScriptComponent;
+
+		std::string componentName;
+		bool isBuiltinComponent;
 
 	};
 

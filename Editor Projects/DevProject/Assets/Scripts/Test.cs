@@ -5,8 +5,7 @@ class Test : Component {
 
     public CopperObject objects;
     public float speed = 0.1f;
-
-    Vector3 test;
+    public Vector3 test;
 
     void Create() {
 
@@ -16,11 +15,15 @@ class Test : Component {
 
     void Update() {
 
-        float ws = Input.GetAxis("Keys_WS") * speed;
-        float ad = Input.GetAxis("Keys_DA") * speed;
+        if (Input.IsKeyDown(KeyCode.A)) Editor.Log("Pressed");
+        if (Input.IsKey(KeyCode.A)) Editor.Log("Held");
+        if (Input.IsKeyReleased(KeyCode.A)) Editor.Log("Released");
 
-        test = transform.forward * ws + transform.right * ad;
-        transform.position += test;
+        //float ws = Input.GetAxis("Keys_WS") * speed;
+        //float ad = Input.GetAxis("Keys_DA") * speed;
+
+        //test = transform.forward * ws + transform.right * ad;
+        //transform.position += test;
 
     }
 

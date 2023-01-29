@@ -20,7 +20,8 @@ namespace Copper {
 		data.wResE = WindowResizeEvent(data.width, data.height);
 		data.wClsE = WindowCloseEvent();
 
-		data.kPrsE = KeyPresedEvent();
+		data.kPrsE = KeyEvent();
+		data.kRlsE = KeyEvent();
 
 		if (!glfwInit()) { LogError("Could not Initialize GLFW!"); }
 
@@ -70,9 +71,28 @@ namespace Copper {
 				case GLFW_PRESS: {
 
 					data.kPrsE.key = (KeyCode) key;
-
 					data.kPrsE.Call();
 					data.kPrsE.Clear();
+
+					break;
+
+				}
+				case GLFW_REPEAT: {
+
+					data.kPrsE.key = (KeyCode) key;
+					data.kPrsE.Call();
+					data.kPrsE.Clear();
+
+					break;
+
+				}
+				case GLFW_RELEASE: {
+
+					data.kRlsE.key = (KeyCode) key;
+					data.kRlsE.Call();
+					data.kRlsE.Clear();
+
+					break;
 
 				}
 
@@ -102,6 +122,19 @@ namespace Copper {
 
 		glfwDestroyWindow(WINDOW);
 		glfwTerminate();
+
+	}
+
+	void Window::AddKeyPressedEventFunc(std::function<bool(const Event&)> func) {
+
+		data.kPrsE += func;
+		glfwSetWindowUserPointer(WINDOW, &data);
+
+	}
+	void Window::AddKeyReleasedEventFunc(std::function<bool(const Event&)> func) {
+
+		data.kRlsE += func;
+		glfwSetWindowUserPointer(WINDOW, &data);
 
 	}
 

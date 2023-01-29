@@ -45,7 +45,14 @@ namespace Copper {
             T ret = new T();
 
             Type type = typeof(T);
-            if (type == typeof(Camera) || type == typeof(Transform)) { ret.objID = objID; return ret; }
+            if (type == typeof(Camera) || type == typeof(Transform)) {
+
+                if (!HasComponent<T>()) return null;
+                ret.objID = objID;
+
+                return ret;
+
+            }
 
             if (!InternalCalls.GetComponent(objID, type, ret)) return null;
 

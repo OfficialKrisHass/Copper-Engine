@@ -4,6 +4,7 @@
 #include "Engine/Core/Engine.h"
 
 #include "Engine/Scripting/ScriptingCore.h"
+#include "Engine/Scripting/MonoUtils.h"
 
 #include <mono/metadata/object.h>
 
@@ -41,8 +42,11 @@ namespace Copper {
 
 		if (!create) return;
 
-		MonoObject* exception = nullptr;
-		mono_runtime_invoke(create, instance, nullptr, &exception);
+		MonoObject* exc = nullptr;
+		mono_runtime_invoke(create, instance, nullptr, &exc);
+
+		if (!exc) return;
+		Scripting::MonoUtils::PrintExceptionDetails(exc);
 
 	}
 	void ScriptComponent::InvokeUpdate() {
@@ -51,6 +55,9 @@ namespace Copper {
 
 		MonoException* exc;
 		update(instance, &exc);
+
+		if (!exc) return;
+		Scripting::MonoUtils::PrintExceptionDetails((MonoObject*) exc);
 
 	}
 
@@ -68,13 +75,19 @@ namespace Copper {
 		if (!obj) return;
 
 		int objID = -1;
-		MonoClassField* objIDField = mono_class_get_field_from_name(Scripting::GetCopperObjectClass(), "objID");
+		MonoClassField* objIDField = mono_class_get_field_from_name(Scripting::GetCopperObjectMonoClass(), "objID");
 		mono_field_get_value(obj, objIDField, &objID);
 		if (objID == -1) return;
 
 		*out = GetObjectFromID(objID);
 
 	}
+	void ScriptComponent::GetFieldValue(const ScriptField& field, Component* out) {
+
+		if (field.type != ScriptField::Type::Component) return;
+
+	}
+
 	void ScriptComponent::SetFieldValue(const ScriptField& field, void* value) {
 
 		mono_field_set_value(instance, field.field, value);
@@ -87,14 +100,19 @@ namespace Copper {
 		//It's possible that the field may be null so we can't just get the MonoObject*
 		//and set it's objID. Instead for safety purposes we create a temporary CopperObject
 		//instance, set it's objID and then set the Scripts field to the temp instance
-		MonoObject* obj = mono_object_new(Scripting::GetAppDomain(), Scripting::GetCopperObjectClass());
+		MonoObject* obj = mono_object_new(Scripting::GetAppDomain(), Scripting::GetCopperObjectMonoClass());
 		mono_runtime_object_init(obj);
 
 		int objID = value->GetID();
-		MonoClassField* objIDField = mono_class_get_field_from_name(Scripting::GetCopperObjectClass(), "objID");
+		MonoClassField* objIDField = mono_class_get_field_from_name(Scripting::GetCopperObjectMonoClass(), "objID");
 		mono_field_set_value(obj, objIDField, &objID);
 
 		mono_field_set_value(instance, field.field, obj);
+
+	}
+	void ScriptComponent::SetFieldValue(const ScriptField& field, Component* value) {
+
+		if (field.type != ScriptField::Type::Component) return;
 
 	}
 

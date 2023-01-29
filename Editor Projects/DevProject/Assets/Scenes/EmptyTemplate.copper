@@ -241,7 +241,7 @@ Entities:
         Name: Test
         Fields:
           objects:
-            Type: 4
+            Type: 6
             Value: -1
           speed:
             Type: 3

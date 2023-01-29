@@ -16,8 +16,8 @@ namespace Copper {
 		Vector2(float all) : x(all), y(all) {}
 		Vector2(float x, float y) : x(x), y(y) {}
 
-		float x;
-		float y;
+		float x = 0.0f;
+		float y = 0.0f;
 
 		static Vector2 zero;
 		static Vector2 one;
@@ -131,9 +131,9 @@ namespace Copper {
 		Vector3(float all) : x(all), y(all), z(all) {}
 		Vector3(float x, float y, float z) : x(x), y(y), z(z) {}
 
-		float x;
-		float y;
-		float z;
+		float x = 0.0f;
+		float y = 0.0f;
+		float z = 0.0f;
 
 		static Vector3 zero;
 		static Vector3 one;
@@ -273,10 +273,10 @@ namespace Copper {
 		Vector4(float all) : x(all), y(all), z(all), w(all) {}
 		Vector4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
 
-		float x;
-		float y;
-		float z;
-		float w;
+		float x = 0.0f;
+		float y = 0.0f;
+		float z = 0.0f;
+		float w = 0.0f;
 
 		static Vector4 zero;
 		static Vector4 one;
@@ -412,8 +412,8 @@ namespace Copper {
 		UVector2I(uint32_t all) : x(all), y(all) {}
 		UVector2I(uint32_t x, uint32_t y) : x(x), y(y) {}
 
-		uint32_t x;
-		uint32_t y;
+		uint32_t x = 0;
+		uint32_t y = 0;
 
 		static UVector2I zero;
 		static UVector2I one;
@@ -521,10 +521,10 @@ namespace Copper {
 		Color(float all, float alpha = 1.0f) : r(all), g(all), b(all), a(alpha) {}
 		Color(float r, float g, float b, float alpha = 1.0f) : r(r), g(g), b(b), a(alpha) {}
 
-		float r;
-		float g;
-		float b;
-		float a;
+		float r = 0.0f;
+		float g = 0.0f;
+		float b = 0.0f;
+		float a = 1.0f;
 		
 		operator Vector3() const { return Vector3(r, g, b); }
 		operator Vector4() const { return Vector4(r, g, b, a); }

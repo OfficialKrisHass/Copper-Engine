@@ -1,18 +1,69 @@
-25/01/2023
+29/01/2023
 
--CopperObject constructor is now private.
--If you want to get the CopperObject from an id, do it through InternalCalls.GetObject(int objID)
+Too lazy to write all of this.
 
--Added the Input system to the C# Scripting API
 
--Added right, left, up, down, forward and back Vector3 properties to the C# Transform component
--Made a simple Movement system in the DevProject
 
--Added a OnWindowFocused event and function to the Editor. This function is called whenever the Window
- loses focus or becomes focused again
 
--Added a FileWatch library to the Editor
--Added ProjectFileWatcher File. a group of functions that watch for changes in the specified directory
- and call the specified Callbacks.
--When there is any sort of change in the current Project, a bool is set and once the Window becomes
- focused again the Editor will automatically Hot reload the Project (FINALLY)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Next push will be a huge update/rework/cleaning up of the ENTIRE project, so it's gonna take some time

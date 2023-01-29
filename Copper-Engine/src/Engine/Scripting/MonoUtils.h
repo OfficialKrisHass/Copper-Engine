@@ -9,6 +9,7 @@
 extern "C" {
 
 	typedef struct _MonoAssembly MonoAssembly;
+	typedef struct _MonoObject MonoObject;
 	typedef struct _MonoString MonoString;
 	typedef struct _MonoDomain MonoDomain;
 	typedef struct _MonoClassField MonoClassField;
@@ -39,5 +40,9 @@ namespace Copper::Scripting::MonoUtils {
 	FieldAccessibility GetFieldAccessibility(MonoClassField* field);
 	ScriptField::Type TypeFromString(const std::string& string);
 
+	bool IsBuiltinComponentField(const std::string& name);
+
+	//Scripts
+	void PrintExceptionDetails(MonoObject* exc);
 
 }

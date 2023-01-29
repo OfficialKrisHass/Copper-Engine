@@ -253,8 +253,6 @@ namespace Editor {
 	void SaveEditorData();
 	void LoadEditorData();
 
-	void GamePanelFocused();
-
 	void NewProject();
 	void OpenProject(std::filesystem::path path);
 	void OpenProject();
@@ -289,7 +287,7 @@ namespace Editor {
 	}
 	void Run() {
 
-		if (data.gamePanelFocused) GamePanelFocused();
+		//
 
 	}
 	void Shutdown() {
@@ -429,14 +427,6 @@ namespace Editor {
 		SetWindowSize(data.gamePanelSize);
 
 		ImGui::Image(reinterpret_cast<void*>((uint64_t) GetFBOTexture()), windowSize, ImVec2 {0, 1}, ImVec2 {1, 0});
-		if (ImGui::IsItemClicked() && data.state == Play) {
-			
-			data.gamePanelFocused = true;
-			
-			Input::SetCursorVisible(false);
-			Input::SetAcceptInputDuringRuntime(true);
-		
-		}
 
 		ImGui::End();
 		ImGui::PopStyleVar();
@@ -473,10 +463,8 @@ namespace Editor {
 		data.viewportFBO.Bind();
 		Renderer::ClearColor(0.18f, 0.18f, 0.18f);
 
-		if (data.state == Play) { Input::SetAcceptInputDuringRuntime(true); }
 		data.project.sceneCam.Update();
 		data.scene.Render(&data.project.sceneCam);
-		if (data.state == Play) { Input::SetAcceptInputDuringRuntime(false); }
 
 		//After we are done rendering we are safe to unbind the FBO unless we want to modify it any way
 		data.viewportFBO.Unbind();
@@ -619,46 +607,17 @@ namespace Editor {
 		
 	}
 
-	void GamePanelFocused() {
-
-		if (Input::IsKey(KeyCode::Escape)) {
-			
-			data.gamePanelFocused = false;
-			
-			Input::SetCursorVisible(true);
-			Input::SetAcceptInputDuringRuntime(false);
-			
-			return;
-		
-		}
-
-		Input::SetCursorPosition((float) GetWindow().Width() / 2, (float) GetWindow().Height() / 2);
-
-	}
-
 	void StartEditorRuntime() {
 
 		data.state = Play;
 
-		data.scene.Serialize(data.scene.path);
+		SaveScene();
 		data.scene.StartRuntime();
 
 	}
 	void StopEditorRuntime() {
 
 		data.state = Edit;
-
-		if (data.gamePanelFocused) {
-
-			data.gamePanelFocused = false;
-
-			Input::SetCursorVisible(true);
-			Input::SetAcceptInputDuringRuntime(false);
-
-			return;
-
-		}
-
 		std::filesystem::path savedPath = data.scene.path;
 
 		data.scene = Scene();
@@ -874,7 +833,7 @@ namespace Editor {
 
 		bool rightClick = Input::IsButton(Input::Button2);
 
-		KeyPresedEvent event = *(KeyPresedEvent*) &e;
+		KeyEvent event = *(KeyEvent*) &e;
 
 		switch (event.key) {
 
@@ -951,6 +910,8 @@ namespace Editor {
 	}
 
 	void SetChanges(bool value) {
+
+		if (data.state == Play) return;
 
 		data.changes = value;
 		data.title = "Copper Editor - TestProject: ";

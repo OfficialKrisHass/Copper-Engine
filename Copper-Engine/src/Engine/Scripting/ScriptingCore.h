@@ -25,7 +25,10 @@ namespace Copper::Scripting {
 	std::vector<std::string> GetScriptComponents();
 	std::vector<ScriptField> GetScriptFields(std::string scriptName);
 
-	MonoClass* GetCopperObjectClass();
+	MonoClass* GetVector2MonoClass();
+	MonoClass* GetVector3MonoClass();
+
+	MonoClass* GetCopperObjectMonoClass();
 
 	MonoDomain* GetRootDomain();
 	MonoDomain* GetAppDomain();

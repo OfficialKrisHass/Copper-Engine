@@ -11,25 +11,24 @@ namespace Copper {
 
 	public:
 		Shader() = default;
-		Shader(std::string vertexPath, std::string fragmentPath);
-		~Shader();
+		Shader(const std::string& vertexPath, const std::string& fragmentPath);
 
-		void Bind();
-		void Unbind();
+		void Bind() const;
+		void Unbind() const;
 
-		void LoadInt(std::string name, int value);
-		void LoadUInt(std::string name, uint32_t value);
-		void LoadFloat(std::string name, float value);
+		void LoadInt(const std::string& name, int value) const;
+		void LoadUInt(const std::string& name, uint32_t value) const;
+		void LoadFloat(const std::string& name, float value) const;
 		
-		void LoadMat4(std::string name, glm::mat4 mat);
-		void LoadVec3(std::string name, Vector3 vec);
+		void LoadMat4(const std::string& name, glm::mat4 mat) const;
+		void LoadVec3(const std::string& name, Vector3 vec) const;
 
 	private:
 		uint32_t ID;
 		uint32_t vertex;
 		uint32_t fragment;
 
-		void CreateShader(std::string path, int type, uint32_t& id);
+		void CreateShader(const std::string& path, int type, uint32_t& id);
 		void CheckShader(uint32_t id, int type);
 		void CheckShader(uint32_t id);
 

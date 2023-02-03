@@ -26,10 +26,12 @@ namespace Copper::Input {
 	void SetCursorVisible(bool visible);
 	void SetCursorPosition(float x, float y);
 
-	void SetWindowTitle(std::string title);
+	void SetWindowTitle(const std::string& title);
 
 	//Getters
 	void GetCursorPosition(double* x, double* y);
+	float GetCursorPosDifferenceX();
+	float GetCursorPosDifferenceY();
 
 	//Controls
 	void WrapCursor();

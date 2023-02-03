@@ -4,7 +4,7 @@
 
 #include "Engine/Scripting/Field.h"
 
-#include <CopperECS/Component.h>
+#include "Engine/Scene/Component.h"
 
 extern "C" {
 
@@ -32,11 +32,11 @@ namespace Copper {
 		void InvokeUpdate();
 
 		void GetFieldValue(const ScriptField& field, void* out);
-		void GetFieldValue(const ScriptField& field, Object* out);
+		void GetFieldValue(const ScriptField& field, InternalEntity** out);
 		void GetFieldValue(const ScriptField& field, Component* out);
 
 		void SetFieldValue(const ScriptField& field, void* value);
-		void SetFieldValue(const ScriptField& field, Object* value);
+		void SetFieldValue(const ScriptField& field, InternalEntity** value);
 		void SetFieldValue(const ScriptField& field, Component* value);
 
 	private:

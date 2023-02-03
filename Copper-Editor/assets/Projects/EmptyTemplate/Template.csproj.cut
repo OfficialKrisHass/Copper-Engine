@@ -63,5 +63,3 @@
   </Target>
   -->
 </Project>
-
-<Compile Include="Assets\$(RecursiveDir)/$(FileName)$(Extension)" />

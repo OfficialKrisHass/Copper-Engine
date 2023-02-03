@@ -1,7 +1,6 @@
 #include "cupch.h"
 #include "Math.h"
 
-#define GLM_ENABLE_EXPERIMENTAL
 #include <GLM/gtx/matrix_decompose.hpp>
 
 namespace Copper::Math {

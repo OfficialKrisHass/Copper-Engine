@@ -1,6 +1,8 @@
 #include "cupch.h"
 #include "Log.h"
 
+#include "Engine/Core/Engine.h"
+
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/ansicolor_sink.h>
 
@@ -11,6 +13,8 @@ namespace Copper {
 	std::shared_ptr<spdlog::sinks::stdout_color_sink_mt> colorSink;
 
 	void Logger::Initialize() {
+
+		CHECK((GetEngineState() == EngineState::Initialization), "Cannot Initialize the Logger, current Engine State is: {}", EngineStateToString(GetEngineState()))
 
 		ringbufferSink = std::make_shared<spdlog::sinks::ringbuffer_sink_mt>(100);
 		colorSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();

@@ -12,14 +12,6 @@ namespace Copper {
 		KeyEvent() = default;
 		KeyEvent(KeyCode key) : key(key) {}
 
-		virtual std::string ToString() const override {
-
-			std::stringstream ss;
-			ss << "Key Pressed Event: " << (uint16_t) key;
-			return ss.str();
-
-		}
-
 		KeyCode key;
 
 	};

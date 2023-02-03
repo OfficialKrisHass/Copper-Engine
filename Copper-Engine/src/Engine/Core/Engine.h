@@ -5,47 +5,66 @@
 
 #include "Engine/Events/Event.h"
 
-#include <CopperECS/CopperECS.h>
-
 #define GetGLFWwindow (GLFWwindow*) GetWindow().GetWindowPtr()
+
+#define VERSION_STAGE "Beta"
+#define VERSION_MAJOR 1
+#define VERSION_MINOR 0
+#define VERSION_DEV 1
 
 namespace Copper {
 
-	void Initialize();
-	void Run();
-	void Shutdown();
+	class Scene;
+	class InternalEntity;
+
+	enum class EngineState : uint8_t {
+
+			Entry,
+			Initialization,
+			PostInitialization,
+			Running,
+			Shutdown,
+
+	};
+
+	namespace EngineCore {
+
+		void Initialize();
+		void Run();
+		void Shutdown();
+
+	}
 	
-	void LoadScene(Scene* scene);
+	EngineState GetEngineState();
+	std::string EngineStateToString(EngineState state);
 
-	bool OnWindowResize(const Event& e);
-	bool OnWindowFocused(const Event& e);
-	bool OnWindowClose(const Event& e);
-	bool OnKeyPressed(const Event& e);
+	//Engine Events
+	void AddPostInitEventFunc(std::function<void()> func);
 
-	//Getters
-	Window& GetWindow();
-	UVector2I GetWindowSize();
+	void AddUpdateEventFunc(std::function<void()> func);
+	void AddUIUpdateEventFunc(std::function<void()> func);
 
-	uint32_t GetFBOTexture();
-
-	Scene* GetScene();
-	uint32_t GetNumOfObjects();
-
-	Object& GetObjectFromID(int32_t id);
-	Object& CreateObjectFromID(int32_t id, ObjectDefaultParams);
+	void AddPreShutdownEventFunc(std::function<bool(const Event&)> func);
+	void AddPostShutdownEventFunc(std::function<void()> func);
 
 	bool IsRuntimeRunning();
 
 	//Setters
-	void SetWindowSize(UVector2I size);
+	void SetWindowSize(const UVector2I& size);
 
 	void SetRenderScene(bool value);
 
-	void SetEditorRunFunc(void (*func)());
-	void SetEditorUIFunc(void (*func)());
+	//Getters
+	Window& GetWindow();
+	UVector2I GetWindowSize();
+	float GetWindowAspectRatio();
 
-	void SetEditorOnKeyPressedFunc(bool (*func)(const Event&));
-	void SetEditorOnWindowCloseFunc(bool (*func)(const Event&));
-	void SetEditorOnWindowFocusedFunc(std::function<bool(const Event&)> func);
+	uint32_t GetFBOTexture();
+
+	Scene* GetScene();
+	uint32_t GetNumOfEntities();
+
+	InternalEntity* GetEntityFromID(int32_t id);
+	InternalEntity* CreateEntityFromID(int32_t id, const std::string& name = "Entity", bool returnIfExists = true);
 
 }

@@ -17,115 +17,65 @@ namespace Editor {
 	MetaFile::SceneMeta sceneMeta;
 	int clickedObjID = -1;
 
-	SceneHierarchy::SceneHierarchy() : Panel("Scene Hierarchy"), scene(scene) {
+	SceneHierarchy::SceneHierarchy() : Panel("Scene Hierarchy") {
 
-		AddObjectCreatedEventFunc(BindEventFunc(SceneHierarchy::OnObjectCreated));
-		AddObjectDestroyedEventFunc(BindEventFunc(SceneHierarchy::OnObjectDestroyed));
+		/*AddEntityCreatedEventFunc(BindEventFunc(SceneHierarchy::OnObjectCreated));
+		AddEntityDestroyedEventFunc(BindEventFunc(SceneHierarchy::OnObjectDestroyed));*/
 
 	}
 
 	void SceneHierarchy::UI() {
 
-		if (!scene) return;
-		if (ImGui::BeginPopupContextWindow(0, 1, false)) { PopupWindow(); ImGui::EndPopup(); }
+		CU_ASSERT(scene, "SceneHierarchy::scene is nullptr... HOW ???!!??!!");
 
-		for (uint32_t i = 0; i < sceneMeta.objectIDs.size(); i++) {
+		for (uint32_t eID : sceneMeta.objectIDs) {
 
-			if (GetObjectFromID(sceneMeta.objectIDs[i]).transform->parent) continue;
-			DrawObjectNode(i);
+			InternalEntity* entity = GetEntityFromID(eID);
+			if (entity->GetTransform()->Parent()) continue;
 
-		}
-
-		//Get the Window Rect through some magic math;
-		ImRect windowRect;
-		windowRect.Min = ImGui::GetWindowPos();
-		windowRect.Max.x = windowRect.Min.x + ImGui::GetWindowWidth();
-		windowRect.Max.y = windowRect.Min.y + ImGui::GetWindowHeight();
-		windowRect.Min.y = ImGui::GetItemRectMax().y + 7;
-
-		if (ImGui::BeginDragDropTargetCustom(windowRect, ImGuiID(7985548))) {
-
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_OBJECT_NODE")) RemoveParent(*(uint32_t*) payload->Data);
-
-			ImGui::EndDragDropTarget();
+			DrawEntityNode(entity);
 
 		}
+
+		//if (ImGui::BeginPopupContextWindow(0, 1, false)) { PopupWindow(); ImGui::EndPopup(); }
+
+		//for (uint32_t i = 0; i < sceneMeta.objectIDs.size(); i++) {
+
+		//	if (GetObjectFromID(sceneMeta.objectIDs[i]).TransformGet()->Parent()) continue;
+		//	DrawObjectNode(i);
+
+		//}
+
+		////Get the Window Rect through some magic math;
+		//ImRect windowRect;
+		//windowRect.Min = ImGui::GetWindowPos();
+		//windowRect.Max.x = windowRect.Min.x + ImGui::GetWindowWidth();
+		//windowRect.Max.y = windowRect.Min.y + ImGui::GetWindowHeight();
+		//windowRect.Min.y = ImGui::GetItemRectMax().y + 7;
+
+		//if (ImGui::BeginDragDropTargetCustom(windowRect, ImGuiID(7985548))) {
+
+		//	if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_OBJECT_NODE")) RemoveParent(*(uint32_t*) payload->Data);
+
+		//	ImGui::EndDragDropTarget();
+
+		//}
 
 	}
 
-	void SceneHierarchy::DrawObjectNode(uint32_t& objIDIndex) {
+	void SceneHierarchy::DrawEntityNode(InternalEntity* entity) {
 
-		Object& obj = GetObjectFromID(sceneMeta.objectIDs[objIDIndex]);
+		ImGui::PushID((int) (uint64_t) entity);
 
-		ImGuiTreeNodeFlags flags = ((selectedObj == obj) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
-		bool opened = ImGui::TreeNodeEx((void*) (uint64_t) obj.GetID(), flags, obj.tag->name.c_str());
+		ImGuiTreeNodeFlags flags = ((selectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
+		bool opened = ImGui::TreeNodeEx(entity, flags, entity->name.c_str());
 
-		//The Drag and Drop stuff needs to be here, since when we open the node
-		//and the object has children, the Drag Drop will only work on the last Child
-		//if we try to do this after rendering the children
-		if (ImGui::BeginDragDropSource()) {
-
-			ImGui::SetDragDropPayload("SCH_OBJECT_NODE", &objIDIndex, sizeof(uint64_t), ImGuiCond_Once);
-			ImGui::EndDragDropSource();
-
-		}
-		if (ImGui::BeginDragDropTarget()) {
-
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_OBJECT_NODE")) {
-
-				uint32_t otherObjIDIndex = *(uint32_t*) payload->Data;
-				Object& otherObj = GetObjectFromID(sceneMeta.objectIDs[otherObjIDIndex]);
-
-				if (otherObj.transform->parent != obj.transform && obj.transform->parent != otherObj.transform) {
-
-					if (otherObj.transform->parent) otherObj.transform->parent->RemoveChild(otherObj.transform);
-					obj.transform->AddChild(otherObj.transform);
-					
-					//if (objIDIndex == objectIDs.size() - 1) objectIDs.push_back(objectIDs[otherObjIDIndex]);
-					sceneMeta.objectIDs.insert(sceneMeta.objectIDs.begin() + objIDIndex + 1, sceneMeta.objectIDs[otherObjIDIndex]);
-					sceneMeta.objectIDs.erase(sceneMeta.objectIDs.begin() + (objIDIndex > otherObjIDIndex ? otherObjIDIndex : otherObjIDIndex + 1));
-
-					objIDIndex--;
-
-					SetChanges(true);
-
-				}
-
-			}
-
-			ImGui::EndDragDropTarget();
-
-		}
-
-		ImRect betweenNodes;
-		betweenNodes.Min = ImGui::GetItemRectMin();
-		betweenNodes.Max = ImGui::GetItemRectMax();
-		betweenNodes.Min.y -= 4;
-		betweenNodes.Max.y -= 18;
-
-		if (ImGui::BeginDragDropTargetCustom(betweenNodes, ImGuiID(7985548))) {
-
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_OBJECT_NODE")) MoveObjectNode(objIDIndex, *(uint32_t*) payload->Data);
-
-			ImGui::EndDragDropTarget();
-
-		}
-
-		if (ImGui::IsItemClicked()) clickedObjID = obj.GetID();
-		if (ImGui::IsMouseReleased(0) && obj.GetID() == clickedObjID) {
-
-			if (Properties::IsDragDropTargetHovered()) clickedObjID = -1;
-			else  selectedObj = obj;
-
-		}
-
+		if (ImGui::IsItemClicked()) selectedEntity = entity;
 		if (opened) {
 
-			uint32_t childIndex;
-			for (int i = 1; i <= obj.transform->numOfChildren; i++) {
+			for (int i = 0; i < entity->GetTransform()->NumOfChildren(); i++) {
 
-				childIndex = objIDIndex + i;
-				DrawObjectNode(childIndex);
+				DrawEntityNode(entity->GetTransform()->GetChild(i)->GetEntity());
 
 			}
 
@@ -133,138 +83,220 @@ namespace Editor {
 
 		}
 
-		if (ImGui::BeginPopupContextItem()) {
-
-			if (ImGui::MenuItem("Delete")) RemoveObjectNode(objIDIndex);
-
-			ImGui::EndPopup();
-
-		}
-		
-
-	}
-	void SceneHierarchy::RemoveObjectNode(uint32_t objIDIndex) {
-
-		Object& obj = GetObjectFromID(sceneMeta.objectIDs[objIDIndex]);
-
-		if (selectedObj == obj) selectedObj = Object();
-
-		scene->DestroyObject(obj);
-
-		SetChanges(true);
-
-	}
-	void SceneHierarchy::MoveObjectNode(uint32_t& objIDIndex, uint32_t objToMoveIDIndex) {
-
-		if (objIDIndex == objToMoveIDIndex || objToMoveIDIndex + 1 == objIDIndex) return;
-
-		Object& obj = GetObjectFromID(sceneMeta.objectIDs[objIDIndex]);
-		Object& objToMove = GetObjectFromID(sceneMeta.objectIDs[objToMoveIDIndex]);
-
-		sceneMeta.objectIDs.insert(sceneMeta.objectIDs.begin() + objIDIndex, sceneMeta.objectIDs[objToMoveIDIndex]);
-		sceneMeta.objectIDs.erase(sceneMeta.objectIDs.begin() + (objIDIndex > objToMoveIDIndex ? objToMoveIDIndex : objToMoveIDIndex + 1));
-		objIDIndex++;
-
-		if (objToMove.transform->parent) objToMove.transform->parent->RemoveChild(objToMove.transform);
-		if (obj.transform->parent) obj.transform->parent->AddChild(objToMove.transform);
-
-		SetChanges(true);
+		ImGui::PopID();
 
 	}
 
-	void SceneHierarchy::PopupWindow() {
+	//void SceneHierarchy::DrawObjectNode(uint32_t& objIDIndex) {
 
-		if (ImGui::MenuItem("Empty Object")) {
+	//	Object* obj = &GetObjectFromID(sceneMeta.objectIDs[objIDIndex]);
 
-			selectedObj = scene->CreateObject("Object");
-			SetChanges(true);
+	//	ImGuiTreeNodeFlags flags = ((selectedObj == obj) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
+	//	bool opened = ImGui::TreeNodeEx((void*) (uint64_t) obj->GetID(), flags, obj->TagGet()->name.c_str());
 
-		}
+	//	//The Drag and Drop stuff needs to be here, since when we open the node
+	//	//and the object has children, the Drag Drop will only work on the last Child
+	//	//if we try to do this after rendering the children
+	//	if (ImGui::BeginDragDropSource()) {
 
-		ImGui::Separator();
+	//		ImGui::SetDragDropPayload("SCH_OBJECT_NODE", &objIDIndex, sizeof(uint64_t), ImGuiCond_Once);
+	//		ImGui::EndDragDropSource();
 
-		if (ImGui::BeginMenu("3D Objects")) {
+	//	}
+	//	if (ImGui::BeginDragDropTarget()) {
 
-			if (ImGui::MenuItem("Plane")) {
+	//		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_OBJECT_NODE")) ChangeObjectParent(*(uint32_t*) payload->Data, objIDIndex);
+	//		ImGui::EndDragDropTarget();
 
-				selectedObj = scene->CreateObject("Plane");
-				MeshRenderer* renderer = selectedObj.AddComponent<MeshRenderer>();
-				Mesh mesh;
+	//	}
 
-				mesh.vertices = planeVertices;
-				mesh.normals = planeNormals;
-				mesh.colors = planeColors;
-				mesh.indices = planeIndices;
+	//	ImRect betweenNodes;
+	//	betweenNodes.Min = ImGui::GetItemRectMin();
+	//	betweenNodes.Max = ImGui::GetItemRectMax();
+	//	betweenNodes.Min.y -= 4;
+	//	betweenNodes.Max.y -= 18;
 
-				renderer->meshes.push_back(mesh);
-				SetChanges(true);
+	//	if (ImGui::BeginDragDropTargetCustom(betweenNodes, ImGuiID(7985548))) {
 
-			}
-			if (ImGui::MenuItem("Cube")) {
+	//		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_OBJECT_NODE")) MoveObjectNode(objIDIndex, *(uint32_t*) payload->Data);
 
-				selectedObj = scene->CreateObject("Cube");
-				MeshRenderer* renderer = selectedObj.AddComponent<MeshRenderer>();
-				Mesh mesh;
+	//		ImGui::EndDragDropTarget();
 
-				mesh.vertices = cubeVertices;
-				mesh.normals = cubeNormals;
-				mesh.colors = cubeColors;
-				mesh.indices = cubeIndices;
+	//	}
 
-				renderer->meshes.push_back(mesh);
-				SetChanges(true);
+	//	if (ImGui::IsItemClicked()) clickedObjID = obj->GetID();
+	//	if (ImGui::IsMouseReleased(0) && obj->GetID() == clickedObjID) {
 
-			}
+	//		if (Properties::IsDragDropTargetHovered()) clickedObjID = -1;
+	//		else  selectedObj = obj;
 
-			ImGui::EndMenu();
+	//	}
 
-		}
+	//	if (opened) {
 
-		if (ImGui::MenuItem("Light")) {
+	//		uint32_t childIndex;
+	//		for (int i = 1; i <= obj->TransformGet()->NumOfChildren(); i++) {
 
-			selectedObj = scene->CreateObject("Light");
-			Light* l = selectedObj.AddComponent<Light>();
+	//			childIndex = objIDIndex + i;
+	//			DrawObjectNode(childIndex);
 
-			SetChanges(true);
+	//		}
 
-		}
+	//		ImGui::TreePop();
 
-	}
+	//	}
 
-	void SceneHierarchy::RemoveParent(uint32_t objIDIndex) {
+	//	if (ImGui::BeginPopupContextItem()) {
 
-		Object& obj = GetObjectFromID(sceneMeta.objectIDs[objIDIndex]);
+	//		if (ImGui::MenuItem("Delete")) RemoveObjectNode(objIDIndex);
 
-		if (!obj.transform->parent) return;
-		
-		obj.transform->parent->RemoveChild(obj.transform);
-		obj.transform->parent = nullptr;
+	//		ImGui::EndPopup();
 
-		sceneMeta.objectIDs.push_back(sceneMeta.objectIDs[objIDIndex]);
-		sceneMeta.objectIDs.erase(sceneMeta.objectIDs.begin() + objIDIndex);
+	//	}
+	//	
 
-	}
+	//}
+	//void SceneHierarchy::RemoveObjectNode(uint32_t objIDIndex) {
 
-	bool SceneHierarchy::OnObjectCreated(const Event& e) {
+	//	Object* obj = &GetObjectFromID(sceneMeta.objectIDs[objIDIndex]);
+	//	if (selectedObj == obj) selectedObj = nullptr;
 
-		ObjectEvent* event = (ObjectEvent*) &e;
+	//	scene->DestroyObject(*obj);
 
-		sceneMeta.objectIDs.push_back(event->obj->GetID());
+	//	SetChanges(true);
 
-		return false;
+	//}
+	//void SceneHierarchy::MoveObjectNode(uint32_t& objIDIndex, uint32_t objToMoveIDIndex) {
 
-	}
-	bool SceneHierarchy::OnObjectDestroyed(const Event& e) {
+	//	if (objIDIndex == objToMoveIDIndex || objToMoveIDIndex + 1 == objIDIndex) return;
 
-		ObjectEvent* event = (ObjectEvent*) &e;
-		uint32_t objIDIndex;
+	//	Object& obj = GetObjectFromID(sceneMeta.objectIDs[objIDIndex]);
+	//	Object& objToMove = GetObjectFromID(sceneMeta.objectIDs[objToMoveIDIndex]);
 
-		for(objIDIndex = 0; objIDIndex < sceneMeta.objectIDs.size() && sceneMeta.objectIDs[objIDIndex] != event->obj->GetID(); objIDIndex++) { }
-		sceneMeta.objectIDs.erase(sceneMeta.objectIDs.begin() + objIDIndex);
+	//	sceneMeta.objectIDs.insert(sceneMeta.objectIDs.begin() + objIDIndex, sceneMeta.objectIDs[objToMoveIDIndex]);
+	//	sceneMeta.objectIDs.erase(sceneMeta.objectIDs.begin() + (objIDIndex > objToMoveIDIndex ? objToMoveIDIndex : objToMoveIDIndex + 1));
+	//	objIDIndex++;
 
-		return false;
+	//	if (objToMove.TransformGet()->Parent()) objToMove.TransformGet()->Parent()->RemoveChild(objToMove.TransformGet());
+	//	if (obj.TransformGet()->Parent()) obj.TransformGet()->Parent()->AddChild(objToMove.TransformGet());
 
-	}
+	//	SetChanges(true);
+
+	//}
+
+	//void SceneHierarchy::ChangeObjectParent(uint32_t& objIDIndex, uint32_t& newParentIDIndex) {
+
+	//	Object* obj = &GetObjectFromID(sceneMeta.objectIDs[objIDIndex]);
+	//	Transform* parent = GetObjectFromID(sceneMeta.objectIDs[newParentIDIndex]).TransformGet();
+
+	//	if (obj->TransformGet()->Parent() != parent && parent->Parent() != obj->TransformGet()) {
+
+	//		if (obj->TransformGet()->Parent()) obj->TransformGet()->Parent()->RemoveChild(obj->TransformGet());
+	//		parent->AddChild(obj->TransformGet());
+
+	//		sceneMeta.objectIDs.insert(sceneMeta.objectIDs.begin() + newParentIDIndex + 1, sceneMeta.objectIDs[objIDIndex]);
+	//		sceneMeta.objectIDs.erase(sceneMeta.objectIDs.begin() + (newParentIDIndex > objIDIndex ? objIDIndex : objIDIndex + 1));
+
+	//		newParentIDIndex--;
+
+	//		SetChanges(true);
+
+	//	}
+
+	//}
+
+	//void SceneHierarchy::PopupWindow() {
+
+	//	if (ImGui::MenuItem("Empty Object")) {
+
+	//		selectedObj = &scene->CreateObject("Object");
+	//		SetChanges(true);
+
+	//	}
+
+	//	ImGui::Separator();
+
+	//	if (ImGui::BeginMenu("3D Objects")) {
+
+	//		if (ImGui::MenuItem("Plane")) {
+
+	//			selectedObj = &scene->CreateObject("Plane");
+	//			MeshRenderer* renderer = selectedObj->AddComponent<MeshRenderer>();
+	//			Mesh mesh;
+
+	//			mesh.vertices = GetPlaneVertices();
+	//			mesh.normals = GetPlaneNormals();
+	//			mesh.colors = GetPlaneColors();
+	//			mesh.indices = GetPlaneIndices();
+
+	//			renderer->meshes.push_back(mesh);
+	//			SetChanges(true);
+
+	//		}
+	//		if (ImGui::MenuItem("Cube")) {
+
+	//			selectedObj = &scene->CreateObject("Cube");
+	//			MeshRenderer* renderer = selectedObj->AddComponent<MeshRenderer>();
+	//			Mesh mesh;
+
+	//			mesh.vertices = GetCubeVertices();
+	//			mesh.normals = GetCubeNormals();
+	//			mesh.colors = GetCubeColors();
+	//			mesh.indices = GetCubeIndices();
+
+	//			renderer->meshes.push_back(mesh);
+	//			SetChanges(true);
+
+	//		}
+
+	//		ImGui::EndMenu();
+
+	//	}
+
+	//	if (ImGui::MenuItem("Light")) {
+
+	//		selectedObj = &scene->CreateObject("Light");
+	//		Light* l = selectedObj->AddComponent<Light>();
+
+	//		SetChanges(true);
+
+	//	}
+
+	//}
+
+	//void SceneHierarchy::RemoveParent(uint32_t objIDIndex) {
+
+	//	Object& obj = GetObjectFromID(sceneMeta.objectIDs[objIDIndex]);
+
+	//	if (!obj.TransformGet()->Parent()) return;
+	//	
+	//	obj.TransformGet()->Parent()->RemoveChild(obj.TransformGet());
+
+	//	sceneMeta.objectIDs.push_back(sceneMeta.objectIDs[objIDIndex]);
+	//	sceneMeta.objectIDs.erase(sceneMeta.objectIDs.begin() + objIDIndex);
+
+	//}
+
+	//bool SceneHierarchy::OnObjectCreated(const Event& e) {
+
+	//	ObjectEvent* event = (ObjectEvent*) &e;
+
+	//	sceneMeta.objectIDs.push_back(event->obj->GetID());
+
+	//	return false;
+
+	//}
+	//bool SceneHierarchy::OnObjectDestroyed(const Event& e) {
+
+	//	ObjectEvent* event = (ObjectEvent*) &e;
+	//	uint32_t objIDIndex;
+
+	//	for(objIDIndex = 0; objIDIndex < sceneMeta.objectIDs.size() && sceneMeta.objectIDs[objIDIndex] != event->obj->GetID(); objIDIndex++) { }
+	//	sceneMeta.objectIDs.erase(sceneMeta.objectIDs.begin() + objIDIndex);
+
+	//	return false;
+
+	//}
 
 	void SceneHierarchy::SaveSceneMeta() {
 

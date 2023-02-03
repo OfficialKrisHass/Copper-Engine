@@ -13,7 +13,7 @@ namespace Editor {
 
     std::filesystem::path editingPath = "";
 
-    FileBrowser::FileBrowser(std::filesystem::path initialDir) : Panel("File Browser"), currentDir(initialDir) {
+    FileBrowser::FileBrowser(const std::filesystem::path& initialDir) : Panel("File Browser"), currentDir(initialDir) {
         
         directoryIcon = Texture("assets/Icons/FileBrowser/DirectoryIcon.png");
         fileIcon = Texture("assets/Icons/FileBrowser/FileIcon.png");
@@ -84,7 +84,7 @@ namespace Editor {
             ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
             if(ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t) icon.GetID()), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 }) && !entry.is_directory()) {
 
-                Properties::SetSelectedFile(path);
+                //Properties::SetSelectedFile(path);
                 
             }
             ImGui::PopStyleColor();

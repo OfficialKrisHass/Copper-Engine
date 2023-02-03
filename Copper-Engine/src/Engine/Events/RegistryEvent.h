@@ -2,23 +2,15 @@
 
 #include "Engine/Events/Event.h"
 
-#include "CopperECS/Object.h"
-#include "CopperECS/Component.h"
+#include "Engine/Scene/Component.h"
+#include "Engine/Scene/Entity.h"
 
 namespace Copper {
 
-	class ObjectEvent : public Event {
+	class EntityEvent : public Event {
 
 	public:
-		Object* obj;
-
-		virtual std::string ToString() const override {
-			
-			std::stringstream ss;
-			ss << "Object Event: " << obj->GetID() << " (" << obj->tag->name << ")";
-			return ss.str();
-		
-		}
+		Entity entity;
 
 	};
 
@@ -26,14 +18,6 @@ namespace Copper {
 
 	public:
 		Component* component;
-
-		virtual std::string ToString() const override {
-
-			std::stringstream ss;
-			ss << "Component Event: " << component->object->GetID() << " (" << component->object->tag->name << ")";
-			return ss.str();
-
-		}
 
 	};
 

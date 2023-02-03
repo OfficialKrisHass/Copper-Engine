@@ -12,19 +12,19 @@ namespace Editor {
 
 	void SceneCamera::Update() {
 		
-		transform->Update();
+		GetTransform()->Update();
 
 		if(!canLook) return;
 
 		if (Input::IsButton(Input::Button2)) {
 
-			if (Input::IsKey(KeyCode::W)) { transform->position +=  transform->forward * speed; }
-			if (Input::IsKey(KeyCode::S)) { transform->position += -transform->forward * speed; }
-			if (Input::IsKey(KeyCode::A)) { transform->position += -transform->right * speed; }
-			if (Input::IsKey(KeyCode::D)) { transform->position +=  transform->right * speed; }
+			if (Input::IsKey(KeyCode::W)) { GetTransform()->position +=  GetTransform()->Forward() * speed; }
+			if (Input::IsKey(KeyCode::S)) { GetTransform()->position += -GetTransform()->Forward() * speed; }
+			if (Input::IsKey(KeyCode::A)) { GetTransform()->position += -GetTransform()->Right() * speed; }
+			if (Input::IsKey(KeyCode::D)) { GetTransform()->position +=  GetTransform()->Right() * speed; }
 		
-			if (Input::IsKey(KeyCode::Space))       { transform->position +=  up * speed; }
-			if (Input::IsKey(KeyCode::LeftControl)) { transform->position += -up * speed; }
+			if (Input::IsKey(KeyCode::Space))       { GetTransform()->position +=  GetTransform()->Up() * speed; }
+			if (Input::IsKey(KeyCode::LeftControl)) { GetTransform()->position += -GetTransform()->Up() * speed; }
 			
 			Input::SetCursorVisible(false);
 
@@ -44,8 +44,8 @@ namespace Editor {
 			float rotX = sensitivity * (float) (mouseY - (GetWindow().Height() / 2)) / GetWindow().Height();
 			float rotY = sensitivity * (float) (mouseX - (GetWindow().Width() / 2)) / GetWindow().Width();
 
-			transform->rotation.x += rotX;
-			transform->rotation.y += rotY;
+			GetTransform()->rotation.x += rotX;
+			GetTransform()->rotation.y += rotY;
 			
 			Input::SetCursorPosition((float) GetWindow().Width() / 2, (float) GetWindow().Height() / 2);
 

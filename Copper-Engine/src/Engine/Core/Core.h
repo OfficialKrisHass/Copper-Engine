@@ -4,6 +4,14 @@
 
 #include "Engine/Utilities/Wrappers.h"
 
+#define CHECK(x, ...) { if(!x) {LogError(__VA_ARGS__); __debugbreak(); } }
+
+#ifdef CU_DEBUG
+    #define CU_ASSERT(x, ...) CHECK(x, __VA_ARGS__);
+#else
+    #define CU_ASSERT(x, ...)
+#endif
+
 namespace Copper {
 
     template<typename T> using Unique = std::unique_ptr<T>;

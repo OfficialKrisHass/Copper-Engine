@@ -2,7 +2,7 @@
 
 #include "Engine/Core/Core.h"
 
-#include <CopperECS/Component.h>
+#include "Engine/Scene/Component.h"
 
 namespace Copper {
 

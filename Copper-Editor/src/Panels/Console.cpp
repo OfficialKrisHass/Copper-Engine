@@ -10,7 +10,7 @@ namespace Editor {
 
 		ImGui::GetFont()->FontSize -= 2.0f;
 
-		for (int i = Logger::GetLastLogMessages().size() - 1; i >= 0; i--) {
+		for (int i = (int) Logger::GetLastLogMessages().size() - 1; i >= 0; i--) {
 
 			std::string msg = Logger::GetLastLogMessages()[i];
 

@@ -5,7 +5,7 @@
 
 namespace Copper::Input::Error {
     
-    int WarningPopup(std::string title, std::string description) {
+    int WarningPopup(const std::string& title, const std::string& description) {
 
         std::wstring wTitle = std::wstring(title.begin(), title.end());
         std::wstring wDescription = std::wstring(description.begin(), description.end());
@@ -16,7 +16,7 @@ namespace Copper::Input::Error {
         
     }
 
-    int ErrorPopup(std::string title, std::string description) {
+    int ErrorPopup(const std::string& title, const std::string& description) {
         
         std::wstring wTitle = std::wstring(title.begin(), title.end());
         std::wstring wDescription = std::wstring(description.begin(), description.end());

@@ -6,7 +6,7 @@
 #include "Engine/Scripting/MonoUtils.h"
 #include "Engine/Scripting/InternalCalls.cpp"
 
-#include <CopperECS/Registry.h>
+//#include "Engine/Scene/Registry.h"
 
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
@@ -31,7 +31,6 @@ namespace Copper::Scripting {
 		MonoClass* copperObjectClass;
 
 		std::vector<std::string> scriptComponents;
-
 		std::unordered_map<std::string, std::vector<ScriptField>> scriptFields;
 
 	};
@@ -44,6 +43,8 @@ namespace Copper::Scripting {
 	void InitScriptFields(const std::string& fullName, MonoClass* scriptClass);
 
 	void Initialize() {
+
+		CHECK((GetEngineState() == EngineState::Initialization), "Cannot Initialize Scripting, current Engine State is: {}", EngineStateToString(GetEngineState()));
 
 		//Initialize Mono
 		mono_set_assemblies_path("lib/mono/lib");
@@ -72,14 +73,14 @@ namespace Copper::Scripting {
 
 	}
 
-	void LoadProjectAssembly(std::filesystem::path path) {
+	void LoadProjectAssembly(const std::filesystem::path& path) {
 
 		data.projectPath = path;
 		data.projectAssembly = MonoUtils::LoadAssembly(path);
 		data.projectAssemblyImage = mono_assembly_get_image(data.projectAssembly);
 
 	}
-	void Reload(std::filesystem::path path, bool initScriptComponents) {
+	void Reload(const std::filesystem::path& path, bool initScriptComponents) {
 
 		if (path != "") data.projectPath = path;
 
@@ -105,10 +106,11 @@ namespace Copper::Scripting {
 		InternalCalls::Initialize();
 
 		if (!initScriptComponents) return;
+		Scene* test = GetScene();
 		for (Component* component : ComponentView<ScriptComponent>(GetScene())) {
 
 			ScriptComponent* script = (ScriptComponent*) component;
-			script->Init(script->GetTransformObject()->GetID(), script->name);
+			script->Init(script->GetEntity()->ID(), script->name);
 
 		}
 
@@ -233,7 +235,7 @@ namespace Copper::Scripting {
 
 	}
 
-	MonoObject* AddScriptComponent(int32_t obj, const std::string& name) {
+	MonoObject* AddScriptComponent(uint32_t obj, const std::string& name) {
 
 		std::string scriptName = name;
 		std::string nameSpace = MonoUtils::RemoveNamespace(scriptName);
@@ -258,7 +260,7 @@ namespace Copper::Scripting {
 	}
 
 	std::vector<std::string> GetScriptComponents() { return data.scriptComponents; }
-	std::vector<ScriptField> GetScriptFields(std::string scriptName) { return data.scriptFields[scriptName]; }
+	std::vector<ScriptField> GetScriptFields(const std::string& scriptName) { return data.scriptFields[scriptName]; }
 
 	MonoClass* GetVector2MonoClass() { return data.vector2Class; }
 	MonoClass* GetVector3MonoClass() { return data.vector3Class; }

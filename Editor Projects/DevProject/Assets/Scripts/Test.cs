@@ -3,9 +3,10 @@ using Copper;
 
 class Test : Component {
 
-    public CopperObject objects;
     public float speed = 0.1f;
-    public Vector3 test;
+    public float sensitivity = 1.0f;
+
+    private Vector3 test;
 
     void Create() {
 
@@ -15,15 +16,16 @@ class Test : Component {
 
     void Update() {
 
-        if (Input.IsKeyDown(KeyCode.A)) Editor.Log("Pressed");
-        if (Input.IsKey(KeyCode.A)) Editor.Log("Held");
-        if (Input.IsKeyReleased(KeyCode.A)) Editor.Log("Released");
+        float ws = Input.GetAxis("Keys_WS") * speed;
+        float ad = Input.GetAxis("Keys_DA") * speed;
 
-        //float ws = Input.GetAxis("Keys_WS") * speed;
-        //float ad = Input.GetAxis("Keys_DA") * speed;
+        test = transform.forward * ws + transform.right * ad;
+        transform.position += test;
 
-        //test = transform.forward * ws + transform.right * ad;
-        //transform.position += test;
+        float mouseX = Input.GetAxis("Mouse X") * sensitivity * 100.0f;
+        float mouseY = Input.GetAxis("Mouse Y") * sensitivity * 100.0f;
+
+        transform.rotation += new Vector3(mouseY, mouseX, 0.0f);
 
     }
 

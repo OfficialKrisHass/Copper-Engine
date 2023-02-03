@@ -9,20 +9,20 @@ namespace Copper {
 	class VertexArray {
 
 	public:
-		VertexArray();
-		~VertexArray();
+		VertexArray() = default;
+		VertexArray(IndexBuffer* ibo);
 
-		void Bind();
-		void Unbind();
+		void Bind() const;
+		void Unbind() const;
 
-		void SetVertexBuffer(Shared<VertexBuffer> vbo);
-		void SetIndexBuffer(Shared<IndexBuffer> ibo);
+		void SetVertexBuffer(VertexBuffer* vbo);
+		void SetIndexBuffer(IndexBuffer* ibo);
 
-		inline uint32_t Count() { return ibo->Count(); }
+		inline uint32_t Count() const { return ibo->Count(); }
 
 	private:
 		uint32_t ID;
-		Shared<IndexBuffer> ibo;
+		IndexBuffer* ibo;
 
 	};
 

@@ -10,7 +10,7 @@ namespace Editor {
 
 	public:
 		Panel() = default;
-		Panel(std::string name) : name(name) {}
+		Panel(const std::string& name) : name(name) {}
 
 		std::string name;
 

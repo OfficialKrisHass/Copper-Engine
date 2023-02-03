@@ -3,15 +3,16 @@
 #include "Engine/Core/Engine.h"
 
 extern void AppEntryPoint();
-extern void AppShutdown();
 
-int main() {
+int main(int argc, char* argv[]) {
 
-	Copper::Initialize();
+	using namespace Copper;
+
 	AppEntryPoint();
-	Copper::Run();
-	Copper::Shutdown();
-	AppShutdown();
+
+	EngineCore::Initialize();
+	EngineCore::Run();
+	EngineCore::Shutdown();
 
 	return 0;
 

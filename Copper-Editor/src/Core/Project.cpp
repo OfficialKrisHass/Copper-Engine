@@ -10,12 +10,11 @@ using namespace Copper;
 
 namespace Editor {
 
-	Project::Project(std::string name, std::filesystem::path path) : name(name), path(path), assetsPath(path.string() + "\\Assets") {
+	Project::Project(const std::string& name, const std::filesystem::path& path) : name(name), path(path), assetsPath(path.string() + "\\Assets") {
 
 		sceneCam = SceneCamera(GetViewportSize());
 		sceneCam.transform = new Transform(Vector3(0.0f, 0.0f, 1.0f), Vector3::zero, Vector3::one);
 		sceneCam.transform->position.z = 1.0f;
-		sceneCam.transform->parent = nullptr;
 
 	}
 
@@ -35,8 +34,8 @@ namespace Editor {
 		//Scene Camera
 		out << YAML::Key << "Scene Camera" << YAML::Value << YAML::BeginMap; //Scene Camera
 
-		out << YAML::Key << "Position" << YAML::Value << sceneCam.transform->position;
-		out << YAML::Key << "Rotation" << YAML::Value << sceneCam.transform->rotation;
+		out << YAML::Key << "Position" << YAML::Value << sceneCam.GetTransform()->position;
+		out << YAML::Key << "Rotation" << YAML::Value << sceneCam.GetTransform()->rotation;
 		
 		out << YAML::Key << "Fov" << YAML::Value << sceneCam.fov;
 		out << YAML::Key << "Near Plane" << YAML::Value << sceneCam.nearPlane;
@@ -73,8 +72,8 @@ namespace Editor {
 		//Scene Camera
 		YAML::Node sceneCamera = main["Scene Camera"];
 
-		sceneCam.transform->position = sceneCamera["Position"].as<Vector3>();
-		sceneCam.transform->rotation = sceneCamera["Rotation"].as<Vector3>();
+		sceneCam.GetTransform()->position = sceneCamera["Position"].as<Vector3>();
+		sceneCam.GetTransform()->rotation = sceneCamera["Rotation"].as<Vector3>();
 
 		sceneCam.fov = sceneCamera["Fov"].as<float>();
 		sceneCam.nearPlane = sceneCamera["Near Plane"].as<float>();
@@ -149,6 +148,8 @@ namespace Editor {
 	}
 	void Project::BuildSolution(bool reloadAssembly) {
 
+		if (reloadAssembly) Scripting::Reload();
+
 		std::string cmd = "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\MSBuild.exe ";
 
 		size_t pos = path.string().find_first_of(' ');
@@ -175,8 +176,6 @@ namespace Editor {
 		cmd += " -nologo";
 
 		system(cmd.c_str());
-
-		if(reloadAssembly) Scripting::Reload();
 
 	}
 

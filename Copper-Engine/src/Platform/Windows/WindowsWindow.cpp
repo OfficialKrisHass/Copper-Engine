@@ -11,17 +11,9 @@
 
 namespace Copper {
 
-	Window::Window(WindowData winData) {
+	Window::Window(const std::string& title, uint32_t width, uint32_t height) {
 
-		data.title = winData.title;
-		data.width = winData.width;
-		data.height = winData.height;
-		
-		data.wResE = WindowResizeEvent(data.width, data.height);
-		data.wClsE = WindowCloseEvent();
-
-		data.kPrsE = KeyEvent();
-		data.kRlsE = KeyEvent();
+		data.title = title;
 
 		if (!glfwInit()) { LogError("Could not Initialize GLFW!"); }
 
@@ -29,68 +21,91 @@ namespace Copper {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		windowPtr = (void*) glfwCreateWindow(data.width, data.height, data.title.c_str(), NULL, NULL);
+		windowPtr = (void*) glfwCreateWindow(width, height, data.title.c_str(), NULL, NULL);
 		glfwMakeContextCurrent(WINDOW);
-
-		//Renderer::Initialize();
-		RendererAPI::Initialize();
-
-		data.wResE += OnWindowResize;
-		data.wFocE += OnWindowFocused;
-		data.wClsE += OnWindowClose;
-		data.kPrsE += OnKeyPressed;
 
 		glfwSetWindowUserPointer(WINDOW, &data);
 		glfwMaximizeWindow(WINDOW);
 
-		glfwSetWindowSizeCallback(WINDOW, [](GLFWwindow* window, int width, int height) {
+		data.size = Size();
 
-			WindowData& data = GETWINDATA;
+		SetupEvents();
 
-			data.wResE.width = width; data.width = width;
-			data.wResE.height = height; data.height = height;
+	}
+	void Window::Update() {
 
-			data.wResE.Call();
-			data.wResE.Clear();
+		glfwPollEvents();
+		glfwSwapBuffers(WINDOW);
 
-		});
+	}
+	void Window::Shutdown() {
+
+		glfwDestroyWindow(WINDOW);
+		glfwTerminate();
+
+	}
+
+	void Window::SetupEvents() {
+
 		glfwSetWindowCloseCallback(WINDOW, [](GLFWwindow* window) {
 
 			WindowData& data = GETWINDATA;
 
-			data.wClsE.Call();
-			data.wClsE.Clear();
+			data.windowCloseEvent();
 
 		});
+		glfwSetWindowFocusCallback(WINDOW, [](GLFWwindow* window, int focused) {
+
+			WindowData& data = GETWINDATA;
+
+			data.windowFocusedEvent.focused = focused;
+			data.windowFocusedEvent.Call();
+			data.windowFocusedEvent.Clear();
+
+		});
+		glfwSetWindowSizeCallback(WINDOW, [](GLFWwindow* window, int width, int height) {
+
+			WindowData& data = GETWINDATA;
+
+			data.windowResizeEvent.width = width; data.size.x = width;
+			data.windowResizeEvent.height = height; data.size.y = height;
+
+			data.windowResizeEvent();
+
+		});
+
 		glfwSetKeyCallback(WINDOW, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
 
 			WindowData& data = GETWINDATA;
 
 			switch (action) {
 
-				case GLFW_PRESS: {
+				case GLFW_PRESS:
+				{
 
-					data.kPrsE.key = (KeyCode) key;
-					data.kPrsE.Call();
-					data.kPrsE.Clear();
-
-					break;
-
-				}
-				case GLFW_REPEAT: {
-
-					data.kPrsE.key = (KeyCode) key;
-					data.kPrsE.Call();
-					data.kPrsE.Clear();
+					data.keyPressedEvent.key = (KeyCode) key;
+					data.keyPressedEvent.Call();
+					data.keyPressedEvent.Clear();
 
 					break;
 
 				}
-				case GLFW_RELEASE: {
+				case GLFW_REPEAT:
+				{
 
-					data.kRlsE.key = (KeyCode) key;
-					data.kRlsE.Call();
-					data.kRlsE.Clear();
+					data.keyPressedEvent.key = (KeyCode) key;
+					data.keyPressedEvent.Call();
+					data.keyPressedEvent.Clear();
+
+					break;
+
+				}
+				case GLFW_RELEASE:
+				{
+
+					data.keyReleasedEvent.key = (KeyCode) key;
+					data.keyReleasedEvent.Call();
+					data.keyReleasedEvent.Clear();
 
 					break;
 
@@ -99,41 +114,98 @@ namespace Copper {
 			}
 
 		});
-		glfwSetWindowFocusCallback(WINDOW, [](GLFWwindow* window, int focused) {
+
+		glfwSetCursorPosCallback(WINDOW, [](GLFWwindow* window, double x, double y) {
 
 			WindowData& data = GETWINDATA;
-			
-			data.wFocE.focused = focused;
-			data.wFocE.Call();
-			data.wFocE.Clear();
+
+			data.mouseMoveEvent.mouseCoords.x = (float) x;
+			data.mouseMoveEvent.mouseCoords.y = (float) y;
+			data.mouseMoveEvent();
 
 		});
 
 	}
 
-	void Window::Update() {
+	uint32_t Window::Width() const {
 
-		glfwPollEvents();
-		glfwSwapBuffers(WINDOW);
+		uint32_t ret;
+
+		glfwGetWindowSize(WINDOW, (int*) &ret, nullptr);
+
+		return ret;
+
+	}
+	uint32_t Window::Height() const {
+
+		uint32_t ret;
+
+		glfwGetWindowSize(WINDOW, nullptr, (int*) &ret);
+
+		return ret;
+
+	}
+	UVector2I Window::Size() const {
+
+		int x, y;
+		glfwGetWindowSize(WINDOW, &x, &y);
+
+		return UVector2I(x, y);
+
+	}
+	float Window::AspectRatio() const {
+
+		UVector2I ret;
+
+		glfwGetWindowSize(WINDOW, (int*) &ret.x, (int*) &ret.y);
+
+		return static_cast<float>(ret.x) / ret.y;
 
 	}
 
-	void Window::Shutdown() {
+	void Window::SetSize(const UVector2I& size) {
 
-		glfwDestroyWindow(WINDOW);
-		glfwTerminate();
+		glfwSetWindowSize(WINDOW, size.x, size.y);
+		data.size.x = size.x;
+		data.size.y = size.y;
+
+	}
+
+	void Window::AddWindowCloseEventFunc(std::function<bool(const Event& e)> func) {
+
+		data.windowCloseEvent += func;
+		glfwSetWindowUserPointer(WINDOW, &data);
+
+	}
+	void Window::AddWindowFocusedEventFunc(std::function<bool(const Event& e)> func) {
+
+		data.windowFocusedEvent += func;
+		glfwSetWindowUserPointer(WINDOW, &data);
+
+	}
+	void Window::AddWindowResizeEventFunc(std::function<bool(const Event& e)> func) {
+
+		data.windowResizeEvent += func;
+		glfwSetWindowUserPointer(WINDOW, &data);
 
 	}
 
 	void Window::AddKeyPressedEventFunc(std::function<bool(const Event&)> func) {
 
-		data.kPrsE += func;
+		data.keyPressedEvent += func;
 		glfwSetWindowUserPointer(WINDOW, &data);
 
 	}
 	void Window::AddKeyReleasedEventFunc(std::function<bool(const Event&)> func) {
 
-		data.kRlsE += func;
+		data.keyReleasedEvent += func;
+		glfwSetWindowUserPointer(WINDOW, &data);
+
+	}
+
+	void Window::AddMouseMoveEventFunc(std::function<bool(const Event&)> func) {
+
+		data.mouseMoveEvent += func;
 		glfwSetWindowUserPointer(WINDOW, &data);
 
 	}

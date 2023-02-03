@@ -32,7 +32,7 @@
 //-----------------------------------
 //------Entity Component System------
 //-----------------------------------
-#include "CopperECS/CopperECS.h"
+#include "Engine/Scene/CopperECS.h"
 
 //Components
 #include "Engine/Components/Transform.h"

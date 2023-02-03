@@ -5,8 +5,7 @@
 
 namespace Copper {
 
-	FrameBuffer::FrameBuffer(UVector2I size) : size(size) { Recreate(); }
-	FrameBuffer::~FrameBuffer() { glDeleteFramebuffers(1, &ID); }
+	FrameBuffer::FrameBuffer(const UVector2I& size) : size(size) { Recreate(); }
 
 	void FrameBuffer::Recreate() {
 
@@ -45,7 +44,7 @@ namespace Copper {
 
 	}
 
-	void FrameBuffer::Resize(UVector2I size) {
+	void FrameBuffer::Resize(const UVector2I& size) {
 
 		this->size = size;
 		Recreate();

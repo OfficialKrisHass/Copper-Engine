@@ -19,7 +19,7 @@ namespace Editor {
 		int gizmoType = 0;
 
 		Project() : name(""), path(""), assetsPath("") {}
-		Project(std::string name, std::filesystem::path path);
+		Project(const std::string& name, const std::filesystem::path& path);
 
 		void Save();
 		void Load();

@@ -4,7 +4,7 @@
 
 namespace Copper::Input::Error {
 
-    int ErrorPopup(std::string title, std::string description);
-    int WarningPopup(std::string title, std::string description);
+    int ErrorPopup(const std::string& title, const std::string& description);
+    int WarningPopup(const std::string& title, const std::string& description);
     
 }

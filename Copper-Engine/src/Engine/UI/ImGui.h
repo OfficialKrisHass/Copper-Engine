@@ -10,4 +10,6 @@ namespace Copper::UI {
 	void Begin();
 	void End();
 
+	void LoadFont(const std::string& path, float fontSize = 18.0f);
+
 }

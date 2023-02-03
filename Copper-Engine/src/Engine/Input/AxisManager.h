@@ -17,8 +17,18 @@ namespace Copper::Input {
 
 	};
 
+	struct MouseAxis {
+
+		bool isX;
+
+		float positiveValue =  1.0f;
+		float negativeValue = -1.0f;
+
+	};
+
 	float GetAxis(const std::string& axisName);
 
 	void AddAxis(const std::string& axisName, KeyCode positive, KeyCode negative, float positiveValue = 1.0f, float negativeValue = -1.0f);
+	void AddMouseAxis(const std::string& axisName, bool isX, float positiveValue = 1.0f, float negativeValue = -1.0f);
 
 }

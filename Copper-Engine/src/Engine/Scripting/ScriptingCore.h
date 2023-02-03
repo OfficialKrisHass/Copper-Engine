@@ -17,13 +17,13 @@ namespace Copper::Scripting {
 	void Initialize();
 	void Shutdown();
 
-	void LoadProjectAssembly(std::filesystem::path path);
-	void Reload(std::filesystem::path path = "", bool initScriptComponents = true);
+	void LoadProjectAssembly(const std::filesystem::path& path);
+	void Reload(const std::filesystem::path& path = "", bool initScriptComponents = true);
 
-	MonoObject* AddScriptComponent(int32_t obj, const std::string& name);
+	MonoObject* AddScriptComponent(uint32_t obj, const std::string& name);
 
 	std::vector<std::string> GetScriptComponents();
-	std::vector<ScriptField> GetScriptFields(std::string scriptName);
+	std::vector<ScriptField> GetScriptFields(const std::string& scriptName);
 
 	MonoClass* GetVector2MonoClass();
 	MonoClass* GetVector3MonoClass();

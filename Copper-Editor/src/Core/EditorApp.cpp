@@ -7,6 +7,8 @@
 #include "Engine/Renderer/FrameBuffer.h"
 #include "Engine/Renderer/Renderer.h"
 
+#include "Engine/UI/ImGui.h"
+
 #include "Core/Project.h"
 #include "Core/MetaFileSerialization.h"
 #include "Core/ProjectFileWatcher.h"
@@ -28,28 +30,7 @@
 #include <yaml-cpp/yaml.h>
 
 using namespace Copper;
-
-#pragma region EntryPoint & Shutdown
-#include <Engine/Core/Entry.h>
-
-void AppEntryPoint() {
-
-	Editor::Initialize();
-
-	SetEditorRunFunc(Editor::Run);
-	SetEditorUIFunc(Editor::UI);
-
-	SetEditorOnKeyPressedFunc(Editor::OnKeyPressed);
-	SetEditorOnWindowCloseFunc(Editor::OnWindowClose);
-	SetEditorOnWindowFocusedFunc(Editor::OnWindowFocused);
-
-}
-void AppShutdown() {
-
-	Editor::Shutdown();
-
-}
-#pragma endregion 
+//using namespace Copper::Engine;
 
 namespace Editor {
 
@@ -217,6 +198,7 @@ namespace Editor {
 	struct EditorData {
 
 		EditorState state;
+		Window window;
 		std::string title;
 
 		//Project
@@ -224,7 +206,7 @@ namespace Editor {
 		bool scriptChanges;
 
 		//Scene
-		Scene scene;
+		Scene* scene;
 		bool changes;
 		
 		//Viewport
@@ -250,21 +232,35 @@ namespace Editor {
 
 	EditorData data;
 
-	void SaveEditorData();
 	void LoadEditorData();
+	void SaveEditorData();
+
+	void RenderDockspace();
+	void RenderGamePanel();
+	void RenderViewport();
+	void RenderToolbar();
+	void RenderMenu();
 
 	void NewProject();
-	void OpenProject(std::filesystem::path path);
+	void OpenProject(const std::filesystem::path& path);
 	void OpenProject();
 
+	void FileChangedCallback(const std::filesystem::path& path, const ProjectFileWatcher::FileChangeType& changeType);
 	void CopyScriptingAPI();
 
 	void StartEditorRuntime();
 	void StopEditorRuntime();
 
-	void FileChangedCallback(const std::filesystem::path& path, const ProjectFileWatcher::FileChangeType& changeType);
+	bool OnKeyPressed(const Copper::Event& e);
+	bool OnWindowClose(const Copper::Event& e);
+	bool OnWindowFocused(const Copper::Event& e);
 
 	void Initialize() {
+
+		GetWindow().AddWindowFocusedEventFunc(Editor::OnWindowFocused);
+		GetWindow().AddKeyPressedEventFunc(Editor::OnKeyPressed);
+
+		UI::LoadFont("assets/Fonts/open-sans.regular.ttf");
 
 		data.state = Edit;
 		data.viewportSize = UVector2I(1280, 720);
@@ -279,15 +275,12 @@ namespace Editor {
 		data.fileBrowser = FileBrowser(data.project.assetsPath);
 		data.console = Console();
 
+		data.properties.SetSelectedObject(data.sceneHierarchy.GetSelectedEntity());
+
 		ProjectFileWatcher::AddFilter(".cs");
 		ProjectFileWatcher::AddFileChangeCallback(FileChangedCallback);
 		
 		LoadEditorData();
-
-	}
-	void Run() {
-
-		//
 
 	}
 	void Shutdown() {
@@ -326,7 +319,7 @@ namespace Editor {
 
 	}
 
-	void UI() {
+	void UIUpdate() {
 
 		RenderDockspace();
 		RenderToolbar();
@@ -334,7 +327,6 @@ namespace Editor {
 		
 		data.console.UIRender();
 		data.fileBrowser.UIRender();
-		data.properties.SetSelectedObject(data.sceneHierarchy.GetSelectedObject());
 		data.properties.UIRender();
 		data.sceneHierarchy.UIRender();
 		RenderGamePanel();
@@ -410,7 +402,7 @@ namespace Editor {
 			return;
 
 		}
-		if (!data.scene.cam) {
+		if (!data.scene->cam) {
 
 			ImGui::Text("No Camera Available!");
 
@@ -464,7 +456,7 @@ namespace Editor {
 		Renderer::ClearColor(0.18f, 0.18f, 0.18f);
 
 		data.project.sceneCam.Update();
-		data.scene.Render(&data.project.sceneCam);
+		data.scene->Render(&data.project.sceneCam);
 
 		//After we are done rendering we are safe to unbind the FBO unless we want to modify it any way
 		data.viewportFBO.Unbind();
@@ -474,7 +466,7 @@ namespace Editor {
 		//Gizmos that I stol... I mean, taken inspiration from The Chernos Game Engine series
 		//Yeah, I definitely didn't copy this entire chunk of code that I don't understand but
 		//magically works, naaah.
-		Object selectedObj = data.sceneHierarchy.GetSelectedObject();
+		InternalEntity* selectedObj = *(data.sceneHierarchy.GetSelectedEntity());
 		if (selectedObj) {
 
 			ImGuizmo::SetOrthographic(false);
@@ -486,7 +478,7 @@ namespace Editor {
 
 			const glm::mat4& cameraProjection = data.project.sceneCam.CreateProjectionMatrix();
 			glm::mat4 cameraView = data.project.sceneCam.CreateViewMatrix();
-			glm::mat4 transform = selectedObj.transform->CreateMatrix();
+			glm::mat4 transform = selectedObj->GetTransform()->CreateMatrix();
 
 			// Snapping
 			bool snap = Input::IsKey(KeyCode::LeftControl);
@@ -505,10 +497,10 @@ namespace Editor {
 
 				Math::DecomposeTransform(transform, position, rotation, scale);
 
-				glm::vec3 deltaRotation = rotation - (glm::vec3) selectedObj.transform->rotation;
-				selectedObj.transform->position = position;
-				selectedObj.transform->rotation += deltaRotation;
-				selectedObj.transform->scale = scale;
+				glm::vec3 deltaRotation = rotation - (glm::vec3) selectedObj->GetTransform()->rotation;
+				selectedObj->GetTransform()->position = position;
+				selectedObj->GetTransform()->rotation += deltaRotation;
+				selectedObj->GetTransform()->scale = scale;
 
 				//The rotation doesn't work for some reason, it keeps wiggling around
 				//Unfortunately I'm dum dum so this is what you get :) uwu
@@ -612,16 +604,19 @@ namespace Editor {
 		data.state = Play;
 
 		SaveScene();
-		data.scene.StartRuntime();
+		data.scene->StartRuntime();
 
 	}
 	void StopEditorRuntime() {
 
 		data.state = Edit;
-		std::filesystem::path savedPath = data.scene.path;
+		std::filesystem::path savedPath = data.scene->path;
+		uint32_t savedSelectedObjID = (*data.sceneHierarchy.GetSelectedEntity())->ID();
 
-		data.scene = Scene();
-		data.scene.Deserialize(savedPath);
+		data.scene = GetScene();
+		data.scene->Deserialize(savedPath);
+
+		data.sceneHierarchy.SetSelectedEntity(GetEntityFromID(savedSelectedObjID));
 		data.sceneHierarchy.LoadSceneMeta();
 
 	}
@@ -676,10 +671,11 @@ namespace Editor {
 		Input::SetWindowTitle(data.title);
 
 	}
-	void OpenProject(std::filesystem::path path) {
+	void OpenProject(const std::filesystem::path& path) {
 
 		data.project = Project("", path);
 		data.project.Load();
+		data.scene = GetScene();
 
 		data.fileBrowser.SetCurrentDir(data.project.assetsPath);
 		ProjectFileWatcher::Stop();
@@ -717,10 +713,8 @@ namespace Editor {
 
 	void NewScene() {
 
-		data.scene = Scene();
-
-		LoadScene(&data.scene);
-		data.sceneHierarchy.SetScene(&data.scene);
+		*data.scene = Scene();
+		data.sceneHierarchy.SetScene(data.scene);
 		
 	}
 	void OpenScene() {
@@ -745,7 +739,7 @@ namespace Editor {
 		OpenScene(path);
 		
 	}
-	void OpenScene(std::filesystem::path path) {
+	void OpenScene(const std::filesystem::path& path) {
 
 		if(data.changes) {
 
@@ -758,31 +752,30 @@ namespace Editor {
 			
 		}
 
-		data.project.lastOpenedScene = std::filesystem::relative(path, data.project.assetsPath);
+		*data.scene = Scene();
 
-		data.scene = Scene();
-		LoadScene(&data.scene);
-
-		data.scene.Deserialize(path);
-		data.sceneHierarchy.SetScene(&data.scene);
+		data.scene->Deserialize(path);
+		data.sceneHierarchy.SetScene(data.scene);
 		data.sceneHierarchy.LoadSceneMeta();
 
 		data.changes = false;
 		data.title = "Copper Editor - " + data.project.name + ": ";
-		data.title += data.scene.name;
+		data.title += data.scene->name;
 		Input::SetWindowTitle(data.title);
+
+		data.project.lastOpenedScene = std::filesystem::relative(path, data.project.assetsPath);
 		
 	}
 	void SaveScene() {
 		
-		if(!data.scene.path.empty()) {
+		if(!data.scene->path.empty()) {
 
-			data.scene.Serialize(data.scene.path);
+			data.scene->Serialize(data.scene->path);
 			data.sceneHierarchy.SaveSceneMeta();
 
 			data.changes = false;
 			data.title = "Copper Editor - TestProject: ";
-			data.title += data.scene.name;
+			data.title += data.scene->name;
 			Input::SetWindowTitle(data.title);
 			
 			return;
@@ -811,12 +804,12 @@ namespace Editor {
 
 			}
 
-			data.scene.Serialize(path);
+			data.scene->Serialize(path);
 			data.sceneHierarchy.SaveSceneMeta();
 
 			data.changes = false;
 			data.title = "Copper Editor - TestProject: ";
-			data.title += data.scene.name;
+			data.title += data.scene->name;
 			Input::SetWindowTitle(data.title);
 			
 		}
@@ -879,35 +872,33 @@ namespace Editor {
 		return true;
 
 	}
-	bool OnWindowClose(const Event& e) {
-
-		if (data.changes) {
-
-			switch (Input::Error::WarningPopup("Unsaved Changes", "There are Unsaved Changes, if you close the Editor your changes will be lost. Are you Sure you want to Close the Editor ?")) {
-
-				case IDOK: break;
-				case IDCANCEL: return false;
-
-			}
-
-		}
-
-		return true;
-
-	}
 	bool OnWindowFocused(const Event& e) {
 
 		WindowFocusedEvent* event = (WindowFocusedEvent*) & e;
 
-		if (event->focused && data.scriptChanges) {
+		if (!event->focused || !data.scriptChanges) return true;
+		data.project.BuildSolution();
 
-			data.project.BuildSolution();
+		data.scriptChanges = false;
+
+		return true;
+
+	}
+	bool OnWindowClose(const Event& e) {
+
+		if (!data.changes) return true;
+
+		switch (Input::Error::WarningPopup("Unsaved Changes", "There are Unsaved Changes, if you close the Editor your changes will be lost. Are you Sure you want to Close the Editor ?")) {
+
+			case IDOK: return true;
+			case IDCANCEL: return false;
 
 		}
 
-		return false;
-
 	}
+	
+	Project GetProject() { return data.project; }
+	UVector2I GetViewportSize() { return data.viewportSize; }
 
 	void SetChanges(bool value) {
 
@@ -915,58 +906,27 @@ namespace Editor {
 
 		data.changes = value;
 		data.title = "Copper Editor - TestProject: ";
-		data.title += data.scene.name;
+		data.title += data.scene->name;
 		data.title += '*';
 		Input::SetWindowTitle(data.title);
 		
 	}
-	
-	Project GetProject() { return data.project; }
-
-	UVector2I GetViewportSize() { return data.viewportSize; }
-
-	void ManualScene() {
-
-		data.scene = Scene();
-		data.scene.name = "Manual";
-		data.scene.path = "assets/TestProject/Test Scenes/Manual.copper";
-
-		LoadScene(&data.scene);
-
-		Object square = data.scene.CreateObject(Vector3::zero, Vector3(90.0f, 0.0f, 0.0f), Vector3::one, "Square");
-		Object cube = data.scene.CreateObject(Vector3(1.5f, 0.0f, 0.0f), Vector3::zero, Vector3::one, "Cube");
-		Object light = data.scene.CreateObject(Vector3(0.0f, 0.0f, 1.0f), Vector3::zero, Vector3::one, "Light");
-
-		cube.transform->parent = square.transform;
-		square.transform->AddChild(cube.transform);
-
-		MeshRenderer* renderer = square.AddComponent<MeshRenderer>();
-		Mesh mesh;
-
-		mesh.vertices = planeVertices;
-		mesh.normals  = planeNormals;
-		mesh.colors   = planeColors;
-		mesh.indices  = planeIndices;
-
-		renderer->meshes.push_back(mesh);
-
-		renderer = cube.AddComponent<MeshRenderer>();
-		
-		mesh.vertices = cubeVertices;
-		mesh.normals  = cubeNormals;
-		mesh.colors   = cubeColors;
-		mesh.indices  = cubeIndices;
-
-		renderer->meshes.push_back(mesh);
-
-		light.AddComponent<Light>();
-
-		data.changes = false;
-		data.title = "Copper Editor - TestProject: ";
-		data.title += data.scene.name;
-		Input::SetWindowTitle(data.title);
-
-
-	}
 
 }
+
+#pragma region EntryPoint
+#include <Engine/Core/Entry.h>
+
+void AppEntryPoint() {
+
+	Editor::data.window = Window("Copper Editor", 1280, 720);
+
+	AddPostInitEventFunc(Editor::Initialize);
+	AddUIUpdateEventFunc(Editor::UIUpdate);
+	AddPreShutdownEventFunc(Editor::OnWindowClose);
+	AddPostShutdownEventFunc(Editor::Shutdown);
+
+}
+#pragma endregion 
+
+Window* GetEditorWindow() { return &Editor::data.window; }

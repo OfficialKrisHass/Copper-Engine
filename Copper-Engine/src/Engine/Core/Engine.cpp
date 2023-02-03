@@ -15,154 +15,228 @@
 
 #include "Engine/UI/ImGui.h"
 
+#include "Engine/Scene/CopperECS.h"
+
 #include <ImGui/imgui.h>
+#include <glad/glad.h>
+
+extern Copper::Window* GetEditorWindow();
 
 namespace Copper {
 
 	struct EngineData {
 
-		bool running = true;
-		UVector2I windowSize;
+		EngineState engineState = EngineState::Entry;
 
-		FrameBuffer* fbo;
-		Window* window;
+		FrameBuffer fbo;
+	#ifdef CU_EDITOR
+		Window* window; //Physical Window - Editor creates, sets and stores the window
+	#else
+		Window window;
+	#endif
 
-		Scene* scene;
-		bool renderScene = false;
+		Scene scene;
+		bool renderScene = true;
 
-		void (*EditorRun)();
-		void (*EditorUI)();
+		SimpleEvent postInitEvent;
+		SimpleEvent updateEvent;
+		SimpleEvent uiUpdateEvent;
+		Event preShutdownEvent;
+		SimpleEvent postShutdownEvent;
 
-		bool (*EditorOnKeyPressed)(const Event&);
-		bool (*EditorOnWindowClose)(const Event&);
+		Window& Window() {
 
-		std::function<bool(const Event&)> EditorOnWindowFocused;
+		#ifdef CU_EDITOR
+			return *window;
+		#else
+			return window;
+		#endif
+
+		}
 			
 	};
-
 	EngineData data;
 
-	void Initialize() {
+	bool OnWindowClose(const Event& e);
+	bool OnWindowResize(const Event& e);
+
+	void EngineCore::Initialize() {
+
+		CHECK((data.engineState == EngineState::Entry), "Cannot Initialize the Engine, current Engine State is: {}", EngineStateToString(data.engineState));
+		data.engineState = EngineState::Initialization;
 
 		Logger::Initialize();
 
-		data.windowSize = UVector2I(1280, 720);
-		data.window = new Window(WindowData("Copper Engine", 1280, 720));
-		data.fbo = new FrameBuffer(data.windowSize);
+	#ifdef CU_EDITOR
+		data.window = GetEditorWindow();
+		RendererAPI::Initialize();
+		data.fbo = FrameBuffer(UVector2I(1280, 720));
+	#else
+		data.window = Window("Copper Engine", 1280, 720);
+		RendererAPI::Initialize();
+		data.fbo = FrameBuffer(data.Window().Size());
+	#endif
+
+		data.Window().AddWindowCloseEventFunc(OnWindowClose);
+		data.Window().AddWindowResizeEventFunc(OnWindowResize);
 
 		Renderer::Initialize();
 		UI::Initialize();
-		Renderer::SetShader(new Shader("assets/Shaders/vertexDefault.glsl", "assets/Shaders/fragmentDefault.glsl"));
+		Renderer::SetShader(Shader("assets/Shaders/vertexDefault.glsl", "assets/Shaders/fragmentDefault.glsl"));
 
 		Input::Init();
-
-		Scripting::Initialize();
 
 		Input::AddAxis("Keys_WS", KeyCode::W, KeyCode::S);
 		Input::AddAxis("Keys_DA", KeyCode::D, KeyCode::A);
 
+		Input::AddMouseAxis("Mouse X", true);
+		Input::AddMouseAxis("Mouse Y", false);
+
+		Scripting::Initialize();
+
+		data.engineState = EngineState::PostInitialization;
+		data.postInitEvent();
+
 	}
 
-	void Run() {
+	void EngineCore::Run() {
 
-		while (data.running) {
+		CHECK((data.engineState == EngineState::PostInitialization), "Cannot Start running the Engine, current Engine State is: {}", EngineStateToString(data.engineState));
+		data.engineState = EngineState::Running;
 
-			//Frame Begin
-			data.fbo->Bind();
-			data.scene->Update(data.renderScene);
-			data.fbo->Unbind();
+		while (data.engineState == EngineState::Running) {
 
-			data.EditorRun();
+			data.updateEvent();
+
+			data.fbo.Bind();
+			data.scene.Update(data.renderScene);
+			data.fbo.Unbind();
+
+			Renderer::ResizeViewport(data.Window().Size());
 
 			UI::Begin();
-			data.EditorUI();
+			data.uiUpdateEvent();
 			UI::End();
 
-			//Frame End
 			Renderer::EndFrame();
-			data.window->Update();
+			data.Window().Update();
 
 		}
 
 	}
 
-	void Shutdown() {
+	void EngineCore::Shutdown() {
+
+		CHECK((data.engineState == EngineState::Shutdown), "Cannot Shutdown the Engine, current Engine State is: {}", EngineStateToString(data.engineState));
 
 		UI::Shutdown();
-		data.window->Shutdown();
+		data.Window().Shutdown();
 
-		//std::cin.get();
-
-	}
-	void LoadScene(Scene* scene) {
-
-		data.scene = scene;
-		
-	}
-
-	bool OnWindowResize(const Event& e) {
-
-		return true;
+		data.postShutdownEvent();
 
 	}
-	bool OnWindowFocused(const Event& e) {
 
-		data.EditorOnWindowFocused(e);
-
-		return false;
-
-	}
 	bool OnWindowClose(const Event& e) {
 
-		if (!data.EditorOnWindowClose(e)) return false;
+		if (!data.preShutdownEvent()) return false;
+		data.engineState = EngineState::Shutdown;
 
-		data.running = false;
+		return true;
+
+	}
+	bool OnWindowResize(const Event& e) {
+
+	#ifndef CU_EDITOR
+		data.fbo.Resize(data.Window().Size());
+		data.scene->cam->Resize(data.Window().Size());
+	#endif
 
 		return true;
 
 	}
 
-	bool OnKeyPressed(const Event& e) {
+	SimpleEvent& GetPostInitEvent() { return data.postInitEvent; }
 
-		data.EditorOnKeyPressed(e);
+	SimpleEvent& GetUpdateEvent() { return data.updateEvent; }
+	SimpleEvent& GetUIUpdateEvent() { return data.uiUpdateEvent; }
 
-		return false;
-
-	}
-
-	//Getters
-	Window& GetWindow() { return *data.window; }
-	UVector2I GetWindowSize() { return data.windowSize; }
-
-	uint32_t GetFBOTexture() { return data.fbo->GetColorAttachment(); }
-
-	Scene* GetScene() { return data.scene; }
-	uint32_t GetNumOfObjects() { return data.scene->GetNumOfObjects(); }
-
-	Object& GetObjectFromID(int32_t id) { return data.scene->GetObjectFromID(id); }
-	Object& CreateObjectFromID(int32_t id, Vector3 position, Vector3 rotation, Vector3 scale, const std::string& name) { return data.scene->CreateObjectFromID(id, position, rotation, scale, name); }
-
-	bool IsRuntimeRunning() { return data.scene->IsRuntimeRunning(); }
+	Event& GetPreShutdownEvent() { return data.preShutdownEvent; }
+	SimpleEvent& GetPostShutdownEvent() { return data.postShutdownEvent; }
 
 	//Setters
-	void SetWindowSize(UVector2I size) {
+	void SetWindowSize(const UVector2I& size) {
 
-		if (size.x == data.windowSize.x && size.y == data.windowSize.y) return;
-		
-		data.windowSize = size;
+	#ifdef CU_EDITOR
+		if (data.fbo.Size() == size) return;
 
-		data.fbo->Resize(data.windowSize);
-		if (data.scene->cam) data.scene->cam->Resize(data.windowSize);
+		data.fbo.Resize(size);
+		data.scene.cam->Resize(size);
+	#else
+		data.window.SetSize(size);
+	#endif
 	
 	}
 
 	void SetRenderScene(bool value) { data.renderScene = value; }
 
-	void SetEditorRunFunc(void (*func)()) { data.EditorRun = func; }
-	void SetEditorUIFunc(void (*func)()) { data.EditorUI = func; }
+	//Getters
+	Window& GetWindow() { return data.Window(); }
+	UVector2I GetWindowSize() {
+		
+	#ifdef CU_EDITOR
+		return data.fbo.Size();
+	#else
+		return data.window.Size();
+	#endif
 
-	void SetEditorOnKeyPressedFunc(bool (*func)(const Event&)) { data.EditorOnKeyPressed = func; }
-	void SetEditorOnWindowCloseFunc(bool (*func)(const Event&)) { data.EditorOnWindowClose = func; }
-	void SetEditorOnWindowFocusedFunc(std::function<bool(const Event&)> func) { data.EditorOnWindowFocused = func; }
+	}
+	float GetWindowAspectRatio() {
+
+	#ifdef CU_EDITOR
+		return static_cast<float>(data.fbo.Width()) / data.fbo.Height();
+	#else
+		return data.window.AspectRatio();
+	#endif
+
+	}
+
+	uint32_t GetFBOTexture() { return data.fbo.GetColorAttachment(); }
+
+	Scene* GetScene() { return &data.scene; }
+	uint32_t GetNumOfEntities() { return data.scene.GetNumOfEntities(); }
+
+	InternalEntity* GetEntityFromID(int32_t id) { return data.scene.GetEntityFromID(id); }
+	InternalEntity* CreateEntityFromID(int32_t id, const std::string& name, bool returnIfExists) {
+		
+		return data.scene.CreateEntityFromID(id, Vector3::zero, Vector3::zero, Vector3::one, name, returnIfExists);
+	
+	}
+
+	bool IsRuntimeRunning() { return data.scene.IsRuntimeRunning(); }
+
+	void AddPostInitEventFunc(std::function<void()> func) { data.postInitEvent += func; }
+
+	void AddUpdateEventFunc(std::function<void()> func) { data.updateEvent += func; }
+	void AddUIUpdateEventFunc(std::function<void()> func) { data.uiUpdateEvent += func; }
+
+	void AddPreShutdownEventFunc(std::function<bool(const Event&)> func) { data.preShutdownEvent += func; }
+	void AddPostShutdownEventFunc(std::function<void()> func) { data.postShutdownEvent += func; }
+
+	EngineState GetEngineState() { return data.engineState; }
+	std::string EngineStateToString(EngineState state) {
+
+		switch (state) {
+
+			case EngineState::Entry: return "Entry"; break;
+			case EngineState::Initialization: return "Initialization"; break;
+			case EngineState::PostInitialization: return "Post Initialization"; break;
+			case EngineState::Running: return "Running"; break;
+			case EngineState::Shutdown: return "Shutdown"; break;
+
+		}
+
+		return "Invalid Engine State!";
+
+	}
 
 }

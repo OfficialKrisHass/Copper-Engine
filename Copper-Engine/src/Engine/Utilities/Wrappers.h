@@ -10,6 +10,9 @@
 
 namespace Copper {
 
+	struct UVector2I;
+	struct Vector2I;
+
 	struct Vector2 {
 
 		Vector2() = default;
@@ -122,6 +125,8 @@ namespace Copper {
 
 		Vector2 operator-() const { return Vector2(-x, -y); }
 
+		operator UVector2I() const;
+		operator Vector2I() const;
 
 	};
 	struct Vector3 {
@@ -406,6 +411,119 @@ namespace Copper {
 
 	};
 
+	struct Vector2I {
+
+		Vector2I() = default;
+		Vector2I(int32_t all) : x(all), y(all) {}
+		Vector2I(int32_t x, int32_t y) : x(x), y(y) {}
+
+		int32_t x = 0;
+		int32_t y = 0;
+
+		static Vector2I zero;
+		static Vector2I one;
+		static Vector2I minusOne;
+
+		Vector2I operator+(const Vector2I& other) const { return Vector2I(x + other.x, y + other.y); }
+		Vector2I operator+(const int32_t other) const { return Vector2I(x + other, y + other); }
+		Vector2I operator+(const glm::uvec2& other) const { return Vector2I(x + other.x, y + other.y); }
+		Vector2I operator-(const Vector2I& other) const { return Vector2I(x - other.x, y - other.y); }
+		Vector2I operator-(const int32_t other) const { return Vector2I(x - other, y - other); }
+		Vector2I operator-(const glm::uvec2& other) const { return Vector2I(x - other.x, y - other.y); }
+		Vector2I operator*(const Vector2I& other) const { return Vector2I(x * other.x, y * other.y); }
+		Vector2I operator*(const int32_t other) const { return Vector2I(x * other, y * other); }
+		Vector2I operator*(const glm::uvec2& other) const { return Vector2I(x * other.x, y * other.y); }
+		Vector2I operator/(const Vector2I& other) const { return Vector2I(x / other.x, y / other.y); }
+		Vector2I operator/(const int32_t other) const { return Vector2I(x / other, y / other); }
+		Vector2I operator/(const glm::uvec2& other) const { return Vector2I(x / other.x, y / other.y); }
+
+		Vector2I& operator=(const Vector2I& other) {
+
+			this->x = other.x;
+			this->y = other.y;
+			return *this;
+
+		}
+		Vector2I& operator+=(const Vector2I& other) {
+
+			this->x += other.x;
+			this->y += other.y;
+			return *this;
+
+		}
+		Vector2I& operator+=(const int32_t& other) {
+
+			this->x += other;
+			this->y += other;
+			return *this;
+
+		}
+		Vector2I& operator-=(const Vector2I& other) {
+
+			this->x -= other.x;
+			this->y -= other.y;
+			return *this;
+
+		}
+		Vector2I& operator-=(const int32_t& other) {
+
+			this->x -= other;
+			this->y -= other;
+			return *this;
+
+		}
+		Vector2I& operator*=(const Vector2I& other) {
+
+			this->x *= other.x;
+			this->y *= other.y;
+			return *this;
+
+		}
+		Vector2I& operator*=(const int32_t& other) {
+
+			this->x *= other;
+			this->y *= other;
+			return *this;
+
+		}
+		Vector2I& operator/=(const Vector2I& other) {
+
+			this->x /= other.x;
+			this->y /= other.y;
+			return *this;
+
+		}
+		Vector2I& operator/=(const int32_t& other) {
+
+			this->x /= other;
+			this->y /= other;
+			return *this;
+
+		}
+
+		Vector2I& operator++() {
+
+			++this->x;
+			++this->y;
+			return *this;
+
+		}
+		Vector2I& operator--() {
+
+			--this->x;
+			--this->y;
+			return *this;
+
+		}
+
+		Vector2I operator-() { return Vector2I(-x, -y); }
+
+		bool operator==(const Vector2I& other) const { return x == other.x && y == other.y; }
+		bool operator!=(const Vector2I& other) const { return !(*this == other); }
+
+		operator Vector2() const;
+
+	};
 	struct UVector2I {
 
 		UVector2I() = default;
@@ -513,6 +631,8 @@ namespace Copper {
 		bool operator==(const UVector2I& other) const { return x == other.x && y == other.y; }
 		bool operator!=(const UVector2I& other) const { return !(*this == other); }
 
+		operator Vector2() const;
+
 	};
 
 	struct Color {
@@ -564,6 +684,11 @@ namespace Copper {
 	inline std::ostream& operator<<(std::ostream& os, const Vector4& vec) {
 
 		return os << "X: " << vec.x << ", Y: " << vec.y << ", Z: " << vec.z << ", W: " << vec.w;
+
+	}
+	inline std::ostream& operator<<(std::ostream& os, const UVector2I& vec) {
+
+		return os << "X: " << vec.x << ", Y: " << vec.y;
 
 	}
 	inline std::ostream& operator<<(std::ostream& os, const Color& col) {

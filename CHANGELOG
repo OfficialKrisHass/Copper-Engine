@@ -1,69 +1,15 @@
-29/01/2023
+22/03/2023 22:19 - I just had the biggest exam of my life, and I may have fucked it up
+                   ... just a bit. But the grind never stops
 
-Too lazy to write all of this.
+-Completely replaced the ECS with a new rewritten version of CopperECS (the CopperECS will get this version soon)
+-Instead of Objects, we now have Entities
 
+-changed some variables that should be private to be private (Component::transform, Object::id, etc)
 
+-Added Mouse Axises (Horizontal and Vertical mouse movements expressed in floats)
+ NOTE: THEY MIGHT NOT FUNCTION PROPERLY BE CAREFUL
 
+-Removed (temporaryrialrirlyi) the feature to add multiple components of the same type to the same Entity
+-Removed (however you spell that word) moving and reararring the Entities in the Scene Hierarchy
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Next push will be a huge update/rework/cleaning up of the ENTIRE project, so it's gonna take some time
+-Finished the Cleanup. FINALLY!!!!!!!!!!

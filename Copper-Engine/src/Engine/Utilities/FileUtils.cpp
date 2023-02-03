@@ -3,7 +3,7 @@
 
 namespace Copper::Utilities {
 
-	std::string ReadFile(std::string path) {
+	std::string ReadFile(const std::string& path) {
 
 		std::string ret;
 		std::ifstream file;
@@ -30,7 +30,7 @@ namespace Copper::Utilities {
 		return ret;
 
 	}
-	char* ReadFileBinary(std::string path, uint32_t* outSIze) {
+	char* ReadFileBinary(const std::string& path, uint32_t* outSIze) {
 		
 		std::ifstream stream(path, std::ios::binary | std::ios::ate);
 
@@ -38,7 +38,7 @@ namespace Copper::Utilities {
 
 		std::streampos end = stream.tellg();
 		stream.seekg(0, std::ios::beg);
-		uint32_t size = end - stream.tellg();
+		uint32_t size = (uint32_t) (end - stream.tellg());
 
 		if (size == 0) { LogError("Assembly is empty.\nPath: {0}", path); return nullptr; }
 

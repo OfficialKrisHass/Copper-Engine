@@ -1,3 +1,4 @@
+Version: [Beta, 1, 0, 0]
 Scene: EmptyTemplate
 Entities:
   0:
@@ -6,9 +7,9 @@ Entities:
       Position: [0, 3.27806497, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
-      Parent: -1
+      Parent: 4294967295
       Children:
-        - 4
+        []
     Components:
       Light:
         Color: [1, 0.999989986, 0.999989986, 0]
@@ -165,10 +166,11 @@ Entities:
       Position: [0, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
-      Parent: -1
+      Parent: 4294967295
       Children:
         - 1
         - 3
+        - 5
     Components:
       Script Component:
         Name: Player
@@ -211,25 +213,12 @@ Entities:
             - 3
             - 0
   4:
-    Name: Light
-    Transform:
-      Position: [0, -1, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-      Parent: 0
-      Children:
-        []
-    Components:
-      Light:
-        Color: [1, 0.999989986, 0.999989986, 0]
-        Intensity: 1
-  5:
     Name: Camera
     Transform:
       Position: [0, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
-      Parent: -1
+      Parent: 4294967295
       Children:
         []
     Components:
@@ -240,19 +229,19 @@ Entities:
       Script Component:
         Name: Test
         Fields:
-          objects:
-            Type: 6
-            Value: -1
           speed:
             Type: 3
             Value: 0.100000001
-  6:
+          sensitivity:
+            Type: 3
+            Value: 1
+  5:
     Name: Player
     Transform:
       Position: [0, -0.699999988, -1.87]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
-      Parent: -1
+      Parent: 2
       Children:
         []
     Components:

@@ -7,7 +7,9 @@
 #include "Engine/Scripting/ScriptingCore.h"
 #include "Engine/Scripting/MonoUtils.h"
 
-#include <CopperECS/CopperECS.h>
+#include "Engine/Scene/CopperECS.h"
+
+#include "Engine/Components/ScriptComponent.h"
 
 #include <mono/jit/jit.h>
 #include <mono/metadata/exception.h>
@@ -17,15 +19,15 @@
 
 namespace Copper::Scripting::InternalCalls {
 
-	static std::unordered_map<std::string, std::function<bool(const Object&)>> hasComponentFuncs;
-	static std::unordered_map<std::string, std::function<bool(Object&)>> addComponentFuncs;
+	static std::unordered_map<std::string, std::function<bool(InternalEntity*)>> hasComponentFuncs;
+	static std::unordered_map<std::string, std::function<bool(InternalEntity*)>> addComponentFuncs;
 
 	void Initialize() {
 
-		hasComponentFuncs["Transform"] = [](const Object& obj) { return true; };
-		hasComponentFuncs["Camera"] =    [](const Object& obj) { return obj.HasComponent<Camera>(); };
+		hasComponentFuncs["Transform"] = [](InternalEntity* entity) { return true; };
+		hasComponentFuncs["Camera"] =    [](InternalEntity* entity) { return entity->HasComponent<Camera>(); };
 
-		addComponentFuncs["Camera"] = [](Object& obj) { return obj.AddComponent<Camera>() != nullptr ? true : false; };
+		addComponentFuncs["Camera"] = [](InternalEntity* entity) { return entity->AddComponent<Camera>() != nullptr ? true : false; };
 
 	}
 
@@ -57,38 +59,38 @@ namespace Copper::Scripting::InternalCalls {
 
 	}
 
-	//Object
-	static MonoString* GetObjectName(int objID) {
+	//Entity
+	static MonoString* GetObjectName(int eID) {
 
-		const Object& obj = GetScene()->GetObjectFromID(objID);
+		InternalEntity* entity = GetEntityFromID(eID);
 
-		return MonoUtils::StringToMono(obj.tag->name);
-
-	}
-	static void SetObjectName(int objID, MonoString* out) {
-
-		const Object& obj = GetScene()->GetObjectFromID(objID);
-
-		obj.tag->name = MonoUtils::MonoToString(out);
+		return MonoUtils::StringToMono(entity->name);
 
 	}
+	static void SetObjectName(int eID, MonoString* out) {
 
-	static MonoObject* GetCopperObject(int objID) {
+		InternalEntity* entity = GetEntityFromID(eID);
+
+		entity->name = MonoUtils::MonoToString(out);
+
+	}
+
+	static MonoObject* GetCopperObject(int eID) {
 
 		MonoObject* ret = mono_object_new(Scripting::GetAppDomain(), Scripting::GetCopperObjectMonoClass());
 		mono_runtime_object_init(ret);
 
 		MonoClassField* objIDField = mono_class_get_field_from_name(Scripting::GetCopperObjectMonoClass(), "objID");
-		mono_field_set_value(ret, objIDField, &objID);
+		mono_field_set_value(ret, objIDField, &eID);
 
 		return ret;
 
 	}
 
 	//Components
-	static void AddComponent(int objID, MonoReflectionType* type, MonoObject* ret) {
+	static void AddComponent(int eID, MonoReflectionType* type, MonoObject* ret) {
 
-		if (objID == -1) { CauseExceptionInvalid("Copper Object"); return; }
+		if (eID == invalidID) { CauseExceptionInvalid("Copper Object"); return; }
 
 		MonoType* managedType = mono_reflection_type_get_type(type);
 		std::string typeName = mono_type_get_name(managedType);
@@ -96,52 +98,47 @@ namespace Copper::Scripting::InternalCalls {
 		std::string scriptName = typeName;
 		MonoUtils::RemoveNamespace(scriptName);
 
-		Object& obj = GetObjectFromID(objID);
+		InternalEntity* entity = GetEntityFromID(eID);
 
 		MonoClassField* field = mono_class_get_field_from_name(mono_class_from_mono_type(managedType), "objID");
-		mono_field_set_value(ret, field, &objID);
+		mono_field_set_value(ret, field, &eID);
 
 		if (addComponentFuncs.find(scriptName) != addComponentFuncs.end()) {
 
-			if (addComponentFuncs[scriptName](obj)) return;
+			if (addComponentFuncs[scriptName](entity)) return;
 			CauseException("Only one component of this type can be on a single object. Type", scriptName.c_str());
 			
 		} else {
 
-			ScriptComponent* script = obj.AddComponent<ScriptComponent>();
-			script->Init(obj.GetID(), typeName);
+			ScriptComponent* script = entity->AddComponent<ScriptComponent>();
+			script->Init(entity->ID(), typeName);
 
 		}
 
 	}
-	static bool GetComponent(int objID, MonoReflectionType* type, MonoObject* ret) {
+	static bool GetComponent(int eID, MonoReflectionType* type, MonoObject* ret) {
 
-		if (objID == -1) { CauseExceptionInvalid("Copper Object"); return false; }
+		if (eID == invalidID) { CauseExceptionInvalid("Copper Object"); return false; }
 
-		Object& obj = GetObjectFromID(objID);
+		InternalEntity* entity = GetEntityFromID(eID);
 
 		MonoType* classType = mono_reflection_type_get_type(type);
 		std::string name = mono_type_get_name(classType);
 
 		MonoClassField* field = mono_class_get_field_from_name(mono_class_from_mono_type(classType), "objID");
-		mono_field_set_value(ret, field, &objID);
+		mono_field_set_value(ret, field, &eID);
 
-		ScriptComponent* script = nullptr;
-		for (ScriptComponent* s : obj.GetComponents<ScriptComponent>()) {
-
-			if (s->name == name) script = s;
-
-		}
-		if (!script) return false;
+		ScriptComponent* script = entity->GetComponent<ScriptComponent>();
+		if (script->name != name) return false;
 
 		script->CopyTo(ret);
 
 		return true;
 
 	}
-	static bool HasComponent(int objID, MonoReflectionType* type) {
+	static bool HasComponent(int eID, MonoReflectionType* type) {
 
-		if (objID == -1) { CauseExceptionInvalid("Copper Object"); return false; }
+		if (eID == invalidID) { CauseExceptionInvalid("Copper Object"); return false; }
 
 		MonoType* managedType = mono_reflection_type_get_type(type);
 		std::string typeName = mono_type_get_name(managedType);
@@ -149,19 +146,16 @@ namespace Copper::Scripting::InternalCalls {
 		std::string scriptName = typeName;
 		MonoUtils::RemoveNamespace(scriptName);
 
-		Object& obj = GetObjectFromID(objID);
+		InternalEntity* entity = GetEntityFromID(eID);
 
 		if (hasComponentFuncs.find(scriptName) != hasComponentFuncs.end()) {
 
-			return hasComponentFuncs[scriptName](obj);
+			return hasComponentFuncs[scriptName](entity);
 
 		} else {
 
-			for (ScriptComponent* script : obj.GetComponents<ScriptComponent>()) {
-
-				if (script->name == typeName) return true;
-
-			}
+			ScriptComponent* script = entity->GetComponent<ScriptComponent>();
+			if (script->name != typeName) return false;
 
 		}
 
@@ -169,94 +163,94 @@ namespace Copper::Scripting::InternalCalls {
 
 	}
 
-	static void SetComponentObjID(MonoReflectionType* type, MonoObject* component, int objID) {
+	static void SetComponentObjID(MonoReflectionType* type, MonoObject* component, int eID) {
 
 		MonoType* classType = mono_reflection_type_get_type(type);
 		MonoClassField* field = mono_class_get_field_from_name(mono_class_from_mono_type(classType), "objID");
-		mono_field_set_value(component, field, &objID);
+		mono_field_set_value(component, field, &eID);
 
 	}
 
 	//Transform
-	static void GetPosition(int objID, Vector3* out) {
+	static void GetPosition(int eID, Vector3* out) {
 
-		if (objID == -1) { CauseExceptionInvalid("Copper Object"); return; }
-		*out = GetScene()->GetObjectFromID(objID).transform->position;
-
-	}
-	static void GetRotation(int objID, Vector3* out) {
-
-		if (objID == -1) { CauseExceptionInvalid("Copper Object"); return; }
-		*out = GetScene()->GetObjectFromID(objID).transform->rotation;
+		if (eID == invalidID) { CauseExceptionInvalid("Copper Object"); return; }
+		*out = GetEntityFromID(eID)->GetTransform()->position;
 
 	}
-	static void GetScale(int objID, Vector3* out) {
+	static void GetRotation(int eID, Vector3* out) {
 
-		if (objID == -1) { CauseExceptionInvalid("Copper Object"); return; }
-		*out = GetScene()->GetObjectFromID(objID).transform->scale;
-
-	}
-	static void SetPosition(int objID, Vector3* value) {
-
-		if (objID == -1) { CauseExceptionInvalid("Copper Object"); return; }
-		GetScene()->GetObjectFromID(objID).transform->position = *value;
+		if (eID == invalidID) { CauseExceptionInvalid("Copper Object"); return; }
+		*out = GetEntityFromID(eID)->GetTransform()->rotation;
 
 	}
-	static void SetRotation(int objID, Vector3* value) {
+	static void GetScale(int eID, Vector3* out) {
 
-		if (objID == -1) { CauseExceptionInvalid("Copper Object"); return; }
-		GetScene()->GetObjectFromID(objID).transform->rotation = *value;
-
-	}
-	static void SetScale(int objID, Vector3* value) {
-
-		if (objID == -1) { CauseExceptionInvalid("Copper Object"); return; }
-		GetScene()->GetObjectFromID(objID).transform->scale = *value;
+		if (eID == invalidID) { CauseExceptionInvalid("Copper Object"); return; }
+		*out = GetEntityFromID(eID)->GetTransform()->scale;
 
 	}
+	static void SetPosition(int eID, Vector3* value) {
 
-	static void GetForward(int objID, Vector3* out) { *out = GetObjectFromID(objID).transform->forward; }
-	static void GetBack(int objID, Vector3* out) { *out = GetObjectFromID(objID).transform->back; }
-	static void GetRight(int objID, Vector3* out) { *out = GetObjectFromID(objID).transform->right; }
-	static void GetLeft(int objID, Vector3* out) { *out = GetObjectFromID(objID).transform->left; }
-	static void GetUp(int objID, Vector3* out) { *out = GetObjectFromID(objID).transform->up; }
-	static void GetDown(int objID, Vector3* out) { *out = GetObjectFromID(objID).transform->down; }
+		if (eID == invalidID) { CauseExceptionInvalid("Copper Object"); return; }
+		GetEntityFromID(eID)->GetTransform()->position = *value;
+
+	}
+	static void SetRotation(int eID, Vector3* value) {
+
+		if (eID == invalidID) { CauseExceptionInvalid("Copper Object"); return; }
+		GetEntityFromID(eID)->GetTransform()->rotation = *value;
+
+	}
+	static void SetScale(int eID, Vector3* value) {
+
+		if (eID == invalidID) { CauseExceptionInvalid("Copper Object"); return; }
+		GetEntityFromID(eID)->GetTransform()->scale = *value;
+
+	}
+
+	static void GetForward(int eID, Vector3* out) { *out = GetEntityFromID(eID)->GetTransform()->Forward(); }
+	static void GetBack(int eID, Vector3* out)  { *out = GetEntityFromID(eID)->GetTransform()->Back(); }
+	static void GetRight(int eID, Vector3* out) { *out = GetEntityFromID(eID)->GetTransform()->Right(); }
+	static void GetLeft(int eID, Vector3* out)  { *out = GetEntityFromID(eID)->GetTransform()->Left(); }
+	static void GetUp(int eID, Vector3* out)    { *out = GetEntityFromID(eID)->GetTransform()->Up(); }
+	static void GetDown(int eID, Vector3* out)  { *out = GetEntityFromID(eID)->GetTransform()->Down(); }
 
 	//Camera
-	static float CameraGetFOV(int objID) {
+	static float CameraGetFOV(int eID) {
 
-		Object& obj = GetObjectFromID(objID);
-		return obj.GetComponent<Camera>()->fov;
-
-	}
-	static float CameraGetNearPlane(int objID) {
-
-		Object& obj = GetObjectFromID(objID);
-		return obj.GetComponent<Camera>()->nearPlane;
+		InternalEntity* entity = GetEntityFromID(eID);
+		return entity->GetComponent<Camera>()->fov;
 
 	}
-	static float CameraGetFarPlane(int objID) {
+	static float CameraGetNearPlane(int eID) {
 
-		Object& obj = GetObjectFromID(objID);
-		return obj.GetComponent<Camera>()->farPlane;
-
-	}
-	static void CameraSetFOV(int objID, float value) {
-
-		Object& obj = GetObjectFromID(objID);
-		obj.GetComponent<Camera>()->fov = value;
+		InternalEntity* entity = GetEntityFromID(eID);
+		return entity->GetComponent<Camera>()->nearPlane;
 
 	}
-	static void CameraSetNearPlane(int objID, float value) {
+	static float CameraGetFarPlane(int eID) {
 
-		Object& obj = GetObjectFromID(objID);
-		obj.GetComponent<Camera>()->nearPlane = value;
+		InternalEntity* entity = GetEntityFromID(eID);
+		return entity->GetComponent<Camera>()->farPlane;
 
 	}
-	static void CameraSetFarPlane(int objID, float value) {
+	static void CameraSetFOV(int eID, float value) {
 
-		Object& obj = GetObjectFromID(objID);
-		obj.GetComponent<Camera>()->farPlane = value;
+		InternalEntity* entity = GetEntityFromID(eID);
+		entity->GetComponent<Camera>()->fov = value;
+
+	}
+	static void CameraSetNearPlane(int eID, float value) {
+
+		InternalEntity* entity = GetEntityFromID(eID);
+		entity->GetComponent<Camera>()->nearPlane = value;
+
+	}
+	static void CameraSetFarPlane(int eID, float value) {
+
+		InternalEntity* entity = GetEntityFromID(eID);
+		entity->GetComponent<Camera>()->farPlane = value;
 
 	}
 

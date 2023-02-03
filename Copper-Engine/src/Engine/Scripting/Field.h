@@ -24,7 +24,7 @@ namespace Copper {
 			Vector2,
 			Vector3,
 
-			CopperObject,
+			Entity,
 			Component
 
 		};

@@ -22,14 +22,14 @@ namespace Editor::MetaFile {
 		out << YAML::EndSeq; //Objects
 
 		out << YAML::EndMap; //Main Map
-		std::ofstream file(scene->path.string() + ".meta");
+		std::ofstream file(scene->path.string() + ".cum");
 		file << out.c_str();
 
 	}
 	void SceneMeta::Deserialize(Scene* scene) {
 
 		YAML::Node main;
-		try { main = YAML::LoadFile(scene->path.string() + ".meta"); } catch (YAML::ParserException e) {
+		try { main = YAML::LoadFile(scene->path.string() + ".cum"); } catch (YAML::ParserException e) {
 
 			LogError("Failed to Read The Scene Meta Data file\n{}\n    {}", scene->path, e.what());
 			return;

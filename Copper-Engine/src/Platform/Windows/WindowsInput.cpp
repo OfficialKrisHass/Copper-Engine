@@ -8,9 +8,17 @@
 #include <GLFW/glfw3.h>
 #include <ImGui/imgui.h>
 
+#ifdef CU_EDITOR
+extern Copper::UVector2I GetViewportCentre();
+#endif
+
 namespace Copper::Input {
 	
 	std::unordered_map<KeyCode, std::pair<uint32_t, bool>> keys;
+
+	bool mouseVisible = true;
+	bool mouseLocked = false;
+	bool firstMouseLockedFrame = true;
 
 	Vector2 prevMousePos;
 	Vector2 mousePosDiference;
@@ -28,6 +36,40 @@ namespace Copper::Input {
 		GetWindow().AddKeyReleasedEventFunc(OnKeyReleased);
 
 		GetWindow().AddMouseMoveEventFunc(OnMouseMove);
+
+	}
+	void Update() {
+
+		mousePosDiference = Vector2::zero;
+
+		if (!mouseLocked) return;
+		if (!AcceptInputDuringRuntime()) return;
+
+		UVector2I centre;
+
+	#ifdef CU_EDITOR
+		centre = GetViewportCentre();
+	#else
+		centre = GetWindowSize() / 2;
+	#endif
+
+		double mouseX;
+		double mouseY;
+		GetCursorPosition(&mouseX, &mouseY);
+		Vector2 mousePos((float) mouseX, (float) mouseY);
+
+		if(!firstMouseLockedFrame) {
+
+			mousePosDiference.x = (mousePos.x - centre.x) / GetWindowSize().x;
+			mousePosDiference.y = (mousePos.y - centre.y + 63) / GetWindowSize().y;
+
+		} else {
+
+			firstMouseLockedFrame = false;
+
+		}
+
+		SetCursorPos(centre.x, centre.y);
 
 	}
 
@@ -82,11 +124,13 @@ namespace Copper::Input {
 
 	bool OnMouseMove(const Event& e) {
 
+		if (mouseLocked) return true;
+
 		MouseMoveEvent& event = *((MouseMoveEvent*) &e);
 
 		Vector2I diferenceFull = prevMousePos - event.mouseCoords;
-		mousePosDiference.x = (float) diferenceFull.x / (float) GetWindow().Width();
-		mousePosDiference.y = (float) diferenceFull.y / (float) GetWindow().Height();
+		mousePosDiference.x = -((float) diferenceFull.x / (float) GetWindow().Width());
+		mousePosDiference.y = -((float) diferenceFull.y / (float) GetWindow().Height());
 
 		prevMousePos = event.mouseCoords;
 
@@ -97,7 +141,13 @@ namespace Copper::Input {
 	void SetCursorVisible(bool visible) {
 		
 		glfwSetInputMode(GetGLFWwindow, GLFW_CURSOR, visible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+		mouseVisible = visible;
 		
+	}
+	void SetCursorLocked(bool locked) {
+
+		mouseLocked = locked;
+
 	}
 	void SetCursorPosition(float x, float y) {
 

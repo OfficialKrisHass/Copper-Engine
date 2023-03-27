@@ -85,13 +85,13 @@ namespace Copper {
 		InternalEntity* CreateEntityFromID(uint32_t eID, Scene* scene, Vector3 position, Vector3 rotation, Vector3 scale, const std::string& name, bool returnIfExists) {
 
 			if (eID >= entities.size()) entities.resize(eID + 1, InternalEntity());
-			if (!returnIfExists && entities[eID]) entities[eID].Invalidate();
+			if (returnIfExists && entities[eID]) return &entities[eID];
 
 			entities[eID].id = eID;
 			entities[eID].name = name;
 			entities[eID].scene = scene;
 
-			entities[eID].transform = AddComponent<Transform>(eID);
+			if (!entities[eID].transform) entities[eID].transform = AddComponent<Transform>(eID);
 			entities[eID].transform->position = position;
 			entities[eID].transform->rotation = rotation;
 			entities[eID].transform->scale = scale;

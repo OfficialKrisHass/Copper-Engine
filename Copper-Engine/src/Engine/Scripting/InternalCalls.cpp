@@ -2,6 +2,7 @@
 
 #include "Engine/Core/Engine.h"
 
+#include "Engine/Input/Input.h"
 #include "Engine/Input/AxisManager.h"
 
 #include "Engine/Scripting/ScriptingCore.h"
@@ -16,6 +17,11 @@
 
 #define CauseExceptionInvalid(argument) mono_raise_exception(mono_get_exception_argument_null(argument))
 #define CauseException(message, argument)  mono_raise_exception(mono_get_exception_argument(argument, message))
+
+#define CheckValidEntity(eID) if (eID == invalidID || eID >= GetNumOfEntities() || !(*GetEntityFromID(eID))) {\
+						      CauseExceptionInvalid("Entity"); return; }
+#define CheckValidEntityWithReturn(eID, ret) if (eID == invalidID || eID >= GetNumOfEntities() || !(*GetEntityFromID(eID))) {\
+											 CauseExceptionInvalid("Entity"); return ret; }
 
 namespace Copper::Scripting::InternalCalls {
 
@@ -49,48 +55,93 @@ namespace Copper::Scripting::InternalCalls {
 	}
 
 	//Input
-	static bool IsKey(int keyCode) { return Input::IsKey((KeyCode) keyCode); }
-	static bool IsKeyDown(int keyCode) { return Input::IsKeyDown((KeyCode) keyCode); }
-	static bool IsKeyReleased(int keyCode) { return Input::IsKeyReleased((KeyCode) keyCode); }
+	static bool IsKey(int keyCode) {
+		
+	#ifdef CU_EDITOR
+		if (!AcceptInputDuringRuntime()) return false;
+	#endif
+		return Input::IsKey((KeyCode) keyCode);
+	
+	}
+	static bool IsKeyDown(int keyCode) {
+		
+	#ifdef CU_EDITOR
+		if (!AcceptInputDuringRuntime()) return false;
+	#endif
+		return Input::IsKeyDown((KeyCode) keyCode);
+	
+	}
+	static bool IsKeyReleased(int keyCode) {
+		
+	#ifdef CU_EDITOR
+		if (!AcceptInputDuringRuntime()) return false;
+	#endif
+		return Input::IsKeyReleased((KeyCode) keyCode);
+	
+	}
 
 	static float GetAxis(MonoString* axisName) {
 
+	#ifdef CU_EDITOR
+		if (!AcceptInputDuringRuntime()) return 0.0f;
+	#endif
 		return Input::GetAxis(MonoUtils::MonoToString(axisName));
 
 	}
 
-	//Entity
-	static MonoString* GetObjectName(int eID) {
+	static void SetCursorVisible(bool visible) {
 
+	#ifdef CU_EDITOR
+		if (!AcceptInputDuringRuntime()) return;
+	#endif
+		Input::SetCursorVisible(visible);
+
+	}
+	static void SetCursorLocked(bool locked) {
+
+	#ifdef CU_EDITOR
+		if (!AcceptInputDuringRuntime()) return;
+	#endif
+		Input::SetCursorLocked(locked);
+
+	}
+
+	//Entity
+	static MonoString* GetEntityName(uint32_t eID) {
+
+		CheckValidEntityWithReturn(eID, nullptr);
 		InternalEntity* entity = GetEntityFromID(eID);
 
 		return MonoUtils::StringToMono(entity->name);
 
 	}
-	static void SetObjectName(int eID, MonoString* out) {
+	static void SetEntityName(uint32_t eID, MonoString* out) {
 
+		CheckValidEntity(eID);
 		InternalEntity* entity = GetEntityFromID(eID);
 
 		entity->name = MonoUtils::MonoToString(out);
 
 	}
 
-	static MonoObject* GetCopperObject(int eID) {
+	static MonoObject* GetEntity(uint32_t eID) {
 
-		MonoObject* ret = mono_object_new(Scripting::GetAppDomain(), Scripting::GetCopperObjectMonoClass());
+		CheckValidEntityWithReturn(eID, nullptr);
+
+		MonoObject* ret = mono_object_new(Scripting::GetAppDomain(), Scripting::GetEntityMonoClass());
 		mono_runtime_object_init(ret);
 
-		MonoClassField* objIDField = mono_class_get_field_from_name(Scripting::GetCopperObjectMonoClass(), "objID");
-		mono_field_set_value(ret, objIDField, &eID);
+		MonoClassField* eIDField = mono_class_get_field_from_name(Scripting::GetEntityMonoClass(), "id");
+		mono_field_set_value(ret, eIDField, &eID);
 
 		return ret;
 
 	}
 
 	//Components
-	static void AddComponent(int eID, MonoReflectionType* type, MonoObject* ret) {
+	static void AddComponent(uint32_t eID, MonoReflectionType* type, MonoObject* ret) {
 
-		if (eID == invalidID) { CauseExceptionInvalid("Copper Object"); return; }
+		CheckValidEntity(eID);
 
 		MonoType* managedType = mono_reflection_type_get_type(type);
 		std::string typeName = mono_type_get_name(managedType);
@@ -100,7 +151,7 @@ namespace Copper::Scripting::InternalCalls {
 
 		InternalEntity* entity = GetEntityFromID(eID);
 
-		MonoClassField* field = mono_class_get_field_from_name(mono_class_from_mono_type(managedType), "objID");
+		MonoClassField* field = mono_class_get_field_from_name(mono_class_from_mono_type(managedType), "eID");
 		mono_field_set_value(ret, field, &eID);
 
 		if (addComponentFuncs.find(scriptName) != addComponentFuncs.end()) {
@@ -116,16 +167,16 @@ namespace Copper::Scripting::InternalCalls {
 		}
 
 	}
-	static bool GetComponent(int eID, MonoReflectionType* type, MonoObject* ret) {
+	static bool GetComponent(uint32_t eID, MonoReflectionType* type, MonoObject* ret) {
 
-		if (eID == invalidID) { CauseExceptionInvalid("Copper Object"); return false; }
+		CheckValidEntityWithReturn(eID, false);
 
 		InternalEntity* entity = GetEntityFromID(eID);
 
 		MonoType* classType = mono_reflection_type_get_type(type);
 		std::string name = mono_type_get_name(classType);
 
-		MonoClassField* field = mono_class_get_field_from_name(mono_class_from_mono_type(classType), "objID");
+		MonoClassField* field = mono_class_get_field_from_name(mono_class_from_mono_type(classType), "eID");
 		mono_field_set_value(ret, field, &eID);
 
 		ScriptComponent* script = entity->GetComponent<ScriptComponent>();
@@ -136,9 +187,9 @@ namespace Copper::Scripting::InternalCalls {
 		return true;
 
 	}
-	static bool HasComponent(int eID, MonoReflectionType* type) {
+	static bool HasComponent(uint32_t eID, MonoReflectionType* type) {
 
-		if (eID == invalidID) { CauseExceptionInvalid("Copper Object"); return false; }
+		CheckValidEntityWithReturn(eID, false);
 
 		MonoType* managedType = mono_reflection_type_get_type(type);
 		std::string typeName = mono_type_get_name(managedType);
@@ -163,91 +214,133 @@ namespace Copper::Scripting::InternalCalls {
 
 	}
 
-	static void SetComponentObjID(MonoReflectionType* type, MonoObject* component, int eID) {
+	static void SetComponentObjID(MonoReflectionType* type, MonoObject* component, uint32_t eID) {
 
 		MonoType* classType = mono_reflection_type_get_type(type);
-		MonoClassField* field = mono_class_get_field_from_name(mono_class_from_mono_type(classType), "objID");
+		MonoClassField* field = mono_class_get_field_from_name(mono_class_from_mono_type(classType), "eID");
 		mono_field_set_value(component, field, &eID);
 
 	}
 
 	//Transform
-	static void GetPosition(int eID, Vector3* out) {
+	static void GetPosition(uint32_t eID, Vector3* out) {
 
-		if (eID == invalidID) { CauseExceptionInvalid("Copper Object"); return; }
+		CheckValidEntity(eID);
 		*out = GetEntityFromID(eID)->GetTransform()->position;
 
 	}
-	static void GetRotation(int eID, Vector3* out) {
+	static void GetRotation(uint32_t eID, Vector3* out) {
 
-		if (eID == invalidID) { CauseExceptionInvalid("Copper Object"); return; }
+		CheckValidEntity(eID);
 		*out = GetEntityFromID(eID)->GetTransform()->rotation;
 
 	}
-	static void GetScale(int eID, Vector3* out) {
+	static void GetScale(uint32_t eID, Vector3* out) {
 
-		if (eID == invalidID) { CauseExceptionInvalid("Copper Object"); return; }
+		CheckValidEntity(eID);
 		*out = GetEntityFromID(eID)->GetTransform()->scale;
 
 	}
-	static void SetPosition(int eID, Vector3* value) {
+	static void SetPosition(uint32_t eID, Vector3* value) {
 
-		if (eID == invalidID) { CauseExceptionInvalid("Copper Object"); return; }
+		CheckValidEntity(eID);
 		GetEntityFromID(eID)->GetTransform()->position = *value;
 
 	}
-	static void SetRotation(int eID, Vector3* value) {
+	static void SetRotation(uint32_t eID, Vector3* value) {
 
-		if (eID == invalidID) { CauseExceptionInvalid("Copper Object"); return; }
+		CheckValidEntity(eID);
 		GetEntityFromID(eID)->GetTransform()->rotation = *value;
 
 	}
-	static void SetScale(int eID, Vector3* value) {
+	static void SetScale(uint32_t eID, Vector3* value) {
 
-		if (eID == invalidID) { CauseExceptionInvalid("Copper Object"); return; }
+		CheckValidEntity(eID);
 		GetEntityFromID(eID)->GetTransform()->scale = *value;
 
 	}
 
-	static void GetForward(int eID, Vector3* out) { *out = GetEntityFromID(eID)->GetTransform()->Forward(); }
-	static void GetBack(int eID, Vector3* out)  { *out = GetEntityFromID(eID)->GetTransform()->Back(); }
-	static void GetRight(int eID, Vector3* out) { *out = GetEntityFromID(eID)->GetTransform()->Right(); }
-	static void GetLeft(int eID, Vector3* out)  { *out = GetEntityFromID(eID)->GetTransform()->Left(); }
-	static void GetUp(int eID, Vector3* out)    { *out = GetEntityFromID(eID)->GetTransform()->Up(); }
-	static void GetDown(int eID, Vector3* out)  { *out = GetEntityFromID(eID)->GetTransform()->Down(); }
+	static void GetForward(uint32_t eID, Vector3* out) {
+
+		CheckValidEntity(eID);
+		*out = GetEntityFromID(eID)->GetTransform()->Forward();
+
+	}
+	static void GetBack(uint32_t eID, Vector3* out)    {
+
+		CheckValidEntity(eID);
+		*out = GetEntityFromID(eID)->GetTransform()->Back();
+	
+	}
+	static void GetRight(uint32_t eID, Vector3* out)   {
+
+		CheckValidEntity(eID);
+		*out = GetEntityFromID(eID)->GetTransform()->Right();
+	
+	}
+	static void GetLeft(uint32_t eID, Vector3* out)    {
+
+		CheckValidEntity(eID);
+		*out = GetEntityFromID(eID)->GetTransform()->Left();
+	
+	}
+	static void GetUp(uint32_t eID, Vector3* out)      {
+
+		CheckValidEntity(eID);
+		*out = GetEntityFromID(eID)->GetTransform()->Up();
+	
+	}
+	static void GetDown(uint32_t eID, Vector3* out)    {
+
+		CheckValidEntity(eID);
+		*out = GetEntityFromID(eID)->GetTransform()->Down();
+	
+	}
 
 	//Camera
-	static float CameraGetFOV(int eID) {
+	static float CameraGetFOV(uint32_t eID) {
+
+		CheckValidEntityWithReturn(eID, 0.0f);
 
 		InternalEntity* entity = GetEntityFromID(eID);
 		return entity->GetComponent<Camera>()->fov;
 
 	}
-	static float CameraGetNearPlane(int eID) {
+	static float CameraGetNearPlane(uint32_t eID) {
+
+		CheckValidEntityWithReturn(eID, 0.0f);
 
 		InternalEntity* entity = GetEntityFromID(eID);
 		return entity->GetComponent<Camera>()->nearPlane;
 
 	}
-	static float CameraGetFarPlane(int eID) {
+	static float CameraGetFarPlane(uint32_t eID) {
+
+		CheckValidEntityWithReturn(eID, 0.0f);
 
 		InternalEntity* entity = GetEntityFromID(eID);
 		return entity->GetComponent<Camera>()->farPlane;
 
 	}
-	static void CameraSetFOV(int eID, float value) {
+	static void CameraSetFOV(uint32_t eID, float value) {
+
+		CheckValidEntity(eID);
 
 		InternalEntity* entity = GetEntityFromID(eID);
 		entity->GetComponent<Camera>()->fov = value;
 
 	}
-	static void CameraSetNearPlane(int eID, float value) {
+	static void CameraSetNearPlane(uint32_t eID, float value) {
+
+		CheckValidEntity(eID);
 
 		InternalEntity* entity = GetEntityFromID(eID);
 		entity->GetComponent<Camera>()->nearPlane = value;
 
 	}
-	static void CameraSetFarPlane(int eID, float value) {
+	static void CameraSetFarPlane(uint32_t eID, float value) {
+
+		CheckValidEntity(eID);
 
 		InternalEntity* entity = GetEntityFromID(eID);
 		entity->GetComponent<Camera>()->farPlane = value;

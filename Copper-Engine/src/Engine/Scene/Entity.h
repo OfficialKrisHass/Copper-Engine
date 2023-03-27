@@ -16,7 +16,7 @@ namespace Copper {
 
 		friend class Registry;
 		friend class Scene;
-		friend class OldSceneVersionSerializer;
+		friend class OldSceneDeserialization;
 		friend class Entity;
 		friend struct YAML::convert<InternalEntity*>;
 
@@ -75,6 +75,8 @@ namespace Copper {
 	};
 
 	class Entity {
+
+		friend class Scene;
 
 	public:
 		Entity() = default;

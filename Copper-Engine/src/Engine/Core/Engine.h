@@ -7,11 +7,6 @@
 
 #define GetGLFWwindow (GLFWwindow*) GetWindow().GetWindowPtr()
 
-#define VERSION_STAGE "Beta"
-#define VERSION_MAJOR 1
-#define VERSION_MINOR 0
-#define VERSION_DEV 1
-
 namespace Copper {
 
 	class Scene;
@@ -29,14 +24,19 @@ namespace Copper {
 
 	namespace EngineCore {
 
-		void Initialize();
+		void Initialize(int argc, char* argv[]);
 		void Run();
 		void Shutdown();
 
 	}
+
+	const Version& GetVersion();
 	
 	EngineState GetEngineState();
 	std::string EngineStateToString(EngineState state);
+
+	uint32_t GetNumArguments();
+	const std::string& GetArgument(uint32_t index);
 
 	//Engine Events
 	void AddPostInitEventFunc(std::function<void()> func);
@@ -54,6 +54,10 @@ namespace Copper {
 
 	void SetRenderScene(bool value);
 
+#ifdef CU_EDITOR
+	void SetAcceptInputDuringRuntime(bool value);
+#endif
+
 	//Getters
 	Window& GetWindow();
 	UVector2I GetWindowSize();
@@ -66,5 +70,9 @@ namespace Copper {
 
 	InternalEntity* GetEntityFromID(int32_t id);
 	InternalEntity* CreateEntityFromID(int32_t id, const std::string& name = "Entity", bool returnIfExists = true);
+
+#ifdef CU_EDITOR
+	bool AcceptInputDuringRuntime();
+#endif
 
 }

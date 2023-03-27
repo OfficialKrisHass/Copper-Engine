@@ -1,7 +1,7 @@
 workspace "Copper-Engine"
     architecture "x64"
     configurations { "Debug", "Release" }
-    startproject "Copper-CppTesting"
+    startproject "Copper-Editor"
 
 outputDir = "%{cfg.system}-%{cfg.architecture}-%{cfg.buildcfg}"
 
@@ -35,7 +35,6 @@ project "Copper-Engine"
         "%{prj.name}/src/Engine/**.h",
         "%{prj.name}/src/Engine/**.cpp",
         
-        "%{prj.name}/lib/CopperECS/include/CopperECS/**.h",
         "%{prj.name}/lib/stb/stb/stb_image.cpp",
 
         "%{prj.name}/lib/ImGuizmo/ImGuizmo/ImGuizmo.h",
@@ -52,7 +51,6 @@ project "Copper-Engine"
         "%{prj.name}/lib/GLM/include",
         "%{prj.name}/lib/yaml-cpp/include",
         "%{prj.name}/lib/assimp/include",
-        "%{prj.name}/lib/CopperECS/include",
         "%{prj.name}/lib/mono/include",
         "%{prj.name}/lib/spdlog",
         "%{prj.name}/lib/ImGui",
@@ -78,7 +76,14 @@ project "Copper-Engine"
         "CU_ENGINE",
         "CU_EDITOR",
         "_CRT_SECURE_NO_WARNINGS",
-        "GLM_ENABLE_EXPERIMENTAL"
+        "GLM_ENABLE_EXPERIMENTAL",
+
+        "VERSION_STAGE=\"BETA\"",
+        "VERSION_MAJOR=1",
+        "VERSION_MINOR=0",
+        "VERSION_DEV=1",
+        
+        "SCENE_VERSION=0"
 
     }
 
@@ -140,8 +145,6 @@ project "Copper-Editor"
         "Copper-Engine/lib/GLM/include",
         "Copper-Engine/lib/yaml-cpp/include",
         "Copper-Engine/lib/assimp/include",
-        
-        "Copper-Engine/lib/CopperECS/include",
 
         "%{prj.name}/lib/FileWatch",
 
@@ -258,8 +261,6 @@ project "Copper-CppTesting"
         "Copper-Engine/lib/GLM/include",
         "Copper-Engine/lib/yaml-cpp/include",
         "Copper-Engine/lib/assimp/include",
-        
-        "Copper-Engine/lib/CopperECS/include",
 
     }
 
@@ -270,6 +271,69 @@ project "Copper-CppTesting"
 
     }
 
+    filter "configurations:Debug"
+        defines "CU_DEBUG"
+        runtime "Debug"
+        symbols "on"
+
+        linkoptions {
+
+            '/NODEFAULTLIB:"libcmt.lib"',
+            '/NODEFAULTLIB:"msvcrt.lib"',
+            '/NODEFAULTLIB:"msvcrtd.lib"'
+
+        }
+
+    filter "configurations:Release"
+        defines "CU_RELEASE"
+        runtime "Release"
+        optimize "on"
+
+        linkoptions {
+
+            '/NODEFAULTLIB:"msvcrt.lib"',
+            '/NODEFAULTLIB:"libcmtd.lib"',
+            '/NODEFAULTLIB:"msvcrtd.lib"'
+
+        }
+
+project "Copper-Launcher"
+    location "Copper-Launcher"
+    kind "ConsoleApp"
+    language "C++"
+    cppdialect "C++17"
+    staticruntime "on"
+
+    targetdir("Build/" .. outputDir .. "/Copper-Editor")
+    objdir("BuildInt/" .. outputDir .. "/Copper-Editor")
+
+    files {
+
+        "%{prj.name}/src/**.h",
+        "%{prj.name}/src/**.cpp",
+
+    }
+
+    includedirs {
+
+        "Copper-Engine/lib/GLFW/include",
+        "Copper-Engine/lib/GLAD/include",
+        "Copper-Engine/lib/yaml-cpp/include",
+        "Copper-Engine/lib/ImGui",
+
+    }
+
+    links {
+
+        "GLFW",
+        "GLAD",
+        "ImGui",
+        "yaml-cpp",
+
+    }
+
+    defines { "Launcher=Copper::Launcher" }
+    
     filter "configurations:Debug"
         defines "CU_DEBUG"
         runtime "Debug"

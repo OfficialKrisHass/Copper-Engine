@@ -34,7 +34,7 @@ namespace Copper::Renderer {
 		data.vbo = VertexBuffer(data.maxVertices * sizeof(float));
 		data.vbo.SetLayout({ {"Position", ElementType::Float3}, {"Color", ElementType::Float3}, {"Normal", ElementType::Float3} });
 
-		data.ibo = IndexBuffer(data.maxVertices * 1.5f * sizeof(uint32_t));
+		data.ibo = IndexBuffer((uint32_t) (data.maxVertices * 1.5f * sizeof(uint32_t)));
 
 		data.vao.SetVertexBuffer(&data.vbo);
 		data.vao.SetIndexBuffer(&data.ibo);

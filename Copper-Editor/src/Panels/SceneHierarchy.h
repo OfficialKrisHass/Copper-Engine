@@ -21,11 +21,11 @@ namespace Editor {
 		static MetaFile::SceneMeta* GetSceneMetaPointer();
 
 		//Setters
-		inline void SetSelectedEntity(Copper::Entity entity) { selectedEntity = entity; }
+		inline void SetSelectedEntity(Copper::InternalEntity* entity) { selectedEntity = entity; }
 		inline void SetScene(Copper::Scene* scene) { this->scene = scene; }
 
 	private:
-		Copper::Entity selectedEntity;
+		Copper::Entity selectedEntity = nullptr;
 		Copper::Scene* scene = nullptr;
 
 		virtual void UI() override;

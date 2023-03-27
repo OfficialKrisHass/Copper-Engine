@@ -20,7 +20,7 @@ namespace Copper::Scripting {
 	void LoadProjectAssembly(const std::filesystem::path& path);
 	void Reload(const std::filesystem::path& path = "", bool initScriptComponents = true);
 
-	MonoObject* AddScriptComponent(uint32_t obj, const std::string& name);
+	MonoObject* AddScriptComponent(uint32_t eID, const std::string& name);
 
 	std::vector<std::string> GetScriptComponents();
 	std::vector<ScriptField> GetScriptFields(const std::string& scriptName);
@@ -28,7 +28,7 @@ namespace Copper::Scripting {
 	MonoClass* GetVector2MonoClass();
 	MonoClass* GetVector3MonoClass();
 
-	MonoClass* GetCopperObjectMonoClass();
+	MonoClass* GetEntityMonoClass();
 
 	MonoDomain* GetRootDomain();
 	MonoDomain* GetAppDomain();

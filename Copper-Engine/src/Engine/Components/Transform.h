@@ -13,7 +13,7 @@ namespace Copper {
 	class Transform : public Component {
 
 		friend class Scene;
-		friend class OldSceneVersionSerializer;
+		friend class OldSceneDeserialization;
 
 	public:
 		Transform() = default;
@@ -35,7 +35,7 @@ namespace Copper {
 		void RemoveChild(int index);
 		Transform* GetChild(int index) const;
 
-		int NumOfChildren() const { return numOfChildren; }
+		uint32_t NumOfChildren() const { return (uint32_t) children.size(); }
 
 		//Rotation
 		const Vector3& Forward() const { return forward; }
@@ -61,11 +61,10 @@ namespace Copper {
 
 		//Parent Data
 		Transform* parent = nullptr;
-		int parentChildIndex = -1;
+		int32_t parentChildIndex = -1;
 
 		//Children Data
 		std::vector<int32_t> children;
-		int numOfChildren = 0;
 
 	};
 

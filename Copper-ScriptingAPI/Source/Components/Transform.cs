@@ -4,9 +4,9 @@ namespace Copper {
 
     public class Transform : Component {
 
-        public Transform(int objID) {
+        public Transform(uint eID) {
 
-            base.objID = objID;
+            base.eID = eID;
 
         }
 
@@ -15,14 +15,14 @@ namespace Copper {
             get {
 
                 Vector3 output;
-                InternalCalls.GetPosition(objID, out output);
+                InternalCalls.GetPosition(eID, out output);
 
                 return output;
 
             }
             set {
 
-                InternalCalls.SetPosition(objID, value);
+                InternalCalls.SetPosition(eID, value);
 
             }
 
@@ -32,14 +32,14 @@ namespace Copper {
             get {
 
                 Vector3 output;
-                InternalCalls.GetRotation(objID, out output);
+                InternalCalls.GetRotation(eID, out output);
 
                 return output;
 
             }
             set {
 
-                InternalCalls.SetRotation(objID, value);
+                InternalCalls.SetRotation(eID, value);
 
             }
 
@@ -49,14 +49,14 @@ namespace Copper {
             get {
 
                 Vector3 output;
-                InternalCalls.GetScale(objID, out output);
+                InternalCalls.GetScale(eID, out output);
 
                 return output;
 
             }
             set {
 
-                InternalCalls.SetScale(objID, value);
+                InternalCalls.SetScale(eID, value);
 
             }
 
@@ -67,7 +67,7 @@ namespace Copper {
             get {
 
                 Vector3 output;
-                InternalCalls.GetForward(objID, out output);
+                InternalCalls.GetForward(eID, out output);
                 return output;
 
             }
@@ -78,7 +78,7 @@ namespace Copper {
             get {
 
                 Vector3 output;
-                InternalCalls.GetBack(objID, out output);
+                InternalCalls.GetBack(eID, out output);
                 return output;
 
             }
@@ -89,7 +89,7 @@ namespace Copper {
             get {
 
                 Vector3 output;
-                InternalCalls.GetRight(objID, out output);
+                InternalCalls.GetRight(eID, out output);
                 return output;
 
             }
@@ -100,7 +100,7 @@ namespace Copper {
             get {
 
                 Vector3 output;
-                InternalCalls.GetLeft(objID, out output);
+                InternalCalls.GetLeft(eID, out output);
                 return output;
 
             }
@@ -111,7 +111,7 @@ namespace Copper {
             get {
 
                 Vector3 output;
-                InternalCalls.GetUp(objID, out output);
+                InternalCalls.GetUp(eID, out output);
                 return output;
 
             }
@@ -122,7 +122,7 @@ namespace Copper {
             get {
 
                 Vector3 output;
-                InternalCalls.GetDown(objID, out output);
+                InternalCalls.GetDown(eID, out output);
                 return output;
 
             }

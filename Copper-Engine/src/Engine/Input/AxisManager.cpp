@@ -11,7 +11,7 @@ namespace Copper::Input {
 		bool isMouseAxis = mouseAxises.find(axisName) != mouseAxises.end();
 		if (!isMouseAxis && axises.find(axisName) == axises.end()) {
 			
-			LogWarn("The axis {} doesn't exist, double check if the name you've provided is correct.");
+			LogWarn("The axis ({}) doesn't exist, double check if the name you've provided is correct.", axisName);
 			return 0.0f;
 		
 		}

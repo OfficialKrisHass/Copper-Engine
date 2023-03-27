@@ -61,7 +61,6 @@ namespace Copper {
 			position = GlobalPosition();
 
 			this->parent->children.erase(this->parent->children.begin() + parentChildIndex);
-			this->parent->numOfChildren--;
 			this->parent = nullptr;
 
 			parentChildIndex = -1;
@@ -74,13 +73,11 @@ namespace Copper {
 			position += this->parent->GlobalPosition();
 
 			this->parent->children.erase(this->parent->children.begin() + parentChildIndex);
-			this->parent->numOfChildren--;
 
 			this->parent = parent;
-			this->parentChildIndex = parent->numOfChildren;
+			this->parentChildIndex = (uint32_t) parent->children.size();
 
 			parent->children.push_back(GetEntity()->ID());
-			parent->numOfChildren++;
 
 			position -= parent->GlobalPosition();
 
@@ -89,10 +86,9 @@ namespace Copper {
 		}
 
 		this->parent = parent;
-		this->parentChildIndex = parent->numOfChildren;
+		this->parentChildIndex = (uint32_t) parent->children.size();
 
 		parent->children.push_back(GetEntity()->ID());
-		parent->numOfChildren++;
 
 		position -= parent->GlobalPosition();
 
@@ -106,10 +102,8 @@ namespace Copper {
 			transform->position += transform->parent->GlobalPosition();
 
 			transform->parent->children.erase(transform->parent->children.begin() + transform->parentChildIndex);
-			transform->parent->numOfChildren--;
 
 			children.push_back(transform->GetEntity()->ID());
-			numOfChildren++;
 
 			transform->parent = this;
 			transform->position -= GlobalPosition();
@@ -119,10 +113,9 @@ namespace Copper {
 		}
 
 		transform->parent = this;
-		transform->parentChildIndex = numOfChildren;
+		transform->parentChildIndex = (uint32_t) children.size();
 
 		children.push_back(transform->GetEntity()->ID());
-		numOfChildren++;
 
 		transform->position -= GlobalPosition();
 
@@ -136,7 +129,6 @@ namespace Copper {
 		child->parentChildIndex = -1;
 
 		children.erase(children.begin() + index);
-		numOfChildren--;
 	
 	}
 	void Transform::RemoveChild(Transform* transform) {

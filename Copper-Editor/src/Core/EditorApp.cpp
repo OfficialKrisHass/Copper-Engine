@@ -211,6 +211,7 @@ namespace Editor {
 		
 		//Viewport
 		UVector2I viewportSize;
+		UVector2I viewportCentre;
 		FrameBuffer viewportFBO;
 		bool canLookViewport;
 
@@ -315,7 +316,14 @@ namespace Editor {
 
 		}
 
-		OpenProject(main["Last Project"].as<std::string>());
+		if (GetNumArguments() == 0) {
+
+			OpenProject(main["Last Project"].as<std::string>());
+			return;
+
+		}
+
+		OpenProject(GetArgument(0));
 
 	}
 
@@ -420,6 +428,8 @@ namespace Editor {
 
 		ImGui::Image(reinterpret_cast<void*>((uint64_t) GetFBOTexture()), windowSize, ImVec2 {0, 1}, ImVec2 {1, 0});
 
+		if (ImGui::IsItemClicked()) { SetAcceptInputDuringRuntime(true); }
+
 		ImGui::End();
 		ImGui::PopStyleVar();
 
@@ -437,10 +447,18 @@ namespace Editor {
 
 		}
 
+		ImGui::GetWindowPos();
+
 		//TODO: Either Change ImGui To use UVector2I or edit Copper Code to use ImVec2
 		//      so that we don't have to allocate memory for the UVector2I
 		ImVec2 windowSize = ImGui::GetContentRegionAvail();
+		ImVec2 windowPos = ImGui::GetWindowPos();
+
 		data.viewportSize = UVector2I((uint32_t) windowSize.x, (uint32_t) windowSize.y);
+
+		data.viewportCentre = data.viewportSize / 2;
+		data.viewportCentre.x += windowPos.x;
+		data.viewportCentre.y += windowPos.y;
 
 		if (data.viewportFBO.Width() != data.viewportSize.x || data.viewportFBO.Height() != data.viewportSize.y) {
 
@@ -606,17 +624,22 @@ namespace Editor {
 		SaveScene();
 		data.scene->StartRuntime();
 
+		Input::SetCursorLocked(true);
+		SetAcceptInputDuringRuntime(true);
+
 	}
 	void StopEditorRuntime() {
 
+		Input::SetCursorLocked(false);
+
 		data.state = Edit;
 		std::filesystem::path savedPath = data.scene->path;
-		uint32_t savedSelectedObjID = (*data.sceneHierarchy.GetSelectedEntity())->ID();
+		Entity savedSelectedEntity = *data.sceneHierarchy.GetSelectedEntity();
 
 		data.scene = GetScene();
 		data.scene->Deserialize(savedPath);
 
-		data.sceneHierarchy.SetSelectedEntity(GetEntityFromID(savedSelectedObjID));
+		data.sceneHierarchy.SetSelectedEntity(savedSelectedEntity);
 		data.sceneHierarchy.LoadSceneMeta();
 
 	}
@@ -818,7 +841,7 @@ namespace Editor {
 
 	bool OnKeyPressed(const Event& e) {
 
-		if (data.state == Play) return true;
+		/*if (data.state == Play) return true;*/
 
 		bool control = Input::IsKey(KeyCode::LeftControl) || Input::IsKey(KeyCode::RightControl);
 		bool shift = Input::IsKey(KeyCode::LeftShift) || Input::IsKey(KeyCode::RightShift);
@@ -864,6 +887,12 @@ namespace Editor {
 
 				if (!rightClick) data.project.gizmoType = ImGuizmo::SCALE;
 
+				break;
+
+			}
+			case KeyCode::Escape: {
+
+				SetAcceptInputDuringRuntime(false);
 				break;
 
 			}
@@ -930,3 +959,4 @@ void AppEntryPoint() {
 #pragma endregion 
 
 Window* GetEditorWindow() { return &Editor::data.window; }
+UVector2I GetViewportCentre() { return Editor::data.viewportCentre; }

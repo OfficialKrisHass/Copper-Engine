@@ -16,42 +16,46 @@ namespace Copper {
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool IsKeyReleased(int keyCode);
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static float GetAxis(string axisName);
 
-        //Object
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static CopperObject GetObject(int objID);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetCursorVisible(bool visible);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetCursorLocked(bool locked);
 
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static string GetObjectName(int objID);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetObjectName(int objID, string name);
+
+        //Entity
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static Entity GetEntity(uint eID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static string GetEntityName(uint eID);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetEntityName(uint eID, string name);
 
         //Components
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void AddComponent(int objID, Type type, Component component);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool GetComponent(int objID, Type type, Component component);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool HasComponent(int objID, Type type);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void AddComponent(uint eID, Type type, Component component);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool GetComponent(uint eID, Type type, Component component);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool HasComponent(uint eID, Type type);
 
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetComponentObjID(Type type, Component component, int objID);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetComponentEID(Type type, Component component, uint eID);
 
         //Transform
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetPosition(int objID, out Vector3 position);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetRotation(int objID, out Vector3 rotation);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetScale(int objID, out Vector3 scale);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetPosition(int objID, Vector3 position);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetRotation(int objID, Vector3 rotation);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetScale(int objID, Vector3 scale);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetPosition(uint eID, out Vector3 position);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetRotation(uint eID, out Vector3 rotation);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetScale(uint eID, out Vector3 scale);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetPosition(uint eID, Vector3 position);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetRotation(uint eID, Vector3 rotation);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetScale(uint eID, Vector3 scale);
 
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetForward(int objID, out Vector3 forward);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetBack(int objID, out Vector3 back);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetRight(int objID, out Vector3 right);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetLeft(int objID, out Vector3 left);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetUp(int objID, out Vector3 up);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetDown(int objID, out Vector3 down);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetForward(uint eID, out Vector3 forward);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetBack(uint eID, out Vector3 back);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetRight(uint eID, out Vector3 right);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetLeft(uint eID, out Vector3 left);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetUp(uint eID, out Vector3 up);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetDown(uint eID, out Vector3 down);
 
 
         //Camera
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static float CameraGetFOV(int objID);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static float CameraGetNearPlane(int objID);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static float CameraGetFarPlane(int objID);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void CameraSetFOV(int objID, float value);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void CameraSetNearPlane(int objID, float value);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void CameraSetFarPlane(int objID, float value);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static float CameraGetFOV(uint eID);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static float CameraGetNearPlane(uint eID);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static float CameraGetFarPlane(uint eID);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void CameraSetFOV(uint eID, float value);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void CameraSetNearPlane(uint eID, float value);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void CameraSetFarPlane(uint eID, float value);
 
     }
 

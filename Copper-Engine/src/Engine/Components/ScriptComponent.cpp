@@ -70,16 +70,16 @@ namespace Copper {
 
 		if (field.type != ScriptField::Type::Entity) return;
 
-		MonoObject* obj = nullptr;
-		obj = mono_field_get_value_object(Scripting::GetAppDomain(), field.field, instance);
-		if (!obj) return;
+		MonoObject* entity = nullptr;
+		entity = mono_field_get_value_object(Scripting::GetAppDomain(), field.field, instance);
+		if (!entity) return;
 
-		int objID = -1;
-		MonoClassField* objIDField = mono_class_get_field_from_name(Scripting::GetCopperObjectMonoClass(), "objID");
-		mono_field_get_value(obj, objIDField, &objID);
-		if (objID == -1) return;
+		uint32_t eID = invalidID;
+		MonoClassField* eIDField = mono_class_get_field_from_name(Scripting::GetEntityMonoClass(), "eID");
+		mono_field_get_value(entity, eIDField, &eID);
+		if (eID == invalidID) return;
 
-		*out = GetEntityFromID(objID);
+		*out = GetEntityFromID(eID);
 
 	}
 	void ScriptComponent::GetFieldValue(const ScriptField& field, Component* out) {
@@ -100,14 +100,14 @@ namespace Copper {
 		//It's possible that the field may be null so we can't just get the MonoObject*
 		//and set it's objID. Instead for safety purposes we create a temporary CopperObject
 		//instance, set it's objID and then set the Scripts field to the temp instance
-		MonoObject* obj = mono_object_new(Scripting::GetAppDomain(), Scripting::GetCopperObjectMonoClass());
-		mono_runtime_object_init(obj);
+		MonoObject* entity = mono_object_new(Scripting::GetAppDomain(), Scripting::GetEntityMonoClass());
+		mono_runtime_object_init(entity);
 
-		int objID = (*value)->ID();
-		MonoClassField* objIDField = mono_class_get_field_from_name(Scripting::GetCopperObjectMonoClass(), "objID");
-		mono_field_set_value(obj, objIDField, &objID);
+		uint32_t entityID = (*value)->ID();
+		MonoClassField* eIDField = mono_class_get_field_from_name(Scripting::GetEntityMonoClass(), "eID");
+		mono_field_set_value(entity, eIDField, &entityID);
 
-		mono_field_set_value(instance, field.field, obj);
+		mono_field_set_value(instance, field.field, entity);
 
 	}
 	void ScriptComponent::SetFieldValue(const ScriptField& field, Component* value) {

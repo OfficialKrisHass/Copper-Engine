@@ -10,6 +10,9 @@ namespace Copper {
 
         public static float GetAxis(string axisName) { return InternalCalls.GetAxis(axisName); }
 
+        public static void SetCursorVisible(bool visible) { InternalCalls.SetCursorVisible(visible); }
+        public static void SetCursorLocked(bool locked) { InternalCalls.SetCursorLocked(locked); }
+
     }
 
 }

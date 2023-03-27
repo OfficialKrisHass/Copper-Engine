@@ -20,17 +20,22 @@
 #include <ImGui/imgui.h>
 #include <glad/glad.h>
 
+#ifdef CU_EDITOR
 extern Copper::Window* GetEditorWindow();
+#endif
 
 namespace Copper {
 
 	struct EngineData {
 
+		Version version;
 		EngineState engineState = EngineState::Entry;
+		std::vector<std::string> arguments;
 
 		FrameBuffer fbo;
 	#ifdef CU_EDITOR
 		Window* window; //Physical Window - Editor creates, sets and stores the window
+		bool acceptInputRuntime = true;
 	#else
 		Window window;
 	#endif
@@ -60,10 +65,20 @@ namespace Copper {
 	bool OnWindowClose(const Event& e);
 	bool OnWindowResize(const Event& e);
 
-	void EngineCore::Initialize() {
+	void EngineCore::Initialize(int argc, char* argv[]) {
 
 		CHECK((data.engineState == EngineState::Entry), "Cannot Initialize the Engine, current Engine State is: {}", EngineStateToString(data.engineState));
+		
+		data.version = Version(VERSION_STAGE, VERSION_MAJOR, VERSION_MINOR, VERSION_DEV);
+		data.version.sceneVersion = SCENE_VERSION;
 		data.engineState = EngineState::Initialization;
+		for (int i = 0; i < argc; i++) {
+
+			if (std::filesystem::path(argv[i]).extension() == ".exe") continue;
+
+			data.arguments.push_back(argv[i]);
+
+		}
 
 		Logger::Initialize();
 
@@ -106,6 +121,8 @@ namespace Copper {
 
 		while (data.engineState == EngineState::Running) {
 
+			data.Window().Update();
+
 			data.updateEvent();
 
 			data.fbo.Bind();
@@ -119,7 +136,8 @@ namespace Copper {
 			UI::End();
 
 			Renderer::EndFrame();
-			data.Window().Update();
+
+			Input::Update();
 
 		}
 
@@ -200,17 +218,17 @@ namespace Copper {
 
 	}
 
+#ifdef CU_EDITOR
+	void SetAcceptInputDuringRuntime(bool value) { data.acceptInputRuntime = value; }
+#endif
+
 	uint32_t GetFBOTexture() { return data.fbo.GetColorAttachment(); }
 
 	Scene* GetScene() { return &data.scene; }
 	uint32_t GetNumOfEntities() { return data.scene.GetNumOfEntities(); }
 
 	InternalEntity* GetEntityFromID(int32_t id) { return data.scene.GetEntityFromID(id); }
-	InternalEntity* CreateEntityFromID(int32_t id, const std::string& name, bool returnIfExists) {
-		
-		return data.scene.CreateEntityFromID(id, Vector3::zero, Vector3::zero, Vector3::one, name, returnIfExists);
-	
-	}
+	InternalEntity* CreateEntityFromID(int32_t id, const std::string& name, bool returnIfExists) { return data.scene.CreateEntityFromID(id, Vector3::zero, Vector3::zero, Vector3::one, name, returnIfExists); }
 
 	bool IsRuntimeRunning() { return data.scene.IsRuntimeRunning(); }
 
@@ -221,6 +239,8 @@ namespace Copper {
 
 	void AddPreShutdownEventFunc(std::function<bool(const Event&)> func) { data.preShutdownEvent += func; }
 	void AddPostShutdownEventFunc(std::function<void()> func) { data.postShutdownEvent += func; }
+
+	const Version& GetVersion() { return data.version; }
 
 	EngineState GetEngineState() { return data.engineState; }
 	std::string EngineStateToString(EngineState state) {
@@ -238,5 +258,16 @@ namespace Copper {
 		return "Invalid Engine State!";
 
 	}
+
+	uint32_t GetNumArguments() { return (uint32_t) data.arguments.size(); }
+	const std::string& GetArgument(uint32_t index) { return data.arguments[index]; }
+
+#ifdef CU_EDITOR
+	bool AcceptInputDuringRuntime() {
+
+		return data.acceptInputRuntime;
+
+	}
+#endif
 
 }

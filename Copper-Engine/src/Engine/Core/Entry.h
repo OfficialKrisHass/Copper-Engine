@@ -10,7 +10,7 @@ int main(int argc, char* argv[]) {
 
 	AppEntryPoint();
 
-	EngineCore::Initialize();
+	EngineCore::Initialize(argc, argv);
 	EngineCore::Run();
 	EngineCore::Shutdown();
 

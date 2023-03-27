@@ -1,15 +1,32 @@
-22/03/2023 22:19 - I just had the biggest exam of my life, and I may have fucked it up
-                   ... just a bit. But the grind never stops
+27/03/2023 27/03
 
--Completely replaced the ECS with a new rewritten version of CopperECS (the CopperECS will get this version soon)
--Instead of Objects, we now have Entities
+-Reworked the Scene Serialization and Deserialization.
+-Added a system to allow the code to be able to deserialize older versions.
 
--changed some variables that should be private to be private (Component::transform, Object::id, etc)
+-Added a Version struct, this struct is just simply a container to hold the version data. Currently it has 4 variables
+-stage, a string indicating the stage (Beta, full Release, Dev, etc), and 3 unsigned integers, major which is the major
+ release of the stage, minor which are the bug fixes and patches for the said major version, and dev which is for the dev
+ branch.
+-It also contains an unsinged integer sceneVersion, which is what version of the De/Serializer should the Scenes use.
+-Also I added defines for the Versions (VERSION_X, x can be STAGE, MAJOR, MINOR, or DEV) and for the scene version
+ (SCENE_VERSION) too. They are just defines for the current version.
 
--Added Mouse Axises (Horizontal and Vertical mouse movements expressed in floats)
- NOTE: THEY MIGHT NOT FUNCTION PROPERLY BE CAREFUL
+-Removed Transform::numOfChildren. Why did it even exist ? It was always equal to the size of the children vector. What was
+ I thinking wtf
 
--Removed (temporaryrialrirlyi) the feature to add multiple components of the same type to the same Entity
--Removed (however you spell that word) moving and reararring the Entities in the Scene Hierarchy
+-Added a new C++ project, Copper Launcher. Which is an app that allows you to create new projects easily, and open the
+ correct project without having to do it from the Editor.
+-The Launcher is really barebone, and the code is really messy, I just wanted to make a base for later. It works, but it might
+ not work sometimes, so yeah.
+-It doesn't worky :c the template it uses to create a new Project is old and outdated which means it doesn't work
 
--Finished the Cleanup. FINALLY!!!!!!!!!!
+-Most of the mentions of Objects (variable and function names) are now replaced with Entity
+-Changed the name of the CopperObject class in the C# scripting API to Entity
+
+-Fixed the Mouse Axises
+-Added Input::SetCursorLocked function that locks the cursor to the middle of the Screen
+-Added a acceptScriptInput bool, if true, C# scripts that call to Input functions (IsKey, IsKeyDown, GetAxis) will return zero
+ or false.
+-When the Editor Runtime starts, acceptScriptInput is set to true by default, if you press Escape it is set to false
+ and if you click the Game Window it is set to true again.
+-Finally made a functioning FPS movement script in the Dev Project

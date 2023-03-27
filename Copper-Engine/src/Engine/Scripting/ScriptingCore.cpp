@@ -28,7 +28,7 @@ namespace Copper::Scripting {
 		MonoClass* componentClass;
 		MonoClass* vector2Class;
 		MonoClass* vector3Class;
-		MonoClass* copperObjectClass;
+		MonoClass* entityClass;
 
 		std::vector<std::string> scriptComponents;
 		std::unordered_map<std::string, std::vector<ScriptField>> scriptFields;
@@ -60,7 +60,7 @@ namespace Copper::Scripting {
 		data.componentClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Component");
 		data.vector2Class = mono_class_from_name(data.apiAssemblyImage, "Copper", "Vector2");
 		data.vector3Class = mono_class_from_name(data.apiAssemblyImage, "Copper", "Vector3");
-		data.copperObjectClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "CopperObject");
+		data.entityClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Entity");
 
 		//Setup ScriptingAPI
 		SetupInternalCalls();
@@ -97,7 +97,7 @@ namespace Copper::Scripting {
 		data.componentClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Component");
 		data.vector2Class = mono_class_from_name(data.apiAssemblyImage, "Copper", "Vector2");
 		data.vector3Class = mono_class_from_name(data.apiAssemblyImage, "Copper", "Vector3");
-		data.copperObjectClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "CopperObject");
+		data.entityClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Entity");
 
 		//Load the Project Assembly
 		LoadProjectAssembly(data.projectPath);
@@ -130,18 +130,21 @@ namespace Copper::Scripting {
 
 		mono_add_internal_call("Copper.InternalCalls::GetAxis", InternalCalls::GetAxis);
 
-		//Object
-		mono_add_internal_call("Copper.InternalCalls::GetObjectName", InternalCalls::GetObjectName);
-		mono_add_internal_call("Copper.InternalCalls::SetObjectName", InternalCalls::SetObjectName);
+		mono_add_internal_call("Copper.InternalCalls::SetCursorVisible", InternalCalls::SetCursorVisible);
+		mono_add_internal_call("Copper.InternalCalls::SetCursorLocked", InternalCalls::SetCursorLocked);
 
-		mono_add_internal_call("Copper.InternalCalls::GetObject", InternalCalls::GetCopperObject);
+		//Object
+		mono_add_internal_call("Copper.InternalCalls::GetEntityName", InternalCalls::GetEntityName);
+		mono_add_internal_call("Copper.InternalCalls::SetEntityName", InternalCalls::SetEntityName);
+
+		mono_add_internal_call("Copper.InternalCalls::GetEntity", InternalCalls::GetEntity);
 
 		//Components
 		mono_add_internal_call("Copper.InternalCalls::AddComponent", InternalCalls::AddComponent);
 		mono_add_internal_call("Copper.InternalCalls::GetComponent", InternalCalls::GetComponent);
 		mono_add_internal_call("Copper.InternalCalls::HasComponent", InternalCalls::HasComponent);
 
-		mono_add_internal_call("Copper.InternalCalls::SetComponentObjID", InternalCalls::SetComponentObjID);
+		mono_add_internal_call("Copper.InternalCalls::SetComponentEID", InternalCalls::SetComponentObjID);
 
 		//Transform
 		mono_add_internal_call("Copper.InternalCalls::GetPosition", InternalCalls::GetPosition);
@@ -235,7 +238,7 @@ namespace Copper::Scripting {
 
 	}
 
-	MonoObject* AddScriptComponent(uint32_t obj, const std::string& name) {
+	MonoObject* AddScriptComponent(uint32_t eID, const std::string& name) {
 
 		std::string scriptName = name;
 		std::string nameSpace = MonoUtils::RemoveNamespace(scriptName);
@@ -251,7 +254,7 @@ namespace Copper::Scripting {
 		MonoMethod* componentConstructor = mono_class_get_method_from_name(data.componentClass, ".ctor", 1);
 		if (!componentConstructor) { LogError("Failed to get the Component Constructor!"); return nullptr; }
 
-		void* param = &obj;
+		void* param = &eID;
 		MonoObject* exception = nullptr;
 		mono_runtime_invoke(componentConstructor, instance, &param, &exception);
 
@@ -265,7 +268,7 @@ namespace Copper::Scripting {
 	MonoClass* GetVector2MonoClass() { return data.vector2Class; }
 	MonoClass* GetVector3MonoClass() { return data.vector3Class; }
 
-	MonoClass* GetCopperObjectMonoClass() { return data.copperObjectClass; }
+	MonoClass* GetEntityMonoClass() { return data.entityClass; }
 
 	MonoDomain* GetRootDomain() { return data.root; }
 	MonoDomain* GetAppDomain() { return data.app; }

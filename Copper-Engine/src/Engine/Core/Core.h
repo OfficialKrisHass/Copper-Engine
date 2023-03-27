@@ -1,10 +1,11 @@
 #pragma once
 
 #include "Engine/Core/Log.h"
+#include "Engine/Core/Version.h"
 
 #include "Engine/Utilities/Wrappers.h"
 
-#define CHECK(x, ...) { if(!x) {LogError(__VA_ARGS__); __debugbreak(); } }
+#define CHECK(x, ...) { if(!(x)) {LogError(__VA_ARGS__); __debugbreak(); } }
 
 #ifdef CU_DEBUG
     #define CU_ASSERT(x, ...) CHECK(x, __VA_ARGS__);

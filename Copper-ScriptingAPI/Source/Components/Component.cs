@@ -4,20 +4,20 @@ namespace Copper {
 
     public class Component {
 
-        protected int objID;
+        protected uint eID;
 
         protected Component() { }
-        protected Component(int objID) {
+        protected Component(uint eID) {
 
-            this.objID = objID;
+            this.eID = eID;
 
         }
 
-        public CopperObject obj {
+        public Entity obj {
 
             get {
 
-                return InternalCalls.GetObject(objID);
+                return InternalCalls.GetEntity(eID);
 
             }
 
@@ -25,7 +25,7 @@ namespace Copper {
         public Transform transform {
 
             get {
-                return new Transform(objID);
+                return new Transform(eID);
             }
 
         }
@@ -33,9 +33,9 @@ namespace Copper {
         public T AddComponent<T>() where T : Component, new() {
 
             T ret = new T();
-            InternalCalls.AddComponent(objID, typeof(T), ret);
+            InternalCalls.AddComponent(eID, typeof(T), ret);
 
-            Editor.Log(ret.objID.ToString());
+            Editor.Log(ret.eID.ToString());
 
             return ret;
 
@@ -48,22 +48,22 @@ namespace Copper {
             if (type == typeof(Camera) || type == typeof(Transform)) {
 
                 if (!HasComponent<T>()) return null;
-                ret.objID = objID;
+                ret.eID = eID;
 
                 return ret;
 
             }
 
-            if (!InternalCalls.GetComponent(objID, type, ret)) return null;
+            if (!InternalCalls.GetComponent(eID, type, ret)) return null;
 
-            Editor.Log(ret.objID.ToString());
+            Editor.Log(ret.eID.ToString());
 
             return ret;
 
         }
         public bool HasComponent<T>() where T : Component, new() {
 
-            return InternalCalls.HasComponent(objID, typeof(T));
+            return InternalCalls.HasComponent(eID, typeof(T));
 
         }
 

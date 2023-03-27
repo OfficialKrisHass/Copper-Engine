@@ -6,20 +6,20 @@ namespace Copper {
 
         public float fov {
 
-            get { return InternalCalls.CameraGetFOV(objID); }
-            set { InternalCalls.CameraSetFOV(objID, value); }
+            get { return InternalCalls.CameraGetFOV(eID); }
+            set { InternalCalls.CameraSetFOV(eID, value); }
 
         }
         public float nearPlane {
 
-            get { return InternalCalls.CameraGetNearPlane(objID); }
-            set { InternalCalls.CameraSetNearPlane(objID, value); }
+            get { return InternalCalls.CameraGetNearPlane(eID); }
+            set { InternalCalls.CameraSetNearPlane(eID, value); }
 
         }
         public float farPlane {
 
-            get { return InternalCalls.CameraGetFarPlane(objID); }
-            set { InternalCalls.CameraSetFarPlane(objID, value); }
+            get { return InternalCalls.CameraGetFarPlane(eID); }
+            set { InternalCalls.CameraSetFarPlane(eID, value); }
 
         }
 

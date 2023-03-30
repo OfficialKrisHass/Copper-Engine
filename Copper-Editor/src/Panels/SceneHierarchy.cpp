@@ -15,7 +15,7 @@ using namespace Copper;
 namespace Editor {
 
 	MetaFile::SceneMeta sceneMeta;
-	int clickedObjID = -1;
+	uint32_t clickedEntityID = invalidID;
 
 	SceneHierarchy::SceneHierarchy() : Panel("Scene Hierarchy") {
 
@@ -70,7 +70,21 @@ namespace Editor {
 		ImGuiTreeNodeFlags flags = ((selectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 		bool opened = ImGui::TreeNodeEx(entity, flags, entity->name.c_str());
 
-		if (ImGui::IsItemClicked()) selectedEntity = entity;
+		if (ImGui::BeginDragDropSource()) {
+
+			uint32_t id = entity->ID();
+			ImGui::SetDragDropPayload("SCH_ENTITY_NODE", &id, sizeof(uint64_t), ImGuiCond_Once);
+			ImGui::EndDragDropSource();
+
+		}
+
+		if (ImGui::IsItemClicked()) clickedEntityID = entity->ID();
+		if (ImGui::IsMouseReleased(0) && entity->ID() == clickedEntityID) {
+
+			if (Properties::IsDragDropTargetHovered()) clickedEntityID = invalidID;
+			else selectedEntity = entity;
+
+		}
 		if (opened) {
 
 			for (int i = 0; i < entity->GetTransform()->NumOfChildren(); i++) {

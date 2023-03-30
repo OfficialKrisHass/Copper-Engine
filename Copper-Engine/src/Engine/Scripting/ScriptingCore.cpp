@@ -137,6 +137,8 @@ namespace Copper::Scripting {
 		mono_add_internal_call("Copper.InternalCalls::GetEntityName", InternalCalls::GetEntityName);
 		mono_add_internal_call("Copper.InternalCalls::SetEntityName", InternalCalls::SetEntityName);
 
+		mono_add_internal_call("Copper.InternalCalls::IsEntityValid", InternalCalls::IsEntityValid);
+
 		mono_add_internal_call("Copper.InternalCalls::GetEntity", InternalCalls::GetEntity);
 
 		//Components

@@ -80,7 +80,7 @@ namespace Copper::Scripting::MonoUtils {
 		else if (string == "Copper.Vector2") return ScriptField::Type::Vector2;
 		else if (string == "Copper.Vector3") return ScriptField::Type::Vector3;
 
-		else if (string == "Copper.CopperObject")  return ScriptField::Type::Entity;
+		else if (string == "Copper.Entity")  return ScriptField::Type::Entity;
 
 		return ScriptField::Type::None;
 

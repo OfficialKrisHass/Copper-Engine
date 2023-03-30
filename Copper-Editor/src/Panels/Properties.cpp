@@ -191,15 +191,6 @@ namespace Editor {
 
 	}
 
-	/*template<typename T> void Properties::RenderScriptField(ScriptComponent* script, const ScriptField& field, std::function<bool(const std::string&, T*)> showFunc) {
-
-		T tmp;
-		script->GetFieldValue(field, &tmp);
-
-		bool changed = showFunc(field.name, &static_cast<T>(tmp));
-		if (changed) script->SetFieldValue(field, &tmp);
-
-	}*/
 	template<typename T, typename F> void Properties::RenderScriptField(ScriptComponent* script, const ScriptField& field, F showFunc) {
 
 		T tmp;
@@ -488,7 +479,7 @@ namespace Editor {
 		bool ret = false;
 		std::string nodeText;
 
-		if (entity) nodeText = (*entity)->name;
+		if (*entity) nodeText = (*entity)->name;
 		else nodeText = "None";
 		nodeText += " (Copper Object)";
 
@@ -503,7 +494,7 @@ namespace Editor {
 		dragDropTargetHovered = ImGui::IsItemHovered();
 		if (ImGui::BeginDragDropTarget()) {
 
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_OBJECT_NODE")) {
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE")) {
 
 				dragDropTargetHovered = true;
 				ret = true;

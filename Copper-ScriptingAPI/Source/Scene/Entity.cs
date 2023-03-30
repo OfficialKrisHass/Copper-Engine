@@ -76,6 +76,8 @@ namespace Copper {
 
         }
 
+        public static implicit operator bool(Entity entity) { return InternalCalls.IsEntityValid(entity.id); }
+
     }
 
 }

@@ -178,7 +178,7 @@ Entities:
     ID: 4
     Transform:
       Position: [0, 0, 0]
-      Rotation: [0.589953959, -1.87500274, 0]
+      Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
       Parent ID: 4294967295
       Children: []
@@ -196,6 +196,9 @@ Entities:
         sensitivity:
           Type: 3
           Value: 1
+        moveThis:
+          Type: 6
+          Value: 4294967295
   Player:
     ID: 5
     Transform:

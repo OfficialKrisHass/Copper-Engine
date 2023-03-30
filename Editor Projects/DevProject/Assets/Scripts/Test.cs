@@ -5,12 +5,16 @@ class Test : Component {
 
     public float speed = 0.1f;
     public float sensitivity = 1.0f;
+    public Entity moveThis;
 
     private Vector3 test;
 
     void Create() {
 
         test = Vector3.zero;
+
+        Input.SetCursorLocked(true);
+        Input.SetCursorVisible(false);
 
     }
 
@@ -21,6 +25,12 @@ class Test : Component {
 
         test = transform.forward * ws + transform.right * ad;
         transform.position += test;
+
+        if(moveThis != null) {
+
+            moveThis.transform.position += test;
+
+        }
 
         float mouseX = Input.GetAxis("Mouse X") * sensitivity * 100.0f;
         float mouseY = Input.GetAxis("Mouse Y") * sensitivity * 100.0f;

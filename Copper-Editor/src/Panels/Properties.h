@@ -49,7 +49,6 @@ namespace Editor {
 		void RenderLight(Copper::Light* light);
 		void RenderCamera(Copper::Camera* camera);
 
-		//template<typename T> void RenderScriptField(Copper::ScriptComponent* script, const Copper::ScriptField& field, std::function<bool(const std::string&, T*)> showFunc);
 		template<typename T, typename F> void RenderScriptField(Copper::ScriptComponent* script, const Copper::ScriptField& field, F showFunc);
 
 	};

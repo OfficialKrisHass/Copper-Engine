@@ -21,10 +21,11 @@ namespace Copper {
 
 
         //Entity
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static Entity GetEntity(uint eID);
-
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static string GetEntityName(uint eID);
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetEntityName(uint eID, string name);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool IsEntityValid(uint eID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static Entity GetEntity(uint eID);
 
         //Components
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void AddComponent(uint eID, Type type, Component component);

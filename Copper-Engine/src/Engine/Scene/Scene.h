@@ -84,6 +84,7 @@ namespace Copper {
 		void DeserializeEntity(InternalEntity* entity, const YAML::Node& node);
 
 		template<typename T> void SerializeScriptField(const struct ScriptField& field, class ScriptComponent* instance, class YAML::Emitter& out);
+		//template<> void SerializeScriptField<InternalEntity*>(const struct ScriptField& field, class ScriptComponent* instance, class YAML::Emitter& out);
 		template<typename T> void DeserializeScriptField(const ScriptField& field, ScriptComponent* instance, const class YAML::Node& fieldNode);
 
 	};

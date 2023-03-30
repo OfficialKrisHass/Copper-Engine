@@ -42,17 +42,6 @@ namespace Copper::Input {
 
 		mousePosDiference = Vector2::zero;
 
-		/*if (!AcceptInputDuringRuntime()) return;
-
-		UVector2I centre;
-	#ifdef CU_EDITOR
-		centre = GetViewportCentre();
-	#else
-		centre = GetWindowSize() / 2;
-	#endif
-
-		SetCursorPos(centre.x, centre.y);*/
-
 	}
 
 	bool IsKey(KeyCode key) {

@@ -68,16 +68,16 @@ namespace Copper {
 	}
 	void ScriptComponent::GetFieldValue(const ScriptField& field, InternalEntity** out) {
 
-		if (field.type != ScriptField::Type::Entity) return;
+		if (field.type != ScriptField::Type::Entity) { *out = nullptr; return; }
 
 		MonoObject* entity = nullptr;
 		entity = mono_field_get_value_object(Scripting::GetAppDomain(), field.field, instance);
-		if (!entity) return;
+		if (!entity) { *out = nullptr; return; }
 
 		uint32_t eID = invalidID;
-		MonoClassField* eIDField = mono_class_get_field_from_name(Scripting::GetEntityMonoClass(), "eID");
+		MonoClassField* eIDField = mono_class_get_field_from_name(Scripting::GetEntityMonoClass(), "id");
 		mono_field_get_value(entity, eIDField, &eID);
-		if (eID == invalidID) return;
+		if (eID == invalidID) { *out = nullptr; return; }
 
 		*out = GetEntityFromID(eID);
 
@@ -103,8 +103,8 @@ namespace Copper {
 		MonoObject* entity = mono_object_new(Scripting::GetAppDomain(), Scripting::GetEntityMonoClass());
 		mono_runtime_object_init(entity);
 
-		uint32_t entityID = (*value)->ID();
-		MonoClassField* eIDField = mono_class_get_field_from_name(Scripting::GetEntityMonoClass(), "eID");
+		uint32_t entityID = *value ? (*value)->ID() : invalidID;
+		MonoClassField* eIDField = mono_class_get_field_from_name(Scripting::GetEntityMonoClass(), "id");
 		mono_field_set_value(entity, eIDField, &entityID);
 
 		mono_field_set_value(instance, field.field, entity);

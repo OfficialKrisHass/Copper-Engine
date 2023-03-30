@@ -388,6 +388,19 @@ namespace Copper {
 		out << YAML::EndMap; // Field
 
 	}
+	//template<> void Scene::SerializeScriptField<InternalEntity*>(const ScriptField& field, ScriptComponent* instance, YAML::Emitter& out) {
+
+	//	InternalEntity* value = nullptr;
+	//	instance->GetFieldValue(field, &value);
+
+	//	out << YAML::Key << field.name << YAML::Value << YAML::BeginMap; // Field
+
+	//	out << YAML::Key << "Type" << YAML::Value << (int) field.type;
+	//	out << YAML::Key << "Value" << YAML::Value << value;
+
+	//	out << YAML::EndMap; // Field
+
+	//}
 	template<typename T> void Scene::DeserializeScriptField(const ScriptField& field, ScriptComponent* instance, const YAML::Node& fieldNode) {
 
 		T tmp = fieldNode.as<T>();

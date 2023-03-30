@@ -29,6 +29,13 @@ namespace Copper {
 
 	YAML::Emitter& operator<<(YAML::Emitter& out, InternalEntity* entity) {
 
+		if (!entity) {
+
+			out << invalidID;
+			return out;
+
+		}
+		
 		out << entity->ID();
 		return out;
 
@@ -44,8 +51,14 @@ namespace YAML {
 
 		Node node;
 
-		node.push_back(entity->ID());
+		if (!entity) {
 
+			node.push_back(invalidID);
+			return node;
+
+		}
+
+		node.push_back(entity->ID());
 		return node;
 
 	}
@@ -53,7 +66,7 @@ namespace YAML {
 
 		uint32_t objID = node.as<uint32_t>();
 
-		if (objID == invalidID) { return true; } //we need to return true because if we don't, YAML crashes
+		if (objID == invalidID) { entity = nullptr; return true; } //we need to return true because if we don't, YAML crashes
 		if (objID >= (uint32_t) GetNumOfEntities()) { entity = CreateEntityFromID(objID); return true; }
 
 		entity = GetEntityFromID(node.as<uint32_t>());

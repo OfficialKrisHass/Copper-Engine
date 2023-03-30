@@ -124,6 +124,13 @@ namespace Copper::Scripting::InternalCalls {
 
 	}
 
+	static bool IsEntityValid(uint32_t eID) {
+
+		if (eID == invalidID || eID >= GetNumOfEntities() || !(*GetEntityFromID(eID))) return false;
+		return true;
+
+	}
+
 	static MonoObject* GetEntity(uint32_t eID) {
 
 		CheckValidEntityWithReturn(eID, nullptr);

@@ -229,6 +229,10 @@ namespace Editor {
 		FileBrowser fileBrowser;
 		Console console;
 
+		//Scripting
+		bool wasCursorLocked = false;
+		bool wasCursorVisible = true;
+
 	};
 
 	EditorData data;
@@ -428,7 +432,13 @@ namespace Editor {
 
 		ImGui::Image(reinterpret_cast<void*>((uint64_t) GetFBOTexture()), windowSize, ImVec2 {0, 1}, ImVec2 {1, 0});
 
-		if (ImGui::IsItemClicked()) { SetAcceptInputDuringRuntime(true); }
+		if (ImGui::IsItemClicked() && IsRuntimeRunning()) {
+			
+			Input::SetCursorLocked(data.wasCursorLocked);
+			Input::SetCursorVisible(data.wasCursorVisible);
+			SetAcceptInputDuringRuntime(true);
+		
+		}
 
 		ImGui::End();
 		ImGui::PopStyleVar();
@@ -625,12 +635,14 @@ namespace Editor {
 		data.scene->StartRuntime();
 
 		Input::SetCursorLocked(true);
+		Input::SetCursorVisible(false);
 		SetAcceptInputDuringRuntime(true);
 
 	}
 	void StopEditorRuntime() {
 
-		Input::SetCursorLocked(false);
+		if(data.wasCursorLocked)
+			Input::SetCursorLocked(false);
 
 		data.state = Edit;
 		std::filesystem::path savedPath = data.scene->path;
@@ -892,6 +904,10 @@ namespace Editor {
 			}
 			case KeyCode::Escape: {
 
+				data.wasCursorLocked = Input::IsCursorLocked();
+				data.wasCursorVisible = Input::IsCursorVisible();
+
+				Input::SetCursorLocked(false);
 				SetAcceptInputDuringRuntime(false);
 				break;
 

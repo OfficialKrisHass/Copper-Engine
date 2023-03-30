@@ -12,9 +12,6 @@ class Test : Component {
 
         test = Vector3.zero;
 
-        Input.SetCursorLocked(true);
-        Input.SetCursorVisible(false);
-
     }
 
     void Update() {

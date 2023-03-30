@@ -14,6 +14,7 @@ namespace Copper {
 
 	class Camera : public Component {
 
+		friend class Scene;
 	#ifdef CU_EDITOR
 		friend Editor::Project;
 	#endif

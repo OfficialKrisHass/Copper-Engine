@@ -68,6 +68,7 @@ namespace Copper {
 	void Scene::Render(Camera* camera) {
 
 		Renderer::RenderFrame(camera, light);
+		//Log(camera->size);
 
 	}
 
@@ -102,6 +103,8 @@ namespace Copper {
 	bool Scene::Deserialize(const std::filesystem::path& path) {
 
 		this->path = path;
+
+		registry.Cleanup();
 
 		runtimeRunning = false;
 		runtimeStarted = false;
@@ -221,6 +224,8 @@ namespace Copper {
 			out << YAML::Key << "Near Plane" << YAML::Value << camera->nearPlane;
 			out << YAML::Key << "Far Plane" << YAML::Value << camera->farPlane;
 
+			out << YAML::Key << "Size" << YAML::Value << camera->size;
+
 			out << YAML::EndMap; // Camera
 
 		}
@@ -339,6 +344,8 @@ namespace Copper {
 			cam->fov = camNode["Fov"].as<float>();
 			cam->nearPlane = camNode["Near Plane"].as<float>();
 			cam->farPlane = camNode["Far Plane"].as<float>();
+
+			cam->size = camNode["Size"].as<UVector2I>();
 
 		}
 		if (YAML::Node scriptNode = node["Script Component"]) {

@@ -181,6 +181,20 @@ namespace Copper {
 
 		}
 
+		void Cleanup() {
+
+			for (ComponentPool* pool : pools) {
+
+				delete pool;
+
+			}
+
+			entities.clear();
+			gaps.clear();
+			pools.clear();
+
+		}
+
 		template<typename T> static int GetCID() {
 
 			static int cID = cCounter++;

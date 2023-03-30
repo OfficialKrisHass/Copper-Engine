@@ -813,6 +813,33 @@ namespace YAML {
 		}
 
 	};
+
+	template<> struct convert<UVector2I> {
+
+		static Node encode(const UVector2I& vec) {
+
+			Node node;
+
+			node.push_back(vec.x);
+			node.push_back(vec.y);
+			node.SetStyle(EmitterStyle::Flow);
+
+			return node;
+
+		}
+		static bool decode(const Node& node, UVector2I& vec) {
+
+			if (!node.IsSequence() || node.size() != 2) return false;
+
+			vec.x = node[0].as<uint32_t>();
+			vec.y = node[1].as<uint32_t>();
+
+			return true;
+
+		}
+
+	};
+
 	template<> struct convert<Color> {
 
 		static Node encode(const Color& col) {

@@ -35,6 +35,9 @@ namespace Copper::Input {
 	float GetCursorPosDifferenceX();
 	float GetCursorPosDifferenceY();
 
+	bool IsCursorLocked();
+	bool IsCursorVisible();
+
 	//Controls
 	void WrapCursor();
 

@@ -42,34 +42,16 @@ namespace Copper::Input {
 
 		mousePosDiference = Vector2::zero;
 
-		if (!mouseLocked) return;
-		if (!AcceptInputDuringRuntime()) return;
+		/*if (!AcceptInputDuringRuntime()) return;
 
 		UVector2I centre;
-
 	#ifdef CU_EDITOR
 		centre = GetViewportCentre();
 	#else
 		centre = GetWindowSize() / 2;
 	#endif
 
-		double mouseX;
-		double mouseY;
-		GetCursorPosition(&mouseX, &mouseY);
-		Vector2 mousePos((float) mouseX, (float) mouseY);
-
-		if(!firstMouseLockedFrame) {
-
-			mousePosDiference.x = (mousePos.x - centre.x) / GetWindowSize().x;
-			mousePosDiference.y = (mousePos.y - centre.y + 63) / GetWindowSize().y;
-
-		} else {
-
-			firstMouseLockedFrame = false;
-
-		}
-
-		SetCursorPos(centre.x, centre.y);
+		SetCursorPos(centre.x, centre.y);*/
 
 	}
 
@@ -124,15 +106,42 @@ namespace Copper::Input {
 
 	bool OnMouseMove(const Event& e) {
 
-		if (mouseLocked) return true;
-
 		MouseMoveEvent& event = *((MouseMoveEvent*) &e);
 
-		Vector2I diferenceFull = prevMousePos - event.mouseCoords;
-		mousePosDiference.x = -((float) diferenceFull.x / (float) GetWindow().Width());
-		mousePosDiference.y = -((float) diferenceFull.y / (float) GetWindow().Height());
+		if (!mouseLocked) {
+
+			Vector2I diferenceFull = prevMousePos - event.mouseCoords;
+			mousePosDiference.x = -((float) diferenceFull.x / (float) GetWindow().Width());
+			mousePosDiference.y = -((float) diferenceFull.y / (float) GetWindow().Height());
+
+			prevMousePos = event.mouseCoords;
+
+			return true;
+
+		}
+
+		UVector2I centre;
+	#ifdef CU_EDITOR
+		centre = GetViewportCentre();
+	#else
+		centre = GetWindowSize() / 2;
+	#endif
+
+		if (event.mouseCoords == centre) return true;
+		if (!firstMouseLockedFrame) {
+
+			mousePosDiference.x = (event.mouseCoords.x - centre.x) / GetWindowSize().x;
+			mousePosDiference.y = (event.mouseCoords.y - centre.y + 63) / GetWindowSize().y;
+
+		} else {
+
+			firstMouseLockedFrame = false;
+
+		}
 
 		prevMousePos = event.mouseCoords;
+
+		SetCursorPos(centre.x, centre.y);
 
 		return true;
 
@@ -140,13 +149,14 @@ namespace Copper::Input {
 	
 	void SetCursorVisible(bool visible) {
 		
-		glfwSetInputMode(GetGLFWwindow, GLFW_CURSOR, visible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+		glfwSetInputMode(GetGLFWwindow, GLFW_CURSOR, visible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_HIDDEN);
 		mouseVisible = visible;
-		
+
 	}
 	void SetCursorLocked(bool locked) {
 
 		mouseLocked = locked;
+		if (locked) firstMouseLockedFrame = true;
 
 	}
 	void SetCursorPosition(float x, float y) {
@@ -169,5 +179,17 @@ namespace Copper::Input {
 
 	float GetCursorPosDifferenceX() { return mousePosDiference.x; }
 	float GetCursorPosDifferenceY() { return mousePosDiference.y; }
+
+	bool IsCursorLocked() {
+
+		return mouseLocked;
+
+	}
+
+	bool IsCursorVisible() {
+
+		return mouseVisible;
+
+	}
 	
 }

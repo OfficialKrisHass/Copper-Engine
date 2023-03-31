@@ -145,18 +145,6 @@ namespace Editor {
 				case ScriptField::Type::Vector3:		RenderScriptField<Vector3>(script, field, BindShowFunc(ShowVector3)); break;
 
 				case ScriptField::Type::Entity:			RenderScriptField<InternalEntity*>(script, field, BindShowFunc(ShowEntity)); break;
-				case ScriptField::Type::Component:
-				{
-
-					ComponentScriptField* componentField = (ComponentScriptField*) &field;
-					if (componentField->isBuiltinComponent) { break; } //Not Implemented yet
-
-					ScriptComponent* tmp = nullptr;
-					script->GetFieldValue(field, tmp);
-
-					break;
-
-				}
 
 			}
 
@@ -510,25 +498,5 @@ namespace Editor {
 		return ret;
 
 	}
-	bool Properties::ShowComponent(const std::string& name, Component* component) {
-
-		bool ret = false;
-		std::string nodeText;
-
-		if (component) nodeText = component->GetEntity()->name;
-		else nodeText = "None";
-		nodeText += " (Component)";
-
-		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-		if (dragDropTargetHovered) ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4 {0.25f, 0.25f, 0.25f, 1.0f});
-
-		ImGui::InputText(name.c_str(), &nodeText, ImGuiInputTextFlags_ReadOnly);
-
-		ImGui::PopItemFlag();
-		if (dragDropTargetHovered) ImGui::PopStyleColor();
-
-		return ret;
-
-	}
-
+	
 }

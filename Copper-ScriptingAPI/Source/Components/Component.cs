@@ -6,7 +6,11 @@ namespace Copper {
 
         protected uint eID;
 
-        protected Component() { }
+        protected Component() {
+
+            eID = Entity.invalidID;
+            
+        }
         protected Component(uint eID) {
 
             this.eID = eID;

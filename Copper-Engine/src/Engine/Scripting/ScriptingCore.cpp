@@ -215,19 +215,6 @@ namespace Copper::Scripting {
 
 			MonoType* type = mono_field_get_type(field);
 			MonoClass* fieldClass = mono_class_from_mono_type(type);
-			if (mono_class_is_subclass_of(fieldClass, data.componentClass, false)) {
-
-				data.scriptFields[fullName].push_back(ComponentScriptField());
-				ComponentScriptField& scriptField = *(ComponentScriptField*) &data.scriptFields[fullName].back();
-				scriptField.SetMonoField(field);
-
-				scriptField.name = mono_field_get_name(field);
-				scriptField.type = ScriptField::Type::Component;
-
-				scriptField.componentName = mono_type_get_name(type);
-				scriptField.isBuiltinComponent = MonoUtils::IsBuiltinComponentField(mono_type_get_name(type));
-
-			}
 
 			data.scriptFields[fullName].push_back(ScriptField());
 			ScriptField& scriptField = data.scriptFields[fullName].back();

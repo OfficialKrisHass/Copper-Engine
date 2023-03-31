@@ -82,11 +82,6 @@ namespace Copper {
 		*out = GetEntityFromID(eID);
 
 	}
-	void ScriptComponent::GetFieldValue(const ScriptField& field, Component* out) {
-
-		if (field.type != ScriptField::Type::Component) return;
-
-	}
 
 	void ScriptComponent::SetFieldValue(const ScriptField& field, void* value) {
 
@@ -108,11 +103,6 @@ namespace Copper {
 		mono_field_set_value(entity, eIDField, &entityID);
 
 		mono_field_set_value(instance, field.field, entity);
-
-	}
-	void ScriptComponent::SetFieldValue(const ScriptField& field, Component* value) {
-
-		if (field.type != ScriptField::Type::Component) return;
 
 	}
 

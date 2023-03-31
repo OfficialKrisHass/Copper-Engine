@@ -32,7 +32,6 @@ namespace Editor {
 		bool ShowColor(const std::string& name, Copper::Color* col);
 
 		bool ShowEntity(const std::string& name, Copper::InternalEntity** entity);
-		bool ShowComponent(const std::string& name, Copper::Component* component);
 
 		static bool IsDragDropTargetHovered() { return dragDropTargetHovered; }
 	

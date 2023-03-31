@@ -2,4 +2,6 @@ C:\Programming\Copper-Engine\Editor Projects\DevProject\Binaries\DevProject.dll
 C:\Programming\Copper-Engine\Editor Projects\DevProject\Binaries\DevProject.pdb
 C:\Programming\Copper-Engine\Editor Projects\DevProject\Objs\Debug\DevProject.dll
 C:\Programming\Copper-Engine\Editor Projects\DevProject\Objs\Debug\DevProject.pdb
-C:\Programming\Copper-Engine\Editor Projects\DevProject\Objs\Debug\DevProject.csprojResolveAssemblyReference.cache
+C:\Programming\Copper-Engine\Editor Projects\DevProject\Objs\Debug\DevProject.csproj.AssemblyReference.cache
+C:\Programming\Copper-Engine\Editor Projects\DevProject\Objs\Debug\DevProject.csproj.CoreCompileInputs.cache
+C:\Programming\Copper-Engine\Editor Projects\DevProject\Objs\Debug\DevProject.csproj.CopyComplete

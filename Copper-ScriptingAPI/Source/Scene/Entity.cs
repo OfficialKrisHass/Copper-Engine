@@ -5,7 +5,7 @@ namespace Copper {
     public class Entity {
 
         protected uint id;
-        const uint invalidID = 4294967295;
+        public const uint invalidID = 4294967295;
 
         protected Entity() {
 

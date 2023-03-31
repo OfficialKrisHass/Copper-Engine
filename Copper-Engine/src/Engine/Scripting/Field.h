@@ -12,9 +12,9 @@ namespace Copper {
 
 	struct ScriptField {
 
-		friend class ScriptComponent;
+		friend ScriptComponent;
 
-		enum class Type {
+		enum class Type : uint32_t {
 
 			None,
 			Int,
@@ -25,26 +25,17 @@ namespace Copper {
 			Vector3,
 
 			Entity,
-			Component
 
 		};
 
-		Type type;
 		std::string name;
+		Type type;
 
 		void SetMonoField(MonoClassField* field) { if (!field) return; this->field = field; }
 
 	private:
 		MonoClassField* field;
 
-
-	};
-	struct ComponentScriptField : public ScriptField {
-
-		friend class ScriptComponent;
-
-		std::string componentName;
-		bool isBuiltinComponent;
 
 	};
 

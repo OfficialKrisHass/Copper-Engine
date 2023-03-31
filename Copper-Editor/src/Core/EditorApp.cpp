@@ -30,7 +30,6 @@
 #include <yaml-cpp/yaml.h>
 
 using namespace Copper;
-//using namespace Copper::Engine;
 
 namespace Editor {
 
@@ -467,8 +466,8 @@ namespace Editor {
 		data.viewportSize = UVector2I((uint32_t) windowSize.x, (uint32_t) windowSize.y);
 
 		data.viewportCentre = data.viewportSize / 2;
-		data.viewportCentre.x += windowPos.x;
-		data.viewportCentre.y += windowPos.y;
+		data.viewportCentre.x += (uint32_t) windowPos.x;
+		data.viewportCentre.y += (uint32_t) windowPos.y;
 
 		if (data.viewportFBO.Width() != data.viewportSize.x || data.viewportFBO.Height() != data.viewportSize.y) {
 
@@ -867,6 +866,8 @@ namespace Editor {
 
 			case KeyCode::S: {
 
+				if (data.state == Play) break;
+
 				if (control && shift) { data.project.Save(); SaveEditorData(); SaveScene(); }
 				if (control && alt) SaveSceneAs();
 				if (control) SaveScene();
@@ -876,6 +877,8 @@ namespace Editor {
 			}
 			case KeyCode::B: {
 
+				if (data.state == Play) break;
+
 				if (control) data.project.BuildSolution();
 
 				break;
@@ -883,6 +886,7 @@ namespace Editor {
 			}
 			case KeyCode::Q: {
 
+				if (data.state == Play) break;
 				if (!rightClick) data.project.gizmoType = ImGuizmo::TRANSLATE;
 
 				break;
@@ -890,6 +894,7 @@ namespace Editor {
 			}
 			case KeyCode::W: {
 
+				if (data.state == Play) break;
 				if (!rightClick) data.project.gizmoType = ImGuizmo::ROTATE;
 
 				break;
@@ -897,6 +902,7 @@ namespace Editor {
 			}
 			case KeyCode::E: {
 
+				if (data.state == Play) break;
 				if (!rightClick) data.project.gizmoType = ImGuizmo::SCALE;
 
 				break;

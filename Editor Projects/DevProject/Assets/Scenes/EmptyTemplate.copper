@@ -198,7 +198,7 @@ Entities:
           Value: 1
         moveThis:
           Type: 6
-          Value: 4294967295
+          Value: 5
   Player:
     ID: 5
     Transform:

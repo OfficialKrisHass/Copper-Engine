@@ -1,6 +1,6 @@
 Name: DevProject
 Last Scene: Scenes\EmptyTemplate.copper
-Gizmo: 0
+Gizmo: 1
 Scene Camera:
   Position: [4.72815132, 2.5053525, 2.83563519]
   Rotation: [-3214.22168, 2461.24731, 0]

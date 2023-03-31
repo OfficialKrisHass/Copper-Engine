@@ -908,6 +908,7 @@ namespace Editor {
 				data.wasCursorVisible = Input::IsCursorVisible();
 
 				Input::SetCursorLocked(false);
+				Input::SetCursorVisible(true);
 				SetAcceptInputDuringRuntime(false);
 				break;
 

@@ -100,15 +100,7 @@ namespace Copper {
 		if (transform->parent) {
 
 			transform->position += transform->parent->GlobalPosition();
-
 			transform->parent->children.erase(transform->parent->children.begin() + transform->parentChildIndex);
-
-			children.push_back(transform->GetEntity()->ID());
-
-			transform->parent = this;
-			transform->position -= GlobalPosition();
-
-			return;
 
 		}
 

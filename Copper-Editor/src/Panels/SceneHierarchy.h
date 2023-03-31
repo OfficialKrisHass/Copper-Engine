@@ -28,13 +28,13 @@ namespace Editor {
 
 		void DrawEntityNode(Copper::InternalEntity* entity);
 
+		void PopupWindow();
+
 		/*void DrawObjectNode(uint32_t& objIDIndex);
 		void RemoveObjectNode(uint32_t objIDIndex);
 		void MoveObjectNode(uint32_t& objIDIndex, uint32_t objToMoveIDIndex);
 
 		void ChangeObjectParent(uint32_t& objIDIndex, uint32_t& newParentIDIndex);
-
-		void PopupWindow();
 
 		void RemoveParent(uint32_t objIDIndex);
 

@@ -10,7 +10,7 @@ namespace Editor::MetaFile {
 		void Serialize(Copper::Scene* scene);
 		void Deserialize(Copper::Scene* scene);
 
-		std::vector<int32_t> objectIDs;
+		std::vector<uint32_t> objectIDs;
 
 	};
 

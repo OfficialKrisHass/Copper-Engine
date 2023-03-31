@@ -10,7 +10,7 @@
 #include "Engine/UI/ImGui.h"
 
 #include "Core/Project.h"
-#include "Core/MetaFileSerialization.h"
+#include "Core/SceneMeta.h"
 #include "Core/ProjectFileWatcher.h"
 
 #include "Core/Utils/ModelLoader.h"
@@ -206,6 +206,7 @@ namespace Editor {
 
 		//Scene
 		Scene* scene;
+		MetaFile::SceneMeta sceneMeta;
 		bool changes;
 		
 		//Viewport
@@ -649,9 +650,9 @@ namespace Editor {
 
 		data.scene = GetScene();
 		data.scene->Deserialize(savedPath);
+		data.sceneMeta.Deserialize(data.scene);
 
 		data.sceneHierarchy.SetSelectedEntity(savedSelectedEntity);
-		data.sceneHierarchy.LoadSceneMeta();
 
 	}
 
@@ -751,6 +752,34 @@ namespace Editor {
 		data.sceneHierarchy.SetScene(data.scene);
 		
 	}
+	void OpenScene(const std::filesystem::path& path) {
+
+		if(data.changes) {
+
+			switch(Input::Error::WarningPopup("Unsaved Changes", "There are Unsaved Changes, if you open another scene you will lose these Changes.")) {
+
+			case IDOK: break;
+			case IDCANCEL: return;
+				
+			}
+			
+		}
+
+		*data.scene = Scene();
+
+		data.scene->Deserialize(path);
+		data.sceneMeta.Deserialize(data.scene);
+
+		data.sceneHierarchy.SetScene(data.scene);
+
+		data.changes = false;
+		data.title = "Copper Editor - " + data.project.name + ": ";
+		data.title += data.scene->name;
+		Input::SetWindowTitle(data.title);
+
+		data.project.lastOpenedScene = std::filesystem::relative(path, data.project.assetsPath);
+		
+	}
 	void OpenScene() {
 
 		std::filesystem::path path = Utilities::OpenDialog("Copper Scene (*.copper)\0*.copper\0", "assets/Projects/DevProject/Assets");
@@ -773,39 +802,12 @@ namespace Editor {
 		OpenScene(path);
 		
 	}
-	void OpenScene(const std::filesystem::path& path) {
-
-		if(data.changes) {
-
-			switch(Input::Error::WarningPopup("Unsaved Changes", "There are Unsaved Changes, if you open another scene you will lose these Changes.")) {
-
-			case IDOK: break;
-			case IDCANCEL: return;
-				
-			}
-			
-		}
-
-		*data.scene = Scene();
-
-		data.scene->Deserialize(path);
-		data.sceneHierarchy.SetScene(data.scene);
-		data.sceneHierarchy.LoadSceneMeta();
-
-		data.changes = false;
-		data.title = "Copper Editor - " + data.project.name + ": ";
-		data.title += data.scene->name;
-		Input::SetWindowTitle(data.title);
-
-		data.project.lastOpenedScene = std::filesystem::relative(path, data.project.assetsPath);
-		
-	}
 	void SaveScene() {
 		
 		if(!data.scene->path.empty()) {
 
 			data.scene->Serialize(data.scene->path);
-			data.sceneHierarchy.SaveSceneMeta();
+			data.sceneMeta.Serialize(data.scene);
 
 			data.changes = false;
 			data.title = "Copper Editor - TestProject: ";
@@ -839,7 +841,7 @@ namespace Editor {
 			}
 
 			data.scene->Serialize(path);
-			data.sceneHierarchy.SaveSceneMeta();
+			data.sceneMeta.Serialize(data.scene);
 
 			data.changes = false;
 			data.title = "Copper Editor - TestProject: ";
@@ -950,6 +952,9 @@ namespace Editor {
 	}
 	
 	Project GetProject() { return data.project; }
+
+	MetaFile::SceneMeta* GetSceneMeta() { return &data.sceneMeta; }
+
 	UVector2I GetViewportSize() { return data.viewportSize; }
 
 	void SetChanges(bool value) {

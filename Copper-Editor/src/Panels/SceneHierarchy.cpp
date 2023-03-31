@@ -14,7 +14,6 @@ using namespace Copper;
 
 namespace Editor {
 
-	MetaFile::SceneMeta sceneMeta;
 	uint32_t clickedEntityID = invalidID;
 
 	SceneHierarchy::SceneHierarchy() : Panel("Scene Hierarchy") {
@@ -28,7 +27,7 @@ namespace Editor {
 
 		CU_ASSERT(scene, "SceneHierarchy::scene is nullptr... HOW ???!!??!!");
 
-		for (uint32_t eID : sceneMeta.objectIDs) {
+		for (uint32_t eID : GetSceneMeta()->objectIDs) {
 
 			InternalEntity* entity = GetEntityFromID(eID);
 			if (entity->GetTransform()->Parent()) continue;
@@ -311,22 +310,5 @@ namespace Editor {
 	//	return false;
 
 	//}
-
-	void SceneHierarchy::SaveSceneMeta() {
-
-		sceneMeta.Serialize(scene);
-
-	}
-	void SceneHierarchy::LoadSceneMeta() {
-
-		sceneMeta.Deserialize(scene);
-
-	}
-
-	MetaFile::SceneMeta* SceneHierarchy::GetSceneMetaPointer() {
-
-		return &sceneMeta;
-
-	}
 
 }

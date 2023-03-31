@@ -3,7 +3,7 @@
 #include "Engine/Scripting/ScriptingCore.h"
 
 #include "Core/EditorApp.h"
-#include "Core/MetaFileSerialization.h"
+#include "Core/SceneMeta.h"
 
 #include "Panels/SceneHierarchy.h"
 
@@ -27,8 +27,6 @@ namespace Editor {
 
 	bool Properties::dragDropTargetHovered = false;
 
-	MetaFile::SceneMeta* sceneMeta;
-
 	template<typename T> static bool DrawComponent(const std::string& name) {
 
 		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
@@ -46,8 +44,6 @@ namespace Editor {
 	}
 
 	Properties::Properties() : Panel("Properties") {
-
-		sceneMeta = SceneHierarchy::GetSceneMetaPointer();
 
 	}
 
@@ -486,7 +482,7 @@ namespace Editor {
 
 				dragDropTargetHovered = true;
 				ret = true;
-				*entity = GetEntityFromID(sceneMeta->objectIDs[*(uint32_t*) payload->Data]);
+				*entity = GetEntityFromID(GetSceneMeta()->objectIDs[*(uint32_t*) payload->Data]);
 
 			}
 

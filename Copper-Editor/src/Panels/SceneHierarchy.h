@@ -2,7 +2,7 @@
 
 #include "Copper.h"
 
-#include "Core/MetaFileSerialization.h"
+#include "Core/SceneMeta.h"
 
 #include "Panels/Panel.h"
 
@@ -12,13 +12,9 @@ namespace Editor {
 
 	public:
 		SceneHierarchy();
-
-		void SaveSceneMeta();
-		void LoadSceneMeta();
 		
 		//Getters
 		inline Copper::Entity* GetSelectedEntity() { return &selectedEntity; }
-		static MetaFile::SceneMeta* GetSceneMetaPointer();
 
 		//Setters
 		inline void SetSelectedEntity(Copper::InternalEntity* entity) { selectedEntity = entity; }

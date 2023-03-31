@@ -1,4 +1,4 @@
-#include "MetaFileSerialization.h"
+#include "SceneMeta.h"
 
 #include "Panels/SceneHierarchy.h"
 
@@ -14,7 +14,7 @@ namespace Editor::MetaFile {
 		out << YAML::BeginMap;
 
 		out << YAML::Key << "Objects" << YAML::Value << YAML::BeginSeq;
-		for (int32_t objID : objectIDs) {
+		for (uint32_t objID : objectIDs) {
 
 			out << objID;
 
@@ -40,7 +40,7 @@ namespace Editor::MetaFile {
 		objectIDs.clear();
 		for (int i = 0; i < objects.size(); i++) {
 
-			objectIDs.push_back(objects[i].as<int32_t>());
+			objectIDs.push_back(objects[i].as<uint32_t>());
 
 		}
 

@@ -18,7 +18,12 @@ namespace Editor {
 
 		//Setters
 		inline void SetSelectedEntity(Copper::InternalEntity* entity) { selectedEntity = entity; }
-		inline void SetScene(Copper::Scene* scene) { this->scene = scene; }
+		inline void SetScene(Copper::Scene* scene) {
+			
+			this->scene = scene;
+			this->selectedEntity = nullptr;
+		
+		}
 
 	private:
 		Copper::Entity selectedEntity = nullptr;

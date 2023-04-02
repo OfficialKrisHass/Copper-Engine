@@ -9,11 +9,13 @@
 
 #include "Engine/UI/ImGui.h"
 
-#include "Core/Project.h"
 #include "Core/SceneMeta.h"
 #include "Core/ProjectFileWatcher.h"
 
 #include "Core/Utils/ModelLoader.h"
+
+#include "Projects/Project.h"
+#include "Projects/ProjectTemplate.h"
 
 #include "Panels/SceneHierarchy.h"
 #include "Panels/Properties.h"
@@ -256,14 +258,18 @@ namespace Editor {
 	void StartEditorRuntime();
 	void StopEditorRuntime();
 
-	bool OnKeyPressed(const Copper::Event& e);
-	bool OnWindowClose(const Copper::Event& e);
-	bool OnWindowFocused(const Copper::Event& e);
+	bool OnKeyPressed(const Event& e);
+	bool OnWindowClose(const Event& e);
+	bool OnWindowFocused(const Event& e);
+
+	bool OnEntityCreated(const Event& e);
 
 	void Initialize() {
 
 		GetWindow().AddWindowFocusedEventFunc(Editor::OnWindowFocused);
 		GetWindow().AddKeyPressedEventFunc(Editor::OnKeyPressed);
+
+		AddEntityCreatedEventFunc(OnEntityCreated);
 
 		UI::LoadFont("assets/Fonts/open-sans.regular.ttf");
 
@@ -277,7 +283,7 @@ namespace Editor {
 		
 		data.sceneHierarchy = SceneHierarchy();
 		data.properties = Properties();
-		data.fileBrowser = FileBrowser(data.project.assetsPath);
+		data.fileBrowser = FileBrowser("");
 		data.console = Console();
 
 		data.properties.SetSelectedObject(data.sceneHierarchy.GetSelectedEntity());
@@ -583,7 +589,11 @@ namespace Editor {
 
 				if (ImGui::MenuItem("New Project")) NewProject();
 				if (ImGui::MenuItem("Open Project")) OpenProject();
-				if(ImGui::MenuItem("Save Project", "Ctrl+Shift+S")) { data.project.Save(); SaveEditorData(); SaveScene(); }
+				if (ImGui::MenuItem("Save Project", "Ctrl+Shift+S")) { data.project.Save(); SaveEditorData(); SaveScene(); }
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("Create Template")) CreateTemplateFromProject(data.project);
 
 				ImGui::Separator();
 
@@ -592,9 +602,6 @@ namespace Editor {
 				ImGui::Separator();
 
 				if (ImGui::MenuItem("Create Solution Files")) data.project.CreateSolution();
-
-				ImGui::Separator();
-
 				if (ImGui::MenuItem("Copy Copper Scripting API")) CopyScriptingAPI();
 
 				ImGui::EndMenu();
@@ -641,7 +648,7 @@ namespace Editor {
 	}
 	void StopEditorRuntime() {
 
-		if(data.wasCursorLocked)
+		if (data.wasCursorLocked)
 			Input::SetCursorLocked(false);
 
 		data.state = Edit;
@@ -670,39 +677,20 @@ namespace Editor {
 		if (path.empty()) { LogWarn("Path is Invalid or Empty"); return; }
 
 		//Create the Project
-		data.project = Project(path.string().substr(path.string().find_last_of('\\') + 1), path);
+		data.project = Project(path.stem().string(), path);
+		data.fileBrowser.SetRelativeDir("");
 
-		//Create the Directioes
-		std::filesystem::create_directories(path.string() + "\\Assets\\Scenes");
-		std::filesystem::create_directories(path.string() + "\\Binaries");
-		std::filesystem::create_directories(path.string() + "\\Objs");
+		CreateProjectFromTemplate("assets\\Templates\\DevProject", data.project);
 
 		//Setup the FileBrowser
-		data.fileBrowser.SetCurrentDir(data.project.assetsPath);
-
-		//Copy the Template scene
-		std::ifstream templateScene("assets/Projects/EmptyTemplate/Assets/Scenes/EmptyTemplate.copper");
-		std::fstream projectScene;
-
-		projectScene.open(data.project.assetsPath.string() + "\\Scenes\\EmptyTemplate.copper", std::ios::out);
-		projectScene << templateScene.rdbuf();
-		projectScene.close();
-		data.project.lastOpenedScene = "Scenes\\EmptyTemplate.copper";
-
-		//Copy the ScriptingAPI dll
-		CopyScriptingAPI();
-
-		//Create, Build and Load the Solution and Assembly
-		data.project.CreateSolution();
 		data.project.BuildSolution(false);
 
 		Scripting::Reload(data.project.path.string() + "\\Binaries\\" + data.project.name + ".dll", false);
 
-		//Lastly Save the Project into the Project.cu file
-		data.project.Save();
+		OpenScene(data.project.assetsPath.string() + "\\" + data.project.lastOpenedScene.string());
 
 		data.changes = false;
-		data.title = "Copper Editor - " + data.project.name + ": ";
+		data.title = "Copper Editor - " + data.project.name + ": EmptyTemplate";
 		Input::SetWindowTitle(data.title);
 
 	}
@@ -711,8 +699,8 @@ namespace Editor {
 		data.project = Project("", path);
 		data.project.Load();
 		data.scene = GetScene();
+		data.fileBrowser.SetRelativeDir("");
 
-		data.fileBrowser.SetCurrentDir(data.project.assetsPath);
 		ProjectFileWatcher::Stop();
 		ProjectFileWatcher::SetDirectory(data.project.assetsPath);
 		ProjectFileWatcher::Start();
@@ -749,6 +737,8 @@ namespace Editor {
 	void NewScene() {
 
 		*data.scene = Scene();
+		data.sceneMeta.objectIDs.clear();
+
 		data.sceneHierarchy.SetScene(data.scene);
 		
 	}
@@ -765,8 +755,6 @@ namespace Editor {
 			
 		}
 
-		*data.scene = Scene();
-
 		data.scene->Deserialize(path);
 		data.sceneMeta.Deserialize(data.scene);
 
@@ -782,11 +770,11 @@ namespace Editor {
 	}
 	void OpenScene() {
 
-		std::filesystem::path path = Utilities::OpenDialog("Copper Scene (*.copper)\0*.copper\0", "assets/Projects/DevProject/Assets");
+		std::filesystem::path path = Utilities::OpenDialog("Copper Scene (*.copper)\0*.copper\0", data.project.assetsPath);
 
 		if(path.empty()) { LogWarn("The Path Specified is empty or is not a Copper Scene File"); return; }
 
-		std::filesystem::path relativeToProjectAssets = std::filesystem::relative(path, "assets/Projects/DevProject/Assets");
+		std::filesystem::path relativeToProjectAssets = std::filesystem::relative(path, data.project.assetsPath);
 		if (relativeToProjectAssets.string()[0] == '.' && relativeToProjectAssets.string()[1] == '.') {
 
 			switch (Input::Error::ErrorPopup("Invalid Scene", "The Scene you have selected is outside your project, or in a folder starting with '..'")) {
@@ -948,6 +936,16 @@ namespace Editor {
 			case IDCANCEL: return false;
 
 		}
+
+	}
+
+	bool OnEntityCreated(const Event& e) {
+
+		EntityEvent* event = (EntityEvent*) &e;
+
+		data.sceneMeta.objectIDs.push_back(event->entity.ID());
+
+		return true;
 
 	}
 	

@@ -28,8 +28,27 @@ namespace Editor::MetaFile {
 	}
 	void SceneMeta::Deserialize(Scene* scene) {
 
+		objectIDs.clear();
+
+		if (!std::filesystem::exists(scene->path.string() + ".cum")) {
+
+			for (InternalEntity* entity : EntityView(scene)) {
+
+				objectIDs.push_back(entity->ID());
+
+			}
+			Serialize(scene);
+
+			return;
+
+		}
+
 		YAML::Node main;
-		try { main = YAML::LoadFile(scene->path.string() + ".cum"); } catch (YAML::ParserException e) {
+		try {
+			
+			main = YAML::LoadFile(scene->path.string() + ".cum");
+		
+		} catch (YAML::ParserException e) {
 
 			LogError("Failed to Read The Scene Meta Data file\n{}\n    {}", scene->path, e.what());
 			return;
@@ -37,7 +56,6 @@ namespace Editor::MetaFile {
 		}
 
 		YAML::Node objects = main["Objects"];
-		objectIDs.clear();
 		for (int i = 0; i < objects.size(); i++) {
 
 			objectIDs.push_back(objects[i].as<uint32_t>());

@@ -7,8 +7,8 @@
     <ProjectGuid>{E1057166-CDD2-CB71-F6EB-B919E2170100}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>First Project</RootNamespace>
-    <AssemblyName>First Project</AssemblyName>
+    <RootNamespace>:{ProjectName}</RootNamespace>
+    <AssemblyName>:{ProjectName}</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -50,6 +50,9 @@
   <ItemGroup>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\**\*.cs">
+      <Compile>Assets\%(RecursiveDir)/%(FileName)%(Extension)</Compile>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

@@ -82,6 +82,8 @@ namespace Copper {
 		Entity() = default;
 		Entity(InternalEntity* entity);
 
+		inline uint32_t ID() const { return id; }
+
 		operator InternalEntity* () const;
 		operator bool() const;
 

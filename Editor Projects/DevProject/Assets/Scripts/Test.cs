@@ -5,7 +5,6 @@ class Test : Component {
 
     public float speed = 0.1f;
     public float sensitivity = 1.0f;
-    public Transform testTransform;
     public Entity moveThis;
 
     private Vector3 test;

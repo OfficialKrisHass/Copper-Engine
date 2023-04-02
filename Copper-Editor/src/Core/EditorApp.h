@@ -2,8 +2,9 @@
 
 #include <Copper.h>
 
-#include "Core/Project.h"
 #include "Core/SceneMeta.h"
+
+#include "Projects/Project.h"
 
 namespace Editor {
 

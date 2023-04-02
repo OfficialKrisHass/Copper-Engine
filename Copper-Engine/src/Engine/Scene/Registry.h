@@ -79,6 +79,9 @@ namespace Copper {
 			entities[id].transform->rotation = rotation;
 			entities[id].transform->scale = scale;
 
+			entityCreatedEvent.entity = &entities[id];
+			entityCreatedEvent();
+
 			return &entities[id];
 
 		}
@@ -86,6 +89,8 @@ namespace Copper {
 
 			if (eID >= entities.size()) entities.resize(eID + 1, InternalEntity());
 			if (returnIfExists && entities[eID]) return &entities[eID];
+
+			bool newEntity = !entities[eID];
 
 			entities[eID].id = eID;
 			entities[eID].name = name;
@@ -95,6 +100,13 @@ namespace Copper {
 			entities[eID].transform->position = position;
 			entities[eID].transform->rotation = rotation;
 			entities[eID].transform->scale = scale;
+
+			if (newEntity) {
+
+				entityCreatedEvent.entity = &entities[eID];
+				entityCreatedEvent();
+
+			}
 
 			return &entities[eID];
 
@@ -106,6 +118,9 @@ namespace Copper {
 
 		}
 		void RemoveEntity(uint32_t eID) {
+
+			entityRemovedEvent.entity = &entities[eID];
+			entityRemovedEvent();
 
 			entities[eID].Invalidate();
 			gaps.push_back(eID);
@@ -138,6 +153,9 @@ namespace Copper {
 			component->Added();
 
 			entities[eID].cMask.set(cID);
+
+			componentAddedEvent.component = (Component*) component;
+			componentAddedEvent();
 
 			return component;
 
@@ -175,6 +193,9 @@ namespace Copper {
 			entities[eID].cMask.reset(cID);
 
 			T* component = static_cast<T*>(pools[cID]->Get(eID));
+			componentRemovedEvent.component = (Component*) component;
+			componentRemovedEvent();
+
 			component->Removed();
 			component->valid = false;
 

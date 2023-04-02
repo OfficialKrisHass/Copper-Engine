@@ -13,7 +13,7 @@ namespace Editor {
 
     std::filesystem::path editingPath = "";
 
-    FileBrowser::FileBrowser(const std::filesystem::path& initialDir) : Panel("File Browser"), currentDir(initialDir) {
+    FileBrowser::FileBrowser(const std::filesystem::path& initialDir) : Panel("File Browser"), projectRelativeDir(initialDir) {
         
         directoryIcon = Texture("assets/Icons/FileBrowser/DirectoryIcon.png");
         fileIcon = Texture("assets/Icons/FileBrowser/FileIcon.png");
@@ -25,13 +25,13 @@ namespace Editor {
         
         ImGui::GetFont()->FontSize -= 2.0f;
         
-        if(currentDir != std::filesystem::path("assets/TestProject")) {
+        if(projectRelativeDir != "") {
 
             ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0));
             
             if(ImGui::Button("<-", ImVec2(30, 30))) {
 
-                currentDir = currentDir.parent_path();
+                projectRelativeDir = projectRelativeDir.parent_path();
                 
             }
 
@@ -40,7 +40,7 @@ namespace Editor {
         }
 
         ImGui::SameLine();
-        ImGui::Text(std::filesystem::relative(currentDir, GetProject().assetsPath).string().c_str());
+        ImGui::Text(projectRelativeDir.string().c_str());
         ImGui::GetFont()->FontSize += 2.0f;
 
         const float padding = 16.0f;
@@ -57,8 +57,8 @@ namespace Editor {
 
             if(ImGui::MenuItem("Folder")) {
 
-                std::filesystem::path path = currentDir;
-                path += "/New Folder";
+                std::filesystem::path path = GetProject().assetsPath / projectRelativeDir;
+                path += "\\New Folder";
 
                 std::filesystem::create_directories(path);
 
@@ -70,9 +70,9 @@ namespace Editor {
             
         }
 
-        for(const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(currentDir)) {
+        for(const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(GetProject().assetsPath / projectRelativeDir)) {
 
-            std::filesystem::path path = entry.path();
+            std::filesystem::path path = std::filesystem::relative(entry.path(), GetProject().assetsPath);
             std::string filename = path.filename().string();
             if(!entry.is_directory()) filename.erase(filename.find_last_of('.'));
 
@@ -100,10 +100,10 @@ namespace Editor {
             
             if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
                 
-                if (entry.is_directory()) currentDir /= path.filename();
+                if (entry.is_directory()) projectRelativeDir /= path.filename();
                 if (path.extension() == ".copper") {
 
-                    OpenScene(path);
+                    OpenScene(GetProject().assetsPath / path);
                     
                 }
 

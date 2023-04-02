@@ -159,6 +159,14 @@ namespace Editor {
 			SetChanges(true);
 
 		}
+		if (ImGui::MenuItem("Camera")) {
+
+			selectedEntity = scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Camera");
+			Camera* c = selectedEntity->AddComponent<Camera>();
+
+			SetChanges(true);
+
+		}
 
 	}
 

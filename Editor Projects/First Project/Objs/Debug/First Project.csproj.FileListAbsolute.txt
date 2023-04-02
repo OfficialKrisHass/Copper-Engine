@@ -1,5 +1,0 @@
-C:\Programming\Copper-Engine\Editor Projects\First Project\Binaries\First Project.dll
-C:\Programming\Copper-Engine\Editor Projects\First Project\Binaries\First Project.pdb
-C:\Programming\Copper-Engine\Editor Projects\First Project\Objs\Debug\First Project.csprojResolveAssemblyReference.cache
-C:\Programming\Copper-Engine\Editor Projects\First Project\Objs\Debug\First Project.dll
-C:\Programming\Copper-Engine\Editor Projects\First Project\Objs\Debug\First Project.pdb

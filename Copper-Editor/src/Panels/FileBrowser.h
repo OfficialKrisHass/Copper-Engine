@@ -13,10 +13,10 @@ namespace Editor {
         FileBrowser() = default;
         FileBrowser(const std::filesystem::path& initialDir);
 
-        void SetRelativeDir(const std::filesystem::path& value) { projectRelativeDir = value; }
+        static void SetRelativeDir(const std::filesystem::path& value) { projectRelativeDir = value; }
 
     private:
-        std::filesystem::path projectRelativeDir;
+        static std::filesystem::path projectRelativeDir;
         Copper::Texture directoryIcon;
         Copper::Texture fileIcon;
         

@@ -111,7 +111,7 @@ namespace Editor {
 					
 					ScriptComponent* script = entity->AddComponent<ScriptComponent>();
 
-					script->Init(entity->ID(), scriptName);
+					script->Init(scriptName);
 						
 				}
 

@@ -12,9 +12,12 @@ using namespace Copper;
 namespace Editor {
 
     std::filesystem::path editingPath = "";
+    std::filesystem::path FileBrowser::projectRelativeDir = "";
 
-    FileBrowser::FileBrowser(const std::filesystem::path& initialDir) : Panel("File Browser"), projectRelativeDir(initialDir) {
+    FileBrowser::FileBrowser(const std::filesystem::path& initialDir) : Panel("File Browser") {
         
+        projectRelativeDir = initialDir;
+
         directoryIcon = Texture("assets/Icons/FileBrowser/DirectoryIcon.png");
         fileIcon = Texture("assets/Icons/FileBrowser/FileIcon.png");
         

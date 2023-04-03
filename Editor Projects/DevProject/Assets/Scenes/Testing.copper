@@ -1,5 +1,5 @@
 Version: 0
-Name: EmptyTemplate
+Name: Testing
 Entities:
   Light:
     ID: 0
@@ -186,7 +186,7 @@ Entities:
       Fov: 90
       Near Plane: 0.100000001
       Far Plane: 1000
-      Size: [586, 556]
+      Size: [1176, 556]
     Script Component:
       Name: Test
       Fields:

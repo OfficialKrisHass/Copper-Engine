@@ -24,7 +24,8 @@ namespace Copper {
 
 		std::string name = "";
 
-		void Init(int32_t objID, const std::string& name);
+		void Init(const std::string& name);
+		//void Init(uint32_t objID, const std::string& name);
 
 		void CopyTo(MonoObject* other);
 		

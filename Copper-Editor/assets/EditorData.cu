@@ -1,1 +1,1 @@
-Last Project: C:\Programming\Copper-Engine\Editor Projects\ProjectFromTemplate
+Last Project: C:\Programming\Copper-Engine\Editor Projects\DevProject

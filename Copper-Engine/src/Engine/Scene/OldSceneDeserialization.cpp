@@ -129,7 +129,7 @@ namespace Copper {
 				if (cName == "Script Component") {
 
 					ScriptComponent* s = deserialized->AddComponent<ScriptComponent>();
-					s->Init(deserialized->id, component["Name"].as<std::string>());
+					s->Init(component["Name"].as<std::string>());
 
 					YAML::Node fields = component["Fields"];
 					for (ScriptField& field : Scripting::GetScriptFields(s->name)) {

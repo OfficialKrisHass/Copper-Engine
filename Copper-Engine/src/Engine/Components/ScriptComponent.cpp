@@ -10,10 +10,10 @@
 
 namespace Copper {
 
-	void ScriptComponent::Init(int32_t objID, const std::string& name) {
+	void ScriptComponent::Init(const std::string& name) {
 
 		this->name = name;
-		instance = Scripting::AddScriptComponent(objID, name);
+		instance = Scripting::AddScriptComponent(GetEntity()->ID(), name);
 		MonoClass* klass = mono_object_get_class(instance);
 
 		create = mono_class_get_method_from_name(klass, "Create", 0);

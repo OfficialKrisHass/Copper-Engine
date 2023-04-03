@@ -351,7 +351,7 @@ namespace Copper {
 		if (YAML::Node scriptNode = node["Script Component"]) {
 
 			ScriptComponent* script = entity->AddComponent<ScriptComponent>();
-			script->Init(entity->id, scriptNode["Name"].as<std::string>());
+			script->Init(scriptNode["Name"].as<std::string>());
 
 			YAML::Node fields = scriptNode["Fields"];
 			for (const ScriptField& field : Scripting::GetScriptFields(script->name)) {

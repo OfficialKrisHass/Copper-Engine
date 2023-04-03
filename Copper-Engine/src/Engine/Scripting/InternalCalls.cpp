@@ -169,7 +169,7 @@ namespace Copper::Scripting::InternalCalls {
 		} else {
 
 			ScriptComponent* script = entity->AddComponent<ScriptComponent>();
-			script->Init(entity->ID(), typeName);
+			script->Init(typeName);
 
 		}
 

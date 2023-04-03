@@ -84,68 +84,6 @@ namespace Editor {
 
 	}
 
-	void Project::CreateSolution() {
-
-		//Copy the visual studio project files
-		std::ifstream templateSln("assets/Projects/EmptyTemplate/Template.sln.cut");
-		std::fstream projectSln;
-		projectSln.open(path.string() + "\\" + name + ".sln", std::ios::out);
-
-		std::string line;
-		while (std::getline(templateSln, line)) {
-
-			size_t pos = line.find(':');
-			while (pos != std::string::npos && line[pos + 1] == '{') {
-
-				size_t end = line.find_first_of('}', pos);
-				std::string var = line.substr(pos + 2, end - (pos + 2));
-
-				if (var == "ProjectName") {
-
-					line.erase(pos, (end - pos) + 1);
-					line.insert(pos, name);
-
-				}
-
-				pos = line.find(':', pos + 1);
-
-			}
-
-			projectSln << line << "\n";
-
-		}
-		projectSln.close();
-
-		std::ifstream templateCsproj("assets/Projects/EmptyTemplate/Template.csproj.cut");
-		std::fstream projectCsproj;
-		projectCsproj.open(path.string() + "\\" + name + ".csproj", std::ios::out);
-
-		line = "";
-		while (std::getline(templateCsproj, line)) {
-
-			size_t pos = line.find(':');
-			while (pos != std::string::npos && line[pos + 1] == '{') {
-
-				size_t end = line.find_first_of('}', pos);
-				std::string var = line.substr(pos + 2, end - (pos + 2));
-
-				if (var == "ProjectName") {
-
-					line.erase(pos, (end - pos) + 1);
-					line.insert(pos, name);
-
-				}
-
-				pos = line.find(':', pos + 1);
-
-			}
-
-			projectCsproj << line << "\n";
-
-		}
-		projectCsproj.close();
-
-	}
 	void Project::BuildSolution(bool reloadAssembly) {
 
 		if (reloadAssembly) Scripting::Reload();

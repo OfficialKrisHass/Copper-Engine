@@ -25,10 +25,10 @@ namespace Copper::Scripting {
 		MonoAssembly* projectAssembly;
 		MonoImage* projectAssemblyImage;
 
+		MonoClass* entityClass;
 		MonoClass* componentClass;
 		MonoClass* vector2Class;
 		MonoClass* vector3Class;
-		MonoClass* entityClass;
 
 		std::vector<std::string> scriptComponents;
 		std::unordered_map<std::string, std::vector<ScriptField>> scriptFields;
@@ -110,7 +110,7 @@ namespace Copper::Scripting {
 		for (Component* component : ComponentView<ScriptComponent>(GetScene())) {
 
 			ScriptComponent* script = (ScriptComponent*) component;
-			script->Init(script->GetEntity()->ID(), script->name);
+			script->Init(script->name);
 
 		}
 
@@ -214,7 +214,6 @@ namespace Copper::Scripting {
 			if (MonoUtils::GetFieldAccessibility(field) != MonoUtils::FieldAccessibility::Public) continue;
 
 			MonoType* type = mono_field_get_type(field);
-			MonoClass* fieldClass = mono_class_from_mono_type(type);
 
 			data.scriptFields[fullName].push_back(ScriptField());
 			ScriptField& scriptField = data.scriptFields[fullName].back();
@@ -233,10 +232,10 @@ namespace Copper::Scripting {
 		std::string nameSpace = MonoUtils::RemoveNamespace(scriptName);
 
 		MonoClass* script = mono_class_from_name(data.projectAssemblyImage, nameSpace.c_str(), scriptName.c_str());
-		if (!script) { LogError("Failed to Get {} Class Reference", name); return nullptr; }
+		if (!script) { LogError("Failed to Get {} C# Class", name); return nullptr; }
 
 		MonoObject* instance = mono_object_new(data.app, script);
-		if (!instance) { LogError("Failed to Instantiate {}", name); return nullptr; }
+		if (!instance) { LogError("Failed to Instantiate {} C# class", name); return nullptr; }
 
 		mono_runtime_object_init(instance);
 

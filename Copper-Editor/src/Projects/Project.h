@@ -24,7 +24,6 @@ namespace Editor {
 		void Save();
 		void Load();
 
-		void CreateSolution();
 		void BuildSolution(bool reloadAssembly = true);
 
 	};

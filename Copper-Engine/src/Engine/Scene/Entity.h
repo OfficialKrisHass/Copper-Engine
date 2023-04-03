@@ -6,8 +6,8 @@
 
 namespace Copper {
 
-	const int maxComponents = 32;
-	const uint32_t invalidID = 4'294'967'295;
+	inline const int maxComponents = 32;
+	inline const uint32_t invalidID = 4'294'967'295;
 
 	class Transform;
 	class Scene;
@@ -49,7 +49,7 @@ namespace Copper {
 		Transform* GetTransform() const { return transform; }
 		uint32_t ID() const { return id; }
 
-		bool operator==(const InternalEntity& other) { return id == other.id && scene == other.scene; }
+		bool operator==(const InternalEntity& other) const { return id == other.id && scene == other.scene; }
 
 		operator bool() const { return id != invalidID && scene != nullptr; }
 		operator uint32_t() const { return id; };

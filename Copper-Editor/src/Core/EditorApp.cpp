@@ -601,7 +601,6 @@ namespace Editor {
 				
 				ImGui::Separator();
 
-				if (ImGui::MenuItem("Create Solution Files")) data.project.CreateSolution();
 				if (ImGui::MenuItem("Copy Copper Scripting API")) CopyScriptingAPI();
 
 				ImGui::EndMenu();
@@ -678,7 +677,7 @@ namespace Editor {
 
 		//Create the Project
 		data.project = Project(path.stem().string(), path);
-		data.fileBrowser.SetRelativeDir("");
+		FileBrowser::SetRelativeDir("");
 
 		CreateProjectFromTemplate("assets\\Templates\\DevProject", data.project);
 
@@ -699,7 +698,7 @@ namespace Editor {
 		data.project = Project("", path);
 		data.project.Load();
 		data.scene = GetScene();
-		data.fileBrowser.SetRelativeDir("");
+		FileBrowser::SetRelativeDir("");
 
 		ProjectFileWatcher::Stop();
 		ProjectFileWatcher::SetDirectory(data.project.assetsPath);

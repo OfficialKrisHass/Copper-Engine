@@ -32,6 +32,7 @@ namespace Editor {
 		for (uint32_t eID : GetSceneMeta()->objectIDs) {
 
 			InternalEntity* entity = GetEntityFromID(eID);
+			if (!entity) continue;
 			if (entity->GetTransform()->Parent()) continue;
 
 			DrawEntityNode(entity);
@@ -74,7 +75,7 @@ namespace Editor {
 		if (ImGui::BeginDragDropSource()) {
 
 			uint32_t id = entity->ID();
-			ImGui::SetDragDropPayload("SCH_ENTITY_NODE", &id, sizeof(uint64_t), ImGuiCond_Once);
+			ImGui::SetDragDropPayload("SCH_ENTITY_NODE", &id, sizeof(uint32_t), ImGuiCond_Once);
 			ImGui::EndDragDropSource();
 
 		}
@@ -84,6 +85,24 @@ namespace Editor {
 				entity->GetTransform()->AddChild(GetEntityFromID(*(uint32_t*) payload->Data)->GetTransform());
 
 			ImGui::EndDragDropTarget();
+
+		}
+
+		if (ImGui::BeginPopupContextItem()) {
+
+			if (ImGui::MenuItem("Remove")) {
+
+				scene->RemoveEntity(entity);
+				selectedEntity = nullptr;
+
+				ImGui::EndPopup();
+				ImGui::PopID();
+
+				return;
+
+			}
+
+			ImGui::EndPopup();
 
 		}
 

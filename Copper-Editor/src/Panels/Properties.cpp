@@ -16,7 +16,6 @@
 #include <cstring>
 
 #define BindShowFunc(func) [this](auto&&... args) -> decltype(auto) { return this->func(std::forward<decltype(args)>(args)...); }
-//#define BindShowFunc(func) std::bind(&func, this, std::placeholders::_1)
 
 #define DragIntSpeed 1.0f
 #define DragFloatSpeed 0.01f
@@ -27,21 +26,7 @@ namespace Editor {
 
 	bool Properties::dragDropTargetHovered = false;
 
-	template<typename T> static bool DrawComponent(const std::string& name) {
-
-		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
-
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2 {4, 4});
-		//ImGui::VerticalSeparator();
-
-		bool opened = ImGui::TreeNodeEx((void*) typeid(T).hash_code(), flags, name.c_str());
-
-		ImGui::PopStyleVar();
-		if(opened) ImGui::TreePop();
-
-		return opened;
-
-	}
+	template<typename T> static bool DrawComponent(const std::string& name, InternalEntity* entity);
 
 	Properties::Properties() : Panel("Properties") {
 
@@ -50,6 +35,7 @@ namespace Editor {
 	void Properties::UI() {
 
 		if (!*selectedEntity) return;
+
 		RenderEntity();
 
 	}
@@ -64,15 +50,14 @@ namespace Editor {
 		if (ImGui::InputText("##Name", buffer, sizeof(buffer))) {
 
 			entity->name = buffer;
-
-			SetChanges(true);
+			Editor::SetChanges(true);
 
 		}
 
 		ImGui::SameLine();
 		ImGui::VerticalSeparator();
 
-		if(DrawComponent<Transform>("Transform")) {
+		if(DrawComponent<Transform>("Transform", entity)) {
 			
 			ShowVector3("Position", &entity->GetTransform()->position);
 			ShowVector3("Rotation", &entity->GetTransform()->rotation);
@@ -101,9 +86,24 @@ namespace Editor {
 
 		if(ImGui::BeginPopup("##AddComponent")) {
 				
-			if (ImGui::MenuItem("Light"))			{ entity->AddComponent<Light>()->color.r = 0.5f; Editor::SetChanges(true); }
-			if (ImGui::MenuItem("Mesh Renderer"))	{ entity->AddComponent<MeshRenderer>(); Editor::SetChanges(true); }
-			if (ImGui::MenuItem("Camera"))			{ entity->AddComponent<Camera>(); Editor::SetChanges(true); }
+			if (ImGui::MenuItem("Light")) {
+				
+				entity->AddComponent<Light>()->color.r = 0.5f;
+				Editor::SetChanges(true);
+			
+			}
+			if (ImGui::MenuItem("Mesh Renderer")) {
+				
+				entity->AddComponent<MeshRenderer>();
+				Editor::SetChanges(true);
+			
+			}
+			if (ImGui::MenuItem("Camera")) {
+				
+				entity->AddComponent<Camera>();
+				Editor::SetChanges(true);
+			
+			}
 
 			for (std::string scriptName : Scripting::GetScriptComponents()) {
 
@@ -112,6 +112,7 @@ namespace Editor {
 					ScriptComponent* script = entity->AddComponent<ScriptComponent>();
 
 					script->Init(scriptName);
+					Editor::SetChanges(true);
 						
 				}
 
@@ -127,7 +128,15 @@ namespace Editor {
 
 		ImGui::PushID((int) (int64_t) script);
 
-		if (!DrawComponent<ScriptComponent>(script->name)) { ImGui::PopID(); return; }
+		if (!DrawComponent<ScriptComponent>(script->name, script->GetEntity())) { ImGui::PopID(); return; }
+		if (!*script) {
+
+			ImGui::Text("This Script is invalid or doesn't exist anymore");
+			ImGui::PopID();
+
+			return;
+
+		}
 
 		for (ScriptField& field : Scripting::GetScriptFields(script->name)) {
 
@@ -153,7 +162,7 @@ namespace Editor {
 
 		ImGui::PushID((int) (int64_t) light);
 
-		if (!DrawComponent<Light>("Light")) { ImGui::PopID(); return; }
+		if (!DrawComponent<Light>("Light", light->GetEntity())) { ImGui::PopID(); return; }
 
 		ShowColor("Color", &light->color);
 		ShowFloat("Intensity", &light->intensity);
@@ -165,13 +174,46 @@ namespace Editor {
 
 		ImGui::PushID((int) (int64_t) camera);
 
-		if (!DrawComponent<Camera>("Camera")) { ImGui::PopID(); return; }
+		if (!DrawComponent<Camera>("Camera", camera->GetEntity())) { ImGui::PopID(); return; }
 
 		ShowFloat("FOV", &camera->fov);
 		ShowFloat("Near Plane", &camera->nearPlane);
 		ShowFloat("Far Plane", &camera->farPlane);
 
 		ImGui::PopID();
+
+	}
+
+	template<typename T> static bool DrawComponent(const std::string& name, InternalEntity* entity) {
+
+		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
+
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2 {4, 4});
+		//ImGui::VerticalSeparator();
+
+		bool opened = ImGui::TreeNodeEx((void*) typeid(T).hash_code(), flags, name.c_str());
+
+		ImGui::PopStyleVar();
+		if (opened) ImGui::TreePop();
+
+		if (ImGui::BeginPopupContextItem()) {
+
+			if (ImGui::MenuItem("Remove Component")) {
+				
+				entity->RemoveComponent<T>();
+
+				SetChanges(true);
+				ImGui::EndPopup();
+
+				return false;
+			
+			}
+
+			ImGui::EndPopup();
+
+		}
+
+		return opened;
 
 	}
 
@@ -188,7 +230,7 @@ namespace Editor {
 	bool Properties::ShowInt(const std::string& name, int* show) {
 
 		bool ret = false;
-		if (ImGui::DragInt(name.c_str(), show, DragIntSpeed)) ret = true;
+		ret = ImGui::DragInt(name.c_str(), show, DragIntSpeed);
 
 		if (ret) SetChanges(true);
 		return ret;
@@ -197,7 +239,7 @@ namespace Editor {
 	bool Properties::ShowUInt(const std::string& name, unsigned int* show) {
 
 		bool ret = false;
-		if (ImGui::DragInt(name.c_str(), (int*) show, DragIntSpeed)) ret = true;
+		ret = ImGui::DragInt(name.c_str(), (int*) show, DragIntSpeed);
 		if (*show < 0) *show = 0;
 
 		if (ret) SetChanges(true);
@@ -207,7 +249,7 @@ namespace Editor {
 	bool Properties::ShowFloat(const std::string& name, float* show) {
 
 		bool ret = false;
-		if (ImGui::DragFloat(name.c_str(), show, DragFloatSpeed)) ret = true;
+		ret = ImGui::DragFloat(name.c_str(), show, DragFloatSpeed);
 
 		if (ret) SetChanges(true);
 		return ret;
@@ -216,7 +258,7 @@ namespace Editor {
 	bool Properties::ShowDouble(const std::string& name, double* show) {
 
 		bool ret = false;
-		if (ImGui::DragFloat(name.c_str(), (float*) show, DragFloatSpeed)) ret = true;
+		ret = ImGui::DragFloat(name.c_str(), (float*) show, DragFloatSpeed);
 
 		if (ret) SetChanges(true);
 		return ret;
@@ -225,7 +267,7 @@ namespace Editor {
 	bool Properties::ShowString(const std::string& name, std::string* show) {
 
 		bool ret = false;
-		if (ImGui::InputText(name.c_str(), show)) ret = true;
+		ret = ImGui::InputText(name.c_str(), show);
 
 		if (ret) SetChanges(true);
 		return ret;
@@ -263,7 +305,7 @@ namespace Editor {
 		ImGui::PopStyleColor();
 
 		ImGui::SameLine();
-		if (ImGui::DragFloat("##X", &vec->x, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
+		ret = ImGui::DragFloat("##X", &vec->x, DragFloatSpeed, 0.0f, 0.0f, "%.2f");
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
@@ -275,7 +317,7 @@ namespace Editor {
 		ImGui::PopStyleColor();
 
 		ImGui::SameLine();
-		if (ImGui::DragFloat("##Y", &vec->y, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
+		if (!ret) ret = ImGui::DragFloat("##Y", &vec->y, DragFloatSpeed, 0.0f, 0.0f, "%.2f");
 		ImGui::PopItemWidth();
 
 		ImGui::VerticalSeparator();
@@ -311,7 +353,7 @@ namespace Editor {
 		ImGui::PopStyleColor();
 
 		ImGui::SameLine();
-		if (ImGui::DragFloat("##X", &vec->x, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
+		ret = ImGui::DragFloat("##X", &vec->x, DragFloatSpeed, 0.0f, 0.0f, "%.2f");
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
@@ -323,7 +365,7 @@ namespace Editor {
 		ImGui::PopStyleColor();
 
 		ImGui::SameLine();
-		if (ImGui::DragFloat("##Y", &vec->y, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
+		if (!ret) ret = ImGui::DragFloat("##Y", &vec->y, DragFloatSpeed, 0.0f, 0.0f, "%.2f");
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
@@ -335,7 +377,7 @@ namespace Editor {
 		ImGui::PopStyleColor();
 
 		ImGui::SameLine();
-		if (ImGui::DragFloat("##Z", &vec->z, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
+		if(!ret) ret = ImGui::DragFloat("##Z", &vec->z, DragFloatSpeed, 0.0f, 0.0f, "%.2f");
 		ImGui::PopItemWidth();
 		ImGui::SameLine(0.0f, 7.0f);
 
@@ -376,7 +418,7 @@ namespace Editor {
 		ImGui::PopStyleColor();
 
 		ImGui::SameLine();
-		if (ImGui::DragFloat("##X", &vec->x, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
+		ret = ImGui::DragFloat("##X", &vec->x, DragFloatSpeed, 0.0f, 0.0f, "%.2f");
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
@@ -388,7 +430,7 @@ namespace Editor {
 		ImGui::PopStyleColor();
 
 		ImGui::SameLine();
-		if (ImGui::DragFloat("##Y", &vec->y, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
+		if (!ret) ret = ImGui::DragFloat("##Y", &vec->y, DragFloatSpeed, 0.0f, 0.0f, "%.2f");
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
@@ -400,7 +442,7 @@ namespace Editor {
 		ImGui::PopStyleColor();
 
 		ImGui::SameLine();
-		if (ImGui::DragFloat("##Z", &vec->z, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
+		if (!ret) ret = ImGui::DragFloat("##Z", &vec->z, DragFloatSpeed, 0.0f, 0.0f, "%.2f");
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
@@ -412,7 +454,7 @@ namespace Editor {
 		ImGui::PopStyleColor();
 
 		ImGui::SameLine();
-		if (ImGui::DragFloat("##W", &vec->w, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
+		if(!ret) ret = ImGui::DragFloat("##W", &vec->w, DragFloatSpeed, 0.0f, 0.0f, "%.2f");
 		ImGui::PopItemWidth();
 
 		ImGui::VerticalSeparator();
@@ -439,7 +481,7 @@ namespace Editor {
 
 		};
 
-		if (ImGui::ColorEdit3("##Color", colors)) ret = true;
+		ret = ImGui::ColorEdit3("##Color", colors);
 		ImGui::SameLine();
 		ImGui::Text(name.c_str());
 
@@ -482,7 +524,7 @@ namespace Editor {
 
 				dragDropTargetHovered = true;
 				ret = true;
-				*entity = GetEntityFromID(GetSceneMeta()->objectIDs[*(uint32_t*) payload->Data]);
+				*entity = GetEntityFromID(*(uint32_t*) payload->Data);
 
 			}
 

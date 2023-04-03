@@ -13,7 +13,19 @@ namespace Copper {
 	void ScriptComponent::Init(const std::string& name) {
 
 		this->name = name;
+
 		instance = Scripting::AddScriptComponent(GetEntity()->ID(), name);
+		if (!instance) {
+
+			valid = false;
+			create = nullptr;
+			update = nullptr;
+
+			return;
+
+		}
+
+		valid = true;
 		MonoClass* klass = mono_object_get_class(instance);
 
 		create = mono_class_get_method_from_name(klass, "Create", 0);

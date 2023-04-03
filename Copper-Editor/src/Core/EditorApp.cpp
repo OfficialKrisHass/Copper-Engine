@@ -263,6 +263,7 @@ namespace Editor {
 	bool OnWindowFocused(const Event& e);
 
 	bool OnEntityCreated(const Event& e);
+	bool OnEntityRemoved(const Event& e);
 
 	void Initialize() {
 
@@ -270,6 +271,7 @@ namespace Editor {
 		GetWindow().AddKeyPressedEventFunc(Editor::OnKeyPressed);
 
 		AddEntityCreatedEventFunc(OnEntityCreated);
+		AddEntityRemovedEventFunc(OnEntityRemoved);
 
 		UI::LoadFont("assets/Fonts/open-sans.regular.ttf");
 
@@ -682,9 +684,7 @@ namespace Editor {
 		CreateProjectFromTemplate("assets\\Templates\\DevProject", data.project);
 
 		//Setup the FileBrowser
-		data.project.BuildSolution(false);
-
-		Scripting::Reload(data.project.path.string() + "\\Binaries\\" + data.project.name + ".dll", false);
+		data.project.BuildSolution(true);
 
 		OpenScene(data.project.assetsPath.string() + "\\" + data.project.lastOpenedScene.string());
 
@@ -943,6 +943,21 @@ namespace Editor {
 		EntityEvent* event = (EntityEvent*) &e;
 
 		data.sceneMeta.objectIDs.push_back(event->entity.ID());
+
+		return true;
+
+	}
+	bool OnEntityRemoved(const Event& e) {
+
+		EntityEvent* event = (EntityEvent*) &e;
+
+		for (int i = 0; i < data.sceneMeta.objectIDs.size(); i++) {
+
+			if (data.sceneMeta.objectIDs[i] != event->entity.ID()) continue;
+			data.sceneMeta.objectIDs.erase(data.sceneMeta.objectIDs.begin() + i);
+			break;
+
+		}
 
 		return true;
 

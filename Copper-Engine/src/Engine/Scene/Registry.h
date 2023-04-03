@@ -19,13 +19,14 @@ namespace Copper {
 	extern ComponentEvent componentRemovedEvent;
 
 	void AddEntityCreatedEventFunc(std::function<bool(const Event&)> func);
-	void AddEntityDestroyedEventFunc(std::function<bool(const Event&)> func);
+	void AddEntityRemovedEventFunc(std::function<bool(const Event&)> func);
 	void AddComponentAddedEventFunc(std::function<bool(const Event&)> func);
 	void AddComponentRemovedEventFunc(std::function<bool(const Event&)> func);
 
 	class Registry {
 
 		friend class Scene;
+		friend class Entity;
 
 	public:
 		struct ComponentPool {
@@ -113,7 +114,7 @@ namespace Copper {
 		}
 		InternalEntity* GetEntityFromID(uint32_t eID) {
 
-			if (eID == invalidID || eID >= entities.size()) return nullptr;
+			if (eID == invalidID || eID >= entities.size() || !entities[eID]) return nullptr;
 			return &entities[eID];
 
 		}
@@ -121,6 +122,21 @@ namespace Copper {
 
 			entityRemovedEvent.entity = &entities[eID];
 			entityRemovedEvent();
+
+			//Update the Parent
+			if (Transform* parent = entities[eID].transform->parent) {
+
+				parent->children.erase(parent->children.begin() + entities[eID].transform->parentChildIndex);
+
+			}
+
+			//Update the Children
+			for (uint32_t childID : entities[eID].transform->children) {
+
+				RemoveEntity(childID);
+
+			}
+			entities[eID].transform->children.clear();
 
 			entities[eID].Invalidate();
 			gaps.push_back(eID);

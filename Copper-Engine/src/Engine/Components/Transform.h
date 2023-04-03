@@ -12,6 +12,7 @@ namespace Copper {
 
 	class Transform : public Component {
 
+		friend class Registry;
 		friend class Scene;
 		friend class OldSceneDeserialization;
 

@@ -84,9 +84,7 @@ namespace Editor {
 
 	}
 
-	void Project::BuildSolution(bool reloadAssembly) {
-
-		if (reloadAssembly) Scripting::Reload();
+	void Project::BuildSolution(bool firstBuild) {
 
 		std::string cmd = "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\MSBuild.exe ";
 
@@ -114,6 +112,12 @@ namespace Editor {
 		cmd += " -nologo";
 
 		system(cmd.c_str());
+
+		Log(path / "Binaries" / (name + ".dll"));
+		if (firstBuild)
+			Scripting::Reload(path / "Binaries" / (name + ".dll"));
+		else
+			Scripting::Reload();
 
 	}
 

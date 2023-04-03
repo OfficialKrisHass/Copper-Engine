@@ -35,7 +35,7 @@ namespace Copper {
 
 					index++;
 
-				} while (!(*scene->GetEntityFromID(index)));
+				} while (!(scene->GetEntityFromID(index)));
 
 				return *this;
 
@@ -61,8 +61,8 @@ namespace Copper {
 
 			endIndex = scene->GetNumOfEntities() - 1;
 
-			while (beginIndex != endIndex + 1 && !(*scene->GetEntityFromID(beginIndex))) { beginIndex++; }
-			while (endIndex >= beginIndex && !(*scene->GetEntityFromID(endIndex))) { endIndex--; }
+			while (beginIndex != endIndex + 1 && !(scene->GetEntityFromID(beginIndex))) { beginIndex++; }
+			while (endIndex >= beginIndex && !(scene->GetEntityFromID(endIndex))) { endIndex--; }
 
 		}
 

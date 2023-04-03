@@ -27,10 +27,13 @@ namespace Copper {
 		InternalEntity* GetEntity() const { return entity; }
 		Transform* GetTransform() const { return transform; }
 
+		operator bool() const { return valid; }
+
 	private:
 		Entity entity = nullptr;
 		Transform* transform = nullptr;
 
+	protected:
 		bool valid = false;
 
 	};

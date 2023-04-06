@@ -163,6 +163,12 @@ namespace Copper {
 
 	}
 
+	float Window::Time() const {
+
+		return (float) glfwGetTime();
+
+	}
+
 	void Window::SetSize(const UVector2I& size) {
 
 		glfwSetWindowSize(WINDOW, size.x, size.y);

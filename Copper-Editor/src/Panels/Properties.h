@@ -19,6 +19,7 @@ namespace Editor {
 			
 		}
 
+		bool ShowBool(const std::string& name, bool* show);
 		bool ShowInt(const std::string& name, int* show);
 		bool ShowUInt(const std::string& name, unsigned int* show);
 		bool ShowFloat(const std::string& name, float* show);
@@ -47,6 +48,8 @@ namespace Editor {
 		void RenderScriptComponent(Copper::ScriptComponent* script);
 		void RenderLight(Copper::Light* light);
 		void RenderCamera(Copper::Camera* camera);
+		void RenderCollider(Copper::Collider* collider);
+		void RenderPhysicsBody(Copper::PhysicsBody* physics);
 
 		template<typename T, typename F> void RenderScriptField(Copper::ScriptComponent* script, const Copper::ScriptField& field, F showFunc);
 

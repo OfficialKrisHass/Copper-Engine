@@ -144,6 +144,12 @@ namespace Copper {
 		static Vector3 one;
 		static Vector3 minusOne;
 
+		float Length() const {
+
+			return sqrt(x * x + y * y + z * z);
+
+		}
+
 		operator glm::vec3() const { return glm::vec3(x, y, z); }
 
 		Vector3 operator+(const Vector3& other) const		{ return Vector3(x + other.x, y + other.y, z + other.z); }

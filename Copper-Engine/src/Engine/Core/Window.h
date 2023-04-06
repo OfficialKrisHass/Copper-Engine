@@ -42,6 +42,8 @@ namespace Copper {
 		UVector2I Size() const;
 		float AspectRatio() const;
 
+		float Time() const;
+
 		void SetSize(const UVector2I& size);
 
 		void AddWindowCloseEventFunc(std::function<bool(const Event&)> func);

@@ -40,3 +40,5 @@
 #include "Engine/Components/Light.h"
 #include "Engine/Components/MeshRenderer.h"
 #include "Engine/Components/ScriptComponent.h"
+#include "Engine/Components/Collider.h"
+#include "Engine/Components/PhysicsBody.h"

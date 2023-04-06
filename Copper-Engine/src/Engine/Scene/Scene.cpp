@@ -4,6 +4,7 @@
 #include "Engine/Core/Engine.h"
 
 #include "Engine/Scene/EntityView.h"
+#include "Engine/Scene/ComponentView.h"
 #include "Engine/Scene/OldSceneDeserialization.h"
 #include "Engine/Scene/Component.h"
 
@@ -14,6 +15,8 @@
 #include "Engine/Components/MeshRenderer.h"
 #include "Engine/Components/ScriptComponent.h"
 #include "Engine/Components/Light.h"
+#include "Engine/Components/Collider.h"
+#include "Engine/Components/PhysicsBody.h"
 
 #include "Engine/Scripting/ScriptingCore.h"
 
@@ -31,13 +34,37 @@ namespace Copper {
 		runtimeRunning = true;
 
 	}
-	void Scene::Update(bool render) {
+	void Scene::Update(bool render, float deltaTime) {
 
 		Renderer::ClearColor(0.18f, 0.18f, 0.18f);
 
 		for (InternalEntity* entity : EntityView(this)) {
 
 			entity->transform->Update();
+
+			PhysicsBody* physicsBody = entity->GetComponent<PhysicsBody>();
+			if (physicsBody && runtimeRunning) {
+
+				physicsBody->force = Vector3(0.0f, 10.0f, 0.0f);
+				Vector3 r = Vector3(1.0f / 2, 1.0f / 2, 0.0f);
+				physicsBody->torque = r.x * physicsBody->force.y - r.y * physicsBody->force.x;
+
+				Vector3 linearAcceleration = Vector3(physicsBody->force.x / 1.0f, physicsBody->force.y / 1.0f, 0.0f);
+				physicsBody->velocity += linearAcceleration * deltaTime;
+				physicsBody->GetTransform()->position += physicsBody->velocity * deltaTime;
+
+				float angularAcceleration = physicsBody->torque / physicsBody->momentOfIntertia;
+				physicsBody->angularVelocity += angularAcceleration * deltaTime;
+				physicsBody->angle += physicsBody->angularVelocity * deltaTime;
+
+				physicsBody->GetTransform()->rotation.z = physicsBody->angle;
+
+				/*Vector3 acceleration = Vector3(0.0f, physicsBody->mass * -GravityConstant, 0.0f) / physicsBody->mass;
+				physicsBody->velocity += acceleration * deltaTime;
+
+				physicsBody->GetTransform()->position += physicsBody->velocity * deltaTime;*/
+
+			}
 
 			if (Light* lightComponent = entity->GetComponent<Light>()) light = lightComponent;
 			if (Camera* cameraComponent = entity->GetComponent<Camera>()) cam = cameraComponent;
@@ -50,9 +77,41 @@ namespace Copper {
 				}
 
 			}
-			if (runtimeRunning && entity->HasComponent<ScriptComponent>()) {
 
-				ScriptComponent* script = entity->GetComponent<ScriptComponent>();
+			if (!runtimeRunning) continue;
+
+			/*std::vector<std::pair<Collider*, Collider*>> collisions;
+			if (Collider* collider = entity->GetComponent<Collider>()) {
+
+				for (Collider* other : ComponentView<Collider>(this)) {
+
+					if (other == collider) continue;
+
+				}
+
+			}*/
+
+			/*if (PhysicsBody* physics = entity->GetComponent<PhysicsBody>()) {
+
+				for (Physics* other : ComponentView<Physics>(this)) {
+
+					if (other == physics) continue;
+					
+					if (physics->Intersects(*other)) {
+
+						physics->velocity = Vector3::zero;
+
+						continue;
+
+					}
+
+					if (!physics->staticBody) physics->velocity.y -= GravityConstant;
+
+				}
+
+			}*/
+
+			if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) {
 
 				if (!runtimeStarted) script->InvokeCreate();
 				script->InvokeUpdate();
@@ -229,6 +288,26 @@ namespace Copper {
 			out << YAML::EndMap; // Camera
 
 		}
+		if (Collider* collider = entity->GetComponent<Collider>()) {
+
+			out << YAML::Key << "Collider" << YAML::Value << YAML::BeginMap; // Collider
+
+			out << YAML::Key << "Size" << YAML::Value << collider->size;
+
+			out << YAML::EndMap; // Collider
+
+		}
+		if (PhysicsBody* physicsBody = entity->GetComponent<PhysicsBody>()) {
+
+			out << YAML::Key << "Physics" << YAML::Value << YAML::BeginMap; // Physics
+
+			out << YAML::Key << "Velocity" << YAML::Value << physicsBody->velocity;
+			out << YAML::Key << "Static" << YAML::Value << physicsBody->staticBody;
+
+			out << YAML::EndMap; // Physics
+
+		}
+
 		if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) {
 
 			out << YAML::Key << "Script Component" << YAML::Value << YAML::BeginMap; // Script Component
@@ -348,6 +427,23 @@ namespace Copper {
 			cam->size = camNode["Size"].as<UVector2I>();
 
 		}
+		if (YAML::Node colliderNode = node["Collider"]) {
+
+			Collider* collider = entity->AddComponent<Collider>();
+
+			collider->size = colliderNode["Size"].as<Vector3>();
+			//collider->staticBody = colliderNode["Static"].as<bool>();
+
+		}
+		if (YAML::Node physicsBodyNode = node["Physics"]) {
+
+			PhysicsBody* physicsBody = entity->AddComponent<PhysicsBody>();
+
+			physicsBody->velocity = physicsBodyNode["Velocity"].as<Vector3>();
+			physicsBody->staticBody = physicsBodyNode["Static"].as<bool>();
+
+		}
+
 		if (YAML::Node scriptNode = node["Script Component"]) {
 
 			ScriptComponent* script = entity->AddComponent<ScriptComponent>();
@@ -388,19 +484,6 @@ namespace Copper {
 		out << YAML::EndMap; // Field
 
 	}
-	//template<> void Scene::SerializeScriptField<InternalEntity*>(const ScriptField& field, ScriptComponent* instance, YAML::Emitter& out) {
-
-	//	InternalEntity* value = nullptr;
-	//	instance->GetFieldValue(field, &value);
-
-	//	out << YAML::Key << field.name << YAML::Value << YAML::BeginMap; // Field
-
-	//	out << YAML::Key << "Type" << YAML::Value << (int) field.type;
-	//	out << YAML::Key << "Value" << YAML::Value << value;
-
-	//	out << YAML::EndMap; // Field
-
-	//}
 	template<typename T> void Scene::DeserializeScriptField(const ScriptField& field, ScriptComponent* instance, const YAML::Node& fieldNode) {
 
 		T tmp = fieldNode.as<T>();

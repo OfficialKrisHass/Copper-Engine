@@ -68,6 +68,8 @@ namespace Editor {
 		if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) RenderScriptComponent(script);
 		if (Light* light = entity->GetComponent<Light>()) RenderLight(light);
 		if (Camera* camera = entity->GetComponent<Camera>()) RenderCamera(camera);
+		if (Collider* collider = entity->GetComponent<Collider>()) RenderCollider(collider);
+		if (PhysicsBody* physicsBody = entity->GetComponent<PhysicsBody>()) RenderPhysicsBody(physicsBody);
 
 		ImGui::Spacing();
 		//ImGui::Spacing();
@@ -104,6 +106,20 @@ namespace Editor {
 				Editor::SetChanges(true);
 			
 			}
+			if (ImGui::MenuItem("Collider")) {
+
+				entity->AddComponent<Collider>();
+				Editor::SetChanges(true);
+
+			}
+			if (ImGui::MenuItem("Physics")) {
+
+				entity->AddComponent<PhysicsBody>();
+				Editor::SetChanges(true);
+
+			}
+
+			ImGui::Separator();
 
 			for (std::string scriptName : Scripting::GetScriptComponents()) {
 
@@ -158,7 +174,7 @@ namespace Editor {
 		ImGui::PopID();
 
 	}
-	void Properties::RenderLight(Copper::Light* light) {
+	void Properties::RenderLight(Light* light) {
 
 		ImGui::PushID((int) (int64_t) light);
 
@@ -170,7 +186,7 @@ namespace Editor {
 		ImGui::PopID();
 
 	}
-	void Properties::RenderCamera(Copper::Camera* camera) {
+	void Properties::RenderCamera(Camera* camera) {
 
 		ImGui::PushID((int) (int64_t) camera);
 
@@ -179,6 +195,29 @@ namespace Editor {
 		ShowFloat("FOV", &camera->fov);
 		ShowFloat("Near Plane", &camera->nearPlane);
 		ShowFloat("Far Plane", &camera->farPlane);
+
+		ImGui::PopID();
+
+	}
+	void Properties::RenderCollider(Collider* collider) {
+
+		ImGui::PushID((void*) collider);
+
+		if (!DrawComponent<Collider>("Collider", collider->GetEntity())) { ImGui::PopID(); return; }
+
+		ShowVector3("Size", &collider->size);
+
+		ImGui::PopID();
+
+	}
+	void Properties::RenderPhysicsBody(PhysicsBody* physics) {
+
+		ImGui::PushID((void*) physics);
+
+		if (!DrawComponent<PhysicsBody>("Physics", physics->GetEntity())) { ImGui::PopID(); return; }
+
+		ShowVector3("Velocity", &physics->velocity);
+		ShowBool("Static Body", &physics->staticBody);
 
 		ImGui::PopID();
 
@@ -227,6 +266,15 @@ namespace Editor {
 
 	}
 
+	bool Properties::ShowBool(const std::string& name, bool* show) {
+
+		bool ret = false;
+		ret = ImGui::Checkbox(name.c_str(), show);
+
+		if (ret) Editor::SetChanges(true);
+		return ret;
+
+	}
 	bool Properties::ShowInt(const std::string& name, int* show) {
 
 		bool ret = false;
@@ -305,7 +353,7 @@ namespace Editor {
 		ImGui::PopStyleColor();
 
 		ImGui::SameLine();
-		ret = ImGui::DragFloat("##X", &vec->x, DragFloatSpeed, 0.0f, 0.0f, "%.2f");
+		if (ImGui::DragFloat("##X", &vec->x, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
@@ -317,7 +365,7 @@ namespace Editor {
 		ImGui::PopStyleColor();
 
 		ImGui::SameLine();
-		if (!ret) ret = ImGui::DragFloat("##Y", &vec->y, DragFloatSpeed, 0.0f, 0.0f, "%.2f");
+		if (ImGui::DragFloat("##Y", &vec->y, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
 
 		ImGui::VerticalSeparator();
@@ -353,7 +401,7 @@ namespace Editor {
 		ImGui::PopStyleColor();
 
 		ImGui::SameLine();
-		ret = ImGui::DragFloat("##X", &vec->x, DragFloatSpeed, 0.0f, 0.0f, "%.2f");
+		if (ImGui::DragFloat("##X", &vec->x, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
@@ -365,7 +413,7 @@ namespace Editor {
 		ImGui::PopStyleColor();
 
 		ImGui::SameLine();
-		if (!ret) ret = ImGui::DragFloat("##Y", &vec->y, DragFloatSpeed, 0.0f, 0.0f, "%.2f");
+		if (ImGui::DragFloat("##Y", &vec->y, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
@@ -377,7 +425,7 @@ namespace Editor {
 		ImGui::PopStyleColor();
 
 		ImGui::SameLine();
-		if(!ret) ret = ImGui::DragFloat("##Z", &vec->z, DragFloatSpeed, 0.0f, 0.0f, "%.2f");
+		if (ImGui::DragFloat("##Z", &vec->z, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
 		ImGui::SameLine(0.0f, 7.0f);
 
@@ -418,7 +466,7 @@ namespace Editor {
 		ImGui::PopStyleColor();
 
 		ImGui::SameLine();
-		ret = ImGui::DragFloat("##X", &vec->x, DragFloatSpeed, 0.0f, 0.0f, "%.2f");
+		if (ImGui::DragFloat("##X", &vec->x, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
@@ -430,7 +478,7 @@ namespace Editor {
 		ImGui::PopStyleColor();
 
 		ImGui::SameLine();
-		if (!ret) ret = ImGui::DragFloat("##Y", &vec->y, DragFloatSpeed, 0.0f, 0.0f, "%.2f");
+		if (ImGui::DragFloat("##Y", &vec->y, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
@@ -442,7 +490,7 @@ namespace Editor {
 		ImGui::PopStyleColor();
 
 		ImGui::SameLine();
-		if (!ret) ret = ImGui::DragFloat("##Z", &vec->z, DragFloatSpeed, 0.0f, 0.0f, "%.2f");
+		if (ImGui::DragFloat("##Z", &vec->z, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
@@ -454,7 +502,7 @@ namespace Editor {
 		ImGui::PopStyleColor();
 
 		ImGui::SameLine();
-		if(!ret) ret = ImGui::DragFloat("##W", &vec->w, DragFloatSpeed, 0.0f, 0.0f, "%.2f");
+		if (ImGui::DragFloat("##W", &vec->w, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
 
 		ImGui::VerticalSeparator();

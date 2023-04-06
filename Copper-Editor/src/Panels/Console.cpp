@@ -6,7 +6,7 @@ namespace Editor {
 
 	void Console::UI() {
 
-		if (ImGui::Button("Test")) Log("Test");
+		/*if (ImGui::Button("Test")) Log("Test");
 
 		ImGui::GetFont()->FontSize -= 2.0f;
 
@@ -29,7 +29,7 @@ namespace Editor {
 
 		}
 
-		ImGui::GetFont()->FontSize += 2.0f;
+		ImGui::GetFont()->FontSize += 2.0f;*/
 
 	}
 

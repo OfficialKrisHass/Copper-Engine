@@ -56,7 +56,7 @@ namespace Copper {
 		}
 
 		void StartRuntime();
-		void Update(bool render);
+		void Update(bool render, float deltaTime);
 
 		void Render(Camera* cam);
 

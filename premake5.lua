@@ -81,7 +81,7 @@ project "Copper-Engine"
         "VERSION_STAGE=\"BETA\"",
         "VERSION_MAJOR=1",
         "VERSION_MINOR=0",
-        "VERSION_DEV=1",
+        "VERSION_DEV=2",
         
         "SCENE_VERSION=0"
 

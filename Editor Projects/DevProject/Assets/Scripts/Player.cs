@@ -23,10 +23,11 @@ class Player : Component {
         float mouseX = Input.GetAxis("Mouse X") * sensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * sensitivity;
 
-        transform.position += new Vector3(moveX, 0.0f, moveZ);
-        //transform.rotation += new Vector3(mouseX, 0.0f, 0.0f);
+        transform.position += transform.right * moveX + transform.forward * moveZ;
+        camera.transform.position += transform.right * moveX + transform.forward * moveZ;
 
-        //camera.transform.rotation += new Vector3(mouseX, 0.0f, mouseY);
+        transform.rotation += new Vector3(0.0f, mouseX, 0.0f);
+        camera.transform.rotation += new Vector3(mouseY, mouseX, 0.0f);
 
     }
 

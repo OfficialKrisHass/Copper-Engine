@@ -41,6 +41,7 @@ namespace Copper {
 	#endif
 
 		Scene scene;
+		float lastFrameTime = 0.0f;
 		bool renderScene = true;
 
 		SimpleEvent postInitEvent;
@@ -121,12 +122,16 @@ namespace Copper {
 
 		while (data.engineState == EngineState::Running) {
 
+			float time = data.Window().Time();
+			float deltaTime = time - data.lastFrameTime;
+			data.lastFrameTime = time;
+
 			data.Window().Update();
 
 			data.updateEvent();
 
 			data.fbo.Bind();
-			data.scene.Update(data.renderScene);
+			data.scene.Update(data.renderScene, deltaTime);
 			data.fbo.Unbind();
 
 			Renderer::ResizeViewport(data.Window().Size());

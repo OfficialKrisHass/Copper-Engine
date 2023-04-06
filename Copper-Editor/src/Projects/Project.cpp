@@ -113,7 +113,6 @@ namespace Editor {
 
 		system(cmd.c_str());
 
-		Log(path / "Binaries" / (name + ".dll"));
 		if (firstBuild)
 			Scripting::Reload(path / "Binaries" / (name + ".dll"));
 		else

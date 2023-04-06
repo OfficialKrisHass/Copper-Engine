@@ -2,8 +2,8 @@ Name: DevProject
 Last Scene: Scenes\Physics.copper
 Gizmo: 0
 Scene Camera:
-  Position: [9.65888977, -11.9441462, 24.621582]
-  Rotation: [-8026.7998, 2122.6543, 0]
+  Position: [3.72913599, -15.5443506, 2.50855875]
+  Rotation: [-8282.5, 2068.97119, 0]
   Fov: 90
   Near Plane: 0.100000001
   Far Plane: 1000

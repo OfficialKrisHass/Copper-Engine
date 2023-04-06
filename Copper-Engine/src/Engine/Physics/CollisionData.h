@@ -4,10 +4,13 @@
 
 namespace Copper {
 
-	struct IntersectData {
+	struct CollisionData {
 
 		Vector3 distance;
 		bool intersect;
+
+		class Collider* a;
+		class Collider* b;
 
 		operator bool() const { return intersect; }
 

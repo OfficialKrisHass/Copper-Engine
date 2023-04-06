@@ -45,11 +45,13 @@ namespace Editor {
 
 		void RenderEntity();
 
-		void RenderScriptComponent(Copper::ScriptComponent* script);
 		void RenderLight(Copper::Light* light);
 		void RenderCamera(Copper::Camera* camera);
-		void RenderCollider(Copper::Collider* collider);
+
+		void RenderSphereCollider(Copper::SphereCollider* collider);
 		void RenderPhysicsBody(Copper::PhysicsBody* physics);
+
+		void RenderScriptComponent(Copper::ScriptComponent* script);
 
 		template<typename T, typename F> void RenderScriptField(Copper::ScriptComponent* script, const Copper::ScriptField& field, F showFunc);
 

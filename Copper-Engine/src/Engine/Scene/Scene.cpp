@@ -20,6 +20,9 @@
 
 #include "Engine/Scripting/ScriptingCore.h"
 
+#include "Engine/Physics/SphereCollider.h"
+#include "Engine/Physics/CollisionData.h"
+
 #include <fstream>
 #include <yaml-cpp/yaml.h>
 
@@ -38,31 +41,40 @@ namespace Copper {
 
 		Renderer::ClearColor(0.18f, 0.18f, 0.18f);
 
+		for (Collider* collider : ComponentView<Collider>(this)) {
+
+			collider->checkedAllCollisions = false;
+
+		}
+
 		for (InternalEntity* entity : EntityView(this)) {
 
 			entity->transform->Update();
 
 			PhysicsBody* physicsBody = entity->GetComponent<PhysicsBody>();
-			if (physicsBody && runtimeRunning) {
+			if (runtimeRunning && physicsBody) {
 
-				physicsBody->force = Vector3(0.0f, 10.0f, 0.0f);
-				Vector3 r = Vector3(1.0f / 2, 1.0f / 2, 0.0f);
-				physicsBody->torque = r.x * physicsBody->force.y - r.y * physicsBody->force.x;
-
-				Vector3 linearAcceleration = Vector3(physicsBody->force.x / 1.0f, physicsBody->force.y / 1.0f, 0.0f);
-				physicsBody->velocity += linearAcceleration * deltaTime;
 				physicsBody->GetTransform()->position += physicsBody->velocity * deltaTime;
+				if(physicsBody->shouldGravity) physicsBody->velocity += Vector3(0.0f, -GravityConstant, 0.0f) * deltaTime;
 
-				float angularAcceleration = physicsBody->torque / physicsBody->momentOfIntertia;
-				physicsBody->angularVelocity += angularAcceleration * deltaTime;
-				physicsBody->angle += physicsBody->angularVelocity * deltaTime;
+				//physicsBody->force = Vector3(0.0f, 10.0f, 0.0f);
+				//Vector3 r = Vector3(1.0f / 2, 1.0f / 2, 0.0f);
+				//physicsBody->torque = r.x * physicsBody->force.y - r.y * physicsBody->force.x;
 
-				physicsBody->GetTransform()->rotation.z = physicsBody->angle;
+				//Vector3 linearAcceleration = Vector3(physicsBody->force.x / 1.0f, physicsBody->force.y / 1.0f, 0.0f);
+				//physicsBody->velocity += linearAcceleration * deltaTime;
+				//physicsBody->GetTransform()->position += physicsBody->velocity * deltaTime;
+
+				//float angularAcceleration = physicsBody->torque / physicsBody->momentOfIntertia;
+				//physicsBody->angularVelocity += angularAcceleration * deltaTime;
+				//physicsBody->angle += physicsBody->angularVelocity * deltaTime;
+
+				//physicsBody->GetTransform()->rotation.z = physicsBody->angle;
 
 				/*Vector3 acceleration = Vector3(0.0f, physicsBody->mass * -GravityConstant, 0.0f) / physicsBody->mass;
-				physicsBody->velocity += acceleration * deltaTime;
+				//physicsBody->velocity += acceleration * deltaTime;
 
-				physicsBody->GetTransform()->position += physicsBody->velocity * deltaTime;*/
+				//physicsBody->GetTransform()->position += physicsBody->velocity * deltaTime;*/
 
 			}
 
@@ -79,6 +91,38 @@ namespace Copper {
 			}
 
 			if (!runtimeRunning) continue;
+
+			std::vector<CollisionData> collisions;
+			if (Collider* collider = entity->GetComponent<Collider>()) {
+
+				for (Collider* other : ComponentView<Collider>(this)) {
+
+					if (other == collider) continue;
+					if (other->checkedAllCollisions) continue;
+
+					CollisionData data;
+					if (data = collider->Intersects(other)) continue;
+
+					collisions.push_back(data);
+
+				}
+
+				collider->checkedAllCollisions = true;
+
+			}
+
+			for (const CollisionData& data : collisions) {
+
+				//Log("A: {}       B: {}       Distance: {}       Distance float: {}", data.a->GetEntity()->name, data.b->GetEntity()->name, data.distance, data.distance.Length());
+				PhysicsBody* body;
+				if (!(body = data.a->GetEntity()->GetComponent<PhysicsBody>())) continue;
+
+				glm::vec3 vel = body->velocity;
+				vel = -glm::normalize(vel) * (glm::vec3) data.distance/* + glm::vec3(0.0f, GravityConstant, 0.0f) * deltaTime*/;
+				body->velocity = vel;
+				//body->shouldGravity = false;
+
+			}
 
 			/*std::vector<std::pair<Collider*, Collider*>> collisions;
 			if (Collider* collider = entity->GetComponent<Collider>()) {
@@ -288,11 +332,11 @@ namespace Copper {
 			out << YAML::EndMap; // Camera
 
 		}
-		if (Collider* collider = entity->GetComponent<Collider>()) {
+		if (SphereCollider* collider = entity->GetComponent<SphereCollider>()) {
 
-			out << YAML::Key << "Collider" << YAML::Value << YAML::BeginMap; // Collider
+			out << YAML::Key << "Sphere Collider" << YAML::Value << YAML::BeginMap; // Collider
 
-			out << YAML::Key << "Size" << YAML::Value << collider->size;
+			out << YAML::Key << "Radius" << YAML::Value << collider->radius;
 
 			out << YAML::EndMap; // Collider
 
@@ -427,12 +471,11 @@ namespace Copper {
 			cam->size = camNode["Size"].as<UVector2I>();
 
 		}
-		if (YAML::Node colliderNode = node["Collider"]) {
+		if (YAML::Node colliderNode = node["Sphere Collider"]) {
 
-			Collider* collider = entity->AddComponent<Collider>();
+			SphereCollider* collider = entity->AddComponent<SphereCollider>();
 
-			collider->size = colliderNode["Size"].as<Vector3>();
-			//collider->staticBody = colliderNode["Static"].as<bool>();
+			collider->radius = colliderNode["Radius"].as<float>();
 
 		}
 		if (YAML::Node physicsBodyNode = node["Physics"]) {

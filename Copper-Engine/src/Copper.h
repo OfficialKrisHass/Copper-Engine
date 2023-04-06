@@ -29,6 +29,10 @@
 #include "Engine/Renderer/Texture.h"
 #include "Engine/Renderer/Mesh.h"
 
+//Physics
+#include "Engine/Physics/CollisionData.h"
+#include "Engine/Physics/SphereCollider.h"
+
 //-----------------------------------
 //------Entity Component System------
 //-----------------------------------

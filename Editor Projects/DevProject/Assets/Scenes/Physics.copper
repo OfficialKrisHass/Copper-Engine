@@ -12,10 +12,10 @@ Entities:
     Light:
       Color: [1, 0.999989986, 0.999989986, 1]
       Intensity: 1
-  Cube:
+  A:
     ID: 1
     Transform:
-      Position: [0, -32.6769524, 5.89806938]
+      Position: [9.85480483e-07, -12, 1.92560577]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
       Parent ID: 4294967295
@@ -132,13 +132,15 @@ Entities:
           - 22
           - 23
           - 20
+    Sphere Collider:
+      Radius: 0.5
     Physics:
       Velocity: [0, 0, 0]
       Static: false
   Ground:
     ID: 2
     Transform:
-      Position: [0, -20, -3]
+      Position: [0, -20, 0]
       Rotation: [0, 0, 0]
       Scale: [10, 1, 10]
       Parent ID: 4294967295
@@ -255,3 +257,125 @@ Entities:
           - 22
           - 23
           - 20
+  B:
+    ID: 3
+    Transform:
+      Position: [0, -17.6157722, 2.57931066]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent ID: 4294967295
+      Children: []
+    Mesh Renderer:
+      Mesh:
+        Data:
+          - Position: [-0.5, -0.5, 0.5]
+            Normal: [0, 0, -1]
+            Color: [1, 0, 0, 1]
+          - Position: [0.5, -0.5, 0.5]
+            Normal: [0, 0, -1]
+            Color: [1, 0, 0, 1]
+          - Position: [0.5, 0.5, 0.5]
+            Normal: [0, 0, -1]
+            Color: [1, 0, 0, 1]
+          - Position: [-0.5, 0.5, 0.5]
+            Normal: [0, 0, -1]
+            Color: [1, 0, 0, 1]
+          - Position: [0.5, -0.5, -0.5]
+            Normal: [0, 0, 1]
+            Color: [0, 1, 1, 1]
+          - Position: [-0.5, -0.5, -0.5]
+            Normal: [0, 0, 1]
+            Color: [0, 1, 1, 1]
+          - Position: [-0.5, 0.5, -0.5]
+            Normal: [0, 0, 1]
+            Color: [0, 1, 1, 1]
+          - Position: [0.5, 0.5, -0.5]
+            Normal: [0, 0, 1]
+            Color: [0, 1, 1, 1]
+          - Position: [0.5, -0.5, 0.5]
+            Normal: [-1, 0, 0]
+            Color: [0, 1, 0, 1]
+          - Position: [0.5, -0.5, -0.5]
+            Normal: [-1, 0, 0]
+            Color: [0, 1, 0, 1]
+          - Position: [0.5, 0.5, -0.5]
+            Normal: [-1, 0, 0]
+            Color: [0, 1, 0, 1]
+          - Position: [0.5, 0.5, 0.5]
+            Normal: [-1, 0, 0]
+            Color: [0, 1, 0, 1]
+          - Position: [-0.5, -0.5, -0.5]
+            Normal: [1, 0, 0]
+            Color: [1, 0, 1, 1]
+          - Position: [-0.5, -0.5, 0.5]
+            Normal: [1, 0, 0]
+            Color: [1, 0, 1, 1]
+          - Position: [-0.5, 0.5, 0.5]
+            Normal: [1, 0, 0]
+            Color: [1, 0, 1, 1]
+          - Position: [-0.5, 0.5, -0.5]
+            Normal: [1, 0, 0]
+            Color: [1, 0, 1, 1]
+          - Position: [-0.5, 0.5, 0.5]
+            Normal: [0, -1, 0]
+            Color: [0, 0, 1, 1]
+          - Position: [0.5, 0.5, 0.5]
+            Normal: [0, -1, 0]
+            Color: [0, 0, 1, 1]
+          - Position: [0.5, 0.5, -0.5]
+            Normal: [0, -1, 0]
+            Color: [0, 0, 1, 1]
+          - Position: [-0.5, 0.5, -0.5]
+            Normal: [0, -1, 0]
+            Color: [0, 0, 1, 1]
+          - Position: [-0.5, -0.5, -0.5]
+            Normal: [0, 1, 0]
+            Color: [1, 1, 0, 1]
+          - Position: [0.5, -0.5, -0.5]
+            Normal: [0, 1, 0]
+            Color: [1, 1, 0, 1]
+          - Position: [0.5, -0.5, 0.5]
+            Normal: [0, 1, 0]
+            Color: [1, 1, 0, 1]
+          - Position: [-0.5, -0.5, 0.5]
+            Normal: [0, 1, 0]
+            Color: [1, 1, 0, 1]
+        Indices:
+          - 0
+          - 1
+          - 2
+          - 2
+          - 3
+          - 0
+          - 4
+          - 5
+          - 6
+          - 6
+          - 7
+          - 4
+          - 8
+          - 9
+          - 10
+          - 10
+          - 11
+          - 8
+          - 12
+          - 13
+          - 14
+          - 14
+          - 15
+          - 12
+          - 16
+          - 17
+          - 18
+          - 18
+          - 19
+          - 16
+          - 20
+          - 21
+          - 22
+          - 22
+          - 23
+          - 20
+    Sphere Collider:
+      Radius: 0.5

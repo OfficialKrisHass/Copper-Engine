@@ -4,7 +4,9 @@
 
 #include "Engine/Scene/Component.h"
 
-#include "Engine/Physics/IntersectData.h"
+#include "Engine/Physics/CollisionData.h"
+
+#define ColliderType(x) Collider::Type GetColliderType() const override { return Collider::Type::x; }
 
 namespace Copper {
 
@@ -12,14 +14,26 @@ namespace Copper {
 
 		friend class Scene;
 
-	public:
-		IntersectData Intersects(Collider* other);
-		IntersectData Intersects(const Vector3& min, const Vector3& max);
+	protected:
+		enum class Type;
 
-		Vector3 size = Vector3::zero;
-		
+	public:
+		CollisionData Intersects(Collider* other);
+
 	private:
-		bool checkedAllColliders = false;
+		bool checkedAllCollisions = false;
+
+		virtual Type GetColliderType() const = 0;
+
+	protected:
+		enum class Type {
+
+			Invalid,
+
+			Sphere,
+			Box
+
+		};
 
 	};
 

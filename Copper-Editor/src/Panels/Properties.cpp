@@ -68,7 +68,7 @@ namespace Editor {
 		if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) RenderScriptComponent(script);
 		if (Light* light = entity->GetComponent<Light>()) RenderLight(light);
 		if (Camera* camera = entity->GetComponent<Camera>()) RenderCamera(camera);
-		if (Collider* collider = entity->GetComponent<Collider>()) RenderCollider(collider);
+		if (SphereCollider* collider = entity->GetComponent<SphereCollider>()) RenderSphereCollider(collider);
 		if (PhysicsBody* physicsBody = entity->GetComponent<PhysicsBody>()) RenderPhysicsBody(physicsBody);
 
 		ImGui::Spacing();
@@ -106,9 +106,10 @@ namespace Editor {
 				Editor::SetChanges(true);
 			
 			}
-			if (ImGui::MenuItem("Collider")) {
 
-				entity->AddComponent<Collider>();
+			if (ImGui::MenuItem("Sphere Collider")) {
+
+				entity->AddComponent<SphereCollider>();
 				Editor::SetChanges(true);
 
 			}
@@ -138,6 +139,56 @@ namespace Editor {
 				
 		}
 		
+	}
+
+	void Properties::RenderLight(Light* light) {
+
+		ImGui::PushID((int) (int64_t) light);
+
+		if (!DrawComponent<Light>("Light", light->GetEntity())) { ImGui::PopID(); return; }
+
+		ShowColor("Color", &light->color);
+		ShowFloat("Intensity", &light->intensity);
+
+		ImGui::PopID();
+
+	}
+	void Properties::RenderCamera(Camera* camera) {
+
+		ImGui::PushID((int) (int64_t) camera);
+
+		if (!DrawComponent<Camera>("Camera", camera->GetEntity())) { ImGui::PopID(); return; }
+
+		ShowFloat("FOV", &camera->fov);
+		ShowFloat("Near Plane", &camera->nearPlane);
+		ShowFloat("Far Plane", &camera->farPlane);
+
+		ImGui::PopID();
+
+	}
+
+	void Properties::RenderSphereCollider(SphereCollider* collider) {
+
+		ImGui::PushID((void*) collider);
+
+		if (!DrawComponent<SphereCollider>("SphereCollider", collider->GetEntity())) { ImGui::PopID(); return; }
+
+		ShowFloat("Radius", &collider->radius);
+
+		ImGui::PopID();
+
+	}
+	void Properties::RenderPhysicsBody(PhysicsBody* physics) {
+
+		ImGui::PushID((void*) physics);
+
+		if (!DrawComponent<PhysicsBody>("Physics", physics->GetEntity())) { ImGui::PopID(); return; }
+
+		ShowVector3("Velocity", &physics->velocity);
+		ShowBool("Static Body", &physics->staticBody);
+
+		ImGui::PopID();
+
 	}
 
 	void Properties::RenderScriptComponent(ScriptComponent* script) {
@@ -170,54 +221,6 @@ namespace Editor {
 			}
 
 		}
-
-		ImGui::PopID();
-
-	}
-	void Properties::RenderLight(Light* light) {
-
-		ImGui::PushID((int) (int64_t) light);
-
-		if (!DrawComponent<Light>("Light", light->GetEntity())) { ImGui::PopID(); return; }
-
-		ShowColor("Color", &light->color);
-		ShowFloat("Intensity", &light->intensity);
-
-		ImGui::PopID();
-
-	}
-	void Properties::RenderCamera(Camera* camera) {
-
-		ImGui::PushID((int) (int64_t) camera);
-
-		if (!DrawComponent<Camera>("Camera", camera->GetEntity())) { ImGui::PopID(); return; }
-
-		ShowFloat("FOV", &camera->fov);
-		ShowFloat("Near Plane", &camera->nearPlane);
-		ShowFloat("Far Plane", &camera->farPlane);
-
-		ImGui::PopID();
-
-	}
-	void Properties::RenderCollider(Collider* collider) {
-
-		ImGui::PushID((void*) collider);
-
-		if (!DrawComponent<Collider>("Collider", collider->GetEntity())) { ImGui::PopID(); return; }
-
-		ShowVector3("Size", &collider->size);
-
-		ImGui::PopID();
-
-	}
-	void Properties::RenderPhysicsBody(PhysicsBody* physics) {
-
-		ImGui::PushID((void*) physics);
-
-		if (!DrawComponent<PhysicsBody>("Physics", physics->GetEntity())) { ImGui::PopID(); return; }
-
-		ShowVector3("Velocity", &physics->velocity);
-		ShowBool("Static Body", &physics->staticBody);
 
 		ImGui::PopID();
 

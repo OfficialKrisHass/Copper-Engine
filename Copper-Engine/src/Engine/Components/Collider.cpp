@@ -3,9 +3,20 @@
 
 #include "Engine/Components/Transform.h"
 
+#include "Engine/Physics/SphereCollider.h"
+
+#define CompareColliderTypes(x, y) GetColliderType() == Type::x && other->GetColliderType() == Type::y
+
 namespace Copper {
 
-	IntersectData Collider::Intersects(Collider* other) {
+	CollisionData Collider::Intersects(Collider* other) {
+
+		if(CompareColliderTypes(Sphere, Sphere))
+			return ((SphereCollider*) this)->Intersects((SphereCollider*) other);
+
+	}
+
+	/*IntersectData Collider::Intersects(Collider* other) {
 
 		Vector3 min = GetTransform()->position - size / 2;
 		Vector3 max = GetTransform()->position + size / 2;
@@ -37,6 +48,6 @@ namespace Copper {
 
 		return IntersectData {thisMin, ret};;
 
-	}
+	}*/
 
 }

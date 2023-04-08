@@ -37,7 +37,7 @@ namespace Copper {
 		inline float LengthSq() const { return x * x + y * y; }
 		inline float Length() const { return sqrt(x * x + y * y); }
 
-		inline Vector2& Normalize() { return *this /= x * x + y * y; }
+		inline Vector2 Normalize() { return *this / (x * x + y * y); }
 
 		Vector2 operator+(const Vector2& other) const		{ return Vector2(x + other.x, y + other.y); }
 		Vector2 operator+(const glm::vec2& other) const		{ return Vector2(x + other.x, y + other.y); }
@@ -162,7 +162,7 @@ namespace Copper {
 		inline float LengthSq() const { return x * x + y * y + z * z; }
 		inline float Length() const { return sqrt(x * x + y * y + z * z); }
 
-		inline Vector3& Normalize() { return *this /= x * x + y * y + z * z; }
+		inline Vector3 Normalize() { return *this / (x * x + y * y + z * z); }
 
 		operator glm::vec3() const { return glm::vec3(x, y, z); }
 
@@ -341,7 +341,7 @@ namespace Copper {
 		inline float LengthSq() const { return x * x + y * y + z * z + w * w; }
 		inline float Length() const { return sqrt(x * x + y * y + z * z + w * w); }
 
-		inline Vector4& Normalize() { return *this /= x * x + y * y + z * z + w * w; }
+		inline Vector4 Normalize() { return *this / (x * x + y * y + z * z + w * w); }
 
 		operator glm::vec4() const { return glm::vec4(x, y, z, w); }
 

@@ -51,7 +51,7 @@ namespace Copper {
 	Vector3::operator UVector3I() const { return UVector3I((uint32_t) x, (uint32_t) y, (uint32_t) z); }
 	Vector3I::operator UVector3I() const { return UVector3I((uint32_t) x, (uint32_t) y, (uint32_t) z); }
 
-	Vector4::operator Vector4I() const { return Vector4((int32_t) x, (int32_t) y, (uint32_t) z, (int32_t) w); }
+	Vector4::operator Vector4I() const { return Vector4I((int32_t) x, (int32_t) y, (int32_t) z, (int32_t) w); }
 	Vector4::operator UVector4I() const { return UVector4I((uint32_t) x, (uint32_t) y, (uint32_t) z, (uint32_t) w); }
 	Vector4I::operator UVector4I() const { return UVector4I((uint32_t) x, (uint32_t) y, (uint32_t) z, (uint32_t) w); }
 

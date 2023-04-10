@@ -136,7 +136,7 @@ Entities:
       Size: [1, 1, 1]
     Physics:
       Mass: 1
-      Gravity: false
+      Gravity: true
       Static: false
       Linear Velocity: [0, 0, 0]
       Angular Velocity: [0, 0, 0]

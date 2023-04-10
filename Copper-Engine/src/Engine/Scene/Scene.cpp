@@ -71,6 +71,7 @@ namespace Copper {
 			PhysicsBody* physicsBody = entity->GetComponent<PhysicsBody>();
 			if (runtimeRunning && physicsBody) {
 
+				physicsBody->force = Vector3::zero;
 				if (!physicsBody->staticBody && physicsBody->gravity) physicsBody->force = Vector3(0.0f, -GravityConstant, 0.0f);
 
 				physicsBody->linearVelocity += physicsBody->force / physicsBody->mass * PhysicsTimeStep;

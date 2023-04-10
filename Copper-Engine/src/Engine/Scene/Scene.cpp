@@ -38,7 +38,7 @@ namespace Copper {
 	void CalculateForceAndTorque(PhysicsBody* body) {
 
 		//if(body->shouldGravity) body->force = Vector3(0.0f, -GravityConstant, 0.0f);
-		if(body->test) body->torque = -Vector3(0.0f, -0.5f, 0.5f) * 5.0f;
+		if(body->test) body->torque = -Vector3(0.0f, -0.5f, 0.5f) * 0.1f;
 
 	}
 
@@ -75,16 +75,21 @@ namespace Copper {
 			PhysicsBody* physicsBody = entity->GetComponent<PhysicsBody>();
 			if (runtimeRunning && physicsBody) {
 
+				if(physicsBody->test) physicsBody->UpdateR();
+
 				CalculateForceAndTorque(physicsBody);
 				physicsBody->test = false;
 
 				physicsBody->linearVelocity += physicsBody->force / physicsBody->mass * PhysicsTimeStep;
 				physicsBody->angularVelocity += physicsBody->torque * physicsBody->R * physicsBody->IbodyInv * glm::transpose(physicsBody->R) * PhysicsTimeStep;
+				//physicsBody->angularVelocity += physicsBody->torque / physicsBody->inertia * PhysicsTimeStep;
 
 				physicsBody->GetTransform()->position += physicsBody->linearVelocity * PhysicsTimeStep;
 
-				physicsBody->R += physicsBody->angularVelocity * physicsBody->R * PhysicsTimeStep;
-				physicsBody->GetTransform()->rotation = glm::degrees(glm::eulerAngles(glm::quat(physicsBody->R)));
+				physicsBody->R = glm::mat3(physicsBody->q);
+				physicsBody->q += 0.5f * (glm::quat(0.0f, physicsBody->angularVelocity) * physicsBody->q);
+				physicsBody->GetTransform()->rotation = glm::degrees(glm::eulerAngles(physicsBody->q));
+				
 
 				physicsBody->torque = Vector3::zero;
 				//physicsBody->angularVelocity = Vector3::zero;

@@ -17,8 +17,10 @@ namespace Copper {
 
 	public:
 		float mass = 1.0f;
+		float inertia = 1.0f;
 
 		glm::mat3 R = glm::mat3(1.0f);
+		glm::quat q;
 
 		Vector3 linearVelocity;
 		Vector3 angularVelocity;
@@ -34,7 +36,7 @@ namespace Copper {
 
 		void UpdateR() {
 
-			R = glm::orientate3((glm::vec3) GetTransform()->rotation);
+			q = glm::quat(GetTransform()->rotation);
 
 		}
 

@@ -49,6 +49,7 @@ namespace Editor {
 		void RenderCamera(Copper::Camera* camera);
 
 		void RenderSphereCollider(Copper::SphereCollider* collider);
+		void RenderBoxCollider(Copper::BoxCollider* collider);
 		void RenderPhysicsBody(Copper::PhysicsBody* physics);
 
 		void RenderScriptComponent(Copper::ScriptComponent* script);

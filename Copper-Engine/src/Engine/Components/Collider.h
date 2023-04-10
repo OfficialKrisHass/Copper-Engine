@@ -14,18 +14,16 @@ namespace Copper {
 
 		friend class Scene;
 
-	protected:
-		enum class Type;
-
 	public:
 		CollisionData Intersects(Collider* other);
+
+		enum class Type;
+		virtual Type GetColliderType() const = 0;
 
 	private:
 		bool checkedAllCollisions = false;
 
-		virtual Type GetColliderType() const = 0;
-
-	protected:
+	public:
 		enum class Type {
 
 			Invalid,

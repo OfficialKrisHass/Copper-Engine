@@ -13,8 +13,8 @@ namespace Copper {
 
 		CollisionData Intersects(SphereCollider* other);
 
-	private:
 		ColliderType(Sphere)
+	private:
 
 	};
 

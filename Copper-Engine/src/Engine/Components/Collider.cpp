@@ -4,6 +4,7 @@
 #include "Engine/Components/Transform.h"
 
 #include "Engine/Physics/SphereCollider.h"
+#include "Engine/Physics/BoxCollider.h"
 
 #define CompareColliderTypes(x, y) GetColliderType() == Type::x && other->GetColliderType() == Type::y
 
@@ -13,6 +14,9 @@ namespace Copper {
 
 		if(CompareColliderTypes(Sphere, Sphere))
 			return ((SphereCollider*) this)->Intersects((SphereCollider*) other);
+
+		if(CompareColliderTypes(Box, Box))
+			return ((BoxCollider*) this)->Intersects((BoxCollider*) other);
 
 	}
 

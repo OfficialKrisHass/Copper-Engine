@@ -32,6 +32,7 @@
 //Physics
 #include "Engine/Physics/CollisionData.h"
 #include "Engine/Physics/SphereCollider.h"
+#include "Engine/Physics/BoxCollider.h"
 
 //-----------------------------------
 //------Entity Component System------

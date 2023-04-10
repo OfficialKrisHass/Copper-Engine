@@ -65,11 +65,19 @@ namespace Editor {
 			
 		}
 
-		if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) RenderScriptComponent(script);
 		if (Light* light = entity->GetComponent<Light>()) RenderLight(light);
 		if (Camera* camera = entity->GetComponent<Camera>()) RenderCamera(camera);
-		if (SphereCollider* collider = entity->GetComponent<SphereCollider>()) RenderSphereCollider(collider);
+
+		if (Collider* collider = entity->GetComponent<Collider>()) {
+
+			     if (collider->GetColliderType() == Collider::Type::Sphere) RenderSphereCollider((SphereCollider*) collider);
+			else if (collider->GetColliderType() == Collider::Type::Box) RenderBoxCollider((BoxCollider*) collider);
+
+		}
+
 		if (PhysicsBody* physicsBody = entity->GetComponent<PhysicsBody>()) RenderPhysicsBody(physicsBody);
+
+		if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) RenderScriptComponent(script);
 
 		ImGui::Spacing();
 		//ImGui::Spacing();
@@ -110,6 +118,12 @@ namespace Editor {
 			if (ImGui::MenuItem("Sphere Collider")) {
 
 				entity->AddComponent<SphereCollider>();
+				Editor::SetChanges(true);
+
+			}
+			if (ImGui::MenuItem("Box Collider")) {
+
+				entity->AddComponent<BoxCollider>();
 				Editor::SetChanges(true);
 
 			}
@@ -171,9 +185,20 @@ namespace Editor {
 
 		ImGui::PushID((void*) collider);
 
-		if (!DrawComponent<SphereCollider>("SphereCollider", collider->GetEntity())) { ImGui::PopID(); return; }
+		if (!DrawComponent<SphereCollider>("Sphere Collider", collider->GetEntity())) { ImGui::PopID(); return; }
 
 		ShowFloat("Radius", &collider->radius);
+
+		ImGui::PopID();
+
+	}
+	void Properties::RenderBoxCollider(BoxCollider* collider) {
+
+		ImGui::PushID((void*) collider);
+
+		if (!DrawComponent<BoxCollider>("Box Collider", collider->GetEntity())) { ImGui::PopID(); return; }
+
+		ShowVector3("Size", &collider->size);
 
 		ImGui::PopID();
 
@@ -184,7 +209,11 @@ namespace Editor {
 
 		if (!DrawComponent<PhysicsBody>("Physics", physics->GetEntity())) { ImGui::PopID(); return; }
 
-		ShowVector3("Velocity", &physics->velocity);
+		ShowFloat("Mass", &physics->mass);
+
+		ShowVector3("Linear Velocity", &physics->linearVelocity);
+		ShowVector3("Angular Velocity", &physics->angularVelocity);
+
 		ShowBool("Static Body", &physics->staticBody);
 
 		ImGui::PopID();

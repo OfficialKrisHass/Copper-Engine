@@ -15,7 +15,7 @@ Entities:
   A:
     ID: 1
     Transform:
-      Position: [9.85480483e-07, -12, 1.92560577]
+      Position: [0.209167004, -1.24402285, 11.6633024]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
       Parent ID: 4294967295
@@ -132,10 +132,12 @@ Entities:
           - 22
           - 23
           - 20
-    Sphere Collider:
-      Radius: 0.5
+    Box Collider:
+      Size: [1, 1, 1]
     Physics:
-      Velocity: [0, 0, 0]
+      Mass: 1
+      Linear Velocity: [0, 0, 0]
+      Angular Velocity: [0, 0, 0]
       Static: false
   Ground:
     ID: 2
@@ -260,7 +262,7 @@ Entities:
   B:
     ID: 3
     Transform:
-      Position: [0, -17.6157722, 2.57931066]
+      Position: [0, -18.0902328, 2.57931066]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
       Parent ID: 4294967295
@@ -377,5 +379,5 @@ Entities:
           - 22
           - 23
           - 20
-    Sphere Collider:
-      Radius: 0.5
+    Box Collider:
+      Size: [1, 1, 1]

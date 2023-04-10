@@ -211,10 +211,14 @@ namespace Editor {
 
 		ShowFloat("Mass", &physics->mass);
 
+		ShowBool("Gravity", &physics->gravity);
+		ShowBool("Static Body", &physics->staticBody);
+
+		ImGui::Separator();
+
 		ShowVector3("Linear Velocity", &physics->linearVelocity);
 		ShowVector3("Angular Velocity", &physics->angularVelocity);
 
-		ShowBool("Static Body", &physics->staticBody);
 
 		ImGui::PopID();
 

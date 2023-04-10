@@ -136,9 +136,10 @@ Entities:
       Size: [1, 1, 1]
     Physics:
       Mass: 1
+      Gravity: false
+      Static: false
       Linear Velocity: [0, 0, 0]
       Angular Velocity: [0, 0, 0]
-      Static: false
   Ground:
     ID: 2
     Transform:

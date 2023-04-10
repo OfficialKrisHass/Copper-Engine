@@ -35,13 +35,6 @@ namespace Copper {
 
 	std::unordered_map<uint32_t, std::function<bool(const YAML::Node&, Scene*)>> oldDeserializeFunctions;
 
-	void CalculateForceAndTorque(PhysicsBody* body) {
-
-		//if(body->shouldGravity) body->force = Vector3(0.0f, -GravityConstant, 0.0f);
-		if(body->test) body->torque = -Vector3(0.0f, -0.5f, 0.5f) * 0.1f;
-
-	}
-
 	void Scene::StartRuntime() {
 
 		runtimeRunning = true;
@@ -64,7 +57,10 @@ namespace Copper {
 
 			collider->checkedAllCollisions = false;
 
-			Vector2 test;
+		}
+		for (PhysicsBody* body : ComponentView<PhysicsBody>(this)) {
+
+			body->q = glm::quat(body->GetTransform()->rotation);
 
 		}
 
@@ -75,28 +71,16 @@ namespace Copper {
 			PhysicsBody* physicsBody = entity->GetComponent<PhysicsBody>();
 			if (runtimeRunning && physicsBody) {
 
-				if(physicsBody->test) physicsBody->UpdateR();
-
-				CalculateForceAndTorque(physicsBody);
-				physicsBody->test = false;
+				if (!physicsBody->staticBody && physicsBody->gravity) physicsBody->force = Vector3(0.0f, -GravityConstant, 0.0f);
 
 				physicsBody->linearVelocity += physicsBody->force / physicsBody->mass * PhysicsTimeStep;
-				physicsBody->angularVelocity += physicsBody->torque * physicsBody->R * physicsBody->IbodyInv * glm::transpose(physicsBody->R) * PhysicsTimeStep;
+				physicsBody->angularVelocity += physicsBody->torque * glm::mat3(physicsBody->q) * physicsBody->IbodyInv * glm::transpose(glm::mat3(physicsBody->q)) * PhysicsTimeStep;
 				//physicsBody->angularVelocity += physicsBody->torque / physicsBody->inertia * PhysicsTimeStep;
 
 				physicsBody->GetTransform()->position += physicsBody->linearVelocity * PhysicsTimeStep;
 
-				physicsBody->R = glm::mat3(physicsBody->q);
-				physicsBody->q += 0.5f * (glm::quat(0.0f, physicsBody->angularVelocity) * physicsBody->q);
-				physicsBody->GetTransform()->rotation = glm::degrees(glm::eulerAngles(physicsBody->q));
-				
-
-				physicsBody->torque = Vector3::zero;
-				//physicsBody->angularVelocity = Vector3::zero;
-
-				//physicsBody->force = Vector3(0.0f, 10.0f, 0.0f);
-				//Vector3 r = Vector3(1.0f / 2, 1.0f / 2, 0.0f);
-				//physicsBody->torque = r.x * physicsBody->force.y - r.y * physicsBody->force.x;
+				physicsBody->q = 0.5f * (glm::quat(0.0f, physicsBody->angularVelocity) * physicsBody->q);
+				physicsBody->GetTransform()->rotation += glm::degrees(glm::eulerAngles(physicsBody->q) * PhysicsTimeStep);
 
 			}
 
@@ -349,10 +333,12 @@ namespace Copper {
 
 			out << YAML::Key << "Mass" << YAML::Value << physicsBody->mass;
 
+			out << YAML::Key << "Gravity" << YAML::Value << physicsBody->gravity;
+			out << YAML::Key << "Static" << YAML::Value << physicsBody->staticBody;
+
 			out << YAML::Key << "Linear Velocity" << YAML::Value << physicsBody->linearVelocity;
 			out << YAML::Key << "Angular Velocity" << YAML::Value << physicsBody->angularVelocity;
 
-			out << YAML::Key << "Static" << YAML::Value << physicsBody->staticBody;
 
 			out << YAML::EndMap; // Physics
 
@@ -498,10 +484,12 @@ namespace Copper {
 
 			physicsBody->mass = physicsBodyNode["Mass"].as<float>();
 
+			physicsBody->staticBody = physicsBodyNode["Static"].as<bool>();
+			physicsBody->gravity = physicsBodyNode["Gravity"].as<bool>();
+
 			physicsBody->linearVelocity = physicsBodyNode["Linear Velocity"].as<Vector3>();
 			physicsBody->angularVelocity = physicsBodyNode["Angular Velocity"].as<Vector3>();
 
-			physicsBody->staticBody = physicsBodyNode["Static"].as<bool>();
 
 		}
 

@@ -15,32 +15,24 @@ namespace Copper {
 
 	class PhysicsBody : public Component {
 
-	public:
-		float mass = 1.0f;
-		float inertia = 1.0f;
+		friend class Scene;
 
-		glm::mat3 R = glm::mat3(1.0f);
-		glm::quat q;
+	public:
+		glm::quat q; //TO DO: Temporary, remove this and put it into Transform
+
+		float mass = 1.0f;
 
 		Vector3 linearVelocity;
 		Vector3 angularVelocity;
-		glm::mat3 Iinv = glm::mat3(1.0f);
+			
+		bool staticBody = false;
+		bool gravity = true;
+
+	private:
 		glm::mat3 IbodyInv = glm::mat3(1.0f);
 
 		Vector3 force;
 		Vector3 torque;
-			
-		bool staticBody = false;
-		bool shouldGravity = true;
-		bool test = true;
-
-		void UpdateR() {
-
-			q = glm::quat(GetTransform()->rotation);
-
-		}
-
-	private:
 
 	};
 

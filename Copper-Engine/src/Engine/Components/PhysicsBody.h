@@ -18,7 +18,8 @@ namespace Copper {
 		friend class Scene;
 
 	public:
-		glm::quat q; //TO DO: Temporary, remove this and put it into Transform
+		//glm::quat q; //TO DO: Temporary, remove this and put it into Transform
+		Quaternion q; //TO DO: Temporary, remove this and put it into Transform
 
 		float mass = 1.0f;
 

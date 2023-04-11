@@ -55,4 +55,6 @@ namespace Copper {
 	Vector4::operator UVector4I() const { return UVector4I((uint32_t) x, (uint32_t) y, (uint32_t) z, (uint32_t) w); }
 	Vector4I::operator UVector4I() const { return UVector4I((uint32_t) x, (uint32_t) y, (uint32_t) z, (uint32_t) w); }
 
+	Quaternion Quaternion::identity = Quaternion(1.0f, Vector3::zero);
+
 }

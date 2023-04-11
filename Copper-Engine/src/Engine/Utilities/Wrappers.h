@@ -6,6 +6,8 @@
 #include <GLM/vec3.hpp>
 #include <GLM/vec4.hpp>
 
+#include <GLM/ext/quaternion_float.hpp>
+
 #include <yaml-cpp/yaml.h>
 
 namespace Copper {
@@ -1368,23 +1370,43 @@ namespace Copper {
 
 	};
 
-	/*struct Quaternion {
+	inline Vector2 operator+(const float s, const Vector2& v) { return v + s; }
+	inline Vector2 operator-(const float s, const Vector2& v) { return v - s; }
+	inline Vector2 operator*(const float s, const Vector2& v) { return v * s; }
+	inline Vector2 operator/(const float s, const Vector2& v) { return v / s; }
+
+	inline Vector3 operator+(const float s, const Vector3& v) { return v + s; }
+	inline Vector3 operator-(const float s, const Vector3& v) { return v - s; }
+	inline Vector3 operator*(const float s, const Vector3& v) { return v * s; }
+	inline Vector3 operator/(const float s, const Vector3& v) { return v / s; }
+
+	inline Vector4 operator+(const float s, const Vector4& v) { return v + s; }
+	inline Vector4 operator-(const float s, const Vector4& v) { return v - s; }
+	inline Vector4 operator*(const float s, const Vector4& v) { return v * s; }
+	inline Vector4 operator/(const float s, const Vector4& v) { return v / s; }
+
+	struct Quaternion {
 
 		Quaternion() = default;
-		Quaternion(float x, float y, float z, float w) : v((x, y, z)), w(w) {}
-		Quaternion(const Vector3& v, float w) : v(v), w(w) {}
+		Quaternion(float x, float y, float z, float s) : v((x, y, z)), s(s) {}
+		Quaternion(float s, const Vector3& v) : v(v), s(s) {}
+		Quaternion(const glm::quat& q) : s(q.w) {}
 
+		float s = 0.0f;
 		Vector3 v;
-		float w = 0.0f;
 
-		Quaternion operator+(const Quaternion& other) const { return Quaternion(v.x + other.v.x, v.y + other.v.y, v.z + other.v.z, w + other.w); }
-		Quaternion operator-(const Quaternion& other) const { return Quaternion(v.x - other.v.x, v.y - other.v.y, v.z - other.v.z, w - other.w); }
-		Quaternion operator*(const Quaternion& other) const { return Quaternion(w * other.v + other.w * v + v.Cross(other.v), w * other.w - v.Dot(other.w)); }
-		Quaternion operator*(const float s) const { return Quaternion(v * s, w * s); }
+		static Quaternion identity;
+
+		Quaternion operator+(const Quaternion& other) const { return Quaternion(v.x + other.v.x, v.y + other.v.y, v.z + other.v.z, s + other.s); }
+		Quaternion operator-(const Quaternion& other) const { return Quaternion(v.x - other.v.x, v.y - other.v.y, v.z - other.v.z, s - other.s); }
+		Quaternion operator*(const Quaternion& other) const { return Quaternion(s * other.s - v.Dot(other.s), s * other.v + other.s * v + v.Cross(other.v)); }
+		Quaternion operator*(const float s) const { return Quaternion(this->s * s, v * s); }
+
+		operator glm::quat() const { return glm::quat(s, v); }
 
 	};
 
-	struct Matrix3 {
+	/*struct Matrix3 {
 
 		Matrix3(float identity = 1.0f) : x0(identity, 0.0f), x1(0.0f, identity), x2(0.0f, 0.0f, identity) {}
 		Matrix3(const Vector3& x0, const Vector3& x1, const Vector3& x2) : x0(x0), x1(x1), x2(x2) {}
@@ -1476,21 +1498,6 @@ namespace Copper {
 		}
 
 	};*/
-
-	inline Vector2 operator+(const float s, const Vector2& v) { return v + s; }
-	inline Vector2 operator-(const float s, const Vector2& v) { return v - s; }
-	inline Vector2 operator*(const float s, const Vector2& v) { return v * s; }
-	inline Vector2 operator/(const float s, const Vector2& v) { return v / s; }
-
-	inline Vector3 operator+(const float s, const Vector3& v) { return v + s; }
-	inline Vector3 operator-(const float s, const Vector3& v) { return v - s; }
-	inline Vector3 operator*(const float s, const Vector3& v) { return v * s; }
-	inline Vector3 operator/(const float s, const Vector3& v) { return v / s; }
-
-	inline Vector4 operator+(const float s, const Vector4& v) { return v + s; }
-	inline Vector4 operator-(const float s, const Vector4& v) { return v - s; }
-	inline Vector4 operator*(const float s, const Vector4& v) { return v * s; }
-	inline Vector4 operator/(const float s, const Vector4& v) { return v / s; }
 	
 	inline std::ostream& operator<<(std::ostream& os, const Vector2& vec) {
 

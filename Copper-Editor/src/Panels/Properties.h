@@ -30,6 +30,7 @@ namespace Editor {
 		bool ShowVector2(const std::string& name, Copper::Vector2* vec);
 		bool ShowVector3(const std::string& name, Copper::Vector3* vec);
 		bool ShowVector4(const std::string& name, Copper::Vector4* vec);
+		bool ShowQuaternion(const std::string& name, Copper::Quaternion* quat, bool eulerAngles = true);
 		bool ShowColor(const std::string& name, Copper::Color* col);
 
 		bool ShowEntity(const std::string& name, Copper::InternalEntity** entity);

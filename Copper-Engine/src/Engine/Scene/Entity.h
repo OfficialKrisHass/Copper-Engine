@@ -4,6 +4,8 @@
 
 #include "Engine/Core/Engine.h"
 
+#include <yaml-cpp/yaml.h>
+
 namespace Copper {
 
 	inline const int maxComponents = 32;

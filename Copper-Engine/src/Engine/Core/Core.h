@@ -3,7 +3,7 @@
 #include "Engine/Core/Log.h"
 #include "Engine/Core/Version.h"
 
-#include "Engine/Utilities/Wrappers.h"
+#include <CMath/CMath.h>
 
 #define CHECK(x, ...) { if(!(x)) {LogError(__VA_ARGS__); __debugbreak(); } }
 

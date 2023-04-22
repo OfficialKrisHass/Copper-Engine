@@ -7,8 +7,8 @@ namespace Copper {
 
 	CollisionData BoxCollider::Intersects(BoxCollider* other) {
 
-		Vector3 min = GetTransform()->position - size / 2;
-		Vector3 max = GetTransform()->position + size / 2;
+		Vector3 min = GetTransform()->position - size / 2.0f;
+		Vector3 max = GetTransform()->position + size / 2.0f;
 		Vector3 otherMin = other->GetTransform()->position - other->size / 2;
 		Vector3 otherMax = other->GetTransform()->position + other->size / 2;
 

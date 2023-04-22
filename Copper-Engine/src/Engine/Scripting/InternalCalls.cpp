@@ -239,7 +239,7 @@ namespace Copper::Scripting::InternalCalls {
 	static void GetRotation(uint32_t eID, Vector3* out) {
 
 		CheckValidEntity(eID);
-		*out = GetEntityFromID(eID)->GetTransform()->rotation;
+		*out = GetEntityFromID(eID)->GetTransform()->rotation.EulerAngles();
 
 	}
 	static void GetScale(uint32_t eID, Vector3* out) {

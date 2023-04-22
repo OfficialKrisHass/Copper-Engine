@@ -44,8 +44,11 @@ namespace Editor {
 			float rotX = sensitivity * (float) (mouseY - (GetWindow().Height() / 2)) / GetWindow().Height();
 			float rotY = sensitivity * (float) (mouseX - (GetWindow().Width() / 2)) / GetWindow().Width();
 
-			GetTransform()->rotation.x += rotX;
-			GetTransform()->rotation.y += rotY;
+			Vector3 test = GetTransform()->EulerRotation();
+			Log("Rot: {},      mouse Rot values: {}", test, Vector2(-rotX, rotY));
+			test.x -= rotX;
+			test.y += rotY;
+			GetTransform()->rotation = test;
 			
 			Input::SetCursorPosition((float) GetWindow().Width() / 2, (float) GetWindow().Height() / 2);
 

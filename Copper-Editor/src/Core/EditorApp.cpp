@@ -533,9 +533,9 @@ namespace Editor {
 
 				Math::DecomposeTransform(transform, position, rotation, scale);
 
-				glm::vec3 deltaRotation = rotation - (glm::vec3) selectedObj->GetTransform()->rotation;
+				glm::vec3 deltaRotation = (Vector3) rotation - selectedObj->GetTransform()->EulerRotation();
 				selectedObj->GetTransform()->position = position;
-				selectedObj->GetTransform()->rotation += deltaRotation;
+				selectedObj->GetTransform()->rotation += Quaternion((Vector3) deltaRotation);
 				selectedObj->GetTransform()->scale = scale;
 
 				//The rotation doesn't work for some reason, it keeps wiggling around

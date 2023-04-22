@@ -60,7 +60,7 @@ namespace Editor {
 		if(DrawComponent<Transform>("Transform", entity)) {
 			
 			ShowVector3("Position", &entity->GetTransform()->position);
-			ShowVector3("Rotation", &entity->GetTransform()->rotation);
+			ShowQuaternion("Rotation", &entity->GetTransform()->rotation);
 			ShowVector3("Scale",    &entity->GetTransform()->scale);
 			
 		}
@@ -551,6 +551,89 @@ namespace Editor {
 		if (ret) SetChanges(true);
 		return ret;
 		
+	}
+	bool Properties::ShowQuaternion(const std::string& name, Quaternion* quat, bool eulerAngles) {
+
+		if (eulerAngles) {
+
+			Vector3 eulerRotation = quat->EulerAngles();
+			bool ret = ShowVector3(name, &eulerRotation);
+			
+			if (ret) *quat = eulerRotation;
+
+			return ret;
+
+		}
+
+		bool ret = false;
+
+		ImGui::PushID(name.c_str());
+
+		//Settings
+		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2 {0, 0});
+
+		//Vars
+		float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+		ImVec2 buttonSize = {lineHeight + 3.0f, lineHeight};
+
+		//X
+		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4 {0.1f, 0.1f, 0.1f, 1.0f});
+		ImGui::Button("X", buttonSize);
+		ImGui::PopItemFlag();
+		ImGui::PopStyleColor();
+
+		ImGui::SameLine();
+		if (ImGui::DragFloat("##S", &quat->s, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
+		ImGui::PopItemWidth();
+		ImGui::SameLine();
+
+		//Y
+		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4 {0.1f, 0.1f, 0.1f, 1.0f});
+		ImGui::Button("Y", buttonSize);
+		ImGui::PopItemFlag();
+		ImGui::PopStyleColor();
+
+		ImGui::SameLine();
+		if (ImGui::DragFloat("##X", &quat->v.x, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
+		ImGui::PopItemWidth();
+		ImGui::SameLine();
+
+		//Z
+		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4 {0.1f, 0.1f, 0.1f, 1.0f});
+		ImGui::Button("Z", buttonSize);
+		ImGui::PopItemFlag();
+		ImGui::PopStyleColor();
+
+		ImGui::SameLine();
+		if (ImGui::DragFloat("##Y", &quat->v.y, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
+		ImGui::PopItemWidth();
+		ImGui::SameLine();
+
+		//W
+		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4 {0.1f, 0.1f, 0.1f, 1.0f});
+		ImGui::Button("W", buttonSize);
+		ImGui::PopItemFlag();
+		ImGui::PopStyleColor();
+
+		ImGui::SameLine();
+		if (ImGui::DragFloat("##Z", &quat->v.z, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
+		ImGui::PopItemWidth();
+
+		ImGui::VerticalSeparator();
+
+		//End
+		ImGui::PopStyleVar();
+		ImGui::Columns(1);
+		ImGui::PopID();
+
+		if (ret) SetChanges(true);
+		return ret;
+
 	}
 	bool Properties::ShowColor(const std::string& name, Color* col) {
 

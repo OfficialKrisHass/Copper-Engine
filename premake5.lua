@@ -11,6 +11,8 @@ group "Libraries"
     include "Copper-Engine/lib/ImGui/ImGui"
     include "Copper-Engine/lib/yaml-cpp"
     include "Copper-Engine/lib/assimp"
+
+    include "Copper-Engine/lib/Copper-Math"
 group ""
 
 project "Copper-Engine"
@@ -56,6 +58,7 @@ project "Copper-Engine"
         "%{prj.name}/lib/ImGui",
         "%{prj.name}/lib/ImGuizmo",
         "%{prj.name}/lib/stb",
+        "%{prj.name}/lib/Copper-Math"
 
     }
 
@@ -141,6 +144,7 @@ project "Copper-Editor"
         "Copper-Engine/lib/spdlog",
         "Copper-Engine/lib/ImGui",
         "Copper-Engine/lib/ImGuizmo",
+        "Copper-Engine/lib/Copper-Math",
         
         "Copper-Engine/lib/GLM/include",
         "Copper-Engine/lib/yaml-cpp/include",
@@ -257,6 +261,7 @@ project "Copper-CppTesting"
         "Copper-Engine/lib/spdlog",
         "Copper-Engine/lib/ImGui",
         "Copper-Engine/lib/ImGuizmo",
+        "Copper-Engine/lib/Copper-Math",
         
         "Copper-Engine/lib/GLM/include",
         "Copper-Engine/lib/yaml-cpp/include",

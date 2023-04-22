@@ -1,0 +1,3 @@
+[submodule "Copper-Engine/lib/Copper-Math"]
+	path = Copper-Engine/lib/Copper-Math
+	url = https://github.com/OfficialChrisHusky/Copper-Math

@@ -68,6 +68,8 @@ namespace Copper {
 
 			entity->transform->Update();
 
+			glm::quat test = glm::quat(Vector3());
+
 			PhysicsBody* physicsBody = entity->GetComponent<PhysicsBody>();
 			if (runtimeRunning && physicsBody) {
 
@@ -83,7 +85,7 @@ namespace Copper {
 				physicsBody->GetTransform()->position += physicsBody->linearVelocity * PhysicsTimeStep;
 
 				physicsBody->q = (Quaternion(0.0f, physicsBody->angularVelocity) * physicsBody->q) * 0.5f;
-				physicsBody->GetTransform()->rotation += glm::degrees(glm::eulerAngles((glm::quat) physicsBody->q) * PhysicsTimeStep);
+				physicsBody->GetTransform()->rotation += physicsBody->q * PhysicsTimeStep;
 
 			}
 

@@ -20,8 +20,9 @@ namespace Copper {
 		void LoadUInt(const std::string& name, uint32_t value) const;
 		void LoadFloat(const std::string& name, float value) const;
 		
-		void LoadMat4(const std::string& name, glm::mat4 mat) const;
-		void LoadVec3(const std::string& name, Vector3 vec) const;
+		void LoadMat4(const std::string& name, const Matrix4& mat) const;
+		void LoadMat4TEST(const std::string& name, const glm::mat4& mat) const;
+		void LoadVec3(const std::string& name, const Vector3& vec) const;
 
 	private:
 		uint32_t ID;

@@ -73,7 +73,7 @@ namespace Editor {
 		YAML::Node sceneCamera = main["Scene Camera"];
 
 		sceneCam.GetTransform()->position = sceneCamera["Position"].as<Vector3>();
-		sceneCam.GetTransform()->rotation = sceneCamera["Rotation"].as<Quaternion>();
+		sceneCam.GetTransform()->rotation = sceneCamera["Rotation"].as<Vector3>();
 
 		sceneCam.fov = sceneCamera["Fov"].as<float>();
 		sceneCam.nearPlane = sceneCamera["Near Plane"].as<float>();

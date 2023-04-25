@@ -31,6 +31,8 @@
 
 #include <yaml-cpp/yaml.h>
 
+#include <CMath/CMath.h>
+
 using namespace Copper;
 
 namespace Editor {
@@ -512,8 +514,8 @@ namespace Editor {
 			float wHeight = (float) ImGui::GetWindowHeight();
 			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, wWidth, wHeight);
 
-			const glm::mat4& cameraProjection = data.project.sceneCam.CreateProjectionMatrix();
-			glm::mat4 cameraView = data.project.sceneCam.CreateViewMatrix();
+			Matrix4 camProjection = data.project.sceneCam.CreateProjectionMatrix();
+			Matrix4 camView = data.project.sceneCam.CreateViewMatrix();
 			glm::mat4 transform = selectedObj->GetTransform()->CreateMatrix();
 
 			// Snapping
@@ -523,7 +525,7 @@ namespace Editor {
 
 			float snapValues[3] = {snapValue, snapValue, snapValue};
 
-			ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
+			ImGuizmo::Manipulate(&(camView.cols[0].x), &(camProjection.cols[0].x),
 								 (ImGuizmo::OPERATION) data.project.gizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
 								 nullptr, snap ? snapValues : nullptr);
 
@@ -533,9 +535,9 @@ namespace Editor {
 
 				Math::DecomposeTransform(transform, position, rotation, scale);
 
-				glm::vec3 deltaRotation = (Vector3) rotation - selectedObj->GetTransform()->EulerRotation();
+				glm::vec3 deltaRotation = (Vector3) rotation - selectedObj->GetTransform()->rotation;
 				selectedObj->GetTransform()->position = position;
-				selectedObj->GetTransform()->rotation += Quaternion((Vector3) deltaRotation);
+				selectedObj->GetTransform()->rotation += deltaRotation;
 				selectedObj->GetTransform()->scale = scale;
 
 				//The rotation doesn't work for some reason, it keeps wiggling around

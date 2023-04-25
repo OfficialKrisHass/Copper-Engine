@@ -79,7 +79,7 @@ namespace Editor {
             std::string filename = path.filename().string();
             if(!entry.is_directory()) filename.erase(filename.find_last_of('.'));
 
-            if (path.extension() == ".meta") continue;
+            if (path.extension() == ".cum") continue;
 
             ImGui::PushID(filename.c_str());
 

@@ -10,24 +10,19 @@
 
 namespace Copper {
 
-	glm::mat4 Camera::CreateViewMatrix() {
+	Matrix4 Camera::CreateViewMatrix() {
 
-		glm::mat4 ret(1.0f);
-
-		ret = glm::lookAt((glm::vec3) GetTransform()->position, (glm::vec3) (GetTransform()->position + GetTransform()->Forward()), (glm::vec3) GetTransform()->Up());
-
-		return ret;
+		return CMath::ViewMatrix(GetTransform()->position, GetTransform()->Forward(), GetTransform()->Up());
 
 	}
+	Matrix4 Camera::CreateProjectionMatrix() {
 
-	glm::mat4 Camera::CreateProjectionMatrix() {
+		Matrix4 ret;
 
-		glm::mat4 ret(1.0f);
-		
 	#ifdef CU_EDITOR
-		ret = glm::perspective(glm::radians(fov), static_cast<float>(size.x) / size.y, nearPlane, farPlane);
+		ret = CMath::ProjectionMatrix(fov, static_cast<float>(size.x) / size.y, nearPlane, farPlane);
 	#else
-		ret = glm::perspective(glm::radians(fov), GetWindowAspectRatio(), nearPlane, farPlane);
+		ret = CMath::ProjectionMatrix(fov, GetWindowAspectRatio(), nearPlane, farPlane);
 	#endif
 
 		return ret;

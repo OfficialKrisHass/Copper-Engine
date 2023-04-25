@@ -60,7 +60,7 @@ namespace Copper {
 		}
 		for (PhysicsBody* body : ComponentView<PhysicsBody>(this)) {
 
-			body->q = glm::quat(body->GetTransform()->rotation);
+			body->q = glm::quat((glm::vec3) body->GetTransform()->rotation);
 
 		}
 
@@ -77,15 +77,15 @@ namespace Copper {
 				if (!physicsBody->staticBody && physicsBody->gravity) physicsBody->force = Vector3(0.0f, -GravityConstant, 0.0f);
 
 				physicsBody->linearVelocity += physicsBody->force / physicsBody->mass * PhysicsTimeStep;
-				physicsBody->angularVelocity += physicsBody->torque * 
-					glm::mat3((glm::quat) physicsBody->q) * physicsBody->IbodyInv * glm::transpose(glm::mat3((glm::quat) physicsBody->q)) *
-					PhysicsTimeStep;
+				physicsBody->angularVelocity += (Vector3) (physicsBody->torque *
+														   glm::mat3((glm::quat) physicsBody->q) * physicsBody->IbodyInv * glm::transpose(glm::mat3((glm::quat) physicsBody->q)) *
+														   PhysicsTimeStep);
 				//physicsBody->angularVelocity += physicsBody->torque / physicsBody->inertia * PhysicsTimeStep;
 
 				physicsBody->GetTransform()->position += physicsBody->linearVelocity * PhysicsTimeStep;
 
-				physicsBody->q = (Quaternion(0.0f, physicsBody->angularVelocity) * physicsBody->q) * 0.5f;
-				physicsBody->GetTransform()->rotation += physicsBody->q * PhysicsTimeStep;
+				physicsBody->q = (glm::quat(0.0f, physicsBody->angularVelocity) * physicsBody->q) * 0.5f;
+				physicsBody->GetTransform()->rotation += glm::eulerAngles(physicsBody->q * PhysicsTimeStep);
 
 			}
 

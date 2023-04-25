@@ -23,8 +23,8 @@ namespace Copper {
 		Camera() = default;
 		Camera(const UVector2I& size) : size(size) {}
 
-		glm::mat4 CreateViewMatrix();
-		glm::mat4 CreateProjectionMatrix();
+		Matrix4 CreateViewMatrix();
+		Matrix4 CreateProjectionMatrix();
 
 		void Resize(const UVector2I& size) { this->size = size; }
 

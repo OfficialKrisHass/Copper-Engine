@@ -105,7 +105,7 @@ namespace Copper {
 		vao->Bind();
 		shader.Bind();
 
-		shader.LoadMat4("ProjectionView", cam->CreateProjectionMatrix() * cam->CreateViewMatrix());
+		shader.LoadMat4TEST("ProjectionView", (glm::mat4) cam->CreateProjectionMatrix() * (glm::mat4) cam->CreateViewMatrix());
 		shader.LoadVec3("camPos", cam->GetTransform()->position);
 
 		if (light) {

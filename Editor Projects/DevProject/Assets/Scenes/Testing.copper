@@ -304,4 +304,8 @@ Entities:
           - 23
           - 20
     Physics:
-      Velocity: [0, 0, 0]
+      Mass: 1
+      Gravity: true
+      Static: false
+      Linear Velocity: [0, 0, 0]
+      Angular Velocity: [0, 0, 0]

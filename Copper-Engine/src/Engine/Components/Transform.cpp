@@ -9,9 +9,11 @@
 
 namespace Copper {
 
-	glm::mat4 Transform::CreateMatrix() {
+	Vector3 VecFromGLM(const glm::vec3& vec) { return Vector3(vec.x, vec.y, vec.z); }
 
-		glm::mat4 ret(1.0f);
+	Matrix4 Transform::CreateMatrix() {
+
+		Matrix4 ret;
 
 		if (parent) {
 
@@ -19,11 +21,11 @@ namespace Copper {
 
 		}
 
-		ret = glm::translate(ret, (glm::vec3) position);
-		ret = glm::rotate(ret, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-		ret = glm::rotate(ret, glm::radians(rotation.x), glm::vec3(0.0f, 1.0f, 0.0f));
-		ret = glm::rotate(ret, glm::radians(rotation.x), glm::vec3(0.0f, 0.0f, 1.0f));
-		ret = glm::scale(ret, (glm::vec3) scale);
+		CMath::TranslateMatrix(ret, position);
+		CMath::RotateMatrix(ret, Vector3(1.0f, 0.0f, 0.0f), rotation.x);
+		CMath::RotateMatrix(ret, Vector3(0.0f, 1.0f, 0.0f), rotation.y);
+		CMath::RotateMatrix(ret, Vector3(0.0f, 0.0f, 1.0f), rotation.z);
+		CMath::ScaleMatrix(ret, scale);
 
 		return ret;
 
@@ -31,11 +33,11 @@ namespace Copper {
 
 	void Transform::Update() {
 
-		//glm::quat quat = glm::quat(glm::vec3(glm::radians(-rotation.x), glm::radians(-rotation.y), glm::radians(-rotation.z)));
+		glm::quat quat = glm::quat(glm::vec3(glm::radians(-rotation.x), glm::radians(-rotation.y), glm::radians(-rotation.z)));
 
-		this->forward	= glm::rotate((glm::quat) rotation, glm::vec3(0.0f, 0.0f, -1.0f));
-		this->right		= glm::rotate((glm::quat) rotation, glm::vec3(1.0f, 0.0f, 0.0f));
-		this->up		= glm::rotate((glm::quat) rotation, glm::vec3(0.0f, 1.0f, 0.0f));
+		this->forward	= VecFromGLM(glm::rotate(quat, glm::vec3(0.0f, 0.0f, -1.0f)));
+		this->right		= VecFromGLM(glm::rotate(quat, glm::vec3(1.0f, 0.0f,  0.0f)));
+		this->up		= VecFromGLM(glm::rotate(quat, glm::vec3(0.0f, 1.0f,  0.0f)));
 		this->back = -forward;
 		this->left = -right;
 		this->down = -up;

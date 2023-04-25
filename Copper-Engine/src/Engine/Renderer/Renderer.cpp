@@ -64,10 +64,9 @@ namespace Copper::Renderer {
 
 	void AddMesh(Mesh* mesh, Transform* transform) {
 
-		glm::mat4 mat = transform->CreateMatrix();
-		glm::mat4 noScale(1.0f);
-
-		noScale = glm::scale(mat, (glm::vec3) (-transform->scale));
+		Matrix4 mat = transform->CreateMatrix();
+		Matrix4 noScale = mat;
+		CMath::ScaleMatrix(noScale, -transform->scale);
 
 		int numOfVertices = (int) data.vertices.size() / 9;
 
@@ -77,8 +76,8 @@ namespace Copper::Renderer {
 			Vector3 normal;
 			Color color;
 
-			position = mat * glm::vec4((glm::vec3) mesh->vertices[i], 1.0f);
-			normal = (glm::mat3) mat * (glm::vec3) mesh->normals[i];
+			position = mat * Vector4(mesh->vertices[i], 1.0f);
+			normal = (Matrix3) mat * mesh->normals[i];
 			color = mesh->colors[i];
 
 			data.vertices.push_back(position.x); data.vertices.push_back(position.y); data.vertices.push_back(position.z);

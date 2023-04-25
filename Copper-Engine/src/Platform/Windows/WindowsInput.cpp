@@ -20,8 +20,8 @@ namespace Copper::Input {
 	bool mouseLocked = false;
 	bool firstMouseLockedFrame = true;
 
-	Vector2 prevMousePos;
-	Vector2 mousePosDiference;
+	UVector2I prevMousePos;
+	UVector2I mousePosDiference;
 
 	bool OnKeyPressed(const Event& e);
 	bool OnKeyReleased(const Event& e);
@@ -40,7 +40,7 @@ namespace Copper::Input {
 	}
 	void Update() {
 
-		mousePosDiference = Vector2::zero;
+		mousePosDiference = UVector2I::zero;
 
 	}
 
@@ -99,7 +99,7 @@ namespace Copper::Input {
 
 		if (!mouseLocked) {
 
-			Vector2I diferenceFull = prevMousePos - event.mouseCoords;
+			UVector2I diferenceFull = prevMousePos - event.mouseCoords;
 			mousePosDiference.x = -((float) diferenceFull.x / (float) GetWindow().Width());
 			mousePosDiference.y = -((float) diferenceFull.y / (float) GetWindow().Height());
 

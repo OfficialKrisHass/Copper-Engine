@@ -20,8 +20,7 @@ namespace Copper {
 
 	public:
 		Transform() = default;
-		Transform(const Vector3 position, const Vector3 rotation, const Vector3 scale) : position(position), rotation(rotation), scale(scale) {}
-		Transform(const Vector3 position, const Vector3 rotation, const Vector3& scale) : position(position), rotation(rotation), scale(scale) {}
+		Transform(const Vector3& position, const Vector3& rotation, const Vector3& scale) : position(position), rotation(rotation), scale(scale) {}
 
 		Vector3 position = Vector3::zero;
 		Vector3 rotation = Vector3::zero;
@@ -48,7 +47,7 @@ namespace Copper {
 		const Vector3& Right()   const { return right; }
 		const Vector3& Left()    const { return left; }
 
-		glm::mat4 CreateMatrix();
+		Matrix4 CreateMatrix();
 
 		bool operator==(const Transform& other) const;
 

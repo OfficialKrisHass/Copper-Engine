@@ -8,9 +8,9 @@ namespace Copper {
 
 	public:
 		MouseMoveEvent() = default;
-		MouseMoveEvent(Vector2 mouseCoords) : mouseCoords(mouseCoords) {}
+		MouseMoveEvent(UVector2I mouseCoords) : mouseCoords(mouseCoords) {}
 
-		Vector2 mouseCoords;
+		UVector2I mouseCoords;
 
 	};
 

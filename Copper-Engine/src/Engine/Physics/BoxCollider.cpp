@@ -9,8 +9,8 @@ namespace Copper {
 
 		Vector3 min = GetTransform()->position - size / 2.0f;
 		Vector3 max = GetTransform()->position + size / 2.0f;
-		Vector3 otherMin = other->GetTransform()->position - other->size / 2;
-		Vector3 otherMax = other->GetTransform()->position + other->size / 2;
+		Vector3 otherMin = other->GetTransform()->position - other->size / 2.0f;
+		Vector3 otherMax = other->GetTransform()->position + other->size / 2.0f;
 
 		Vector3 dist1 = min - otherMax;
 		Vector3 dist2 = otherMin - max;

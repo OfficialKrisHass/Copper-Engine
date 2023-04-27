@@ -54,11 +54,12 @@ project "Copper-Engine"
         "%{prj.name}/lib/yaml-cpp/include",
         "%{prj.name}/lib/assimp/include",
         "%{prj.name}/lib/mono/include",
+        "%{prj.name}/lib/physx/include",
         "%{prj.name}/lib/spdlog",
         "%{prj.name}/lib/ImGui",
         "%{prj.name}/lib/ImGuizmo",
         "%{prj.name}/lib/stb",
-        "%{prj.name}/lib/Copper-Math"
+        "%{prj.name}/lib/Copper-Math",
 
     }
 
@@ -69,8 +70,14 @@ project "Copper-Engine"
         "ImGui",
         "yaml-cpp",
         "assimp",
-        "%{prj.name}/lib/mono/bin/%{cfg.buildcfg}/mono-2.0-sgen.dll",
         "opengl32.lib",
+
+        "%{prj.name}/lib/mono/bin/%{cfg.buildcfg}/mono-2.0-sgen.dll",
+
+        "/lib/physx/bin/win.x86_64.vc143.mt/debug/PhysX_64.lib",
+        "/lib/physx/bin/win.x86_64.vc143.mt/debug/PhysXCommon_64.lib",
+        "/lib/physx/bin/win.x86_64.vc143.mt/debug/PhysXFoundation_64.lib",
+        "/lib/physx/bin/win.x86_64.vc143.mt/debug/PhysXExtensions_static_64.lib",
 
     }
 
@@ -86,7 +93,8 @@ project "Copper-Engine"
         "VERSION_MINOR=0",
         "VERSION_DEV=2",
         
-        "SCENE_VERSION=0"
+        "SCENE_VERSION=0",
+        "INCLUDE_GLM"
 
     }
 
@@ -162,12 +170,17 @@ project "Copper-Editor"
 
         "Copper-Engine/lib/mono/lib/%{cfg.buildcfg}/mono-2.0-sgen.lib",
 
+        "Copper-Engine/lib/physx/bin/win.x86_64.vc143.mt/debug/PhysXCommon_64.lib",
+        "Copper-Engine/lib/physx/bin/win.x86_64.vc143.mt/debug/PhysXFoundation_64.lib",
+        "Copper-Engine/lib/physx/bin/win.x86_64.vc143.mt/debug/PhysXExtensions_static_64.lib",
+
     }
 
     defines {
 
         "CU_EDITOR",
-        "_CRT_SECURE_NO_WARNINGS"
+        "_CRT_SECURE_NO_WARNINGS",
+        "INCLUDE_GLM"
 
     }
     

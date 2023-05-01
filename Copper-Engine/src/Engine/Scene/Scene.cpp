@@ -15,36 +15,47 @@
 #include "Engine/Components/MeshRenderer.h"
 #include "Engine/Components/ScriptComponent.h"
 #include "Engine/Components/Light.h"
-#include "Engine/Components/Collider.h"
 #include "Engine/Components/PhysicsBody.h"
 
 #include "Engine/Scripting/ScriptingCore.h"
 
-#include "Engine/Physics/CollisionData.h"
-#include "Engine/Physics/SphereCollider.h"
-#include "Engine/Physics/BoxCollider.h"
-
 #include <fstream>
 #include <yaml-cpp/yaml.h>
 
-#define PhysicsTimeStep 0.02f
+#include <physx/PxPhysicsAPI.h>
 
 namespace Copper {
 
 	int cCounter = 0;
+
+	physx::PxMaterial* physicsMaterial;
 
 	std::unordered_map<uint32_t, std::function<bool(const YAML::Node&, Scene*)>> oldDeserializeFunctions;
 
 	void Scene::StartRuntime() {
 
 		runtimeRunning = true;
+		physicsScene = Physics::CreatePhysicsScene();
+
+		physicsMaterial = Physics::GetPhysicsInstance()->createMaterial(0.5f, 0.5f, 0.6f);
+		physx::PxShape* groundShape = Physics::GetPhysicsInstance()->createShape(physx::PxPlaneGeometry(), *physicsMaterial, true);
+		physx::PxRigidStatic* ground = Physics::GetPhysicsInstance()->createRigidStatic(physx::PxTransformFromPlaneEquation(physx::PxPlane(0, 1, 0, 0)));
+		ground->attachShape(*groundShape);
+		groundShape->release();
+
+		physicsScene->addActor(*ground);
 
 		for (PhysicsBody* body : ComponentView<PhysicsBody>(this)) {
 
-			Vector3& scale = body->GetTransform()->scale;
-			body->IbodyInv = glm::inverse((body->mass / 12) * glm::mat3(glm::vec3(scale.y * scale.y + scale.z * scale.z, 0.0f, 0.0f),
-																		glm::vec3(0.0f, scale.x * scale.x + scale.z * scale.z, 0.0f),
-																		glm::vec3(0.0f, 0.0f, scale.x * scale.x + scale.y * scale.y)));
+			Vector3 bodyScale = body->GetTransform()->scale / 2.0f;
+			physx::PxShape* shape = Physics::GetPhysicsInstance()->createShape(physx::PxBoxGeometry(bodyScale.x, bodyScale.y, bodyScale.z), *physicsMaterial);
+			physx::PxTransform transform(body->GetTransform()->position.x, body->GetTransform()->position.y, body->GetTransform()->position.z);
+
+			body->body = Physics::GetPhysicsInstance()->createRigidDynamic(transform);
+			body->body->attachShape(*shape);
+			physx::PxRigidBodyExt::updateMassAndInertia(*body->body, body->mass);
+			physicsScene->addActor(*body->body);
+			shape->release();
 
 		}
 
@@ -53,41 +64,30 @@ namespace Copper {
 
 		Renderer::ClearColor(0.18f, 0.18f, 0.18f);
 
-		for (Collider* collider : ComponentView<Collider>(this)) {
+		if (runtimeRunning) {
 
-			collider->checkedAllCollisions = false;
-
-		}
-		for (PhysicsBody* body : ComponentView<PhysicsBody>(this)) {
-
-			body->q = glm::quat((glm::vec3) body->GetTransform()->rotation);
+			physicsScene->simulate(1.0f / 60.0f);
+			physicsScene->fetchResults(true);
 
 		}
 
 		for (InternalEntity* entity : EntityView(this)) {
 
-			entity->transform->Update();
+			if (PhysicsBody* body = entity->GetComponent<PhysicsBody>()) {
 
-			glm::quat test = glm::quat(Vector3());
+				if (runtimeRunning) {
 
-			PhysicsBody* physicsBody = entity->GetComponent<PhysicsBody>();
-			if (runtimeRunning && physicsBody) {
+					physx::PxTransform bodyTransform = body->body->getGlobalPose();
+					body->GetTransform()->position = Vector3(bodyTransform.p.x, bodyTransform.p.y, bodyTransform.p.z);
 
-				physicsBody->force = Vector3::zero;
-				if (!physicsBody->staticBody && physicsBody->gravity) physicsBody->force = Vector3(0.0f, -GravityConstant, 0.0f);
+					glm::quat bodyRotation = glm::quat(bodyTransform.q.w, bodyTransform.q.x, bodyTransform.q.y, bodyTransform.q.z);
+					body->GetTransform()->rotation = Vector3(glm::degrees(glm::eulerAngles(bodyRotation)));
 
-				physicsBody->linearVelocity += physicsBody->force / physicsBody->mass * PhysicsTimeStep;
-				physicsBody->angularVelocity += (Vector3) (physicsBody->torque *
-														   glm::mat3((glm::quat) physicsBody->q) * physicsBody->IbodyInv * glm::transpose(glm::mat3((glm::quat) physicsBody->q)) *
-														   PhysicsTimeStep);
-				//physicsBody->angularVelocity += physicsBody->torque / physicsBody->inertia * PhysicsTimeStep;
-
-				physicsBody->GetTransform()->position += physicsBody->linearVelocity * PhysicsTimeStep;
-
-				physicsBody->q = (glm::quat(0.0f, physicsBody->angularVelocity) * physicsBody->q) * 0.5f;
-				physicsBody->GetTransform()->rotation += glm::eulerAngles(physicsBody->q * PhysicsTimeStep);
+				}
 
 			}
+
+			entity->transform->Update();
 
 			if (Light* lightComponent = entity->GetComponent<Light>()) light = lightComponent;
 			if (Camera* cameraComponent = entity->GetComponent<Camera>()) cam = cameraComponent;
@@ -102,38 +102,6 @@ namespace Copper {
 			}
 
 			if (!runtimeRunning) continue;
-
-			/*std::vector<CollisionData> collisions;
-			if (Collider* collider = entity->GetComponent<Collider>()) {
-
-				for (Collider* other : ComponentView<Collider>(this)) {
-
-					if (other == collider) continue;
-					if (other->checkedAllCollisions) continue;
-
-					CollisionData data;
-					if (data = collider->Intersects(other)) continue;
-
-					collisions.push_back(data);
-
-				}
-
-				collider->checkedAllCollisions = true;
-
-			}*/
-
-			//for (const CollisionData& data : collisions) {
-
-			//	PhysicsBody* body;
-			//	if (!(body = data.a->GetEntity()->GetComponent<PhysicsBody>())) continue;
-
-			//	body->linearVelocity = -body->linearVelocity.Normalize() * data.distance;
-			//	body->GetTransform()->position += body->linearVelocity * PhysicsTimeStep;
-			//	body->linearVelocity = Vector3::zero;
-			//	//body->shouldGravity = false;
-
-			//}
-
 			if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) {
 
 				if (!runtimeStarted) script->InvokeCreate();
@@ -150,7 +118,6 @@ namespace Copper {
 	void Scene::Render(Camera* camera) {
 
 		Renderer::RenderFrame(camera, light);
-		//Log(camera->size);
 
 	}
 
@@ -311,43 +278,6 @@ namespace Copper {
 			out << YAML::EndMap; // Camera
 
 		}
-		if (Collider* collider = entity->GetComponent<Collider>()) {
-
-			if (collider->GetColliderType() == Collider::Type::Sphere) {
-
-				out << YAML::Key << "Sphere Collider" << YAML::Value << YAML::BeginMap; // Sphere Collider
-
-				out << YAML::Key << "Radius" << YAML::Value << ((SphereCollider*) collider)->radius;
-
-				out << YAML::EndMap; // Sphere Collider
-
-			} else if(collider->GetColliderType() == Collider::Type::Box) {
-
-				out << YAML::Key << "Box Collider" << YAML::Value << YAML::BeginMap; // Box Collider
-
-				out << YAML::Key << "Size" << YAML::Value << ((BoxCollider*) collider)->size;
-
-				out << YAML::EndMap; // Box Collider
-
-			}
-
-		}
-		if (PhysicsBody* physicsBody = entity->GetComponent<PhysicsBody>()) {
-
-			out << YAML::Key << "Physics" << YAML::Value << YAML::BeginMap; // Physics
-
-			out << YAML::Key << "Mass" << YAML::Value << physicsBody->mass;
-
-			out << YAML::Key << "Gravity" << YAML::Value << physicsBody->gravity;
-			out << YAML::Key << "Static" << YAML::Value << physicsBody->staticBody;
-
-			out << YAML::Key << "Linear Velocity" << YAML::Value << physicsBody->linearVelocity;
-			out << YAML::Key << "Angular Velocity" << YAML::Value << physicsBody->angularVelocity;
-
-
-			out << YAML::EndMap; // Physics
-
-		}
 
 		if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) {
 
@@ -377,6 +307,16 @@ namespace Copper {
 
 		}
 		
+		if (PhysicsBody* body = entity->GetComponent<PhysicsBody>()) {
+
+			out << YAML::Key << "Physics Body" << YAML::Value << YAML::BeginMap; // Physics Body
+
+			out << YAML::Key << "Mass" << YAML::Value << body->mass;
+
+			out << YAML::EndMap; // Physics Body
+
+		}
+
 		out << YAML::EndMap; // Enity
 
 	}
@@ -469,35 +409,6 @@ namespace Copper {
 
 		}
 
-		if (YAML::Node colliderNode = node["Sphere Collider"]) {
-
-			SphereCollider* collider = entity->AddComponent<SphereCollider>();
-
-			collider->radius = colliderNode["Radius"].as<float>();
-
-		}
-		if (YAML::Node colliderNode = node["Box Collider"]) {
-
-			BoxCollider* collider = entity->AddComponent<BoxCollider>();
-
-			//collider->size = colliderNode["Size"].as<Vector3>();
-
-		}
-		if (YAML::Node physicsBodyNode = node["Physics"]) {
-
-			PhysicsBody* physicsBody = entity->AddComponent<PhysicsBody>();
-
-			physicsBody->mass = physicsBodyNode["Mass"].as<float>();
-
-			physicsBody->staticBody = physicsBodyNode["Static"].as<bool>();
-			physicsBody->gravity = physicsBodyNode["Gravity"].as<bool>();
-
-			physicsBody->linearVelocity = physicsBodyNode["Linear Velocity"].as<Vector3>();
-			physicsBody->angularVelocity = physicsBodyNode["Angular Velocity"].as<Vector3>();
-
-
-		}
-
 		if (YAML::Node scriptNode = node["Script Component"]) {
 
 			ScriptComponent* script = entity->AddComponent<ScriptComponent>();
@@ -520,6 +431,14 @@ namespace Copper {
 				}
 
 			}
+
+		}
+
+		if (YAML::Node bodyNode = node["Physics Body"]) {
+
+			PhysicsBody* body = entity->AddComponent<PhysicsBody>();
+
+			body->mass = bodyNode["Mass"].as<float>();
 
 		}
 

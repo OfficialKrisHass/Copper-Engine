@@ -28,11 +28,6 @@
 #include "Engine/Renderer/Texture.h"
 #include "Engine/Renderer/Mesh.h"
 
-//Physics
-#include "Engine/Physics/CollisionData.h"
-#include "Engine/Physics/SphereCollider.h"
-#include "Engine/Physics/BoxCollider.h"
-
 //-----------------------------------
 //------Entity Component System------
 //-----------------------------------
@@ -44,5 +39,4 @@
 #include "Engine/Components/Light.h"
 #include "Engine/Components/MeshRenderer.h"
 #include "Engine/Components/ScriptComponent.h"
-#include "Engine/Components/Collider.h"
 #include "Engine/Components/PhysicsBody.h"

@@ -39,3 +39,5 @@ namespace Copper {
 	};
 
 }
+
+#include "Engine/Components/Transform.h"

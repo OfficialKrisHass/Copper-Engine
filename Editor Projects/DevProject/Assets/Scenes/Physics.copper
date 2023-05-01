@@ -4,7 +4,7 @@ Entities:
   Light:
     ID: 0
     Transform:
-      Position: [0, 2.39618683, 0]
+      Position: [-4.93940735, 12.6903553, -7.6237011]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
       Parent ID: 4294967295
@@ -15,7 +15,7 @@ Entities:
   A:
     ID: 1
     Transform:
-      Position: [0.209167004, -1.24402285, 11.6633024]
+      Position: [0, 2.32914257, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
       Parent ID: 4294967295
@@ -132,18 +132,12 @@ Entities:
           - 22
           - 23
           - 20
-    Box Collider:
-      Size: [1, 1, 1]
-    Physics:
+    Physics Body:
       Mass: 1
-      Gravity: true
-      Static: false
-      Linear Velocity: [0, 0, 0]
-      Angular Velocity: [0, 0, 0]
   Ground:
     ID: 2
     Transform:
-      Position: [0, -20, 0]
+      Position: [0, -0.5, 0]
       Rotation: [0, 0, 0]
       Scale: [10, 1, 10]
       Parent ID: 4294967295
@@ -263,7 +257,7 @@ Entities:
   B:
     ID: 3
     Transform:
-      Position: [0, -18.0902328, 2.57931066]
+      Position: [0.370437145, 10, -0.815434933]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
       Parent ID: 4294967295
@@ -380,5 +374,5 @@ Entities:
           - 22
           - 23
           - 20
-    Box Collider:
-      Size: [1, 1, 1]
+    Physics Body:
+      Mass: 1

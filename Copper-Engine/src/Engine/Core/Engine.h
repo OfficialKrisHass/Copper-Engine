@@ -14,11 +14,11 @@ namespace Copper {
 
 	enum class EngineState : uint8_t {
 
-			Entry,
-			Initialization,
-			PostInitialization,
-			Running,
-			Shutdown,
+		Entry,
+		Initialization,
+		PostInitialization,
+		Running,
+		Shutdown,
 
 	};
 

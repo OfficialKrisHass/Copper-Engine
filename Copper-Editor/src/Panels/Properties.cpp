@@ -68,16 +68,9 @@ namespace Editor {
 		if (Light* light = entity->GetComponent<Light>()) RenderLight(light);
 		if (Camera* camera = entity->GetComponent<Camera>()) RenderCamera(camera);
 
-		if (Collider* collider = entity->GetComponent<Collider>()) {
-
-			     if (collider->GetColliderType() == Collider::Type::Sphere) RenderSphereCollider((SphereCollider*) collider);
-			else if (collider->GetColliderType() == Collider::Type::Box) RenderBoxCollider((BoxCollider*) collider);
-
-		}
-
-		if (PhysicsBody* physicsBody = entity->GetComponent<PhysicsBody>()) RenderPhysicsBody(physicsBody);
-
 		if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) RenderScriptComponent(script);
+
+		if (PhysicsBody* body = entity->GetComponent<PhysicsBody>()) RenderPhysicsBody(body);
 
 		ImGui::Spacing();
 		//ImGui::Spacing();
@@ -114,20 +107,7 @@ namespace Editor {
 				Editor::SetChanges(true);
 			
 			}
-
-			if (ImGui::MenuItem("Sphere Collider")) {
-
-				entity->AddComponent<SphereCollider>();
-				Editor::SetChanges(true);
-
-			}
-			if (ImGui::MenuItem("Box Collider")) {
-
-				entity->AddComponent<BoxCollider>();
-				Editor::SetChanges(true);
-
-			}
-			if (ImGui::MenuItem("Physics")) {
+			if (ImGui::MenuItem("Physics Body")) {
 
 				entity->AddComponent<PhysicsBody>();
 				Editor::SetChanges(true);
@@ -181,49 +161,6 @@ namespace Editor {
 
 	}
 
-	void Properties::RenderSphereCollider(SphereCollider* collider) {
-
-		ImGui::PushID((void*) collider);
-
-		if (!DrawComponent<SphereCollider>("Sphere Collider", collider->GetEntity())) { ImGui::PopID(); return; }
-
-		ShowFloat("Radius", &collider->radius);
-
-		ImGui::PopID();
-
-	}
-	void Properties::RenderBoxCollider(BoxCollider* collider) {
-
-		ImGui::PushID((void*) collider);
-
-		if (!DrawComponent<BoxCollider>("Box Collider", collider->GetEntity())) { ImGui::PopID(); return; }
-
-		ShowVector3("Size", &collider->size);
-
-		ImGui::PopID();
-
-	}
-	void Properties::RenderPhysicsBody(PhysicsBody* physics) {
-
-		ImGui::PushID((void*) physics);
-
-		if (!DrawComponent<PhysicsBody>("Physics", physics->GetEntity())) { ImGui::PopID(); return; }
-
-		ShowFloat("Mass", &physics->mass);
-
-		ShowBool("Gravity", &physics->gravity);
-		ShowBool("Static Body", &physics->staticBody);
-
-		ImGui::Separator();
-
-		ShowVector3("Linear Velocity", &physics->linearVelocity);
-		ShowVector3("Angular Velocity", &physics->angularVelocity);
-
-
-		ImGui::PopID();
-
-	}
-
 	void Properties::RenderScriptComponent(ScriptComponent* script) {
 
 		ImGui::PushID((int) (int64_t) script);
@@ -254,6 +191,18 @@ namespace Editor {
 			}
 
 		}
+
+		ImGui::PopID();
+
+	}
+
+	void Properties::RenderPhysicsBody(PhysicsBody* body) {
+
+		ImGui::PushID((int) (int64_t) body);
+
+		if (!DrawComponent<PhysicsBody>("Physics Body", body->GetEntity())) { ImGui::PopID(); return; }
+
+		ShowFloat("Mass", &body->mass);
 
 		ImGui::PopID();
 

@@ -13,6 +13,8 @@
 
 #include "Engine/Scripting/ScriptingCore.h"
 
+#include "Engine/Physics/PhysicsEngine.h"
+
 #include "Engine/UI/ImGui.h"
 
 #include "Engine/Scene/CopperECS.h"
@@ -109,6 +111,7 @@ namespace Copper {
 		Input::AddMouseAxis("Mouse Y", false);
 
 		Scripting::Initialize();
+		Physics::Initialize();
 
 		data.engineState = EngineState::PostInitialization;
 		data.postInitEvent();

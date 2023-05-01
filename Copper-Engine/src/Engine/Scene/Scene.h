@@ -8,6 +8,8 @@
 #include "Engine/Components/Light.h"
 #include "Engine/Components/Camera.h"
 
+#include "Engine/Physics/PhysicsEngine.h"
+
 namespace Copper {
 
 	class Scene {
@@ -74,6 +76,7 @@ namespace Copper {
 
 	private:
 		Registry registry;
+		physx::PxScene* physicsScene;
 
 		Light* light;
 

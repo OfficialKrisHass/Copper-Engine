@@ -238,8 +238,6 @@ namespace Copper {
 			return cID;
 
 		}
-		template<> static int GetCID<class SphereCollider>() { return GetCID<class Collider>(); }
-		template<> static int GetCID<class BoxCollider>() { return GetCID<class Collider>(); }
 
 		ComponentPool* GetComponentPool(int cID) {
 

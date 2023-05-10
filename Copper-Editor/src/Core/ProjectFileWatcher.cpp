@@ -8,13 +8,13 @@ namespace Editor::ProjectFileWatcher {
 
 	struct ProjectFileWatcherData {
 
-		std::filesystem::path directory;
+		Filesystem::Path directory;
 		std::vector<std::string> filters;
 		bool running;
 
 		Unique<filewatch::FileWatch<std::string>> fw;
 
-		std::vector<std::function<void(const std::filesystem::path&, const FileChangeType& changeType)>> callbacks;
+		std::vector<std::function<void(const Filesystem::Path&, const FileChangeType& changeType)>> callbacks;
 
 	};
 	ProjectFileWatcherData data;
@@ -23,10 +23,10 @@ namespace Editor::ProjectFileWatcher {
 
 	void Start() {
 
-		if (data.directory.empty()) { LogError("Can't FileWatch an empty Directory!"); return; }
+		if (data.directory.Empty()) { LogError("Can't FileWatch an empty Directory!"); return; }
 
 		data.running = true;
-		data.fw = CreateUnique<filewatch::FileWatch<std::string>>(data.directory.string(), FileChangeCallback);
+		data.fw = CreateUnique<filewatch::FileWatch<std::string>>(data.directory.String(), FileChangeCallback);
 
 	}
 	void Stop() {
@@ -40,7 +40,7 @@ namespace Editor::ProjectFileWatcher {
 
 		if (!data.running) return;
 
-		std::filesystem::path fsPath(path);
+		Filesystem::Path fsPath(path);
 		
 		//We have to do this the stupid way of holding each filter as a string
 		//instead of having a single string that has all of the filters because
@@ -50,7 +50,7 @@ namespace Editor::ProjectFileWatcher {
 		bool extensionCorrect = false;
 		for (const std::string& filter : data.filters) {
 
-			if (fsPath.extension() == filter) { extensionCorrect = true; break; }
+			if (fsPath.Extension() == filter) { extensionCorrect = true; break; }
 
 		}
 		if (!extensionCorrect) return;
@@ -66,13 +66,13 @@ namespace Editor::ProjectFileWatcher {
 
 		}
 
-		for (size_t i = 0; i < data.callbacks.size(); i++) { data.callbacks[i](data.directory.string() + fsPath.string(), type); }
+		for (size_t i = 0; i < data.callbacks.size(); i++) { data.callbacks[i](data.directory / fsPath, type); }
 
 	}
 
-	void SetDirectory(const std::filesystem::path& directory) { data.directory = directory; }
+	void SetDirectory(const Filesystem::Path& directory) { data.directory = directory; }
 	void AddFilter(const std::string& filter) { data.filters.push_back(filter); }
 
-	void AddFileChangeCallback(std::function<void(const std::filesystem::path&, const FileChangeType& changeType)> func) { data.callbacks.push_back(func); }
+	void AddFileChangeCallback(std::function<void(const Filesystem::Path&, const FileChangeType& changeType)> func) { data.callbacks.push_back(func); }
 
 }

@@ -2,16 +2,16 @@
 
 namespace Editor {
 
-	void CreateFileAndReplace(const std::filesystem::path& originalPath, const std::filesystem::path& outPath, const std::string& what, const std::string& replace);
+	void CreateFileAndReplace(const Filesystem::Path& originalPath, const Filesystem::Path& outPath, const std::string& what, const std::string& replace);
 
-	void CopyFileTo(const std::filesystem::path& original, const std::filesystem::path& where, bool binary = false);
+	void CopyFileTo(const Filesystem::Path& original, const Filesystem::Path& where, bool binary = false);
 
 	void CreateTemplateFromProject(const Project& project) {
 
 		//Create The Directories
-		std::filesystem::create_directories("assets\\Templates\\" + project.name + "\\Assets\\Scenes");
-		std::filesystem::create_directories("assets\\Templates\\" + project.name + "\\Binaries");
-		std::filesystem::create_directories("assets\\Templates\\" + project.name + "\\Objs");
+		std::experimental::filesystem::create_directories("assets\\Templates\\" + project.name + "\\Assets\\Scenes");
+		std::experimental::filesystem::create_directories("assets\\Templates\\" + project.name + "\\Binaries");
+		std::experimental::filesystem::create_directories("assets\\Templates\\" + project.name + "\\Objs");
 
 		//Create the .cu, .sln, .csproj template files
 		CreateFileAndReplace(project.path / "Project.cu", "assets\\Templates\\" + project.name + "\\Project.cu.cut", project.name, ":{ProjectName}");
@@ -19,19 +19,19 @@ namespace Editor {
 		CreateFileAndReplace(project.path / "DevProject.csproj", "assets\\Templates\\" + project.name + "\\Template.csproj.cut", project.name, ":{ProjectName}");
 
 		//Copy the Last opened Scene
-		CopyFileTo(project.assetsPath / project.lastOpenedScene, "assets\\Templates\\" + project.name + "\\Assets\\" + project.lastOpenedScene.string());
-		CopyFileTo(project.assetsPath / (project.lastOpenedScene.string() + ".cum"), "assets\\Templates\\" + project.name + "\\Assets\\" + project.lastOpenedScene.string() + ".cum");
+		CopyFileTo(project.assetsPath / project.lastOpenedScene, "assets\\Templates\\" + project.name + "\\Assets\\" + project.lastOpenedScene.String());
+		CopyFileTo(project.assetsPath / (project.lastOpenedScene.String() + ".cum"), "assets\\Templates\\" + project.name + "\\Assets\\" + project.lastOpenedScene.String() + ".cum");
 
 		//Copy the Scripting API dll
 		CopyFileTo("assets\\ScriptAPI\\Copper-ScriptingAPI.dll", "assets\\Templates\\" + project.name + "\\Binaries\\Copper-ScriptingAPI.dll", true);
 
 	}
-	void CreateProjectFromTemplate(const std::filesystem::path& templatePath, Project& project) {
+	void CreateProjectFromTemplate(const Filesystem::Path& templatePath, Project& project) {
 
 		//Create the Directories
-		std::filesystem::create_directories(project.path / "Assets\\Scenes");
-		std::filesystem::create_directories(project.path / "Binaries");
-		std::filesystem::create_directories(project.path / "Objs");
+		std::experimental::filesystem::create_directories((project.path / "Assets\\Scenes").String());
+		std::experimental::filesystem::create_directories((project.path / "Binaries").String());
+		std::experimental::filesystem::create_directories((project.path / "Objs").String());
 
 		//Create the Project files from the tempalte
 		CreateFileAndReplace(templatePath / "Project.cu.cut", project.path / "Project.cu", ":{ProjectName}", project.name);
@@ -49,7 +49,7 @@ namespace Editor {
 
 	}
 	
-	void CreateFileAndReplace(const std::filesystem::path& originalPath, const std::filesystem::path& outPath, const std::string& what, const std::string& argument) {
+	void CreateFileAndReplace(const Filesystem::Path& originalPath, const Filesystem::Path& outPath, const std::string& what, const std::string& argument) {
 
 		std::ifstream originalFile(originalPath);
 		std::ofstream templateFile(outPath);
@@ -74,10 +74,22 @@ namespace Editor {
 
 	}
 
-	void CopyFileTo(const std::filesystem::path& original, const std::filesystem::path& where, bool binary) {
+	void CopyFileTo(const Filesystem::Path& original, const Filesystem::Path& where, bool binary) {
+		
+		std::ios_base::openmode inFlags = std::ios_base::in;
+		std::ios_base::openmode outFlags = std::ios_base::out;
+		if(binary) {
 
-		std::ifstream originalFile(original, std::ios::in | binary ? std::ios::binary : 0);
-		std::ofstream newFile(where, std::ios::out | binary ? std::ios::binary : 0);
+			inFlags |= std::ios_base::binary;
+			outFlags |= std::ios_base::binary;
+
+		}
+
+		std::ifstream originalFile;
+		std::ofstream newFile;
+
+		originalFile.open(original.String(), inFlags);
+		newFile.open(where.String(), outFlags);
 
 		newFile << originalFile.rdbuf();
 

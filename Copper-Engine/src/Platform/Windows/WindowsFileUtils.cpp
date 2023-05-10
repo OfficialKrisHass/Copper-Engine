@@ -12,7 +12,7 @@
 
 namespace Copper::Utilities {
 
-    std::string OpenDialog(const char* filter, std::filesystem::path initialDir) {
+    Filesystem::Path OpenDialog(const char* filter, const Filesystem::Path& initialDir) {
 
         OPENFILENAMEA ofn;
         CHAR szFile[260] = { 0 };
@@ -25,7 +25,7 @@ namespace Copper::Utilities {
         ofn.lpstrFile = szFile;
         ofn.nMaxFile = sizeof(szFile);
         
-        std::string initial = initialDir.make_preferred().string();
+        std::string initial = initialDir.CreateAndReplaceSeparator().String();
         ofn.lpstrInitialDir = initial.c_str();
 
         ofn.lpstrFilter = filter;
@@ -34,11 +34,11 @@ namespace Copper::Utilities {
 
         if (GetOpenFileNameA(&ofn) == TRUE) return ofn.lpstrFile;
 
-        return std::string();
+        return "";
         
     }
 
-    std::string SaveDialog(const char* filter, std::filesystem::path initialDir) {
+    Filesystem::Path SaveDialog(const char* filter, const Filesystem::Path& initialDir) {
 
         OPENFILENAMEA ofn;
         CHAR szFile[260] = { 0 };
@@ -51,7 +51,7 @@ namespace Copper::Utilities {
         ofn.lpstrFile = szFile;
         ofn.nMaxFile = sizeof(szFile);
         
-        std::string initial = initialDir.make_preferred().string();
+        std::string initial = initialDir.CreateAndReplaceSeparator().String();
         ofn.lpstrInitialDir = initial.c_str();
         
         ofn.lpstrFilter = filter;
@@ -62,7 +62,7 @@ namespace Copper::Utilities {
 
         if (GetSaveFileNameA(&ofn) == TRUE) return ofn.lpstrFile;
 		
-        return std::string();
+        return "";
         
     }
 
@@ -76,7 +76,7 @@ namespace Copper::Utilities {
         return 0;
     }
 
-    std::string FolderOpenDialog() {
+    Filesystem::Path FolderOpenDialog() {
 
         TCHAR path[256];
 

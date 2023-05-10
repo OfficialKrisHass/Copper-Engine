@@ -11,10 +11,10 @@ using namespace Copper;
 
 namespace Editor {
 
-    std::filesystem::path editingPath = "";
-    std::filesystem::path FileBrowser::projectRelativeDir = "";
+    Filesystem::Path editingPath = "";
+    Filesystem::Path FileBrowser::projectRelativeDir = "";
 
-    FileBrowser::FileBrowser(const std::filesystem::path& initialDir) : Panel("File Browser") {
+    FileBrowser::FileBrowser(const Filesystem::Path& initialDir) : Panel("File Browser") {
         
         projectRelativeDir = initialDir;
 
@@ -34,7 +34,7 @@ namespace Editor {
             
             if(ImGui::Button("<-", ImVec2(30, 30))) {
 
-                projectRelativeDir = projectRelativeDir.parent_path();
+                projectRelativeDir = projectRelativeDir.ParentPath();
                 
             }
 
@@ -43,7 +43,7 @@ namespace Editor {
         }
 
         ImGui::SameLine();
-        ImGui::Text(projectRelativeDir.string().c_str());
+        ImGui::Text(projectRelativeDir.String().c_str());
         ImGui::GetFont()->FontSize += 2.0f;
 
         const float padding = 16.0f;
@@ -60,10 +60,10 @@ namespace Editor {
 
             if(ImGui::MenuItem("Folder")) {
 
-                std::filesystem::path path = GetProject().assetsPath / projectRelativeDir;
-                path += "\\New Folder";
+                Filesystem::Path path = GetProject().assetsPath / projectRelativeDir;
+                path /= "New Folder";
 
-                std::filesystem::create_directories(path);
+                std::experimental::filesystem::create_directories(path.String());
 
                 editingPath = path;
                 
@@ -73,38 +73,45 @@ namespace Editor {
             
         }
 
-        for(const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(GetProject().assetsPath / projectRelativeDir)) {
+        for(const Filesystem::DirectoryEntry& entry : Filesystem::DirectoryIterator((GetProject().assetsPath / projectRelativeDir).String())) {
 
-            std::filesystem::path path = std::filesystem::relative(entry.path(), GetProject().assetsPath);
-            std::string filename = path.filename().string();
-            if(!entry.is_directory()) filename.erase(filename.find_last_of('.'));
+            Filesystem::Path fullPath = entry.path().string();
+            Filesystem::Path path = fullPath.RelativeTo(GetProject().assetsPath);
 
-            if (path.extension() == ".cum") continue;
+            std::string filename = path.File().String();
+            if(!fullPath.Directory()) {  
+                
+                size_t index = filename.find_last_of('.');
+                if (index != std::string::npos) filename.erase(index);
+
+            }
+
+            if (path.Extension() == "cum") continue;
 
             ImGui::PushID(filename.c_str());
 
-            Texture icon = entry.is_directory() ? directoryIcon : fileIcon;
+            Texture icon = fullPath.Directory() ? directoryIcon : fileIcon;
             ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-            if(ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t) icon.GetID()), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 }) && !entry.is_directory()) {
+            if(ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t) icon.GetID()), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 }) && !fullPath.Directory()) {
 
                 //Properties::SetSelectedFile(path);
                 
             }
             ImGui::PopStyleColor();
 
-            if ((path.extension() == ".fbx" || path.extension() == ".gltf" || path.extension() == ".obj") && ImGui::BeginDragDropSource()) {
+            if ((path.Extension() == "fbx" || path.Extension() == "gltf" || path.Extension() == "obj") && ImGui::BeginDragDropSource()) {
 
-                char* itemPath = (char*) path.c_str();
+                char* itemPath = (char*) path.String().c_str();
 
-                ImGui::SetDragDropPayload("MODEL", itemPath, (path.string().size() + 1) * sizeof(char), ImGuiCond_Once);
+                ImGui::SetDragDropPayload("MODEL", itemPath, (path.String().size() + 1) * sizeof(char), ImGuiCond_Once);
                 ImGui::EndDragDropSource();
 
             }
             
             if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
                 
-                if (entry.is_directory()) projectRelativeDir /= path.filename();
-                if (path.extension() == ".copper") {
+                if (fullPath.Directory()) projectRelativeDir /= path.File();
+                if (path.Extension() == "copper") {
 
                     OpenScene(GetProject().assetsPath / path);
                     
@@ -114,8 +121,8 @@ namespace Editor {
 
             if(ImGui::BeginPopupContextItem()) {
                 
-                if(ImGui::MenuItem("Remove")) { std::filesystem::remove_all(path); }
-                if(ImGui::MenuItem("Edit")) { editingPath = path; }
+                if(ImGui::MenuItem("Remove")) { path.Delete(); }
+                if(ImGui::MenuItem("Edit")) { editingPath = fullPath; }
                 
                 ImGui::EndPopup();
                 
@@ -123,19 +130,17 @@ namespace Editor {
 
             if (Input::IsKey(KeyCode::Escape)) { editingPath = ""; }
 
-            if(editingPath == path) {
+            if(editingPath == fullPath) {
 
                 char buffer[128] = {};
-                std::strncpy(buffer, filename.c_str(), sizeof(buffer));
+                std::strncpy(buffer, filename.c_str(), filename.length() * sizeof(char));
 
                 if (ImGui::InputText("##Edit Name", buffer, sizeof(buffer)) && (Input::IsKey(KeyCode::Enter) || Input::IsButton(Input::Button1))) {
 
-                    editingPath = editingPath.parent_path();
-                    editingPath += "\\";
-                    editingPath += buffer;
-                    editingPath += path.extension();
+                    editingPath = editingPath.ParentPath();
+                    editingPath /= buffer;
 
-                    rename(path, editingPath);
+                    rename(fullPath.String().c_str(), editingPath.String().c_str());
 
                     editingPath = "";
 

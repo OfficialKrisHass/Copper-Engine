@@ -5,7 +5,7 @@
 
 #include <GLM/glm.hpp>
 #include <GLM/ext/matrix_transform.hpp>
-#include <glm/gtx/quaternion.hpp>
+#include <GLM/gtx/quaternion.hpp>
 
 namespace Copper {
 

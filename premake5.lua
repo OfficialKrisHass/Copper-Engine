@@ -12,14 +12,14 @@ group "Libraries"
     include "Copper-Engine/lib/yaml-cpp"
     include "Copper-Engine/lib/assimp"
 
-    include "Copper-Engine/lib/Copper-Math"
+    include "Copper-Engine/lib/Copper-Math/CMath"
 group ""
 
 project "Copper-Engine"
     location "Copper-Engine"
     kind "StaticLib"
     language "C++"  
-    cppdialect "C++17"
+    cppdialect "C++20"
     staticruntime "on"
 
     targetdir("Build/" .. outputDir .. "/%{prj.name}")
@@ -54,12 +54,13 @@ project "Copper-Engine"
         "%{prj.name}/lib/yaml-cpp/include",
         "%{prj.name}/lib/assimp/include",
         "%{prj.name}/lib/mono/include",
-        "%{prj.name}/lib/physx/include",
         "%{prj.name}/lib/spdlog",
         "%{prj.name}/lib/ImGui",
         "%{prj.name}/lib/ImGuizmo",
         "%{prj.name}/lib/stb",
         "%{prj.name}/lib/Copper-Math",
+
+        "%{prj.name}/lib/physx/include/physx",
 
     }
 
@@ -71,13 +72,6 @@ project "Copper-Engine"
         "yaml-cpp",
         "assimp",
         "opengl32.lib",
-
-        "%{prj.name}/lib/mono/bin/%{cfg.buildcfg}/mono-2.0-sgen.dll",
-
-        "/lib/physx/bin/win.x86_64.vc143.mt/debug/PhysX_64.lib",
-        "/lib/physx/bin/win.x86_64.vc143.mt/debug/PhysXCommon_64.lib",
-        "/lib/physx/bin/win.x86_64.vc143.mt/debug/PhysXFoundation_64.lib",
-        "/lib/physx/bin/win.x86_64.vc143.mt/debug/PhysXExtensions_static_64.lib",
 
     }
 
@@ -100,7 +94,7 @@ project "Copper-Engine"
 
     filter "files:Copper-Engine/lib/ImGuizmo/ImGuizmo/**.cpp"
         flags { "NoPCH" }
-
+    
     filter "system:windows"
         systemversion "latest"
 
@@ -114,6 +108,31 @@ project "Copper-Engine"
 
             "%{prj.name}/src/Platform/Windows/**.cpp",
             "%{prj.name}/src/Platform/OpenGL/**.cpp"
+
+        }
+
+    filter "system:linux"
+        defines {
+
+            "CU_LINUX"
+
+        }
+
+        files {
+
+            "%{prj.name}/src/Platform/Linux/**.cpp",
+            "%{prj.name}/src/Platform/OpenGL/**.cpp",
+
+        }
+
+        buildoptions {
+    
+            "`pkg-config --cflags mono-2`"
+    
+        }
+        linkoptions {
+
+            "`pkg-config --libs mono-2`",
 
         }
 
@@ -131,7 +150,7 @@ project "Copper-Editor"
     location "Copper-Editor"
     kind "ConsoleApp"
     language "C++"
-    cppdialect "C++17"
+    cppdialect "C++20"
     staticruntime "on"
 
     targetdir("Build/" .. outputDir .. "/%{prj.name}")
@@ -165,14 +184,11 @@ project "Copper-Editor"
     links {
 
         "Copper-Engine",
+        "GLFW",
+        "GLAD",
+        "ImGui",
         "yaml-cpp",
         "assimp",
-
-        "Copper-Engine/lib/mono/lib/%{cfg.buildcfg}/mono-2.0-sgen.lib",
-
-        "Copper-Engine/lib/physx/bin/win.x86_64.vc143.mt/debug/PhysXCommon_64.lib",
-        "Copper-Engine/lib/physx/bin/win.x86_64.vc143.mt/debug/PhysXFoundation_64.lib",
-        "Copper-Engine/lib/physx/bin/win.x86_64.vc143.mt/debug/PhysXExtensions_static_64.lib",
 
     }
 
@@ -201,31 +217,36 @@ project "Copper-Editor"
 
         }
 
+    filter "system:linux"
+        defines {
+
+            "CU_LINUX",
+            "GLM_ENABLE_EXPERIMENTAL"
+
+        }
+        
+        buildoptions {
+    
+            "`pkg-config --cflags mono-2`"
+    
+        }
+        linkoptions {
+
+            "`pkg-config --libs mono-2`",
+            "-lX11",
+            "-lstdc++fs",
+
+        }
+
     filter "configurations:Debug"
         defines "CU_DEBUG"
         runtime "Debug"
         symbols "on"
 
-        linkoptions {
-
-            '/NODEFAULTLIB:"libcmt.lib"',
-            '/NODEFAULTLIB:"msvcrt.lib"',
-            '/NODEFAULTLIB:"msvcrtd.lib"'
-
-        }
-
     filter "configurations:Release"
         defines "CU_RELEASE"
         runtime "Release"
         optimize "on"
-
-        linkoptions {
-
-            '/NODEFAULTLIB:"msvcrt.lib"',
-            '/NODEFAULTLIB:"libcmtd.lib"',
-            '/NODEFAULTLIB:"msvcrtd.lib"'
-
-        }
 
 project "Copper-ScriptingAPI"
     location "Copper-ScriptingAPI"
@@ -254,7 +275,7 @@ project "Copper-CppTesting"
     location "Copper-CppTesting"
     kind "ConsoleApp"
     language "C++"
-    cppdialect "C++17"
+    cppdialect "C++20"
     staticruntime "on"
 
     targetdir("Build/" .. outputDir .. "/%{prj.name}")
@@ -319,7 +340,7 @@ project "Copper-Launcher"
     location "Copper-Launcher"
     kind "ConsoleApp"
     language "C++"
-    cppdialect "C++17"
+    cppdialect "C++20"
     staticruntime "on"
 
     targetdir("Build/" .. outputDir .. "/Copper-Editor")

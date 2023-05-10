@@ -130,7 +130,7 @@ namespace Copper::Input {
 
 		prevMousePos = event.mouseCoords;
 
-		SetCursorPos(centre.x, centre.y);
+		SetCursorPosition(centre.x, centre.y);
 
 		return true;
 

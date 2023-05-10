@@ -2,15 +2,15 @@
 
 #include "Engine/Core/Core.h"
 
-#include "Engine/Scene/Entity.h"
+#include "Engine/Scene/InternalEntity.h"
 #include "Engine/Scene/Registry.h"
 
-#include "Engine/Components/Light.h"
-#include "Engine/Components/Camera.h"
-
-#include "Engine/Physics/PhysicsEngine.h"
+#include "Engine/Filesystem/Path.h"
 
 namespace Copper {
+
+	class Light;
+	class Camera;
 
 	class Scene {
 
@@ -20,7 +20,7 @@ namespace Copper {
 
 	public:
 		std::string name;
-		std::filesystem::path path;
+		Filesystem::Path path;
 
 		Camera* cam = nullptr;
 
@@ -62,8 +62,8 @@ namespace Copper {
 
 		void Render(Camera* cam);
 
-		void Serialize(const std::filesystem::path& path);
-		bool Deserialize(const std::filesystem::path& path);
+		void Serialize(const Filesystem::Path& path);
+		bool Deserialize(const Filesystem::Path& path);
 
 		Registry::ComponentPool* GetComponentPool(int cID) {
 
@@ -76,7 +76,6 @@ namespace Copper {
 
 	private:
 		Registry registry;
-		physx::PxScene* physicsScene;
 
 		Light* light;
 

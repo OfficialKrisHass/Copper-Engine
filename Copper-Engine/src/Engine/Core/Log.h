@@ -16,7 +16,7 @@ namespace Copper {
 #define LogError(...)	Copper::Logger::GetLogger()->error(__VA_ARGS__)
 #define LogSuccess(...)	Copper::Logger::GetLogger()->info(__VA_ARGS__)
 
-#elif CU_RELEASE
+#else
 
 #define Log(...)
 #define LogWarn(...)

@@ -155,7 +155,7 @@ namespace Copper {
 
 	}
 
-	template<typename T> void OldSceneDeserialization::ReadField_Beta1_0_0(YAML::Node& value, ScriptField& field, ScriptComponent* scriptInstance) {
+	template<typename T> void OldSceneDeserialization::ReadField_Beta1_0_0(const YAML::Node& value, ScriptField& field, ScriptComponent* scriptInstance) {
 
 		T tmp = value.as<T>();
 		scriptInstance->SetFieldValue(field, &tmp);

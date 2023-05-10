@@ -4,7 +4,15 @@
 
 namespace Copper::Input::Error {
 
-    int ErrorPopup(const std::string& title, const std::string& description);
-    int WarningPopup(const std::string& title, const std::string& description);
+    enum PopupResult : uint32_t {
+
+        Ok,
+        Cancel,
+        Invalid
+
+    };
+
+    PopupResult WarningPopup(const std::string& title, const std::string& description);
+    PopupResult ErrorPopup(const std::string& title, const std::string& description);
     
 }

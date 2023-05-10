@@ -10,13 +10,7 @@ using namespace Copper;
 
 namespace Editor {
 
-	Project::Project(const std::string& name, const std::filesystem::path& path) : name(name), path(path), assetsPath(path.string() + "\\Assets") {
-
-		sceneCam = SceneCamera(GetViewportSize());
-		sceneCam.transform = new Transform(Vector3(0.0f, 0.0f, 1.0f), Vector3::zero, Vector3::one);
-		sceneCam.transform->position.z = 1.0f;
-
-	}
+	Project::Project(const std::string& name, const Filesystem::Path& path) : name(name), path(path), assetsPath(path / "Assets") {}
 
 	void Project::Save() {
 
@@ -26,7 +20,7 @@ namespace Editor {
 
 		//Main Project Stuff
 		out << YAML::Key << "Name" << YAML::Value << name;
-		out << YAML::Key << "Last Scene" << YAML::Value << lastOpenedScene.string();
+		out << YAML::Key << "Last Scene" << YAML::Value << lastOpenedScene;
 
 		//Viewport
 		out << YAML::Key << "Gizmo" << YAML::Value << gizmoType;
@@ -48,14 +42,23 @@ namespace Editor {
 		out << YAML::EndMap; //Scene Camera
 		out << YAML::EndMap; //Main
 
-		std::ofstream file(path.string() + "\\Project.cu");
+		std::ofstream file(path + "/Project.cu");
 		file << out.c_str();
 
 	}
-	void Project::Load() {
+	void Project::Load(const Filesystem::Path& path) {
+
+		sceneCam = SceneCamera(GetViewportSize());
+
+		if(!path.Empty()) {
+
+			this->path = path;
+			this->assetsPath = path / "Assets";
+
+		}
 
 		YAML::Node main;
-		try { main = YAML::LoadFile(path.string() + "/Project.cu"); } catch (YAML::ParserException e) {
+		try { main = YAML::LoadFile(path / "Project.cu"); } catch (YAML::ParserException e) {
 
 			LogError("Failed to Read The Editor Data save file\n    {1}", e.what());
 			return;
@@ -64,16 +67,14 @@ namespace Editor {
 
 		//Main Project Stuff
 		name = main["Name"].as<std::string>();
-		lastOpenedScene = assetsPath.string() + '\\' + main["Last Scene"].as<std::string>();
+		lastOpenedScene = assetsPath / main["Last Scene"].as<std::string>();
 
 		//Viewport
 		gizmoType = main["Gizmo"].as<int>();
 
 		//Scene Camera
 		YAML::Node sceneCamera = main["Scene Camera"];
-
-		sceneCam.GetTransform()->position = sceneCamera["Position"].as<Vector3>();
-		sceneCam.GetTransform()->rotation = sceneCamera["Rotation"].as<Vector3>();
+		sceneCam.transform = new Transform(sceneCamera["Position"].as<Vector3>(), sceneCamera["Rotation"].as<Vector3>(), Vector3::one);
 
 		sceneCam.fov = sceneCamera["Fov"].as<float>();
 		sceneCam.nearPlane = sceneCamera["Near Plane"].as<float>();
@@ -88,8 +89,8 @@ namespace Editor {
 
 		std::string cmd = "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\MSBuild.exe ";
 
-		size_t pos = path.string().find_first_of(' ');
-		std::string newPath = path.string();
+		size_t pos = path.String().find_first_of(' ');
+		std::string newPath = path.String();
 		while (pos != std::string::npos) {
 
 			newPath.erase(pos, 1);

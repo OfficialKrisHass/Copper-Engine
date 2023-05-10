@@ -20,7 +20,7 @@ namespace Editor {
 
 	void NewScene();
 	void OpenScene();
-	void OpenScene(const std::filesystem::path& path);
+	void OpenScene(const Filesystem::Path& path);
 	void SaveScene();
 	void SaveSceneAs();
 

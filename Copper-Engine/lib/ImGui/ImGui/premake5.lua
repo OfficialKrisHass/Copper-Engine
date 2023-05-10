@@ -31,11 +31,21 @@ project "ImGui"
 
     }
 
+    links {
+
+        "GLAD",
+        "opengl32.lib"
+
+    }
+
     filter "system:windows"
         systemversion "latest"
 
     filter "configurations:Debug"
         runtime "Debug"
+    
+    filter "configurations:Release"
+        runtime "Release"
 
     filter { "system:windows", "configurations:Release" }
         buildoptions "/MT"

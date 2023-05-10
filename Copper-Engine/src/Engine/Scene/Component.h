@@ -10,6 +10,8 @@ namespace Editor { struct Project; }
 
 namespace Copper {
 
+	class Transform;
+
 	class Component {
 
 		friend class Registry;
@@ -41,3 +43,4 @@ namespace Copper {
 }
 
 #include "Engine/Components/Transform.h"
+#include "Engine/Scene/InternalEntity.h"

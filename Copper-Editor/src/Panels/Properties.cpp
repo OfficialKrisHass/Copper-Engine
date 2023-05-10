@@ -246,7 +246,7 @@ namespace Editor {
 		T tmp;
 		script->GetFieldValue(field, &tmp);
 
-		bool changed = showFunc(field.name, &static_cast<T>(tmp));
+		bool changed = showFunc(field.name, &tmp);
 		if (changed) script->SetFieldValue(field, &tmp);
 
 	}

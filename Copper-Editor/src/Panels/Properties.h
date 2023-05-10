@@ -4,8 +4,6 @@
 
 #include "Panels/Panel.h"
 
-#include <filesystem>
-
 namespace Editor {
 
 	class Properties : public Panel {

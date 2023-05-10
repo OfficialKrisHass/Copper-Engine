@@ -22,7 +22,7 @@ namespace Editor::MetaFile {
 		out << YAML::EndSeq; //Objects
 
 		out << YAML::EndMap; //Main Map
-		std::ofstream file(scene->path.string() + ".cum");
+		std::ofstream file(scene->path.String() + ".cum");
 		file << out.c_str();
 
 	}
@@ -30,7 +30,7 @@ namespace Editor::MetaFile {
 
 		objectIDs.clear();
 
-		if (!std::filesystem::exists(scene->path.string() + ".cum")) {
+		if (!std::experimental::filesystem::exists(scene->path.String() + "cum")) {
 
 			for (InternalEntity* entity : EntityView(scene)) {
 
@@ -46,11 +46,11 @@ namespace Editor::MetaFile {
 		YAML::Node main;
 		try {
 			
-			main = YAML::LoadFile(scene->path.string() + ".cum");
+			main = YAML::LoadFile(scene->path.String() + ".cum");
 		
 		} catch (YAML::ParserException e) {
 
-			LogError("Failed to Read The Scene Meta Data file\n{}\n    {}", scene->path, e.what());
+			LogError("Failed to Read The Scene Meta Data file\n{}\n    {}", scene->path.String(), e.what());
 			return;
 
 		}

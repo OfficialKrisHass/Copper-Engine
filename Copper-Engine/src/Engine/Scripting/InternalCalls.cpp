@@ -28,7 +28,7 @@ namespace Copper::Scripting::InternalCalls {
 	static std::unordered_map<std::string, std::function<bool(InternalEntity*)>> hasComponentFuncs;
 	static std::unordered_map<std::string, std::function<bool(InternalEntity*)>> addComponentFuncs;
 
-	void Initialize() {
+	inline void Initialize() {
 
 		hasComponentFuncs["Transform"] = [](InternalEntity* entity) { return true; };
 		hasComponentFuncs["Camera"] =    [](InternalEntity* entity) { return entity->HasComponent<Camera>(); };

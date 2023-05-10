@@ -2,7 +2,6 @@
 
 #include "Engine/Events/Event.h"
 
-#include "Engine/Scene/Component.h"
 #include "Engine/Scene/Entity.h"
 
 namespace Copper {
@@ -17,7 +16,7 @@ namespace Copper {
 	class ComponentEvent : public Event {
 
 	public:
-		Component* component;
+		class Component* component;
 
 	};
 

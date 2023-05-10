@@ -13,8 +13,6 @@
 
 #include "Engine/Scripting/ScriptingCore.h"
 
-#include "Engine/Physics/PhysicsEngine.h"
-
 #include "Engine/UI/ImGui.h"
 
 #include "Engine/Scene/CopperECS.h"
@@ -52,7 +50,7 @@ namespace Copper {
 		Event preShutdownEvent;
 		SimpleEvent postShutdownEvent;
 
-		Window& Window() {
+		Window& WindowRef() {
 
 		#ifdef CU_EDITOR
 			return *window;
@@ -77,7 +75,7 @@ namespace Copper {
 		data.engineState = EngineState::Initialization;
 		for (int i = 0; i < argc; i++) {
 
-			if (std::filesystem::path(argv[i]).extension() == ".exe") continue;
+			if (Filesystem::Path(argv[i]).Extension() == ".exe") continue;
 
 			data.arguments.push_back(argv[i]);
 
@@ -92,11 +90,11 @@ namespace Copper {
 	#else
 		data.window = Window("Copper Engine", 1280, 720);
 		RendererAPI::Initialize();
-		data.fbo = FrameBuffer(data.Window().Size());
+		data.fbo = FrameBuffer(data.WindowRef().Size());
 	#endif
 
-		data.Window().AddWindowCloseEventFunc(OnWindowClose);
-		data.Window().AddWindowResizeEventFunc(OnWindowResize);
+		data.WindowRef().AddWindowCloseEventFunc(OnWindowClose);
+		data.WindowRef().AddWindowResizeEventFunc(OnWindowResize);
 
 		Renderer::Initialize();
 		UI::Initialize();
@@ -111,7 +109,6 @@ namespace Copper {
 		Input::AddMouseAxis("Mouse Y", false);
 
 		Scripting::Initialize();
-		Physics::Initialize();
 
 		data.engineState = EngineState::PostInitialization;
 		data.postInitEvent();
@@ -125,11 +122,11 @@ namespace Copper {
 
 		while (data.engineState == EngineState::Running) {
 
-			float time = data.Window().Time();
+			float time = data.WindowRef().Time();
 			float deltaTime = time - data.lastFrameTime;
 			data.lastFrameTime = time;
 
-			data.Window().Update();
+			data.WindowRef().Update();
 
 			data.updateEvent();
 
@@ -137,7 +134,7 @@ namespace Copper {
 			data.scene.Update(data.renderScene, deltaTime);
 			data.fbo.Unbind();
 
-			Renderer::ResizeViewport(data.Window().Size());
+			Renderer::ResizeViewport(data.WindowRef().Size());
 
 			UI::Begin();
 			data.uiUpdateEvent();
@@ -156,7 +153,7 @@ namespace Copper {
 		CHECK((data.engineState == EngineState::Shutdown), "Cannot Shutdown the Engine, current Engine State is: {}", EngineStateToString(data.engineState));
 
 		UI::Shutdown();
-		data.Window().Shutdown();
+		data.WindowRef().Shutdown();
 
 		data.postShutdownEvent();
 
@@ -173,8 +170,8 @@ namespace Copper {
 	bool OnWindowResize(const Event& e) {
 
 	#ifndef CU_EDITOR
-		data.fbo.Resize(data.Window().Size());
-		data.scene->cam->Resize(data.Window().Size());
+		data.fbo.Resize(data.WindowRef().Size());
+		data.scene.cam->Resize(data.WindowRef().Size());
 	#endif
 
 		return true;
@@ -206,7 +203,7 @@ namespace Copper {
 	void SetRenderScene(bool value) { data.renderScene = value; }
 
 	//Getters
-	Window& GetWindow() { return data.Window(); }
+	Window& GetWindow() { return data.WindowRef(); }
 	UVector2I GetWindowSize() {
 		
 	#ifdef CU_EDITOR

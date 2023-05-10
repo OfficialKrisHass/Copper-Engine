@@ -93,7 +93,6 @@ project "assimp"
 
   files {
       "include/**",
-      "contrib/zlib/**.c",
 
       "code/Assimp.cpp",
 
@@ -158,6 +157,33 @@ project "assimp"
 
       "code/glTFImporter.cpp",
       "code/glTF2Importer.cpp",
+      
+      "contrib/zlib/zlib.h",
+      "contrib/zlib/zconf.h",
+      "contrib/zlib/crc32.h",
+      "contrib/zlib/deflate.h",
+      "contrib/zlib/gzguts.h",
+      "contrib/zlib/inffast.h",
+      "contrib/zlib/inffixed.h",
+      "contrib/zlib/inflate.h",
+      "contrib/zlib/inftrees.h",
+      "contrib/zlib/trees.h",
+      "contrib/zlib/zutil.h",
+      "contrib/zlib/adler32.c",
+      "contrib/zlib/compress.c",
+      "contrib/zlib/crc32.c",
+      "contrib/zlib/deflate.c",
+      "contrib/zlib/gzclose.c",
+      "contrib/zlib/gzlib.c",
+      "contrib/zlib/gzread.c",
+      "contrib/zlib/gzwrite.c",
+      "contrib/zlib/inflate.c",
+      "contrib/zlib/infback.c",
+      "contrib/zlib/inftrees.c",
+      "contrib/zlib/inffast.c",
+      "contrib/zlib/trees.c",
+      "contrib/zlib/uncompr.c",
+      "contrib/zlib/zutil.c",
 
       
   }
@@ -172,6 +198,8 @@ project "assimp"
 
    filter "system:windows"
       systemversion "latest"
+
+      files { "contrib/zlib/**.c", "contrib/zlib/**.h" }
 
    filter  "configurations:Debug"
        runtime "Debug"

@@ -1,6 +1,17 @@
 #pragma once
 
+#ifdef CU_LINUX
+
+#include <experimental/filesystem>
+namespace std::filesystem { using path = std::experimental::filesystem::path; }
+
+#else
+
 #include <filesystem>
+
+#endif
+
+#include <string>
 
 namespace Launcher {
 

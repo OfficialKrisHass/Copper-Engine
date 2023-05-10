@@ -3,10 +3,8 @@
 
 #include "Engine/Core/Engine.h"
 
-#include "Engine/Scene/EntityView.h"
-#include "Engine/Scene/ComponentView.h"
+#include "Engine/Scene/CopperECS.h"
 #include "Engine/Scene/OldSceneDeserialization.h"
-#include "Engine/Scene/Component.h"
 
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Renderer/Mesh.h"
@@ -21,71 +19,22 @@
 
 #include <fstream>
 #include <yaml-cpp/yaml.h>
-
-#include <physx/PxPhysicsAPI.h>
-
 namespace Copper {
 
 	int cCounter = 0;
-
-	physx::PxMaterial* physicsMaterial;
 
 	std::unordered_map<uint32_t, std::function<bool(const YAML::Node&, Scene*)>> oldDeserializeFunctions;
 
 	void Scene::StartRuntime() {
 
 		runtimeRunning = true;
-		physicsScene = Physics::CreatePhysicsScene();
-
-		physicsMaterial = Physics::GetPhysicsInstance()->createMaterial(0.5f, 0.5f, 0.6f);
-		physx::PxShape* groundShape = Physics::GetPhysicsInstance()->createShape(physx::PxPlaneGeometry(), *physicsMaterial, true);
-		physx::PxRigidStatic* ground = Physics::GetPhysicsInstance()->createRigidStatic(physx::PxTransformFromPlaneEquation(physx::PxPlane(0, 1, 0, 0)));
-		ground->attachShape(*groundShape);
-		groundShape->release();
-
-		physicsScene->addActor(*ground);
-
-		for (PhysicsBody* body : ComponentView<PhysicsBody>(this)) {
-
-			Vector3 bodyScale = body->GetTransform()->scale / 2.0f;
-			physx::PxShape* shape = Physics::GetPhysicsInstance()->createShape(physx::PxBoxGeometry(bodyScale.x, bodyScale.y, bodyScale.z), *physicsMaterial);
-			physx::PxTransform transform(body->GetTransform()->position.x, body->GetTransform()->position.y, body->GetTransform()->position.z);
-
-			body->body = Physics::GetPhysicsInstance()->createRigidDynamic(transform);
-			body->body->attachShape(*shape);
-			physx::PxRigidBodyExt::updateMassAndInertia(*body->body, body->mass);
-			physicsScene->addActor(*body->body);
-			shape->release();
-
-		}
 
 	}
 	void Scene::Update(bool render, float deltaTime) {
 
 		Renderer::ClearColor(0.18f, 0.18f, 0.18f);
 
-		if (runtimeRunning) {
-
-			physicsScene->simulate(1.0f / 60.0f);
-			physicsScene->fetchResults(true);
-
-		}
-
 		for (InternalEntity* entity : EntityView(this)) {
-
-			if (PhysicsBody* body = entity->GetComponent<PhysicsBody>()) {
-
-				if (runtimeRunning) {
-
-					physx::PxTransform bodyTransform = body->body->getGlobalPose();
-					body->GetTransform()->position = Vector3(bodyTransform.p.x, bodyTransform.p.y, bodyTransform.p.z);
-
-					glm::quat bodyRotation = glm::quat(bodyTransform.q.w, bodyTransform.q.x, bodyTransform.q.y, bodyTransform.q.z);
-					body->GetTransform()->rotation = Vector3(glm::degrees(glm::eulerAngles(bodyRotation)));
-
-				}
-
-			}
 
 			entity->transform->Update();
 
@@ -121,10 +70,10 @@ namespace Copper {
 
 	}
 
-	void Scene::Serialize(const std::filesystem::path& path) {
+	void Scene::Serialize(const Filesystem::Path& path) {
 
 		this->path = path;
-		this->name = path.stem().string();
+		this->name = path.File();
 
 		YAML::Emitter out;
 		out << YAML::BeginMap; // Main
@@ -149,7 +98,7 @@ namespace Copper {
 		file << out.c_str();
 
 	}
-	bool Scene::Deserialize(const std::filesystem::path& path) {
+	bool Scene::Deserialize(const Filesystem::Path& path) {
 
 		this->path = path;
 
@@ -161,9 +110,10 @@ namespace Copper {
 		cam = nullptr;
 
 		YAML::Node data;
-		try { data = YAML::LoadFile(path.string()); } catch(YAML::ParserException e) {
-
-			LogError("Failed to Read .scene file. {}\n    {}", path.string(), e.what());
+		try { data = YAML::LoadFile(path); } catch(YAML::ParserException e) {
+			
+			LogError("Failed to Read .scene file. {}", path.String());
+			LogError("    {}", e.what());
 			return false;
 			
 		}
@@ -177,7 +127,7 @@ namespace Copper {
 
 		uint32_t sceneVersion = versionNode.as<uint32_t>();
 		if (oldDeserializeFunctions.find(sceneVersion) != oldDeserializeFunctions.end()) return oldDeserializeFunctions[sceneVersion](data, this);
-		CU_ASSERT(sceneVersion == GetVersion().sceneVersion, "The Scene you tried to open has an invalid version ({})\n{}", sceneVersion, path.string());
+		CU_ASSERT(sceneVersion == GetVersion().sceneVersion, "The Scene you tried to open has an invalid version ({})\n{}", sceneVersion, path.String());
 
 		this->name = data["Name"].as<std::string>();
 
@@ -445,7 +395,7 @@ namespace Copper {
 	}
 
 	template<typename T> void Scene::SerializeScriptField(const ScriptField& field, ScriptComponent* instance, YAML::Emitter& out) {
-
+		
 		T value;
 		instance->GetFieldValue(field, &value);
 

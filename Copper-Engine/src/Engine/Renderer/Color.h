@@ -2,8 +2,6 @@
 
 #include <CMath/Vectors.h>
 
-#include <yaml-cpp/yaml.h>
-
 namespace Copper {
 
 	struct Color {

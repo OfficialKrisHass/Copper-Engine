@@ -3,7 +3,7 @@
 #include "Engine/Core/Core.h"
 #include "Engine/Events/RegistryEvent.h"
 
-#include "Engine/Scene/Entity.h"
+#include "Engine/Scene/InternalEntity.h"
 #include "Engine/Components/Transform.h"
 #include "Engine/Components/Camera.h"
 

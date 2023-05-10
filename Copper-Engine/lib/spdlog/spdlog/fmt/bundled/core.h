@@ -2700,7 +2700,6 @@ class compile_parse_context
 
   FMT_CONSTEXPR void check_arg_id(int id) {
     base::check_arg_id(id);
-    if (id >= num_args_) this->on_error("argument not found");
   }
   using base::check_arg_id;
 };

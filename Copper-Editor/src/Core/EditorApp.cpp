@@ -251,10 +251,10 @@ namespace Editor {
 	void RenderMenu();
 
 	void NewProject();
-	void OpenProject(const std::filesystem::path& path);
+	void OpenProject(const Filesystem::Path& path);
 	void OpenProject();
 
-	void FileChangedCallback(const std::filesystem::path& path, const ProjectFileWatcher::FileChangeType& changeType);
+	void FileChangedCallback(const Filesystem::Path& path, const ProjectFileWatcher::FileChangeType& changeType);
 	void CopyScriptingAPI();
 
 	void StartEditorRuntime();
@@ -292,7 +292,7 @@ namespace Editor {
 
 		data.properties.SetSelectedObject(data.sceneHierarchy.GetSelectedEntity());
 
-		ProjectFileWatcher::AddFilter(".cs");
+		ProjectFileWatcher::AddFilter("cs");
 		ProjectFileWatcher::AddFileChangeCallback(FileChangedCallback);
 		
 		LoadEditorData();
@@ -310,7 +310,7 @@ namespace Editor {
 
 		out << YAML::BeginMap; //Start
 
-		out << YAML::Key << "Last Project" << YAML::Value << data.project.path.string();
+		out << YAML::Key << "Last Project" << YAML::Value << data.project.path;
 
 		out << YAML::EndMap; //End
 
@@ -330,19 +330,12 @@ namespace Editor {
 
 		}
 
-		if (GetNumArguments() == 0) {
-
-			OpenProject(main["Last Project"].as<std::string>());
-			return;
-
-		}
-
-		OpenProject(GetArgument(0));
+		OpenProject(main["Last Project"].as<std::string>());
 
 	}
 
 	void UIUpdate() {
-
+		
 		RenderDockspace();
 		RenderToolbar();
 		RenderMenu();
@@ -655,7 +648,7 @@ namespace Editor {
 			Input::SetCursorLocked(false);
 
 		data.state = Edit;
-		std::filesystem::path savedPath = data.scene->path;
+		Filesystem::Path savedPath = data.scene->path;
 		Entity savedSelectedEntity = *data.sceneHierarchy.GetSelectedEntity();
 
 		data.scene = GetScene();
@@ -666,7 +659,7 @@ namespace Editor {
 
 	}
 
-	void FileChangedCallback(const std::filesystem::path& path, const ProjectFileWatcher::FileChangeType& changeType) {
+	void FileChangedCallback(const Filesystem::Path& path, const ProjectFileWatcher::FileChangeType& changeType) {
 
 		data.scriptChanges = true;
 
@@ -676,29 +669,28 @@ namespace Editor {
 
 		//Open the Folder Dialog
 		//TODO : Either make our own Folder Open Dialog or Start using the Windows new System
-		std::filesystem::path path = Utilities::FolderOpenDialog();
-		if (path.empty()) { LogWarn("Path is Invalid or Empty"); return; }
+		Filesystem::Path path = Utilities::FolderOpenDialog();
+		if (path.Empty()) { LogWarn("Path is Invalid or Empty"); return; }
 
 		//Create the Project
-		data.project = Project(path.stem().string(), path);
+		data.project = Project(path.File().String(), path);
 		FileBrowser::SetRelativeDir("");
 
-		CreateProjectFromTemplate("assets\\Templates\\DevProject", data.project);
+		CreateProjectFromTemplate("assets/Templates/DevProject", data.project);
 
 		//Setup the FileBrowser
 		data.project.BuildSolution(true);
 
-		OpenScene(data.project.assetsPath.string() + "\\" + data.project.lastOpenedScene.string());
+		OpenScene(data.project.assetsPath / data.project.lastOpenedScene);
 
 		data.changes = false;
 		data.title = "Copper Editor - " + data.project.name + ": EmptyTemplate";
 		Input::SetWindowTitle(data.title);
 
 	}
-	void OpenProject(const std::filesystem::path& path) {
-
-		data.project = Project("", path);
-		data.project.Load();
+	void OpenProject(const Filesystem::Path& path) {
+		
+		data.project.Load(path);
 		data.scene = GetScene();
 		FileBrowser::SetRelativeDir("");
 
@@ -710,15 +702,15 @@ namespace Editor {
 		data.title = "Copper Editor - " + data.project.name + ": ";
 		Input::SetWindowTitle(data.title);
 
-		Scripting::Reload(data.project.path.string() + "\\Binaries\\" + data.project.name + ".dll", false);
+		Scripting::Reload(data.project.path / "Binaries" / data.project.name + ".dll", false);
 
 		OpenScene(data.project.lastOpenedScene);
 
 	}
 	void OpenProject() {
 
-		std::filesystem::path path = Utilities::FolderOpenDialog();
-		if (path.empty()) { LogWarn("path is Invalid or empty"); return; }
+		Filesystem::Path path = Utilities::FolderOpenDialog();
+		if (path.Empty()) { LogWarn("path is Invalid or empty"); return; }
 
 		OpenProject(path);
 
@@ -729,7 +721,7 @@ namespace Editor {
 		std::ifstream dllSrc("assets/ScriptAPI/Copper-ScriptingAPI.dll", std::ios::binary);
 		std::fstream dllDst;
 
-		dllDst.open(data.project.path.string() + "/Binaries/Copper-ScriptingAPI.dll", std::ios::out | std::ios::binary);
+		dllDst.open(data.project.path / "Binaries/Copper-ScriptingAPI.dll", std::ios::out | std::ios::binary);
 		dllDst << dllSrc.rdbuf();
 		dllDst.close();
 
@@ -743,14 +735,14 @@ namespace Editor {
 		data.sceneHierarchy.SetScene(data.scene);
 		
 	}
-	void OpenScene(const std::filesystem::path& path) {
+	void OpenScene(const Filesystem::Path& path) {
 
 		if(data.changes) {
 
 			switch(Input::Error::WarningPopup("Unsaved Changes", "There are Unsaved Changes, if you open another scene you will lose these Changes.")) {
 
-			case IDOK: break;
-			case IDCANCEL: return;
+			case Input::Error::PopupResult::Ok: break;
+			case Input::Error::PopupResult::Cancel: return;
 				
 			}
 			
@@ -766,24 +758,19 @@ namespace Editor {
 		data.title += data.scene->name;
 		Input::SetWindowTitle(data.title);
 
-		data.project.lastOpenedScene = std::filesystem::relative(path, data.project.assetsPath);
+		data.project.lastOpenedScene = path.RelativeTo(data.project.assetsPath);
 		
 	}
 	void OpenScene() {
 
-		std::filesystem::path path = Utilities::OpenDialog("Copper Scene (*.copper)\0*.copper\0", data.project.assetsPath);
+		Filesystem::Path path = Utilities::OpenDialog("Copper Scene (*.copper)\0*.copper\0", data.project.assetsPath);
 
-		if(path.empty()) { LogWarn("The Path Specified is empty or is not a Copper Scene File"); return; }
+		if(path.Empty()) { LogWarn("The Path Specified is empty or is not a Copper Scene File"); return; }
 
-		std::filesystem::path relativeToProjectAssets = std::filesystem::relative(path, data.project.assetsPath);
-		if (relativeToProjectAssets.string()[0] == '.' && relativeToProjectAssets.string()[1] == '.') {
+		Filesystem::Path relativeToProjectAssets = path.RelativeTo(data.project.assetsPath);
+		if (relativeToProjectAssets.Empty()) {
 
-			switch (Input::Error::ErrorPopup("Invalid Scene", "The Scene you have selected is outside your project, or in a folder starting with '..'")) {
-
-				case IDOK: return;
-
-			}
-
+			Input::Error::ErrorPopup("Invalid Scene Path", "The scene you have tried to Open is outside of the Assets folder of this Project.");
 			return;
 
 		}
@@ -793,7 +780,7 @@ namespace Editor {
 	}
 	void SaveScene() {
 		
-		if(!data.scene->path.empty()) {
+		if(!data.scene->path.Empty()) {
 
 			data.scene->Serialize(data.scene->path);
 			data.sceneMeta.Serialize(data.scene);
@@ -812,19 +799,14 @@ namespace Editor {
 	}
 	void SaveSceneAs() {
 
-		std::string path = Utilities::SaveDialog("Copper Scene (*.copper)\0*.copper\0", "assets/Projects/DevProject/Assets");
+		Filesystem::Path path = Utilities::SaveDialog("Copper Scene (*.copper)\0*.copper\0", "assets/Projects/DevProject/Assets");
 
-		if(!path.empty()) {
+		if(!path.Empty()) {
 
-			std::filesystem::path relativeToProjectAssets = std::filesystem::relative(path, data.project.assetsPath);
-			if (relativeToProjectAssets.string()[0] == '.' && relativeToProjectAssets.string()[1] == '.') {
+			Filesystem::Path relativeToProjectAssets = path.RelativeTo(data.project.assetsPath);
+			if (relativeToProjectAssets.Empty()) {
 
-				switch (Input::Error::ErrorPopup("Invalid Scene", "The Place you want to save this scene is outside of this Project or starts with '..'")) {
-
-					case IDOK: return;
-
-				}
-
+				Input::Error::ErrorPopup("Invalid Scene", "The Place you want to save this scene is outside of this Project or starts with '..'");
 				return;
 
 			}
@@ -933,10 +915,12 @@ namespace Editor {
 
 		switch (Input::Error::WarningPopup("Unsaved Changes", "There are Unsaved Changes, if you close the Editor your changes will be lost. Are you Sure you want to Close the Editor ?")) {
 
-			case IDOK: return true;
-			case IDCANCEL: return false;
+			case Input::Error::PopupResult::Ok: return true;
+			case Input::Error::PopupResult::Cancel: return false;
 
 		}
+
+		return true;
 
 	}
 

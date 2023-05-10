@@ -4,12 +4,6 @@
 
 #include "Engine/Scene/Component.h"
 
-namespace physx {
-
-	class PxRigidDynamic;
-
-}
-
 namespace Copper {
 
 	class PhysicsBody : public Component {
@@ -23,7 +17,6 @@ namespace Copper {
 		float mass = 1.0f;
 
 	private:
-		physx::PxRigidDynamic* body;
 
 	};
 

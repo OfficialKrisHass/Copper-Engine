@@ -2,16 +2,16 @@
 
 #include "Engine/Core/Core.h"
 
-#include "cupch.h"
+#include "Engine/Filesystem/Path.h"
 
 namespace Copper::Utilities {
 
-	std::string ReadFile(const std::string& path);
-	char* ReadFileBinary(const std::string& path, uint32_t* size);
+	std::string ReadFile(const Filesystem::Path& path);
+	char* ReadFileBinary(const Filesystem::Path& path, uint32_t* outSize);
 
-	std::string SaveDialog(const char* filter, std::filesystem::path initialDir);
-	std::string OpenDialog(const char* filter, std::filesystem::path initialDir);
+	Filesystem::Path SaveDialog(const char* filter, const Filesystem::Path& initialDir);
+	Filesystem::Path OpenDialog(const char* filter, const Filesystem::Path& initialDir);
 
-	std::string FolderOpenDialog();
+	Filesystem::Path FolderOpenDialog();
 
 }

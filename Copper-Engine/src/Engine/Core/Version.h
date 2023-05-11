@@ -4,23 +4,23 @@ namespace Copper {
 
 	struct Version {
 
-		std::string stage = "Invalid";
 		uint32_t major = 0;
 		uint32_t minor = 0;
-		uint32_t dev = 0;
+		uint32_t patch = 0;
+		uint32_t tweak = 0;
 
 		uint32_t sceneVersion = 0;
 
 		Version() = default;
-		Version(const std::string& stage, uint32_t major, uint32_t minor, uint32_t dev) : stage(stage), major(major), minor(minor), dev(dev) {}
+		Version(uint32_t major, uint32_t minor, uint32_t patch = 0, uint32_t tweak = 0) : major(major), minor(minor), patch(patch), tweak(tweak) {}
 
-		bool operator==(const Version& other) const { return stage == other.stage && major == other.major && minor == other.minor && dev == other.dev; }
+		bool operator==(const Version& other) const { return major == other.major && minor == other.minor && patch == other.patch && tweak == other.tweak; }
 
 	};
 
 	inline std::ostream& operator<<(std::ostream& os, const Version& version) {
 
-		return os << version.stage << " " << version.major << "." << version.minor << "." << version.dev;
+		return os << version.major << "." << version.minor << "." << version.patch << "." << version.tweak;
 
 	}
 

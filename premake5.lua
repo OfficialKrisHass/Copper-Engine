@@ -36,7 +36,7 @@ project "Copper-Engine"
 
         "%{prj.name}/src/Engine/**.h",
         "%{prj.name}/src/Engine/**.cpp",
-        
+
         "%{prj.name}/lib/stb/stb/stb_image.cpp",
 
         "%{prj.name}/lib/ImGuizmo/ImGuizmo/ImGuizmo.h",
@@ -81,11 +81,11 @@ project "Copper-Engine"
         "CU_EDITOR",
         "_CRT_SECURE_NO_WARNINGS",
         "GLM_ENABLE_EXPERIMENTAL",
-
-        "VERSION_STAGE=\"BETA\"",
-        "VERSION_MAJOR=1",
+        
+        "VERSION_MAJOR=0",
         "VERSION_MINOR=0",
-        "VERSION_DEV=2",
+        "VERSION_PATCH=0",
+        "VERSION_TWEAK=2",
         
         "SCENE_VERSION=0",
         "INCLUDE_GLM"

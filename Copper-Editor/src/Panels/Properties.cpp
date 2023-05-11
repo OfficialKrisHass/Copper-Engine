@@ -353,7 +353,7 @@ namespace Editor {
 		if (ImGui::DragFloat("##Y", &vec->y, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
 
-		ImGui::Separator();
+		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 
 		//End
 		ImGui::PopStyleVar();
@@ -423,7 +423,7 @@ namespace Editor {
 		ImGui::PopStyleVar();
 		ImGui::PopID();
 
-		ImGui::Separator();
+		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 
 		if(ret) SetChanges(true);
 		return ret;
@@ -490,7 +490,7 @@ namespace Editor {
 		if (ImGui::DragFloat("##W", &vec->w, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
 
-		ImGui::Separator();
+		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 
 		//End
 		ImGui::PopStyleVar();

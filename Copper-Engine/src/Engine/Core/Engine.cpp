@@ -70,7 +70,7 @@ namespace Copper {
 
 		CHECK((data.engineState == EngineState::Entry), "Cannot Initialize the Engine, current Engine State is: {}", EngineStateToString(data.engineState));
 		
-		data.version = Version(VERSION_STAGE, VERSION_MAJOR, VERSION_MINOR, VERSION_DEV);
+		data.version = Version(VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_TWEAK);
 		data.version.sceneVersion = SCENE_VERSION;
 		data.engineState = EngineState::Initialization;
 		for (int i = 0; i < argc; i++) {

@@ -22,7 +22,7 @@ namespace Editor {
 
 		CU_ASSERT(scene, "SceneHierarchy::scene is nullptr... HOW ???!!??!!");
 
-		if (ImGui::BeginPopupContextWindow(0, 1, false)) {
+		if (ImGui::BeginPopupContextWindow("##Scene Hierarchy")) {
 
 			PopupWindow();
 			ImGui::EndPopup();

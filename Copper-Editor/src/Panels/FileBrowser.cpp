@@ -56,7 +56,7 @@ namespace Editor {
 
         ImGui::Columns(columns, 0, false);
 
-        if(ImGui::BeginPopupContextWindow(0, 1, false)) {
+        if(ImGui::BeginPopupContextWindow("##File Browser")) {
 
             if(ImGui::MenuItem("Folder")) {
 

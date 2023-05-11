@@ -55,7 +55,7 @@ namespace Editor {
 		}
 
 		ImGui::SameLine();
-		ImGui::VerticalSeparator();
+		ImGui::Separator();
 
 		if(DrawComponent<Transform>("Transform", entity)) {
 			
@@ -353,7 +353,7 @@ namespace Editor {
 		if (ImGui::DragFloat("##Y", &vec->y, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
 
-		ImGui::VerticalSeparator();
+		ImGui::Separator();
 
 		//End
 		ImGui::PopStyleVar();
@@ -423,7 +423,7 @@ namespace Editor {
 		ImGui::PopStyleVar();
 		ImGui::PopID();
 
-		ImGui::VerticalSeparator();
+		ImGui::Separator();
 
 		if(ret) SetChanges(true);
 		return ret;
@@ -490,7 +490,7 @@ namespace Editor {
 		if (ImGui::DragFloat("##W", &vec->w, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
 
-		ImGui::VerticalSeparator();
+		ImGui::Separator();
 
 		//End
 		ImGui::PopStyleVar();

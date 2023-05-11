@@ -1,6 +1,6 @@
 #pragma once
 #include <stdint.h>
-#include "imgui.h"
+#include <ImGui/imgui.h>
 
 struct ImRect;
 

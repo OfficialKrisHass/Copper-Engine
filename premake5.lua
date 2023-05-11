@@ -8,7 +8,7 @@ outputDir = "%{cfg.system}-%{cfg.architecture}-%{cfg.buildcfg}"
 group "Libraries"
     include "Copper-Engine/lib/GLFW"
     include "Copper-Engine/lib/GLAD"
-    include "Copper-Engine/lib/ImGui/ImGui"
+    include "Copper-Engine/lib/ImGui"
     include "Copper-Engine/lib/yaml-cpp"
     include "Copper-Engine/lib/assimp"
 

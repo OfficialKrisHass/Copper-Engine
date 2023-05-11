@@ -4,12 +4,12 @@
 #include "Engine/Core/Engine.h"
 
 #define IMGUI_IMPL_OPENGL_LOADER_GLAD
-#include <ImGui/examples/imgui_impl_opengl3.cpp>
-#include <ImGui/examples/imgui_impl_glfw.cpp>
+#include <ImGui/backends/imgui_impl_opengl3.cpp>
+#include <ImGui/backends/imgui_impl_glfw.cpp>
 
 #include <ImGui/imgui.h>
-#include <ImGui/examples/imgui_impl_opengl3.h>
-#include <ImGui/examples/imgui_impl_glfw.h>
+#include <ImGui/backends/imgui_impl_opengl3.h>
+#include <ImGui/backends/imgui_impl_glfw.h>
 
 #include <ImGuizmo/ImGuizmo.h>
 

@@ -2,13 +2,15 @@
 
 #include "Engine/Core/Core.h"
 
-namespace Copper::Input::Error {
+namespace Copper::Input {
 
     enum PopupResult : uint32_t {
 
         Ok,
         Cancel,
-        Invalid
+        Closed,
+        Waiting,
+        Invalid,
 
     };
 

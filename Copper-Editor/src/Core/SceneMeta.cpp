@@ -22,8 +22,10 @@ namespace Editor::MetaFile {
 		out << YAML::EndSeq; //Objects
 
 		out << YAML::EndMap; //Main Map
-		std::ofstream file(scene->path.String() + ".cum");
+		std::ofstream file;
+		file.open(scene->path.String() + ".cum");
 		file << out.c_str();
+		file.close();
 
 	}
 	void SceneMeta::Deserialize(Scene* scene) {

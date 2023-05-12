@@ -30,10 +30,12 @@ namespace Copper {
 
 	public:
 		Window() = default;
-		Window(const std::string& title, uint32_t width, uint32_t height);
+		Window(const std::string& title, uint32_t width, uint32_t height, bool maximize = true);
 
 		void Update();
 		void Shutdown();
+
+		void SetAsCurrentContext();
 
 		inline void* GetWindowPtr() const { return windowPtr; }
 

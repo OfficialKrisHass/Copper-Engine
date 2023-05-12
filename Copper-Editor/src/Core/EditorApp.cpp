@@ -739,10 +739,10 @@ namespace Editor {
 
 		if(data.changes) {
 
-			switch(Input::Error::WarningPopup("Unsaved Changes", "There are Unsaved Changes, if you open another scene you will lose these Changes.")) {
+			switch(Input::WarningPopup("Unsaved Changes", "There are Unsaved Changes, if you open another scene you will lose these Changes.")) {
 
-			case Input::Error::PopupResult::Ok: break;
-			case Input::Error::PopupResult::Cancel: return;
+			case Input::PopupResult::Ok: break;
+			case Input::PopupResult::Cancel: return;
 				
 			}
 			
@@ -770,7 +770,7 @@ namespace Editor {
 		Filesystem::Path relativeToProjectAssets = path.RelativeTo(data.project.assetsPath);
 		if (relativeToProjectAssets.Empty()) {
 
-			Input::Error::ErrorPopup("Invalid Scene Path", "The scene you have tried to Open is outside of the Assets folder of this Project.");
+			Input::ErrorPopup("Invalid Scene Path", "The scene you have tried to Open is outside of the Assets folder of this Project.");
 			return;
 
 		}
@@ -806,7 +806,7 @@ namespace Editor {
 			Filesystem::Path relativeToProjectAssets = path.RelativeTo(data.project.assetsPath);
 			if (relativeToProjectAssets.Empty()) {
 
-				Input::Error::ErrorPopup("Invalid Scene", "The Place you want to save this scene is outside of this Project or starts with '..'");
+				Input::ErrorPopup("Invalid Scene", "The Place you want to save this scene is outside of this Project or starts with '..'");
 				return;
 
 			}
@@ -911,12 +911,14 @@ namespace Editor {
 	}
 	bool OnWindowClose(const Event& e) {
 
+		//Input::ErrorPopup("Test Error", "With a random ass Description uwu");
+
 		if (!data.changes) return true;
 
-		switch (Input::Error::WarningPopup("Unsaved Changes", "There are Unsaved Changes, if you close the Editor your changes will be lost. Are you Sure you want to Close the Editor ?")) {
+		switch (Input::WarningPopup("Unsaved Changes", "There are Unsaved Changes, if you close the Editor your changes will be lost. Are you Sure you want to Close the Editor ?")) {
 
-			case Input::Error::PopupResult::Ok: return true;
-			case Input::Error::PopupResult::Cancel: return false;
+			case Input::PopupResult::Ok: return true;
+			case Input::PopupResult::Cancel: return false;
 
 		}
 

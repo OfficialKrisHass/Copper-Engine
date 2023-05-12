@@ -11,11 +11,14 @@
 
 namespace Copper {
 
-	Window::Window(const std::string& title, uint32_t width, uint32_t height) {
+	uint32_t windowCount = 0;
+
+	Window::Window(const std::string& title, uint32_t width, uint32_t height, bool maximize) {
 
 		data.title = title;
 
-		if (!glfwInit()) { LogError("Could not Initialize GLFW!"); }
+		if (windowCount == 0 && !glfwInit()) { LogError("Could not Initialize GLFW!"); }
+		windowCount++;
 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -25,7 +28,7 @@ namespace Copper {
 		glfwMakeContextCurrent(WINDOW);
 
 		glfwSetWindowUserPointer(WINDOW, &data);
-		glfwMaximizeWindow(WINDOW);
+		if (maximize) glfwMaximizeWindow(WINDOW);
 
 		data.size = Size();
 
@@ -41,7 +44,15 @@ namespace Copper {
 	void Window::Shutdown() {
 
 		glfwDestroyWindow(WINDOW);
-		glfwTerminate();
+
+		if (windowCount == 1) glfwTerminate();
+		windowCount--;
+
+	}
+	
+	void Window::SetAsCurrentContext() {
+
+		glfwMakeContextCurrent(WINDOW);
 
 	}
 

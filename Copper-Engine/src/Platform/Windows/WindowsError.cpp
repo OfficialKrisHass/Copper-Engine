@@ -1,9 +1,9 @@
 ﻿#include "cupch.h"
-#include "Engine/Input/Error.h"
+#include "Engine/Input/Popup.h"
 
 #include <winuser.h>
 
-namespace Copper::Input::Error {
+namespace Copper::Input {
 
     PopupResult WinToCopper(int win) {
 

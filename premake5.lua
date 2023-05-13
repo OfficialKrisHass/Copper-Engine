@@ -62,6 +62,8 @@ project "Copper-Engine"
 
         "%{prj.name}/lib/physx/include/physx",
 
+        "%{prj.name}/lib/ImGui/ImGui",
+
     }
 
     links {

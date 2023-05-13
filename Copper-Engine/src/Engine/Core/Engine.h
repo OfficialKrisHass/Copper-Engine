@@ -29,6 +29,7 @@ namespace Copper {
 		void Shutdown();
 
 	}
+	void LoadUIFont(const std::string& path, float fontSize = 18.0f);
 
 	const Version& GetVersion();
 	
@@ -51,6 +52,7 @@ namespace Copper {
 
 	//Setters
 	void SetWindowSize(const UVector2I& size);
+	void SetMainUIAsCurrent();
 
 	void SetRenderScene(bool value);
 

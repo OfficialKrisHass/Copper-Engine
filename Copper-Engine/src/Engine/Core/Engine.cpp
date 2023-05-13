@@ -39,6 +39,7 @@ namespace Copper {
 	#else
 		Window window;
 	#endif
+		UI mainUI;
 
 		Scene scene;
 		float lastFrameTime = 0.0f;
@@ -97,8 +98,8 @@ namespace Copper {
 		data.WindowRef().AddWindowResizeEventFunc(OnWindowResize);
 
 		Renderer::Initialize();
-		UI::Initialize();
 		Renderer::SetShader(Shader("assets/Shaders/vertexDefault.glsl", "assets/Shaders/fragmentDefault.glsl"));
+		data.mainUI.Initialize(data.WindowRef(), true);
 
 		Input::Init();
 
@@ -136,9 +137,9 @@ namespace Copper {
 
 			Renderer::ResizeViewport(data.WindowRef().Size());
 
-			UI::Begin();
+			data.mainUI.Begin();
 			data.uiUpdateEvent();
-			UI::End();
+			data.mainUI.End();
 
 			Renderer::EndFrame();
 
@@ -152,10 +153,15 @@ namespace Copper {
 
 		CHECK((data.engineState == EngineState::Shutdown), "Cannot Shutdown the Engine, current Engine State is: {}", EngineStateToString(data.engineState));
 
-		UI::Shutdown();
+		data.mainUI.Shutdown();
 		data.WindowRef().Shutdown();
 
 		data.postShutdownEvent();
+
+	}
+	void LoadUIFont(const std::string& path, float fontSize) {
+
+		data.mainUI.LoadFont(path, fontSize);
 
 	}
 
@@ -199,6 +205,7 @@ namespace Copper {
 	#endif
 	
 	}
+	void SetMainUIAsCurrent() { data.mainUI.SetAsCurrent(); }
 
 	void SetRenderScene(bool value) { data.renderScene = value; }
 

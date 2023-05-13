@@ -3,6 +3,8 @@
 
 #include "Engine/Core/Engine.h"
 
+#include "Engine/UI/ImGui.h"
+
 #include <ImGui/imgui.h>
 #include <ImGui/backends/imgui_impl_opengl3.h>
 #include <ImGui/backends/imgui_impl_glfw.h>
@@ -14,38 +16,30 @@ namespace Copper::Input {
 
     bool ClosePopup(const Event& e);
 
-    void SetupColors(ImVec4* colors);
-
     PopupResult WarningPopup(const std::string& title, const std::string& description) {
         
-        ImGuiIO& io = ImGui::GetIO();
-        ImFont* defaultFont = io.FontDefault;
-        
-        //Setting up and creating the Popup
+        if (popupOpen) {
+
+            LogError("Only one Popup can be open at any given Time!");
+            return PopupResult::Invalid;
+
+        }
+
+        //Setting Up and creating the Popup
         popupOpen = true;
         result = PopupResult::Invalid;
 
         Window popupWindow(title, 400, 150, false);
         popupWindow.AddWindowCloseEventFunc(ClosePopup);
 
-        ImGuiContext* prevContext = ImGui::GetCurrentContext();
-        ImGuiContext* context = ImGui::CreateContext();
-        ImGui::SetCurrentContext(context);
-
-        ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*) popupWindow.GetWindowPtr(), true);
-        ImGui_ImplOpenGL3_Init("#version 460");
-        
-        io.FontDefault = defaultFont;
-        SetupColors(ImGui::GetStyle().Colors);
+        UI popupUI;
+        popupUI.Initialize(popupWindow, false);
 
         //Popup Render Loop
         while(popupOpen) {
 
             popupWindow.Update();
-
-            ImGui_ImplOpenGL3_NewFrame();
-		    ImGui_ImplGlfw_NewFrame();
-		    ImGui::NewFrame();
+            popupUI.Begin();
 
             //Prepare the flags, font size, etc
             ImFont* font = ImGui::GetFont();
@@ -59,12 +53,13 @@ namespace Copper::Input {
 		    ImGui::SetNextWindowSize(viewport->Size);
 		    ImGui::SetNextWindowViewport(viewport->ID);
 
-            ImVec2 buttonSize = {(float) (popupWindow.Width() / 2.0f) - 35.0f, 20.0f};
+            ImVec2 buttonSize = {(float) (popupWindow.Width() / 2.0f) - 35.0f, 30.0f};
 
             //Create the "Window"
 		    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+            ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.0f));
             ImGui::Begin("##Popup", nullptr, window_flags);
 
             //Description
@@ -81,57 +76,48 @@ namespace Copper::Input {
 
             //Finish the Window
             ImGui::End();
-            ImGui::PopStyleVar(3);
+            ImGui::PopStyleVar(4);
 
             font->FontSize += 1.0f;
 
             //Finally, Render the Popup Window
-            ImGui::Render();
-		    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+            popupUI.End();
 
         }
 
         popupWindow.Shutdown();
-        ImGui_ImplOpenGL3_Shutdown();
-	    ImGui_ImplGlfw_Shutdown();
-	    ImGui::DestroyContext(context);
+        popupUI.Shutdown();
 
         GetWindow().SetAsCurrentContext();
-        ImGui::SetCurrentContext(prevContext);
+        SetMainUIAsCurrent();
 
         return result;
 
     }
     PopupResult ErrorPopup(const std::string& title, const std::string& description) {;
 
-        ImGuiIO& io = ImGui::GetIO();
-        ImFont* defaultFont = io.FontDefault;
-        
-        //Setting up and creating the Popup
+        if (popupOpen) {
+
+            LogError("Only one Popup can be open at any given Time!");
+            return PopupResult::Invalid;
+
+        }
+
+        //Setting Up and creating the Popup
         popupOpen = true;
         result = PopupResult::Invalid;
 
         Window popupWindow(title, 400, 150, false);
         popupWindow.AddWindowCloseEventFunc(ClosePopup);
 
-        ImGuiContext* prevContext = ImGui::GetCurrentContext();
-        ImGuiContext* context = ImGui::CreateContext();
-        ImGui::SetCurrentContext(context);
-
-        ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*) popupWindow.GetWindowPtr(), true);
-        ImGui_ImplOpenGL3_Init("#version 460");
-        
-        io.FontDefault = defaultFont;
-        SetupColors(ImGui::GetStyle().Colors);
+        UI popupUI;
+        popupUI.Initialize(popupWindow, false);
 
         //Popup Render Loop
         while(popupOpen) {
 
             popupWindow.Update();
-
-            ImGui_ImplOpenGL3_NewFrame();
-		    ImGui_ImplGlfw_NewFrame();
-		    ImGui::NewFrame();
+            popupUI.Begin();
 
             //Prepare the flags, font size, etc
             ImFont* font = ImGui::GetFont();
@@ -145,12 +131,13 @@ namespace Copper::Input {
 		    ImGui::SetNextWindowSize(viewport->Size);
 		    ImGui::SetNextWindowViewport(viewport->ID);
 
-            ImVec2 buttonSize = {(float) (popupWindow.Width() / 2.0f) - 35.0f, 20.0f};
+            ImVec2 buttonSize = {(float) (popupWindow.Width() / 2.0f) - 35.0f, 30.0f};
 
             //Create the "Window"
 		    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+            ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.0f, 0.0f));
             ImGui::Begin("##Popup", nullptr, window_flags);
 
             //Description
@@ -163,23 +150,20 @@ namespace Copper::Input {
 
             //Finish the Window
             ImGui::End();
-            ImGui::PopStyleVar(3);
+            ImGui::PopStyleVar(4);
 
             font->FontSize += 1.0f;
 
             //Finally, Render the Popup Window
-            ImGui::Render();
-		    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+            popupUI.End();
 
         }
 
         popupWindow.Shutdown();
-        ImGui_ImplOpenGL3_Shutdown();
-	    ImGui_ImplGlfw_Shutdown();
-	    ImGui::DestroyContext(context);
+        popupUI.Shutdown();
 
         GetWindow().SetAsCurrentContext();
-        ImGui::SetCurrentContext(prevContext);
+        SetMainUIAsCurrent();
 
         return result;
 
@@ -191,34 +175,6 @@ namespace Copper::Input {
         result = PopupResult::Closed;
 
         return true;
-
-    }
-
-    void SetupColors(ImVec4* colors) {
-
-        colors[ImGuiCol_WindowBg] = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);
-
-		colors[ImGuiCol_Header] = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
-		colors[ImGuiCol_HeaderHovered] = ImVec4(0.25f, 0.25f, 0.25f, 1.0f);
-		colors[ImGuiCol_HeaderActive] = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
-
-		colors[ImGuiCol_Button] = ImVec4(0.07f, 0.07f, 0.07f, 1.0f);
-		colors[ImGuiCol_ButtonHovered] = ImVec4(0.09f, 0.09f, 0.09f, 1.0f);
-		colors[ImGuiCol_ButtonActive] = ImVec4(0.05f, 0.05f, 0.05f, 1.0f);
-
-		colors[ImGuiCol_FrameBg] = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
-		colors[ImGuiCol_FrameBgHovered] = ImVec4(0.25f, 0.25f, 0.25f, 1.0f);
-		colors[ImGuiCol_FrameBgActive] = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
-
-		colors[ImGuiCol_Tab] = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
-		colors[ImGuiCol_TabHovered] = ImVec4(0.38f, 0.38f, 0.38f, 1.0f);
-		colors[ImGuiCol_TabActive] = ImVec4(0.28f, 0.28f, 0.28f, 1.0f);
-		colors[ImGuiCol_TabUnfocused] = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
-		colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
-
-		colors[ImGuiCol_TitleBg] = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
-		colors[ImGuiCol_TitleBgActive] = ImVec4(0.25f, 0.25f, 0.25f, 1.0f);
-		colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
 
     }
 

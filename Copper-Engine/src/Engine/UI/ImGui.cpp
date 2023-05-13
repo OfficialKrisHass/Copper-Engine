@@ -13,7 +13,7 @@
 
 #include <ImGuizmo/ImGuizmo.h>
 
-namespace Copper::UI {
+namespace Copper {
 
 	/*float windowBG[3];
 	float Button[3];
@@ -31,18 +31,35 @@ namespace Copper::UI {
 	float TitleA[3];
 	float TitleC[3];*/
 
-	void Initialize() {
+	std::string mainFontPath = "";
+	float mainFontSize = 0.0f;
 
-		CHECK((GetEngineState() == EngineState::Initialization), "Cannot Initialize UI, current Engine State is: {}", EngineStateToString(GetEngineState()))
+	uint32_t uiCount = 0;
 
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
+	void UI::Initialize(const Window& window, bool gizmo, bool docking, bool viewports) {
 
+		this->gizmo = gizmo;
+		this->docking = docking;
+		this->viewports = viewports;
+		
+		if(!uiCount) {
+
+			CHECK((GetEngineState() == EngineState::Initialization), "Cannot Initialize UI, current Engine State is: {}", EngineStateToString(GetEngineState()))
+			IMGUI_CHECKVERSION();
+
+		}
+		uiCount++;
+
+		context = ImGui::CreateContext();
+		ImGui::SetCurrentContext(context);
 		ImGuiIO& io = ImGui::GetIO();
 
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+		if (docking) io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+		if (viewports) io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
+		if (!mainFontPath.empty())
+			io.FontDefault = io.Fonts->AddFontFromFileTTF(mainFontPath.c_str(), mainFontSize);
 
 		auto& colors = ImGui::GetStyle().Colors;
 
@@ -70,34 +87,35 @@ namespace Copper::UI {
 		colors[ImGuiCol_TitleBgActive] = ImVec4(0.25f, 0.25f, 0.25f, 1.0f);
 		colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
 
-		ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(GetWindow().GetWindowPtr()), true);
+		ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(window.GetWindowPtr()), true);
 		ImGui_ImplOpenGL3_Init("#version 460");
 
 	}
-	void Shutdown() {
+	void UI::Shutdown() {
 
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext();
+		ImGui::DestroyContext(context);
+		uiCount--;
 
 	}
 
-	void Begin() {
+	void UI::Begin() {
 
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-		ImGuizmo::BeginFrame();
+		if (gizmo) ImGuizmo::BeginFrame();
 
 	}
-	void End() {
+	void UI::End() {
 
-		ImGuiIO& io = ImGui::GetIO();
-		io.DisplaySize = ImVec2((float) GetWindow().Width(), (float) GetWindow().Height());
+		//io.DisplaySize = ImVec2((float) GetWindow().Width(), (float) GetWindow().Height());
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
+		ImGuiIO& io = ImGui::GetIO();
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
 
 			GLFWwindow* backup = glfwGetCurrentContext();
@@ -109,12 +127,21 @@ namespace Copper::UI {
 
 	}
 
-	void LoadFont(const std::string& path, float fontSize) {
+	void UI::LoadFont(const std::string& path, float fontSize) {
 
 		ImGuiIO& io = ImGui::GetIO();
-		io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/Fonts/open-sans.regular.ttf", fontSize);
+		io.FontDefault = io.Fonts->AddFontFromFileTTF(path.c_str(), fontSize);
+		
+		if(mainFontPath.empty()) {
+
+			mainFontPath = path;
+			mainFontSize = fontSize;
+
+		}
 
 	}
+
+	void UI::SetAsCurrent() { ImGui::SetCurrentContext(context); }
 
 	/*void ThemeEditor() {
 		ImGui::Begin("Theme Editor");

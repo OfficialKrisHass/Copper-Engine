@@ -275,7 +275,7 @@ namespace Editor {
 		AddEntityCreatedEventFunc(OnEntityCreated);
 		AddEntityRemovedEventFunc(OnEntityRemoved);
 
-		UI::LoadFont("assets/Fonts/open-sans.regular.ttf");
+		LoadUIFont("assets/Fonts/open-sans.regular.ttf");
 
 		data.state = Edit;
 		data.viewportSize = UVector2I(1280, 720);
@@ -911,7 +911,7 @@ namespace Editor {
 	}
 	bool OnWindowClose(const Event& e) {
 
-		//Input::ErrorPopup("Test Error", "With a random ass Description uwu");
+		//Input::WarningPopup("Test Error", "With a random ass Description uwu");
 
 		if (!data.changes) return true;
 

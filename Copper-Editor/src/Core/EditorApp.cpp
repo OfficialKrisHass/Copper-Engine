@@ -763,7 +763,7 @@ namespace Editor {
 	}
 	void OpenScene() {
 
-		Filesystem::Path path = Utilities::OpenDialog("Copper Scene (*.copper)\0*.copper\0", data.project.assetsPath);
+		Filesystem::Path path = Utilities::OpenDialog("Copper Scene (*.copper)\n*.copper", data.project.assetsPath);
 
 		if(path.Empty()) { LogWarn("The Path Specified is empty or is not a Copper Scene File"); return; }
 
@@ -799,7 +799,7 @@ namespace Editor {
 	}
 	void SaveSceneAs() {
 
-		Filesystem::Path path = Utilities::SaveDialog("Copper Scene (*.copper)\0*.copper\0", "assets/Projects/DevProject/Assets");
+		Filesystem::Path path = Utilities::SaveDialog("Copper Scene (*.copper)\n*.copper", data.project.assetsPath);
 
 		if(!path.Empty()) {
 
@@ -831,7 +831,7 @@ namespace Editor {
 		bool shift = Input::IsKey(KeyCode::LeftShift) || Input::IsKey(KeyCode::RightShift);
 		bool alt = Input::IsKey(KeyCode::LeftAlt) || Input::IsKey(KeyCode::RightAlt);
 
-		bool rightClick = Input::IsButton(Input::Button2);
+		bool rightClick = Input::IsButton(MouseCode::Button2);
 
 		KeyEvent event = *(KeyEvent*) &e;
 

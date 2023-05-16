@@ -69,7 +69,7 @@ namespace Copper::Input {
 	
 	bool IsButton(MouseCode button) {
 		
-		return glfwGetMouseButton(GetGLFWwindow, button) == GLFW_PRESS ? true : false;
+		return glfwGetMouseButton(GetGLFWwindow, (int) button) == GLFW_PRESS ? true : false;
 
 	}
 

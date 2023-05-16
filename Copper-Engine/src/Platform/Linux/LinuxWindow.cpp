@@ -4,6 +4,9 @@
 #include "Engine/Core/Engine.h"
 #include "Engine/Renderer/Renderer.h"
 
+#include "Engine/Input/KeyCodes.h"
+#include "Engine/Input/Input.h"
+
 #include <GLFW/glfw3.h>
 
 #define WINDOW (GLFWwindow*) windowPtr
@@ -135,6 +138,17 @@ namespace Copper {
 			data.mouseMoveEvent();
 
 		});
+
+	}
+
+	bool Window::IsKeyPressed(KeyCode keycode) const {
+
+		return glfwGetKey(WINDOW, (int) keycode) == GLFW_PRESS;
+
+	}
+	bool Window::IsButtonPressed(MouseCode mousecode) const {
+
+		return glfwGetMouseButton(WINDOW, (int) mousecode) == GLFW_PRESS;
 
 	}
 

@@ -39,6 +39,9 @@ namespace Copper {
 
 		inline void* GetWindowPtr() const { return windowPtr; }
 
+		bool IsKeyPressed(enum KeyCode keycode) const;
+		bool IsButtonPressed(enum MouseCode mousecode) const;
+
 		uint32_t Width() const;
 		uint32_t Height() const;
 		UVector2I Size() const;

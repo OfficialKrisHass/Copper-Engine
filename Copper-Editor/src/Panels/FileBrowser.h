@@ -15,8 +15,6 @@ namespace Editor {
 
     private:
         static Copper::Filesystem::Path projectRelativeDir;
-        Copper::Texture directoryIcon;
-        Copper::Texture fileIcon;
         
         virtual void UI() override;
     

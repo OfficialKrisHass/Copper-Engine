@@ -20,6 +20,7 @@
 #include "Engine/Input/Input.h"
 #include "Engine/Input/AxisManager.h"
 #include "Engine/Input/Popup.h"
+#include "Engine/Input/KeyCodes.h"
 
 //Utilities
 #include "Engine/Utilities/FileUtils.h"

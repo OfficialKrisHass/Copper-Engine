@@ -5,13 +5,6 @@
 #include "KeyCodes.h"
 
 namespace Copper::Input {
-	
-	enum MouseCode {
-		
-		Button1 = 0,
-		Button2 = 1
-		
-	};
 
 	//Input
 	void Init();

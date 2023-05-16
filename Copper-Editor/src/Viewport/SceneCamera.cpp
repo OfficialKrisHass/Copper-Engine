@@ -16,7 +16,7 @@ namespace Editor {
 
 		if(!canLook) return;
 
-		if (Input::IsButton(Input::Button2)) {
+		if (Input::IsButton(MouseCode::Button2)) {
 
 			if (Input::IsKey(KeyCode::W)) { GetTransform()->position +=  GetTransform()->Forward() * speed; }
 			if (Input::IsKey(KeyCode::S)) { GetTransform()->position += -GetTransform()->Forward() * speed; }

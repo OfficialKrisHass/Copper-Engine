@@ -33,7 +33,7 @@ namespace Copper::Input {
         popupWindow.AddWindowCloseEventFunc(ClosePopup);
 
         UI popupUI;
-        popupUI.Initialize(popupWindow, false);
+        popupUI.Initialize(popupWindow, false, false, false);
 
         //Popup Render Loop
         while(popupOpen) {

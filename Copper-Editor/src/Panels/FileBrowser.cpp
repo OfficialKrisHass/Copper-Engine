@@ -14,15 +14,17 @@ namespace Editor {
     Filesystem::Path editingPath = "";
     Filesystem::Path FileBrowser::projectRelativeDir = "";
 
+    Texture directoryIcon;
+    Texture fileIcon;
+
     FileBrowser::FileBrowser(const Filesystem::Path& initialDir) : Panel("File Browser") {
         
         projectRelativeDir = initialDir;
 
-        directoryIcon = Texture("assets/Icons/FileBrowser/DirectoryIcon.png");
-        fileIcon = Texture("assets/Icons/FileBrowser/FileIcon.png");
-        
-    }
+        directoryIcon = Texture("assets/Icons/DirectoryIcon.png");
+        fileIcon = Texture("assets/Icons/FileIcon.png");
 
+    }
 
     void FileBrowser::UI() {
         
@@ -90,9 +92,9 @@ namespace Editor {
 
             ImGui::PushID(filename.c_str());
 
-            Texture icon = fullPath.Directory() ? directoryIcon : fileIcon;
+            uint64_t icon = fullPath.Directory() ? (uint64_t) directoryIcon.GetID() : (uint64_t) fileIcon.GetID();
             ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-            if(ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t) icon.GetID()), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 }) && !fullPath.Directory()) {
+            if(ImGui::ImageButton(reinterpret_cast<ImTextureID>(icon), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 }) && !fullPath.Directory()) {
 
                 //Properties::SetSelectedFile(path);
                 
@@ -135,7 +137,7 @@ namespace Editor {
                 char buffer[128] = {};
                 std::strncpy(buffer, filename.c_str(), filename.length() * sizeof(char));
 
-                if (ImGui::InputText("##Edit Name", buffer, sizeof(buffer)) && (Input::IsKey(KeyCode::Enter) || Input::IsButton(Input::Button1))) {
+                if (ImGui::InputText("##Edit Name", buffer, sizeof(buffer)) && (Input::IsKey(KeyCode::Enter) || Input::IsButton(MouseCode::Button1))) {
 
                     editingPath = editingPath.ParentPath();
                     editingPath /= buffer;

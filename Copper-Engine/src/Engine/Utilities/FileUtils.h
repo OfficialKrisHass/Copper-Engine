@@ -4,6 +4,12 @@
 
 #include "Engine/Filesystem/Path.h"
 
+#ifdef CU_WINDOWS
+	#define ROOT_DIR "C:\\"
+#else
+	#define ROOT_DIR "/home"
+#endif
+
 namespace Copper::Utilities {
 
 	std::string ReadFile(const Filesystem::Path& path);
@@ -12,6 +18,6 @@ namespace Copper::Utilities {
 	Filesystem::Path SaveDialog(const std::string& filter, const Filesystem::Path& initialDir);
 	Filesystem::Path OpenDialog(const std::string& filter, const Filesystem::Path& initialDir);
 
-	Filesystem::Path FolderOpenDialog();
+	Filesystem::Path FolderOpenDialog(const Filesystem::Path& initialDir = ROOT_DIR);
 
 }

@@ -90,4 +90,11 @@ namespace Copper::Filesystem {
 
     inline const std::string& Path::String() const { return str; }
 
+    inline std::ostream& operator<<(std::ostream& os, const Path& path) {
+
+        os << path.String();
+        return os;
+
+    }
+
 }

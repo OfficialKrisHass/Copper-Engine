@@ -669,7 +669,8 @@ namespace Editor {
 
 		//Open the Folder Dialog
 		//TODO : Either make our own Folder Open Dialog or Start using the Windows new System
-		Filesystem::Path path = Utilities::FolderOpenDialog();
+		//TODO : Fixed... well for linux
+		Filesystem::Path path = Utilities::FolderOpenDialog((!data.project.path.Empty()) ? data.project.path.ParentPath() : ROOT_DIR);
 		if (path.Empty()) { LogWarn("Path is Invalid or Empty"); return; }
 
 		//Create the Project
@@ -709,7 +710,7 @@ namespace Editor {
 	}
 	void OpenProject() {
 
-		Filesystem::Path path = Utilities::FolderOpenDialog();
+		Filesystem::Path path = Utilities::FolderOpenDialog((!data.project.path.Empty()) ? data.project.path.ParentPath() : ROOT_DIR);
 		if (path.Empty()) { LogWarn("path is Invalid or empty"); return; }
 
 		OpenProject(path);
@@ -765,7 +766,7 @@ namespace Editor {
 
 		Filesystem::Path path = Utilities::OpenDialog("Copper Scene (*.copper)\n*.copper", data.project.assetsPath);
 
-		if(path.Empty()) { LogWarn("The Path Specified is empty or is not a Copper Scene File"); return; }
+		if(path.Empty()) { LogWarn("The Path Specified is empty or is not a Copper Scene File\n {}", path); return; }
 
 		Filesystem::Path relativeToProjectAssets = path.RelativeTo(data.project.assetsPath);
 		if (relativeToProjectAssets.Empty()) {

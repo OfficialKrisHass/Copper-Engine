@@ -43,10 +43,10 @@ namespace Copper::Filesystem {
 
     }
 
-    void Path::Delete() {
+    void Path::Delete() const {
 
     #ifdef CU_WINDOWS
-        std::filesystem::remove_al(str);
+        std::filesystem::remove_all(str);
     #else
         std::experimental::filesystem::remove_all(str);
     #endif
@@ -108,7 +108,10 @@ namespace Copper::Filesystem {
     }
     Path Path::ParentPath() const {
 
-        size_t len = str.find_last_of(separator);
+        size_t end = std::string::npos;
+        if(str.back() == separator || str.back() == OTHER_SEPARATOR) end = str.size() - 2;
+
+        size_t len = str.find_last_of(separator, end);
         if (len == std::string::npos) len = str.find_last_of(OTHER_SEPARATOR);
 
         return Path(str.substr(0, len));

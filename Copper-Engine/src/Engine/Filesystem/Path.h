@@ -35,7 +35,7 @@ namespace Copper::Filesystem {
         //Generates a new Path with the correct Separator. This function does not update the Path the function has been called on
         Path CreateAndReplaceSeparator() const;
 
-        void Delete();
+        void Delete() const;
 
         void Add(const std::string& string, bool replaceSeparator = true);
 
@@ -83,6 +83,8 @@ namespace Copper::Filesystem {
         std::string str = "";
 
     };
+
+    std::ostream& operator<<(std::ostream& os, const Path& path);
 
 }
 

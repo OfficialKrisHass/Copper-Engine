@@ -4,7 +4,7 @@
 
 #include "Engine/Renderer/Mesh.h"
 
-#include <CopperECS/Component.h>
+#include "Engine/Scene/Component.h"
 
 namespace Copper {
 

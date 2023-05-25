@@ -6,8 +6,15 @@ namespace Copper {
 
 	class WindowCloseEvent : public Event {
 
+
+	};
+
+	class WindowFocusedEvent : public Event {
+
 	public:
-		virtual std::string ToString() const override { return "Window Close Event"; }
+		WindowFocusedEvent() = default;
+
+		bool focused;
 
 	};
 
@@ -19,14 +26,6 @@ namespace Copper {
 
 		uint32_t width;
 		uint32_t height;
-
-		virtual std::string ToString() const override {
-
-			std::stringstream ss;
-			ss << "Window Resize Event: " << width << ", " << height;
-			return ss.str();
-
-		}
 
 	};
 

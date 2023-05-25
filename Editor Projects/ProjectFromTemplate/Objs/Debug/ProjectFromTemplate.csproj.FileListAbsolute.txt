@@ -1,0 +1,5 @@
+C:\Programming\Copper-Engine\Editor Projects\ProjectFromTemplate\Binaries\ProjectFromTemplate.dll
+C:\Programming\Copper-Engine\Editor Projects\ProjectFromTemplate\Binaries\ProjectFromTemplate.pdb
+C:\Programming\Copper-Engine\Editor Projects\ProjectFromTemplate\Objs\Debug\ProjectFromTemplate.csprojResolveAssemblyReference.cache
+C:\Programming\Copper-Engine\Editor Projects\ProjectFromTemplate\Objs\Debug\ProjectFromTemplate.dll
+C:\Programming\Copper-Engine\Editor Projects\ProjectFromTemplate\Objs\Debug\ProjectFromTemplate.pdb

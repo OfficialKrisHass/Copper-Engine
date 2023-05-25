@@ -70,20 +70,19 @@ namespace Copper {
 		VertexBuffer() = default;
 		VertexBuffer(std::vector<float> vertices);
 		VertexBuffer(uint32_t size);
-		~VertexBuffer();
 
-		void Bind();
-		void Unbind();
+		void Bind() const;
+		void Unbind() const;
 
-		void SetLayout(std::initializer_list<Element> elements) { this->elements = elements; CalculateStuff(); }
-		void SetData(std::vector<float> vertices);
+		void SetLayout(const std::initializer_list<Element>& elements) { this->elements = elements; CalculateStuff(); }
+		void SetData(const std::vector<float>& vertices);
 
 		std::vector<Element>::iterator begin() { return elements.begin(); }
 		std::vector<Element>::iterator end() { return elements.end(); }
 		std::vector<Element>::const_iterator begin() const { return elements.begin(); }
 		std::vector<Element>::const_iterator end() const { return elements.end(); }
 
-		uint32_t Stride() { return stride; }
+		uint32_t Stride() const { return stride; }
 
 	private:
 		uint32_t ID;
@@ -112,14 +111,13 @@ namespace Copper {
 		IndexBuffer() = default;
 		IndexBuffer(std::vector<uint32_t> indices);
 		IndexBuffer(uint32_t size);
-		~IndexBuffer();
 
-		void Bind();
-		void Unbind();
+		void Bind() const;
+		void Unbind() const;
 
-		void SetData(std::vector<uint32_t> indices);
+		void SetData(const std::vector<uint32_t>& indices);
 
-		uint32_t Count() { return count; }
+		uint32_t Count() const { return count; }
 
 	private:
 		uint32_t ID;

@@ -1,425 +1,417 @@
 #include "cupch.h"
+#include "Scene.h"
 
 #include "Engine/Core/Engine.h"
+
+#include "Engine/Scene/CopperECS.h"
+#include "Engine/Scene/OldSceneDeserialization.h"
 
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Renderer/Mesh.h"
 
 #include "Engine/Components/Camera.h"
 #include "Engine/Components/MeshRenderer.h"
+#include "Engine/Components/ScriptComponent.h"
 #include "Engine/Components/Light.h"
+#include "Engine/Components/PhysicsBody.h"
+
+#include "Engine/Scripting/ScriptingCore.h"
 
 #include <fstream>
 #include <yaml-cpp/yaml.h>
-
-#include <CopperECS/CopperECS.h>
-
-namespace YAML {
-
-	using namespace Copper;
-
-	template<> struct convert<Vector2> {
-
-		static Node encode(const Vector2& vec) {
-
-			Node node;
-			
-			node.push_back(vec.x);
-			node.push_back(vec.y);
-			node.SetStyle(EmitterStyle::Flow);
-
-			return node;
-			
-		}
-		static bool decode(const Node& node, Vector2& vec) {
-
-			if(!node.IsSequence() || node.size() != 2) return false;
-
-			vec.x = node[0].as<float>();
-			vec.y = node[1].as<float>();
-
-			return true;
-			
-		}
-		
-	};
-	template<> struct convert<Vector3> {
-
-		static Node encode(const Vector3& vec) {
-
-			Node node;
-			
-			node.push_back(vec.x);
-			node.push_back(vec.y);
-			node.push_back(vec.z);
-			node.SetStyle(EmitterStyle::Flow);
-
-			return node;
-			
-		}
-		static bool decode(const Node& node, Vector3& vec) {
-
-			if(!node.IsSequence() || node.size() != 3) return false;
-
-			vec.x = node[0].as<float>();
-			vec.y = node[1].as<float>();
-			vec.z = node[2].as<float>();
-
-			return true;
-			
-		}
-		
-	};
-	template<> struct convert<Vector4> {
-
-		static Node encode(const Vector4& vec) {
-
-			Node node;
-			
-			node.push_back(vec.x);
-			node.push_back(vec.y);
-			node.push_back(vec.z);
-			node.push_back(vec.w);
-			node.SetStyle(EmitterStyle::Flow);
-
-			return node;
-			
-		}
-		static bool decode(const Node& node, Vector4& vec) {
-
-			if(!node.IsSequence() || node.size() != 4) return false;
-
-			vec.x = node[0].as<float>();
-			vec.y = node[1].as<float>();
-			vec.z = node[2].as<float>();
-			vec.w = node[3].as<float>();
-
-			return true;
-			
-		}
-		
-	};
-	template<> struct convert<Color> {
-
-		static Node encode(const Color& col) {
-
-			Node node;
-			
-			node.push_back(col.r);
-			node.push_back(col.g);
-			node.push_back(col.b);
-			node.push_back(col.a);
-			node.SetStyle(EmitterStyle::Flow);
-
-			return node;
-			
-		}
-		static bool decode(const Node& node, Color& col) {
-
-			if(!node.IsSequence() || node.size() != 4) return false;
-
-			col.r = node[0].as<float>();
-			col.g = node[1].as<float>();
-			col.b = node[2].as<float>();
-			col.a = node[3].as<float>();
-
-			return true;
-			
-		}
-		
-	};
-	
-}
-
 namespace Copper {
-
-	YAML::Emitter& operator<<(YAML::Emitter& out, const Vector2& vec) {
-
-		out << YAML::Flow;
-		out << YAML::BeginSeq << vec.x << vec.y << YAML::EndSeq;
-		return out;
-		
-	}
-	YAML::Emitter& operator<<(YAML::Emitter& out, const Vector3& vec) {
-
-		out << YAML::Flow;
-		out << YAML::BeginSeq << vec.x << vec.y << vec.z << YAML::EndSeq;
-		return out;
-		
-	}
-	YAML::Emitter& operator<<(YAML::Emitter& out, const Vector4& vec) {
-
-		out << YAML::Flow;
-		out << YAML::BeginSeq << vec.x << vec.y << vec.z << vec.w << YAML::EndSeq;
-		return out;
-		
-	}
-	YAML::Emitter& operator<<(YAML::Emitter& out, const Color& col) {
-
-		out << YAML::Flow;
-		out << YAML::BeginSeq << col.r << col.g << col.b << col.a << YAML::EndSeq;
-		return out;
-		
-	}
 
 	int cCounter = 0;
 
-	Object Scene::CreateObject(Vector3 position, Vector3 rotation, Vector3 scale, std::string name) {
+	std::unordered_map<uint32_t, std::function<bool(const YAML::Node&, Scene*)>> oldDeserializeFunctions;
 
-		Object obj = registry.CreateObject(this, position, rotation, scale, name);
+	void Scene::StartRuntime() {
 
-		return obj;
+		runtimeRunning = true;
 
 	}
-	Object Scene::CreateObject(std::string name) { return CreateObject(Vector3::zero, Vector3::zero, Vector3::one, name); }
-
-	void Scene::Update() {
+	void Scene::Update(bool render, float deltaTime) {
 
 		Renderer::ClearColor(0.18f, 0.18f, 0.18f);
 
-		Light* directional = nullptr;
+		for (InternalEntity* entity : EntityView(this)) {
 
-		for (Object& o : SceneView<>(this)) {
+			entity->transform->Update();
 
-			o.transform->Update();
-
-			if (o.HasComponent<Light>()) directional = o.GetComponent<Light>();
-			if (o.HasComponent<MeshRenderer>()) {
-
-				MeshRenderer* renderer = o.GetComponent<MeshRenderer>();
+			if (Light* lightComponent = entity->GetComponent<Light>()) light = lightComponent;
+			if (Camera* cameraComponent = entity->GetComponent<Camera>()) cam = cameraComponent;
+			if (MeshRenderer* renderer = entity->GetComponent<MeshRenderer>()) {
 
 				for (Mesh mesh : renderer->meshes) {
 
-					Renderer::AddMesh(&mesh, o.transform);
+					Renderer::AddMesh(&mesh, entity->transform);
 
 				}
 
 			}
 
-		}
+			if (!runtimeRunning) continue;
+			if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) {
 
-		cam->transform->Update();
-		cam->Update();
-		Renderer::Render(cam, directional);
+				if (!runtimeStarted) script->InvokeCreate();
+				script->InvokeUpdate();
+
+			}
+
+		}
+		if (runtimeRunning && !runtimeStarted) runtimeStarted = true;
+
+		if (cam && render) Render(cam);
+
+	}
+	void Scene::Render(Camera* camera) {
+
+		Renderer::RenderFrame(camera, light);
 
 	}
 
-	void Scene::Serialize(std::filesystem::path path) {
+	void Scene::Serialize(const Filesystem::Path& path) {
 
 		this->path = path;
-		this->name = path.stem().string();
+		this->name = path.File();
 
 		YAML::Emitter out;
-		out << YAML::BeginMap;
+		out << YAML::BeginMap; // Main
 
-		out << YAML::Key << "Scene" << YAML::Value << name;
-		out << YAML::Key << "Entities" << YAML::Value << YAML::BeginMap;
+		//Version
+		out << YAML::Key << "Version" << YAML::Value << SCENE_VERSION;
 
-		for(Object& o : SceneView<>(this)) {
-			
-			out << YAML::Key << o.id;
-			out << YAML::Value << YAML::BeginMap;
+		//Name
+		out << YAML::Key << "Name" << YAML::Value << name;
 
-			//Name
-			out << YAML::Key << "Name" << YAML::Value << o.tag->name;
+		//Entities
+		out << YAML::Key << "Entities" << YAML::Value << YAML::BeginMap; // Entities
+		for (InternalEntity* entity : EntityView(this)) {
 
-			//Transform
-			out << YAML::Key << "Transform";
-			out << YAML::Value << YAML::BeginMap;
+			SerializeEntity(entity, out);
 
-			out << YAML::Key << "Position" << YAML::Value << o.transform->position;
-			out << YAML::Key << "Rotation" << YAML::Value << o.transform->rotation;
-			out << YAML::Key << "Scale" << YAML::Value << o.transform->scale;
-
-			out << YAML::Key << "Parent" << YAML::Value;
-			if (o.transform->parent) out << o.transform->parent->object->GetID();
-			else out << -1;
-
-			out << YAML::Key << "Children" << YAML::Value << YAML::BeginSeq;
-
-			for (int i = 0; i < o.transform->numOfChildren; i++) { out << o.transform->children[i]; }
-
-			out << YAML::EndSeq;
-
-			out << YAML::EndMap;
-			
-			//Components
-			out << YAML::Key << "Components";
-			out << YAML::Value << YAML::BeginMap;
-
-			if(o.HasComponent<Camera>()) {
-
-				Camera* cam = o.GetComponent<Camera>();
-
-				out << YAML::Key << "Camera" << YAML::Value << YAML::BeginMap;
-
-				out << YAML::Key << "Fov" << YAML::Value << cam->fov;
-				out << YAML::Key << "Near Plane" << YAML::Value << cam->nearPlane;
-				out << YAML::Key << "Far Plane" << YAML::Value << cam->farPlane;
-
-				out << YAML::EndMap;
-				
-			}
-			if(o.HasComponent<MeshRenderer>()) {
-
-				MeshRenderer* renderer = o.GetComponent<MeshRenderer>();
-
-				out << YAML::Key << "Mesh Renderer" << YAML::Value << YAML::BeginMap;
-
-				for (Mesh mesh : renderer->meshes) {
-
-					out << YAML::Key << "Mesh" << YAML::Value << YAML::BeginMap;
-
-					out << YAML::Key << "Data" << YAML::Value << YAML::BeginMap;
-					for (int i = 0; i < mesh.vertices.size(); i++) {
-
-						out << YAML::Key << "Vertex" << YAML::Value << YAML::BeginMap;
-
-						out << YAML::Key << "Position" << YAML::Value << mesh.vertices[i];
-						out << YAML::Key << "Normal" << YAML::Value << mesh.normals[i];
-						out << YAML::Key << "Color" << YAML::Value << mesh.colors[i];
-
-						out << YAML::EndMap;
-
-					}
-					out << YAML::EndMap;
-
-					out << YAML::Key << "Indices" << YAML::Value << YAML::BeginSeq;
-					for (int i = 0; i < mesh.indices.size(); i++) {
-
-						out << mesh.indices[i];
-
-					}
-					out << YAML::EndSeq;
-
-					out << YAML::EndMap;
-
-				}
-
-				out << YAML::EndMap;
-				
-			}
-			if(o.HasComponent<Light>()) {
-
-				Light* light = o.GetComponent<Light>();
-
-				out << YAML::Key << "Light" << YAML::Value << YAML::BeginMap;
-				out << YAML::Key << "Color" << YAML::Value << "None";
-
-				out << YAML::EndMap;
-				
-			}
-
-			out << YAML::EndMap;
-			out << YAML::EndMap;
-			
 		}
+		out << YAML::EndMap; // Entities
 
-		out << YAML::EndMap;
-		out << YAML::EndMap;
+		out << YAML::EndMap; // Main
 		std::ofstream file(path);
 		file << out.c_str();
-		
+
 	}
-	bool Scene::Deserialize(std::filesystem::path path) {
+	bool Scene::Deserialize(const Filesystem::Path& path) {
 
 		this->path = path;
 
+		registry.Cleanup();
+
+		runtimeRunning = false;
+		runtimeStarted = false;
+		light = nullptr;
+		cam = nullptr;
+
 		YAML::Node data;
-
-		try { data = YAML::LoadFile(path.string()); } catch(YAML::ParserException e) {
-
-			LogError("Failed to Read .scene file. {0}\n    {1}", path.string(), e.what());
+		try { data = YAML::LoadFile(path); } catch(YAML::ParserException e) {
+			
+			LogError("Failed to Read .scene file. {}", path.String());
+			LogError("    {}", e.what());
 			return false;
 			
 		}
-		name = data["Scene"].as<std::string>();
+
+		YAML::Node versionNode = data["Version"];
+		if (versionNode.IsSequence()) {
+
+			return OldSceneDeserialization::DeserializeVersion_Beta1_0_0(data, this);
+
+		}
+
+		uint32_t sceneVersion = versionNode.as<uint32_t>();
+		if (oldDeserializeFunctions.find(sceneVersion) != oldDeserializeFunctions.end()) return oldDeserializeFunctions[sceneVersion](data, this);
+		CU_ASSERT(sceneVersion == GetVersion().sceneVersion, "The Scene you tried to open has an invalid version ({})\n{}", sceneVersion, path.String());
+
+		this->name = data["Name"].as<std::string>();
 
 		YAML::Node entities = data["Entities"];
 		for (YAML::const_iterator it = entities.begin(); it != entities.end(); ++it) {
 
-			YAML::Node entity = it->second;
-			
-			std::string name = entity["Name"].as<std::string>();
-			int32_t id = it->first.as<int>();
-			Object deserialized = registry.CreateObjectFromID(id, this, Vector3::zero, Vector3::zero, Vector3::one, name);
+			std::string name = it->first.as<std::string>();
+			uint32_t id = it->second["ID"].as<uint32_t>();
+			InternalEntity* entity = CreateEntityFromID(id, name, Vector3::zero, Vector3::zero, Vector3::one, false);
 
-			deserialized.transform->position = entity["Transform"]["Position"].as<Vector3>();
-			deserialized.transform->rotation = entity["Transform"]["Rotation"].as<Vector3>();
-			deserialized.transform->scale = entity["Transform"]["Scale"].as<Vector3>();
+			DeserializeEntity(entity, it->second);
 
-			int32_t parentID = entity["Transform"]["Parent"].as<int>();
-
-			deserialized.transform->parent = parentID == -1 ? nullptr : registry.CreateObjectFromID(parentID, this, Vector3::zero, Vector3::zero, Vector3::one, "Empty Parent").transform;
-
-			for (int i = 0; i < entity["Transform"]["Children"].size(); i++) {
-
-				deserialized.transform->children.push_back(entity["Transform"]["Children"][i].as<int>());
-				deserialized.transform->numOfChildren++;
-
-			}
-
-			YAML::Node components = entity["Components"];
-			
-			YAML::Node camera = components["Camera"];
-			if(camera) {
-
-				Camera* cam = deserialized.AddComponent<Camera>();
-
-				cam->fov = camera["Fov"].as<float>();
-				cam->nearPlane = camera["Near Plane"].as<float>();
-				cam->farPlane = camera["Far Plane"].as<float>();
-				
-			}
-
-			YAML::Node meshRenderer = components["Mesh Renderer"];
-			if(meshRenderer) {
-
-				MeshRenderer* renderer = deserialized.AddComponent<MeshRenderer>();
-
-				for (YAML::const_iterator it = meshRenderer.begin(); it != meshRenderer.end(); ++it) {
-
-					YAML::Node mesh = it->second;
-					Mesh m;
-
-					YAML::Node meshData = mesh["Data"];
-					for (YAML::const_iterator it = meshData.begin(); it != meshData.end(); ++it) {
-
-						YAML::Node vertex = it->second;
-
-						m.vertices.push_back(vertex["Position"].as<Vector3>());
-						m.normals.push_back(vertex["Normal"].as<Vector3>());
-						m.colors.push_back(vertex["Color"].as<Color>());
-
-					}
-
-					YAML::Node indices = mesh["Indices"];
-					for (int i = 0; i < indices.size(); i++) {
-
-						m.indices.push_back(indices[i].as<uint32_t>());
-
-					}
-
-					renderer->meshes.push_back(m);
-
-				}
-				
-			}
-
-			YAML::Node light = components["Light"];
-			if(light) {
-
-				Light* l = deserialized.AddComponent<Light>();
-
-				l->color = Color::white;
-				l->intensity = 1.0f;
-				
-			}
-			
 		}
 
 		return true;
 		
+	}
+
+	void Scene::SerializeEntity(InternalEntity* entity, YAML::Emitter& out) {
+
+		out << YAML::Key << entity->name << YAML::Value << YAML::BeginMap; // Entity
+
+		out << YAML::Key << "ID" << YAML::Value << entity->id;
+		out << YAML::Key << "Transform" << YAML::Value << YAML::BeginMap; // Transform
+
+		out << YAML::Key << "Position" << YAML::Value << entity->transform->position;
+		out << YAML::Key << "Rotation" << YAML::Value << entity->transform->rotation;
+		out << YAML::Key << "Scale" << YAML::Value << entity->transform->scale;
+
+		out << YAML::Key << "Parent ID" << YAML::Value;
+		if (entity->transform->parent) out << entity->transform->parent->entity.id;
+		else out << invalidID;
+
+		out << YAML::Key << "Children" << YAML::Value << YAML::Flow << YAML::BeginSeq; // Children
+		for (uint32_t childID : entity->transform->children) {
+
+			out << childID;
+
+		}
+		out << YAML::EndSeq; // Children
+
+		out << YAML::EndMap; // Transform
+
+		if (MeshRenderer* renderer = entity->GetComponent<MeshRenderer>()) {
+
+			out << YAML::Key << "Mesh Renderer" << YAML::Value << YAML::BeginMap; // Mesh Renderer
+
+			for (Mesh& mesh : renderer->meshes) {
+
+				out << YAML::Key << "Mesh" << YAML::Value << YAML::BeginMap; // Mesh
+
+				out << YAML::Key << "Data" << YAML::Value << YAML::BeginSeq; // Data
+				for (int i = 0; i < mesh.vertices.size(); i++) {
+
+					out << YAML::BeginMap; // Vertex;
+
+					out << YAML::Key << "Position" << YAML::Value << mesh.vertices[i];
+					out << YAML::Key << "Normal" << YAML::Value << mesh.normals[i];
+					out << YAML::Key << "Color" << YAML::Value << mesh.colors[i];
+
+					out << YAML::EndMap; // Vertex
+
+				}
+				out << YAML::EndSeq; // Data
+
+				out << YAML::Key << "Indices" << YAML::Value << YAML::BeginSeq; // Indices
+				for (uint32_t index : mesh.indices)
+					out << index;
+				out << YAML::EndSeq; // Indices
+
+				out << YAML::EndMap; // Mesh
+
+			}
+
+			out << YAML::EndMap; // Mesh Renderer
+
+		}
+		if (Light* light = entity->GetComponent<Light>()) {
+
+			out << YAML::Key << "Light" << YAML::Value << YAML::BeginMap; // Light
+
+			out << YAML::Key << "Color" << YAML::Value << light->color;
+			out << YAML::Key << "Intensity" << YAML::Value << light->intensity;
+
+			out << YAML::EndMap; // Light
+
+		}
+		if (Camera* camera = entity->GetComponent<Camera>()) {
+
+			out << YAML::Key << "Camera" << YAML::Value << YAML::BeginMap; // Camera
+
+			out << YAML::Key << "Fov" << YAML::Value << camera->fov;
+			out << YAML::Key << "Near Plane" << YAML::Value << camera->nearPlane;
+			out << YAML::Key << "Far Plane" << YAML::Value << camera->farPlane;
+
+			out << YAML::Key << "Size" << YAML::Value << camera->size;
+
+			out << YAML::EndMap; // Camera
+
+		}
+
+		if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) {
+
+			out << YAML::Key << "Script Component" << YAML::Value << YAML::BeginMap; // Script Component
+
+			out << YAML::Key << "Name" << YAML::Value << script->name;
+			out << YAML::Key << "Fields" << YAML::Value << YAML::BeginMap; // Fields
+			for (const ScriptField& field : Scripting::GetScriptFields(script->name)) {
+
+				switch (field.type) {
+
+					case ScriptField::Type::Int: SerializeScriptField<int>(field, script, out); break;
+					case ScriptField::Type::UInt: SerializeScriptField<unsigned int>(field, script, out); break;
+					case ScriptField::Type::Float: SerializeScriptField<float>(field, script, out); break;
+
+					case ScriptField::Type::Vector2: SerializeScriptField<Vector2>(field, script, out); break;
+					case ScriptField::Type::Vector3: SerializeScriptField<Vector3>(field, script, out); break;
+
+					case ScriptField::Type::Entity: SerializeScriptField<InternalEntity*>(field, script, out); break;
+
+				}
+
+			}
+			out << YAML::EndMap; // Fields
+
+			out << YAML::EndMap; // Script Component
+
+		}
+		
+		if (PhysicsBody* body = entity->GetComponent<PhysicsBody>()) {
+
+			out << YAML::Key << "Physics Body" << YAML::Value << YAML::BeginMap; // Physics Body
+
+			out << YAML::Key << "Mass" << YAML::Value << body->mass;
+
+			out << YAML::EndMap; // Physics Body
+
+		}
+
+		out << YAML::EndMap; // Enity
+
+	}
+	void Scene::DeserializeEntity(InternalEntity* entity, const YAML::Node& node) {
+
+		YAML::Node transform = node["Transform"];
+		entity->transform->position = transform["Position"].as<Vector3>();
+		entity->transform->rotation = transform["Rotation"].as<Vector3>();
+		entity->transform->scale = transform["Scale"].as<Vector3>();
+
+		//Set the Parent
+		uint32_t parentID = transform["Parent ID"].as<uint32_t>();
+		if (parentID == invalidID) entity->transform->parent = nullptr;
+		else if(entity->id < parentID) {
+
+			//This little maneuver is gonna cost us 51 miliseconds
+			Entity saved = entity;
+			InternalEntity* parent = CreateEntityFromID(parentID, "Empty Parent", Vector3::zero, Vector3::zero, Vector3::one);
+			entity = saved;
+
+			entity->transform->parent = parent->transform;
+			entity->transform->parentChildIndex = (int32_t) parent->transform->children.size();
+
+			parent->transform->children.push_back(entity->id);
+
+		}
+
+		//Set the children
+		for (int i = 0; i < transform["Children"].size(); i++) {
+
+			uint32_t childID = transform["Children"][i].as<uint32_t>();
+			if (childID < entity->id) continue;
+			
+			entity->transform->children.push_back(childID);
+
+			Entity saved = entity;
+			InternalEntity* child = CreateEntityFromID(childID, "Empty Child", Vector3::zero, Vector3::zero, Vector3::one);
+			entity = saved;
+
+			child->transform->parent = entity->transform;
+			child->transform->parentChildIndex = i;
+
+		}
+
+		if (YAML::Node rendererNode = node["Mesh Renderer"]) {
+
+			MeshRenderer* renderer = entity->AddComponent<MeshRenderer>();
+
+			YAML::Node meshNode = rendererNode["Mesh"];
+			Mesh mesh;
+
+			YAML::Node dataNode = meshNode["Data"];
+			for (int i = 0; i < dataNode.size(); i++) {
+
+				YAML::Node vertex = dataNode[i];
+
+				mesh.vertices.push_back(vertex["Position"].as<Vector3>());
+				mesh.normals.push_back(vertex["Normal"].as<Vector3>());
+				mesh.colors.push_back(vertex["Color"].as<Color>());
+
+			}
+
+			YAML::Node indicesNode = meshNode["Indices"];
+			for (int i = 0; i < indicesNode.size(); i++) {
+
+				mesh.indices.push_back(indicesNode[i].as<uint32_t>());
+
+			}
+
+			renderer->meshes.push_back(mesh);
+
+		}
+		if (YAML::Node lightNode = node["Light"]) {
+
+			Light* light = entity->AddComponent<Light>();
+
+			light->color = lightNode["Color"].as<Color>();
+			light->intensity = lightNode["Intensity"].as<float>();
+
+		}
+		if (YAML::Node camNode = node["Camera"]) {
+
+			Camera* cam = entity->AddComponent<Camera>();
+
+			cam->fov = camNode["Fov"].as<float>();
+			cam->nearPlane = camNode["Near Plane"].as<float>();
+			cam->farPlane = camNode["Far Plane"].as<float>();
+
+			cam->size = camNode["Size"].as<UVector2I>();
+
+		}
+
+		if (YAML::Node scriptNode = node["Script Component"]) {
+
+			ScriptComponent* script = entity->AddComponent<ScriptComponent>();
+			script->Init(scriptNode["Name"].as<std::string>());
+
+			YAML::Node fields = scriptNode["Fields"];
+			for (const ScriptField& field : Scripting::GetScriptFields(script->name)) {
+
+				switch (field.type) {
+
+					case ScriptField::Type::Int: DeserializeScriptField<int>(field, script, fields[field.name]["Value"]); break;
+					case ScriptField::Type::UInt: DeserializeScriptField<unsigned int>(field, script, fields[field.name]["Value"]); break;
+					case ScriptField::Type::Float: DeserializeScriptField<float>(field, script, fields[field.name]["Value"]); break;
+
+					case ScriptField::Type::Vector2: DeserializeScriptField<Vector2>(field, script, fields[field.name]["Value"]); break;
+					case ScriptField::Type::Vector3: DeserializeScriptField<Vector3>(field, script, fields[field.name]["Value"]); break;
+
+					case ScriptField::Type::Entity: DeserializeScriptField<InternalEntity*>(field, script, fields[field.name]["Value"]); break;
+
+				}
+
+			}
+
+		}
+
+		if (YAML::Node bodyNode = node["Physics Body"]) {
+
+			PhysicsBody* body = entity->AddComponent<PhysicsBody>();
+
+			body->mass = bodyNode["Mass"].as<float>();
+
+		}
+
+	}
+
+	template<typename T> void Scene::SerializeScriptField(const ScriptField& field, ScriptComponent* instance, YAML::Emitter& out) {
+		
+		T value;
+		instance->GetFieldValue(field, &value);
+
+		out << YAML::Key << field.name << YAML::Value << YAML::BeginMap; // Field
+
+		out << YAML::Key << "Type" << YAML::Value << (int) field.type;
+		out << YAML::Key << "Value" << YAML::Value << value;
+
+		out << YAML::EndMap; // Field
+
+	}
+	template<typename T> void Scene::DeserializeScriptField(const ScriptField& field, ScriptComponent* instance, const YAML::Node& fieldNode) {
+
+		T tmp = fieldNode.as<T>();
+		instance->SetFieldValue(field, &tmp);
+
 	}
 
 }

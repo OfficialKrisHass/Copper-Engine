@@ -1,33 +1,21 @@
 #include "cupch.h"
 #include "Renderer.h"
 
+#include "Engine/Core/Engine.h"
+
+#include "Engine/Components/Transform.h"
+
 #include <GLM/ext/matrix_transform.hpp>
 
 namespace Copper::Renderer {
-
-	std::vector<float> vertices{
-		//Position				//Color				//Normals
-		-0.5f, -0.5f,  0.0f,    1.0f, 0.0f, 0.0f,	0.0f,  0.0f, -1.0f,
-		 0.5f, -0.5f,  0.0f,    0.0f, 1.0f, 0.0f,	0.0f,  0.0f, -1.0f,
-		 0.5f,  0.5f,  0.0f,    0.0f, 0.0f, 1.0f,	0.0f,  0.0f, -1.0f,
-		-0.5f,  0.5f,  0.0f,    1.0f, 0.0f, 1.0f,	0.0f,  0.0f, -1.0f,
-
-	};
-
-	std::vector<uint32_t> indices{
-
-		0, 1, 2,
-		2, 3, 0,
-
-	};
 
 	struct RendererData {
 
 		static const uint32_t maxVertices = 20000;
 
-		Shared<VertexArray> vao;
-		Shared<VertexBuffer> vbo;
-		Shared<IndexBuffer> ibo;
+		VertexArray vao;
+		VertexBuffer vbo;
+		IndexBuffer ibo;
 
 		std::vector<float> vertices;
 		std::vector<uint32_t> indices;
@@ -39,39 +27,46 @@ namespace Copper::Renderer {
 
 	void Initialize() {
 
-		data.vao = CreateShared<VertexArray>();
+		CHECK((GetEngineState() == EngineState::Initialization), "Cannot Initialize the Renderer, current Engine State is: {}", EngineStateToString(GetEngineState()))
+
+		data.vao = VertexArray(nullptr);
 		
-		data.vbo = CreateShared<VertexBuffer>(data.maxVertices * sizeof(float));
-		data.vbo->SetLayout({ {"Position", ElementType::Float3}, {"Color", ElementType::Float3}, {"Normal", ElementType::Float3} });
+		data.vbo = VertexBuffer(data.maxVertices * sizeof(float));
+		data.vbo.SetLayout({ {"Position", ElementType::Float3}, {"Color", ElementType::Float3}, {"Normal", ElementType::Float3} });
 
-		data.ibo = CreateShared<IndexBuffer>(data.maxVertices * 1.5f * sizeof(uint32_t));
+		data.ibo = IndexBuffer((uint32_t) (data.maxVertices * 1.5f * sizeof(uint32_t)));
 
-		data.vao->SetVertexBuffer(data.vbo);
-		data.vao->SetIndexBuffer(data.ibo);
-
-		data.vbo->Unbind();
-		data.vao->Unbind();
+		data.vao.SetVertexBuffer(&data.vbo);
+		data.vao.SetIndexBuffer(&data.ibo);
+				
+		data.vbo.Unbind();
+		data.vao.Unbind();
 
 	}
 
-	void Render(Camera* cam, Light* light) {
+	void RenderFrame(Camera* cam, Light* light) {
 
-		data.vbo->SetData(data.vertices);
-		data.ibo->SetData(data.indices);
+		data.vbo.SetData(data.vertices);
+		data.ibo.SetData(data.indices);
 
-		api.Render(data.vao, (uint32_t) data.indices.size(), cam, light);
+		api.Render(&data.vao, (uint32_t) data.indices.size(), cam, light);
+		
+		
+	}
+	void EndFrame() {
 
 		data.vertices.clear();
 		data.indices.clear();
-		
+
+		api.EndFrame();
+
 	}
 
 	void AddMesh(Mesh* mesh, Transform* transform) {
 
-		glm::mat4 mat = transform->CreateMatrix();
-		glm::mat4 noScale(1.0f);
-
-		noScale = glm::scale(mat, (glm::vec3) (-transform->scale));
+		Matrix4 mat = transform->CreateMatrix();
+		Matrix4 noScale = mat;
+		CMath::ScaleMatrix(noScale, -transform->scale);
 
 		int numOfVertices = (int) data.vertices.size() / 9;
 
@@ -81,8 +76,8 @@ namespace Copper::Renderer {
 			Vector3 normal;
 			Color color;
 
-			position = mat * glm::vec4((glm::vec3) mesh->vertices[i], 1.0f);
-			normal = (glm::mat3) mat * (glm::vec3) mesh->normals[i];
+			position = mat * Vector4(mesh->vertices[i], 1.0f);
+			normal = (Matrix3) mat * mesh->normals[i];
 			color = mesh->colors[i];
 
 			data.vertices.push_back(position.x); data.vertices.push_back(position.y); data.vertices.push_back(position.z);
@@ -100,7 +95,9 @@ namespace Copper::Renderer {
 	}
 
 	void ClearColor(float r, float g, float b) { api.ClearColor(r, g, b); }
-	void SetShader(Shader* shader) { api.SetShader(shader); }
+	void ResizeViewport(const UVector2I& size) { api.ResizeViewport(size); }
+
+	void SetShader(const Shader& shader) { api.SetShader(shader); }
 	Shader* GetShader() { return api.GetShader(); }
 
 

@@ -1,0 +1,17 @@
+ECS - Object
+
+1.0.0 - What is an Object:
+-An Object is an actual object in a game (a car, gun, but also triggers and camera) and in Copper
+ Engine we have a class representing the Object called, as you guessed Object. This class stores
+ mostly properties as this class is just a wrapper for the internal C++ Object that actually does
+ all of the work so every piece of data needs to be retrieved instead of stored in the actual class.
+
+1.0.1 - name
+-Object.name is a property that as you might've guessed is the name of the object as a string.
+
+1.0.2 - transform
+-Object.transform is a property of the Object's transform. Every object in Copper Engine has a
+ component called Transform, this component stores mostly data about the Object's position, rotation
+ and scale, but it also stores some data about relation to other Objects (such as parent,
+ localPosition, etc). Object.transform doesn't have a setter because the Transform never changes,
+ only it's data does.

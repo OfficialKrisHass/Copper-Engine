@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Copper.h"
+
+#include "Core/SceneMeta.h"
+
 #include "Panels/Panel.h"
 
 namespace Editor {
@@ -8,25 +11,40 @@ namespace Editor {
 	class SceneHierarchy : public Panel {
 
 	public:
-		SceneHierarchy() : Panel("SceneHierarchy") {}
+		SceneHierarchy();
 		
-		void SetSelectedObject(Copper::Object object) { selectedObj = object; }
+		//Getters
+		inline Copper::Entity* GetSelectedEntity() { return &selectedEntity; }
 
-		Copper::Object GetSelectedObject() { return selectedObj; }
+		//Setters
+		inline void SetSelectedEntity(Copper::InternalEntity* entity) { selectedEntity = entity; }
+		inline void SetScene(Copper::Scene* scene) {
+			
+			this->scene = scene;
+			this->selectedEntity = nullptr;
+		
+		}
 
 	private:
-		Copper::Object selectedObj;
-		Copper::Scene* scene;
-		bool anyNodeHovered = false;
+		Copper::Entity selectedEntity = nullptr;
+		Copper::Scene* scene = nullptr;
 
 		virtual void UI() override;
 
-		void DrawObjectNode(Copper::Object obj);
+		void DrawEntityNode(Copper::InternalEntity* entity);
 
-		bool CheckDropType(std::string wantedType, std::string payloadType) { return payloadType == wantedType; }
+		void PopupWindow();
 
-		void DropModel(void* data);
-		void DropObject(void* data);
+		/*void DrawObjectNode(uint32_t& objIDIndex);
+		void RemoveObjectNode(uint32_t objIDIndex);
+		void MoveObjectNode(uint32_t& objIDIndex, uint32_t objToMoveIDIndex);
+
+		void ChangeObjectParent(uint32_t& objIDIndex, uint32_t& newParentIDIndex);
+
+		void RemoveParent(uint32_t objIDIndex);
+
+		bool OnObjectCreated(const Copper::Event& e);
+		bool OnObjectDestroyed(const Copper::Event& e);*/
 
 	};
 

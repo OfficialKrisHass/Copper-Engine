@@ -3,20 +3,18 @@
 #include "Copper.h"
 #include "Panels/Panel.h"
 
-#include <filesystem>
-
 namespace Editor {
     
     class FileBrowser : public Panel {
         
     public:
         FileBrowser() = default;
-        FileBrowser(int test);
+        FileBrowser(const Copper::Filesystem::Path& initialDir);
+
+        static void SetRelativeDir(const Copper::Filesystem::Path& value) { projectRelativeDir = value; }
 
     private:
-        std::filesystem::path currentDir;
-        Copper::Texture directoryIcon;
-        Copper::Texture fileIcon;
+        static Copper::Filesystem::Path projectRelativeDir;
         
         virtual void UI() override;
     

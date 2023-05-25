@@ -1,24 +1,27 @@
 #pragma once
 
-#include "Engine/Components/Camera.h"
+#include "Copper.h"
 
-namespace Copper {
+namespace Editor {
 
-	class SceneCamera : public Camera {
+	class SceneCamera : public Copper::Camera {
+
+		friend struct Project;
 
 	public:
 		SceneCamera() = default;
-		SceneCamera(UVector2I size) : Camera(size) {}
+		SceneCamera(Copper::UVector2I size) : Camera(size) {}
 
-		virtual void Update() override;
+		void Update();
 		
-		inline void SetCanLook(bool can) {this->canLook = can;}
+		inline void SetCanLook(bool can) { this->canLook = can; }
 		
 		float speed = 0.1f;
 		float sensitivity = 100.0f;
-	protected:
+
+	private:
 		bool firstClick = true;
-		bool canLook;
+		bool canLook = false;
 
 	};
 

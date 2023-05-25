@@ -26,23 +26,18 @@ namespace Copper {
 
 	}
 
-	VertexArray::VertexArray() {
+	VertexArray::VertexArray(IndexBuffer* ibo) {
+
+		this->ibo = ibo;
 
 		glGenVertexArrays(1, &ID);
 		glBindVertexArray(ID);
 
 	}
 
-	VertexArray::~VertexArray() {
-
-		glDeleteVertexArrays(1, &ID);
-
-	}
-
-	void VertexArray::SetVertexBuffer(Shared<VertexBuffer> vbo) {
+	void VertexArray::SetVertexBuffer(VertexBuffer* vbo) {
 
 		uint32_t index = 0;
-
 		for (const Element& e : *vbo) {
 
 			glEnableVertexAttribArray(index);
@@ -53,11 +48,10 @@ namespace Copper {
 		}
 
 	}
+	void VertexArray::SetIndexBuffer(IndexBuffer* ibo) { this->ibo = ibo; }
 
-	void VertexArray::SetIndexBuffer(Shared<IndexBuffer> ibo) { this->ibo = ibo; }
 
-
-	void VertexArray::Bind() { glBindVertexArray(ID); }
-	void VertexArray::Unbind() { glBindVertexArray(0); }
+	void VertexArray::Bind() const { glBindVertexArray(ID); }
+	void VertexArray::Unbind() const { glBindVertexArray(0); }
 
 }

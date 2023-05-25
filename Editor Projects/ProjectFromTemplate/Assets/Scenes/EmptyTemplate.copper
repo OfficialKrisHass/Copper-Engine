@@ -1,0 +1,27 @@
+Version: 0
+Name: EmptyTemplate
+Entities:
+  Light:
+    ID: 0
+    Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent ID: 4294967295
+      Children: []
+    Light:
+      Color: [1, 0.999989986, 0.999989986, 1]
+      Intensity: 1
+  Camera:
+    ID: 1
+    Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent ID: 4294967295
+      Children: []
+    Camera:
+      Fov: 90
+      Near Plane: 0.100000001
+      Far Plane: 1000
+      Size: [1920, 969]

@@ -1,0 +1,5 @@
+C:\Programming\Copper-Engine\Editor Projects\TestingProject\Binaries\TestingProject.dll
+C:\Programming\Copper-Engine\Editor Projects\TestingProject\Binaries\TestingProject.pdb
+C:\Programming\Copper-Engine\Editor Projects\TestingProject\Objs\Debug\TestingProject.csprojResolveAssemblyReference.cache
+C:\Programming\Copper-Engine\Editor Projects\TestingProject\Objs\Debug\TestingProject.dll
+C:\Programming\Copper-Engine\Editor Projects\TestingProject\Objs\Debug\TestingProject.pdb

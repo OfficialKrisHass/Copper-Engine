@@ -2,13 +2,22 @@
 
 #include "Engine/Core/Core.h"
 
-#include "cupch.h"
+#include "Engine/Filesystem/Path.h"
+
+#ifdef CU_WINDOWS
+	#define ROOT_DIR "C:\\"
+#else
+	#define ROOT_DIR "/home"
+#endif
 
 namespace Copper::Utilities {
 
-	std::string ReadFile(std::string path);
+	std::string ReadFile(const Filesystem::Path& path);
+	char* ReadFileBinary(const Filesystem::Path& path, uint32_t* outSize);
 
-	std::string SaveDialog(const char* filter);
-	std::string OpenDialog(const char* filter);
+	Filesystem::Path SaveDialog(const std::string& filter, const Filesystem::Path& initialDir);
+	Filesystem::Path OpenDialog(const std::string& filter, const Filesystem::Path& initialDir);
+
+	Filesystem::Path FolderOpenDialog(const Filesystem::Path& initialDir = ROOT_DIR);
 
 }

@@ -1,4 +1,4 @@
-#pragma once
+ #pragma once
 
 #include "Engine/Core/Core.h"
 #include "cupch.h"
@@ -8,10 +8,10 @@ namespace Copper {
 	class FrameBuffer {
 
 	public:
-		FrameBuffer(UVector2I size);
-		~FrameBuffer();
+		FrameBuffer() = default;
+		FrameBuffer(const UVector2I& size);
 
-		void Resize(UVector2I size);
+		void Resize(const UVector2I& size);
 
 		void Bind();
 		void Unbind();
@@ -20,11 +20,12 @@ namespace Copper {
 
 		inline uint32_t Width() { return size.x; }
 		inline uint32_t Height() { return size.y; }
+		inline UVector2I Size() { return size; }
 
 	private:
-		uint32_t ID;
-		uint32_t color;
-		uint32_t depth;
+		uint32_t ID = 0;
+		uint32_t color = 0;
+		uint32_t depth = 0;
 
 		UVector2I size;
 

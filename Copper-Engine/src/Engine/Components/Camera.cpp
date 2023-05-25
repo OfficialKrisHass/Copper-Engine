@@ -1,26 +1,29 @@
 #include "cupch.h"
 #include "Camera.h"
 
+#include "Engine/Core/Engine.h"
+
+#include "Engine/Components/Transform.h"
+
 #include <GLM/ext/matrix_clip_space.hpp>
 #include <GLM/ext/matrix_transform.hpp>
 
 namespace Copper {
 
-	glm::mat4 Camera::CreateViewMatrix() {
+	Matrix4 Camera::CreateViewMatrix() {
 
-		glm::mat4 ret(1.0f);
-
-		ret = glm::lookAt((glm::vec3) transform->position, (glm::vec3) (transform->position + transform->forward), (glm::vec3) transform->up);
-
-		return ret;
+		return CMath::ViewMatrix(GetTransform()->position, GetTransform()->Forward(), GetTransform()->Up());
 
 	}
+	Matrix4 Camera::CreateProjectionMatrix() {
 
-	glm::mat4 Camera::CreateProjectionMatrix() {
+		Matrix4 ret;
 
-		glm::mat4 ret(1.0f);
-		
-		ret = glm::perspective(glm::radians(fov), static_cast<float>(size.x) / size.y, nearPlane, farPlane);
+	#ifdef CU_EDITOR
+		ret = CMath::ProjectionMatrix(fov, static_cast<float>(size.x) / size.y, nearPlane, farPlane);
+	#else
+		ret = CMath::ProjectionMatrix(fov, GetWindowAspectRatio(), nearPlane, farPlane);
+	#endif
 
 		return ret;
 

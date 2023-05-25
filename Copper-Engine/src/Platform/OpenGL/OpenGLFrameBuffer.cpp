@@ -5,8 +5,7 @@
 
 namespace Copper {
 
-	FrameBuffer::FrameBuffer(UVector2I size) : size(size) { Recreate(); }
-	FrameBuffer::~FrameBuffer() { glDeleteFramebuffers(1, &ID); }
+	FrameBuffer::FrameBuffer(const UVector2I& size) : size(size) { Recreate(); }
 
 	void FrameBuffer::Recreate() {
 
@@ -25,7 +24,7 @@ namespace Copper {
 		glGenTextures(1, &color);
 		glBindTexture(GL_TEXTURE_2D, color);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, size.x, size.y, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -45,7 +44,7 @@ namespace Copper {
 
 	}
 
-	void FrameBuffer::Resize(UVector2I size) {
+	void FrameBuffer::Resize(const UVector2I& size) {
 
 		this->size = size;
 		Recreate();

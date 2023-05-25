@@ -5,32 +5,76 @@
 
 #include "Engine/Events/Event.h"
 
-#include <CopperECS/CopperECS.h>
-
 #define GetGLFWwindow (GLFWwindow*) GetWindow().GetWindowPtr()
 
 namespace Copper {
 
-	void Initialize();
-	void Run();
-	void Shutdown();
-	
-	void LoadScene(Scene* scene);
+	class Scene;
+	class InternalEntity;
 
-	bool OnWindowResize(Event& e);
-	bool OnWindowClose(Event& e);
+	enum class EngineState : uint8_t {
+
+		Entry,
+		Initialization,
+		PostInitialization,
+		Running,
+		Shutdown,
+
+	};
+
+	namespace EngineCore {
+
+		void Initialize(int argc, char* argv[]);
+		void Run();
+		void Shutdown();
+
+	}
+	void LoadUIFont(const std::string& path, float fontSize = 18.0f);
+
+	const Version& GetVersion();
+	
+	EngineState GetEngineState();
+	std::string EngineStateToString(EngineState state);
+
+	uint32_t GetNumArguments();
+	const std::string& GetArgument(uint32_t index);
+
+	//Engine Events
+	void AddPostInitEventFunc(std::function<void()> func);
+
+	void AddUpdateEventFunc(std::function<void()> func);
+	void AddUIUpdateEventFunc(std::function<void()> func);
+
+	void AddPreShutdownEventFunc(std::function<bool(const Event&)> func);
+	void AddPostShutdownEventFunc(std::function<void()> func);
+
+	bool IsRuntimeRunning();
+
+	//Setters
+	void SetWindowSize(const UVector2I& size);
+	void SetMainUIAsCurrent();
+
+	void SetRenderScene(bool value);
+
+#ifdef CU_EDITOR
+	void SetAcceptInputDuringRuntime(bool value);
+#endif
 
 	//Getters
-	Window GetWindow();
+	Window& GetWindow();
+	UVector2I GetWindowSize();
+	float GetWindowAspectRatio();
+
 	uint32_t GetFBOTexture();
 
 	Scene* GetScene();
-	Object GetObjectFromID(int32_t id);
+	uint32_t GetNumOfEntities();
 
-	//Setters
-	void SetWindowSize(UVector2I size);
+	InternalEntity* GetEntityFromID(int32_t id);
+	InternalEntity* CreateEntityFromID(int32_t id, const std::string& name = "Entity", bool returnIfExists = true);
 
-	void SetEditorRunFunc(void (*func)());
-	void SetEditorUIFunc(void (*func)());
+#ifdef CU_EDITOR
+	bool AcceptInputDuringRuntime();
+#endif
 
 }

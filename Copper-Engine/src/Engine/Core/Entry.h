@@ -4,12 +4,15 @@
 
 extern void AppEntryPoint();
 
-int main() {
+int main(int argc, char* argv[]) {
 
-	Copper::Initialize();
+	using namespace Copper;
+
 	AppEntryPoint();
-	Copper::Run();
-	Copper::Shutdown();
+
+	EngineCore::Initialize(argc, argv);
+	EngineCore::Run();
+	EngineCore::Shutdown();
 
 	return 0;
 

@@ -5,17 +5,21 @@ workspace "Copper-Engine"
 
 outputDir = "%{cfg.system}-%{cfg.architecture}-%{cfg.buildcfg}"
 
-include "Copper-Engine/lib/GLFW"
-include "Copper-Engine/lib/GLAD"
-include "Copper-Engine/lib/ImGui/ImGui"
-include "Copper-Engine/lib/yaml-cpp"
-include "Copper-Engine/lib/assimp"
+group "Libraries"
+    include "Copper-Engine/lib/GLFW"
+    include "Copper-Engine/lib/GLAD"
+    include "Copper-Engine/lib/ImGui"
+    include "Copper-Engine/lib/yaml-cpp"
+    include "Copper-Engine/lib/assimp"
+
+    include "Copper-Engine/lib/Copper-Math/CMath"
+group ""
 
 project "Copper-Engine"
     location "Copper-Engine"
     kind "StaticLib"
     language "C++"  
-    cppdialect "C++17"
+    cppdialect "C++20"
     staticruntime "on"
 
     targetdir("Build/" .. outputDir .. "/%{prj.name}")
@@ -32,9 +36,11 @@ project "Copper-Engine"
 
         "%{prj.name}/src/Engine/**.h",
         "%{prj.name}/src/Engine/**.cpp",
-        
-        "%{prj.name}/lib/CopperECS/include/CopperECS/**.h",
+
         "%{prj.name}/lib/stb/stb/stb_image.cpp",
+
+        "%{prj.name}/lib/ImGuizmo/ImGuizmo/ImGuizmo.h",
+        "%{prj.name}/lib/ImGuizmo/ImGuizmo/ImGuizmo.cpp",
 
     }
 
@@ -42,15 +48,21 @@ project "Copper-Engine"
 
         "%{prj.name}/src",
 
-        "%{prj.name}/lib/spdlog",
         "%{prj.name}/lib/GLFW/include",
         "%{prj.name}/lib/GLAD/include",
         "%{prj.name}/lib/GLM/include",
         "%{prj.name}/lib/yaml-cpp/include",
         "%{prj.name}/lib/assimp/include",
-        "%{prj.name}/lib/CopperECS/include",
+        "%{prj.name}/lib/mono/include",
+        "%{prj.name}/lib/spdlog",
         "%{prj.name}/lib/ImGui",
-        "%{prj.name}/lib/stb"
+        "%{prj.name}/lib/ImGuizmo",
+        "%{prj.name}/lib/stb",
+        "%{prj.name}/lib/Copper-Math",
+
+        "%{prj.name}/lib/physx/include/physx",
+
+        "%{prj.name}/lib/ImGui/ImGui",
 
     }
 
@@ -61,24 +73,36 @@ project "Copper-Engine"
         "ImGui",
         "yaml-cpp",
         "assimp",
-        "opengl32.lib"
+        "opengl32.lib",
 
     }
 
     defines {
 
         "CU_ENGINE",
-        "_CRT_SECURE_NO_WARNINGS"
+        "CU_EDITOR",
+        "_CRT_SECURE_NO_WARNINGS",
+        "GLM_ENABLE_EXPERIMENTAL",
+        
+        "VERSION_MAJOR=0",
+        "VERSION_MINOR=0",
+        "VERSION_PATCH=0",
+        "VERSION_TWEAK=7",
+        
+        "SCENE_VERSION=0",
+        "INCLUDE_GLM"
 
     }
 
+    filter "files:Copper-Engine/lib/ImGuizmo/ImGuizmo/**.cpp"
+        flags { "NoPCH" }
+    
     filter "system:windows"
         systemversion "latest"
 
         defines {
 
             "CU_WINDOWS",
-            "GLM_ENABLE_EXPERIMENTAL"
 
         }
 
@@ -86,6 +110,31 @@ project "Copper-Engine"
 
             "%{prj.name}/src/Platform/Windows/**.cpp",
             "%{prj.name}/src/Platform/OpenGL/**.cpp"
+
+        }
+
+    filter "system:linux"
+        defines {
+
+            "CU_LINUX"
+
+        }
+
+        files {
+
+            "%{prj.name}/src/Platform/Linux/**.cpp",
+            "%{prj.name}/src/Platform/OpenGL/**.cpp",
+
+        }
+
+        buildoptions {
+    
+            "`pkg-config --cflags mono-2`"
+    
+        }
+        linkoptions {
+
+            "`pkg-config --libs mono-2`",
 
         }
 
@@ -103,7 +152,7 @@ project "Copper-Editor"
     location "Copper-Editor"
     kind "ConsoleApp"
     language "C++"
-    cppdialect "C++17"
+    cppdialect "C++20"
     staticruntime "on"
 
     targetdir("Build/" .. outputDir .. "/%{prj.name}")
@@ -123,23 +172,33 @@ project "Copper-Editor"
         "Copper-Engine/src",
         "Copper-Engine/lib/spdlog",
         "Copper-Engine/lib/ImGui",
+        "Copper-Engine/lib/ImGuizmo",
+        "Copper-Engine/lib/Copper-Math",
+        
         "Copper-Engine/lib/GLM/include",
+        "Copper-Engine/lib/yaml-cpp/include",
         "Copper-Engine/lib/assimp/include",
-        "Copper-Engine/lib/CopperECS/include",
+
+        "%{prj.name}/lib/FileWatch",
 
     }
 
     links {
 
         "Copper-Engine",
-        "assimp"
+        "GLFW",
+        "GLAD",
+        "ImGui",
+        "yaml-cpp",
+        "assimp",
 
     }
 
     defines {
 
         "CU_EDITOR",
-        "_CRT_SECURE_NO_WARNINGS"
+        "_CRT_SECURE_NO_WARNINGS",
+        "INCLUDE_GLM"
 
     }
     
@@ -160,6 +219,162 @@ project "Copper-Editor"
 
         }
 
+    filter "system:linux"
+        defines {
+
+            "CU_LINUX",
+            "GLM_ENABLE_EXPERIMENTAL"
+
+        }
+        
+        buildoptions {
+    
+            "`pkg-config --cflags mono-2`"
+    
+        }
+        linkoptions {
+
+            "`pkg-config --libs mono-2`",
+            "-lX11",
+            "-lstdc++fs",
+
+        }
+
+    filter "configurations:Debug"
+        defines "CU_DEBUG"
+        runtime "Debug"
+        symbols "on"
+
+    filter "configurations:Release"
+        defines "CU_RELEASE"
+        runtime "Release"
+        optimize "on"
+
+project "Copper-ScriptingAPI"
+    location "Copper-ScriptingAPI"
+    language "C#"
+    kind "SharedLib"
+    dotnetframework "4.8"
+
+    targetdir("Copper-Editor/assets/ScriptAPI")
+    objdir("Copper-Editor/assets/ScriptAPI/Int")
+
+    files {
+
+        "%{prj.name}/Source/**.cs"
+
+    }
+
+    filter "configurations:Debug"
+        optimize "Off"
+        symbols "Default"
+
+    filter "configurations:Release"
+        optimize "On"
+        symbols "Default"
+
+project "Copper-CppTesting"
+    location "Copper-CppTesting"
+    kind "ConsoleApp"
+    language "C++"
+    cppdialect "C++20"
+    staticruntime "on"
+
+    targetdir("Build/" .. outputDir .. "/%{prj.name}")
+    objdir("BuildInt/" .. outputDir .. "/%{prj.name}")
+
+    files {
+
+        "%{prj.name}/src/**.h",
+        "%{prj.name}/src/**.cpp",
+
+    }
+
+    includedirs {
+
+        "Copper-Engine/src",
+
+        "Copper-Engine/lib/spdlog",
+        "Copper-Engine/lib/ImGui",
+        "Copper-Engine/lib/ImGuizmo",
+        "Copper-Engine/lib/Copper-Math",
+        
+        "Copper-Engine/lib/GLM/include",
+        "Copper-Engine/lib/yaml-cpp/include",
+        "Copper-Engine/lib/assimp/include",
+
+    }
+
+    links {
+
+        "Copper-Engine",
+        "Copper-Engine/lib/mono/lib/%{cfg.buildcfg}/mono-2.0-sgen.lib",
+
+    }
+
+    filter "configurations:Debug"
+        defines "CU_DEBUG"
+        runtime "Debug"
+        symbols "on"
+
+        linkoptions {
+
+            '/NODEFAULTLIB:"libcmt.lib"',
+            '/NODEFAULTLIB:"msvcrt.lib"',
+            '/NODEFAULTLIB:"msvcrtd.lib"'
+
+        }
+
+    filter "configurations:Release"
+        defines "CU_RELEASE"
+        runtime "Release"
+        optimize "on"
+
+        linkoptions {
+
+            '/NODEFAULTLIB:"msvcrt.lib"',
+            '/NODEFAULTLIB:"libcmtd.lib"',
+            '/NODEFAULTLIB:"msvcrtd.lib"'
+
+        }
+
+project "Copper-Launcher"
+    location "Copper-Launcher"
+    kind "ConsoleApp"
+    language "C++"
+    cppdialect "C++20"
+    staticruntime "on"
+
+    targetdir("Build/" .. outputDir .. "/Copper-Editor")
+    objdir("BuildInt/" .. outputDir .. "/Copper-Editor")
+
+    files {
+
+        "%{prj.name}/src/**.h",
+        "%{prj.name}/src/**.cpp",
+
+    }
+
+    includedirs {
+
+        "Copper-Engine/lib/GLFW/include",
+        "Copper-Engine/lib/GLAD/include",
+        "Copper-Engine/lib/yaml-cpp/include",
+        "Copper-Engine/lib/ImGui",
+
+    }
+
+    links {
+
+        "GLFW",
+        "GLAD",
+        "ImGui",
+        "yaml-cpp",
+
+    }
+
+    defines { "Launcher=Copper::Launcher" }
+    
     filter "configurations:Debug"
         defines "CU_DEBUG"
         runtime "Debug"

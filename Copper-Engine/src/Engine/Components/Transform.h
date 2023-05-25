@@ -2,52 +2,70 @@
 
 #include "Engine/Core/Core.h"
 
+#include "Engine/Scene/Component.h"
+
 #include "cupch.h"
 
 #include <GLM/mat4x4.hpp>
 
+#include <GLM/gtx/euler_angles.hpp>
+
 namespace Copper {
 
-	class Object;
-	class Scene;
+	class Transform : public Component {
 
-	class Transform {
-
+		friend class Registry;
 		friend class Scene;
+		friend class OldSceneDeserialization;
 
 	public:
 		Transform() = default;
-		Transform(Vector3 position, Vector3 rotation, Vector3 scale) : position(position), rotation(rotation), scale(scale) {}
+		Transform(const Vector3& position, const Vector3& rotation, const Vector3& scale) : position(position), rotation(rotation), scale(scale) {}
 
 		Vector3 position = Vector3::zero;
 		Vector3 rotation = Vector3::zero;
 		Vector3 scale = Vector3::one;
 
+		Vector3 GlobalPosition() const;
+
+		//Parent
+		void SetParent(Transform* parent);
+		Transform* Parent() const { return parent; }
+
+		//Children
+		void AddChild(Transform* transform);
+		void RemoveChild(Transform* transform);
+		void RemoveChild(int index);
+		Transform* GetChild(int index) const;
+
+		uint32_t NumOfChildren() const { return (uint32_t) children.size(); }
+
+		const Vector3& Forward() const { return forward; }
+		const Vector3& Back()    const { return back; }
+		const Vector3& Up()      const { return up; }
+		const Vector3& Down()    const { return down; }
+		const Vector3& Right()   const { return right; }
+		const Vector3& Left()    const { return left; }
+
+		Matrix4 CreateMatrix();
+
+		bool operator==(const Transform& other) const;
+
+		void Update();
+
+	private:
 		Vector3 forward;
-		Vector3 backward;
+		Vector3 back;
 		Vector3 up;
 		Vector3 down;
 		Vector3 left;
 		Vector3 right;
 
-		Shared<Object> object;
-		Transform* parent;
-		int numOfChildren;
+		//Parent Data
+		Transform* parent = nullptr;
+		int32_t parentChildIndex = -1;
 
-		glm::mat4 CreateMatrix();
-		void Update();
-
-		Vector3 GlobalPosition();
-
-		Transform* GetChild(int index) const;
-
-		void AddChild(Transform* transform);
-		void RemoveChild(Transform* transform);
-		void RemoveChild(int index);
-
-		bool operator==(const Transform& other) const;
-
-	private:
+		//Children Data
 		std::vector<int32_t> children;
 
 	};

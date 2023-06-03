@@ -70,7 +70,7 @@ namespace Editor {
 
 		if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) RenderScriptComponent(script);
 
-		if (PhysicsBody* body = entity->GetComponent<PhysicsBody>()) RenderPhysicsBody(body);
+		if (PhysicsObject* body = entity->GetComponent<PhysicsObject>()) RenderPhysicsObject(body);
 
 		ImGui::Spacing();
 		//ImGui::Spacing();
@@ -107,9 +107,9 @@ namespace Editor {
 				Editor::SetChanges(true);
 			
 			}
-			if (ImGui::MenuItem("Physics Body")) {
+			if (ImGui::MenuItem("Physics Object")) {
 
-				entity->AddComponent<PhysicsBody>();
+				entity->AddComponent<PhysicsObject>();
 				Editor::SetChanges(true);
 
 			}
@@ -196,13 +196,14 @@ namespace Editor {
 
 	}
 
-	void Properties::RenderPhysicsBody(PhysicsBody* body) {
+	void Properties::RenderPhysicsObject(PhysicsObject* object) {
 
-		ImGui::PushID((int) (int64_t) body);
+		ImGui::PushID((int) (int64_t) object);
 
-		if (!DrawComponent<PhysicsBody>("Physics Body", body->GetEntity())) { ImGui::PopID(); return; }
+		if (!DrawComponent<PhysicsObject>("Physics Object", object->GetEntity())) { ImGui::PopID(); return; }
 
-		ShowFloat("Mass", &body->mass);
+		ShowFloat("Mass", &object->mass);
+		ShowBool("Is Static", &object->isStatic);
 
 		ImGui::PopID();
 

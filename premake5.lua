@@ -54,6 +54,7 @@ project "Copper-Engine"
         "%{prj.name}/lib/yaml-cpp/include",
         "%{prj.name}/lib/assimp/include",
         "%{prj.name}/lib/mono/include",
+        "%{prj.name}/lib/PhysX/include",
         "%{prj.name}/lib/spdlog",
         "%{prj.name}/lib/ImGui",
         "%{prj.name}/lib/ImGuizmo",
@@ -85,9 +86,9 @@ project "Copper-Engine"
         "GLM_ENABLE_EXPERIMENTAL",
         
         "VERSION_MAJOR=0",
-        "VERSION_MINOR=0",
+        "VERSION_MINOR=2",
         "VERSION_PATCH=0",
-        "VERSION_TWEAK=7",
+        "VERSION_TWEAK=0",
         
         "SCENE_VERSION=0",
         "INCLUDE_GLM"
@@ -185,7 +186,7 @@ project "Copper-Editor"
 
     links {
 
-        "Copper-Engine",
+        
         "GLFW",
         "GLAD",
         "ImGui",
@@ -235,9 +236,15 @@ project "Copper-Editor"
         linkoptions {
 
             "`pkg-config --libs mono-2`",
+            
             "-lX11",
             "-lstdc++fs",
 
+            "-L../Build/linux-x86_64-Debug/Copper-Engine -lCopper-Engine",
+            
+            "-L../Copper-Engine/lib/PhysX/lib",
+            "-lPhysXExtensions_static_64 -lPhysX_static_64 -lPhysXPvdSDK_static_64 -lPhysXCooking_static_64 -lPhysXCommon_static_64 -lPhysXFoundation_static_64",
+            
         }
 
     filter "configurations:Debug"

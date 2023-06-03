@@ -657,6 +657,10 @@ namespace Editor {
 
 		data.sceneHierarchy.SetSelectedEntity(savedSelectedEntity);
 
+		Input::SetCursorLocked(false);
+		Input::SetCursorVisible(true);
+		SetAcceptInputDuringRuntime(false);
+
 	}
 
 	void FileChangedCallback(const Filesystem::Path& path, const ProjectFileWatcher::FileChangeType& changeType) {

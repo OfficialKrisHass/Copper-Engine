@@ -2,10 +2,12 @@
 
 #include "Engine/Core/Core.h"
 
+#include "Engine/Filesystem/Path.h"
+
 #include "Engine/Scene/InternalEntity.h"
 #include "Engine/Scene/Registry.h"
 
-#include "Engine/Filesystem/Path.h"
+#include "Engine/Physics/PhysicsEngine.h"
 
 namespace Copper {
 
@@ -81,6 +83,8 @@ namespace Copper {
 
 		bool runtimeRunning = false;
 		bool runtimeStarted = false;
+
+		physx::PxScene* physicsScene = nullptr;
 
 		void SerializeEntity(InternalEntity* entity, YAML::Emitter& out);
 		void DeserializeEntity(InternalEntity* entity, const YAML::Node& node);

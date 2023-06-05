@@ -10,11 +10,13 @@
 #include "Engine/Renderer/Shader.h"
 #include "Engine/Renderer/Texture.h"
 
+#include "Engine/UI/ImGui.h"
+
 #include "Engine/Input/AxisManager.h"
 
 #include "Engine/Scripting/ScriptingCore.h"
 
-#include "Engine/UI/ImGui.h"
+#include "Engine/Physics/PhysicsEngine.h"
 
 #include "Engine/Scene/CopperECS.h"
 
@@ -111,6 +113,7 @@ namespace Copper {
 		Input::AddMouseAxis("Mouse Y", false);
 
 		Scripting::Initialize();
+		PhysicsEngine::Initialize();
 
 		data.engineState = EngineState::PostInitialization;
 		data.postInitEvent();
@@ -156,6 +159,7 @@ namespace Copper {
 
 		data.mainUI.Shutdown();
 		data.WindowRef().Shutdown();
+		PhysicsEngine::Shutdown();
 
 		data.postShutdownEvent();
 

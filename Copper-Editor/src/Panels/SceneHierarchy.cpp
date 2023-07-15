@@ -55,6 +55,9 @@ namespace Editor {
 
 		}
 
+		Vector3 rot = GetProject().sceneCam.GetTransform()->rotation.EulerAngles();
+		ImGui::DragFloat3("Rotation", &rot.x, 1.0f);
+
 	}
 
 	void SceneHierarchy::DrawEntityNode(InternalEntity* entity) {

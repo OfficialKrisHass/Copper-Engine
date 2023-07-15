@@ -5,6 +5,7 @@
 #include "Engine/Scripting/ScriptingCore.h"
 
 #include <yaml-cpp/yaml.h>
+#include "Engine/YAMLOverloads/YAMLOverloads.h"
 
 using namespace Copper;
 
@@ -74,7 +75,7 @@ namespace Editor {
 
 		//Scene Camera
 		YAML::Node sceneCamera = main["Scene Camera"];
-		sceneCam.transform = new Transform(sceneCamera["Position"].as<Vector3>(), sceneCamera["Rotation"].as<Vector3>(), Vector3::one);
+		sceneCam.transform = new Transform(sceneCamera["Position"].as<Vector3>(), sceneCamera["Rotation"].as<Quaternion>(), Vector3::one);
 
 		sceneCam.fov = sceneCamera["Fov"].as<float>();
 		sceneCam.nearPlane = sceneCamera["Near Plane"].as<float>();

@@ -8,6 +8,7 @@
 
 #include <ImGui/imgui.h>
 #include <yaml-cpp/yaml.h>
+#include "Engine/YAMLOverloads/YAMLOverloads.h"
 
 #include <corecrt_wstring.h>
 

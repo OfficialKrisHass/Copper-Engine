@@ -4,6 +4,8 @@
 
 namespace physx { class PxScene; class PxRigidActor; }
 
+namespace Copper { class Transform; }
+
 namespace Copper::PhysicsEngine {
 
     void Initialize();

@@ -21,10 +21,9 @@ namespace Copper::PhysicsEngine {
     };
     Data data;
 
-    physx::PxQuat QuatFromEuler(const Vector3& eulerAngles) {
+    physx::PxQuat CopperToPhysX(const Quaternion& quat) {
 
-        glm::quat tmp(CMath::DegreesToRadians(eulerAngles));
-        return physx::PxQuat(tmp.x, tmp.y, tmp.z, tmp.w);
+        return physx::PxQuat(quat.x, quat.y, quat.z, quat.w);
 
     }
     physx::PxVec3 CopperToPhysX(const Vector3& vec) {
@@ -73,9 +72,9 @@ namespace Copper::PhysicsEngine {
         physx::PxRigidActor* ret = nullptr;
 
         if(!staticBody)
-            ret = physx::PxCreateDynamic(*data.physics, physx::PxTransform(CopperToPhysX(transform->position), QuatFromEuler(transform->rotation)), *shape, 10.0f);
+            ret = physx::PxCreateDynamic(*data.physics, physx::PxTransform(CopperToPhysX(transform->position), CopperToPhysX(transform->rotation)), *shape, 10.0f);
         else
-            ret = physx::PxCreateStatic(*data.physics, physx::PxTransform(CopperToPhysX(transform->position), QuatFromEuler(transform->rotation)), *shape);
+            ret = physx::PxCreateStatic(*data.physics, physx::PxTransform(CopperToPhysX(transform->position), CopperToPhysX(transform->rotation)), *shape);
 
         shape->release();
         return ret;

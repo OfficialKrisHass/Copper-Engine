@@ -5,7 +5,7 @@ Entities:
     ID: 0
     Transform:
       Position: [0.924498081, 3.06043935, 2.59961128]
-      Rotation: [0, 0, 0]
+      Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
       Parent ID: 4294967295
       Children: []
@@ -16,7 +16,7 @@ Entities:
     ID: 1
     Transform:
       Position: [1.06000018, 1.04999995, 1.37]
-      Rotation: [16.2429867, -30.4185543, -0.312795639]
+      Rotation: [0.955393672, 0.135614976, -0.260085434, 0.0344544612]
       Scale: [0.999999404, 0.999999106, 0.999999642]
       Parent ID: 4294967295
       Children: []
@@ -29,7 +29,7 @@ Entities:
     ID: 2
     Transform:
       Position: [0, -20, 0]
-      Rotation: [0, 0, 0]
+      Rotation: [1, 0, 0, 0]
       Scale: [10, 1, 10]
       Parent ID: 4294967295
       Children: []
@@ -152,7 +152,7 @@ Entities:
     ID: 3
     Transform:
       Position: [0, -19, 0]
-      Rotation: [0, 0, 0]
+      Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
       Parent ID: 4294967295
       Children: []
@@ -275,7 +275,7 @@ Entities:
     ID: 4
     Transform:
       Position: [0.763340831, -16.601366, 0.833542705]
-      Rotation: [0, 0, 0]
+      Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
       Parent ID: 4294967295
       Children: []

@@ -30,6 +30,7 @@
 #include <ImGuizmo/ImGuizmo.h>
 
 #include <yaml-cpp/yaml.h>
+#include "Engine/YAMLOverloads/YAMLOverloads.h"
 
 #include <CMath/CMath.h>
 
@@ -528,13 +529,15 @@ namespace Editor {
 
 				Math::DecomposeTransform(transform, position, rotation, scale);
 
-				glm::vec3 deltaRotation = (Vector3) rotation - selectedObj->GetTransform()->rotation;
+				//glm::vec3 deltaRotation = (Vector3) rotation - selectedObj->GetTransform()->rotation;
 				selectedObj->GetTransform()->position = position;
-				selectedObj->GetTransform()->rotation += deltaRotation;
+				//selectedObj->GetTransform()->rotation += deltaRotation;
 				selectedObj->GetTransform()->scale = scale;
 
 				//The rotation doesn't work for some reason, it keeps wiggling around
 				//Unfortunately I'm dum dum so this is what you get :) uwu
+
+				//TODO: Dont be dum dum like a friggin idiot and learn how to do it owo
 
 			}
 

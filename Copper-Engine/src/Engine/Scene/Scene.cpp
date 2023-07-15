@@ -17,6 +17,8 @@
 
 #include "Engine/Scripting/ScriptingCore.h"
 
+#include "Engine/YAMLOverloads/YAMLOverloads.h"
+
 #include <fstream>
 #include <yaml-cpp/yaml.h>
 
@@ -57,7 +59,7 @@ namespace Copper {
 				physx::PxTransform trans = object->actor->getGlobalPose();
 
 				object->transform->position = Vector3(trans.p.x, trans.p.y, trans.p.z);
-				object->transform->rotation = glm::degrees(glm::eulerAngles(glm::quat(trans.q.w, trans.q.x, trans.q.y, trans.q.z)));
+				object->transform->rotation = Quaternion(trans.q.w, trans.q.x, trans.q.y, trans.q.z);
 
 			}
 
@@ -300,7 +302,7 @@ namespace Copper {
 
 		YAML::Node transform = node["Transform"];
 		entity->transform->position = transform["Position"].as<Vector3>();
-		entity->transform->rotation = transform["Rotation"].as<Vector3>();
+		entity->transform->rotation = transform["Rotation"].as<Quaternion>();
 		entity->transform->scale = transform["Scale"].as<Vector3>();
 
 		//Set the Parent

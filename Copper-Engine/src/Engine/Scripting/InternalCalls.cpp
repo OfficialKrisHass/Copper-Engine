@@ -236,7 +236,7 @@ namespace Copper::Scripting::InternalCalls {
 		*out = GetEntityFromID(eID)->GetTransform()->position;
 
 	}
-	static void GetRotation(uint32_t eID, Vector3* out) {
+	static void GetRotation(uint32_t eID, Quaternion* out) {
 
 		CheckValidEntity(eID);
 		*out = GetEntityFromID(eID)->GetTransform()->rotation;
@@ -254,7 +254,7 @@ namespace Copper::Scripting::InternalCalls {
 		GetEntityFromID(eID)->GetTransform()->position = *value;
 
 	}
-	static void SetRotation(uint32_t eID, Vector3* value) {
+	static void SetRotation(uint32_t eID, Quaternion* value) {
 
 		CheckValidEntity(eID);
 		GetEntityFromID(eID)->GetTransform()->rotation = *value;
@@ -273,34 +273,16 @@ namespace Copper::Scripting::InternalCalls {
 		*out = GetEntityFromID(eID)->GetTransform()->Forward();
 
 	}
-	static void GetBack(uint32_t eID, Vector3* out)    {
-
-		CheckValidEntity(eID);
-		*out = GetEntityFromID(eID)->GetTransform()->Back();
-	
-	}
 	static void GetRight(uint32_t eID, Vector3* out)   {
 
 		CheckValidEntity(eID);
 		*out = GetEntityFromID(eID)->GetTransform()->Right();
 	
 	}
-	static void GetLeft(uint32_t eID, Vector3* out)    {
-
-		CheckValidEntity(eID);
-		*out = GetEntityFromID(eID)->GetTransform()->Left();
-	
-	}
 	static void GetUp(uint32_t eID, Vector3* out)      {
 
 		CheckValidEntity(eID);
 		*out = GetEntityFromID(eID)->GetTransform()->Up();
-	
-	}
-	static void GetDown(uint32_t eID, Vector3* out)    {
-
-		CheckValidEntity(eID);
-		*out = GetEntityFromID(eID)->GetTransform()->Down();
 	
 	}
 
@@ -351,6 +333,12 @@ namespace Copper::Scripting::InternalCalls {
 
 		InternalEntity* entity = GetEntityFromID(eID);
 		entity->GetComponent<Camera>()->farPlane = value;
+
+	}
+
+	static Vector3 QuaternionEulerAngles(Quaternion* quaternion) {
+
+		return quaternion->EulerAngles();
 
 	}
 

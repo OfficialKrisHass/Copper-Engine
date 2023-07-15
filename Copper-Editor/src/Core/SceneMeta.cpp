@@ -3,6 +3,7 @@
 #include "Panels/SceneHierarchy.h"
 
 #include <yaml-cpp/yaml.h>
+#include "Engine/YAMLOverloads/YAMLOverloads.h"
 
 using namespace Copper;
 

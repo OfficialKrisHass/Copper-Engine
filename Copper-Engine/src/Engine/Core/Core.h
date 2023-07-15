@@ -38,6 +38,10 @@ namespace Copper {
     using UMatrix3I = CMath::UMatrix3I;
     using UMatrix4I = CMath::UMatrix4I;
 
+    using Quaternion = CMath::Quaternion;
+    using QuaternionI = CMath::QuaternionI;
+    using UQuaternionI = CMath::UQuaternionI;
+
     template<typename T> using Unique = std::unique_ptr<T>;
     template<typename T, typename ... Args> constexpr  Unique<T> CreateUnique(Args&& ... args) {
 
@@ -54,7 +58,11 @@ namespace Copper {
     
 }
 
-#include "Engine/YAMLOverloads/Vectors.h"
-#include "Engine/YAMLOverloads/Color.h"
-#include "Engine/YAMLOverloads/Path.h"
-#include "Engine/YAMLOverloads/Entity.h"
+namespace YAML {
+
+    struct Emitter;
+    struct Node;
+
+    template<typename T> struct convert;
+
+}

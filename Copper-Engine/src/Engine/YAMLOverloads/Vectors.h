@@ -1,22 +1,25 @@
 #pragma once
 
+#define CMATH_PARENT_NAMESPACE Copper
+#include <CMath/CMath.h>
+
 #include <yaml-cpp/yaml.h>
 
 namespace Copper {
 
-	template<typename T> inline YAML::Emitter& operator<<(YAML::Emitter& out, const CMath::vec2<T>& vec) {
+	template<typename T> inline YAML::Emitter& operator<<(YAML::Emitter& out, const CMath::vec<2, T>& vec) {
 
 		out << YAML::Flow << YAML::BeginSeq << vec.x << vec.y << YAML::EndSeq;
 		return out;
 
 	}
-	template<typename T> inline YAML::Emitter& operator<<(YAML::Emitter& out, const CMath::vec3<T>& vec) {
+	template<typename T> inline YAML::Emitter& operator<<(YAML::Emitter& out, const CMath::vec<3, T>& vec) {
 
 		out << YAML::Flow << YAML::BeginSeq << vec.x << vec.y << vec.z << YAML::EndSeq;
 		return out;
 
 	}
-	template<typename T> inline YAML::Emitter& operator<<(YAML::Emitter& out, const CMath::vec4<T>& vec) {
+	template<typename T> inline YAML::Emitter& operator<<(YAML::Emitter& out, const CMath::vec<4, T>& vec) {
 
 		out << YAML::Flow << YAML::BeginSeq << vec.x << vec.y << vec.z << vec.w << YAML::EndSeq;
 		return out;
@@ -27,9 +30,9 @@ namespace Copper {
 
 namespace YAML {
 
-	template<typename T> struct convert<Copper::CMath::vec2<T>> {
+	template<typename T> struct convert<Copper::CMath::vec<2, T>> {
 
-		static Node encode(const Copper::CMath::vec2<T>& vec) {
+		static Node encode(const Copper::CMath::vec<2, T>& vec) {
 
 			Node node;
 			node.push_back(vec.x);
@@ -39,7 +42,7 @@ namespace YAML {
 			return node;
 
 		}
-		static bool decode(const Node& node, Copper::CMath::vec2<T>& vec) {
+		static bool decode(const Node& node, Copper::CMath::vec<2, T>& vec) {
 
 			if (!node.IsSequence() || node.size() != 2) return false;
 
@@ -51,9 +54,9 @@ namespace YAML {
 		}
 
 	};
-	template<typename T> struct convert<Copper::CMath::vec3<T>> {
+	template<typename T> struct convert<Copper::CMath::vec<3, T>> {
 
-		static Node encode(const Copper::CMath::vec3<T>& vec) {
+		static Node encode(const Copper::CMath::vec<3, T>& vec) {
 
 			Node node;
 			node.push_back(vec.x);
@@ -64,7 +67,7 @@ namespace YAML {
 			return node;
 
 		}
-		static bool decode(const Node& node, Copper::CMath::vec3<T>& vec) {
+		static bool decode(const Node& node, Copper::CMath::vec<3, T>& vec) {
 
 			if (!node.IsSequence() || node.size() != 3) return false;
 
@@ -77,9 +80,9 @@ namespace YAML {
 		}
 
 	};
-	template<typename T> struct convert<Copper::CMath::vec4<T>> {
+	template<typename T> struct convert<Copper::CMath::vec<4, T>> {
 
-		static Node encode(const Copper::CMath::vec4<T>& vec) {
+		static Node encode(const Copper::CMath::vec<4, T>& vec) {
 
 			Node node;
 			node.push_back(vec.x);
@@ -91,7 +94,7 @@ namespace YAML {
 			return node;
 
 		}
-		static bool decode(const Node& node, Copper::CMath::vec4<T>& vec) {
+		static bool decode(const Node& node, Copper::CMath::vec<4, T>& vec) {
 
 			if (!node.IsSequence() || node.size() != 4) return false;
 

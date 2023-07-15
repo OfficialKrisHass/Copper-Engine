@@ -22,9 +22,7 @@ namespace Copper {
 		}
 
 		CMath::TranslateMatrix(ret, position);
-		CMath::RotateMatrix(ret, Vector3(1.0f, 0.0f, 0.0f), rotation.x);
-		CMath::RotateMatrix(ret, Vector3(0.0f, 1.0f, 0.0f), rotation.y);
-		CMath::RotateMatrix(ret, Vector3(0.0f, 0.0f, 1.0f), rotation.z);
+		ret *= (Matrix4) rotation;
 		CMath::ScaleMatrix(ret, scale);
 
 		return ret;
@@ -33,14 +31,9 @@ namespace Copper {
 
 	void Transform::Update() {
 
-		glm::quat quat = glm::quat(glm::vec3(glm::radians(-rotation.x), glm::radians(-rotation.y), glm::radians(-rotation.z)));
-
-		this->forward	= VecFromGLM(glm::rotate(quat, glm::vec3(0.0f, 0.0f, -1.0f)));
-		this->right		= VecFromGLM(glm::rotate(quat, glm::vec3(1.0f, 0.0f,  0.0f)));
-		this->up		= VecFromGLM(glm::rotate(quat, glm::vec3(0.0f, 1.0f,  0.0f)));
-		this->back = -forward;
-		this->left = -right;
-		this->down = -up;
+		this->forward	= rotation * Vector3(0.0f, 0.0f, -1.0f);
+		this->right		= rotation * Vector3(1.0f, 0.0f,  0.0f);
+		this->up		= rotation * Vector3(0.0f, 1.0f,  0.0f);
 
 	}
 

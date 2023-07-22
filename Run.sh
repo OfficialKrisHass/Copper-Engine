@@ -1,4 +1,4 @@
 #! /bin/bash
 
-cd Build/linux-x86_64-Debug/Copper-Editor
+cd Build/linux-x86_64-Release/Copper-Editor
 ./Copper-Editor

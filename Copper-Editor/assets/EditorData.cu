@@ -1,1 +1,1 @@
-Last Project: C:\Programming\Copper-Engine\Editor Projects\DevProject
+Last Project: /home/chris/programming/Copper-Engine/Editor Projects/LinuxTesting/

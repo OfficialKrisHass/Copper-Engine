@@ -7,8 +7,6 @@
 #include "Engine/Scene/InternalEntity.h"
 #include "Engine/Scene/Registry.h"
 
-#include "Engine/Physics/PhysicsEngine.h"
-
 namespace Copper {
 
 	class Light;
@@ -83,8 +81,6 @@ namespace Copper {
 
 		bool runtimeRunning = false;
 		bool runtimeStarted = false;
-
-		physx::PxScene* physicsScene = nullptr;
 
 		void SerializeEntity(InternalEntity* entity, YAML::Emitter& out);
 		void DeserializeEntity(InternalEntity* entity, const YAML::Node& node);

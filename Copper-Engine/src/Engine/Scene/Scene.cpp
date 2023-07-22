@@ -13,7 +13,6 @@
 #include "Engine/Components/MeshRenderer.h"
 #include "Engine/Components/ScriptComponent.h"
 #include "Engine/Components/Light.h"
-#include "Engine/Components/PhysicsObject.h"
 
 #include "Engine/Scripting/ScriptingCore.h"
 
@@ -21,8 +20,6 @@
 
 #include <fstream>
 #include <yaml-cpp/yaml.h>
-
-#include <PxPhysicsAPI.h>
 
 namespace Copper {
 
@@ -34,34 +31,12 @@ namespace Copper {
 
 		runtimeRunning = true;
 
-		physicsScene = PhysicsEngine::CreateScene();
-		
-		for (PhysicsObject* obj : ComponentView<PhysicsObject>(this)) {
-
-			obj->actor = PhysicsEngine::CreateRigidActor(obj->transform, obj->isStatic);
-			physicsScene->addActor(*obj->actor);
-
-		}
-
 	}
 	void Scene::Update(bool render, float deltaTime) {
 
 		Renderer::ClearColor(0.18f, 0.18f, 0.18f);
 
-		if (runtimeRunning)
-			PhysicsEngine::UpdateScene(physicsScene);
-
 		for (InternalEntity* entity : EntityView(this)) {
-
-			if(runtimeRunning && entity->HasComponent<PhysicsObject>()) {
-
-				PhysicsObject* object = entity->GetComponent<PhysicsObject>();
-				physx::PxTransform trans = object->actor->getGlobalPose();
-
-				object->transform->position = Vector3(trans.p.x, trans.p.y, trans.p.z);
-				object->transform->rotation = Quaternion(trans.q.w, trans.q.x, trans.q.y, trans.q.z);
-
-			}
 
 			entity->transform->Update();
 
@@ -283,17 +258,6 @@ namespace Copper {
 			out << YAML::EndMap; // Script Component
 
 		}
-		
-		if (PhysicsObject* object = entity->GetComponent<PhysicsObject>()) {
-
-			out << YAML::Key << "Physics Object" << YAML::Value << YAML::BeginMap; // Physics Object
-
-			out << YAML::Key << "Mass" << YAML::Value << object->mass;
-			out << YAML::Key << "Is Static" << YAML::Value << object->isStatic;
-
-			out << YAML::EndMap; // Physics Object
-
-		}
 
 		out << YAML::EndMap; // Enity
 
@@ -409,15 +373,6 @@ namespace Copper {
 				}
 
 			}
-
-		}
-
-		if (YAML::Node objectNode = node["Physics Object"]) {
-
-			PhysicsObject* object = entity->AddComponent<PhysicsObject>();
-
-			object->mass = objectNode["Mass"].as<float>();
-			object->isStatic = objectNode["Is Static"].as<bool>();
 
 		}
 

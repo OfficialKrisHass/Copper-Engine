@@ -48,8 +48,6 @@ namespace Editor {
 
 		void RenderScriptComponent(Copper::ScriptComponent* script);
 
-		void RenderPhysicsObject(Copper::PhysicsObject* object);
-
 		template<typename T, typename F> void RenderScriptField(Copper::ScriptComponent* script, const Copper::ScriptField& field, F showFunc);
 
 	};

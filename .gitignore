@@ -3,7 +3,6 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-Makefile
 *.make
 *.mingw
 .vscode
@@ -32,6 +31,7 @@ mono_crash.*
 # Build results
 [Bb]uild/
 [Bb]uild[Ii]nt/
+[Cc]Make/
 
 [Dd]ocs
 

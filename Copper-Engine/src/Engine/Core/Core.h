@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Config.h>
+
 #include "Engine/Core/Log.h"
 #include "Engine/Core/Version.h"
 

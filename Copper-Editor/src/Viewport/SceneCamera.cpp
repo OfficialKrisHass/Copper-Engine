@@ -44,10 +44,6 @@ namespace Editor {
 			float rotX = sensitivity * (float) (mouseY - (GetWindow().Height() / 2)) / GetWindow().Height();
 			float rotY = sensitivity * (float) (mouseX - (GetWindow().Width() / 2)) / GetWindow().Width();
 			
-			Vector3 tmp = glm::degrees(glm::eulerAngles((glm::quat) (GetTransform()->rotation)));
-			tmp.y -= rotY;
-			GetTransform()->rotation = glm::quat(glm::radians((glm::vec3) (tmp)));
-			
 			Input::SetCursorPosition((float) GetWindow().Width() / 2, (float) GetWindow().Height() / 2);
 
 		} else {

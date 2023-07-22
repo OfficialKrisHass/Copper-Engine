@@ -2,7 +2,7 @@ OS = linux
 CONFIGURATION = Release
 BUILD_DIR = Build/$(OS)-x86_64-$(CONFIGURATION)
 
-all: CMake $(BUILD_DIR)/Copper-Editor $(BUILD_DIR)/Copper-Editor/lib
+all: CMake
 	@${MAKE} --no-print-directory -C CMake -f Makefile
 	@cp -r Copper-Editor/assets $(BUILD_DIR)/Copper-Editor
 	@cp -r Copper-Editor/lib/mono $(BUILD_DIR)/Copper-Editor/lib
@@ -15,8 +15,3 @@ CMake: CMakeLists.txt Copper-Engine/CMakeLists.txt Copper-Editor/CMakeLists.txt
 clean:
 	@rm -r CMake
 	@rm -r Build
-
-$(BUILD_DIR)/Copper-Editor:
-	@mkdir $(BUILD_DIR)/Copper-Editor
-$(BUILD_DIR)/Copper-Editor/lib:
-	@mkdir $(BUILD_DIR)/Copper-Editor/lib

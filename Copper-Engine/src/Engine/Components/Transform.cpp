@@ -22,7 +22,7 @@ namespace Copper {
 		}
 
 		CMath::TranslateMatrix(ret, position);
-		ret *= (Matrix4) rotation;
+		ret = (Matrix4) rotation * ret;
 		CMath::ScaleMatrix(ret, scale);
 
 		return ret;

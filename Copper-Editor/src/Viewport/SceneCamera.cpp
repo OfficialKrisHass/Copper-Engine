@@ -10,6 +10,9 @@ using namespace Copper;
 
 namespace Editor {
 
+	float rotX;
+	float rotY;
+
 	void SceneCamera::Update() {
 		
 		GetTransform()->Update();
@@ -41,8 +44,9 @@ namespace Editor {
 			
 			Input::GetCursorPosition(&mouseX, &mouseY);
 			
-			float rotX = sensitivity * (float) (mouseY - (GetWindow().Height() / 2)) / GetWindow().Height();
-			float rotY = sensitivity * (float) (mouseX - (GetWindow().Width() / 2)) / GetWindow().Width();
+			rotX -= sensitivity * (float) (mouseY - (GetWindow().Height() / 2)) / GetWindow().Height();
+			rotY -= sensitivity * (float) (mouseX - (GetWindow().Width() / 2)) / GetWindow().Width();
+			GetTransform()->rotation = Quaternion(rotX, rotY, 0.0f);
 			
 			Input::SetCursorPosition((float) GetWindow().Width() / 2, (float) GetWindow().Height() / 2);
 

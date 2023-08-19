@@ -18,7 +18,7 @@ include(CTest)
 find_program(YAML_CPP_CLANG_FORMAT_EXE NAMES clang-format)
 
 option(YAML_CPP_BUILD_CONTRIB "Enable yaml-cpp contrib in library" ON)
-option(YAML_CPP_BUILD_TOOLS "Enable parse tools" ON)
+option(YAML_CPP_BUILD_TOOLS "Enable parse tools" OFF)
 option(YAML_BUILD_SHARED_LIBS "Build yaml-cpp shared library" ${BUILD_SHARED_LIBS})
 
 cmake_dependent_option(YAML_CPP_BUILD_TESTS
@@ -159,10 +159,6 @@ endif()
 
 if(YAML_CPP_BUILD_TESTS)
 	add_subdirectory(test)
-endif()
-
-if(YAML_CPP_BUILD_TOOLS)
-	add_subdirectory(util)
 endif()
 
 if (YAML_CPP_CLANG_FORMAT_EXE)

@@ -18,7 +18,10 @@ include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Components/CMakeLists.txt
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Utilities/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/YAMLOverloads/CMakeLists.txt)
 
-include(${PROJECT_SOURCE_DIR}/Copper-Engine/lib/Copper-Math/CMakeLists.txt)
+include(${PROJECT_SOURCE_DIR}/Copper-Engine/lib/Copper-Math/CMath/CMakeLists.txt)
+list(TRANSFORM CMathSources PREPEND lib/Copper-Math/)
+
+list(APPEND sources ${CMathSources})
 
 # Include dirs
 list(APPEND includeDirs lib/GLFW/include lib/GLAD/include lib/GLM/include lib/yaml-cpp/include lib/assimp/include lib/mono/include lib/PhysX/include

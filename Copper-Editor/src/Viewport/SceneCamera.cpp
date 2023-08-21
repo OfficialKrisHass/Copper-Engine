@@ -1,6 +1,7 @@
 #include "SceneCamera.h"
 
 #include "Engine/Core/Engine.h"
+#include "Engine/Core/Window.h"
 
 #include <GLM/glm.hpp>
 #include <GLM/gtx/rotate_vector.hpp>
@@ -9,6 +10,9 @@
 using namespace Copper;
 
 namespace Editor {
+
+	float rotX;
+	float rotY;
 
 	void SceneCamera::Update() {
 		
@@ -41,11 +45,9 @@ namespace Editor {
 			
 			Input::GetCursorPosition(&mouseX, &mouseY);
 			
-			float rotX = sensitivity * (float) (mouseY - (GetWindow().Height() / 2)) / GetWindow().Height();
-			float rotY = sensitivity * (float) (mouseX - (GetWindow().Width() / 2)) / GetWindow().Width();
-
-			GetTransform()->rotation.x += rotX;
-			GetTransform()->rotation.y += rotY;
+			rotX -= sensitivity * (float) (mouseY - (GetWindow().Height() / 2)) / GetWindow().Height();
+			rotY -= sensitivity * (float) (mouseX - (GetWindow().Width() / 2)) / GetWindow().Width();
+			GetTransform()->rotation = Quaternion(rotX, rotY, 0.0f);
 			
 			Input::SetCursorPosition((float) GetWindow().Width() / 2, (float) GetWindow().Height() / 2);
 

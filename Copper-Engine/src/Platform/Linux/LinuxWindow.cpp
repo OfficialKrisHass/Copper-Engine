@@ -20,7 +20,16 @@ namespace Copper {
 
 		data.title = title;
 
+	#ifdef CU_EDITOR // we cant verify the state in the editor because the editor creates the window before Engine Initialization
 		if (windowCount == 0 && !glfwInit()) { LogError("Could not Initialize GLFW!"); }
+	#else
+		if (windowCount == 0) {
+
+			VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the main Window");
+			if (!glfwInit()) { LogError("Could not Initialize GLFW"); }
+
+		}
+	#endif
 		windowCount++;
 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);

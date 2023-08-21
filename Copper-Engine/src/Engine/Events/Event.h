@@ -1,7 +1,5 @@
 #pragma once
 
-#include "cupch.h"
-
 #include "Engine/Core/Core.h"
 
 #define BindEventFunc(func) std::bind(&func, this, std::placeholders::_1)

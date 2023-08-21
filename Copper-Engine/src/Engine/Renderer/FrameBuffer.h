@@ -1,7 +1,6 @@
  #pragma once
 
 #include "Engine/Core/Core.h"
-#include "cupch.h"
 
 namespace Copper {
 
@@ -32,5 +31,7 @@ namespace Copper {
 		void Recreate();
 
 	};
+
+	uint32_t GetMainFBOTexture();
 
 }

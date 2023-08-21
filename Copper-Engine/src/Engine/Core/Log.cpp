@@ -16,7 +16,7 @@ namespace Copper {
 
 	void Logger::Initialize() {
 
-		CHECK((GetEngineState() == EngineState::Initialization), "Cannot Initialize the Logger, current Engine State is: {}", EngineStateToString(GetEngineState()))
+		VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the Logger");
 
 		ringbufferSink = std::make_shared<spdlog::sinks::ringbuffer_sink_mt>(100);
 		colorSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();

@@ -2,14 +2,16 @@
 
 #include "Engine/Core/Core.h"
 
-#include "Engine/Renderer/VertexArray.h"
 #include "Engine/Renderer/Shader.h"
-#include "Engine/Renderer/Mesh.h"
-
-#include "Engine/Components/Camera.h"
-#include "Engine/Components/Light.h"
 
 namespace Copper {
+
+	class VertexArray;
+
+	class Transform;
+	class Camera;
+	class Light; 
+	class Mesh;
 
 	namespace Renderer {
 

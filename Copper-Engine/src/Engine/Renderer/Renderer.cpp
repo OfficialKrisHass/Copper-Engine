@@ -3,6 +3,10 @@
 
 #include "Engine/Core/Engine.h"
 
+#include "Engine/Renderer/VertexArray.h"
+#include "Engine/Renderer/Buffer.h"
+#include "Engine/Renderer/Mesh.h"
+
 #include "Engine/Components/Transform.h"
 
 #include <GLM/ext/matrix_transform.hpp>
@@ -27,7 +31,7 @@ namespace Copper::Renderer {
 
 	void Initialize() {
 
-		CHECK((GetEngineState() == EngineState::Initialization), "Cannot Initialize the Renderer, current Engine State is: {}", EngineStateToString(GetEngineState()))
+		VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the Renderer");
 
 		data.vao = VertexArray(nullptr);
 		
@@ -64,6 +68,7 @@ namespace Copper::Renderer {
 
 	void AddMesh(Mesh* mesh, Transform* transform) {
 
+		// TODO: there is a lot of ways I have thought about optimizing this, use them
 		Matrix4 mat = transform->CreateMatrix();
 		Matrix4 noScale = mat;
 		CMath::ScaleMatrix(noScale, -transform->scale);
@@ -97,7 +102,12 @@ namespace Copper::Renderer {
 	void ClearColor(float r, float g, float b) { api.ClearColor(r, g, b); }
 	void ResizeViewport(const UVector2I& size) { api.ResizeViewport(size); }
 
-	void SetShader(const Shader& shader) { api.SetShader(shader); }
+	void SetShader(const Shader& shader) {
+		
+		VERIFY_STATE(EngineCore::EngineState::Initialization, "Set the Shader");
+		api.SetShader(shader);
+		
+	}
 	Shader* GetShader() { return api.GetShader(); }
 
 

@@ -54,14 +54,14 @@ namespace Copper {
 
 			if (!pool) {
 
-				beginIndex = maxComponents;
-				endIndex = maxComponents - 1;
+				beginIndex = MAX_ENTITY_COMPONENTS;
+				endIndex = MAX_ENTITY_COMPONENTS - 1;
 				return;
 
 			}
 
-			endIndex = maxComponents - 1;
-			while (beginIndex != maxComponents && (!pool->Valid(beginIndex) || !(*((T*) pool->Get(beginIndex))->GetEntity()))) {
+			endIndex = MAX_ENTITY_COMPONENTS - 1;
+			while (beginIndex != MAX_ENTITY_COMPONENTS && (!pool->Valid(beginIndex) || !(*((T*) pool->Get(beginIndex))->GetEntity()))) {
 
 				beginIndex++;
 

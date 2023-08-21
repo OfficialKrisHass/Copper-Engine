@@ -8,7 +8,6 @@
 #include "Engine/Core/Core.h"
 #include "Engine/Core/Engine.h"
 #include "Engine/Core/Log.h"
-#include "Engine/Core/Window.h"
 
 //Events
 #include "Engine/Events/Event.h"
@@ -24,11 +23,6 @@
 
 //Utilities
 #include "Engine/Utilities/FileUtils.h"
-
-//YAML Overloads
-#include "Engine/YAMLOverloads/Vectors.h"
-#include "Engine/YAMLOverloads/Color.h"
-#include "Engine/YAMLOverloads/Path.h"
 
 //Filesystem
 #include "Engine/Filesystem/Path.h"
@@ -49,4 +43,10 @@
 #include "Engine/Components/Light.h"
 #include "Engine/Components/MeshRenderer.h"
 #include "Engine/Components/ScriptComponent.h"
-#include "Engine/Components/PhysicsObject.h"
+
+//-------------------------
+//------Miscellaneous------
+//-------------------------
+
+//YAML Overloads
+#include "Engine/YAMLOverloads/Everything.h"

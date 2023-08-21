@@ -37,209 +37,61 @@ using namespace Copper;
 
 namespace Editor {
 
-#pragma region Plane
-	std::vector<Vector3> planeVertices {
-
-		Vector3(-0.5f, 0.0f,  0.5f),
-		Vector3(0.5f, 0.0f,  0.5f),
-		Vector3(0.5f, 0.0f, -0.5f),
-		Vector3(-0.5f, 0.0f, -0.5f),
-
-	};
-	std::vector<Vector3> planeNormals {
-
-		Vector3(0.0f, -1.0f, 0.0f),
-		Vector3(0.0f, -1.0f, 0.0f),
-		Vector3(0.0f, -1.0f, 0.0f),
-		Vector3(0.0f, -1.0f, 0.0f),
-
-	};
-	std::vector<Color> planeColors {
-
-		Color(1.0f, 1.0f, 1.0f),
-		Color(1.0f, 1.0f, 1.0f),
-		Color(1.0f, 1.0f, 1.0f),
-		Color(1.0f, 1.0f, 1.0f),
-
-	};
-	std::vector<uint32_t> planeIndices {
-
-		0, 1, 2,
-		2, 3, 0
-
-	};
-#pragma endregion
-#pragma region Cube
-	std::vector<Vector3> cubeVertices {
-		//Front
-		Vector3(-0.5f, -0.5f,  0.5f),
-		Vector3(0.5f, -0.5f,  0.5f),
-		Vector3(0.5f,  0.5f,  0.5f),
-		Vector3(-0.5f,  0.5f,  0.5f),
-		//Back
-		Vector3(0.5f, -0.5f, -0.5f),
-		Vector3(-0.5f, -0.5f, -0.5f),
-		Vector3(-0.5f,  0.5f, -0.5f),
-		Vector3(0.5f,  0.5f, -0.5f),
-		//Right
-		Vector3(0.5f, -0.5f,  0.5f),
-		Vector3(0.5f, -0.5f, -0.5f),
-		Vector3(0.5f,  0.5f, -0.5f),
-		Vector3(0.5f,  0.5f,  0.5f),
-		//Left
-		Vector3(-0.5f, -0.5f, -0.5f),
-		Vector3(-0.5f, -0.5f,  0.5f),
-		Vector3(-0.5f,  0.5f,  0.5f),
-		Vector3(-0.5f,  0.5f, -0.5f),
-		//Up
-		Vector3(-0.5f,  0.5f,  0.5f),
-		Vector3(0.5f,  0.5f,  0.5f),
-		Vector3(0.5f,  0.5f, -0.5f),
-		Vector3(-0.5f,  0.5f, -0.5f),
-		//Down
-		Vector3(-0.5f, -0.5f, -0.5f),
-		Vector3(0.5f, -0.5f, -0.5f),
-		Vector3(0.5f, -0.5f,  0.5f),
-		Vector3(-0.5f, -0.5f,  0.5f),
-
-	};
-	std::vector<Vector3> cubeNormals {
-		//Front
-		Vector3( 0.0f,  0.0f,  1.0f),
-		Vector3( 0.0f,  0.0f,  1.0f),
-		Vector3( 0.0f,  0.0f,  1.0f),
-		Vector3( 0.0f,  0.0f,  1.0f),
-		//Back
-		Vector3( 0.0f,  0.0f, -1.0f),
-		Vector3( 0.0f,  0.0f, -1.0f),
-		Vector3( 0.0f,  0.0f, -1.0f),
-		Vector3( 0.0f,  0.0f, -1.0f),
-		//Right
-		Vector3( 1.0f,  0.0f,  0.0f),
-		Vector3( 1.0f,  0.0f,  0.0f),
-		Vector3( 1.0f,  0.0f,  0.0f),
-		Vector3( 1.0f,  0.0f,  0.0f),
-		//Left
-		Vector3(-1.0f,  0.0f,  0.0f),
-		Vector3(-1.0f,  0.0f,  0.0f),
-		Vector3(-1.0f,  0.0f,  0.0f),
-		Vector3(-1.0f,  0.0f,  0.0f),
-		//Up
-		Vector3(0.0f, -1.0f,  0.0f),
-		Vector3(0.0f, -1.0f,  0.0f),
-		Vector3(0.0f, -1.0f,  0.0f),
-		Vector3(0.0f, -1.0f,  0.0f),
-		//Down
-		Vector3(0.0f,  1.0f,  0.0f),
-		Vector3(0.0f,  1.0f,  0.0f),
-		Vector3(0.0f,  1.0f,  0.0f),
-		Vector3(0.0f,  1.0f,  0.0f),
-
-	};
-	std::vector<Color> cubeColors {
-		//Front
-		Color(1.0f, 1.0f, 1.0f),
-		Color(1.0f, 1.0f, 1.0f),
-		Color(1.0f, 1.0f, 1.0f),
-		Color(1.0f, 1.0f, 1.0f),
-		//Back
-		Color(1.0f, 1.0f, 1.0f),
-		Color(1.0f, 1.0f, 1.0f),
-		Color(1.0f, 1.0f, 1.0f),
-		Color(1.0f, 1.0f, 1.0f),
-		//Right
-		Color(1.0f, 1.0f, 1.0f),
-		Color(1.0f, 1.0f, 1.0f),
-		Color(1.0f, 1.0f, 1.0f),
-		Color(1.0f, 1.0f, 1.0f),
-		//Left
-		Color(1.0f, 1.0f, 1.0f),
-		Color(1.0f, 1.0f, 1.0f),
-		Color(1.0f, 1.0f, 1.0f),
-		Color(1.0f, 1.0f, 1.0f),
-		//Up
-		Color(1.0f, 1.0f, 1.0f),
-		Color(1.0f, 1.0f, 1.0f),
-		Color(1.0f, 1.0f, 1.0f),
-		Color(1.0f, 1.0f, 1.0f),
-		//Down
-		Color(1.0f, 1.0f, 1.0f),
-		Color(1.0f, 1.0f, 1.0f),
-		Color(1.0f, 1.0f, 1.0f),
-		Color(1.0f, 1.0f, 1.0f),
-
-	};
-	std::vector<uint32_t> cubeIndices {
-
-		//Front
-		0, 1, 2,
-		2, 3, 0,
-
-		//Back
-		4, 5, 6,
-		6, 7, 4,
-
-		//Right
-		8, 9, 10,
-		10, 11, 8,
-
-		//Left
-		12, 13, 14,
-		14, 15, 12,
-
-		//Up
-		16, 17, 18,
-		18, 19, 16,
-
-		//Down
-		20, 21, 22,
-		22, 23, 20
-
-	};
-#pragma endregion 
-
 	struct EditorData {
+
+		// Core Data
 
 		EditorState state;
 		Window window;
 		std::string title;
 
-		//Project
+		// Project
+
 		Project project;
 		bool scriptChanges;
 
-		//Scene
+		// Scene
+
 		Scene* scene;
 		MetaFile::SceneMeta sceneMeta;
 		bool changes;
 		
-		//Viewport
+		// Viewport
+
 		UVector2I viewportSize;
 		UVector2I viewportCentre;
 		FrameBuffer viewportFBO;
 		bool canLookViewport;
 
-		//Game Panel
+		// Game Panel
+
 		UVector2I gamePanelSize;
 		bool gamePanelFocused;
 
-		//Icons
+		// Icons
+
 		Texture playIcon;
 		Texture stopIcon;
 		
-		//Panels
+		// Panels
+
 		SceneHierarchy sceneHierarchy;
 		Properties properties;
 		FileBrowser fileBrowser;
 		Console console;
 
-		//Scripting
+		// Scripting
+
 		bool wasCursorLocked = false;
 		bool wasCursorVisible = true;
 
 	};
 
 	EditorData data;
+
+	void Initialize();
+	void UIUpdate();
+	void Shutdown();
 
 	void LoadEditorData();
 	void SaveEditorData();
@@ -275,7 +127,7 @@ namespace Editor {
 		AddEntityCreatedEventFunc(OnEntityCreated);
 		AddEntityRemovedEventFunc(OnEntityRemoved);
 
-		LoadUIFont("assets/Fonts/open-sans.regular.ttf");
+		LoadMainUIContextFont("assets/Fonts/open-sans.regular.ttf");
 
 		data.state = Edit;
 		data.viewportSize = UVector2I(1280, 720);
@@ -407,7 +259,7 @@ namespace Editor {
 		//to save some performance
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2 {0, 0});
 		bool open = ImGui::Begin("Game");
-		SetRenderScene(open);
+		SetShouldRenderScene(open);
 
 		if (!open) {
 
@@ -433,9 +285,9 @@ namespace Editor {
 
 		SetWindowSize(data.gamePanelSize);
 
-		ImGui::Image(reinterpret_cast<void*>((uint64_t) GetFBOTexture()), windowSize, ImVec2 {0, 1}, ImVec2 {1, 0});
+		ImGui::Image(reinterpret_cast<void*>((uint64_t) GetMainFBOTexture()), windowSize, ImVec2 {0, 1}, ImVec2 {1, 0});
 
-		if (ImGui::IsItemClicked() && IsRuntimeRunning()) {
+		if (ImGui::IsItemClicked() && IsSceneRuntimeRunning()) {
 			
 			Input::SetCursorLocked(data.wasCursorLocked);
 			Input::SetCursorVisible(data.wasCursorVisible);
@@ -528,13 +380,15 @@ namespace Editor {
 
 				Math::DecomposeTransform(transform, position, rotation, scale);
 
-				glm::vec3 deltaRotation = (Vector3) rotation - selectedObj->GetTransform()->rotation;
+				//glm::vec3 deltaRotation = (Vector3) rotation - selectedObj->GetTransform()->rotation;
 				selectedObj->GetTransform()->position = position;
-				selectedObj->GetTransform()->rotation += deltaRotation;
+				//selectedObj->GetTransform()->rotation += deltaRotation;
 				selectedObj->GetTransform()->scale = scale;
 
 				//The rotation doesn't work for some reason, it keeps wiggling around
 				//Unfortunately I'm dum dum so this is what you get :) uwu
+
+				//TODO: Dont be dum dum like a friggin idiot and learn how to do it owo
 
 			}
 

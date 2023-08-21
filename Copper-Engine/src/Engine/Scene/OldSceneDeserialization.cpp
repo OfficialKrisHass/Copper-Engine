@@ -13,6 +13,7 @@
 
 #include <fstream>
 #include <yaml-cpp/yaml.h>
+#include "Engine/YAMLOverloads/Everything.h"
 
 namespace Copper {
 
@@ -30,12 +31,12 @@ namespace Copper {
 			InternalEntity* deserialized = scene->CreateEntityFromID(id, Vector3::zero, Vector3::zero, Vector3::one, name, false);
 
 			deserialized->transform->position = entity["Transform"]["Position"].as<Vector3>();
-			deserialized->transform->rotation = entity["Transform"]["Rotation"].as<Vector3>();
+			deserialized->transform->rotation = entity["Transform"]["Rotation"].as<Quaternion>();
 			deserialized->transform->scale = entity["Transform"]["Scale"].as<Vector3>();
 
 			uint32_t parentID = entity["Transform"]["Parent"].as<uint32_t>();
 
-			if (parentID == invalidID) deserialized->transform->parent = nullptr;
+			if (parentID == INVALID_ENTITY_ID) deserialized->transform->parent = nullptr;
 			else if (id > parentID) {
 
 				Transform* parent = scene->GetEntityFromID(parentID)->transform;

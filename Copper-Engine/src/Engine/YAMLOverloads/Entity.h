@@ -10,7 +10,7 @@ namespace Copper {
 
     inline YAML::Emitter& operator<<(YAML::Emitter& out, const InternalEntity* entity) {
 
-        out << (entity ? entity->ID() : invalidID);
+        out << (entity ? entity->ID() : INVALID_ENTITY_ID);
 		return out;
 
     }
@@ -26,7 +26,7 @@ namespace YAML {
         static Node encode(const Copper::InternalEntity*& entity) {
 
             Node node;
-            node.push_back((entity ? entity->ID() : invalidID));
+            node.push_back((entity ? entity->ID() : INVALID_ENTITY_ID));
 
             return node;
 
@@ -35,7 +35,7 @@ namespace YAML {
 
             uint32_t id = node.as<uint32_t>();
 
-            if(id == invalidID) entity = nullptr;
+            if(id == INVALID_ENTITY_ID) entity = nullptr;
             else if(id < GetNumOfEntities()) entity = GetEntityFromID(id);
             else entity = CreateEntityFromID(id);
 

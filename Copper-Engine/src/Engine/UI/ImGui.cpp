@@ -4,12 +4,12 @@
 #include "Engine/Core/Engine.h"
 
 #define IMGUI_IMPL_OPENGL_LOADER_GLAD
-#include <ImGui/backends/imgui_impl_opengl3.cpp>
-#include <ImGui/backends/imgui_impl_glfw.cpp>
+#include <ImGui/../imgui_impl_opengl3.cpp>
+#include <ImGui/../imgui_impl_glfw.cpp>
 
 #include <ImGui/imgui.h>
-#include <ImGui/backends/imgui_impl_opengl3.h>
-#include <ImGui/backends/imgui_impl_glfw.h>
+#include <ImGui/../imgui_impl_opengl3.h>
+#include <ImGui/../imgui_impl_glfw.h>
 
 #include <ImGuizmo/ImGuizmo.h>
 
@@ -36,15 +36,15 @@ namespace Copper {
 
 	uint32_t uiCount = 0;
 
-	void UI::Initialize(const Window& window, bool gizmo, bool docking, bool viewports) {
+	void UIContext::Initialize(const Window& window, bool gizmo, bool docking, bool viewports) {
 
 		this->gizmo = gizmo;
 		this->docking = docking;
 		this->viewports = viewports;
 		
 		if(!uiCount) {
-
-			CHECK((GetEngineState() == EngineState::Initialization), "Cannot Initialize UI, current Engine State is: {}", EngineStateToString(GetEngineState()))
+			
+			VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the main UI");
 			IMGUI_CHECKVERSION();
 
 		}
@@ -91,7 +91,7 @@ namespace Copper {
 		ImGui_ImplOpenGL3_Init("#version 460");
 
 	}
-	void UI::Shutdown() {
+	void UIContext::Shutdown() {
 
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
@@ -100,7 +100,7 @@ namespace Copper {
 
 	}
 
-	void UI::Begin() {
+	void UIContext::Begin() {
 
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -108,7 +108,7 @@ namespace Copper {
 		if (gizmo) ImGuizmo::BeginFrame();
 
 	}
-	void UI::End() {
+	void UIContext::End() {
 
 		//io.DisplaySize = ImVec2((float) GetWindow().Width(), (float) GetWindow().Height());
 
@@ -127,7 +127,7 @@ namespace Copper {
 
 	}
 
-	void UI::LoadFont(const std::string& path, float fontSize) {
+	void UIContext::LoadFont(const std::string& path, float fontSize) {
 
 		ImGuiIO& io = ImGui::GetIO();
 		io.FontDefault = io.Fonts->AddFontFromFileTTF(path.c_str(), fontSize);
@@ -141,7 +141,7 @@ namespace Copper {
 
 	}
 
-	void UI::SetAsCurrent() { ImGui::SetCurrentContext(context); }
+	void UIContext::SetAsCurrent() { ImGui::SetCurrentContext(context); }
 
 	/*void ThemeEditor() {
 		ImGui::Begin("Theme Editor");

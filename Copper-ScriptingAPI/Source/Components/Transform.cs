@@ -27,11 +27,11 @@ namespace Copper {
             }
 
         }
-        public Vector3 rotation {
+        public Quaternion rotation {
 
             get {
 
-                Vector3 output;
+                Quaternion output;
                 InternalCalls.GetRotation(eID, out output);
 
                 return output;
@@ -73,17 +73,6 @@ namespace Copper {
             }
         
         }
-        public Vector3 back {
-
-            get {
-
-                Vector3 output;
-                InternalCalls.GetBack(eID, out output);
-                return output;
-
-            }
-
-        }
         public Vector3 right {
 
             get {
@@ -95,34 +84,12 @@ namespace Copper {
             }
 
         }
-        public Vector3 left {
-
-            get {
-
-                Vector3 output;
-                InternalCalls.GetLeft(eID, out output);
-                return output;
-
-            }
-
-        }
         public Vector3 up {
 
             get {
 
                 Vector3 output;
                 InternalCalls.GetUp(eID, out output);
-                return output;
-
-            }
-
-        }
-        public Vector3 down {
-
-            get {
-
-                Vector3 output;
-                InternalCalls.GetDown(eID, out output);
                 return output;
 
             }

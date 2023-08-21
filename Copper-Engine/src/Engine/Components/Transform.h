@@ -20,10 +20,11 @@ namespace Copper {
 
 	public:
 		Transform() = default;
+		Transform(const Vector3& position, const Quaternion& rotation, const Vector3& scale) : position(position), rotation(rotation), scale(scale) {}
 		Transform(const Vector3& position, const Vector3& rotation, const Vector3& scale) : position(position), rotation(rotation), scale(scale) {}
 
 		Vector3 position = Vector3::zero;
-		Vector3 rotation = Vector3::zero;
+		Quaternion rotation = Quaternion(1.0f, 0.0, 0.0f, 0.0f);
 		Vector3 scale = Vector3::one;
 
 		Vector3 GlobalPosition() const;
@@ -41,11 +42,8 @@ namespace Copper {
 		uint32_t NumOfChildren() const { return (uint32_t) children.size(); }
 
 		const Vector3& Forward() const { return forward; }
-		const Vector3& Back()    const { return back; }
-		const Vector3& Up()      const { return up; }
-		const Vector3& Down()    const { return down; }
 		const Vector3& Right()   const { return right; }
-		const Vector3& Left()    const { return left; }
+		const Vector3& Up()      const { return up; }
 
 		Matrix4 CreateMatrix();
 
@@ -55,11 +53,8 @@ namespace Copper {
 
 	private:
 		Vector3 forward;
-		Vector3 back;
-		Vector3 up;
-		Vector3 down;
-		Vector3 left;
 		Vector3 right;
+		Vector3 up;
 
 		//Parent Data
 		Transform* parent = nullptr;

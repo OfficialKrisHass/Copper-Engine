@@ -36,18 +36,15 @@ namespace Copper {
 
         //Transform
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetPosition(uint eID, out Vector3 position);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetRotation(uint eID, out Vector3 rotation);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetRotation(uint eID, out Quaternion rotation);
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetScale(uint eID, out Vector3 scale);
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetPosition(uint eID, Vector3 position);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetRotation(uint eID, Vector3 rotation);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetRotation(uint eID, Quaternion rotation);
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void SetScale(uint eID, Vector3 scale);
 
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetForward(uint eID, out Vector3 forward);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetBack(uint eID, out Vector3 back);
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetRight(uint eID, out Vector3 right);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetLeft(uint eID, out Vector3 left);
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetUp(uint eID, out Vector3 up);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void GetDown(uint eID, out Vector3 down);
 
 
         //Camera
@@ -57,6 +54,9 @@ namespace Copper {
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void CameraSetFOV(uint eID, float value);
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void CameraSetNearPlane(uint eID, float value);
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void CameraSetFarPlane(uint eID, float value);
+
+        //Quaternion
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static Vector3 QuaternionEulerAngles(Quaternion quaternion);
 
     }
 

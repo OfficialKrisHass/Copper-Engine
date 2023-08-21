@@ -1,0 +1,6 @@
+#define VERSION_MAJOR @Copper-Engine_VERSION_MAJOR@
+#define VERSION_MINOR @Copper-Engine_VERSION_MINOR@
+#define VERSION_PATCH @Copper-Engine_VERSION_PATCH@
+#define VERSION_TWEAK @Copper-Engine_VERSION_TWEAK@
+
+#define SCENE_VERSION @SCENE_VERSION@

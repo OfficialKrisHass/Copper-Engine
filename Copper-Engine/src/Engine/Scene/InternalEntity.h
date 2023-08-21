@@ -4,10 +4,10 @@
 
 #include <bitset>
 
-namespace Copper {
+#define INVALID_ENTITY_ID 4'294'967'295
+#define MAX_ENTITY_COMPONENTS 32
 
-	inline const int maxComponents = 32;
-	inline const uint32_t invalidID = 4'294'967'295;
+namespace Copper {
 
 	class Transform;
 	class Scene;
@@ -18,7 +18,6 @@ namespace Copper {
 		friend class Scene;
 		friend class OldSceneDeserialization;
 		friend class Entity;
-		friend struct YAML::convert<InternalEntity*>;
 
 	public:
 		InternalEntity() = default;
@@ -35,20 +34,20 @@ namespace Copper {
 
 		bool operator==(const InternalEntity& other) const { return id == other.id && scene == other.scene; }
 
-		operator bool() const { return id != invalidID && scene != nullptr; }
+		operator bool() const { return id != INVALID_ENTITY_ID && scene != nullptr; }
 		operator uint32_t() const { return id; };
 		operator int32_t() const { return id; };
 
 	private:
-		uint32_t id = invalidID;
+		uint32_t id = INVALID_ENTITY_ID;
 		Scene* scene = nullptr;
 		Transform* transform = nullptr;
 
-		std::bitset<maxComponents> cMask;
+		std::bitset<MAX_ENTITY_COMPONENTS> cMask;
 
 		void Invalidate() {
 
-			id = invalidID;
+			id = INVALID_ENTITY_ID;
 			name = "";
 			scene = nullptr;
 			transform = nullptr;

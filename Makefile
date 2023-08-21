@@ -4,7 +4,7 @@ BUILD_DIR = Build/$(OS)-x86_64-$(CONFIGURATION)
 
 .PHONY: clean
 
-all: CMake
+all: CMake/Debug/Makefile
 	@${MAKE} --no-print-directory -C CMake/$(CONFIGURATION) -f Makefile
 	@cp -r Copper-Editor/assets $(BUILD_DIR)/Copper-Editor
 	@cp -r Copper-Editor/lib/mono $(BUILD_DIR)/Copper-Editor/lib

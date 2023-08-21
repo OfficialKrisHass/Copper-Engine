@@ -42,4 +42,5 @@ target_include_directories(Copper-Editor PRIVATE ${includeDirs})
 # Libaries
 target_link_libraries(Copper-Editor PRIVATE Copper-Engine glfw GLAD ImGui yaml-cpp assimp
                                             monosgen-2.0 /usr/lib/libpthread.a
-                                            -lX11 -lstdc++fs)
+                                            -lX11 -lstdc++fs
+                                            PhysXExtensions_static_64 PhysX_static_64 PhysXPvdSDK_static_64 PhysXVehicle_static_64 PhysXCharacterKinematic_static_64 PhysXCooking_static_64 PhysXCommon_static_64 PhysXFoundation_static_64)

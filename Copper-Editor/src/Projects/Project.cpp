@@ -5,7 +5,7 @@
 #include "Engine/Scripting/ScriptingCore.h"
 
 #include <yaml-cpp/yaml.h>
-#include "Engine/YAMLOverloads/YAMLOverloads.h"
+#include "Engine/YAMLOverloads/Everything.h"
 
 using namespace Copper;
 

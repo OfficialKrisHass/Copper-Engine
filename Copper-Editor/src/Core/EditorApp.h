@@ -14,10 +14,6 @@ namespace Editor {
 
 	};
 
-	void Initialize();
-	void UIUpdate();
-	void Shutdown();
-
 	void NewScene();
 	void OpenScene();
 	void OpenScene(const Filesystem::Path& path);
@@ -25,9 +21,7 @@ namespace Editor {
 	void SaveSceneAs();
 
 	Project GetProject();
-
 	MetaFile::SceneMeta* GetSceneMeta();
-
 	Copper::UVector2I GetViewportSize();
 
 	void SetChanges(bool value);

@@ -60,10 +60,12 @@ namespace Editor {
 		if(DrawComponent<Transform>("Transform", entity)) {
 			
 			ShowVector3("Position", &entity->GetTransform()->position);
+
 			Vector3 newRot = entity->GetTransform()->rotation.EulerAngles();
 			if (ShowVector3("Rotation", &newRot));
-				entity->GetTransform()->rotation = newRot;
-			ShowVector3("Scale",    &entity->GetTransform()->scale);
+				entity->GetTransform()->rotation = Quaternion(newRot);
+
+			ShowVector3("Scale", &entity->GetTransform()->scale);
 			
 		}
 

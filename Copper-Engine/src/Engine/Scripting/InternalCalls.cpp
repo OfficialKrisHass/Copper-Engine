@@ -11,6 +11,7 @@
 #include "Engine/Scene/CopperECS.h"
 
 #include "Engine/Components/ScriptComponent.h"
+#include "Engine/Components/Camera.h"
 
 #include <mono/jit/jit.h>
 #include <mono/metadata/exception.h>
@@ -18,9 +19,9 @@
 #define CauseExceptionInvalid(argument) mono_raise_exception(mono_get_exception_argument_null(argument))
 #define CauseException(message, argument)  mono_raise_exception(mono_get_exception_argument(argument, message))
 
-#define CheckValidEntity(eID) if (eID == invalidID || eID >= GetNumOfEntities() || !(*GetEntityFromID(eID))) {\
+#define CheckValidEntity(eID) if (eID == INVALID_ENTITY_ID || eID >= GetNumOfEntities() || !(*GetEntityFromID(eID))) {\
 						      CauseExceptionInvalid("Entity"); return; }
-#define CheckValidEntityWithReturn(eID, ret) if (eID == invalidID || eID >= GetNumOfEntities() || !(*GetEntityFromID(eID))) {\
+#define CheckValidEntityWithReturn(eID, ret) if (eID == INVALID_ENTITY_ID || eID >= GetNumOfEntities() || !(*GetEntityFromID(eID))) {\
 											 CauseExceptionInvalid("Entity"); return ret; }
 
 namespace Copper::Scripting::InternalCalls {
@@ -126,7 +127,7 @@ namespace Copper::Scripting::InternalCalls {
 
 	static bool IsEntityValid(uint32_t eID) {
 
-		if (eID == invalidID || eID >= GetNumOfEntities() || !(*GetEntityFromID(eID))) return false;
+		if (eID == INVALID_ENTITY_ID || eID >= GetNumOfEntities() || !(*GetEntityFromID(eID))) return false;
 		return true;
 
 	}

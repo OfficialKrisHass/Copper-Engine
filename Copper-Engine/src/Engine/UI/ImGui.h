@@ -7,7 +7,7 @@ class ImGuiContext;
 
 namespace Copper {
 
-	class UI {
+	class UIContext {
 
 	public:
 		void Initialize(const Window& window, bool gizmo = false, bool docking = true, bool viewports = true);
@@ -28,5 +28,8 @@ namespace Copper {
 		ImGuiContext* context;
 
 	};
+
+	void SetMainUIAsCurrent();
+	void LoadMainUIContextFont(const std::string& path, float fontSize = 18.0f);
 
 }

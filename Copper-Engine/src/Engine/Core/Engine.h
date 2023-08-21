@@ -1,45 +1,39 @@
 #pragma once
 
 #include "Engine/Core/Core.h"
-#include "Engine/Core/Window.h"
-
-#include "Engine/Events/Event.h"
 
 #define GetGLFWwindow (GLFWwindow*) GetWindow().GetWindowPtr()
 
+#define VERIFY_STATE(state, task) CHECK((EngineCore::GetEngineState() == state), "Cannot {} because of invalid Engine State.\nExpected State: {}\nCurrent State: {}", task, EngineCore::EngineStateToString(state), EngineCore::EngineStateToString(EngineCore::GetEngineState()))
+
 namespace Copper {
 
-	class Scene;
-	class InternalEntity;
-
-	enum class EngineState : uint8_t {
-
-		Entry,
-		Initialization,
-		PostInitialization,
-		Running,
-		Shutdown,
-
-	};
+	class Event;
 
 	namespace EngineCore {
 
+		enum class EngineState : uint8_t {
+
+			Entry,
+			Initialization,
+			PostInitialization,
+			Running,
+			Shutdown,
+
+		};
+
 		void Initialize(int argc, char* argv[]);
-		void Run();
-		void Shutdown();
+
+		EngineState GetEngineState();
+		std::string EngineStateToString(EngineState state);
+
+		uint32_t GetNumArguments();
+		const std::string& GetArgument(uint32_t index);
 
 	}
-	void LoadUIFont(const std::string& path, float fontSize = 18.0f);
 
-	const Version& GetVersion();
-	
-	EngineState GetEngineState();
-	std::string EngineStateToString(EngineState state);
+	// Engine Events
 
-	uint32_t GetNumArguments();
-	const std::string& GetArgument(uint32_t index);
-
-	//Engine Events
 	void AddPostInitEventFunc(std::function<void()> func);
 
 	void AddUpdateEventFunc(std::function<void()> func);
@@ -48,32 +42,10 @@ namespace Copper {
 	void AddPreShutdownEventFunc(std::function<bool(const Event&)> func);
 	void AddPostShutdownEventFunc(std::function<void()> func);
 
-	bool IsRuntimeRunning();
-
-	//Setters
-	void SetWindowSize(const UVector2I& size);
-	void SetMainUIAsCurrent();
-
-	void SetRenderScene(bool value);
+	// Editor Misc.
 
 #ifdef CU_EDITOR
 	void SetAcceptInputDuringRuntime(bool value);
-#endif
-
-	//Getters
-	Window& GetWindow();
-	UVector2I GetWindowSize();
-	float GetWindowAspectRatio();
-
-	uint32_t GetFBOTexture();
-
-	Scene* GetScene();
-	uint32_t GetNumOfEntities();
-
-	InternalEntity* GetEntityFromID(int32_t id);
-	InternalEntity* CreateEntityFromID(int32_t id, const std::string& name = "Entity", bool returnIfExists = true);
-
-#ifdef CU_EDITOR
 	bool AcceptInputDuringRuntime();
 #endif
 

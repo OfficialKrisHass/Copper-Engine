@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Copper {
+/*namespace Copper {
 
 	struct Version {
 
@@ -24,4 +24,4 @@ namespace Copper {
 
 	}
 
-}
+}*/

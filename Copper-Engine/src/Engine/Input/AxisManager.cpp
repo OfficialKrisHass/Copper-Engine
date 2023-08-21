@@ -1,10 +1,24 @@
 #include "cupch.h"
 #include "AxisManager.h"
 
+#include "Engine/Core/Engine.h"
+
 namespace Copper::Input {
 
 	std::unordered_map<std::string, Axis> axises;
 	std::unordered_map<std::string, MouseAxis> mouseAxises;
+
+	void InitializeAxisManager() {
+		
+		VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the Axis Manager");
+
+		AddAxis("Keys_WS", KeyCode::W, KeyCode::S);
+		AddAxis("Keys_DA", KeyCode::D, KeyCode::A);
+
+		AddMouseAxis("Mouse X", true);
+		AddMouseAxis("Mouse Y", false);
+
+	}
 
 	float GetAxis(const std::string& axisName) {
 

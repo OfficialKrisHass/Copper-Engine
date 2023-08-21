@@ -59,12 +59,3 @@ namespace Copper {
     }
     
 }
-
-namespace YAML {
-
-    struct Emitter;
-    struct Node;
-
-    template<typename T> struct convert;
-
-}

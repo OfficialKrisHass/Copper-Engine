@@ -29,7 +29,7 @@ namespace YAML {
         }
         static bool decode(const Node& node, Copper::Filesystem::Path& path) {
 
-            path.str = node.as<std::string>();
+            path = node.as<std::string>();
 
             return true;
 

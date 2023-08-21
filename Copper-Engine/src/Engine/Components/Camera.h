@@ -4,8 +4,6 @@
 
 #include "Engine/Scene/Component.h"
 
-#include <GLM/mat4x4.hpp>
-
 #ifdef CU_EDITOR
 namespace Editor { struct Project; }
 #endif

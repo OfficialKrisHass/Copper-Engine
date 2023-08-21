@@ -9,14 +9,10 @@
 #endif
 
 namespace std::filesystem { class path; }
-namespace Copper::Filesystem { class Path; }
-namespace YAML { template<> struct convert<Copper::Filesystem::Path>; }
 
 namespace Copper::Filesystem {
 
     class Path {
-
-        friend YAML::convert<Path>;
 
     public:
         Path() = default;

@@ -44,7 +44,7 @@ namespace Copper::Scripting {
 
 	void Initialize() {
 
-		CHECK((GetEngineState() == EngineState::Initialization), "Cannot Initialize Scripting, current Engine State is: {}", EngineStateToString(GetEngineState()));
+		VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the Scripting Engine");
 
 		//Initialize Mono
 		mono_set_assemblies_path("lib/mono/lib");
@@ -75,7 +75,6 @@ namespace Copper::Scripting {
 
 	void LoadProjectAssembly(const Filesystem::Path& path) {
 
-
 		data.projectPath = path;
 		data.projectAssembly = MonoUtils::LoadAssembly(path);
 		data.projectAssemblyImage = mono_assembly_get_image(data.projectAssembly);
@@ -83,7 +82,6 @@ namespace Copper::Scripting {
 
 	}
 	void Reload(const Filesystem::Path& path, bool initScriptComponents) {
-
 
 		if (path != "") data.projectPath = path;
 

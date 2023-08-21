@@ -3,6 +3,8 @@
 
 #include "Engine/Core/Engine.h"
 
+#include "Engine/Scene/Scene.h"
+
 #include "Engine/Scripting/ScriptingCore.h"
 #include "Engine/Scripting/MonoUtils.h"
 
@@ -86,10 +88,10 @@ namespace Copper {
 		entity = mono_field_get_value_object(Scripting::GetAppDomain(), field.field, instance);
 		if (!entity) { *out = nullptr; return; }
 
-		uint32_t eID = invalidID;
+		uint32_t eID = INVALID_ENTITY_ID;
 		MonoClassField* eIDField = mono_class_get_field_from_name(Scripting::GetEntityMonoClass(), "id");
 		mono_field_get_value(entity, eIDField, &eID);
-		if (eID == invalidID) { *out = nullptr; return; }
+		if (eID == INVALID_ENTITY_ID) { *out = nullptr; return; }
 
 		*out = GetEntityFromID(eID);
 
@@ -110,7 +112,7 @@ namespace Copper {
 		MonoObject* entity = mono_object_new(Scripting::GetAppDomain(), Scripting::GetEntityMonoClass());
 		mono_runtime_object_init(entity);
 
-		uint32_t entityID = *value ? (*value)->ID() : invalidID;
+		uint32_t entityID = *value ? (*value)->ID() : INVALID_ENTITY_ID;
 		MonoClassField* eIDField = mono_class_get_field_from_name(Scripting::GetEntityMonoClass(), "id");
 		mono_field_set_value(entity, eIDField, &entityID);
 

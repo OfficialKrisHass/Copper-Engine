@@ -3,6 +3,8 @@
 
 #include "Engine/Core/Engine.h"
 
+#include "Engine/Scene/Scene.h"
+
 #include <GLM/glm.hpp>
 #include <GLM/ext/matrix_transform.hpp>
 #include <GLM/gtx/quaternion.hpp>

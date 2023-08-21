@@ -18,33 +18,43 @@
 
 #include "Engine/Scene/CopperECS.h"
 
-#include <ImGui/imgui.h>
-#include <glad/glad.h>
+#include "Engine/Components/Camera.h"
 
 #ifdef CU_EDITOR
 extern Copper::Window* GetEditorWindow();
 #endif
 
+#define VERIFY_STATE_INTERNAL(state, task) CHECK(data.engineState == state, "Cannot {} because of invalid Engine State.\nExpected State: {}\nCurrent State: {}", task, EngineStateToString(state), EngineStateToString(data.engineState))
+
 namespace Copper {
+
+	using namespace EngineCore;
 
 	struct EngineData {
 
-		Version version;
+		// Core variables
+
 		EngineState engineState = EngineState::Entry;
 		std::vector<std::string> arguments;
 
-		FrameBuffer fbo;
-	#ifdef CU_EDITOR
-		Window* window; //Physical Window - Editor creates, sets and stores the window
+		//Rendering
+	
+	#ifdef CU_EDITOR // Editor creates its own window and then passes it to the Engine
+		Window* window;
 		bool acceptInputRuntime = true;
-	#else
+	#else // Every other app lets the Engine create the window
 		Window window;
 	#endif
-		UI mainUI;
+		FrameBuffer fbo;
+		UIContext mainUIContext;
+
+		// Scene
 
 		Scene scene;
 		float lastFrameTime = 0.0f;
 		bool renderScene = true;
+
+		// Engine Events
 
 		SimpleEvent postInitEvent;
 		SimpleEvent updateEvent;
@@ -52,6 +62,7 @@ namespace Copper {
 		Event preShutdownEvent;
 		SimpleEvent postShutdownEvent;
 
+		// Helper function to get a reference to the window no matter if we are using the editor or not
 		Window& WindowRef() {
 
 		#ifdef CU_EDITOR
@@ -68,13 +79,17 @@ namespace Copper {
 	bool OnWindowClose(const Event& e);
 	bool OnWindowResize(const Event& e);
 
+	void Run();
+	void Shutdown();
+
+#pragma region EngineCore
 	void EngineCore::Initialize(int argc, char* argv[]) {
 
-		CHECK((data.engineState == EngineState::Entry), "Cannot Initialize the Engine, current Engine State is: {}", EngineStateToString(data.engineState));
-		
-		data.version = Version(VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_TWEAK);
-		data.version.sceneVersion = SCENE_VERSION;
+		// This is the only function that has to do this as this is the only exposed function
+		VERIFY_STATE_INTERNAL(EngineState::Entry, "Initialize the Engine");
 		data.engineState = EngineState::Initialization;
+
+		// TODO: Implement our own argument system
 		for (int i = 0; i < argc; i++) {
 
 			if (Filesystem::Path(argv[i]).Extension() == ".exe") continue;
@@ -88,7 +103,7 @@ namespace Copper {
 	#ifdef CU_EDITOR
 		data.window = GetEditorWindow();
 		RendererAPI::Initialize();
-		data.fbo = FrameBuffer(UVector2I(1280, 720));
+		data.fbo = FrameBuffer(UVector2I(1280, 720)); // TODO: Possibly find a solution that doesnt mean we have to have an invalid size for the first few frames
 	#else
 		data.window = Window("Copper Engine", 1280, 720);
 		RendererAPI::Initialize();
@@ -100,26 +115,21 @@ namespace Copper {
 
 		Renderer::Initialize();
 		Renderer::SetShader(Shader("assets/Shaders/vertexDefault.glsl", "assets/Shaders/fragmentDefault.glsl"));
-		data.mainUI.Initialize(data.WindowRef(), true);
+		data.mainUIContext.Initialize(data.WindowRef(), true);
 
 		Input::Init();
-
-		Input::AddAxis("Keys_WS", KeyCode::W, KeyCode::S);
-		Input::AddAxis("Keys_DA", KeyCode::D, KeyCode::A);
-
-		Input::AddMouseAxis("Mouse X", true);
-		Input::AddMouseAxis("Mouse Y", false);
+		Input::InitializeAxisManager();
 
 		Scripting::Initialize();
 
 		data.engineState = EngineState::PostInitialization;
 		data.postInitEvent();
 
+		Run();
+
 	}
+	void Run() {
 
-	void EngineCore::Run() {
-
-		CHECK((data.engineState == EngineState::PostInitialization), "Cannot Start running the Engine, current Engine State is: {}", EngineStateToString(data.engineState));
 		data.engineState = EngineState::Running;
 
 		while (data.engineState == EngineState::Running) {
@@ -138,9 +148,9 @@ namespace Copper {
 
 			Renderer::ResizeViewport(data.WindowRef().Size());
 
-			data.mainUI.Begin();
+			data.mainUIContext.Begin();
 			data.uiUpdateEvent();
-			data.mainUI.End();
+			data.mainUIContext.End();
 
 			Renderer::EndFrame();
 
@@ -148,22 +158,37 @@ namespace Copper {
 
 		}
 
+		Shutdown();
+
 	}
+	void Shutdown() {
 
-	void EngineCore::Shutdown() {
-
-		CHECK((data.engineState == EngineState::Shutdown), "Cannot Shutdown the Engine, current Engine State is: {}", EngineStateToString(data.engineState));
-
-		data.mainUI.Shutdown();
+		data.mainUIContext.Shutdown();
 		data.WindowRef().Shutdown();
 		data.postShutdownEvent();
 
 	}
-	void LoadUIFont(const std::string& path, float fontSize) {
 
-		data.mainUI.LoadFont(path, fontSize);
+	EngineState EngineCore::GetEngineState() { return data.engineState; }
+	std::string EngineCore::EngineStateToString(EngineState state) {
+
+		switch (state) {
+
+			case EngineState::Entry: return "Entry"; break;
+			case EngineState::Initialization: return "Initialization"; break;
+			case EngineState::PostInitialization: return "Post Initialization"; break;
+			case EngineState::Running: return "Running"; break;
+			case EngineState::Shutdown: return "Shutdown"; break;
+
+		}
+
+		return "Invalid Engine State!";
 
 	}
+
+	uint32_t EngineCore::GetNumArguments() { return (uint32_t) data.arguments.size(); }
+	const std::string& EngineCore::GetArgument(uint32_t index) { return data.arguments[index]; }
+#pragma endregion
 
 	bool OnWindowClose(const Event& e) {
 
@@ -175,6 +200,8 @@ namespace Copper {
 	}
 	bool OnWindowResize(const Event& e) {
 
+		// Editor handles resizing on its own
+
 	#ifndef CU_EDITOR
 		data.fbo.Resize(data.WindowRef().Size());
 		data.scene.cam->Resize(data.WindowRef().Size());
@@ -184,32 +211,18 @@ namespace Copper {
 
 	}
 
-	SimpleEvent& GetPostInitEvent() { return data.postInitEvent; }
-
-	SimpleEvent& GetUpdateEvent() { return data.updateEvent; }
-	SimpleEvent& GetUIUpdateEvent() { return data.uiUpdateEvent; }
-
-	Event& GetPreShutdownEvent() { return data.preShutdownEvent; }
-	SimpleEvent& GetPostShutdownEvent() { return data.postShutdownEvent; }
-
-	//Setters
-	void SetWindowSize(const UVector2I& size) {
-
-	#ifdef CU_EDITOR
-		if (data.fbo.Size() == size) return;
-
-		data.fbo.Resize(size);
-		data.scene.cam->Resize(size);
-	#else
-		data.window.SetSize(size);
-	#endif
+	// Engine Events
 	
-	}
-	void SetMainUIAsCurrent() { data.mainUI.SetAsCurrent(); }
+	void AddPostInitEventFunc(std::function<void()> func) { data.postInitEvent += func; }
 
-	void SetRenderScene(bool value) { data.renderScene = value; }
+	void AddUpdateEventFunc(std::function<void()> func) { data.updateEvent += func; }
+	void AddUIUpdateEventFunc(std::function<void()> func) { data.uiUpdateEvent += func; }
 
-	//Getters
+	void AddPreShutdownEventFunc(std::function<bool(const Event&)> func) { data.preShutdownEvent += func; }
+	void AddPostShutdownEventFunc(std::function<void()> func) { data.postShutdownEvent += func; }
+
+	// Declaration in Window.h
+
 	Window& GetWindow() { return data.WindowRef(); }
 	UVector2I GetWindowSize() {
 		
@@ -230,56 +243,47 @@ namespace Copper {
 
 	}
 
+	void SetMainWindowAsCurrent() { data.WindowRef().SetAsCurrentContext(); }
+	void SetWindowSize(const UVector2I& size) {
+
+	#ifdef CU_EDITOR
+		if (data.fbo.Size() == size) return;
+
+		data.fbo.Resize(size);
+		data.scene.cam->Resize(size);
+	#else
+		data.window.SetSize(size);
+	#endif
+	
+	}
+
+	// Declaration in FrameBuffer.h
+
+	uint32_t GetMainFBOTexture() { return data.fbo.GetColorAttachment(); }
+
+	// Declaration in ImGui.h
+
+	void SetMainUIAsCurrent() { data.mainUIContext.SetAsCurrent(); }
+	void LoadMainUIContextFont(const std::string& path, float fontSize) { data.mainUIContext.LoadFont(path, fontSize); }
+
+	// Declaration in Scene.h
+	
+	Scene* GetScene() { return &data.scene; }
+	void SetShouldRenderScene(bool value) { data.renderScene = value; }
+
+	uint32_t GetNumOfEntities() { return data.scene.GetNumOfEntities(); }
+	bool IsSceneRuntimeRunning() { return data.scene.IsRuntimeRunning(); }
+
+	InternalEntity* CreateEntity(ENTITY_PROPERTIES_DECLARATION) { return data.scene.CreateEntity(position, rotation, scale, name); }
+	InternalEntity* CreateEntityFromID(uint32_t id, ENTITY_PROPERTIES_DECLARATION, bool returnIfExists) { return data.scene.CreateEntityFromID(id, position, rotation, scale, name, returnIfExists); }
+	InternalEntity* GetEntityFromID(uint32_t id) { return data.scene.GetEntityFromID(id); }
+	void RemoveEntity(InternalEntity* entity) { data.scene.RemoveEntity(entity); }
+	void RemoveEntityFromID(uint32_t id) { data.scene.RemoveEntityFromID(id); }
+
+// Editor misc.
 #ifdef CU_EDITOR
 	void SetAcceptInputDuringRuntime(bool value) { data.acceptInputRuntime = value; }
-#endif
-
-	uint32_t GetFBOTexture() { return data.fbo.GetColorAttachment(); }
-
-	Scene* GetScene() { return &data.scene; }
-	uint32_t GetNumOfEntities() { return data.scene.GetNumOfEntities(); }
-
-	InternalEntity* GetEntityFromID(int32_t id) { return data.scene.GetEntityFromID(id); }
-	InternalEntity* CreateEntityFromID(int32_t id, const std::string& name, bool returnIfExists) { return data.scene.CreateEntityFromID(id, Vector3::zero, Vector3::zero, Vector3::one, name, returnIfExists); }
-
-	bool IsRuntimeRunning() { return data.scene.IsRuntimeRunning(); }
-
-	void AddPostInitEventFunc(std::function<void()> func) { data.postInitEvent += func; }
-
-	void AddUpdateEventFunc(std::function<void()> func) { data.updateEvent += func; }
-	void AddUIUpdateEventFunc(std::function<void()> func) { data.uiUpdateEvent += func; }
-
-	void AddPreShutdownEventFunc(std::function<bool(const Event&)> func) { data.preShutdownEvent += func; }
-	void AddPostShutdownEventFunc(std::function<void()> func) { data.postShutdownEvent += func; }
-
-	const Version& GetVersion() { return data.version; }
-
-	EngineState GetEngineState() { return data.engineState; }
-	std::string EngineStateToString(EngineState state) {
-
-		switch (state) {
-
-			case EngineState::Entry: return "Entry"; break;
-			case EngineState::Initialization: return "Initialization"; break;
-			case EngineState::PostInitialization: return "Post Initialization"; break;
-			case EngineState::Running: return "Running"; break;
-			case EngineState::Shutdown: return "Shutdown"; break;
-
-		}
-
-		return "Invalid Engine State!";
-
-	}
-
-	uint32_t GetNumArguments() { return (uint32_t) data.arguments.size(); }
-	const std::string& GetArgument(uint32_t index) { return data.arguments[index]; }
-
-#ifdef CU_EDITOR
-	bool AcceptInputDuringRuntime() {
-
-		return data.acceptInputRuntime;
-
-	}
+	bool AcceptInputDuringRuntime() { return data.acceptInputRuntime; }
 #endif
 
 }

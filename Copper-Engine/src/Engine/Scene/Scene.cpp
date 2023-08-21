@@ -16,7 +16,7 @@
 
 #include "Engine/Scripting/ScriptingCore.h"
 
-#include "Engine/YAMLOverloads/YAMLOverloads.h"
+#include "Engine/YAMLOverloads/Everything.h"
 
 #include <fstream>
 #include <yaml-cpp/yaml.h>
@@ -129,7 +129,7 @@ namespace Copper {
 
 		uint32_t sceneVersion = versionNode.as<uint32_t>();
 		if (oldDeserializeFunctions.find(sceneVersion) != oldDeserializeFunctions.end()) return oldDeserializeFunctions[sceneVersion](data, this);
-		CU_ASSERT(sceneVersion == GetVersion().sceneVersion, "The Scene you tried to open has an invalid version ({})\n{}", sceneVersion, path.String());
+		CU_ASSERT(sceneVersion == SCENE_VERSION, "The Scene you tried to open has an invalid version ({})\n{}", sceneVersion, path.String());
 
 		this->name = data["Name"].as<std::string>();
 
@@ -138,7 +138,7 @@ namespace Copper {
 
 			std::string name = it->first.as<std::string>();
 			uint32_t id = it->second["ID"].as<uint32_t>();
-			InternalEntity* entity = CreateEntityFromID(id, name, Vector3::zero, Vector3::zero, Vector3::one, false);
+			InternalEntity* entity = CreateEntityFromID(id, Vector3::zero, Quaternion(), Vector3::one, name, false);
 
 			DeserializeEntity(entity, it->second);
 
@@ -161,7 +161,7 @@ namespace Copper {
 
 		out << YAML::Key << "Parent ID" << YAML::Value;
 		if (entity->transform->parent) out << entity->transform->parent->entity.id;
-		else out << invalidID;
+		else out << INVALID_ENTITY_ID;
 
 		out << YAML::Key << "Children" << YAML::Value << YAML::Flow << YAML::BeginSeq; // Children
 		for (uint32_t childID : entity->transform->children) {
@@ -271,12 +271,12 @@ namespace Copper {
 
 		//Set the Parent
 		uint32_t parentID = transform["Parent ID"].as<uint32_t>();
-		if (parentID == invalidID) entity->transform->parent = nullptr;
+		if (parentID == INVALID_ENTITY_ID) entity->transform->parent = nullptr;
 		else if(entity->id < parentID) {
 
 			//This little maneuver is gonna cost us 51 miliseconds
 			Entity saved = entity;
-			InternalEntity* parent = CreateEntityFromID(parentID, "Empty Parent", Vector3::zero, Vector3::zero, Vector3::one);
+			InternalEntity* parent = CreateEntityFromID(parentID, Vector3::zero, Quaternion(), Vector3::one, "Empty Parent");
 			entity = saved;
 
 			entity->transform->parent = parent->transform;
@@ -295,7 +295,7 @@ namespace Copper {
 			entity->transform->children.push_back(childID);
 
 			Entity saved = entity;
-			InternalEntity* child = CreateEntityFromID(childID, "Empty Child", Vector3::zero, Vector3::zero, Vector3::one);
+			InternalEntity* child = CreateEntityFromID(childID, Vector3::zero, Quaternion(), Vector3::one, "Empty Child");
 			entity = saved;
 
 			child->transform->parent = entity->transform;

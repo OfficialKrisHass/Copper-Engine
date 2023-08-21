@@ -68,4 +68,11 @@ namespace Copper {
 
 	};
 
+	Window& GetWindow();
+	UVector2I GetWindowSize();
+	float GetWindowAspectRatio();
+
+	void SetMainWindowAsCurrent();
+	void SetWindowSize(const UVector2I& size);
+
 }

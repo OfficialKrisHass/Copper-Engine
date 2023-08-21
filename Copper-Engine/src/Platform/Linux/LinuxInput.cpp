@@ -2,6 +2,7 @@
 #include "Engine/Input/Input.h"
 
 #include "Engine/Core/Engine.h"
+#include "Engine/Core/Window.h"
 
 #include "Engine/Events/MouseEvent.h"
 
@@ -29,7 +30,7 @@ namespace Copper::Input {
 
 	void Init() {
 
-		CHECK((GetEngineState() == EngineState::Initialization), "Cannot Initialize Input, current Engine State is: {}", EngineStateToString(GetEngineState()))
+		VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize Input");
 
 		GetWindow().AddKeyPressedEventFunc(OnKeyPressed);
 		GetWindow().AddKeyReleasedEventFunc(OnKeyReleased);

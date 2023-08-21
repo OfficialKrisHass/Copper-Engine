@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Engine/Core/Core.h"
-#include "cupch.h"
 
 namespace Copper {
 

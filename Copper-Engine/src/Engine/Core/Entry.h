@@ -11,8 +11,6 @@ int main(int argc, char* argv[]) {
 	AppEntryPoint();
 
 	EngineCore::Initialize(argc, argv);
-	EngineCore::Run();
-	EngineCore::Shutdown();
 
 	return 0;
 

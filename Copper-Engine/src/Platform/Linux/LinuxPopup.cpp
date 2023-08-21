@@ -32,7 +32,7 @@ namespace Copper::Input {
         Window popupWindow(title, 400, 150, false);
         popupWindow.AddWindowCloseEventFunc(ClosePopup);
 
-        UI popupUI;
+        UIContext popupUI;
         popupUI.Initialize(popupWindow, false, false, false);
 
         //Popup Render Loop
@@ -110,7 +110,7 @@ namespace Copper::Input {
         Window popupWindow(title, 400, 150, false);
         popupWindow.AddWindowCloseEventFunc(ClosePopup);
 
-        UI popupUI;
+        UIContext popupUI;
         popupUI.Initialize(popupWindow, false);
 
         //Popup Render Loop

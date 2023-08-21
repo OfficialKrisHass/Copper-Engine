@@ -26,6 +26,8 @@ namespace Copper::Input {
 
 	};
 
+	void InitializeAxisManager();
+
 	float GetAxis(const std::string& axisName);
 
 	void AddAxis(const std::string& axisName, KeyCode positive, KeyCode negative, float positiveValue = 1.0f, float negativeValue = -1.0f);

@@ -14,7 +14,7 @@ using namespace Copper;
 
 namespace Editor {
 
-	uint32_t clickedEntityID = invalidID;
+	uint32_t clickedEntityID = INVALID_ENTITY_ID;
 
 	SceneHierarchy::SceneHierarchy() : Panel("Scene Hierarchy") { }
 
@@ -55,9 +55,6 @@ namespace Editor {
 
 		}
 
-		Vector3 rot = GetProject().sceneCam.GetTransform()->rotation.EulerAngles();
-		ImGui::DragFloat3("Rotation", &rot.x, 1.0f);
-
 	}
 
 	void SceneHierarchy::DrawEntityNode(InternalEntity* entity) {
@@ -70,7 +67,7 @@ namespace Editor {
 		if (ImGui::IsItemClicked()) clickedEntityID = entity->ID();
 		if (ImGui::IsMouseReleased(0) && entity->ID() == clickedEntityID) {
 
-			if (Properties::IsDragDropTargetHovered()) clickedEntityID = invalidID;
+			if (Properties::IsDragDropTargetHovered()) clickedEntityID = INVALID_ENTITY_ID;
 			else selectedEntity = entity;
 
 		}
@@ -144,10 +141,10 @@ namespace Editor {
 				MeshRenderer* renderer = selectedEntity->AddComponent<MeshRenderer>();
 				Mesh mesh;
 
-				mesh.vertices = GetPlaneVertices();
-				mesh.normals = GetPlaneNormals();
-				mesh.colors = GetPlaneColors();
-				mesh.indices = GetPlaneIndices();
+				mesh.vertices = planeVertices;
+				mesh.normals = planeNormals;
+				mesh.colors = planeColors;
+				mesh.indices = planeIndices;
 
 				renderer->meshes.push_back(mesh);
 				SetChanges(true);
@@ -159,10 +156,10 @@ namespace Editor {
 				MeshRenderer* renderer = selectedEntity->AddComponent<MeshRenderer>();
 				Mesh mesh;
 
-				mesh.vertices = GetCubeVertices();
-				mesh.normals = GetCubeNormals();
-				mesh.colors = GetCubeColors();
-				mesh.indices = GetCubeIndices();
+				mesh.vertices = cubeVertices;
+				mesh.normals = cubeNormals;
+				mesh.colors = cubeColors;
+				mesh.indices = cubeIndices;
 
 				renderer->meshes.push_back(mesh);
 				SetChanges(true);

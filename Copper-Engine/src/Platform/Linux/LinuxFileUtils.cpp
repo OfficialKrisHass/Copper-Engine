@@ -55,7 +55,7 @@ namespace Copper::Utilities {
 
         //Setup the Dialog
         Window dialogWindow("Save Dialog", 1280, 720, false);
-        UI dialogUI;
+        UIContext dialogUI;
 
         dialogUI.Initialize(dialogWindow, false, true, false);
         dialogWindow.AddWindowCloseEventFunc(CloseDialog);
@@ -107,7 +107,7 @@ namespace Copper::Utilities {
 
         //Setup the Dialog
         Window dialogWindow("Open Dialog", 1280, 720, false);
-        UI dialogUI;
+        UIContext dialogUI;
 
         dialogUI.Initialize(dialogWindow, false, true, false);
         dialogWindow.AddWindowCloseEventFunc(CloseDialog);
@@ -159,7 +159,7 @@ namespace Copper::Utilities {
 
         //Setup the Dialog
         Window dialogWindow("Folder Open Dialog", 1280, 720, false);
-        UI dialogUI;
+        UIContext dialogUI;
 
         dialogUI.Initialize(dialogWindow, false, true, false);
         dialogWindow.AddWindowCloseEventFunc(CloseDialog);

@@ -61,7 +61,7 @@ target_include_directories(Copper-Engine PRIVATE src ${includeDirs} ${PROJECT_BI
 # Libraries
 add_subdirectory(lib/GLFW)
 add_subdirectory(lib/GLAD)
-add_subdirectory(lib/ImGui/ImGui)
+add_subdirectory(lib/ImGui)
 add_subdirectory(lib/yaml-cpp)
 add_subdirectory(lib/assimp)
 

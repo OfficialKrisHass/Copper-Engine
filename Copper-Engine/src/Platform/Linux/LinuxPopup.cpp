@@ -6,8 +6,6 @@
 #include "Engine/UI/ImGui.h"
 
 #include <ImGui/imgui.h>
-#include <ImGui/backends/imgui_impl_opengl3.h>
-#include <ImGui/backends/imgui_impl_glfw.h>
 
 namespace Copper::Input {
 

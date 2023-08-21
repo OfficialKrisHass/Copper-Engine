@@ -112,7 +112,7 @@ namespace Copper {
 		shader.Bind();
 
 		// TODO: Fix the CMath implementation of LoadMat4 not working
-		shader.LoadMat4TEST("ProjectionView", (glm::mat4) cam->CreateProjectionMatrix() * (glm::mat4) cam->CreateViewMatrix());
+		shader.LoadMat4("ProjectionView", cam->CreateProjectionMatrix() * cam->CreateViewMatrix());
 		shader.LoadVec3("camPos", cam->GetTransform()->position);
 
 		if (light) {

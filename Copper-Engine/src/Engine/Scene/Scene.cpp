@@ -13,6 +13,8 @@
 #include "Engine/Components/MeshRenderer.h"
 #include "Engine/Components/ScriptComponent.h"
 #include "Engine/Components/Light.h"
+#include "Engine/Components/RigidBody.h"
+#include "Engine/Components/BoxCollider.h"
 
 #include "Engine/Scripting/ScriptingCore.h"
 
@@ -33,6 +35,12 @@ namespace Copper {
 
 		InitializePhysics();
 
+		for (RigidBody* rb : ComponentView<RigidBody>(this)) {
+
+			rb->SetupBody();
+
+		}
+
 	}
 	void Scene::Update(bool render, float deltaTime) {
 
@@ -43,6 +51,8 @@ namespace Copper {
 		for (InternalEntity* entity : EntityView(this)) {
 
 			entity->transform->Update();
+
+			if (runtimeRunning && entity->HasComponent<RigidBody>()) entity->GetComponent<RigidBody>()->UpdatePositionAndRotation();
 
 			if (Light* lightComponent = entity->GetComponent<Light>()) light = lightComponent;
 			if (Camera* cameraComponent = entity->GetComponent<Camera>()) cam = cameraComponent;
@@ -237,6 +247,29 @@ namespace Copper {
 
 		}
 
+		if (RigidBody* rb = entity->GetComponent<RigidBody>()) {
+
+			out << YAML::Key << "Rigid Body" << YAML::Value << YAML::BeginMap; // Rigid Body
+
+			out << YAML::Key << "Gravity" << YAML::Value << rb->gravity;
+			out << YAML::Key << "Mass" << YAML::Value << rb->mass;
+
+			out << YAML::EndMap; // Rigid Body
+
+		}
+		if (BoxCollider* collider = entity->GetComponent<BoxCollider>()) {
+
+			out << YAML::Key << "Box Collider" << YAML::Value << YAML::BeginMap; // Box Collider
+
+			out << YAML::Key << "Trigger" << YAML::Value << collider->trigger;
+
+			out << YAML::Key << "Center" << YAML::Value << collider->center;
+			out << YAML::Key << "Size" << YAML::Value << collider->size;
+
+			out << YAML::EndMap; // Box Collider
+
+		}
+
 		if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) {
 
 			out << YAML::Key << "Script Component" << YAML::Value << YAML::BeginMap; // Script Component
@@ -354,6 +387,25 @@ namespace Copper {
 			cam->farPlane = camNode["Far Plane"].as<float>();
 
 			cam->size = camNode["Size"].as<UVector2I>();
+
+		}
+
+		if (YAML::Node rbNode = node["Rigid Body"]) {
+
+			RigidBody* rb = entity->AddComponent<RigidBody>();
+
+			rb->gravity = rbNode["Gravity"].as<bool>();
+			rb->mass = rbNode["Mass"].as<float>();
+
+		}
+		if (YAML::Node colliderNode = node["Box Collider"]) {
+
+			BoxCollider* collider = entity->AddComponent<BoxCollider>();
+
+			collider->trigger = colliderNode["Trigger"].as<bool>();
+
+			collider->center = colliderNode["Center"].as<Vector3>();
+			collider->size = colliderNode["Size"].as<Vector3>();
 
 		}
 

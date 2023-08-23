@@ -5,5 +5,6 @@
 namespace Copper::PhysicsEngine {
 
     void Initialize();
+    void Shutdown();
 
 }

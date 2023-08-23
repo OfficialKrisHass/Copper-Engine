@@ -23,6 +23,7 @@ namespace Copper {
 	class Scene {
 
 		friend InternalEntity;
+		friend class RigidBody;
 		friend class Entity;
 		friend class OldSceneVersionSerializer;
 
@@ -94,6 +95,11 @@ namespace Copper {
 		void InitializePhysics();
 		void UpdatePhysics(float deltaTime);
 		void ShutdownPhysics();
+
+		void AddRigidBody(class RigidBody* rb);
+
+		// Serialization
+
 
 		void SerializeEntity(InternalEntity* entity, YAML::Emitter& out);
 		void DeserializeEntity(InternalEntity* entity, const YAML::Node& node);

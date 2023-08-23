@@ -72,6 +72,9 @@ namespace Editor {
 		if (Light* light = entity->GetComponent<Light>()) RenderLight(light);
 		if (Camera* camera = entity->GetComponent<Camera>()) RenderCamera(camera);
 
+		if (RigidBody* rb = entity->GetComponent<RigidBody>()) RenderRigidBody(rb);
+		if (BoxCollider* collider = entity->GetComponent<BoxCollider>()) RenderBoxCollider(collider);
+
 		if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) RenderScriptComponent(script);
 
 		ImGui::Spacing();
@@ -96,18 +99,26 @@ namespace Editor {
 				entity->AddComponent<Light>()->color.r = 0.5f;
 				Editor::SetChanges(true);
 			
-			}
-			if (ImGui::MenuItem("Mesh Renderer")) {
+			} else if (ImGui::MenuItem("Mesh Renderer")) {
 				
 				entity->AddComponent<MeshRenderer>();
 				Editor::SetChanges(true);
 			
-			}
-			if (ImGui::MenuItem("Camera")) {
+			} else if (ImGui::MenuItem("Camera")) {
 				
 				entity->AddComponent<Camera>();
 				Editor::SetChanges(true);
 			
+			} else if (ImGui::MenuItem("Rigid Body")) {
+
+				entity->AddComponent<RigidBody>();
+				Editor::SetChanges(true);
+
+			} else if (ImGui::MenuItem("Box Collider")) {
+
+				entity->AddComponent<BoxCollider>();
+				Editor::SetChanges(true);
+
 			}
 
 			ImGui::Separator();
@@ -134,7 +145,6 @@ namespace Editor {
 	void Properties::RenderLight(Light* light) {
 
 		ImGui::PushID((int) (int64_t) light);
-
 		if (!DrawComponent<Light>("Light", light->GetEntity())) { ImGui::PopID(); return; }
 
 		ShowColor("Color", &light->color);
@@ -146,7 +156,6 @@ namespace Editor {
 	void Properties::RenderCamera(Camera* camera) {
 
 		ImGui::PushID((int) (int64_t) camera);
-
 		if (!DrawComponent<Camera>("Camera", camera->GetEntity())) { ImGui::PopID(); return; }
 
 		ShowFloat("FOV", &camera->fov);
@@ -157,10 +166,33 @@ namespace Editor {
 
 	}
 
+	void Properties::RenderRigidBody(RigidBody* rb) {
+
+		ImGui::PushID((int) (int64_t) rb);
+		if (!DrawComponent<RigidBody>("Rigid Body", rb->GetEntity())) { ImGui::PopID(); return; }
+
+		ShowBool("Gravity", &rb->gravity);
+		ShowFloat("Mass", &rb->mass);
+
+		ImGui::PopID();
+
+	}
+	void Properties::RenderBoxCollider(BoxCollider* collider) {
+
+		ImGui::PushID((int) (int64_t) collider);
+		if (!DrawComponent<BoxCollider>("Box Collider", collider->GetEntity())) { ImGui::PopID(); return; }
+
+		ShowBool("Trigger", &collider->trigger);
+		ShowVector3("Center", &collider->center);
+		ShowVector3("Size", &collider->size);
+
+		ImGui::PopID();
+
+	}
+
 	void Properties::RenderScriptComponent(ScriptComponent* script) {
 
 		ImGui::PushID((int) (int64_t) script);
-
 		if (!DrawComponent<ScriptComponent>(script->name, script->GetEntity())) { ImGui::PopID(); return; }
 		if (!*script) {
 

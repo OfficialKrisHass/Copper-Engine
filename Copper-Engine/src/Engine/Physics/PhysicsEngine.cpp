@@ -1,7 +1,10 @@
 #include "cupch.h"
 #include "PhysicsEngine.h"
 
-#include "Engine/Scene/Scene.h"
+#include "Engine/Scene/CopperECS.h"
+
+#include "Engine/Components/RigidBody.h"
+#include "Engine/Components/BoxCollider.h"
 
 #include <PxPhysicsAPI.h>
 
@@ -29,39 +32,21 @@ namespace Copper::PhysicsEngine {
         data.physics = PxCreatePhysics(PX_PHYSICS_VERSION, *data.foundation, PxTolerancesScale());
         data.dispatcher = PxDefaultCpuDispatcherCreate(1);
 
-        /*PxSceneDesc sceneDesc(physics->getTolerancesScale());
-        sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
-        sceneDesc.cpuDispatcher = dispatcher;
-        sceneDesc.filterShader = PxDefaultSimulationFilterShader;
+    }
 
-        scene = physics->createScene(sceneDesc);
-        material = physics->createMaterial(0.5f, 0.5f, 0.6f);
+    void Shutdown() {
 
-        PxRigidStatic* groundPlane = PxCreatePlane(*physics, PxPlane(0, 1, 0, 0), *material);
-        scene->addActor(*groundPlane);
-
-        PxShape* shape = physics->createShape(PxSphereGeometry(10.0f), *material);
-        PxRigidDynamic* dynamic = PxCreateDynamic(*physics, PxTransform(PxVec3(0, 40, 0)), *shape, 10.0f);
-        scene->addActor(*dynamic);
-        shape->release();
-
-        for(unsigned int i = 0; i < 100; i++) {
-
-            scene->simulate(1.0f/60.0f);
-            scene->fetchResults(true);
-
-            if (i % 20 != 0) continue;
-            std::cout << "Position of the Sphere: " << dynamic->getGlobalPose().p.x << ", " << dynamic->getGlobalPose().p.y << ", " << dynamic->getGlobalPose().p.z << std::endl;
-
-        }
-        std::cout << "Position of the Sphere: " << dynamic->getGlobalPose().p.x << ", " << dynamic->getGlobalPose().p.y << ", " << dynamic->getGlobalPose().p.z << std::endl;
-
-        scene->release();
-        dispatcher->release();
-        physics->release();
-        foundation->release();*/
+        data.dispatcher->release();
+        data.physics->release();
+        data.foundation->release();
 
     }
+
+    PxVec3 CopperToPhysX(const Vector3& vec) { return PxVec3(vec.x, vec.y, vec.z); }
+    Vector3 PhysXToCopper(const PxVec3& vec) { return Vector3(vec.x, vec.y, vec.z); }
+
+    PxQuat CopperToPhysX(const Quaternion& quat) { return PxQuat(quat.x, quat.y, quat.z, quat.w); }
+    Quaternion PhysXToCopper(const PxQuat& quat) { return Quaternion(quat.w, quat.x, quat.y, quat.z); }
 
 }
 namespace Copper {
@@ -80,6 +65,8 @@ namespace Copper {
         physicsScene = data.physics->createScene(sceneDesc);
         data.material = data.physics->createMaterial(0.5f, 0.5f, 0.6f);
 
+        physicsScene->addActor(*PxCreatePlane(*data.physics, PxPlane(0.0f, 1.0f, 0.0f, 0.0f), *data.material));
+
     }
     void Scene::UpdatePhysics(float deltaTime) {
 
@@ -91,6 +78,29 @@ namespace Copper {
 
         physicsInitialized = false;
         physicsScene->release();
+
+    }
+    void Scene::AddRigidBody(RigidBody* rb) {
+
+        physicsScene->addActor(*rb->body);
+
+    }
+
+    void RigidBody::SetupBody() {
+
+        BoxCollider* collider = GetEntity()->GetComponent<BoxCollider>();
+        if (!collider) { LogError("Rigidbody on Entity {} has no Collider!", GetEntity()->name); return; }
+
+        PxShape* shape = data.physics->createShape(PxBoxGeometry(CopperToPhysX(collider->size / 2.0f)), *data.material);
+        body = PxCreateDynamic(*data.physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape, 1.0f);
+        GetScene()->AddRigidBody(this);
+        shape->release();
+
+    }
+    void RigidBody::UpdatePositionAndRotation() {
+
+        GetTransform()->position = PhysXToCopper(body->getGlobalPose().p);
+        GetTransform()->rotation = PhysXToCopper(body->getGlobalPose().q);
 
     }
 

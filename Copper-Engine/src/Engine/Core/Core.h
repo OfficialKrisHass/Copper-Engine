@@ -3,7 +3,6 @@
 #include <Config.h>
 
 #include "Engine/Core/Log.h"
-#include "Engine/Core/Version.h"
 
 #define CMATH_PARENT_NAMESPACE Copper
 #include <CMath/CMath.h>

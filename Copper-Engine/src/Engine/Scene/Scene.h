@@ -11,6 +11,7 @@
 #define ENTITY_PROPERTIES_DECLARATION const Vector3& position, const Quaternion& rotation, const Vector3& scale, const std::string& name
 
 namespace YAML { class Emitter; class Node; }
+namespace physx { class PxScene; }
 
 namespace Copper {
 
@@ -81,14 +82,23 @@ namespace Copper {
 
 		Light* light;
 
+		physx::PxScene* physicsScene;
+
 		bool runtimeRunning = false;
 		bool runtimeStarted = false;
+
+		// Defined in PhysicsEngine.cpp so that we dont have physx includes in Scene.cpp
+
+		bool physicsInitialized = false;
+
+		void InitializePhysics();
+		void UpdatePhysics(float deltaTime);
+		void ShutdownPhysics();
 
 		void SerializeEntity(InternalEntity* entity, YAML::Emitter& out);
 		void DeserializeEntity(InternalEntity* entity, const YAML::Node& node);
 
 		template<typename T> void SerializeScriptField(const struct ScriptField& field, class ScriptComponent* instance, YAML::Emitter& out);
-		//template<> void SerializeScriptField<InternalEntity*>(const struct ScriptField& field, class ScriptComponent* instance, class YAML::Emitter& out);
 		template<typename T> void DeserializeScriptField(const ScriptField& field, ScriptComponent* instance, const YAML::Node& fieldNode);
 
 	};

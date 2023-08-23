@@ -31,10 +31,14 @@ namespace Copper {
 
 		runtimeRunning = true;
 
+		InitializePhysics();
+
 	}
 	void Scene::Update(bool render, float deltaTime) {
 
 		Renderer::ClearColor(0.18f, 0.18f, 0.18f);
+
+		if (runtimeRunning) UpdatePhysics(deltaTime);
 
 		for (InternalEntity* entity : EntityView(this)) {
 
@@ -101,6 +105,8 @@ namespace Copper {
 
 	}
 	bool Scene::Deserialize(const Filesystem::Path& path) {
+
+		if (physicsInitialized) ShutdownPhysics();
 
 		this->path = path;
 

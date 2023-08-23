@@ -14,9 +14,11 @@
 
 #include "Engine/Input/AxisManager.h"
 
-#include "Engine/Scripting/ScriptingCore.h"
-
 #include "Engine/Scene/CopperECS.h"
+
+#include "Engine/Physics/PhysicsEngine.h"
+
+#include "Engine/Scripting/ScriptingCore.h"
 
 #include "Engine/Components/Camera.h"
 
@@ -100,6 +102,8 @@ namespace Copper {
 
 		Logger::Initialize();
 
+		// Window & Renderer Initialization
+
 	#ifdef CU_EDITOR
 		data.window = GetEditorWindow();
 		RendererAPI::Initialize();
@@ -117,10 +121,20 @@ namespace Copper {
 		Renderer::SetShader(Shader("assets/Shaders/vertexDefault.glsl", "assets/Shaders/fragmentDefault.glsl"));
 		data.mainUIContext.Initialize(data.WindowRef(), true);
 
+		// Input
+
 		Input::Init();
 		Input::InitializeAxisManager();
 
+		// Physics
+
+		PhysicsEngine::Initialize();
+
+		// Scripting
+
 		Scripting::Initialize();
+
+		// Finalization
 
 		data.engineState = EngineState::PostInitialization;
 		data.postInitEvent();

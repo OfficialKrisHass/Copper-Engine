@@ -7,15 +7,16 @@ list(APPEND sources src/Copper.h src/cupch.h src/cupch.cpp
                     lib/ImGuizmo/ImGuizmo/ImGuizmo.h lib/ImGuizmo/ImGuizmo/ImGuizmo.cpp)
 
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Core/CMakeLists.txt)
-include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Filesystem/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Events/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Renderer/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/UI/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Input/CMakeLists.txt)
-include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Scripting/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Scene/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Components/CMakeLists.txt)
+include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Scripting/CMakeLists.txt)
+include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Physics/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Utilities/CMakeLists.txt)
+include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Filesystem/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/YAMLOverloads/CMakeLists.txt)
 
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/lib/Copper-Math/CMath/CMakeLists.txt)

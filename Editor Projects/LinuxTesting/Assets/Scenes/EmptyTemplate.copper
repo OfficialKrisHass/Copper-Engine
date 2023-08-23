@@ -28,7 +28,7 @@ Entities:
   Ground:
     ID: 2
     Transform:
-      Position: [0, -0.5, 0]
+      Position: [0, 0, 0]
       Rotation: [1, 0, 0, 0]
       Scale: [20, 1, 20]
       Parent ID: 4294967295
@@ -145,10 +145,18 @@ Entities:
           - 22
           - 23
           - 20
+    Rigid Body:
+      Static: true
+      Gravity: false
+      Mass: 1
+    Box Collider:
+      Trigger: false
+      Center: [0, 0, 0]
+      Size: [1, 1, 1]
   Cube:
     ID: 3
     Transform:
-      Position: [-0.737697303, 5.5392189, -0.472681642]
+      Position: [-0.987099409, 5.63597965, -0.715051889]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
       Parent ID: 4294967295
@@ -266,6 +274,7 @@ Entities:
           - 23
           - 20
     Rigid Body:
+      Static: false
       Gravity: true
       Mass: 1
     Box Collider:
@@ -393,6 +402,7 @@ Entities:
           - 23
           - 20
     Rigid Body:
+      Static: false
       Gravity: true
       Mass: 1
     Box Collider:

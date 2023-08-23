@@ -2,8 +2,8 @@ Name: LinuxTesting
 Last Scene: Scenes/EmptyTemplate.copper
 Gizmo: 0
 Scene Camera:
-  Position: [0.123254329, 1.44931912, 6.66645145]
-  Rotation: [0.991829693, -0.121624351, 0.038201347, 0.00468448736]
+  Position: [-1.27324808, 5.28132248, 4.7203455]
+  Rotation: [0.935576677, -0.326268017, 0.127542943, 0.0444786437]
   Fov: 90
   Near Plane: 0.100000001
   Far Plane: 1000

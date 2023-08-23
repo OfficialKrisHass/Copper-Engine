@@ -65,8 +65,6 @@ namespace Copper {
         physicsScene = data.physics->createScene(sceneDesc);
         data.material = data.physics->createMaterial(0.5f, 0.5f, 0.6f);
 
-        physicsScene->addActor(*PxCreatePlane(*data.physics, PxPlane(0.0f, 1.0f, 0.0f, 0.0f), *data.material));
-
     }
     void Scene::UpdatePhysics(float deltaTime) {
 
@@ -91,10 +89,19 @@ namespace Copper {
         BoxCollider* collider = GetEntity()->GetComponent<BoxCollider>();
         if (!collider) { LogError("Rigidbody on Entity {} has no Collider!", GetEntity()->name); return; }
 
-        PxShape* shape = data.physics->createShape(PxBoxGeometry(CopperToPhysX(collider->size / 2.0f)), *data.material);
-        body = PxCreateDynamic(*data.physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape, 1.0f);
+        PxShape* shape = data.physics->createShape(PxBoxGeometry(CopperToPhysX(GetTransform()->scale * collider->size / 2.0f)), *data.material);
+
+        if (isStatic)
+            body = PxCreateStatic(*data.physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape);
+        else
+            body = PxCreateDynamic(*data.physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape, 1.0f);
+
         GetScene()->AddRigidBody(this);
         shape->release();
+
+        body->setName(GetEntity()->name.c_str());
+        if (!isStatic)
+            ((PxRigidDynamic*) body)->setMass(mass);
 
     }
     void RigidBody::UpdatePositionAndRotation() {

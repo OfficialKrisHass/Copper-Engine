@@ -251,7 +251,9 @@ namespace Copper {
 
 			out << YAML::Key << "Rigid Body" << YAML::Value << YAML::BeginMap; // Rigid Body
 
+			out << YAML::Key << "Static" << YAML::Value << rb->isStatic;
 			out << YAML::Key << "Gravity" << YAML::Value << rb->gravity;
+
 			out << YAML::Key << "Mass" << YAML::Value << rb->mass;
 
 			out << YAML::EndMap; // Rigid Body
@@ -394,7 +396,9 @@ namespace Copper {
 
 			RigidBody* rb = entity->AddComponent<RigidBody>();
 
+			rb->isStatic = rbNode["Static"].as<bool>();
 			rb->gravity = rbNode["Gravity"].as<bool>();
+
 			rb->mass = rbNode["Mass"].as<float>();
 
 		}

@@ -4,7 +4,7 @@
 
 #include "Engine/Scene/Component.h"
 
-namespace physx { class PxRigidDynamic; }
+namespace physx { class PxRigidActor; }
 
 namespace Copper {
 
@@ -13,13 +13,15 @@ namespace Copper {
         friend class Scene;
 
     public:
+        bool isStatic;
         bool gravity;
+
         float mass;
 
         void UpdatePositionAndRotation();
 
     private:
-        physx::PxRigidDynamic* body;
+        physx::PxRigidActor* body;
 
         void SetupBody();
 

@@ -171,7 +171,9 @@ namespace Editor {
 		ImGui::PushID((int) (int64_t) rb);
 		if (!DrawComponent<RigidBody>("Rigid Body", rb->GetEntity())) { ImGui::PopID(); return; }
 
+		ShowBool("Static", &rb->isStatic);
 		ShowBool("Gravity", &rb->gravity);
+
 		ShowFloat("Mass", &rb->mass);
 
 		ImGui::PopID();

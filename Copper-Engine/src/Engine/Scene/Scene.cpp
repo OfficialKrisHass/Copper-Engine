@@ -305,6 +305,8 @@ namespace Copper {
 	}
 	void Scene::DeserializeEntity(InternalEntity* entity, const YAML::Node& node) {
 
+		try {
+
 		YAML::Node transform = node["Transform"];
 		entity->transform->position = transform["Position"].as<Vector3>();
 		entity->transform->rotation = transform["Rotation"].as<Quaternion>();
@@ -396,7 +398,7 @@ namespace Copper {
 
 			RigidBody* rb = entity->AddComponent<RigidBody>();
 
-			rb->isStatic = rbNode["Static"].as<bool>();
+			rb->isStatic = rbNode["Staic"].as<bool>();
 			rb->gravity = rbNode["Gravity"].as<bool>();
 
 			rb->mass = rbNode["Mass"].as<float>();
@@ -435,6 +437,12 @@ namespace Copper {
 				}
 
 			}
+
+		}
+
+		} catch (const YAML::BadConversion& e) {
+
+			LogError("Encountered an exception when trying to deserialize entity {} ({}): {}", entity->id, entity->name, e.msg);
 
 		}
 

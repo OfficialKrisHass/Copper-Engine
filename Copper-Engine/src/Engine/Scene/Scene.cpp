@@ -398,7 +398,7 @@ namespace Copper {
 
 			RigidBody* rb = entity->AddComponent<RigidBody>();
 
-			rb->isStatic = rbNode["Staic"].as<bool>();
+			rb->isStatic = rbNode["Static"].as<bool>();
 			rb->gravity = rbNode["Gravity"].as<bool>();
 
 			rb->mass = rbNode["Mass"].as<float>();

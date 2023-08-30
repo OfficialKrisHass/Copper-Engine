@@ -26,7 +26,7 @@ list(APPEND sources ${CMathSources})
 
 # Include dirs
 list(APPEND includeDirs lib/GLFW/include lib/GLAD/include lib/GLM/include lib/yaml-cpp/include lib/assimp/include lib/mono/include lib/PhysX/include
-                        lib/spdlog lib/ImGui lib/ImGuizmo lib/stb lib/Copper-Math)
+                        lib/spdlog lib/ImGui lib/ImGuizmo lib/stb lib/Copper-Math lib/pfd)
 
 # Defines
 list(APPEND defines CU_ENGINE CU_EDITOR _CRT_SECURE_NO_WARNINGS INCLUDE_GLM)
@@ -45,7 +45,6 @@ elseif(${CMAKE_BUILD_TYPE} STREQUAL Release)
     list(APPEND defines CU_RELEASE)
 endif()
 
-#message(${sources})
 list(TRANSFORM sources PREPEND ${PROJECT_SOURCE_DIR}/Copper-Engine/)
 
 configure_file(src/Config.h.in src/Config.h)

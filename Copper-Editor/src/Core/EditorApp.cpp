@@ -119,6 +119,10 @@ namespace Editor {
 	bool OnEntityCreated(const Event& e);
 	bool OnEntityRemoved(const Event& e);
 
+#ifdef CU_LINUX
+	void RunPremake();
+#endif
+
 	void Initialize() {
 
 		GetWindow().AddWindowFocusedEventFunc(Editor::OnWindowFocused);
@@ -148,6 +152,10 @@ namespace Editor {
 		ProjectFileWatcher::AddFileChangeCallback(FileChangedCallback);
 		
 		LoadEditorData();
+
+	#ifdef CU_LINUX
+		RunPremake();
+	#endif
 
 	}
 	void Shutdown() {
@@ -521,23 +529,31 @@ namespace Editor {
 
 		data.scriptChanges = true;
 
+	#ifdef CU_LINUX
+		if (changeType == ProjectFileWatcher::FileChangeType::Created || changeType == ProjectFileWatcher::FileChangeType::Deleted)
+			RunPremake();
+	#endif
+
 	}
 
 	void NewProject() {
 
 		//Open the Folder Dialog
 		//TODO : Either make our own Folder Open Dialog or Start using the Windows new System
-		//TODO : Fixed... well for linux
-		Filesystem::Path path = Utilities::FolderOpenDialog((!data.project.path.Empty()) ? data.project.path.ParentPath() : ROOT_DIR);
+		//TODO #2 : Fixed... well for linux
+		Filesystem::Path path = Utilities::FolderOpenDialog("New Project", (!data.project.path.Empty()) ? data.project.path.ParentPath() : ROOT_DIR);
 		if (path.Empty()) { LogWarn("Path is Invalid or Empty"); return; }
 
 		//Create the Project
 		data.project = Project(path.File().String(), path);
 		FileBrowser::SetRelativeDir("");
 
-		CreateProjectFromTemplate("assets/Templates/DevProject", data.project);
+		CreateProjectFromTemplate("assets/Templates/LinuxTesting", data.project);
 
-		//Setup the FileBrowser
+	#ifdef CU_LINUX
+		RunPremake();
+	#endif
+		
 		data.project.BuildSolution(true);
 
 		OpenScene(data.project.assetsPath / data.project.lastOpenedScene);
@@ -568,7 +584,7 @@ namespace Editor {
 	}
 	void OpenProject() {
 
-		Filesystem::Path path = Utilities::FolderOpenDialog((!data.project.path.Empty()) ? data.project.path.ParentPath() : ROOT_DIR);
+		Filesystem::Path path = Utilities::FolderOpenDialog("Open Project", (!data.project.path.Empty()) ? data.project.path.ParentPath() : ROOT_DIR);
 		if (path.Empty()) { LogWarn("path is Invalid or empty"); return; }
 
 		OpenProject(path);
@@ -598,9 +614,10 @@ namespace Editor {
 
 		if(data.changes) {
 
-			switch(Input::WarningPopup("Unsaved Changes", "There are Unsaved Changes, if you open another scene you will lose these Changes.")) {
+			switch(Input::WarningPopup("Unsaved Changes", "There are unsaved changes made to this scene, do you wish to save before opening a new scene ?")) {
 
-			case Input::PopupResult::Ok: break;
+			case Input::PopupResult::Yes: SaveScene(); break;
+			case Input::PopupResult::No: break;
 			case Input::PopupResult::Cancel: return;
 				
 			}
@@ -622,7 +639,7 @@ namespace Editor {
 	}
 	void OpenScene() {
 
-		Filesystem::Path path = Utilities::OpenDialog("Copper Scene (*.copper)\n*.copper", data.project.assetsPath);
+		Filesystem::Path path = Utilities::OpenDialog("Open Scene", { "Copper Scene Files (.copper)", "*.copper" }, data.project.assetsPath);
 
 		if(path.Empty()) { LogWarn("The Path Specified is empty or is not a Copper Scene File\n {}", path); return; }
 
@@ -658,7 +675,7 @@ namespace Editor {
 	}
 	void SaveSceneAs() {
 
-		Filesystem::Path path = Utilities::SaveDialog("Copper Scene (*.copper)\n*.copper", data.project.assetsPath);
+		Filesystem::Path path = Utilities::SaveDialog("Save Scene As", { "Copper Scene Files (.copper)", "*.copper" }, data.project.assetsPath);
 
 		if(!path.Empty()) {
 
@@ -770,18 +787,41 @@ namespace Editor {
 	}
 	bool OnWindowClose(const Event& e) {
 
-		//Input::WarningPopup("Test Error", "With a random ass Description uwu");
-
 		if (!data.changes) return true;
 
-		switch (Input::WarningPopup("Unsaved Changes", "There are Unsaved Changes, if you close the Editor your changes will be lost. Are you Sure you want to Close the Editor ?")) {
+		Input::PopupResult test = Input::WarningPopup("Unsaved Changes", "There are Unsaved Changes in the project, do you wish to save the Project before exiting ?");
 
-			case Input::PopupResult::Ok: return true;
-			case Input::PopupResult::Cancel: return false;
+		switch (test) {
+
+			case Input::PopupResult::Yes: {
+				
+				SaveScene();
+				SaveEditorData();
+				
+				return true;
+				break;
+			
+			}
+			case Input::PopupResult::No: {
+				
+				return true;
+				break;
+			
+			}
+			case Input::PopupResult::Cancel: {
+
+				return false;
+				break;
+
+			}
+			default: {
+
+				return false;
+				break;
+
+			}
 
 		}
-
-		return true;
 
 	}
 
@@ -827,6 +867,15 @@ namespace Editor {
 		Input::SetWindowTitle(data.title);
 		
 	}
+
+#ifdef CU_LINUX
+	void RunPremake() {
+
+		system(("cd \"" + data.project.path.String() + "\"").c_str());
+		system("premake/premake5 gmake2");
+
+	}
+#endif
 
 }
 

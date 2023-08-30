@@ -88,6 +88,7 @@ namespace Editor {
 
 	void Project::BuildSolution(bool firstBuild) {
 
+	#ifdef CU_WINDOWS
 		std::string cmd = "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\MSBuild.exe ";
 
 		size_t pos = path.String().find_first_of(' ');
@@ -114,6 +115,10 @@ namespace Editor {
 		cmd += " -nologo";
 
 		system(cmd.c_str());
+	#else
+		system(("cd \"" + path.String() + "\"").c_str());
+		system("make");
+	#endif
 
 		if (firstBuild)
 			Scripting::Reload(path / "Binaries" / (name + ".dll"));

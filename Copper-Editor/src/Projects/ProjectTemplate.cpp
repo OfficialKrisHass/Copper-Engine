@@ -2,57 +2,54 @@
 
 namespace Editor {
 
-	void CreateFileAndReplace(const Filesystem::Path& originalPath, const Filesystem::Path& outPath, const std::string& what, const std::string& replace);
+	void CreateFileAndReplace(const Filesystem::Path& original, const Filesystem::Path& out, const std::string& what, const std::string& replace);
 
 	void CopyFileTo(const Filesystem::Path& original, const Filesystem::Path& where, bool binary = false);
 
 	void CreateTemplateFromProject(const Project& project) {
 
-		//Create The Directories
-		std::experimental::filesystem::create_directories("assets\\Templates\\" + project.name + "\\Assets\\Scenes");
-		std::experimental::filesystem::create_directories("assets\\Templates\\" + project.name + "\\Binaries");
-		std::experimental::filesystem::create_directories("assets\\Templates\\" + project.name + "\\Objs");
+		const Filesystem::Path path = "assets/Templates/" + project.name;
 
-		//Create the .cu, .sln, .csproj template files
-		CreateFileAndReplace(project.path / "Project.cu", "assets\\Templates\\" + project.name + "\\Project.cu.cut", project.name, ":{ProjectName}");
-		CreateFileAndReplace(project.path / "DevProject.sln", "assets\\Templates\\" + project.name + "\\Template.sln.cut", project.name, ":{ProjectName}");
-		CreateFileAndReplace(project.path / "DevProject.csproj", "assets\\Templates\\" + project.name + "\\Template.csproj.cut", project.name, ":{ProjectName}");
+		std::experimental::filesystem::create_directories(path.String() + "/Assets/Scenes");
 
-		//Copy the Last opened Scene
-		CopyFileTo(project.assetsPath / project.lastOpenedScene, "assets\\Templates\\" + project.name + "\\Assets\\" + project.lastOpenedScene.String());
-		CopyFileTo(project.assetsPath / (project.lastOpenedScene.String() + ".cum"), "assets\\Templates\\" + project.name + "\\Assets\\" + project.lastOpenedScene.String() + ".cum");
+		CreateFileAndReplace(project.path / "Project.cu", path / "Project.cu.cut", project.name, ":{ProjectName}");
 
-		//Copy the Scripting API dll
-		CopyFileTo("assets\\ScriptAPI\\Copper-ScriptingAPI.dll", "assets\\Templates\\" + project.name + "\\Binaries\\Copper-ScriptingAPI.dll", true);
+		CopyFileTo(project.assetsPath / project.lastOpenedScene, path / "Assets" / project.lastOpenedScene);
+		CopyFileTo(project.assetsPath / (project.lastOpenedScene.String() + ".cum"), path / "Assets" / (project.lastOpenedScene.String() + ".cum"));
 
 	}
 	void CreateProjectFromTemplate(const Filesystem::Path& templatePath, Project& project) {
 
-		//Create the Directories
-		std::experimental::filesystem::create_directories((project.path / "Assets\\Scenes").String());
-		std::experimental::filesystem::create_directories((project.path / "Binaries").String());
-		std::experimental::filesystem::create_directories((project.path / "Objs").String());
+		std::experimental::filesystem::create_directories(project.path.String() + "/Assets/Scenes");
+		std::experimental::filesystem::create_directories(project.path.String() + "/Binaries");
+		std::experimental::filesystem::create_directories(project.path.String() + "/Objs");
 
-		//Create the Project files from the tempalte
 		CreateFileAndReplace(templatePath / "Project.cu.cut", project.path / "Project.cu", ":{ProjectName}", project.name);
-		CreateFileAndReplace(templatePath / "Template.sln.cut", project.path / (project.name + ".sln"), ":{ProjectName}", project.name);
-		CreateFileAndReplace(templatePath / "Template.csproj.cut", project.path / (project.name + ".csproj"), ":{ProjectName}", project.name);
+
+	#ifdef CU_WINDOWS
+		CreateFileAndReplace("assets/Templates/Template.sln.cut", project.path / (project.name + ".sln"), ":{ProjectName}", project.name);
+		CreateFileAndReplace("assets/Templates/Template.csproj.cut", project.path / (project.name + ".csproj"), ":{ProjectName}", project.name);
+	#else
+		CreateFileAndReplace("assets/Templates/premake5.lua.cut", project.path / "premake5.lua", ":{ProjectName}", project.name);
+
+		// Since we have to use premake for Linux, we also have to copy the premake executable
+		std::experimental::filesystem::copy("assets/premake", project.path.String() + "/premake", std::experimental::filesystem::copy_options::recursive);
+	#endif
 
 		//Copy the Template Scene
-		CopyFileTo(templatePath / "Assets\\Scenes\\EmptyTemplate.copper", project.assetsPath / "Scenes\\EmptyTemplate.copper");
-		CopyFileTo(templatePath / "Assets\\Scenes\\EmptyTemplate.copper.cum", project.assetsPath / "Scenes\\EmptyTemplate.copper.cum");
+		CopyFileTo(templatePath / "Assets/Scenes/EmptyTemplate.copper", project.assetsPath / "Scenes/EmptyTemplate.copper");
+		CopyFileTo(templatePath / "Assets/Scenes/EmptyTemplate.copper.cum", project.assetsPath / "Scenes/EmptyTemplate.copper.cum");
 
-		project.lastOpenedScene = "Scenes\\EmptyTemplate.copper";
+		project.lastOpenedScene = "Scenes/EmptyTemplate.copper";
 
-		////Copy the Scripting API dll
-		CopyFileTo("assets\\ScriptAPI\\Copper-ScriptingAPI.dll", project.path / "Binaries\\Copper-ScriptingAPI.dll", true);
+		CopyFileTo("assets/ScriptAPI/Copper-ScriptingAPI.dll", project.path / "Binaries/Copper-ScriptingAPI.dll", true);
 
 	}
 	
-	void CreateFileAndReplace(const Filesystem::Path& originalPath, const Filesystem::Path& outPath, const std::string& what, const std::string& argument) {
+	void CreateFileAndReplace(const Filesystem::Path& original, const Filesystem::Path& out, const std::string& what, const std::string& argument) {
 
-		std::ifstream originalFile(originalPath);
-		std::ofstream templateFile(outPath);
+		std::ifstream originalFile(original);
+		std::ofstream templateFile(out);
 
 		std::string line;
 		while (std::getline(originalFile, line)) {

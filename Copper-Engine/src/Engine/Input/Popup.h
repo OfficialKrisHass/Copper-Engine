@@ -4,16 +4,22 @@
 
 namespace Copper::Input {
 
-    enum PopupResult : uint32_t {
+    enum PopupResult : int32_t {
 
         Ok,
+        Yes,
+        No,
+        Retry,
+        Abort,
+        Ignore,
         Cancel,
-        Closed,
-        Waiting,
-        Invalid,
+
+        Invalid
 
     };
 
+    PopupResult QuestionPopup(const std::string& title, const std::string& description, bool cancel = false);
+    PopupResult InfoPopup(const std::string& title, const std::string& description, bool cancel = false);
     PopupResult WarningPopup(const std::string& title, const std::string& description);
     PopupResult ErrorPopup(const std::string& title, const std::string& description);
     

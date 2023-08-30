@@ -285,7 +285,7 @@ Entities:
     ID: 4
     Transform:
       Position: [0, 4, 0]
-      Rotation: [1, 0, 0, 0]
+      Rotation: [0.995320618, 0, -0.0966275334, 0]
       Scale: [1, 1, 1]
       Parent ID: 4294967295
       Children: []

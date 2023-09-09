@@ -2,6 +2,7 @@
 #include "Engine.h"
 
 #include "Engine/Core/Window.h"
+#include "Engine/Core/Args.h"
 
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Renderer/Buffer.h"
@@ -37,7 +38,7 @@ namespace Copper {
 		// Core variables
 
 		EngineState engineState = EngineState::Entry;
-		std::vector<std::string> arguments;
+		const Args* arguments;
 
 		//Rendering
 	
@@ -85,27 +86,18 @@ namespace Copper {
 	void Shutdown();
 
 #pragma region EngineCore
-	void EngineCore::Initialize(int argc, char* argv[]) {
+	void EngineCore::Initialize(const Args& args) {
 
 		// This is the only function that has to do this as this is the only exposed function
 		VERIFY_STATE_INTERNAL(EngineState::Entry, "Initialize the Engine");
 		data.engineState = EngineState::Initialization;
-
-		// TODO: Implement our own argument system
-		for (int i = 0; i < argc; i++) {
-
-			if (Filesystem::Path(argv[i]).Extension() == ".exe") continue;
-
-			data.arguments.push_back(argv[i]);
-
-		}
-
-		Logger::Initialize();
+		data.arguments = &args;
 
 		// Window & Renderer Initialization
 
 	#ifdef CU_EDITOR
 		data.window = GetEditorWindow();
+		CHECK(data.window, "Editor Window returned nullptr! Check if you have created a window in AppEntryPoint and provided a GetEditorWindow function!");
 		RendererAPI::Initialize();
 		data.fbo = FrameBuffer(UVector2I(1280, 720)); // TODO: Possibly find a solution that doesnt mean we have to have an invalid size for the first few frames
 	#else
@@ -200,8 +192,7 @@ namespace Copper {
 
 	}
 
-	uint32_t EngineCore::GetNumArguments() { return (uint32_t) data.arguments.size(); }
-	const std::string& EngineCore::GetArgument(uint32_t index) { return data.arguments[index]; }
+	const Args* EngineCore::GetArguments() { return data.arguments; }
 #pragma endregion
 
 	bool OnWindowClose(const Event& e) {

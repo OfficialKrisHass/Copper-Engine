@@ -66,6 +66,8 @@ namespace Editor {
 
 		}
 
+		try {
+
 		//Main Project Stuff
 		name = main["Name"].as<std::string>();
 		lastOpenedScene = assetsPath / main["Last Scene"].as<std::string>();
@@ -83,6 +85,15 @@ namespace Editor {
 
 		sceneCam.speed = sceneCamera["Speed"].as<float>();
 		sceneCam.sensitivity = sceneCamera["Sensitivity"].as<float>();
+
+		} catch(YAML::Exception e) {
+
+			LogError("Encountered an exception when loading a project with path {}: {}", path, e.msg);
+			return;
+
+			// TODO: Make a Project browser panel to open a project when an invalid project was found
+
+		}
 
 	}
 

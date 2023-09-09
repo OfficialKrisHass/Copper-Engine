@@ -1,5 +1,7 @@
 #include "EditorApp.h"
 
+#include "Engine/Core/Args.h"
+
 #include "Engine/Utilities/Math.h"
 
 #include "Engine/Scripting/ScriptingCore.h"
@@ -41,6 +43,7 @@ namespace Editor {
 
 		// Core Data
 
+		const Args* arguments;
 		EditorState state;
 		Window window;
 		std::string title;
@@ -183,14 +186,31 @@ namespace Editor {
 	void LoadEditorData() {
 
 		YAML::Node main;
-		try { main = YAML::LoadFile("assets/EditorData.cu"); } catch (YAML::ParserException e) {
+		try { main = YAML::LoadFile("assets/EditorData.cu"); } catch (YAML::Exception e) {
 
 			LogError("Failed to Read The Editor Data save file\n    {1}", e.what());
 			return;
 
 		}
 
-		OpenProject(main["Last Project"].as<std::string>());
+		if (data.arguments->Count() > 0) {
+
+			OpenProject(data.arguments->GetArg(0));
+
+		} else {
+
+			try {
+				
+				OpenProject(main["Last Project"].as<std::string>());
+				
+			} catch(YAML::Exception e) {
+
+				LogError("Encountered an error while Opening a Project: {}", e.msg);
+				return;
+
+			}
+
+		}
 
 	}
 
@@ -882,7 +902,9 @@ namespace Editor {
 #pragma region EntryPoint
 #include <Engine/Core/Entry.h>
 
-void AppEntryPoint() {
+void AppEntryPoint(const Args& arguments) {
+
+	Editor::data.arguments = &arguments;
 
 	Editor::data.window = Window("Copper Editor", 1280, 720);
 

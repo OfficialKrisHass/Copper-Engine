@@ -83,8 +83,19 @@ namespace Copper {
         physicsScene->addActor(*rb->body);
 
     }
+    void Scene::RemoveRigidBody(RigidBody* rb) {
+
+        physicsScene->removeActor(*rb->body);
+
+    }
 
     void RigidBody::SetupBody() {
+
+        if (body) {
+
+            GetScene()->RemoveRigidBody(this);
+
+        }
 
         BoxCollider* collider = GetEntity()->GetComponent<BoxCollider>();
         if (!collider) { LogError("Rigidbody on Entity {} has no Collider!", GetEntity()->name); return; }
@@ -95,6 +106,9 @@ namespace Copper {
             body = PxCreateStatic(*data.physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape);
         else
             body = PxCreateDynamic(*data.physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape, 1.0f);
+
+        if (!gravity && !isStatic)
+            body->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, true);
 
         GetScene()->AddRigidBody(this);
         shape->release();

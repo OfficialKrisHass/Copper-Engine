@@ -97,6 +97,7 @@ namespace Copper {
 		void ShutdownPhysics();
 
 		void AddRigidBody(class RigidBody* rb);
+		void RemoveRigidBody(RigidBody* rb);
 
 		// Serialization
 

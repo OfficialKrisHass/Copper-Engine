@@ -8,6 +8,9 @@ namespace Copper {
 
     class BoxCollider : public Component {
 
+        friend class Scene;
+        friend class RigidBody;
+
     public:
         bool trigger;
         
@@ -15,7 +18,9 @@ namespace Copper {
         Vector3 size;
 
     private:
-        //
+        bool hasRB = false;
+
+        void Setup();
 
     };
     

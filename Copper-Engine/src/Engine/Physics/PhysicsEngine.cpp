@@ -89,6 +89,12 @@ namespace Copper {
 
     }
 
+    void BoxCollider::Setup() {
+
+        //
+
+    }
+
     void RigidBody::SetupBody() {
 
         if (body) {
@@ -100,6 +106,7 @@ namespace Copper {
         BoxCollider* collider = GetEntity()->GetComponent<BoxCollider>();
         if (!collider) { LogError("Rigidbody on Entity {} has no Collider!", GetEntity()->name); return; }
 
+        collider->hasRB = true;
         PxShape* shape = data.physics->createShape(PxBoxGeometry(CopperToPhysX(GetTransform()->scale * collider->size / 2.0f)), *data.material);
 
         if (isStatic)

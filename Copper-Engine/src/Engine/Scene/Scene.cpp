@@ -40,6 +40,12 @@ namespace Copper {
 			rb->SetupBody();
 
 		}
+		for (BoxCollider* collider : ComponentView<BoxCollider>(this)) {
+
+			if (collider->hasRB) continue;
+			collider->Setup();
+
+		}
 
 	}
 	void Scene::Update(bool render, float deltaTime) {

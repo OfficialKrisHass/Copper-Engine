@@ -8,6 +8,8 @@ namespace Copper {
 
     class BoxCollider : public Component {
 
+        friend Scene;
+
     public:
         bool trigger;
         
@@ -15,7 +17,7 @@ namespace Copper {
         Vector3 size;
 
     private:
-        //
+        void Setup();
 
     };
     

@@ -11,7 +11,7 @@
 #define ENTITY_PROPERTIES_DECLARATION const Vector3& position, const Quaternion& rotation, const Vector3& scale, const std::string& name
 
 namespace YAML { class Emitter; class Node; }
-namespace physx { class PxScene; }
+namespace physx { class PxScene; class PxRigidActor; }
 
 namespace Copper {
 
@@ -20,10 +20,13 @@ namespace Copper {
 	class Light;
 	class Camera;
 
+	class RigidBody;
+
 	class Scene {
 
 		friend InternalEntity;
 		friend class RigidBody;
+		friend class BoxCollider;
 		friend class Entity;
 		friend class OldSceneVersionSerializer;
 
@@ -96,8 +99,10 @@ namespace Copper {
 		void UpdatePhysics(float deltaTime);
 		void ShutdownPhysics();
 
-		void AddRigidBody(class RigidBody* rb);
-		void RemoveRigidBody(RigidBody* rb);
+		void AddPhysicsBody(physx::PxRigidActor* body);
+		void RemovePhysicsBody(physx::PxRigidActor* body);
+
+		physx::PxScene* GetPhysicsScene() { return physicsScene; }
 
 		// Serialization
 

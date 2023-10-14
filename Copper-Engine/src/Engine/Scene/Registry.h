@@ -214,6 +214,41 @@ namespace Copper {
 			component->Removed();
 			component->valid = false;
 
+		}
+
+		void* GetComponent(int componentID, uint32_t eID) {
+
+			if (eID == INVALID_ENTITY_ID) return nullptr;
+			if (!entities[eID]) return nullptr;
+			if (!entities[eID].cMask.test(componentID)) return nullptr;
+
+			void* component = static_cast<void*>(pools[componentID]->Get(eID));
+			return component;
+
+		}
+		bool HasComponent(int componentID, uint32_t eID) {
+
+			if (eID == INVALID_ENTITY_ID) return false;
+			if (!entities[eID]) return false;
+
+			return entities[eID].cMask.test(componentID);
+
+		}
+		void RemoveComponent(int componentID, uint32_t eID) {
+
+			if (eID == INVALID_ENTITY_ID) return;
+			if (!entities[eID]) return;
+			if (!entities[eID].cMask.test(componentID)) return;
+
+			pools[componentID]->Remove(eID);
+			entities[eID].cMask.reset(componentID);
+
+			Component* component = static_cast<Component*>(pools[componentID]->Get(eID));
+			componentRemovedEvent.component = component;
+			componentRemovedEvent();
+
+			component->Removed();
+			component->valid = false;
 
 		}
 

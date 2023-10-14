@@ -171,10 +171,10 @@ namespace Editor {
 		ImGui::PushID((int) (int64_t) rb);
 		if (!DrawComponent<RigidBody>("Rigid Body", rb->GetEntity())) { ImGui::PopID(); return; }
 
-		if (ShowBool("Static", &rb->isStatic) && IsSceneRuntimeRunning()) rb->SetupBody();
-		if (ShowBool("Gravity", &rb->gravity) && IsSceneRuntimeRunning()) rb->SetupBody();
+		if (ShowBool("Static", &rb->isStatic) && IsSceneRuntimeRunning()) rb->Setup();
+		if (ShowBool("Gravity", &rb->gravity) && IsSceneRuntimeRunning()) rb->Setup();
 
-		if (ShowFloat("Mass", &rb->mass) && IsSceneRuntimeRunning()) rb->SetupBody();
+		if (ShowFloat("Mass", &rb->mass) && IsSceneRuntimeRunning()) rb->Setup();
 
 		ImGui::PopID();
 

@@ -29,6 +29,10 @@ namespace Copper {
 		template<typename T> bool HasComponent();
 		template<typename T> void RemoveComponent();
 
+		void* GetComponent(int componentID);
+		bool HasComponent(int componentID);
+		void RemoveComponent(int componentID);
+
 		Transform* GetTransform() const { return transform; }
 		uint32_t ID() const { return id; }
 

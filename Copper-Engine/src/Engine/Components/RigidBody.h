@@ -20,16 +20,16 @@ namespace Copper {
 
     public:
         bool isStatic;
-        bool gravity;
+        bool gravity = true;
 
-        float mass;
+        float mass = 1.0f;
 
         void UpdatePositionAndRotation();
 
     private:
         physx::PxRigidActor* body;
 
-        void SetupBody();
+        void Setup();
 
     };
     

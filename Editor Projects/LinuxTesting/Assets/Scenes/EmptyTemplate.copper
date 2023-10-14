@@ -145,10 +145,6 @@ Entities:
           - 22
           - 23
           - 20
-    Rigid Body:
-      Static: true
-      Gravity: false
-      Mass: 1
     Box Collider:
       Trigger: false
       Center: [0, 0, 0]
@@ -273,10 +269,6 @@ Entities:
           - 22
           - 23
           - 20
-    Rigid Body:
-      Static: true
-      Gravity: true
-      Mass: 1
     Box Collider:
       Trigger: false
       Center: [0, 0, 0]
@@ -284,7 +276,131 @@ Entities:
   Cube 1:
     ID: 4
     Transform:
-      Position: [0, 4, 0]
+      Position: [0.612112522, 7.25216103, 0.381770134]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent ID: 4294967295
+      Children: []
+    Mesh Renderer:
+      Mesh:
+        Data:
+          - Position: [-0.5, -0.5, 0.5]
+            Normal: [0, 0, -1]
+            Color: [1, 0, 0, 1]
+          - Position: [0.5, -0.5, 0.5]
+            Normal: [0, 0, -1]
+            Color: [1, 0, 0, 1]
+          - Position: [0.5, 0.5, 0.5]
+            Normal: [0, 0, -1]
+            Color: [1, 0, 0, 1]
+          - Position: [-0.5, 0.5, 0.5]
+            Normal: [0, 0, -1]
+            Color: [1, 0, 0, 1]
+          - Position: [0.5, -0.5, -0.5]
+            Normal: [0, 0, 1]
+            Color: [0, 1, 1, 1]
+          - Position: [-0.5, -0.5, -0.5]
+            Normal: [0, 0, 1]
+            Color: [0, 1, 1, 1]
+          - Position: [-0.5, 0.5, -0.5]
+            Normal: [0, 0, 1]
+            Color: [0, 1, 1, 1]
+          - Position: [0.5, 0.5, -0.5]
+            Normal: [0, 0, 1]
+            Color: [0, 1, 1, 1]
+          - Position: [0.5, -0.5, 0.5]
+            Normal: [-1, 0, 0]
+            Color: [0, 1, 0, 1]
+          - Position: [0.5, -0.5, -0.5]
+            Normal: [-1, 0, 0]
+            Color: [0, 1, 0, 1]
+          - Position: [0.5, 0.5, -0.5]
+            Normal: [-1, 0, 0]
+            Color: [0, 1, 0, 1]
+          - Position: [0.5, 0.5, 0.5]
+            Normal: [-1, 0, 0]
+            Color: [0, 1, 0, 1]
+          - Position: [-0.5, -0.5, -0.5]
+            Normal: [1, 0, 0]
+            Color: [1, 0, 1, 1]
+          - Position: [-0.5, -0.5, 0.5]
+            Normal: [1, 0, 0]
+            Color: [1, 0, 1, 1]
+          - Position: [-0.5, 0.5, 0.5]
+            Normal: [1, 0, 0]
+            Color: [1, 0, 1, 1]
+          - Position: [-0.5, 0.5, -0.5]
+            Normal: [1, 0, 0]
+            Color: [1, 0, 1, 1]
+          - Position: [-0.5, 0.5, 0.5]
+            Normal: [0, -1, 0]
+            Color: [0, 0, 1, 1]
+          - Position: [0.5, 0.5, 0.5]
+            Normal: [0, -1, 0]
+            Color: [0, 0, 1, 1]
+          - Position: [0.5, 0.5, -0.5]
+            Normal: [0, -1, 0]
+            Color: [0, 0, 1, 1]
+          - Position: [-0.5, 0.5, -0.5]
+            Normal: [0, -1, 0]
+            Color: [0, 0, 1, 1]
+          - Position: [-0.5, -0.5, -0.5]
+            Normal: [0, 1, 0]
+            Color: [1, 1, 0, 1]
+          - Position: [0.5, -0.5, -0.5]
+            Normal: [0, 1, 0]
+            Color: [1, 1, 0, 1]
+          - Position: [0.5, -0.5, 0.5]
+            Normal: [0, 1, 0]
+            Color: [1, 1, 0, 1]
+          - Position: [-0.5, -0.5, 0.5]
+            Normal: [0, 1, 0]
+            Color: [1, 1, 0, 1]
+        Indices:
+          - 0
+          - 1
+          - 2
+          - 2
+          - 3
+          - 0
+          - 4
+          - 5
+          - 6
+          - 6
+          - 7
+          - 4
+          - 8
+          - 9
+          - 10
+          - 10
+          - 11
+          - 8
+          - 12
+          - 13
+          - 14
+          - 14
+          - 15
+          - 12
+          - 16
+          - 17
+          - 18
+          - 18
+          - 19
+          - 16
+          - 20
+          - 21
+          - 22
+          - 22
+          - 23
+          - 20
+    Rigid Body:
+      Static: false
+      Gravity: false
+      Mass: 1
+  Cube:
+    ID: 5
+    Transform:
+      Position: [-0.175141871, 11.7283487, -0.129583716]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
       Parent ID: 4294967295

@@ -35,9 +35,10 @@ namespace Copper {
 
 		InitializePhysics();
 
-		for (RigidBody* rb : ComponentView<RigidBody>(this)) {
+		for (InternalEntity* entity : ComponentViewOR<RigidBody, BoxCollider>(this)) {
 
-			rb->SetupBody();
+			if (RigidBody* rb = entity->GetComponent<RigidBody>()) rb->Setup();
+			else if (BoxCollider* collider = entity->GetComponent<BoxCollider>()) collider->Setup();
 
 		}
 

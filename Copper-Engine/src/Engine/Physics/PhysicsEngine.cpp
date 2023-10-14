@@ -23,6 +23,8 @@ namespace Copper::PhysicsEngine {
 
         PxMaterial* material = nullptr;
 
+        PxShape* noColliderShape = nullptr;
+
     };
     PhysicsEngineData data;
 
@@ -65,6 +67,9 @@ namespace Copper {
         physicsScene = data.physics->createScene(sceneDesc);
         data.material = data.physics->createMaterial(0.5f, 0.5f, 0.6f);
 
+        data.noColliderShape = data.physics->createShape(PxSphereGeometry(1.0f), *data.material, false);
+        data.noColliderShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
+
     }
     void Scene::UpdatePhysics(float deltaTime) {
 
@@ -78,47 +83,94 @@ namespace Copper {
         physicsScene->release();
 
     }
-    void Scene::AddRigidBody(RigidBody* rb) {
+    
+    void Scene::AddPhysicsBody(PxRigidActor* body) {
 
-        physicsScene->addActor(*rb->body);
-
-    }
-    void Scene::RemoveRigidBody(RigidBody* rb) {
-
-        physicsScene->removeActor(*rb->body);
+        physicsScene->addActor(*body);
 
     }
+    void Scene::RemovePhysicsBody(PxRigidActor* body) {
 
-    void RigidBody::SetupBody() {
+        physicsScene->removeActor(*body);
 
-        if (body) {
+    }
 
-            GetScene()->RemoveRigidBody(this);
+    void BoxCollider::Setup() {
+
+        RigidBody* rb = GetEntity()->GetComponent<RigidBody>();
+        if (rb) return;
+
+        // Case 1: Collider with no Rigid Body
+        
+        PxShape* shape = data.physics->createShape(PxBoxGeometry(CopperToPhysX(GetTransform()->scale * size / 2.0f)), *data.material);
+        shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, trigger);
+
+        PxRigidStatic* body = PxCreateStatic(*data.physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape);
+        
+        GetScene()->AddPhysicsBody(body);
+
+    }
+
+    void RigidBody::Setup() {
+
+        if (body)
+            GetScene()->RemovePhysicsBody(body);
+
+        BoxCollider* collider = GetEntity()->GetComponent<BoxCollider>();
+
+        // Case 2: Rigid Body with a Collider
+
+        if (collider) {
+
+            PxShape* shape = data.physics->createShape(PxBoxGeometry(CopperToPhysX(GetTransform()->scale * collider->size / 2.0f)), *data.material);
+
+            if (isStatic)
+                body = PxCreateStatic(*data.physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape);
+            else {
+
+                body = PxCreateDynamic(*data.physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape, 1.0f);
+
+                ((PxRigidDynamic*) body)->setMass(mass);
+                if (!gravity)
+                    body->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true);
+
+            }
+
+            GetScene()->AddPhysicsBody(body);
+            shape->release();
+
+            body->setName(GetEntity()->name.c_str());
+
+            return;
 
         }
 
-        BoxCollider* collider = GetEntity()->GetComponent<BoxCollider>();
-        if (!collider) { LogError("Rigidbody on Entity {} has no Collider!", GetEntity()->name); return; }
-
-        PxShape* shape = data.physics->createShape(PxBoxGeometry(CopperToPhysX(GetTransform()->scale * collider->size / 2.0f)), *data.material);
+        // Case 3: Rigid Body with no Collider - Why though ?
 
         if (isStatic)
-            body = PxCreateStatic(*data.physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape);
-        else
-            body = PxCreateDynamic(*data.physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape, 1.0f);
+            body = PxCreateStatic(*data.physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *data.noColliderShape);
+        else {
 
-        if (!gravity && !isStatic)
-            body->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, true);
+            body = PxCreateDynamic(*data.physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *data.noColliderShape, 1.0f);
 
-        GetScene()->AddRigidBody(this);
-        shape->release();
-
-        body->setName(GetEntity()->name.c_str());
-        if (!isStatic)
             ((PxRigidDynamic*) body)->setMass(mass);
+            if (!gravity)
+                body->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true);
+
+        }
+
+        GetScene()->AddPhysicsBody(body);
+        body->setName(GetEntity()->name.c_str());
 
     }
     void RigidBody::UpdatePositionAndRotation() {
+
+        if (!body) {
+
+            //LogError("The body does not exist :c");
+            return;
+
+        }
 
         GetTransform()->position = PhysXToCopper(body->getGlobalPose().p);
         GetTransform()->rotation = PhysXToCopper(body->getGlobalPose().q);

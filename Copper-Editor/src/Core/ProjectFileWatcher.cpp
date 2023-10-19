@@ -4,12 +4,13 @@
 
 using namespace Copper;
 
+// TODO : THIS SHIT IS NOT WORKING FOR SOME REASON, WTF
+
 namespace Editor::ProjectFileWatcher {
 
 	struct ProjectFileWatcherData {
 
 		Filesystem::Path directory;
-		std::vector<std::string> filters;
 		bool running;
 
 		Unique<filewatch::FileWatch<std::string>> fw;
@@ -38,22 +39,14 @@ namespace Editor::ProjectFileWatcher {
 
 	static void FileChangeCallback(const std::string& path, const filewatch::Event changeType) {
 
+		Log("Why the fuck are you not working and registering anything you stupid fucking dumbass");
+
 		if (!data.running) return;
 
 		Filesystem::Path fsPath(path);
 		
-		//We have to do this the stupid way of holding each filter as a string
-		//instead of having a single string that has all of the filters because
-		//for some weird F*CKING reason, if I tried to get an index of a character
-		//in the filter string, the value would become random when the code enters
-		//a loop. I couldn't even change the variable to hold a different value
-		bool extensionCorrect = false;
-		for (const std::string& filter : data.filters) {
-
-			if (fsPath.Extension() == filter) { extensionCorrect = true; break; }
-
-		}
-		if (!extensionCorrect) return;
+		if (fsPath.Extension() != "cs")
+			return;
 
 		FileChangeType type;
 		switch (changeType) {
@@ -71,7 +64,6 @@ namespace Editor::ProjectFileWatcher {
 	}
 
 	void SetDirectory(const Filesystem::Path& directory) { data.directory = directory; }
-	void AddFilter(const std::string& filter) { data.filters.push_back(filter); }
 
 	void AddFileChangeCallback(std::function<void(const Filesystem::Path&, const FileChangeType& changeType)> func) { data.callbacks.push_back(func); }
 

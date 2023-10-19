@@ -9,29 +9,29 @@ ifndef verbose
 endif
 
 ifeq ($(config),debug)
-  Copper_ScriptingAPI_config = debug
+  LinuxTesting_config = debug
 
 else ifeq ($(config),release)
-  Copper_ScriptingAPI_config = release
+  LinuxTesting_config = release
 
 else
   $(error "invalid configuration $(config)")
 endif
 
-PROJECTS := Copper-ScriptingAPI
+PROJECTS := LinuxTesting
 
 .PHONY: all clean help $(PROJECTS) 
 
 all: $(PROJECTS)
 
-Copper-ScriptingAPI:
-ifneq (,$(Copper_ScriptingAPI_config))
-	@echo "==== Building Copper-ScriptingAPI ($(Copper_ScriptingAPI_config)) ===="
-	@${MAKE} --no-print-directory -C . -f Copper-ScriptingAPI.make config=$(Copper_ScriptingAPI_config)
+LinuxTesting:
+ifneq (,$(LinuxTesting_config))
+	@echo "==== Building LinuxTesting ($(LinuxTesting_config)) ===="
+	@${MAKE} --no-print-directory -C . -f LinuxTesting.make config=$(LinuxTesting_config)
 endif
 
 clean:
-	@${MAKE} --no-print-directory -C . -f Copper-ScriptingAPI.make clean
+	@${MAKE} --no-print-directory -C . -f LinuxTesting.make clean
 
 help:
 	@echo "Usage: make [config=name] [target]"
@@ -43,6 +43,6 @@ help:
 	@echo "TARGETS:"
 	@echo "   all (default)"
 	@echo "   clean"
-	@echo "   Copper-ScriptingAPI"
+	@echo "   LinuxTesting"
 	@echo ""
 	@echo "For more information, see https://github.com/premake/premake-core/wiki"

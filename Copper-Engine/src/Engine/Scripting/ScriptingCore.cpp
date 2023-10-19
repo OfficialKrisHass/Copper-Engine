@@ -73,15 +73,21 @@ namespace Copper::Scripting {
 
 	}
 
-	void LoadProjectAssembly(const Filesystem::Path& path) {
+	bool LoadProjectAssembly(const Filesystem::Path& path) {
 
 		data.projectPath = path;
+
 		data.projectAssembly = MonoUtils::LoadAssembly(path);
+		if (!data.projectAssembly)
+			return false;
+
 		data.projectAssemblyImage = mono_assembly_get_image(data.projectAssembly);
+
+		return true;
 
 
 	}
-	void Reload(const Filesystem::Path& path, bool initScriptComponents) {
+	bool Reload(const Filesystem::Path& path, bool initScriptComponents) {
 
 		if (path != "") data.projectPath = path;
 
@@ -101,76 +107,20 @@ namespace Copper::Scripting {
 		data.entityClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Entity");
 
 		//Load the Project Assembly
-		LoadProjectAssembly(data.projectPath);
+		if (!LoadProjectAssembly(data.projectPath))
+			return false;
 
 		InitScriptComponents();
 		InternalCalls::Initialize();
 
-		if (!initScriptComponents) return;
-		Scene* test = GetScene();
-		for (Component* component : ComponentView<ScriptComponent>(GetScene())) {
+		if (!initScriptComponents) return true;
+		
+		for (ScriptComponent* script : ComponentView<ScriptComponent>(GetScene())) {
 
-			ScriptComponent* script = (ScriptComponent*) component;
 			script->Init(script->name);
 
 		}
-
-	}
-
-	void SetupInternalCalls() {
-		
-		//Logging
-		mono_add_internal_call("Copper.InternalCalls::Log", (void*) InternalCalls::EditorLog);
-		mono_add_internal_call("Copper.InternalCalls::LogWarn", (void*) InternalCalls::EditorLogWarn);
-		mono_add_internal_call("Copper.InternalCalls::LogError", (void*) InternalCalls::EditorLogError);
-
-		//Input
-		mono_add_internal_call("Copper.InternalCalls::IsKey", (void*) InternalCalls::IsKey);
-		mono_add_internal_call("Copper.InternalCalls::IsKeyDown", (void*) InternalCalls::IsKeyDown);
-		mono_add_internal_call("Copper.InternalCalls::IsKeyReleased", (void*) InternalCalls::IsKeyReleased);
-
-		mono_add_internal_call("Copper.InternalCalls::GetAxis", (void*) InternalCalls::GetAxis);
-
-		mono_add_internal_call("Copper.InternalCalls::SetCursorVisible", (void*) InternalCalls::SetCursorVisible);
-		mono_add_internal_call("Copper.InternalCalls::SetCursorLocked", (void*) InternalCalls::SetCursorLocked);
-
-		//Object
-		mono_add_internal_call("Copper.InternalCalls::GetEntityName", (void*) InternalCalls::GetEntityName);
-		mono_add_internal_call("Copper.InternalCalls::SetEntityName", (void*) InternalCalls::SetEntityName);
-
-		mono_add_internal_call("Copper.InternalCalls::IsEntityValid", (void*) InternalCalls::IsEntityValid);
-
-		mono_add_internal_call("Copper.InternalCalls::GetEntity", (void*) InternalCalls::GetEntity);
-
-		//Components
-		mono_add_internal_call("Copper.InternalCalls::AddComponent", (void*) InternalCalls::AddComponent);
-		mono_add_internal_call("Copper.InternalCalls::GetComponent", (void*) InternalCalls::GetComponent);
-		mono_add_internal_call("Copper.InternalCalls::HasComponent", (void*) InternalCalls::HasComponent);
-
-		mono_add_internal_call("Copper.InternalCalls::SetComponentEID", (void*) InternalCalls::SetComponentObjID);
-
-		//Transform
-		mono_add_internal_call("Copper.InternalCalls::GetPosition", (void*) InternalCalls::GetPosition);
-		mono_add_internal_call("Copper.InternalCalls::GetRotation", (void*) InternalCalls::GetRotation);
-		mono_add_internal_call("Copper.InternalCalls::GetScale", (void*) InternalCalls::GetScale);
-		mono_add_internal_call("Copper.InternalCalls::SetPosition", (void*) InternalCalls::SetPosition);
-		mono_add_internal_call("Copper.InternalCalls::SetRotation", (void*) InternalCalls::SetRotation);
-		mono_add_internal_call("Copper.InternalCalls::SetScale", (void*) InternalCalls::SetScale);
-
-		mono_add_internal_call("Copper.InternalCalls::GetForward", (void*) InternalCalls::GetForward);
-		mono_add_internal_call("Copper.InternalCalls::GetRight", (void*) InternalCalls::GetRight);
-		mono_add_internal_call("Copper.InternalCalls::GetUp",    (void*) InternalCalls::GetUp);
-
-		//Camera
-		mono_add_internal_call("Copper.InternalCalls::CameraGetFOV", (void*) InternalCalls::CameraGetFOV);
-		mono_add_internal_call("Copper.InternalCalls::CameraGetNearPlane", (void*) InternalCalls::CameraGetNearPlane);
-		mono_add_internal_call("Copper.InternalCalls::CameraGetFarPlane", (void*) InternalCalls::CameraGetFarPlane);
-		mono_add_internal_call("Copper.InternalCalls::CameraSetFOV", (void*) InternalCalls::CameraSetFOV);
-		mono_add_internal_call("Copper.InternalCalls::CameraSetNearPlane", (void*) InternalCalls::CameraSetNearPlane);
-		mono_add_internal_call("Copper.InternalCalls::CameraSetFarPlane", (void*) InternalCalls::CameraSetFarPlane);
-
-		//Quaternion
-		mono_add_internal_call("Copper.InternalCalls::QuaternionEulerAngles", (void*) InternalCalls::QuaternionEulerAngles);
+		return true;
 
 	}
 
@@ -247,6 +197,90 @@ namespace Copper::Scripting {
 		mono_runtime_invoke(componentConstructor, instance, &param, &exception);
 
 		return instance;
+
+	}
+
+	void SetupInternalCalls() {
+		
+		//======== Logging ========
+
+		mono_add_internal_call("Copper.InternalCalls::Log", (void*) InternalCalls::EditorLog);
+		mono_add_internal_call("Copper.InternalCalls::LogWarn", (void*) InternalCalls::EditorLogWarn);
+		mono_add_internal_call("Copper.InternalCalls::LogError", (void*) InternalCalls::EditorLogError);
+
+		//======== Input ========
+
+		mono_add_internal_call("Copper.InternalCalls::IsKey", (void*) InternalCalls::IsKey);
+		mono_add_internal_call("Copper.InternalCalls::IsKeyDown", (void*) InternalCalls::IsKeyDown);
+		mono_add_internal_call("Copper.InternalCalls::IsKeyReleased", (void*) InternalCalls::IsKeyReleased);
+
+		mono_add_internal_call("Copper.InternalCalls::GetAxis", (void*) InternalCalls::GetAxis);
+
+		mono_add_internal_call("Copper.InternalCalls::SetCursorVisible", (void*) InternalCalls::SetCursorVisible);
+		mono_add_internal_call("Copper.InternalCalls::SetCursorLocked", (void*) InternalCalls::SetCursorLocked);
+
+		//======== Object ========
+
+		mono_add_internal_call("Copper.InternalCalls::GetEntityName", (void*) InternalCalls::GetEntityName);
+		mono_add_internal_call("Copper.InternalCalls::SetEntityName", (void*) InternalCalls::SetEntityName);
+
+		mono_add_internal_call("Copper.InternalCalls::IsEntityValid", (void*) InternalCalls::IsEntityValid);
+
+		mono_add_internal_call("Copper.InternalCalls::GetEntity", (void*) InternalCalls::GetEntity);
+
+		//======== Components ========
+
+		mono_add_internal_call("Copper.InternalCalls::AddComponent", (void*) InternalCalls::AddComponent);
+		mono_add_internal_call("Copper.InternalCalls::GetComponent", (void*) InternalCalls::GetComponent);
+		mono_add_internal_call("Copper.InternalCalls::HasComponent", (void*) InternalCalls::HasComponent);
+
+		mono_add_internal_call("Copper.InternalCalls::SetComponentEID", (void*) InternalCalls::SetComponentObjID);
+
+		//======== Transform ========
+
+		mono_add_internal_call("Copper.InternalCalls::GetPosition", (void*) InternalCalls::GetPosition);
+		mono_add_internal_call("Copper.InternalCalls::GetRotation", (void*) InternalCalls::GetRotation);
+		mono_add_internal_call("Copper.InternalCalls::GetScale", (void*) InternalCalls::GetScale);
+		mono_add_internal_call("Copper.InternalCalls::SetPosition", (void*) InternalCalls::SetPosition);
+		mono_add_internal_call("Copper.InternalCalls::SetRotation", (void*) InternalCalls::SetRotation);
+		mono_add_internal_call("Copper.InternalCalls::SetScale", (void*) InternalCalls::SetScale);
+
+		mono_add_internal_call("Copper.InternalCalls::GetForward", (void*) InternalCalls::GetForward);
+		mono_add_internal_call("Copper.InternalCalls::GetRight", (void*) InternalCalls::GetRight);
+		mono_add_internal_call("Copper.InternalCalls::GetUp",    (void*) InternalCalls::GetUp);
+
+		//======== Camera ========
+
+		mono_add_internal_call("Copper.InternalCalls::CameraGetFOV", (void*) InternalCalls::CameraGetFOV);
+		mono_add_internal_call("Copper.InternalCalls::CameraGetNearPlane", (void*) InternalCalls::CameraGetNearPlane);
+		mono_add_internal_call("Copper.InternalCalls::CameraGetFarPlane", (void*) InternalCalls::CameraGetFarPlane);
+		mono_add_internal_call("Copper.InternalCalls::CameraSetFOV", (void*) InternalCalls::CameraSetFOV);
+		mono_add_internal_call("Copper.InternalCalls::CameraSetNearPlane", (void*) InternalCalls::CameraSetNearPlane);
+		mono_add_internal_call("Copper.InternalCalls::CameraSetFarPlane", (void*) InternalCalls::CameraSetFarPlane);
+
+		//======== RigidBody ========
+
+		mono_add_internal_call("Copper.InternalCalls::RigidBodyGetIsStatic", (void*) InternalCalls::RigidBodyGetIsStatic);
+		mono_add_internal_call("Copper.InternalCalls::RigidBodyGetGravity", (void*) InternalCalls::RigidBodyGetGravity);
+		mono_add_internal_call("Copper.InternalCalls::RigidBodySetIsStatic", (void*) InternalCalls::RigidBodySetIsStatic);
+		mono_add_internal_call("Copper.InternalCalls::RigidBodySetGravity", (void*) InternalCalls::RigidBodySetGravity);
+
+		mono_add_internal_call("Copper.InternalCalls::RigidBodyGetMass", (void*) InternalCalls::RigidBodyGetMass);
+		mono_add_internal_call("Copper.InternalCalls::RigidBodySetMass", (void*) InternalCalls::RigidBodySetMass);
+
+		//======== BoxCollider ========
+
+		mono_add_internal_call("Copper.InternalCalls::BoxColliderGetTrigger", (void*) InternalCalls::BoxColliderGetTrigger);
+		mono_add_internal_call("Copper.InternalCalls::BoxColliderSetTrigger", (void*) InternalCalls::BoxColliderSetTrigger);
+
+		mono_add_internal_call("Copper.InternalCalls::BoxColliderGetCenter", (void*) InternalCalls::BoxColliderGetCenter);
+		mono_add_internal_call("Copper.InternalCalls::BoxColliderGetSize", (void*) InternalCalls::BoxColliderGetSize);
+		mono_add_internal_call("Copper.InternalCalls::BoxColliderSetCenter", (void*) InternalCalls::BoxColliderSetCenter);
+		mono_add_internal_call("Copper.InternalCalls::BoxColliderSetSize", (void*) InternalCalls::BoxColliderSetSize);
+
+		//======== Quaternion ========
+
+		mono_add_internal_call("Copper.InternalCalls::QuaternionEulerAngles", (void*) InternalCalls::QuaternionEulerAngles);
 
 	}
 

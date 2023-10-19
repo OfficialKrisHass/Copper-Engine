@@ -12,6 +12,8 @@
 
 #include "Engine/Components/ScriptComponent.h"
 #include "Engine/Components/Camera.h"
+#include "Engine/Components/RigidBody.h"
+#include "Engine/Components/BoxCollider.h"
 
 #include <mono/jit/jit.h>
 #include <mono/metadata/exception.h>
@@ -337,6 +339,109 @@ namespace Copper::Scripting::InternalCalls {
 
 	}
 
+	//RigidBody
+	static bool RigidBodyGetIsStatic(uint32_t eID) {
+
+		CheckValidEntityWithReturn(eID, false);
+
+		InternalEntity* entity = GetEntityFromID(eID);
+		return entity->GetComponent<RigidBody>()->isStatic;
+
+	}
+	static bool RigidBodyGetGravity(uint eID) {
+
+		CheckValidEntityWithReturn(eID, true);
+
+		InternalEntity* entity = GetEntityFromID(eID);
+		return entity->GetComponent<RigidBody>()->gravity;
+
+	}
+	static void RigidBodySetIsStatic(uint32_t eID, bool value) {
+
+		CheckValidEntity(eID);
+
+		InternalEntity* entity = GetEntityFromID(eID);
+		entity->GetComponent<RigidBody>()->isStatic = value;
+
+	}
+	static void RigidBodySetGravity(uint32_t eID, bool value) {
+
+		CheckValidEntity(eID);
+
+		InternalEntity* entity = GetEntityFromID(eID);
+		entity->GetComponent<RigidBody>()->gravity = value;
+
+	}
+
+	static float RigidBodyGetMass(uint32_t eID) {
+
+		CheckValidEntityWithReturn(eID, 0.0f);
+
+		InternalEntity* entity = GetEntityFromID(eID);
+		return entity->GetComponent<RigidBody>()->mass;
+
+	}
+	static void RigidBodySetMass(uint32_t eID, float value) {
+
+		CheckValidEntity(eID);
+
+		InternalEntity* entity = GetEntityFromID(eID);
+		entity->GetComponent<RigidBody>()->mass = value;
+
+	}
+
+	//BoxCollider
+	static bool BoxColliderGetTrigger(uint32_t eID) {
+
+		CheckValidEntityWithReturn(eID, false);
+
+		InternalEntity* entity = GetEntityFromID(eID);
+		return entity->GetComponent<BoxCollider>()->trigger;
+
+	}
+	static void BoxColliderSetTrigger(uint32_t eID, bool value) {
+
+		CheckValidEntity(eID);
+
+		InternalEntity* entity = GetEntityFromID(eID);
+		entity->GetComponent<BoxCollider>()->trigger = value;
+
+	}
+
+	static void BoxColliderGetCenter(uint32_t eID, Vector3* out) {
+
+		CheckValidEntity(eID);
+
+		InternalEntity* entity = GetEntityFromID(eID);
+		*out = entity->GetComponent<BoxCollider>()->center;
+
+	}
+	static void BoxColliderGetSize(uint32_t eID, Vector3* out) {
+
+		CheckValidEntity(eID);
+
+		InternalEntity* entity = GetEntityFromID(eID);
+		*out = entity->GetComponent<BoxCollider>()->size;
+
+	}
+	static void BoxColliderSetCenter(uint32_t eID, Vector3* value) {
+
+		CheckValidEntity(eID);
+
+		InternalEntity* entity = GetEntityFromID(eID);
+		entity->GetComponent<BoxCollider>()->center = *value;
+
+	}
+	static void BoxColliderSetSize(uint32_t eID, Vector3* value) {
+
+		CheckValidEntity(eID);
+
+		InternalEntity* entity = GetEntityFromID(eID);
+		entity->GetComponent<BoxCollider>()->size = *value;
+
+	}
+
+	//Quaternion
 	static Vector3 QuaternionEulerAngles(Quaternion* quaternion) {
 
 		return quaternion->EulerAngles();

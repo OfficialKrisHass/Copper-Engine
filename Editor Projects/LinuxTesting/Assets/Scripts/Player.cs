@@ -8,7 +8,7 @@ class Player : Component {
 
     private void Create() {
 
-        Editor.Log("Test from the Script World!");
+        Editor.Log("Test from the Script World! UwU");
 
     }
 

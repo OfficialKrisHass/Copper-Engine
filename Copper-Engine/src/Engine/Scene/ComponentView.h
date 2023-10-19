@@ -39,13 +39,47 @@ namespace Copper {
 	template<typename T> class ComponentView {
 
 	private:
+		struct Iterator;
+
+	public:
+		ComponentView(Scene* scene) : scene(scene) {
+
+			while (beginIndex != MAX_ENTITY_COMPONENTS && !ValidEntity(beginIndex)) {
+
+				beginIndex++;
+
+			}
+			while (endIndex > beginIndex && !ValidEntity(endIndex - 1)) {
+
+				endIndex--;
+
+			}
+
+		}
+
+		const Iterator begin() const { return Iterator(beginIndex, endIndex, scene); }
+		const Iterator end() const { return Iterator(endIndex, endIndex, scene); }
+
+	private:
+		Scene* scene;
+
+		uint32_t beginIndex = 0;
+		uint32_t endIndex = MAX_ENTITY_COMPONENTS;
+
+		bool ValidEntity(uint32_t index) {
+
+			InternalEntity* entity = scene->GetEntityFromID(index);
+			return entity && entity->GetComponent<T>();
+
+		}
+
 		struct Iterator {
 
-			Iterator(uint32_t index, uint32_t endIndex, Registry::ComponentPool* pool) : index(index), endIndex(endIndex), pool(pool) {}
+			Iterator(uint32_t index, uint32_t endIndex, Scene* scene) : index(index), endIndex(endIndex), scene(scene) {}
 
 			T* operator*() {
 
-				return static_cast<T*>(pool->Get(index));
+				return scene->GetEntityFromID(index)->GetComponent<T>();
 
 			}
 			bool operator!=(const Iterator& other) {
@@ -60,52 +94,26 @@ namespace Copper {
 
 					index++;
 
-				} while (endIndex != MAX_ENTITY_COMPONENTS && (!pool->Valid(index) || !(*((Component*) pool->Get(index))->GetEntity()))); // MY EYEEESS PLEASE SAVE ME I BEG YOU
+				} while (index != endIndex && !ValidEntity(index));
+
 				return *this;
 
 			}
 
 		private:
 			uint32_t index;
-			uint32_t endIndex = MAX_ENTITY_COMPONENTS;
-			Registry::ComponentPool* pool;
+			uint32_t endIndex;
+
+			Scene* scene;
+
+			bool ValidEntity(uint32_t index) {
+
+				InternalEntity* entity = scene->GetEntityFromID(index);
+				return entity && entity->GetComponent<T>();
+
+			}
 
 		};
-
-	public:
-		ComponentView(Scene* scene) : scene(scene), pool(scene->GetComponentPool(Registry::GetCID<T>())) {
-
-			if (!pool) {
-
-				beginIndex = MAX_ENTITY_COMPONENTS;
-				endIndex = MAX_ENTITY_COMPONENTS;
-				return;
-
-			}
-																					   // What the actual shit is this, what the fuck did I even try to write here, 
-			endIndex = MAX_ENTITY_COMPONENTS;										   // please explain this to me Chris, what the fuck is this
-			while (beginIndex != MAX_ENTITY_COMPONENTS && (!pool->Valid(beginIndex) || !(*((T*) pool->Get(beginIndex))->GetEntity()))) {
-
-				beginIndex++;
-
-			}
-			while (endIndex > beginIndex && (!pool->Valid(endIndex - 1) || !(*((T*) pool->Get(endIndex - 1))->GetEntity()))) {
-
-				endIndex--;
-
-			}
-
-		}
-
-		const Iterator begin() const { return Iterator(beginIndex, endIndex, pool); }
-		const Iterator end() const { return Iterator(endIndex, endIndex, pool); }
-
-	private:
-		Scene* scene = nullptr;
-		Registry::ComponentPool* pool = nullptr;
-
-		uint32_t beginIndex = 0;
-		uint32_t endIndex = 0;
 
 	};
 

@@ -26,7 +26,7 @@ namespace Editor {
 		void Save();
 		void Load(const Filesystem::Path& path = "");
 
-		void BuildSolution(bool firstBuild = false);
+		bool BuildSolution(bool firstBuild = false);
 
 	};
 

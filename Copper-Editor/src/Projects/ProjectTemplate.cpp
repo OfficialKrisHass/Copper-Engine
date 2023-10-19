@@ -31,9 +31,6 @@ namespace Editor {
 		CreateFileAndReplace("assets/Templates/Template.csproj.cut", project.path / (project.name + ".csproj"), ":{ProjectName}", project.name);
 	#else
 		CreateFileAndReplace("assets/Templates/premake5.lua.cut", project.path / "premake5.lua", ":{ProjectName}", project.name);
-
-		// Since we have to use premake for Linux, we also have to copy the premake executable
-		std::experimental::filesystem::copy("assets/premake", project.path.String() + "/premake", std::experimental::filesystem::copy_options::recursive);
 	#endif
 
 		//Copy the Template Scene

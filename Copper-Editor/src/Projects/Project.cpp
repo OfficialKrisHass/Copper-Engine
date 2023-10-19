@@ -97,7 +97,7 @@ namespace Editor {
 
 	}
 
-	void Project::BuildSolution(bool firstBuild) {
+	bool Project::BuildSolution(bool firstBuild) {
 
 	#ifdef CU_WINDOWS
 		std::string cmd = "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\MSBuild.exe ";
@@ -127,14 +127,14 @@ namespace Editor {
 
 		system(cmd.c_str());
 	#else
-		system(("cd \"" + path.String() + "\"").c_str());
-		system("make");
+		const std::string cmd = "make --no-print-directory -C \"" + path.String() + "\" -f Makefile";
+		system(cmd.c_str());
 	#endif
 
 		if (firstBuild)
-			Scripting::Reload(path / "Binaries" / (name + ".dll"));
+			return Scripting::Reload(path / "Binaries" / (name + ".dll"));
 		else
-			Scripting::Reload();
+			return Scripting::Reload();
 
 	}
 

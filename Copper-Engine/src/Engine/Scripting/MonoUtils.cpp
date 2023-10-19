@@ -15,6 +15,7 @@ namespace Copper::Scripting::MonoUtils {
 
 		uint32_t dataSize;
 		char* data = Utilities::ReadFileBinary(path.String(), &dataSize);
+		if (!data) return nullptr;
 
 		MonoImageOpenStatus status;
 		MonoImage* image = mono_image_open_from_data_full(data, dataSize, 1, &status, 0);

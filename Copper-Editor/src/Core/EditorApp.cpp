@@ -150,8 +150,7 @@ namespace Editor {
 		data.console = Console();
 
 		data.properties.SetSelectedObject(data.sceneHierarchy.GetSelectedEntity());
-
-		ProjectFileWatcher::AddFilter("cs");
+		
 		ProjectFileWatcher::AddFileChangeCallback(FileChangedCallback);
 		
 		LoadEditorData();
@@ -597,7 +596,26 @@ namespace Editor {
 		data.title = "Copper Editor - " + data.project.name + ": ";
 		Input::SetWindowTitle(data.title);
 
-		Scripting::Reload(data.project.path / "Binaries" / data.project.name + ".dll", false);
+		// In a completely new project, or a cleaned project, this should fail as the Assembly does not exist
+		// so it will build the project and attempt to load it again, if that fails, it tries again 9 more times
+		// and then exit the application
+
+		bool reloadSuccess = Scripting::Reload(data.project.path / "Binaries" / data.project.name + ".dll", false);
+		int i = 0;
+		while (!reloadSuccess && i < 10) {
+
+			LogError("Failed to Load the Project Assembly, attempt #{}", i);
+
+			reloadSuccess = data.project.BuildSolution();
+			i++;
+
+		}
+		if (!reloadSuccess) {
+
+			LogError("Could not Load the Project Assembly, exiting application now!");
+			exit(-1);
+
+		}
 
 		OpenScene(data.project.lastOpenedScene);
 
@@ -891,8 +909,13 @@ namespace Editor {
 #ifdef CU_LINUX
 	void RunPremake() {
 
-		system(("cd \"" + data.project.path.String() + "\"").c_str());
-		system("premake/premake5 gmake2");
+		const std::string path = data.project.path.String();
+
+		// It hurts my eyes, but there is no other solution that I know of
+		//system(("cd \"" + data.project.path.String() + "\" ; ./premake/premake5 gmake2").c_str());
+
+		// Turns out there is :)
+		system(("./util/premake/premake5 --file=\"" + path + "premake5.lua\" gmake2").c_str());
 
 	}
 #endif

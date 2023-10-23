@@ -2,8 +2,9 @@
 CONFIGURATION = Debug
 BUILD_DIR = Build/$(OS)-x86_64-$(CONFIGURATION)
 
-.PHONY: clean
 .PHONY: ScriptingAPI
+.PHONY: copyfiles
+.PHONY: clean
 
 all: Copper-ScriptingAPI/Makefile
 	@${MAKE} --no-print-directory -C CMake/$(CONFIGURATION) -f Makefile
@@ -27,6 +28,14 @@ Copper-ScriptingAPI/Makefile: Copper-ScriptingAPI/premake5.lua
 
 ScriptingAPI:
 	@${MAKE} --no-print-directory -C Copper-ScriptingAPI -f Makefile
+
+copyfiles:
+	@cp -r Copper-Editor/assets $(BUILD_DIR)/Copper-Editor
+	@cp -r Copper-Editor/util $(BUILD_DIR)/Copper-Editor
+	@cp -r Copper-Editor/lib/mono $(BUILD_DIR)/Copper-Editor/lib
+	@cp -r Copper-Editor/lib/PhysX/$(OS)/. $(BUILD_DIR)/Copper-Editor
+	@cp Copper-Editor/imgui.ini $(BUILD_DIR)/Copper-Editor
+	@cp Copper-Editor/libmonosgen-2.0.a $(BUILD_DIR)/Copper-Editor
 
 clean:
 	@rm -r CMake

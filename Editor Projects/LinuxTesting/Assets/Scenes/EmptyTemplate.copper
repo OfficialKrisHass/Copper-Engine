@@ -15,7 +15,7 @@ Entities:
   Camera:
     ID: 1
     Transform:
-      Position: [0, 3, 3.81436825]
+      Position: [0, 5.36000013, 5]
       Rotation: [1, 0, 0, 0]
       Scale: [0.999999404, 0.999999106, 0.999999642]
       Parent ID: 4294967295

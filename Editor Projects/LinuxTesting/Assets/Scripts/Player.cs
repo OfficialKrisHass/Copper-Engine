@@ -6,9 +6,21 @@ class Player : Component {
 
     public float speed = 1.0f;
 
-    private void Create() {
+    public RigidBody rb;
 
-        Editor.Log("Test from the Script World! UwU");
+    private void Create() {
+        
+        rb = GetComponent<RigidBody>();
+
+    }
+
+    public void Update() {
+
+        if (Input.IsKeyDown(KeyCode.Space)) {
+
+            rb.gravity = !rb.gravity;
+
+        }
 
     }
 

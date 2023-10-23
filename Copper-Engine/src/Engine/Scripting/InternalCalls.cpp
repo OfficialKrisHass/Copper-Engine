@@ -35,8 +35,10 @@ namespace Copper::Scripting::InternalCalls {
 
 		hasComponentFuncs["Transform"] = [](InternalEntity* entity) { return true; };
 		hasComponentFuncs["Camera"] =    [](InternalEntity* entity) { return entity->HasComponent<Camera>(); };
+		hasComponentFuncs["RigidBody"] = [](InternalEntity* entity) { return entity->HasComponent<RigidBody>(); };
 
-		addComponentFuncs["Camera"] = [](InternalEntity* entity) { return entity->AddComponent<Camera>() != nullptr ? true : false; };
+		addComponentFuncs["Camera"] =    [](InternalEntity* entity) { return entity->AddComponent<Camera>() != nullptr ? true : false; };
+		addComponentFuncs["RigidBody"] = [](InternalEntity* entity) { return entity->AddComponent<RigidBody>() != nullptr ? true : false; };
 
 	}
 
@@ -360,16 +362,18 @@ namespace Copper::Scripting::InternalCalls {
 
 		CheckValidEntity(eID);
 
-		InternalEntity* entity = GetEntityFromID(eID);
-		entity->GetComponent<RigidBody>()->isStatic = value;
+		RigidBody* rb = GetEntityFromID(eID)->GetComponent<RigidBody>();
+		rb->isStatic = value;
+		rb->Setup();
 
 	}
 	static void RigidBodySetGravity(uint32_t eID, bool value) {
 
 		CheckValidEntity(eID);
 
-		InternalEntity* entity = GetEntityFromID(eID);
-		entity->GetComponent<RigidBody>()->gravity = value;
+		RigidBody* rb = GetEntityFromID(eID)->GetComponent<RigidBody>();
+		rb->gravity = value;
+		rb->Setup();
 
 	}
 
@@ -385,8 +389,9 @@ namespace Copper::Scripting::InternalCalls {
 
 		CheckValidEntity(eID);
 
-		InternalEntity* entity = GetEntityFromID(eID);
-		entity->GetComponent<RigidBody>()->mass = value;
+		RigidBody* rb = GetEntityFromID(eID)->GetComponent<RigidBody>();
+		rb->mass = value;
+		rb->Setup();
 
 	}
 

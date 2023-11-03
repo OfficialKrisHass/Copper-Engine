@@ -32,6 +32,13 @@ namespace Copper {
 		void InvokeCreate();
 		void InvokeUpdate();
 
+		void InvokeOnCollisionBegin(InternalEntity* other);
+		void InvokeOnCollisionPersist(InternalEntity* other);
+		void InvokeOnCollisionEnd(InternalEntity* other);
+
+		void InvokeOnTriggerEnter(InternalEntity* other);
+		void InvokeOnTriggerLeave(InternalEntity* other);
+
 		void GetFieldValue(const ScriptField& field, void* out);
 		void GetFieldValue(const ScriptField& field, InternalEntity** out);
 
@@ -43,6 +50,19 @@ namespace Copper {
 
 		MonoMethod* create = nullptr;
 		void (*update) (MonoObject* obj, MonoException** exc) = nullptr;
+
+		// Collision Eventss
+
+		MonoMethod* onCollisionBegin = nullptr;
+		void (*onCollisionPersist) (MonoObject* obj, MonoObject* other, MonoException** exc) = nullptr;
+		MonoMethod* onCollisionEnd = nullptr;
+
+		// Trigger Events
+
+		MonoMethod* onTriggerEnter = nullptr;
+		MonoMethod* onTriggerLeave = nullptr;
+
+		void Invalidate();
 
 	};
 

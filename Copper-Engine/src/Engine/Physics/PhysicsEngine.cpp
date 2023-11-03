@@ -6,11 +6,16 @@
 #include "Engine/Components/RigidBody.h"
 #include "Engine/Components/BoxCollider.h"
 
+#include "Engine/Physics/CollisionNotifier.cpp"
+
 #include <PxPhysicsAPI.h>
 
 namespace Copper::PhysicsEngine {
 
     using namespace physx;
+
+    // Custom Simulation Shader
+    PxFilterFlags DefaultSimulationShader(PxFilterObjectAttributes attributes0, PxFilterData filterData0, PxFilterObjectAttributes attributes1, PxFilterData filterData1, PxPairFlags& pairFlags, const void* constantBlock, uint32_t constantBlockSize);
 
     struct PhysicsEngineData {
 
@@ -25,6 +30,8 @@ namespace Copper::PhysicsEngine {
 
         PxShape* noColliderShape = nullptr;
 
+        CollisionNotifier collisionNotifier;
+
     };
     PhysicsEngineData data;
 
@@ -33,7 +40,7 @@ namespace Copper::PhysicsEngine {
         data.foundation = PxCreateFoundation(PX_PHYSICS_VERSION, data.allocator, data.errCallback);
         data.physics = PxCreatePhysics(PX_PHYSICS_VERSION, *data.foundation, PxTolerancesScale());
         data.dispatcher = PxDefaultCpuDispatcherCreate(1);
-
+        
     }
 
     void Shutdown() {
@@ -54,7 +61,7 @@ namespace Copper::PhysicsEngine {
 namespace Copper {
 
     using namespace PhysicsEngine;
-
+    
     void Scene::InitializePhysics() {
 
         physicsInitialized = true;
@@ -62,13 +69,15 @@ namespace Copper {
         PxSceneDesc sceneDesc(data.physics->getTolerancesScale());
         sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
         sceneDesc.cpuDispatcher = data.dispatcher;
-        sceneDesc.filterShader = PxDefaultSimulationFilterShader;
+        sceneDesc.filterShader = DefaultSimulationShader;
 
         physicsScene = data.physics->createScene(sceneDesc);
         data.material = data.physics->createMaterial(0.5f, 0.5f, 0.6f);
 
         data.noColliderShape = data.physics->createShape(PxSphereGeometry(1.0f), *data.material, false);
         data.noColliderShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
+
+        physicsScene->setSimulationEventCallback(&data.collisionNotifier);
 
     }
     void Scene::UpdatePhysics(float deltaTime) {
@@ -103,9 +112,17 @@ namespace Copper {
         // Case 1: Collider with no Rigid Body
         
         PxShape* shape = data.physics->createShape(PxBoxGeometry(CopperToPhysX(GetTransform()->scale * size / 2.0f)), *data.material);
-        shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, trigger);
+        if (trigger) {
+
+            shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
+            shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
+            
+        }
 
         PxRigidStatic* body = PxCreateStatic(*data.physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape);
+        
+        body->setName(GetEntity()->name.c_str());
+        body->userData = (void*) GetEntity();
         
         GetScene()->AddPhysicsBody(body);
 
@@ -123,6 +140,12 @@ namespace Copper {
         if (collider) {
 
             PxShape* shape = data.physics->createShape(PxBoxGeometry(CopperToPhysX(GetTransform()->scale * collider->size / 2.0f)), *data.material);
+            if (collider->trigger) {
+
+                shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
+                shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
+
+            }
 
             if (isStatic)
                 body = PxCreateStatic(*data.physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape);
@@ -140,6 +163,7 @@ namespace Copper {
             shape->release();
 
             body->setName(GetEntity()->name.c_str());
+            body->userData = (void*) GetEntity();
 
             return;
 
@@ -160,7 +184,9 @@ namespace Copper {
         }
 
         GetScene()->AddPhysicsBody(body);
+
         body->setName(GetEntity()->name.c_str());
+        body->userData = (void*) GetEntity();
 
     }
     void RigidBody::UpdatePositionAndRotation() {

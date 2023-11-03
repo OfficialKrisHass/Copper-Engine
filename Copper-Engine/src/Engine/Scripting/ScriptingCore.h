@@ -24,6 +24,8 @@ namespace Copper::Scripting {
 
 	MonoObject* AddScriptComponent(uint32_t eID, const std::string& name);
 
+	MonoObject* GetScriptEntity(uint32_t eID);
+
 	std::vector<std::string> GetScriptComponents();
 	std::vector<ScriptField> GetScriptFields(const std::string& scriptName);
 

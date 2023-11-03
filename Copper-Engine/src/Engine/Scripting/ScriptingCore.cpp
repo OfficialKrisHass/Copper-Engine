@@ -33,6 +33,8 @@ namespace Copper::Scripting {
 		std::vector<std::string> scriptComponents;
 		std::unordered_map<std::string, std::vector<ScriptField>> scriptFields;
 
+		std::vector<MonoObject*> entities;
+
 	};
 
 	ScriptingCoreData data;
@@ -187,8 +189,6 @@ namespace Copper::Scripting {
 		MonoObject* instance = mono_object_new(data.app, script);
 		if (!instance) { LogError("Failed to Instantiate {} C# class", name); return nullptr; }
 
-		mono_runtime_object_init(instance);
-
 		MonoMethod* componentConstructor = mono_class_get_method_from_name(data.componentClass, ".ctor", 1);
 		if (!componentConstructor) { LogError("Failed to get the Component Constructor!"); return nullptr; }
 
@@ -197,6 +197,36 @@ namespace Copper::Scripting {
 		mono_runtime_invoke(componentConstructor, instance, &param, &exception);
 
 		return instance;
+
+	}
+
+	MonoObject* GetScriptEntity(uint32_t eID) {
+
+		if (data.entities.size() < eID + 1) {
+
+			data.entities.resize(eID + 1, nullptr);
+
+		}
+		if (!data.entities[eID]) {
+
+			MonoObject* entity = mono_object_new(data.app, data.entityClass);
+			if (!entity) { LogError("Failed to Create C# Entity, ID: {}", eID); return nullptr; }
+
+			MonoMethod* constructor = mono_class_get_method_from_name(data.entityClass, ".ctor", 1);
+			if (!constructor) { LogError("Failed to Get the Entity Constructor Method, ID: {}", eID); return nullptr; }
+
+			void* param = &eID;
+			MonoObject* exc = nullptr;
+			mono_runtime_invoke(constructor, entity, &param, &exc);
+
+			if (exc)
+				Scripting::MonoUtils::PrintExceptionDetails(exc);
+
+			data.entities[eID] = entity;
+
+		}
+
+		return data.entities[eID];
 
 	}
 

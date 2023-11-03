@@ -5,11 +5,10 @@ namespace Copper {
     public class Entity {
 
         protected uint id;
-        public const uint invalidID = 4294967295;
 
         protected Entity() {
 
-            id = invalidID;
+            id = 4294967295;
 
         }
         protected Entity(uint id) {
@@ -21,7 +20,7 @@ namespace Copper {
         public string name {
 
             get {
-
+                
                 return InternalCalls.GetEntityName(id);
 
             }

@@ -19,10 +19,7 @@ namespace Copper {
 		instance = Scripting::AddScriptComponent(GetEntity()->ID(), name);
 		if (!instance) {
 
-			valid = false;
-			create = nullptr;
-			update = nullptr;
-
+			Invalidate();
 			return;
 
 		}
@@ -31,10 +28,21 @@ namespace Copper {
 		MonoClass* klass = mono_object_get_class(instance);
 
 		create = mono_class_get_method_from_name(klass, "Create", 0);
+		onCollisionBegin = mono_class_get_method_from_name(klass, "OnCollisionBegin", 1);
+		onCollisionEnd = mono_class_get_method_from_name(klass, "OnCollisionEnd", 1);
+		onTriggerEnter = mono_class_get_method_from_name(klass, "OnTriggerEnter", 1);
+		onTriggerLeave = mono_class_get_method_from_name(klass, "OnTriggerLeave", 1);
 		
 		MonoMethod* updateMethod = mono_class_get_method_from_name(klass, "Update", 0);
-		if (!updateMethod) { update = nullptr; return; }
-		update = (void(*) (MonoObject*, MonoException**)) mono_method_get_unmanaged_thunk(updateMethod);
+		MonoMethod* onCollisionPersistMethod = mono_class_get_method_from_name(klass, "OnCollisionPersist", 1);
+
+		if (updateMethod)
+			update = (void(*) (MonoObject*, MonoException**)) mono_method_get_unmanaged_thunk(updateMethod);
+		else { update = nullptr; }
+
+		if (onCollisionPersistMethod)
+			onCollisionPersist = (void(*) (MonoObject*, MonoObject*, MonoException**)) mono_method_get_unmanaged_thunk(onCollisionPersistMethod);
+		else { onCollisionPersist = nullptr; }
 
 	}
 
@@ -75,7 +83,73 @@ namespace Copper {
 
 	}
 
-	void ScriptComponent::GetFieldValue(const ScriptField& field, void* out) {
+    void ScriptComponent::InvokeOnCollisionBegin(InternalEntity *other) {
+
+		if (!onCollisionBegin || !other)
+			return;
+
+		void* param = (void*) Scripting::GetScriptEntity(other->ID());
+		MonoObject* exc = nullptr;
+		mono_runtime_invoke(onCollisionBegin, instance, &param, &exc);
+
+		if (exc)
+			Scripting::MonoUtils::PrintExceptionDetails(exc);
+
+    }
+    void ScriptComponent::InvokeOnCollisionPersist(InternalEntity *other) {
+
+		if (!onCollisionPersist || !other)
+			return;
+
+		MonoException* exc;
+		onCollisionPersist(instance, Scripting::GetScriptEntity(other->ID()), &exc);
+
+		if (exc)
+			Scripting::MonoUtils::PrintExceptionDetails((MonoObject*) exc);
+
+    }
+	void ScriptComponent::InvokeOnCollisionEnd(InternalEntity *other) {
+
+		if (!onCollisionEnd || !other)
+			return;
+		
+		void* param = (void*) Scripting::GetScriptEntity(other->ID());
+		MonoObject* exc = nullptr;
+		mono_runtime_invoke(onCollisionEnd, instance, &param, &exc);
+
+		if (exc)
+			Scripting::MonoUtils::PrintExceptionDetails(exc);
+
+    }
+
+    void ScriptComponent::InvokeOnTriggerEnter(InternalEntity *other) {
+
+		if (!onTriggerEnter || !other)
+			return;
+
+		void* param = (void*) Scripting::GetScriptEntity(other->ID());
+		MonoObject* exc = nullptr;
+		mono_runtime_invoke(onTriggerEnter, instance, &param, &exc);
+
+		if (exc)
+			Scripting::MonoUtils::PrintExceptionDetails(exc);
+
+    }
+	void ScriptComponent::InvokeOnTriggerLeave(InternalEntity *other) {
+
+		if (!onTriggerLeave)
+			return;
+
+		void* param = (void*) Scripting::GetScriptEntity(other->ID());
+		MonoObject* exc = nullptr;
+		mono_runtime_invoke(onTriggerLeave, instance, &param, &exc);
+
+		if (exc)
+			Scripting::MonoUtils::PrintExceptionDetails(exc);
+
+    }
+
+    void ScriptComponent::GetFieldValue(const ScriptField& field, void* out) {
 
 		mono_field_get_value(instance, field.field, out);
 
@@ -106,17 +180,23 @@ namespace Copper {
 
 		if (field.type != ScriptField::Type::Entity) return;
 
-		//It's possible that the field may be null so we can't just get the MonoObject*
-		//and set it's objID. Instead for safety purposes we create a temporary CopperObject
-		//instance, set it's objID and then set the Scripts field to the temp instance
-		MonoObject* entity = mono_object_new(Scripting::GetAppDomain(), Scripting::GetEntityMonoClass());
-		mono_runtime_object_init(entity);
-
 		uint32_t entityID = *value ? (*value)->ID() : INVALID_ENTITY_ID;
-		MonoClassField* eIDField = mono_class_get_field_from_name(Scripting::GetEntityMonoClass(), "id");
-		mono_field_set_value(entity, eIDField, &entityID);
+		mono_field_set_value(instance, field.field, Scripting::GetScriptEntity(entityID));
 
-		mono_field_set_value(instance, field.field, entity);
+	}
+
+	void ScriptComponent::Invalidate() {
+
+		valid = false;
+		create = nullptr;
+		update = nullptr;
+
+		onCollisionBegin = nullptr;
+		onCollisionPersist = nullptr;
+		onCollisionEnd = nullptr;
+
+		onTriggerEnter = nullptr;
+		onTriggerLeave = nullptr;
 
 	}
 

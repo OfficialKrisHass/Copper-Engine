@@ -24,4 +24,20 @@ class Player : Component {
 
     }
 
+    private void OnCollisionBegin(Entity other) {
+
+        Editor.Log("Collision Begin: " + other.name);
+
+    }
+    private void OnCollisionPersist(Entity other) {
+
+        Editor.Log("Collision Persist: " + other.name);
+
+    }
+    private void OnCollisionEnd(Entity other) {
+
+        Editor.Log("Collision End: " + other.name);
+
+    }
+
 }

@@ -8,7 +8,7 @@ namespace Copper {
 
         protected Component() {
 
-            eID = Entity.invalidID;
+            eID = 4294967295;
             
         }
         protected Component(uint eID) {

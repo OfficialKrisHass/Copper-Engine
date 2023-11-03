@@ -35,6 +35,7 @@ namespace Copper {
 
 		Transform* GetTransform() const { return transform; }
 		uint32_t ID() const { return id; }
+		const uint32_t* IDPointer() const { return &id; }
 
 		bool operator==(const InternalEntity& other) const { return id == other.id && scene == other.scene; }
 

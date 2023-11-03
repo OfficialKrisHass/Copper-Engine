@@ -24,7 +24,7 @@ Entities:
       Fov: 90
       Near Plane: 0.100000001
       Far Plane: 1000
-      Size: [1920, 960]
+      Size: [1280, 948]
   Ground:
     ID: 2
     Transform:
@@ -149,7 +149,7 @@ Entities:
       Trigger: false
       Center: [0, 0, 0]
       Size: [1, 1, 1]
-  Cube:
+  Cube B:
     ID: 3
     Transform:
       Position: [-0.987099409, 10.2944775, -0.715051889]
@@ -273,7 +273,7 @@ Entities:
       Trigger: false
       Center: [0, 0, 0]
       Size: [1, 1, 1]
-  Cube 1:
+  Cube RB_T:
     ID: 4
     Transform:
       Position: [0.612112522, 7.25216103, 0.381770134]
@@ -397,7 +397,15 @@ Entities:
       Static: false
       Gravity: false
       Mass: 1
-  Cube:
+    Box Collider:
+      Trigger: true
+      Center: [0, 0, 0]
+      Size: [1, 1, 1]
+    Script Component:
+      Name: TriggerTest
+      Fields:
+        {}
+  Cube RB:
     ID: 5
     Transform:
       Position: [-0.175141871, 11.7283487, -0.129583716]
@@ -530,4 +538,4 @@ Entities:
       Fields:
         speed:
           Type: 3
-          Value: 1
+          Value: 0

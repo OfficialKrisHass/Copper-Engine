@@ -2,7 +2,7 @@
 
 namespace Copper {
 
-    public class Camera : Component {
+    public class Camera : BuiltInComponent {
 
         public float fov {
 

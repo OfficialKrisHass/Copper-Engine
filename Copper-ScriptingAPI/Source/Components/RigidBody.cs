@@ -2,7 +2,7 @@ using System;
 
 namespace Copper {
 
-    public class RigidBody : Component {
+    public class RigidBody : BuiltInComponent {
 
         public bool isStatic {
 

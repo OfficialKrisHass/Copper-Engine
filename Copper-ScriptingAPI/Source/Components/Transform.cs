@@ -2,13 +2,7 @@
 
 namespace Copper {
 
-    public class Transform : Component {
-
-        public Transform(uint eID) {
-
-            base.eID = eID;
-
-        }
+    public class Transform : BuiltInComponent {
 
         public Vector3 position {
 

@@ -39,8 +39,6 @@ namespace Copper {
             T ret = new T();
             InternalCalls.AddComponent(eID, typeof(T), ret);
 
-            Editor.Log(ret.eID.ToString());
-
             return ret;
 
         }
@@ -49,7 +47,7 @@ namespace Copper {
             T ret = new T();
 
             Type type = typeof(T);
-            if (type == typeof(Camera) || type == typeof(Transform) || type == typeof(RigidBody)) {
+            if (type.BaseType == typeof(BuiltInComponent)) {
 
                 if (!HasComponent<T>()) return null;
                 ret.eID = eID;

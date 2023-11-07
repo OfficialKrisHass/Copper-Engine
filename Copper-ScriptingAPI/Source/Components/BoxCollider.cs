@@ -2,7 +2,7 @@ using System;
 
 namespace Copper {
 
-    public class BoxCollider : Component {
+    public class BoxCollider : BuiltInComponent {
 
         public bool trigger {
 

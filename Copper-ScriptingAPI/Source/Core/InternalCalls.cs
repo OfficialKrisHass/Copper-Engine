@@ -5,6 +5,9 @@ namespace Copper {
 
     public static class InternalCalls {
 
+        //======== Core ========
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static uint GetComponentPointer(uint eID, Type type);
+
         //======== Logging ========
 
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Log(string msg);

@@ -1,0 +1,2 @@
+C:\Programming\Copper-Engine\Copper-Editor\assets\ScriptAPI\Int\Debug\Copper-ScriptingAPI.csproj.AssemblyReference.cache
+C:\Programming\Copper-Engine\Copper-Editor\assets\ScriptAPI\Int\Debug\Copper-ScriptingAPI.csproj.CoreCompileInputs.cache

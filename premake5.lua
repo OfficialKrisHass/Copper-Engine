@@ -3,7 +3,7 @@ workspace "Copper-Engine"
     configurations { "Debug", "Release" }
     startproject "Copper-Editor"
 
-outputDir = "%{cfg.system}-%{cfg.architecture}-%{cfg.buildcfg}"
+outputDir = "windows-%{cfg.architecture}-%{cfg.buildcfg}"
 
 group "Libraries"
     include "Copper-Engine/lib/GLFW"
@@ -60,10 +60,7 @@ project "Copper-Engine"
         "%{prj.name}/lib/ImGuizmo",
         "%{prj.name}/lib/stb",
         "%{prj.name}/lib/Copper-Math",
-
-        "%{prj.name}/lib/physx/include/physx",
-
-        "%{prj.name}/lib/ImGui/ImGui",
+        "%{prj.name}/lib/pfd"
 
     }
 
@@ -76,6 +73,8 @@ project "Copper-Engine"
         "assimp",
         "opengl32.lib",
 
+        "%{prj.name}/lib/mono/bin/%{cfg.buildcfg}/mono-2.0-sgen.dll",
+
     }
 
     defines {
@@ -84,14 +83,14 @@ project "Copper-Engine"
         "CU_EDITOR",
         "_CRT_SECURE_NO_WARNINGS",
         "GLM_ENABLE_EXPERIMENTAL",
+        "INCLUDE_GLM",
         
         "VERSION_MAJOR=0",
         "VERSION_MINOR=2",
-        "VERSION_PATCH=1",
-        "VERSION_TWEAK=0",
+        "VERSION_PATCH=2",
+        "VERSION_TWEAK=12",
         
         "SCENE_VERSION=0",
-        "INCLUDE_GLM"
 
     }
 
@@ -111,31 +110,6 @@ project "Copper-Engine"
 
             "%{prj.name}/src/Platform/Windows/**.cpp",
             "%{prj.name}/src/Platform/OpenGL/**.cpp"
-
-        }
-
-    filter "system:linux"
-        defines {
-
-            "CU_LINUX"
-
-        }
-
-        files {
-
-            "%{prj.name}/src/Platform/Linux/**.cpp",
-            "%{prj.name}/src/Platform/OpenGL/**.cpp",
-
-        }
-
-        buildoptions {
-    
-            "`pkg-config --cflags mono-2`"
-    
-        }
-        linkoptions {
-
-            "`pkg-config --libs mono-2`",
 
         }
 
@@ -185,7 +159,6 @@ project "Copper-Editor"
     }
 
     links {
-
         
         "GLFW",
         "GLAD",
@@ -198,8 +171,8 @@ project "Copper-Editor"
     defines {
 
         "CU_EDITOR",
+        "INCLUDE_GLM",
         "_CRT_SECURE_NO_WARNINGS",
-        "INCLUDE_GLM"
 
     }
     
@@ -218,33 +191,6 @@ project "Copper-Editor"
             "CU_WINDOWS",
             "GLM_ENABLE_EXPERIMENTAL"
 
-        }
-
-    filter "system:linux"
-        defines {
-
-            "CU_LINUX",
-            "GLM_ENABLE_EXPERIMENTAL"
-
-        }
-        
-        buildoptions {
-    
-            "`pkg-config --cflags mono-2`"
-    
-        }
-        linkoptions {
-
-            "`pkg-config --libs mono-2`",
-            
-            "-lX11",
-            "-lstdc++fs",
-
-            "-L../Build/linux-x86_64-Debug/Copper-Engine -lCopper-Engine",
-            
-            "-L../Copper-Engine/lib/PhysX/lib",
-            "-lPhysXExtensions_static_64 -lPhysX_static_64 -lPhysXPvdSDK_static_64 -lPhysXCooking_static_64 -lPhysXCommon_static_64 -lPhysXFoundation_static_64",
-            
         }
 
     filter "configurations:Debug"

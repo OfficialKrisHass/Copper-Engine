@@ -29,8 +29,7 @@ list(APPEND includeDirs lib/GLFW/include lib/GLAD/include lib/GLM/include lib/ya
                         lib/spdlog lib/ImGui lib/ImGuizmo lib/stb lib/Copper-Math lib/pfd)
 
 # Defines
-list(APPEND defines CU_ENGINE CU_EDITOR _CRT_SECURE_NO_WARNINGS INCLUDE_GLM)
-list(APPEND defines CU_LINUX) #TODO: Move this into a if statement based on the OS we are building for
+list(APPEND defines CU_ENGINE CU_EDITOR CU_CMAKE _CRT_SECURE_NO_WARNINGS INCLUDE_GLM)
 
 # OS Specific
 # TODO: Add options to control what os we are building for

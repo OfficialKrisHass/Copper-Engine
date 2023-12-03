@@ -1,6 +1,8 @@
 #pragma once
 
-#include <Config.h>
+#ifdef CU_CMAKE
+    #include <Config.h>
+#endif
 
 #include "Engine/Core/Log.h"
 
@@ -21,27 +23,27 @@
 
 namespace Copper {
 
-    using Vector2 = CMath::Vector2;
-    using Vector3 = CMath::Vector3;
-    using Vector4 = CMath::Vector4;
-    using Matrix3 = CMath::Matrix3;
-    using Matrix4 = CMath::Matrix4;
+    using CMath::Vector2;
+    using CMath::Vector3;
+    using CMath::Vector4;
+    using CMath::Matrix3;
+    using CMath::Matrix4;
 
-    using Vector2I = CMath::Vector2I;
-    using Vector3I = CMath::Vector3I;
-    using Vector4I = CMath::Vector4I;
-    using Matrix3I = CMath::Matrix3I;
-    using Matrix4I = CMath::Matrix4I;
+    using CMath::Vector2I;
+    using CMath::Vector3I;
+    using CMath::Vector4I;
+    using CMath::Matrix3I;
+    using CMath::Matrix4I;
 
-    using UVector2I = CMath::UVector2I;
-    using UVector3I = CMath::UVector3I;
-    using UVector4I = CMath::UVector4I;
-    using UMatrix3I = CMath::UMatrix3I;
-    using UMatrix4I = CMath::UMatrix4I;
+    using CMath::UVector2I;
+    using CMath::UVector3I;
+    using CMath::UVector4I;
+    using CMath::UMatrix3I;
+    using CMath::UMatrix4I;
 
-    using Quaternion = CMath::Quaternion;
-    using QuaternionI = CMath::QuaternionI;
-    using UQuaternionI = CMath::UQuaternionI;
+    using CMath::Quaternion;
+    using CMath::QuaternionI;
+    using CMath::UQuaternionI;
 
     template<typename T> using Unique = std::unique_ptr<T>;
     template<typename T, typename ... Args> constexpr  Unique<T> CreateUnique(Args&& ... args) {

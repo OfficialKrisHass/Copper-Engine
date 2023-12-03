@@ -350,7 +350,7 @@ namespace Copper::Scripting::InternalCalls {
 		return entity->GetComponent<RigidBody>()->isStatic;
 
 	}
-	static bool RigidBodyGetGravity(uint eID) {
+	static bool RigidBodyGetGravity(uint32_t eID) {
 
 		CheckValidEntityWithReturn(eID, true);
 

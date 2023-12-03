@@ -1,5 +1,11 @@
 #include "ProjectTemplate.h"
 
+#ifdef CU_LINUX
+using std::experimental::filesystem::create_directories;
+#else
+using std::filesystem::create_directories;
+#endif
+
 namespace Editor {
 
 	void CreateFileAndReplace(const Filesystem::Path& original, const Filesystem::Path& out, const std::string& what, const std::string& replace);
@@ -10,7 +16,7 @@ namespace Editor {
 
 		const Filesystem::Path path = "assets/Templates/" + project.name;
 
-		std::experimental::filesystem::create_directories(path.String() + "/Assets/Scenes");
+		create_directories(path.String() + "/Assets/Scenes");
 
 		CreateFileAndReplace(project.path / "Project.cu", path / "Project.cu.cut", project.name, ":{ProjectName}");
 
@@ -20,9 +26,9 @@ namespace Editor {
 	}
 	void CreateProjectFromTemplate(const Filesystem::Path& templatePath, Project& project) {
 
-		std::experimental::filesystem::create_directories(project.path.String() + "/Assets/Scenes");
-		std::experimental::filesystem::create_directories(project.path.String() + "/Binaries");
-		std::experimental::filesystem::create_directories(project.path.String() + "/Objs");
+		create_directories(project.path.String() + "/Assets/Scenes");
+		create_directories(project.path.String() + "/Binaries");
+		create_directories(project.path.String() + "/Objs");
 
 		CreateFileAndReplace(templatePath / "Project.cu.cut", project.path / "Project.cu", ":{ProjectName}", project.name);
 

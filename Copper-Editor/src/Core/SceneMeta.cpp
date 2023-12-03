@@ -7,6 +7,8 @@
 
 using namespace Copper;
 
+using std::filesystem::exists;
+
 namespace Editor::MetaFile {
 
 	void SceneMeta::Serialize(Scene* scene) {
@@ -33,7 +35,7 @@ namespace Editor::MetaFile {
 
 		objectIDs.clear();
 
-		if (!std::experimental::filesystem::exists(scene->path.String() + "cum")) {
+		if (!exists(scene->path.String() + "cum")) {
 
 			for (InternalEntity* entity : EntityView(scene)) {
 

@@ -5,6 +5,7 @@
 #include "Engine/Renderer/Renderer.h"
 
 #include "Engine/Input/KeyCodes.h"
+#include "Engine/Input/Input.h"
 
 #include <GLFW/glfw3.h>
 
@@ -13,21 +14,33 @@
 
 namespace Copper {
 
-	Window::Window(const std::string& title, uint32_t width, uint32_t height) {
+	uint32_t windowCount = 0;
+
+	Window::Window(const std::string& title, uint32_t width, uint32_t height, bool maximize) {
 
 		data.title = title;
 
-		if (!glfwInit()) { LogError("Could not Initialize GLFW!"); }
+#ifdef CU_EDITOR // we cant verify the state in the editor because the editor creates the window before Engine Initialization
+		if (windowCount == 0 && !glfwInit()) { LogError("Could not Initialize GLFW!"); }
+#else
+		if (windowCount == 0) {
+
+			VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the main Window");
+			if (!glfwInit()) { LogError("Could not Initialize GLFW"); }
+
+		}
+#endif
+		windowCount++;
 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		windowPtr = (void*) glfwCreateWindow(width, height, data.title.c_str(), NULL, NULL);
+		windowPtr = (void*)glfwCreateWindow(width, height, data.title.c_str(), NULL, NULL);
 		glfwMakeContextCurrent(WINDOW);
 
 		glfwSetWindowUserPointer(WINDOW, &data);
-		glfwMaximizeWindow(WINDOW);
+		if (maximize) glfwMaximizeWindow(WINDOW);
 
 		data.size = Size();
 
@@ -43,7 +56,15 @@ namespace Copper {
 	void Window::Shutdown() {
 
 		glfwDestroyWindow(WINDOW);
-		glfwTerminate();
+
+		if (windowCount == 1) glfwTerminate();
+		windowCount--;
+
+	}
+
+	void Window::SetAsCurrentContext() {
+
+		glfwMakeContextCurrent(WINDOW);
 
 	}
 
@@ -55,7 +76,7 @@ namespace Copper {
 
 			data.windowCloseEvent();
 
-		});
+			});
 		glfwSetWindowFocusCallback(WINDOW, [](GLFWwindow* window, int focused) {
 
 			WindowData& data = GETWINDATA;
@@ -64,7 +85,7 @@ namespace Copper {
 			data.windowFocusedEvent.Call();
 			data.windowFocusedEvent.Clear();
 
-		});
+			});
 		glfwSetWindowSizeCallback(WINDOW, [](GLFWwindow* window, int width, int height) {
 
 			WindowData& data = GETWINDATA;
@@ -74,7 +95,7 @@ namespace Copper {
 
 			data.windowResizeEvent();
 
-		});
+			});
 
 		glfwSetKeyCallback(WINDOW, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
 
@@ -82,56 +103,61 @@ namespace Copper {
 
 			switch (action) {
 
-				case GLFW_PRESS:
-				{
+			case GLFW_PRESS:
+			{
 
-					data.keyPressedEvent.key = (KeyCode) key;
-					data.keyPressedEvent.Call();
-					data.keyPressedEvent.Clear();
+				data.keyPressedEvent.key = (KeyCode)key;
+				data.keyPressedEvent.Call();
+				data.keyPressedEvent.Clear();
 
-					break;
+				break;
 
-				}
-				case GLFW_REPEAT:
-				{
+			}
+			case GLFW_REPEAT:
+			{
 
-					data.keyPressedEvent.key = (KeyCode) key;
-					data.keyPressedEvent.Call();
-					data.keyPressedEvent.Clear();
+				data.keyPressedEvent.key = (KeyCode)key;
+				data.keyPressedEvent.Call();
+				data.keyPressedEvent.Clear();
 
-					break;
+				break;
 
-				}
-				case GLFW_RELEASE:
-				{
+			}
+			case GLFW_RELEASE:
+			{
 
-					data.keyReleasedEvent.key = (KeyCode) key;
-					data.keyReleasedEvent.Call();
-					data.keyReleasedEvent.Clear();
+				data.keyReleasedEvent.key = (KeyCode)key;
+				data.keyReleasedEvent.Call();
+				data.keyReleasedEvent.Clear();
 
-					break;
-
-				}
+				break;
 
 			}
 
-		});
+			}
+
+			});
 
 		glfwSetCursorPosCallback(WINDOW, [](GLFWwindow* window, double x, double y) {
 
 			WindowData& data = GETWINDATA;
 
-			data.mouseMoveEvent.mouseCoords.x = (float) x;
-			data.mouseMoveEvent.mouseCoords.y = (float) y;
+			data.mouseMoveEvent.mouseCoords.x = (uint32_t) x;
+			data.mouseMoveEvent.mouseCoords.y = (uint32_t) y;
 			data.mouseMoveEvent();
 
-		});
+			});
 
 	}
 
-	bool Window::IsKeyPressed(KeyCode keycode) {
+	bool Window::IsKeyPressed(KeyCode keycode) const {
 
-		return glfwGetKey(WINDOW, (int) keycode) == GLFW_PRESS;
+		return glfwGetKey(WINDOW, (int)keycode) == GLFW_PRESS;
+
+	}
+	bool Window::IsButtonPressed(MouseCode mousecode) const {
+
+		return glfwGetMouseButton(WINDOW, (int)mousecode) == GLFW_PRESS;
 
 	}
 
@@ -139,7 +165,7 @@ namespace Copper {
 
 		uint32_t ret;
 
-		glfwGetWindowSize(WINDOW, (int*) &ret, nullptr);
+		glfwGetWindowSize(WINDOW, (int*)&ret, nullptr);
 
 		return ret;
 
@@ -148,7 +174,7 @@ namespace Copper {
 
 		uint32_t ret;
 
-		glfwGetWindowSize(WINDOW, nullptr, (int*) &ret);
+		glfwGetWindowSize(WINDOW, nullptr, (int*)&ret);
 
 		return ret;
 
@@ -165,7 +191,7 @@ namespace Copper {
 
 		UVector2I ret;
 
-		glfwGetWindowSize(WINDOW, (int*) &ret.x, (int*) &ret.y);
+		glfwGetWindowSize(WINDOW, (int*)&ret.x, (int*)&ret.y);
 
 		return static_cast<float>(ret.x) / ret.y;
 
@@ -173,7 +199,7 @@ namespace Copper {
 
 	float Window::Time() const {
 
-		return (float) glfwGetTime();
+		return (float)glfwGetTime();
 
 	}
 

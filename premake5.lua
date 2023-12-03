@@ -19,8 +19,10 @@ project "Copper-Engine"
     location "Copper-Engine"
     kind "StaticLib"
     language "C++"  
+
     cppdialect "C++20"
     staticruntime "on"
+    systemversion "latest"
 
     targetdir("Build/" .. outputDir .. "/%{prj.name}")
     objdir("BuildInt/" .. outputDir .. "/%{prj.name}")
@@ -36,6 +38,9 @@ project "Copper-Engine"
 
         "%{prj.name}/src/Engine/**.h",
         "%{prj.name}/src/Engine/**.cpp",
+
+        "%{prj.name}/src/Platform/Windows/**.cpp",
+        "%{prj.name}/src/Platform/OpenGL/**.cpp",
 
         "%{prj.name}/lib/stb/stb/stb_image.cpp",
 
@@ -73,17 +78,19 @@ project "Copper-Engine"
         "assimp",
         "opengl32.lib",
 
-        "%{prj.name}/lib/mono/bin/%{cfg.buildcfg}/mono-2.0-sgen.dll",
-
     }
 
     defines {
 
         "CU_ENGINE",
         "CU_EDITOR",
-        "_CRT_SECURE_NO_WARNINGS",
-        "GLM_ENABLE_EXPERIMENTAL",
+        "CU_WINDOWS",
+
         "INCLUDE_GLM",
+        "GLM_ENABLE_EXPERIMENTAL",
+
+        "_CRT_SECURE_NO_WARNINGS",
+        "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
         
         "VERSION_MAJOR=0",
         "VERSION_MINOR=2",
@@ -96,22 +103,6 @@ project "Copper-Engine"
 
     filter "files:Copper-Engine/lib/ImGuizmo/ImGuizmo/**.cpp"
         flags { "NoPCH" }
-    
-    filter "system:windows"
-        systemversion "latest"
-
-        defines {
-
-            "CU_WINDOWS",
-
-        }
-
-        files {
-
-            "%{prj.name}/src/Platform/Windows/**.cpp",
-            "%{prj.name}/src/Platform/OpenGL/**.cpp"
-
-        }
 
     filter "configurations:Debug"
         defines "CU_DEBUG"
@@ -127,8 +118,10 @@ project "Copper-Editor"
     location "Copper-Editor"
     kind "ConsoleApp"
     language "C++"
+
     cppdialect "C++20"
     staticruntime "on"
+    systemversion "latest"
 
     targetdir("Build/" .. outputDir .. "/%{prj.name}")
     objdir("BuildInt/" .. outputDir .. "/%{prj.name}")
@@ -160,38 +153,41 @@ project "Copper-Editor"
 
     links {
         
+        "Copper-Engine",
         "GLFW",
         "GLAD",
         "ImGui",
         "yaml-cpp",
         "assimp",
 
+        "Copper-Engine/lib/mono/lib/%{cfg.buildcfg}/mono-2.0-sgen.lib",
+        "Copper-Engine/lib/PhysX/lib/PhysX_64.lib",
+        "Copper-Engine/lib/PhysX/lib/PhysXCommon_64.lib",
+        "Copper-Engine/lib/PhysX/lib/PhysXFoundation_64.lib",
+        "Copper-Engine/lib/PhysX/lib/PhysXExtensions_static_64.lib",
+
     }
 
     defines {
 
         "CU_EDITOR",
+        "CU_WINDOWS",
         "INCLUDE_GLM",
+        
+        "GLM_ENABLE_EXPERIMENTAL",
         "_CRT_SECURE_NO_WARNINGS",
+        "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
 
     }
-    
+
     postbuildcommands {
-        
+
         "{COPYDIR} assets ../Build/" .. outputDir .. "/Copper-Editor/assets",
-        
+        "{COPYDIR} lib/PhysX/windows ../Build/" .. outputDir .. "/Copper-Editor",
+        "{COPYDIR} lib/mono/lib ../Build/" .. outputDir .. "/Copper-Editor/lib/mono/lib",
+        "{COPYFILE} mono-2.0-sgen.dll ../Build/" .. outputDir .. "/Copper-Editor",
+
     }
-
-    filter "system:windows"
-        staticruntime "on"
-        systemversion "latest"
-
-        defines {
-
-            "CU_WINDOWS",
-            "GLM_ENABLE_EXPERIMENTAL"
-
-        }
 
     filter "configurations:Debug"
         defines "CU_DEBUG"

@@ -28,7 +28,7 @@ namespace Copper::PhysicsEngine {
 
     void CollisionNotifier::onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, uint32_t nbPairs) {
 
-        for (int i = 0; i < nbPairs; i++) {
+        for (uint32_t i = 0; i < nbPairs; i++) {
 
             const PxContactPair& pair = pairs[i];
 
@@ -69,7 +69,7 @@ namespace Copper::PhysicsEngine {
     }
     void CollisionNotifier::onTrigger(PxTriggerPair* pairs, uint32_t count) {
 
-        for (int i = 0; i < count; i++) {
+        for (uint32_t i = 0; i < count; i++) {
 
             const PxTriggerPair& pair = pairs[i];
 

@@ -21,7 +21,7 @@ namespace Copper {
 
         }
 
-        inline uint32_t Count() const { return args.size(); }
+        inline uint32_t Count() const { return (uint32_t) args.size(); }
         inline char* GetArg(const uint32_t index) const { return args[index]; }
 
     private:

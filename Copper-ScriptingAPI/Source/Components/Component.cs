@@ -29,7 +29,9 @@ namespace Copper {
         public Transform transform {
 
             get {
-                return new Transform(eID);
+
+                return new Transform();
+
             }
 
         }

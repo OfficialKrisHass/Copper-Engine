@@ -6,10 +6,10 @@
 #include "Engine/Scripting/MonoUtils.h"
 #include "Engine/Scripting/InternalCalls.cpp"
 
-//#include "Engine/Scene/Registry.h"
-
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
+
+char domainName[] = "CUScriptRuntime";
 
 namespace Copper::Scripting {
 
@@ -53,7 +53,7 @@ namespace Copper::Scripting {
 		data.root = mono_jit_init("CUJITRuntime");
 
 		//Load the ScriptingAPI
-		data.app = mono_domain_create_appdomain("CUScriptRuntime", nullptr);
+		data.app = mono_domain_create_appdomain(domainName, nullptr);
 		mono_domain_set(data.app, true);
 
 		data.apiAssembly = MonoUtils::LoadAssembly("assets/ScriptAPI/Copper-ScriptingAPI.dll");
@@ -97,7 +97,7 @@ namespace Copper::Scripting {
 		mono_domain_unload(data.app);
 
 		//Load the Scripting API
-		data.app = mono_domain_create_appdomain("CUScriptRuntime", nullptr);
+		data.app = mono_domain_create_appdomain(domainName, nullptr);
 		mono_domain_set(data.app, true);
 
 		data.apiAssembly = MonoUtils::LoadAssembly("assets/ScriptAPI/Copper-ScriptingAPI.dll");

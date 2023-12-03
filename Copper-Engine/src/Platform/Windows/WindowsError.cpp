@@ -11,6 +11,7 @@ namespace Copper::Input {
 
             case IDOK: return PopupResult::Ok; break;
             case IDCANCEL: return PopupResult::Cancel; break;
+            default: return PopupResult::Invalid; break;
 
         }
 

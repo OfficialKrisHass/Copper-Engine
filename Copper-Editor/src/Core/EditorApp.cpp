@@ -192,7 +192,7 @@ namespace Editor {
 
 		}
 
-		if (data.arguments->Count() > 0) {
+		if (data.arguments->Count() > 1) {
 
 			OpenProject(data.arguments->GetArg(0));
 

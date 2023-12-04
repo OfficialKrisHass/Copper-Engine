@@ -4,6 +4,17 @@ namespace Copper {
 
     public class Transform : BuiltInComponent {
 
+        protected Transform() {
+
+            this.eID = 4294967295;
+
+        }
+        public Transform(uint eID) {
+
+            this.eID = eID;
+
+        }
+
         public Vector3 position {
 
             get {

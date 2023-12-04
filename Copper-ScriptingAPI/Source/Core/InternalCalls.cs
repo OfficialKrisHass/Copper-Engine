@@ -74,6 +74,9 @@ namespace Copper {
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static float RigidBodyGetMass(uint eID);
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void RigidBodySetMass(uint eID, float value);
 
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void RigidBodyAddForce(uint eID, Vector3 force, byte mode);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void RigidBodyAddTorque(uint eID, Vector3 torque, byte mode);
+
 
         //======== BoxCollider ========
 

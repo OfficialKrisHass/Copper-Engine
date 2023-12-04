@@ -19,6 +19,15 @@ namespace Copper {
 
     }
 
+    enum class ForceMode : uint8_t {
+
+        Force = 0,
+        Impulse = 1,
+        VelocityChange = 2,
+        Acceleration = 3
+
+    };
+
     class RigidBody : public Component {
 
         friend class Scene;
@@ -36,6 +45,9 @@ namespace Copper {
         float mass = 1.0f;
 
         void UpdatePositionAndRotation();
+
+        void AddForce(const Vector3& force, const ForceMode mode);
+        void AddTorque(const Vector3& torque, const ForceMode mode);
 
     private:
         physx::PxRigidActor* body;

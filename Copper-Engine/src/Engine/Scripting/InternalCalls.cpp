@@ -395,6 +395,21 @@ namespace Copper::Scripting::InternalCalls {
 
 	}
 
+	static void RigidBodyAddForce(uint32_t eID, Vector3* force, uint8_t mode) {
+
+		CheckValidEntity(eID);
+
+		GetEntityFromID(eID)->GetComponent<RigidBody>()->AddForce(*force, (ForceMode) mode);
+
+	}
+	static void RigidBodyAddTorque(uint32_t eID, Vector3* torque, uint8_t mode) {
+
+		CheckValidEntity(eID);
+
+		GetEntityFromID(eID)->GetComponent<RigidBody>()->AddTorque(*torque, (ForceMode) mode);
+
+	}
+
 	//BoxCollider
 	static bool BoxColliderGetTrigger(uint32_t eID) {
 

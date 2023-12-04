@@ -15,7 +15,7 @@ Entities:
   Camera:
     ID: 1
     Transform:
-      Position: [0, 5.36000013, 5]
+      Position: [0, 2.42180204, 5]
       Rotation: [1, 0, 0, 0]
       Scale: [0.999999404, 0.999999106, 0.999999642]
       Parent ID: 4294967295
@@ -408,7 +408,7 @@ Entities:
   Cube RB:
     ID: 5
     Transform:
-      Position: [-0.175141871, 11.7283487, -0.129583716]
+      Position: [-0.175141871, 2.85415411, -0.129583716]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
       Parent ID: 4294967295

@@ -203,4 +203,30 @@ namespace Copper {
 
     }
 
+    void RigidBody::AddForce(const Vector3& force, const ForceMode mode) {
+
+        if (isStatic) {
+
+            LogError("Cant add force to a static rigidBody on entity {} ({})", GetEntity()->name, GetEntity()->ID());
+            return;
+
+        }
+
+        ((PxRigidDynamic*) body)->addForce(CopperToPhysX(force), (PxForceMode::Enum) mode);
+
+    }
+    void RigidBody::AddTorque(const Vector3& torque, const ForceMode mode) {
+
+        if (isStatic) {
+
+            LogError("Cant add torque to a static rigidBody on entity {} ({})", GetEntity()->name, GetEntity()->ID());
+            return;
+
+        }
+
+        ((PxRigidDynamic*) body)->addTorque(CopperToPhysX(torque), (PxForceMode::Enum) mode);
+
+    }
+    
+
 }

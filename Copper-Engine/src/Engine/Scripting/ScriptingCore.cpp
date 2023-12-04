@@ -298,6 +298,9 @@ namespace Copper::Scripting {
 		mono_add_internal_call("Copper.InternalCalls::RigidBodyGetMass", (void*) InternalCalls::RigidBodyGetMass);
 		mono_add_internal_call("Copper.InternalCalls::RigidBodySetMass", (void*) InternalCalls::RigidBodySetMass);
 
+		mono_add_internal_call("Copper.InternalCalls::RigidBodyAddForce", (void*) InternalCalls::RigidBodyAddForce);
+		mono_add_internal_call("Copper.InternalCalls::RigidBodyAddTorque", (void*) InternalCalls::RigidBodyAddTorque);
+
 		//======== BoxCollider ========
 
 		mono_add_internal_call("Copper.InternalCalls::BoxColliderGetTrigger", (void*) InternalCalls::BoxColliderGetTrigger);

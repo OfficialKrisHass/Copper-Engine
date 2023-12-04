@@ -18,25 +18,9 @@ class Player : Component {
 
         if (Input.IsKeyDown(KeyCode.Space)) {
 
-            rb.gravity = !rb.gravity;
+            rb.AddForce(new Vector3(0.0f, 10.0f, 0.0f), ForceMode.Force);
 
         }
-
-    }
-
-    private void OnCollisionBegin(Entity other) {
-
-        Editor.Log("Collision Begin: " + other.name);
-
-    }
-    private void OnCollisionPersist(Entity other) {
-
-        Editor.Log("Collision Persist: " + other.name);
-
-    }
-    private void OnCollisionEnd(Entity other) {
-
-        Editor.Log("Collision End: " + other.name);
 
     }
 

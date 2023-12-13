@@ -18,9 +18,9 @@ namespace Copper::Input {
 
     };
 
-    PopupResult QuestionPopup(const std::string& title, const std::string& description, bool cancel = false);
-    PopupResult InfoPopup(const std::string& title, const std::string& description, bool cancel = false);
-    PopupResult WarningPopup(const std::string& title, const std::string& description);
+    PopupResult QuestionPopup(const std::string& title, const std::string& description, bool hasCancel = false);
+    PopupResult InfoPopup(const std::string& title, const std::string& description, bool hasCancel = false);
+    PopupResult WarningPopup(const std::string& title, const std::string& description, bool hasCancel = false);
     PopupResult ErrorPopup(const std::string& title, const std::string& description);
     
 }

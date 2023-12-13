@@ -39,8 +39,6 @@ namespace Editor::ProjectFileWatcher {
 
 	static void FileChangeCallback(const std::string& path, const filewatch::Event changeType) {
 
-		Log("Why the fuck are you not working and registering anything you stupid fucking dumbass");
-
 		if (!data.running) return;
 
 		Filesystem::Path fsPath(path);

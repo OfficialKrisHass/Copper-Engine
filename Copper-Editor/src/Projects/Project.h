@@ -26,7 +26,13 @@ namespace Editor {
 		void Save();
 		void Load(const Filesystem::Path& path = "");
 
-		bool BuildSolution(bool firstBuild = false);
+		bool BuildSolution(bool firstBuild = false) const;
+
+		void RegenerateProjectFile() const;
+		void RegenerateIDEFiles() const;
+	#ifdef CU_LINUX
+		void RunPremake() const;
+	#endif
 
 	};
 

@@ -4,30 +4,22 @@ using Copper;
 
 class Player : Component {
 
-    public float speed = 1.0f;
-    public float sensitivity;
+    public float jumpForce = 10.0f;
 
-    public Entity camera;
+    public RigidBody rb;
 
     private void Create() {
 
-        Input.SetCursorLocked(true);
-        Input.SetCursorVisible(false);
+        rb = GetComponent<RigidBody>();
 
     }
     private void Update() {
 
-        float moveX = Input.GetAxis("Keys_DA") * speed;
-        float moveZ = Input.GetAxis("Keys_WS") * speed;
+        if (Input.IsKeyDown(KeyCode.Space)) {
 
-        float mouseX = Input.GetAxis("Mouse X") * sensitivity;
-        float mouseY = Input.GetAxis("Mouse Y") * sensitivity;
+            rb.AddForce(new Vector3(0.0f, jumpForce, 0.0f), ForceMode.Force);
 
-        transform.position += transform.right * moveX + transform.forward * moveZ;
-        camera.transform.position += transform.right * moveX + transform.forward * moveZ;
-
-        transform.rotation += new Vector3(0.0f, mouseX, 0.0f);
-        camera.transform.rotation += new Vector3(mouseY, mouseX, 0.0f);
+        }
 
     }
 

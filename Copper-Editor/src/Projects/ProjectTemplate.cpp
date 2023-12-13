@@ -32,12 +32,7 @@ namespace Editor {
 
 		CreateFileAndReplace(templatePath / "Project.cu.cut", project.path / "Project.cu", ":{ProjectName}", project.name);
 
-	#ifdef CU_WINDOWS
-		CreateFileAndReplace("assets/Templates/Template.sln.cut", project.path / (project.name + ".sln"), ":{ProjectName}", project.name);
-		CreateFileAndReplace("assets/Templates/Template.csproj.cut", project.path / (project.name + ".csproj"), ":{ProjectName}", project.name);
-	#else
-		CreateFileAndReplace("assets/Templates/premake5.lua.cut", project.path / "premake5.lua", ":{ProjectName}", project.name);
-	#endif
+		project.RegenerateIDEFiles();
 
 		//Copy the Template Scene
 		CopyFileTo(templatePath / "Assets/Scenes/EmptyTemplate.copper", project.assetsPath / "Scenes/EmptyTemplate.copper");

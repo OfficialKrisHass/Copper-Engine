@@ -5,7 +5,7 @@ Entities:
     ID: 0
     Transform:
       Position: [-4.93940735, 12.6903553, -7.6237011]
-      Rotation: [0, 0, 0]
+      Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
       Parent ID: 4294967295
       Children: []
@@ -16,7 +16,7 @@ Entities:
     ID: 1
     Transform:
       Position: [0, 2.32914257, 0]
-      Rotation: [0, 0, 0]
+      Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
       Parent ID: 4294967295
       Children: []
@@ -132,13 +132,19 @@ Entities:
           - 22
           - 23
           - 20
-    Physics Body:
+    Rigid Body:
+      Static: false
+      Gravity: true
       Mass: 1
+    Box Collider:
+      Trigger: false
+      Center: [0, 0, 0]
+      Size: [1, 1, 1]
   Ground:
     ID: 2
     Transform:
       Position: [0, -0.5, 0]
-      Rotation: [0, 0, 0]
+      Rotation: [1, 0, 0, 0]
       Scale: [10, 1, 10]
       Parent ID: 4294967295
       Children: []
@@ -254,11 +260,19 @@ Entities:
           - 22
           - 23
           - 20
+    Rigid Body:
+      Static: true
+      Gravity: true
+      Mass: 1
+    Box Collider:
+      Trigger: false
+      Center: [0, 0, 0]
+      Size: [1, 1, 1]
   B:
     ID: 3
     Transform:
       Position: [0.370437145, 10, -0.815434933]
-      Rotation: [0, 0, 0]
+      Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
       Parent ID: 4294967295
       Children: []
@@ -374,5 +388,11 @@ Entities:
           - 22
           - 23
           - 20
-    Physics Body:
+    Rigid Body:
+      Static: false
+      Gravity: true
       Mass: 1
+    Box Collider:
+      Trigger: false
+      Center: [0, 0, 0]
+      Size: [1, 1, 1]

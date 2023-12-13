@@ -399,7 +399,7 @@ namespace Copper::Scripting::InternalCalls {
 
 		CheckValidEntity(eID);
 
-		GetEntityFromID(eID)->GetComponent<RigidBody>()->AddForce(*force, (ForceMode) mode);
+ 		GetEntityFromID(eID)->GetComponent<RigidBody>()->AddForce(*force, (ForceMode) mode);
 
 	}
 	static void RigidBodyAddTorque(uint32_t eID, Vector3* torque, uint8_t mode) {

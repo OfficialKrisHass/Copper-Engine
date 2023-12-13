@@ -11,6 +11,8 @@ using namespace Copper;
 
 namespace Editor {
 
+	static void CreateFileAndReplace(const Filesystem::Path& original, const Filesystem::Path& out, const std::string& what, const std::string& argument);
+
 	Project::Project(const std::string& name, const Filesystem::Path& path) : name(name), path(path), assetsPath(path / "Assets") {}
 
 	void Project::Save() {
@@ -97,7 +99,7 @@ namespace Editor {
 
 	}
 
-	bool Project::BuildSolution(bool firstBuild) {
+	bool Project::BuildSolution(bool firstBuild) const {
 
 	#ifdef CU_WINDOWS
 		std::string cmd = "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\MSBuild.exe ";
@@ -135,6 +137,61 @@ namespace Editor {
 			return Scripting::Reload(path / "Binaries" / (name + ".dll"));
 		else
 			return Scripting::Reload();
+
+	}
+
+	void Project::RegenerateProjectFile() const {
+
+		CreateFileAndReplace("assets/Templates/Project.cu.cut", path / "Project.cu", ":{ProjectName}", name);
+
+	}
+	void Project::RegenerateIDEFiles() const {
+
+	#ifdef CU_WINDOWS
+		CreateFileAndReplace("assets/Templates/Template.sln.cut", path / (name + ".sln"), ":{ProjectName}", name);
+		CreateFileAndReplace("assets/Templates/Template.csproj.cut", path / (name + ".csproj"), ":{ProjectName}", name);
+	#elif CU_LINUX
+		CreateFileAndReplace("assets/Templates/premake5.lua.cut", path / "premake5.lua", ":{ProjectName}", name);
+	#endif
+
+	}
+
+#ifdef CU_LINUX
+	void Project::RunPremake() const {
+
+		const std::string p = path.String();
+
+		// It hurts my eyes, but there is no other solution that I know of
+		//system(("cd \"" + data.project.path.String() + "\" ; ./premake/premake5 gmake2").c_str());
+
+		// Turns out there is :)
+		system(("./util/premake/premake5 --file=\"" + p + "premake5.lua\" gmake2").c_str());
+
+	}
+#endif
+
+	static void CreateFileAndReplace(const Filesystem::Path& original, const Filesystem::Path& out, const std::string& what, const std::string& argument) {
+
+		std::ifstream originalFile(original);
+		std::ofstream templateFile(out);
+
+		std::string line;
+		while (std::getline(originalFile, line)) {
+
+			size_t pos = line.find(what);
+			while (pos != std::string::npos) {
+
+				line.replace(pos, what.size(), argument);
+				pos = line.find(what);
+
+			}
+
+			templateFile << line << "\n";
+
+		}
+
+		originalFile.close();
+		templateFile.close();
 
 	}
 

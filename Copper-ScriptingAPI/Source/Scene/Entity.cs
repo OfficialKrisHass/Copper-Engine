@@ -36,7 +36,7 @@ namespace Copper {
 
             get {
 
-                return new Transform();
+                return new Transform(id);
 
             }
 

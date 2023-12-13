@@ -18,6 +18,7 @@
 
 #include "Projects/Project.h"
 #include "Projects/ProjectTemplate.h"
+#include "Projects/ProjectChecker.h"
 
 #include "Panels/SceneHierarchy.h"
 #include "Panels/Properties.h"
@@ -197,17 +198,8 @@ namespace Editor {
 			OpenProject(data.arguments->GetArg(0));
 
 		} else {
-
-			try {
 				
-				OpenProject(main["Last Project"].as<std::string>());
-				
-			} catch(YAML::Exception e) {
-
-				LogError("Encountered an error while Opening a Project: {}", e.msg);
-				return;
-
-			}
+			OpenProject(main["Last Project"].as<std::string>());
 
 		}
 
@@ -584,9 +576,18 @@ namespace Editor {
 	}
 	void OpenProject(const Filesystem::Path& path) {
 		
-		data.project.Load(path);
+		try { data.project.Load(path); }
+		catch (YAML::Exception e) { LogError("Something went wrong trying to open the Project file.\n    {}", e.what()); }
+
 		data.scene = GetScene();
 		FileBrowser::SetRelativeDir("");
+
+		if (uint16_t issueFlags = ProjectChecker::CheckProject(data.project)) {
+
+			if (Input::WarningPopup("Corrupted Project", "This project is missing some of the core folders and/or files that are required by the Editor to function properly, would you like to attempt to fix the Project ?") == Input::PopupResult::Yes)
+				ProjectChecker::FixProject(data.project, issueFlags);
+
+		}
 
 		ProjectFileWatcher::Stop();
 		ProjectFileWatcher::SetDirectory(data.project.assetsPath);
@@ -612,7 +613,7 @@ namespace Editor {
 		}
 		if (!reloadSuccess) {
 
-			LogError("Could not Load the Project Assembly, exiting application now!");
+			Input::ErrorPopup("Build failed", "Failed to build the project multiple times, Look into the log to see more information. Exiting application now");
 			exit(-1);
 
 		}

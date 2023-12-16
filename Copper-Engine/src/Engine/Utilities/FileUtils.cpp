@@ -1,6 +1,8 @@
 #include "cupch.h"
 #include "FileUtils.h"
 
+#include <portable-file-dialogs.h>
+
 namespace Copper::Utilities {
 
 	std::string ReadFile(const Filesystem::Path& path) {
@@ -50,6 +52,24 @@ namespace Copper::Utilities {
 		*outSize = size;
 		return buffer;
 		
+	}
+
+	Filesystem::Path OpenDialog(const std::string& title, const std::vector<std::string>& filters, const Filesystem::Path& initialDir) {
+
+		return pfd::open_file(title, initialDir.String(), filters, false).result()[0];
+
+	}
+
+	Filesystem::Path SaveDialog(const std::string& title, const std::vector<std::string>& filters, const Filesystem::Path& initialDir) {
+
+		return pfd::save_file(title, initialDir.String(), filters).result();
+
+	}
+
+	Filesystem::Path FolderOpenDialog(const std::string& title, const Filesystem::Path& initialDir) {
+
+		return pfd::select_folder(title, initialDir.String()).result();
+
 	}
 
 }

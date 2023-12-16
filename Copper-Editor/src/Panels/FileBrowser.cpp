@@ -66,7 +66,7 @@ namespace Editor {
 
         if(ImGui::BeginPopupContextWindow("##File Browser")) {
 
-            if(ImGui::MenuItem("Folder")) {
+            if(ImGui::MenuItem("Folder", 0, false, GetProject().name != "")) {
 
                 Filesystem::Path path = GetProject().assetsPath / projectRelativeDir;
                 path /= "New Folder";
@@ -80,6 +80,8 @@ namespace Editor {
             ImGui::EndPopup();
             
         }
+
+        if (!GetProject()) return;
 
         for(const Filesystem::DirectoryEntry& entry : Filesystem::DirectoryIterator((GetProject().assetsPath / projectRelativeDir).String())) {
 

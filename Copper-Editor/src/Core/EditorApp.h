@@ -20,7 +20,8 @@ namespace Editor {
 	void SaveScene();
 	void SaveSceneAs();
 
-	Project GetProject();
+	const Project& GetProject();
+	SceneCamera& GetSceneCam();
 	MetaFile::SceneMeta* GetSceneMeta();
 	Copper::UVector2I GetViewportSize();
 

@@ -31,15 +31,15 @@ namespace Editor {
 		//Scene Camera
 		out << YAML::Key << "Scene Camera" << YAML::Value << YAML::BeginMap; //Scene Camera
 
-		out << YAML::Key << "Position" << YAML::Value << sceneCam.GetTransform()->position;
-		out << YAML::Key << "Rotation" << YAML::Value << sceneCam.GetTransform()->rotation;
+		out << YAML::Key << "Position" << YAML::Value << GetSceneCam().GetTransform()->position;
+		out << YAML::Key << "Rotation" << YAML::Value << GetSceneCam().GetTransform()->rotation;
 		
-		out << YAML::Key << "Fov" << YAML::Value << sceneCam.fov;
-		out << YAML::Key << "Near Plane" << YAML::Value << sceneCam.nearPlane;
-		out << YAML::Key << "Far Plane" << YAML::Value << sceneCam.farPlane;
+		out << YAML::Key << "Fov" << YAML::Value << GetSceneCam().fov;
+		out << YAML::Key << "Near Plane" << YAML::Value << GetSceneCam().nearPlane;
+		out << YAML::Key << "Far Plane" << YAML::Value << GetSceneCam().farPlane;
 
-		out << YAML::Key << "Speed" << YAML::Value << sceneCam.speed;
-		out << YAML::Key << "Sensitivity" << YAML::Value << sceneCam.sensitivity;
+		out << YAML::Key << "Speed" << YAML::Value << GetSceneCam().speed;
+		out << YAML::Key << "Sensitivity" << YAML::Value << GetSceneCam().sensitivity;
 
 		//End
 		out << YAML::EndMap; //Scene Camera
@@ -50,8 +50,6 @@ namespace Editor {
 
 	}
 	void Project::Load(const Filesystem::Path& path) {
-
-		sceneCam = SceneCamera(GetViewportSize());
 
 		if(!path.Empty()) {
 
@@ -79,14 +77,14 @@ namespace Editor {
 
 		//Scene Camera
 		YAML::Node sceneCamera = main["Scene Camera"];
-		sceneCam.transform = new Transform(sceneCamera["Position"].as<Vector3>(), sceneCamera["Rotation"].as<Quaternion>(), Vector3::one);
+		GetSceneCam().transform = new Transform(sceneCamera["Position"].as<Vector3>(), sceneCamera["Rotation"].as<Quaternion>(), Vector3::one);
 
-		sceneCam.fov = sceneCamera["Fov"].as<float>();
-		sceneCam.nearPlane = sceneCamera["Near Plane"].as<float>();
-		sceneCam.farPlane = sceneCamera["Far Plane"].as<float>();
+		GetSceneCam().fov = sceneCamera["Fov"].as<float>();
+		GetSceneCam().nearPlane = sceneCamera["Near Plane"].as<float>();
+		GetSceneCam().farPlane = sceneCamera["Far Plane"].as<float>();
 
-		sceneCam.speed = sceneCamera["Speed"].as<float>();
-		sceneCam.sensitivity = sceneCamera["Sensitivity"].as<float>();
+		GetSceneCam().speed = sceneCamera["Speed"].as<float>();
+		GetSceneCam().sensitivity = sceneCamera["Sensitivity"].as<float>();
 
 		} catch(YAML::Exception e) {
 

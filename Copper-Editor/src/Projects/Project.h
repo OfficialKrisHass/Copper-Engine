@@ -16,8 +16,6 @@ namespace Editor {
 		Filesystem::Path assetsPath;
 		Filesystem::Path lastOpenedScene;
 
-		SceneCamera sceneCam;
-
 		int gizmoType = 0;
 
 		Project() : name(""), path(""), assetsPath("") {}
@@ -33,6 +31,8 @@ namespace Editor {
 	#ifdef CU_LINUX
 		void RunPremake() const;
 	#endif
+
+		operator bool() const { return name != ""; }
 
 	};
 

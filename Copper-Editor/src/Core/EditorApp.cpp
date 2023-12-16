@@ -67,6 +67,8 @@ namespace Editor {
 		FrameBuffer viewportFBO;
 		bool canLookViewport;
 
+		SceneCamera sceneCam;
+
 		// Game Panel
 
 		UVector2I gamePanelSize;
@@ -98,7 +100,7 @@ namespace Editor {
 	void Shutdown();
 
 	void LoadEditorData();
-	void SaveEditorData();
+	void SaveEditorData(bool saveProject = true);
 
 	void RenderDockspace();
 	void RenderGamePanel();
@@ -150,10 +152,12 @@ namespace Editor {
 		data.fileBrowser = FileBrowser("");
 		data.console = Console();
 
+		data.sceneCam = SceneCamera(data.viewportSize);
+
 		data.properties.SetSelectedObject(data.sceneHierarchy.GetSelectedEntity());
 		
 		ProjectFileWatcher::AddFileChangeCallback(FileChangedCallback);
-		
+
 		LoadEditorData();
 
 	#ifdef CU_LINUX
@@ -167,7 +171,7 @@ namespace Editor {
 
 	}
 
-	void SaveEditorData() {
+	void SaveEditorData(bool saveProject) {
 
 		YAML::Emitter out;
 
@@ -180,10 +184,19 @@ namespace Editor {
 		std::ofstream file("assets/EditorData.cu");
 		file << out.c_str();
 
-		data.project.Save();
+		if (saveProject && data.project) data.project.Save();
 
 	}
 	void LoadEditorData() {
+
+		if (!std::filesystem::exists("assets/EditorData.cu")) {
+
+			LogWarn("EditorData.cu is missing, generating a default one");
+
+			data.project.path = "";
+			SaveEditorData(false);
+
+		}
 
 		YAML::Node main;
 		try { main = YAML::LoadFile("assets/EditorData.cu"); } catch (YAML::Exception e) {
@@ -196,12 +209,19 @@ namespace Editor {
 		if (data.arguments->Count() > 1) {
 
 			OpenProject(data.arguments->GetArg(0));
-
-		} else {
-				
-			OpenProject(main["Last Project"].as<std::string>());
+			return;
 
 		}
+		
+		std::string path = main["Last Project"].as<std::string>();
+		if (!std::filesystem::exists(path)) {
+
+			OpenProject();
+			return;
+
+		}
+
+		OpenProject(path);
 
 	}
 
@@ -288,7 +308,7 @@ namespace Editor {
 			return;
 
 		}
-		if (!data.scene->cam) {
+		if (!data.project || !data.scene->cam) {
 
 			ImGui::Text("No Camera Available!");
 
@@ -331,8 +351,6 @@ namespace Editor {
 
 		}
 
-		ImGui::GetWindowPos();
-
 		//TODO: Either Change ImGui To use UVector2I or edit Copper Code to use ImVec2
 		//      so that we don't have to allocate memory for the UVector2I
 		ImVec2 windowSize = ImGui::GetContentRegionAvail();
@@ -349,7 +367,7 @@ namespace Editor {
 			//We don't need to Call SetWindowSize because if the Viewport size is changed
 			//it only affects the Viewport, not the Actualy Game Engine and the Main Game Panel
 			data.viewportFBO.Resize(data.viewportSize);
-			data.project.sceneCam.Resize(data.viewportSize);
+			data.sceneCam.Resize(data.viewportSize);
 
 		}
 
@@ -357,8 +375,8 @@ namespace Editor {
 		data.viewportFBO.Bind();
 		Renderer::ClearColor(0.18f, 0.18f, 0.18f);
 
-		data.project.sceneCam.Update();
-		data.scene->Render(&data.project.sceneCam);
+		data.sceneCam.Update();
+		if (data.scene) data.scene->Render(&data.sceneCam);
 
 		//After we are done rendering we are safe to unbind the FBO unless we want to modify it any way
 		data.viewportFBO.Unbind();
@@ -378,8 +396,8 @@ namespace Editor {
 			float wHeight = (float) ImGui::GetWindowHeight();
 			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, wWidth, wHeight);
 
-			Matrix4 camProjection = data.project.sceneCam.CreateProjectionMatrix();
-			Matrix4 camView = data.project.sceneCam.CreateViewMatrix();
+			Matrix4 camProjection = data.sceneCam.CreateProjectionMatrix();
+			Matrix4 camView = data.sceneCam.CreateViewMatrix();
 			glm::mat4 transform = selectedObj->GetTransform()->CreateMatrix();
 
 			// Snapping
@@ -414,7 +432,7 @@ namespace Editor {
 		}
 
 		data.canLookViewport = ImGui::IsItemHovered();
-		data.project.sceneCam.SetCanLook(data.canLookViewport);
+		data.sceneCam.SetCanLook(data.canLookViewport);
 		
 		ImGui::End();
 		ImGui::PopStyleVar();
@@ -438,11 +456,11 @@ namespace Editor {
 
 		if (data.state == Edit) {
 
-			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t) data.playIcon.GetID()), buttonSize, {0, 1}, {1, 0})) StartEditorRuntime();
+			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t) data.playIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project) StartEditorRuntime();
 
 		} else if (data.state == Play) {
 
-			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t) data.stopIcon.GetID()), buttonSize, {0, 1}, {1, 0})) StopEditorRuntime();
+			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t) data.stopIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project) StopEditorRuntime();
 
 		}
 
@@ -459,19 +477,19 @@ namespace Editor {
 
 				if (ImGui::MenuItem("New Project")) NewProject();
 				if (ImGui::MenuItem("Open Project")) OpenProject();
-				if (ImGui::MenuItem("Save Project", "Ctrl+Shift+S")) { data.project.Save(); SaveEditorData(); SaveScene(); }
+				if (ImGui::MenuItem("Save Project", "Ctrl+Shift+S", false, data.project)) { data.project.Save(); SaveEditorData(); SaveScene(); }
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem("Create Template")) CreateTemplateFromProject(data.project);
+				if (ImGui::MenuItem("Create Template", 0, false, data.project)) CreateTemplateFromProject(data.project);
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem("Build Solution", "Ctrl+B")) data.project.BuildSolution();
+				if (ImGui::MenuItem("Build Solution", "Ctrl+B", false, data.project)) data.project.BuildSolution();
 				
 				ImGui::Separator();
 
-				if (ImGui::MenuItem("Copy Copper Scripting API")) CopyScriptingAPI();
+				if (ImGui::MenuItem("Copy Copper Scripting API", 0, false, data.project)) CopyScriptingAPI();
 
 				ImGui::EndMenu();
 
@@ -479,10 +497,10 @@ namespace Editor {
 
 			if(ImGui::BeginMenu("File")) {
 
-				if(ImGui::MenuItem("New Scene"))				NewScene();
-				if(ImGui::MenuItem("Open Scene"))				OpenScene();
-				if(ImGui::MenuItem("Save Scene", "Ctr+S"))		SaveScene();
-				if(ImGui::MenuItem("Save Ass", "Ctrl+Alt+S"))	SaveSceneAs();
+				if(ImGui::MenuItem("New Scene", 0, false, data.project))				NewScene();
+				if(ImGui::MenuItem("Open Scene", 0, false, data.project))				OpenScene();
+				if(ImGui::MenuItem("Save Scene", "Ctr+S", false, data.project))		SaveScene();
+				if(ImGui::MenuItem("Save Ass", "Ctrl+Alt+S", false, data.project))	SaveSceneAs();
 
 				ImGui::EndMenu();
 				
@@ -490,8 +508,8 @@ namespace Editor {
 
 			if(ImGui::BeginMenu("Camera")) {
 
-				if (ImGui::DragFloat("Speed", &data.project.sceneCam.speed, 0.01f, 0.001f, 50.0f, "%.4f")) SetChanges(true);
-				if (ImGui::DragFloat("Sensitivity", &data.project.sceneCam.sensitivity, 0.1f, 1.0f, 1000.0f)) SetChanges(true);
+				if (ImGui::DragFloat("Speed", &data.sceneCam.speed, 0.01f, 0.001f, 50.0f, "%.4f")) SetChanges(true);
+				if (ImGui::DragFloat("Sensitivity", &data.sceneCam.sensitivity, 0.1f, 1.0f, 1000.0f)) SetChanges(true);
 
 				ImGui::EndMenu();
 				
@@ -889,7 +907,8 @@ namespace Editor {
 
 	}
 	
-	Project GetProject() { return data.project; }
+	const Project& GetProject() { return data.project; }
+	SceneCamera& GetSceneCam() { return data.sceneCam; }
 
 	MetaFile::SceneMeta* GetSceneMeta() { return &data.sceneMeta; }
 

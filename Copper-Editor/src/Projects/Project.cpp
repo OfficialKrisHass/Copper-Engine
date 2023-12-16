@@ -33,10 +33,6 @@ namespace Editor {
 
 		out << YAML::Key << "Position" << YAML::Value << GetSceneCam().GetTransform()->position;
 		out << YAML::Key << "Rotation" << YAML::Value << GetSceneCam().GetTransform()->rotation;
-		
-		out << YAML::Key << "Fov" << YAML::Value << GetSceneCam().fov;
-		out << YAML::Key << "Near Plane" << YAML::Value << GetSceneCam().nearPlane;
-		out << YAML::Key << "Far Plane" << YAML::Value << GetSceneCam().farPlane;
 
 		out << YAML::Key << "Speed" << YAML::Value << GetSceneCam().speed;
 		out << YAML::Key << "Sensitivity" << YAML::Value << GetSceneCam().sensitivity;
@@ -78,10 +74,6 @@ namespace Editor {
 		//Scene Camera
 		YAML::Node sceneCamera = main["Scene Camera"];
 		GetSceneCam().transform = new Transform(sceneCamera["Position"].as<Vector3>(), sceneCamera["Rotation"].as<Quaternion>(), Vector3::one);
-
-		GetSceneCam().fov = sceneCamera["Fov"].as<float>();
-		GetSceneCam().nearPlane = sceneCamera["Near Plane"].as<float>();
-		GetSceneCam().farPlane = sceneCamera["Far Plane"].as<float>();
 
 		GetSceneCam().speed = sceneCamera["Speed"].as<float>();
 		GetSceneCam().sensitivity = sceneCamera["Sensitivity"].as<float>();

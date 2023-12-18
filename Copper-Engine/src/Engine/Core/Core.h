@@ -24,6 +24,7 @@
 #ifdef CU_WINDOWS
 namespace fs = std::filesystem;
 #elif CU_LINUX
+namespace std::experimental::filesystem {}
 namespace fs = std::experimental::filesystem;
 #endif
 

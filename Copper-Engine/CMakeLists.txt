@@ -16,7 +16,6 @@ include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Components/CMakeLists.txt
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Scripting/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Physics/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Utilities/CMakeLists.txt)
-include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Filesystem/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/YAMLOverloads/CMakeLists.txt)
 
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/lib/Copper-Math/CMath/CMakeLists.txt)

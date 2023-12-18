@@ -2,8 +2,6 @@
 
 #include "Engine/Core/Core.h"
 
-#include "Engine/Filesystem/Path.h"
-
 #include "Engine/Scripting/Field.h"
 
 extern "C" {
@@ -19,8 +17,8 @@ namespace Copper::Scripting {
 	void Initialize();
 	void Shutdown();
 
-	bool LoadProjectAssembly(const Filesystem::Path& path);
-	bool Reload(const Filesystem::Path& path = "", bool initScriptComponents = true);
+	bool LoadProjectAssembly(const fs::path& path);
+	bool Reload(const fs::path& path = "", bool initScriptComponents = true);
 
 	MonoObject* AddScriptComponent(uint32_t eID, const std::string& name);
 

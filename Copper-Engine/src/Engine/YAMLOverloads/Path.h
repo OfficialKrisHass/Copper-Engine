@@ -1,14 +1,12 @@
 #pragma once
 
-#include "Engine/Filesystem/Path.h"
-
 #include <yaml-cpp/yaml.h>
 
 namespace Copper {
 
-    inline YAML::Emitter& operator<<(YAML::Emitter& out, const Filesystem::Path& path) {
+    inline YAML::Emitter& operator<<(YAML::Emitter& out, const fs::path& path) {
 
-        out << path.String();
+        out << path.string();
         return out;
 
     }
@@ -17,17 +15,17 @@ namespace Copper {
 
 namespace YAML {
 
-    template<> struct convert<Copper::Filesystem::Path> {
+    template<> struct convert<fs::path> {
 
-        static Node encode(const Copper::Filesystem::Path& path) {
+        static Node encode(const fs::path& path) {
 
             Node node;
-            node.push_back(path.String());
+            node.push_back(path.string());
 
             return node;
 
         }
-        static bool decode(const Node& node, Copper::Filesystem::Path& path) {
+        static bool decode(const Node& node, fs::path& path) {
 
             path = node.as<std::string>();
 

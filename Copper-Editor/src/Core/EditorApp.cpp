@@ -1,6 +1,7 @@
 #include "EditorApp.h"
 
 #include "Engine/Core/Args.h"
+#include "Engine/Core/Core.h"
 
 #include "Engine/Utilities/Math.h"
 
@@ -109,10 +110,10 @@ namespace Editor {
 	void RenderMenu();
 
 	void NewProject();
-	void OpenProject(const Filesystem::Path& path);
+	void OpenProject(const fs::path& path);
 	void OpenProject();
 
-	void FileChangedCallback(const Filesystem::Path& path, const ProjectFileWatcher::FileChangeType& changeType);
+	void FileChangedCallback(const fs::path& path, const ProjectFileWatcher::FileChangeType& changeType);
 	void CopyScriptingAPI();
 
 	void StartEditorRuntime();
@@ -189,7 +190,7 @@ namespace Editor {
 	}
 	void LoadEditorData() {
 
-		if (!std::filesystem::exists("assets/EditorData.cu")) {
+		if (!fs::exists("assets/EditorData.cu")) {
 
 			LogWarn("EditorData.cu is missing, generating a default one");
 
@@ -539,7 +540,7 @@ namespace Editor {
 			Input::SetCursorLocked(false);
 
 		data.state = Edit;
-		Filesystem::Path savedPath = data.scene->path;
+		fs::path savedPath = data.scene->path;
 		Entity savedSelectedEntity = *data.sceneHierarchy.GetSelectedEntity();
 
 		data.scene = GetScene();
@@ -554,7 +555,7 @@ namespace Editor {
 
 	}
 
-	void FileChangedCallback(const Filesystem::Path& path, const ProjectFileWatcher::FileChangeType& changeType) {
+	void FileChangedCallback(const fs::path& path, const ProjectFileWatcher::FileChangeType& changeType) {
 
 		data.scriptChanges = true;
 
@@ -570,11 +571,11 @@ namespace Editor {
 		//Open the Folder Dialog
 		//TODO : Either make our own Folder Open Dialog or Start using the Windows new System
 		//TODO #2 : Fixed... well for linux
-		Filesystem::Path path = Utilities::FolderOpenDialog("New Project", (!data.project.path.Empty()) ? data.project.path.ParentPath() : ROOT_DIR);
-		if (path.Empty()) { LogWarn("Path is Invalid or Empty"); return; }
+		fs::path path = Utilities::FolderOpenDialog("New Project", data.project ? data.project.path.parent_path() : ROOT_DIR);
+		if (path.empty()) { LogWarn("Path is Invalid or Empty"); return; }
 
 		//Create the Project
-		data.project = Project(path.File().String(), path);
+		data.project = Project(path.filename().string(), path);
 		FileBrowser::SetRelativeDir("");
 
 		CreateProjectFromTemplate("assets/Templates/LinuxTesting", data.project);
@@ -592,7 +593,7 @@ namespace Editor {
 		Input::SetWindowTitle(data.title);
 
 	}
-	void OpenProject(const Filesystem::Path& path) {
+	void OpenProject(const fs::path& path) {
 		
 		try { data.project.Load(path); }
 		catch (YAML::Exception e) { LogError("Something went wrong trying to open the Project file.\n    {}", e.what()); }
@@ -619,7 +620,7 @@ namespace Editor {
 		// so it will build the project and attempt to load it again, if that fails, it tries again 9 more times
 		// and then exit the application
 
-		bool reloadSuccess = Scripting::Reload(data.project.path / "Binaries" / data.project.name + ".dll", false);
+		bool reloadSuccess = Scripting::Reload(data.project.path / "Binaries" / (data.project.name + ".dll"), false);
 		int i = 0;
 		while (!reloadSuccess && i < 10) {
 
@@ -641,8 +642,8 @@ namespace Editor {
 	}
 	void OpenProject() {
 
-		Filesystem::Path path = Utilities::FolderOpenDialog("Open Project", (!data.project.path.Empty()) ? data.project.path.ParentPath() : ROOT_DIR);
-		if (path.Empty()) { LogWarn("path is Invalid or empty"); return; }
+		fs::path path = Utilities::FolderOpenDialog("Open Project", data.project ? data.project.path.parent_path() : ROOT_DIR);
+		if (path.empty()) { LogWarn("path is Invalid or empty"); return; }
 
 		OpenProject(path);
 
@@ -667,7 +668,7 @@ namespace Editor {
 		data.sceneHierarchy.SetScene(data.scene);
 		
 	}
-	void OpenScene(const Filesystem::Path& path) {
+	void OpenScene(const fs::path& path) {
 
 		if(data.changes) {
 
@@ -691,29 +692,29 @@ namespace Editor {
 		data.title += data.scene->name;
 		Input::SetWindowTitle(data.title);
 
-		data.project.lastOpenedScene = path.RelativeTo(data.project.assetsPath);
+		data.project.lastOpenedScene = fs::relative(path, data.project.assetsPath);
 		
 	}
 	void OpenScene() {
 
-		Filesystem::Path path = Utilities::OpenDialog("Open Scene", { "Copper Scene Files (.copper)", "*.copper" }, data.project.assetsPath);
+		fs::path result = Utilities::OpenDialog("Open Scene", { "Copper Scene Files (.copper)", "*.copper" }, data.project.assetsPath);
 
-		if(path.Empty()) { LogWarn("The Path Specified is empty or is not a Copper Scene File\n {}", path); return; }
+		if(result.empty()) { LogWarn("The Path Specified is empty or is not a Copper Scene File\n {}", result); return; }
 
-		Filesystem::Path relativeToProjectAssets = path.RelativeTo(data.project.assetsPath);
-		if (relativeToProjectAssets.Empty()) {
+		fs::path relativeToProjectAssets = fs::relative(result, data.project.assetsPath);
+		if (relativeToProjectAssets.empty()) {
 
 			Input::ErrorPopup("Invalid Scene Path", "The scene you have tried to Open is outside of the Assets folder of this Project.");
 			return;
 
 		}
 
-		OpenScene(path);
+		OpenScene(result);
 		
 	}
 	void SaveScene() {
 		
-		if(!data.scene->path.Empty()) {
+		if(!data.scene->path.empty()) {
 
 			data.scene->Serialize(data.scene->path);
 			data.sceneMeta.Serialize(data.scene);
@@ -732,27 +733,25 @@ namespace Editor {
 	}
 	void SaveSceneAs() {
 
-		Filesystem::Path path = Utilities::SaveDialog("Save Scene As", { "Copper Scene Files (.copper)", "*.copper" }, data.project.assetsPath);
+		fs::path path = Utilities::SaveDialog("Save Scene As", { "Copper Scene Files (.copper)", "*.copper" }, data.project.assetsPath);
 
-		if(!path.Empty()) {
+		if (path.empty()) return;
 
-			Filesystem::Path relativeToProjectAssets = path.RelativeTo(data.project.assetsPath);
-			if (relativeToProjectAssets.Empty()) {
+		fs::path relativeToProjectAssets = fs::relative(path, data.project.assetsPath);
+		if (relativeToProjectAssets.empty()) {
 
-				Input::ErrorPopup("Invalid Scene", "The Place you want to save this scene is outside of this Project or starts with '..'");
-				return;
+			Input::ErrorPopup("Invalid Scene", "The Place you want to save this scene is outside of this Project or starts with '..'");
+			return;
 
-			}
-
-			data.scene->Serialize(path);
-			data.sceneMeta.Serialize(data.scene);
-
-			data.changes = false;
-			data.title = "Copper Editor - TestProject: ";
-			data.title += data.scene->name;
-			Input::SetWindowTitle(data.title);
-			
 		}
+
+		data.scene->Serialize(path);
+		data.sceneMeta.Serialize(data.scene);
+
+		data.changes = false;
+		data.title = "Copper Editor - TestProject: ";
+		data.title += data.scene->name;
+		Input::SetWindowTitle(data.title);
 		
 	}
 

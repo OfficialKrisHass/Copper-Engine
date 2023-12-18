@@ -17,13 +17,13 @@ using std::filesystem::create_directories;
 
 namespace Editor {
 
-    Filesystem::Path editingPath = "";
-    Filesystem::Path FileBrowser::projectRelativeDir = "";
+    fs::path editingPath = "";
+    fs::path FileBrowser::projectRelativeDir = "";
 
     Texture directoryIcon;
     Texture fileIcon;
 
-    FileBrowser::FileBrowser(const Filesystem::Path& initialDir) : Panel("File Browser") {
+    FileBrowser::FileBrowser(const fs::path& initialDir) : Panel("File Browser") {
         
         projectRelativeDir = initialDir;
 
@@ -42,7 +42,7 @@ namespace Editor {
             
             if(ImGui::Button("<-", ImVec2(30, 30))) {
 
-                projectRelativeDir = projectRelativeDir.ParentPath();
+                projectRelativeDir = projectRelativeDir.parent_path();
                 
             }
 
@@ -51,7 +51,7 @@ namespace Editor {
         }
 
         ImGui::SameLine();
-        ImGui::Text(projectRelativeDir.String().c_str());
+        ImGui::Text(projectRelativeDir.string().c_str());
         ImGui::GetFont()->FontSize += 2.0f;
 
         const float padding = 16.0f;
@@ -68,10 +68,10 @@ namespace Editor {
 
             if(ImGui::MenuItem("Folder", 0, false, GetProject().name != "")) {
 
-                Filesystem::Path path = GetProject().assetsPath / projectRelativeDir;
+                fs::path path = GetProject().assetsPath / projectRelativeDir;
                 path /= "New Folder";
 
-                create_directories(path.String());
+                create_directories(path.string());
 
                 editingPath = path;
                 
@@ -83,45 +83,45 @@ namespace Editor {
 
         if (!GetProject()) return;
 
-        for(const Filesystem::DirectoryEntry& entry : Filesystem::DirectoryIterator((GetProject().assetsPath / projectRelativeDir).String())) {
+        for(const fs::directory_entry& entry : fs::directory_iterator((GetProject().assetsPath / projectRelativeDir).string())) {
 
-            Filesystem::Path fullPath = entry.path().string();
-            Filesystem::Path path = fullPath.RelativeTo(GetProject().assetsPath);
+            fs::path fullPath = entry.path().string();
+            fs::path path = fs::relative(fullPath, GetProject().assetsPath);
 
-            std::string filename = path.File().String();
-            if(!fullPath.Directory()) {  
+            std::string filename = path.filename().string();
+            if(!entry.is_directory()) {  
                 
                 size_t index = filename.find_last_of('.');
                 if (index != std::string::npos) filename.erase(index);
 
             }
 
-            if (path.Extension() == "cum") continue;
+            if (path.extension() == "cum") continue;
 
             ImGui::PushID(filename.c_str());
 
-            uint64_t icon = fullPath.Directory() ? (uint64_t) directoryIcon.GetID() : (uint64_t) fileIcon.GetID();
+            uint64_t icon = entry.is_directory() ? (uint64_t) directoryIcon.GetID() : (uint64_t) fileIcon.GetID();
             ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-            if(ImGui::ImageButton(reinterpret_cast<ImTextureID>(icon), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 }) && !fullPath.Directory()) {
+            if(ImGui::ImageButton(reinterpret_cast<ImTextureID>(icon), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 }) && !entry.is_directory()) {
 
                 //Properties::SetSelectedFile(path);
                 
             }
             ImGui::PopStyleColor();
 
-            if ((path.Extension() == "fbx" || path.Extension() == "gltf" || path.Extension() == "obj") && ImGui::BeginDragDropSource()) {
+            if ((path.extension() == "fbx" || path.extension() == "gltf" || path.extension() == "obj") && ImGui::BeginDragDropSource()) {
 
-                char* itemPath = (char*) path.String().c_str();
+                char* itemPath = (char*) path.string().c_str();
 
-                ImGui::SetDragDropPayload("MODEL", itemPath, (path.String().size() + 1) * sizeof(char), ImGuiCond_Once);
+                ImGui::SetDragDropPayload("MODEL", itemPath, (path.string().size() + 1) * sizeof(char), ImGuiCond_Once);
                 ImGui::EndDragDropSource();
 
             }
             
             if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
                 
-                if (fullPath.Directory()) projectRelativeDir /= path.File();
-                if (path.Extension() == "copper") {
+                if (entry.is_directory()) projectRelativeDir /= path.filename();
+                if (path.extension() == "copper") {
 
                     OpenScene(GetProject().assetsPath / path);
                     
@@ -131,7 +131,7 @@ namespace Editor {
 
             if(ImGui::BeginPopupContextItem()) {
                 
-                if(ImGui::MenuItem("Remove")) { path.Delete(); }
+                if (ImGui::MenuItem("Remove")) { fs::remove_all(path); }
                 if(ImGui::MenuItem("Edit")) { editingPath = fullPath; }
                 
                 ImGui::EndPopup();
@@ -147,10 +147,10 @@ namespace Editor {
 
                 if (ImGui::InputText("##Edit Name", buffer, sizeof(buffer)) && (Input::IsKey(KeyCode::Enter) || Input::IsButton(MouseCode::Button1))) {
 
-                    editingPath = editingPath.ParentPath();
+                    editingPath = editingPath.parent_path();
                     editingPath /= buffer;
 
-                    rename(fullPath.String().c_str(), editingPath.String().c_str());
+                    rename(fullPath.string().c_str(), editingPath.string().c_str());
 
                     editingPath = "";
 

@@ -21,7 +21,7 @@ namespace Copper::Scripting {
 		MonoAssembly* apiAssembly;
 		MonoImage* apiAssemblyImage;
 
-		Filesystem::Path projectPath;
+		fs::path projectPath;
 		MonoAssembly* projectAssembly;
 		MonoImage* projectAssemblyImage;
 
@@ -75,7 +75,7 @@ namespace Copper::Scripting {
 
 	}
 
-	bool LoadProjectAssembly(const Filesystem::Path& path) {
+	bool LoadProjectAssembly(const fs::path& path) {
 
 		data.projectPath = path;
 
@@ -89,9 +89,9 @@ namespace Copper::Scripting {
 
 
 	}
-	bool Reload(const Filesystem::Path& path, bool initScriptComponents) {
+	bool Reload(const fs::path& path, bool initScriptComponents) {
 
-		if (path != "") data.projectPath = path;
+		if (!path.empty()) data.projectPath = path;
 
 		mono_domain_set(mono_get_root_domain(), false);
 		mono_domain_unload(data.app);

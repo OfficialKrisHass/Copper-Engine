@@ -5,7 +5,7 @@
 
 namespace Copper::Utilities {
 
-	std::string ReadFile(const Filesystem::Path& path) {
+	std::string ReadFile(const fs::path& path) {
 
 		std::string ret;
 		std::ifstream file;
@@ -14,7 +14,7 @@ namespace Copper::Utilities {
 
 		try {
 
-			file.open(path.String());
+			file.open(path.string());
 
 			std::stringstream ss;
 
@@ -25,25 +25,25 @@ namespace Copper::Utilities {
 
 		} catch (std::ifstream::failure e) {
 
-			LogError("Failed to open File: {0}", path.String());
+			LogError("Failed to open File: {0}", path.string());
 
 		}
 
 		return ret;
 
 	}
-	char* ReadFileBinary(const Filesystem::Path& path, uint32_t* outSize) {
+	char* ReadFileBinary(const fs::path& path, uint32_t* outSize) {
 		
 		std::ifstream stream;
-		stream.open(path.String(), std::ios::binary | std::ios::ate);
+		stream.open(path.string(), std::ios::binary | std::ios::ate);
 
-		if (!stream) { LogError("Failed to Read Assembly File.\nPath: {0}", path.String()); return nullptr; }
+		if (!stream) { LogError("Failed to Read Assembly File.\nPath: {0}", path.string()); return nullptr; }
 
 		std::streampos end = stream.tellg();
 		stream.seekg(0, std::ios::beg);
 		uint32_t size = (uint32_t) (end - stream.tellg());
 
-		if (size == 0) { LogError("Assembly is empty.\nPath: {0}", path.String()); return nullptr; }
+		if (size == 0) { LogError("Assembly is empty.\nPath: {0}", path.string()); return nullptr; }
 
 		char* buffer = new char[size];
 		stream.read((char*) buffer, size);
@@ -54,21 +54,21 @@ namespace Copper::Utilities {
 		
 	}
 
-	Filesystem::Path OpenDialog(const std::string& title, const std::vector<std::string>& filters, const Filesystem::Path& initialDir) {
+	fs::path OpenDialog(const std::string& title, const std::vector<std::string>& filters, const fs::path& initialDir) {
 
-		return pfd::open_file(title, initialDir.String(), filters, false).result()[0];
-
-	}
-
-	Filesystem::Path SaveDialog(const std::string& title, const std::vector<std::string>& filters, const Filesystem::Path& initialDir) {
-
-		return pfd::save_file(title, initialDir.String(), filters).result();
+		return pfd::open_file(title, initialDir.string(), filters, false).result()[0];
 
 	}
 
-	Filesystem::Path FolderOpenDialog(const std::string& title, const Filesystem::Path& initialDir) {
+	fs::path SaveDialog(const std::string& title, const std::vector<std::string>& filters, const fs::path& initialDir) {
 
-		return pfd::select_folder(title, initialDir.String()).result();
+		return pfd::save_file(title, initialDir.string(), filters).result();
+
+	}
+
+	fs::path FolderOpenDialog(const std::string& title, const fs::path& initialDir) {
+
+		return pfd::select_folder(title, initialDir.string()).result();
 
 	}
 

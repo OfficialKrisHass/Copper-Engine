@@ -11,7 +11,7 @@ namespace Editor::ProjectChecker {
 
 	uint16_t CheckProject(const Project& project) {
 
-		const std::string path = project.path.String() + "/";
+		const std::string path = project.path.string() + "/";
 		uint16_t ret = 0;
 
 		// Base folders
@@ -45,14 +45,12 @@ namespace Editor::ProjectChecker {
 	}
 	void FixProject(Project& project, const uint16_t issueFlags) {
 
-		const std::string path = project.path.String() + "/";
-
-		if (FLAG(issueFlags, MissingAssets)) std::filesystem::create_directories(path + "Assets");
-		if (FLAG(issueFlags, MissingBinaries)) std::filesystem::create_directories(path + "Binaries");
+		if (FLAG(issueFlags, MissingAssets)) std::filesystem::create_directories(project.path / "Assets");
+		if (FLAG(issueFlags, MissingBinaries)) std::filesystem::create_directories(project.path / "Binaries");
 
 		if (FLAG(issueFlags, MissingProjectFile)) {
 
-			project.name = ((std::filesystem::path) path).parent_path().filename().string();
+			project.name = project.path.parent_path().filename().string();
 			project.RegenerateProjectFile();
 			
 		}
@@ -70,7 +68,7 @@ namespace Editor::ProjectChecker {
 			std::ifstream dllSrc("assets/ScriptAPI/Copper-ScriptingAPI.dll", std::ios::binary);
 			std::fstream dllDst;
 
-			dllDst.open(path + "Binaries/Copper-ScriptingAPI.dll", std::ios::out | std::ios::binary);
+			dllDst.open(project.path / "Binaries/Copper-ScriptingAPI.dll", std::ios::out | std::ios::binary);
 			dllDst << dllSrc.rdbuf();
 			dllDst.close();
 

@@ -16,7 +16,7 @@ namespace Editor {
 
 	void NewScene();
 	void OpenScene();
-	void OpenScene(const Filesystem::Path& path);
+	void OpenScene(const fs::path& path);
 	void SaveScene();
 	void SaveSceneAs();
 

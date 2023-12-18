@@ -21,7 +21,27 @@
     #define CU_ASSERT(x, ...)
 #endif
 
+#ifdef CU_WINDOWS
+namespace fs = std::filesystem;
+#elif CU_LINUX
+namespace fs = std::experimental::filesystem;
+#endif
+
 namespace Copper {
+
+    template<typename T> using Unique = std::unique_ptr<T>;
+    template<typename T, typename ... Args> constexpr  Unique<T> CreateUnique(Args&& ... args) {
+
+        return std::make_unique<T>(std::forward<Args>(args)...);
+        
+    }
+
+    template<typename T> using Shared = std::shared_ptr<T>;
+    template<typename T, typename ... Args> constexpr  Shared<T> CreateShared(Args&& ... args) {
+
+        return std::make_shared<T>(std::forward<Args>(args)...);
+        
+    }
 
     using CMath::Vector2;
     using CMath::Vector3;
@@ -44,19 +64,5 @@ namespace Copper {
     using CMath::Quaternion;
     using CMath::QuaternionI;
     using CMath::UQuaternionI;
-
-    template<typename T> using Unique = std::unique_ptr<T>;
-    template<typename T, typename ... Args> constexpr  Unique<T> CreateUnique(Args&& ... args) {
-
-        return std::make_unique<T>(std::forward<Args>(args)...);
-        
-    }
-
-    template<typename T> using Shared = std::shared_ptr<T>;
-    template<typename T, typename ... Args> constexpr  Shared<T> CreateShared(Args&& ... args) {
-
-        return std::make_shared<T>(std::forward<Args>(args)...);
-        
-    }
     
 }

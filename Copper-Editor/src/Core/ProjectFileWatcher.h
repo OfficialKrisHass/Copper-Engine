@@ -9,9 +9,9 @@ namespace Editor::ProjectFileWatcher {
 	void Start();
 	void Stop();
 
-	void SetDirectory(const Copper::Filesystem::Path& directory);
+	void SetDirectory(const fs::path& directory);
 	
-	void AddFileChangeCallback(std::function<void(const Copper::Filesystem::Path&, const FileChangeType& changeType)> func);
+	void AddFileChangeCallback(std::function<void(const fs::path&, const FileChangeType& changeType)> func);
 
 	enum class FileChangeType : int {
 

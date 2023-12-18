@@ -7,6 +7,6 @@
 namespace Editor {
 
 	void CreateTemplateFromProject(const Project& project);
-	void CreateProjectFromTemplate(const Copper::Filesystem::Path& templatePath, Project& project);
+	void CreateProjectFromTemplate(const fs::path& templatePath, Project& project);
 
 }

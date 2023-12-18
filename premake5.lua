@@ -161,10 +161,10 @@ project "Copper-Editor"
         "assimp",
 
         "Copper-Engine/lib/mono/lib/%{cfg.buildcfg}/mono-2.0-sgen.lib",
-        "Copper-Engine/lib/PhysX/lib/PhysX_64.lib",
-        "Copper-Engine/lib/PhysX/lib/PhysXCommon_64.lib",
-        "Copper-Engine/lib/PhysX/lib/PhysXFoundation_64.lib",
-        "Copper-Engine/lib/PhysX/lib/PhysXExtensions_static_64.lib",
+        "Copper-Engine/lib//PhysX/lib/%{cfg.buildcfg}/PhysX_64.lib",
+        "Copper-Engine/lib//PhysX/lib/%{cfg.buildcfg}/PhysXCommon_64.lib",
+        "Copper-Engine/lib//PhysX/lib/%{cfg.buildcfg}/PhysXFoundation_64.lib",
+        "Copper-Engine/lib//PhysX/lib/%{cfg.buildcfg}/PhysXExtensions_static_64.lib",
 
     }
 
@@ -183,9 +183,11 @@ project "Copper-Editor"
     postbuildcommands {
 
         "{COPYDIR} assets ../Build/" .. outputDir .. "/Copper-Editor/assets",
-        "{COPYDIR} lib/PhysX/windows ../Build/" .. outputDir .. "/Copper-Editor",
+
         "{COPYDIR} lib/mono/lib ../Build/" .. outputDir .. "/Copper-Editor/lib/mono/lib",
-        "{COPYFILE} mono-2.0-sgen.dll ../Build/" .. outputDir .. "/Copper-Editor",
+
+        "{COPYDIR} lib/PhysX/windows/%{cfg.buildcfg} ../Build/" .. outputDir .. "/Copper-Editor",
+        "{COPYFILE} lib/mono/bin/%{cfg.buildcfg}/mono-2.0-sgen.dll ../Build/" .. outputDir .. "/Copper-Editor",
 
     }
 

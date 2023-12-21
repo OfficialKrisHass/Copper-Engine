@@ -15,10 +15,10 @@ Entities:
   Camera:
     ID: 1
     Transform:
-      Position: [0, 0, 2.46020794]
+      Position: [0, 0, 0]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
-      Parent ID: 4294967295
+      Parent ID: 2
       Children: []
     Camera:
       Fov: 90
@@ -32,7 +32,7 @@ Entities:
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
       Parent ID: 4294967295
-      Children: []
+      Children: [1]
     Mesh Renderer:
       Mesh:
         Data:

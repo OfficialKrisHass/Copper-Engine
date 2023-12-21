@@ -12,21 +12,27 @@ namespace Editor {
 
 		std::string name;
 
-		Filesystem::Path path;
-		Filesystem::Path assetsPath;
-		Filesystem::Path lastOpenedScene;
-
-		SceneCamera sceneCam;
+		fs::path path;
+		fs::path assetsPath;
+		fs::path lastOpenedScene;
 
 		int gizmoType = 0;
 
 		Project() : name(""), path(""), assetsPath("") {}
-		Project(const std::string& name, const Filesystem::Path& path);
+		Project(const std::string& name, const fs::path& path);
 
-		void Save();
-		void Load(const Filesystem::Path& path = "");
+		void Save() const;
+		void Load(const fs::path& path = "");
 
-		bool BuildSolution(bool firstBuild = false);
+		bool BuildSolution(bool firstBuild = false) const;
+
+		void RegenerateProjectFile() const;
+		void RegenerateIDEFiles() const;
+	#ifdef CU_LINUX
+		void RunPremake() const;
+	#endif
+
+		operator bool() const { return name != ""; }
 
 	};
 

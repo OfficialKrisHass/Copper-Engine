@@ -87,10 +87,10 @@ namespace Copper {
 
 	}
 
-	void Scene::Serialize(const Filesystem::Path& path) {
+	void Scene::Serialize(const fs::path& path) {
 
 		this->path = path;
-		this->name = path.File();
+		this->name = path.filename().string();
 
 		YAML::Emitter out;
 		out << YAML::BeginMap; // Main
@@ -115,7 +115,7 @@ namespace Copper {
 		file << out.c_str();
 
 	}
-	bool Scene::Deserialize(const Filesystem::Path& path) {
+	bool Scene::Deserialize(const fs::path& path) {
 
 		if (physicsInitialized) ShutdownPhysics();
 
@@ -129,9 +129,9 @@ namespace Copper {
 		cam = nullptr;
 
 		YAML::Node data;
-		try { data = YAML::LoadFile(path); } catch(YAML::ParserException e) {
+		try { data = YAML::LoadFile(path.string()); } catch(YAML::ParserException e) {
 			
-			LogError("Failed to Read .scene file. {}", path.String());
+			LogError("Failed to Read .scene file. {}", path.string());
 			LogError("    {}", e.what());
 			return false;
 			
@@ -146,7 +146,7 @@ namespace Copper {
 
 		uint32_t sceneVersion = versionNode.as<uint32_t>();
 		if (oldDeserializeFunctions.find(sceneVersion) != oldDeserializeFunctions.end()) return oldDeserializeFunctions[sceneVersion](data, this);
-		CU_ASSERT(sceneVersion == SCENE_VERSION, "The Scene you tried to open has an invalid version ({})\n{}", sceneVersion, path.String());
+		CU_ASSERT(sceneVersion == SCENE_VERSION, "The Scene you tried to open has an invalid version of {}\n    Path: {}", sceneVersion, path.string());
 
 		this->name = data["Name"].as<std::string>();
 

@@ -11,17 +11,17 @@
 
 namespace Copper::Scripting::MonoUtils {
 
-	MonoAssembly* LoadAssembly(const Filesystem::Path& path) {
+	MonoAssembly* LoadAssembly(const fs::path& path) {
 
 		uint32_t dataSize;
-		char* data = Utilities::ReadFileBinary(path.String(), &dataSize);
+		char* data = Utilities::ReadFileBinary(path.string(), &dataSize);
 		if (!data) return nullptr;
 
 		MonoImageOpenStatus status;
 		MonoImage* image = mono_image_open_from_data_full(data, dataSize, 1, &status, 0);
-		if (status != MONO_IMAGE_OK) { LogError("Failed to Read Assembly {0}.\n\n{1}", path.String(), mono_image_strerror(status)); return nullptr; }
+		if (status != MONO_IMAGE_OK) { LogError("Failed to Read Assembly {0}.\n\n{1}", path.string(), mono_image_strerror(status)); return nullptr; }
 
-		MonoAssembly* assembly = mono_assembly_load_from_full(image, path.String().c_str(), &status, 0);
+		MonoAssembly* assembly = mono_assembly_load_from_full(image, path.string().c_str(), &status, 0);
 		mono_image_close(image);
 
 		delete[] data;

@@ -10,12 +10,12 @@ namespace Editor::ProjectFileWatcher {
 
 	struct ProjectFileWatcherData {
 
-		Filesystem::Path directory;
+		fs::path directory;
 		bool running;
 
 		Unique<filewatch::FileWatch<std::string>> fw;
 
-		std::vector<std::function<void(const Filesystem::Path&, const FileChangeType& changeType)>> callbacks;
+		std::vector<std::function<void(const fs::path&, const FileChangeType& changeType)>> callbacks;
 
 	};
 	ProjectFileWatcherData data;
@@ -24,10 +24,10 @@ namespace Editor::ProjectFileWatcher {
 
 	void Start() {
 
-		if (data.directory.Empty()) { LogError("Can't FileWatch an empty Directory!"); return; }
+		if (data.directory.empty()) { LogError("Can't FileWatch an empty Directory!"); return; }
 
 		data.running = true;
-		data.fw = CreateUnique<filewatch::FileWatch<std::string>>(data.directory.String(), FileChangeCallback);
+		data.fw = CreateUnique<filewatch::FileWatch<std::string>>(data.directory.string(), FileChangeCallback);
 
 	}
 	void Stop() {
@@ -39,13 +39,11 @@ namespace Editor::ProjectFileWatcher {
 
 	static void FileChangeCallback(const std::string& path, const filewatch::Event changeType) {
 
-		Log("Why the fuck are you not working and registering anything you stupid fucking dumbass");
-
 		if (!data.running) return;
 
-		Filesystem::Path fsPath(path);
+		fs::path fsPath(path);
 		
-		if (fsPath.Extension() != "cs")
+		if (fsPath.extension() != "cs")
 			return;
 
 		FileChangeType type;
@@ -63,8 +61,8 @@ namespace Editor::ProjectFileWatcher {
 
 	}
 
-	void SetDirectory(const Filesystem::Path& directory) { data.directory = directory; }
+	void SetDirectory(const fs::path& directory) { data.directory = directory; }
 
-	void AddFileChangeCallback(std::function<void(const Filesystem::Path&, const FileChangeType& changeType)> func) { data.callbacks.push_back(func); }
+	void AddFileChangeCallback(std::function<void(const fs::path&, const FileChangeType& changeType)> func) { data.callbacks.push_back(func); }
 
 }

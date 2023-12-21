@@ -4,13 +4,13 @@ namespace Editor {
 
 	using namespace Copper;
 
-	void Model::LoadMesh(const Filesystem::Path& path) {
+	void Model::LoadMesh(const fs::path& path) {
 
 		Assimp::Importer importer;
 
-		const aiScene* scene = importer.ReadFile(path.String().c_str(), (aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices));
+		const aiScene* scene = importer.ReadFile(path.string().c_str(), (aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices));
 
-		if (!scene) { LogError("Error Parsing FBX model file!\nPath: {0}\nError:\n\n{1}", path.String(), importer.GetErrorString()); return; }
+		if (!scene) { LogError("Error Parsing FBX model file!\nPath: {0}\nError:\n\n{1}", path.string(), importer.GetErrorString()); return; }
 
 		uint32_t numVertices = 0;
 		uint32_t numIndices = 0;

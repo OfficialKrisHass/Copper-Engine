@@ -1,37 +1,38 @@
 #include "ProjectTemplate.h"
 
+#ifdef CU_LINUX
+using std::experimental::filesystem::create_directories;
+#else
+using std::filesystem::create_directories;
+#endif
+
 namespace Editor {
 
-	void CreateFileAndReplace(const Filesystem::Path& original, const Filesystem::Path& out, const std::string& what, const std::string& replace);
+	void CreateFileAndReplace(const fs::path& original, const fs::path& out, const std::string& what, const std::string& replace);
 
-	void CopyFileTo(const Filesystem::Path& original, const Filesystem::Path& where, bool binary = false);
+	void CopyFileTo(const fs::path& original, const fs::path& where, bool binary = false);
 
 	void CreateTemplateFromProject(const Project& project) {
 
-		const Filesystem::Path path = "assets/Templates/" + project.name;
+		const fs::path path = "assets/Templates/" + project.name;
 
-		std::experimental::filesystem::create_directories(path.String() + "/Assets/Scenes");
+		create_directories(path.string() + "/Assets/Scenes");
 
 		CreateFileAndReplace(project.path / "Project.cu", path / "Project.cu.cut", project.name, ":{ProjectName}");
 
 		CopyFileTo(project.assetsPath / project.lastOpenedScene, path / "Assets" / project.lastOpenedScene);
-		CopyFileTo(project.assetsPath / (project.lastOpenedScene.String() + ".cum"), path / "Assets" / (project.lastOpenedScene.String() + ".cum"));
+		CopyFileTo(project.assetsPath / (project.lastOpenedScene.string() + ".cum"), path / "Assets" / (project.lastOpenedScene.string() + ".cum"));
 
 	}
-	void CreateProjectFromTemplate(const Filesystem::Path& templatePath, Project& project) {
+	void CreateProjectFromTemplate(const fs::path& templatePath, Project& project) {
 
-		std::experimental::filesystem::create_directories(project.path.String() + "/Assets/Scenes");
-		std::experimental::filesystem::create_directories(project.path.String() + "/Binaries");
-		std::experimental::filesystem::create_directories(project.path.String() + "/Objs");
+		create_directories(project.path.string() + "/Assets/Scenes");
+		create_directories(project.path.string() + "/Binaries");
+		create_directories(project.path.string() + "/Objs");
 
 		CreateFileAndReplace(templatePath / "Project.cu.cut", project.path / "Project.cu", ":{ProjectName}", project.name);
 
-	#ifdef CU_WINDOWS
-		CreateFileAndReplace("assets/Templates/Template.sln.cut", project.path / (project.name + ".sln"), ":{ProjectName}", project.name);
-		CreateFileAndReplace("assets/Templates/Template.csproj.cut", project.path / (project.name + ".csproj"), ":{ProjectName}", project.name);
-	#else
-		CreateFileAndReplace("assets/Templates/premake5.lua.cut", project.path / "premake5.lua", ":{ProjectName}", project.name);
-	#endif
+		project.RegenerateIDEFiles();
 
 		//Copy the Template Scene
 		CopyFileTo(templatePath / "Assets/Scenes/EmptyTemplate.copper", project.assetsPath / "Scenes/EmptyTemplate.copper");
@@ -43,7 +44,7 @@ namespace Editor {
 
 	}
 	
-	void CreateFileAndReplace(const Filesystem::Path& original, const Filesystem::Path& out, const std::string& what, const std::string& argument) {
+	void CreateFileAndReplace(const fs::path& original, const fs::path& out, const std::string& what, const std::string& argument) {
 
 		std::ifstream originalFile(original);
 		std::ofstream templateFile(out);
@@ -68,7 +69,7 @@ namespace Editor {
 
 	}
 
-	void CopyFileTo(const Filesystem::Path& original, const Filesystem::Path& where, bool binary) {
+	void CopyFileTo(const fs::path& original, const fs::path& where, bool binary) {
 		
 		std::ios_base::openmode inFlags = std::ios_base::in;
 		std::ios_base::openmode outFlags = std::ios_base::out;
@@ -82,8 +83,8 @@ namespace Editor {
 		std::ifstream originalFile;
 		std::ofstream newFile;
 
-		originalFile.open(original.String(), inFlags);
-		newFile.open(where.String(), outFlags);
+		originalFile.open(original.string(), inFlags);
+		newFile.open(where.string(), outFlags);
 
 		newFile << originalFile.rdbuf();
 

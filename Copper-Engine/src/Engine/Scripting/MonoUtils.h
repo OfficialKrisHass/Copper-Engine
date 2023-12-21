@@ -2,8 +2,6 @@
 
 #include "Engine/Core/Core.h"
 
-#include "Engine/Filesystem/Path.h"
-
 #include "Engine/Scripting/Field.h"
 
 #include <cupch.h>
@@ -30,7 +28,7 @@ namespace Copper::Scripting::MonoUtils {
 	};
 
 	//Assembly
-	MonoAssembly* LoadAssembly(const Filesystem::Path& path);
+	MonoAssembly* LoadAssembly(const fs::path& path);
 
 	//Strings
 	std::string MonoToString(MonoString* string);

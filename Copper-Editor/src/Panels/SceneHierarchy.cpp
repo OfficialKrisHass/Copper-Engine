@@ -20,8 +20,6 @@ namespace Editor {
 
 	void SceneHierarchy::UI() {
 
-		CU_ASSERT(scene, "SceneHierarchy::scene is nullptr... HOW ???!!??!!");
-
 		if (ImGui::BeginPopupContextWindow("##Scene Hierarchy")) {
 
 			PopupWindow();
@@ -124,7 +122,7 @@ namespace Editor {
 
 	void SceneHierarchy::PopupWindow() {
 
-		if (ImGui::MenuItem("Entity")) {
+		if (ImGui::MenuItem("Entity", 0, false, scene)) {
 
 			selectedEntity = scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one);
 			SetChanges(true);
@@ -135,7 +133,7 @@ namespace Editor {
 
 		if (ImGui::BeginMenu("3D Objects")) {
 
-			if (ImGui::MenuItem("Plane")) {
+			if (ImGui::MenuItem("Plane", 0, false, scene)) {
 
 				selectedEntity = scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Plane");
 				MeshRenderer* renderer = selectedEntity->AddComponent<MeshRenderer>();
@@ -150,7 +148,7 @@ namespace Editor {
 				SetChanges(true);
 
 			}
-			if (ImGui::MenuItem("Cube")) {
+			if (ImGui::MenuItem("Cube", 0, false, scene)) {
 
 				selectedEntity = scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Cube");
 				MeshRenderer* renderer = selectedEntity->AddComponent<MeshRenderer>();
@@ -170,7 +168,7 @@ namespace Editor {
 
 		}
 
-		if (ImGui::MenuItem("Light")) {
+		if (ImGui::MenuItem("Light", 0, false, scene)) {
 
 			selectedEntity = scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Light");
 			Light* l = selectedEntity->AddComponent<Light>();
@@ -178,7 +176,7 @@ namespace Editor {
 			SetChanges(true);
 
 		}
-		if (ImGui::MenuItem("Camera")) {
+		if (ImGui::MenuItem("Camera", 0, false, scene)) {
 
 			selectedEntity = scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Camera");
 			Camera* c = selectedEntity->AddComponent<Camera>();

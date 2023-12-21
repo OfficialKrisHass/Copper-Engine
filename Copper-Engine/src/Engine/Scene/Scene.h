@@ -5,8 +5,6 @@
 #include "Engine/Scene/InternalEntity.h"
 #include "Engine/Scene/Registry.h"
 
-#include "Engine/Filesystem/Path.h"
-
 #define ENTITY_DEFAULT_PROPERTIES_DECLARATION const Vector3& position = Vector3::zero, const Quaternion& rotation = Quaternion(1.0f, 0.0f, 0.0f, 0.0f), const Vector3& scale = Vector3::one, const std::string& name = "Entity"
 #define ENTITY_PROPERTIES_DECLARATION const Vector3& position, const Quaternion& rotation, const Vector3& scale, const std::string& name
 
@@ -32,7 +30,7 @@ namespace Copper {
 
 	public:
 		std::string name;
-		Filesystem::Path path;
+		fs::path path;
 
 		Camera* cam = nullptr;
 
@@ -69,8 +67,8 @@ namespace Copper {
 
 		void Render(Camera* cam);
 
-		void Serialize(const Filesystem::Path& path);
-		bool Deserialize(const Filesystem::Path& path);
+		void Serialize(const fs::path& path);
+		bool Deserialize(const fs::path& path);
 
 		Registry::ComponentPool* GetComponentPool(int cID) {
 

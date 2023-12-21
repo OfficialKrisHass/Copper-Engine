@@ -14,21 +14,27 @@ namespace Editor {
 	float rotX;
 	float rotY;
 
+	SceneCamera::SceneCamera(UVector2I size) : Camera(size) {
+
+		this->transform = new Transform(Vector3::zero, Vector3::zero, Vector3::one);
+
+	}
+
 	void SceneCamera::Update() {
 		
-		GetTransform()->Update();
+		transform->Update();
 
 		if(!canLook) return;
 
 		if (Input::IsButton(MouseCode::Button2)) {
 
-			if (Input::IsKey(KeyCode::W)) { GetTransform()->position +=  GetTransform()->Forward() * speed; }
-			if (Input::IsKey(KeyCode::S)) { GetTransform()->position += -GetTransform()->Forward() * speed; }
-			if (Input::IsKey(KeyCode::A)) { GetTransform()->position += -GetTransform()->Right() * speed; }
-			if (Input::IsKey(KeyCode::D)) { GetTransform()->position +=  GetTransform()->Right() * speed; }
+			if (Input::IsKey(KeyCode::W)) { transform->position +=  transform->Forward() * speed; }
+			if (Input::IsKey(KeyCode::S)) { transform->position += -transform->Forward() * speed; }
+			if (Input::IsKey(KeyCode::A)) { transform->position += -transform->Right() * speed; }
+			if (Input::IsKey(KeyCode::D)) { transform->position +=  transform->Right() * speed; }
 		
-			if (Input::IsKey(KeyCode::Space))       { GetTransform()->position +=  GetTransform()->Up() * speed; }
-			if (Input::IsKey(KeyCode::LeftControl)) { GetTransform()->position += -GetTransform()->Up() * speed; }
+			if (Input::IsKey(KeyCode::Space))       { transform->position +=  transform->Up() * speed; }
+			if (Input::IsKey(KeyCode::LeftControl)) { transform->position += -transform->Up() * speed; }
 			
 			Input::SetCursorVisible(false);
 
@@ -47,7 +53,7 @@ namespace Editor {
 			
 			rotX -= sensitivity * (float) (mouseY - (GetWindow().Height() / 2)) / GetWindow().Height();
 			rotY -= sensitivity * (float) (mouseX - (GetWindow().Width() / 2)) / GetWindow().Width();
-			GetTransform()->rotation = Quaternion(rotX, rotY, 0.0f);
+			transform->rotation = Quaternion(rotX, rotY, 0.0f);
 			
 			Input::SetCursorPosition((float) GetWindow().Width() / 2, (float) GetWindow().Height() / 2);
 

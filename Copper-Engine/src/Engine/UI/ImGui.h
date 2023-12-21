@@ -3,7 +3,7 @@
 #include "Engine/Core/Core.h"
 #include "Engine/Core/Window.h"
 
-class ImGuiContext;
+struct ImGuiContext;
 
 namespace Copper {
 

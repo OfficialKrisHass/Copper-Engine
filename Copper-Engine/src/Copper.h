@@ -24,10 +24,6 @@
 //Utilities
 #include "Engine/Utilities/FileUtils.h"
 
-//Filesystem
-#include "Engine/Filesystem/Path.h"
-#include "Engine/Filesystem/Iterator.h"
-
 //Rendering
 #include "Engine/Renderer/Texture.h"
 #include "Engine/Renderer/Mesh.h"

@@ -171,10 +171,46 @@ namespace Editor {
 		ImGui::PushID((int) (int64_t) rb);
 		if (!DrawComponent<RigidBody>("Rigid Body", rb->GetEntity())) { ImGui::PopID(); return; }
 
-		if (ShowBool("Static", &rb->isStatic) && IsSceneRuntimeRunning()) rb->Setup();
-		if (ShowBool("Gravity", &rb->gravity) && IsSceneRuntimeRunning()) rb->Setup();
+		bool changed = false;
 
-		if (ShowFloat("Mass", &rb->mass) && IsSceneRuntimeRunning()) rb->Setup();
+		if (ShowBool("Static", &rb->isStatic) && !changed && IsSceneRuntimeRunning()) changed = true;
+		if (ShowBool("Gravity", &rb->gravity) && !changed && IsSceneRuntimeRunning()) changed = true;
+
+		if (ShowFloat("Mass", &rb->mass) && !changed && IsSceneRuntimeRunning()) changed = true;
+
+		// Position Lock
+
+		ImGui::Text("Lock Pos:");
+
+		ImGui::SameLine();
+		if (ImGui::Checkbox("X##Pos", &rb->positionLock[0]) && !changed && IsSceneRuntimeRunning())
+			changed = true;
+
+		ImGui::SameLine();
+		if (ImGui::Checkbox("Y##Pos", &rb->positionLock[1]) && !changed && IsSceneRuntimeRunning())
+			changed = true;
+
+		ImGui::SameLine();
+		if (ImGui::Checkbox("Z##Pos", &rb->positionLock[2]) && !changed && IsSceneRuntimeRunning())
+			changed = true;
+
+		// Rotation Lock
+
+		ImGui::Text("Lock Rot:");
+
+		ImGui::SameLine();
+		if (ImGui::Checkbox("X##Rot", &rb->rotationLock[0]) && !changed && IsSceneRuntimeRunning())
+			changed = true;
+
+		ImGui::SameLine();
+		if (ImGui::Checkbox("Y##Rot", &rb->rotationLock[1]) && !changed && IsSceneRuntimeRunning())
+			changed = true;
+
+		ImGui::SameLine();
+		if (ImGui::Checkbox("Z##Rot", &rb->rotationLock[2]) && !changed && IsSceneRuntimeRunning())
+			changed = true;
+
+		if (changed) rb->Setup();
 
 		ImGui::PopID();
 

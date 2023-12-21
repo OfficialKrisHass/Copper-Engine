@@ -4,22 +4,24 @@ using Copper;
 
 class Player : Component {
 
-    public float jumpForce = 10.0f;
+    public float speed = 1.0f;
 
-    public RigidBody rb;
+    RigidBody rb;
 
     private void Create() {
 
         rb = GetComponent<RigidBody>();
 
+        Input.SetCursorLocked(true);
+        Input.SetCursorVisible(false);
+
     }
     private void Update() {
 
-        if (Input.IsKeyDown(KeyCode.Space)) {
+        float x = Input.GetAxis("Keys_WS") * speed;
+        float z = Input.GetAxis("Keys_DA") * speed;
 
-            rb.AddForce(new Vector3(0.0f, jumpForce, 0.0f), ForceMode.Force);
-
-        }
+        rb.AddForce(transform.forward * x + transform.right * z, ForceMode.Force);
 
     }
 

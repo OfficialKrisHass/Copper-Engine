@@ -4,7 +4,7 @@
 
 #include "Engine/Scene/Component.h"
 
-namespace physx { class PxRigidActor; }
+namespace physx { class PxRigidActor; class PxShape; }
 #ifdef CU_EDITOR
     namespace Editor { class Properties; }
 #endif
@@ -44,6 +44,9 @@ namespace Copper {
 
         float mass = 1.0f;
 
+        bool positionLock[3] = { false, false, false };
+        bool rotationLock[3] = { false, false, false };
+
         void UpdatePositionAndRotation();
 
         void AddForce(const Vector3& force, const ForceMode mode);
@@ -53,6 +56,9 @@ namespace Copper {
         physx::PxRigidActor* body;
 
         void Setup();
+
+        void CreateDynamic(physx::PxShape* shape);
+        void CreateStatic(physx::PxShape* shape);
 
     };
     

@@ -43,7 +43,7 @@ namespace Editor::ProjectFileWatcher {
 
 		fs::path fsPath(path);
 		
-		if (fsPath.extension() != "cs")
+		if (fsPath.extension() != ".cs")
 			return;
 
 		FileChangeType type;

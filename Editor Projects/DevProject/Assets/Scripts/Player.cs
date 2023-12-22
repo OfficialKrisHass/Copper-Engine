@@ -5,6 +5,7 @@ using Copper;
 class Player : Component {
 
     public float speed = 1.0f;
+    public float sensitivity= 1.0f;
 
     RigidBody rb;
 

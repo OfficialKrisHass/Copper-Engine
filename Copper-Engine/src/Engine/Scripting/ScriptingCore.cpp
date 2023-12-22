@@ -313,7 +313,8 @@ namespace Copper::Scripting {
 
 		//======== Quaternion ========
 
-		mono_add_internal_call("Copper.InternalCalls::QuaternionEulerAngles", (void*) InternalCalls::QuaternionEulerAngles);
+		mono_add_internal_call("Copper.InternalCalls::QuaternionToEulerAngles", (void*) InternalCalls::QuaternionToEulerAngles);
+		mono_add_internal_call("Copper.InternalCalls::QuaternionFromEulerAngles", (void*) InternalCalls::QuaternionFromEulerAngles);
 
 	}
 

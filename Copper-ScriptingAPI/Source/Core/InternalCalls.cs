@@ -90,7 +90,8 @@ namespace Copper {
 
         //======== Quaternion ========
 
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static Vector3 QuaternionEulerAngles(Quaternion quaternion);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static Vector3 QuaternionToEulerAngles(Quaternion quaternion);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static Quaternion QuaternionFromEulerAngles(Vector3 quaternion);
 
     }
 

@@ -462,9 +462,14 @@ namespace Copper::Scripting::InternalCalls {
 	}
 
 	//Quaternion
-	static Vector3 QuaternionEulerAngles(Quaternion* quaternion) {
+	static Vector3 QuaternionToEulerAngles(Quaternion* quaternion) {
 
 		return quaternion->EulerAngles();
+
+	}
+	static Quaternion QuaternionFromEulerAngles(Vector3* euler) {
+
+		return Quaternion(*euler);
 
 	}
 

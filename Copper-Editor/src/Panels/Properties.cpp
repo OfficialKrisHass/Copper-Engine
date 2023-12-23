@@ -59,13 +59,19 @@ namespace Editor {
 
 		if(DrawComponent<Transform>("Transform", entity)) {
 			
-			ShowVector3("Position", &entity->GetTransform()->position);
+			Transform* transform = entity->GetTransform();
 
-			Vector3 newRot = entity->GetTransform()->rotation.EulerAngles();
+			ShowVector3("Position", &transform->position);
+			Vector3 globalPos = transform->GlobalPosition();
+			ShowVector3("Global Position", &globalPos);
+
+			ImGui::Separator();
+
+			Vector3 newRot = transform->rotation.EulerAngles();
 			if (ShowVector3("Rotation", &newRot));
-				entity->GetTransform()->rotation = Quaternion(newRot);
+				transform->rotation = Quaternion(newRot);
 
-			ShowVector3("Scale", &entity->GetTransform()->scale);
+			ShowVector3("Scale", &transform->scale);
 			
 		}
 

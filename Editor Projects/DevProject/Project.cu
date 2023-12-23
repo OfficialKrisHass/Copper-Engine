@@ -1,8 +1,8 @@
 Name: DevProject
-Last Scene: Scenes\EmptyTemplate.copper
+Last Scene: Scenes\ParentAndChild.copper
 Gizmo: 0
 Scene Camera:
-  Position: [0.439251035, 2.55451226, -4.25000048]
-  Rotation: [0.118303567, -0.0321349874, 0.957752824, 0.260155946]
+  Position: [4.35536909, 1.64665878, -4.76341581]
+  Rotation: [-0.0538964942, 0.011249329, 0.977419794, 0.204007998]
   Speed: 0.0299999993
   Sensitivity: 110

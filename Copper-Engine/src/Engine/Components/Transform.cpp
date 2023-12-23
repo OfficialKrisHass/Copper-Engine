@@ -33,9 +33,9 @@ namespace Copper {
 
 	void Transform::Update() {
 
-		this->forward	= rotation * Vector3(0.0f, 0.0f, -1.0f);
-		this->right		= rotation * Vector3(1.0f, 0.0f,  0.0f);
-		this->up		= rotation * Vector3(0.0f, 1.0f,  0.0f);
+		this->forward	= GlobalRotation() * Vector3(0.0f, 0.0f, -1.0f);
+		this->right		= GlobalRotation() * Vector3(1.0f, 0.0f,  0.0f);
+		this->up		= GlobalRotation() * Vector3(0.0f, 1.0f,  0.0f);
 
 	}
 
@@ -45,24 +45,39 @@ namespace Copper {
 		else return position;
 
 	}
+	Quaternion Transform::GlobalRotation() const {
+
+		if (parent) return rotation * parent->GlobalRotation();
+		else return rotation;
+
+	}
+	Vector3 Transform::GlobalScale() const {
+
+		if (parent) return scale * parent->GlobalScale();
+		else return scale;
+
+	}
 
 	Transform* Transform::GetChild(int index) const { return GetEntityFromID(children[index])->GetTransform(); }
 
 	void Transform::SetParent(Transform* parent) {
 
 		if (parent == this->parent) return;
+
+		// Case 1: Removing a parent (new parent == nullptr)
 		if (parent == nullptr) {
 
-			position = GlobalPosition();
+			position += this->parent->GlobalPosition();
 
 			this->parent->children.erase(this->parent->children.begin() + parentChildIndex);
 			this->parent = nullptr;
 
 			parentChildIndex = -1;
-
 			return;
 
 		}
+
+		// Case 2: Changing a parent (old parent != nullptr)
 		if (this->parent) {
 
 			position += this->parent->GlobalPosition();
@@ -74,44 +89,46 @@ namespace Copper {
 
 			parent->children.push_back(GetEntity()->ID());
 
-			position -= parent->GlobalPosition();
+			position -= this->parent->GlobalPosition();
 
 			return;
 
 		}
+
+		// Case 3: Setting a parent (old parent == nullptr)
 
 		this->parent = parent;
 		this->parentChildIndex = (uint32_t) parent->children.size();
 
 		parent->children.push_back(GetEntity()->ID());
 
-		position -= parent->GlobalPosition();
+		position -= this->parent->GlobalPosition();
 
 	}
 
-	void Transform::AddChild(Transform* transform) {
+	void Transform::AddChild(Transform* child) {
 
-		if (transform->parent == this || !transform) return;
-		if (transform->parent) {
+		if (child->parent == this || !child) return;
+		if (child->parent) {
 
-			transform->position += transform->parent->GlobalPosition();
-			transform->parent->children.erase(transform->parent->children.begin() + transform->parentChildIndex);
+			child->position += child->parent->GlobalPosition();
+			child->parent->children.erase(child->parent->children.begin() + child->parentChildIndex);
 
 		}
 
-		transform->parent = this;
-		transform->parentChildIndex = (uint32_t) children.size();
+		child->parent = this;
+		child->parentChildIndex = (uint32_t) children.size();
 
-		children.push_back(transform->GetEntity()->ID());
+		children.push_back(child->GetEntity()->ID());
 
-		transform->position -= GlobalPosition();
+		child->position -= GlobalPosition();
 
 	}
 	void Transform::RemoveChild(int index) {
 
 		Transform* child = GetEntityFromID(children[index])->GetTransform();
 		
-		child->position = child->GlobalPosition();
+		child->position += child->parent->GlobalPosition();
 		child->parent = nullptr;
 		child->parentChildIndex = -1;
 

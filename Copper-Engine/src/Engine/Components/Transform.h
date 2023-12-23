@@ -28,6 +28,8 @@ namespace Copper {
 		Vector3 scale = Vector3::one;
 
 		Vector3 GlobalPosition() const;
+		Quaternion GlobalRotation() const;
+		Vector3 GlobalScale() const;
 
 		//Parent
 		void SetParent(Transform* parent);

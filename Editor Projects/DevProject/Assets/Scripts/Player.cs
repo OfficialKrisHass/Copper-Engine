@@ -24,6 +24,11 @@ class Player : Component {
 
         rb.AddForce(transform.forward * x + transform.right * z, ForceMode.Force);
 
+        float mouseX = Input.GetAxis("Mouse X") * sensitivity;
+        float mouseY = Input.GetAxis("Mouse Y") * sensitivity;
+
+        transform.rotation += Quaternion.Euler(0.0f, mouseX, 0.0f);
+
     }
 
 }

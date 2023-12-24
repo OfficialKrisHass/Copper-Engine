@@ -62,20 +62,12 @@ namespace Editor {
 			Transform* transform = entity->GetTransform();
 
 			ShowVector3("Position", &transform->position);
-			Vector3 globalPos = transform->GlobalPosition();
-			ShowVector3("Global Position", &globalPos);
-
-			ImGui::Separator();
 
 			Vector3 newRot = transform->rotation.EulerAngles();
 			if (ShowVector3("Rotation", &newRot));
 				transform->rotation = Quaternion(newRot);
 
-			ImGui::Separator();
-
 			ShowVector3("Scale", &transform->scale);
-			Vector3 globalScale = transform->GlobalScale();
-			ShowVector3("Global Scale", &globalScale);
 			
 		}
 

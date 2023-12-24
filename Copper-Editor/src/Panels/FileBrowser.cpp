@@ -96,7 +96,7 @@ namespace Editor {
 
             }
 
-            if (path.extension() == "cum") continue;
+            if (path.extension() == ".cum") continue;
 
             ImGui::PushID(filename.c_str());
 
@@ -121,7 +121,7 @@ namespace Editor {
             if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
                 
                 if (entry.is_directory()) projectRelativeDir /= path.filename();
-                if (path.extension() == "copper") {
+                if (path.extension() == ".copper") {
 
                     OpenScene(GetProject().assetsPath / path);
                     

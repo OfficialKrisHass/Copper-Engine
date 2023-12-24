@@ -69,10 +69,9 @@ namespace Copper {
 
 			position += this->parent->GlobalPosition();
 
-			this->parent->children.erase(this->parent->children.begin() + parentChildIndex);
+			this->parent->RemoveChild(this);
 			this->parent = nullptr;
 
-			parentChildIndex = -1;
 			return;
 
 		}
@@ -82,11 +81,8 @@ namespace Copper {
 
 			position += this->parent->GlobalPosition();
 
-			this->parent->children.erase(this->parent->children.begin() + parentChildIndex);
-
+			this->parent->RemoveChild(this);
 			this->parent = parent;
-			this->parentChildIndex = (uint32_t) parent->children.size();
-
 			parent->children.push_back(GetEntity()->ID());
 
 			position -= this->parent->GlobalPosition();
@@ -98,8 +94,6 @@ namespace Copper {
 		// Case 3: Setting a parent (old parent == nullptr)
 
 		this->parent = parent;
-		this->parentChildIndex = (uint32_t) parent->children.size();
-
 		parent->children.push_back(GetEntity()->ID());
 
 		position -= this->parent->GlobalPosition();
@@ -112,13 +106,12 @@ namespace Copper {
 		if (child->parent) {
 
 			child->position += child->parent->GlobalPosition();
-			child->parent->children.erase(child->parent->children.begin() + child->parentChildIndex);
+
+			child->parent->RemoveChild(child);
 
 		}
 
 		child->parent = this;
-		child->parentChildIndex = (uint32_t) children.size();
-
 		children.push_back(child->GetEntity()->ID());
 
 		child->position -= GlobalPosition();
@@ -126,18 +119,33 @@ namespace Copper {
 	}
 	void Transform::RemoveChild(int index) {
 
+		if (index < 0 || index > children.size()) {
+
+			LogError("Can't remove an invalid index child. Parent: {} ({}), index: {}", GetEntity()->name, GetEntity()->ID(), index);
+			return;
+
+		}
+
 		Transform* child = GetEntityFromID(children[index])->GetTransform();
 		
 		child->position += child->parent->GlobalPosition();
 		child->parent = nullptr;
-		child->parentChildIndex = -1;
 
 		children.erase(children.begin() + index);
 	
 	}
 	void Transform::RemoveChild(Transform* transform) {
 
-		RemoveChild(transform->parentChildIndex);
+		for (int i = 0; i < children.size(); i++) {
+
+			if (children[i] != transform->GetEntity()->ID()) continue;
+
+			RemoveChild(i);
+			return;
+
+		}
+
+		LogError("Can't remove a child. Parent: {} ({}), Child: {} ({})", GetEntity()->name, GetEntity()->ID(), transform->GetEntity()->name, transform->GetEntity()->ID());
 
 	}
 

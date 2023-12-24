@@ -60,7 +60,6 @@ namespace Copper {
 
 		//Parent Data
 		Transform* parent = nullptr;
-		int32_t parentChildIndex = -1;
 
 		//Children Data
 		std::vector<int32_t> children;

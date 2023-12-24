@@ -332,7 +332,6 @@ namespace Copper {
 			entity = saved;
 
 			entity->transform->parent = parent->transform;
-			entity->transform->parentChildIndex = (int32_t) parent->transform->children.size();
 
 			parent->transform->children.push_back(entity->id);
 
@@ -351,7 +350,6 @@ namespace Copper {
 			entity = saved;
 
 			child->transform->parent = entity->transform;
-			child->transform->parentChildIndex = i;
 
 		}
 

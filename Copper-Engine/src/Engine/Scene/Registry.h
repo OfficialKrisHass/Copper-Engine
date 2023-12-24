@@ -125,7 +125,7 @@ namespace Copper {
 			//Update the Parent
 			if (Transform* parent = entities[eID].transform->parent) {
 
-				parent->children.erase(parent->children.begin() + entities[eID].transform->parentChildIndex);
+				parent->RemoveChild(entities[eID].transform);
 
 			}
 

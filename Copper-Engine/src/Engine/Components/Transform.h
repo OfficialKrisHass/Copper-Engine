@@ -58,6 +58,10 @@ namespace Copper {
 		Vector3 right;
 		Vector3 up;
 
+		Vector3 globalPosition;
+		Quaternion globalRotation;
+		Vector3 globalScale;
+
 		//Parent Data
 		Transform* parent = nullptr;
 
@@ -66,4 +70,4 @@ namespace Copper {
 
 	};
 
-}
+} 

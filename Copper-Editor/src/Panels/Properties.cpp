@@ -71,7 +71,11 @@ namespace Editor {
 			if (ShowVector3("Rotation", &newRot));
 				transform->rotation = Quaternion(newRot);
 
+			ImGui::Separator();
+
 			ShowVector3("Scale", &transform->scale);
+			Vector3 globalScale = transform->GlobalScale();
+			ShowVector3("Global Scale", &globalScale);
 			
 		}
 

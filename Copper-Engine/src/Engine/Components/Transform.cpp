@@ -121,7 +121,7 @@ namespace Copper {
 
 		if (index < 0 || index > children.size()) {
 
-			LogError("Can't remove an invalid index child. Parent: {} ({}), index: {}", GetEntity()->name, GetEntity()->ID(), index);
+			LogError("Can't remove an invalid index child. Parent: {}, index: {}", *GetEntity(), index);
 			return;
 
 		}
@@ -145,7 +145,7 @@ namespace Copper {
 
 		}
 
-		LogError("Can't remove a child. Parent: {} ({}), Child: {} ({})", GetEntity()->name, GetEntity()->ID(), transform->GetEntity()->name, transform->GetEntity()->ID());
+		LogError("Can't remove a child. Parent: {}, Child: {}", *GetEntity(), *transform->GetEntity());
 
 	}
 

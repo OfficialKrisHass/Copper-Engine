@@ -200,7 +200,6 @@ namespace Copper {
         if (rotationLock[2]) flags |= LockFlag::eLOCK_ANGULAR_Z;
 
         ((PxRigidDynamic*) body)->setRigidDynamicLockFlags(flags);
-        //((PxRigidDynamic*) body)->setRigidDynamicLockFlags(LockFlag::eLOCK_ANGULAR_X | LockFlag::eLOCK_ANGULAR_Y | LockFlag::eLOCK_ANGULAR_Z);
 
     }
     void RigidBody::CreateStatic(PxShape* shape) {
@@ -211,15 +210,13 @@ namespace Copper {
 
     void RigidBody::UpdatePositionAndRotation() {
 
-        if (!body) {
-
-            //LogError("The body does not exist :c");
+        if (!body || isStatic)
             return;
 
-        }
+        Transform* transform = GetTransform();
 
-        GetTransform()->position = PhysXToCopper(body->getGlobalPose().p);
-        GetTransform()->rotation = PhysXToCopper(body->getGlobalPose().q);
+        transform->position = PhysXToCopper(body->getGlobalPose().p);
+        transform->rotation = PhysXToCopper(body->getGlobalPose().q);
 
     }
 
@@ -227,7 +224,7 @@ namespace Copper {
 
         if (isStatic) {
 
-            LogError("Cant add force to a static rigidBody on entity {} ({})", GetEntity()->name, GetEntity()->ID());
+            LogError("Cant add force to a static rigidBody on entity {}", *GetEntity(), GetEntity()->ID());
             return;
 
         }
@@ -239,7 +236,7 @@ namespace Copper {
 
         if (isStatic) {
 
-            LogError("Cant add torque to a static rigidBody on entity {} ({})", GetEntity()->name, GetEntity()->ID());
+            LogError("Cant add torque to a static rigidBody on entity {}", *GetEntity());
             return;
 
         }

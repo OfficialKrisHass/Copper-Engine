@@ -226,7 +226,7 @@ namespace Copper::Scripting::InternalCalls {
 
 	}
 
-	static void SetComponentObjID(MonoReflectionType* type, MonoObject* component, uint32_t eID) {
+	static void SetComponentEID(MonoReflectionType* type, MonoObject* component, uint32_t eID) {
 
 		MonoType* classType = mono_reflection_type_get_type(type);
 		MonoClassField* field = mono_class_get_field_from_name(mono_class_from_mono_type(classType), "eID");

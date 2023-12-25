@@ -19,6 +19,8 @@ class Player : Component {
 
     }
     private void Update() {
+        
+        Editor.Log(transform.position.ToString());
 
         float x = Input.GetAxis("Keys_WS") * speed;
         float z = Input.GetAxis("Keys_DA") * speed;

@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 
 namespace Copper {
 
@@ -18,8 +19,6 @@ namespace Copper {
             this.x = v.x;
             this.y = v.y;
             this.z = v.z;
-
-            //Vector4 test = Vector4.one * this;
 
         }
 
@@ -58,13 +57,13 @@ namespace Copper {
 
         public Vector3 eulerAngles {
 
-            get { return InternalCalls.QuaternionToEulerAngles(this); }
-            set { this = InternalCalls.QuaternionFromEulerAngles(value); }
+            get { return Internal_ToEuler(this); }
+            set { this = Internal_FromEuler(value); }
 
         }
 
-        public static Quaternion Euler(Vector3 euler) { return InternalCalls.QuaternionFromEulerAngles(euler); }
-        public static Quaternion Euler(float x, float y, float z) { return InternalCalls.QuaternionFromEulerAngles(new Vector3(x, y, z)); }
+        public static Quaternion Euler(Vector3 euler) { return Internal_FromEuler(euler); }
+        public static Quaternion Euler(float x, float y, float z) { return Internal_FromEuler(new Vector3(x, y, z)); }
 
         public static Quaternion operator+(Quaternion lhs, Quaternion rhs) { return new Quaternion(lhs.w + rhs.w, lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z); }
         public static Quaternion operator-(Quaternion lhs, Quaternion rhs) { return new Quaternion(lhs.w - rhs.w, lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z); }
@@ -101,6 +100,9 @@ namespace Copper {
         public override int GetHashCode() { return w.GetHashCode() ^ x.GetHashCode() ^ y.GetHashCode() ^ z.GetHashCode(); }
 
         public override string ToString() { return "W: {" + w + "} X: {" + x + "} Y: {" + y + "} Z: {" + z + "}"; }
+
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static Vector3 Internal_ToEuler(Quaternion quaternion);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static Quaternion Internal_FromEuler(Vector3 quaternion);
 
     }
 

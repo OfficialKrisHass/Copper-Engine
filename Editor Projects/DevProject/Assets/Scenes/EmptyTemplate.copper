@@ -159,10 +159,10 @@ Entities:
       Fields:
         speed:
           Type: 3
-          Value: 1
+          Value: 0
         sensitivity:
           Type: 3
-          Value: 1
+          Value: 0
   Ground:
     ID: 3
     Transform:

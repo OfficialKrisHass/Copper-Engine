@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace Copper {
 
@@ -20,14 +21,14 @@ namespace Copper {
             get {
 
                 Vector3 output;
-                InternalCalls.GetPosition(eID, out output);
+                Internal_GetPosition(eID, out output);
 
                 return output;
 
             }
             set {
 
-                InternalCalls.SetPosition(eID, value);
+                Internal_SetPosition(eID, value);
 
             }
 
@@ -37,14 +38,14 @@ namespace Copper {
             get {
 
                 Quaternion output;
-                InternalCalls.GetRotation(eID, out output);
+                Internal_GetRotation(eID, out output);
 
                 return output;
 
             }
             set {
 
-                InternalCalls.SetRotation(eID, value);
+                Internal_SetRotation(eID, value);
 
             }
 
@@ -54,14 +55,14 @@ namespace Copper {
             get {
 
                 Vector3 output;
-                InternalCalls.GetScale(eID, out output);
+                Internal_GetScale(eID, out output);
 
                 return output;
 
             }
             set {
 
-                InternalCalls.SetScale(eID, value);
+                Internal_SetScale(eID, value);
 
             }
 
@@ -72,7 +73,7 @@ namespace Copper {
             get {
 
                 Vector3 output;
-                InternalCalls.GetForward(eID, out output);
+                Internal_GetForward(eID, out output);
                 return output;
 
             }
@@ -83,7 +84,7 @@ namespace Copper {
             get {
 
                 Vector3 output;
-                InternalCalls.GetRight(eID, out output);
+                Internal_GetRight(eID, out output);
                 return output;
 
             }
@@ -94,12 +95,23 @@ namespace Copper {
             get {
 
                 Vector3 output;
-                InternalCalls.GetUp(eID, out output);
+                Internal_GetUp(eID, out output);
                 return output;
 
             }
 
         }
+
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_GetPosition(uint eID, out Vector3 position);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_GetRotation(uint eID, out Quaternion rotation);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_GetScale(uint eID, out Vector3 scale);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetPosition(uint eID, Vector3 position);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetRotation(uint eID, Quaternion rotation);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetScale(uint eID, Vector3 scale);
+
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_GetForward(uint eID, out Vector3 forward);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_GetRight(uint eID, out Vector3 right);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_GetUp(uint eID, out Vector3 up);
 
     }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 
 namespace Copper {
 
@@ -6,8 +7,8 @@ namespace Copper {
 
         public bool trigger {
 
-            get { return InternalCalls.BoxColliderGetTrigger(eID); }
-            set { InternalCalls.BoxColliderSetTrigger(eID, value); }
+            get { return Internal_GetTrigger(eID); }
+            set { Internal_SetTrigger(eID, value); }
 
         }
 
@@ -16,12 +17,12 @@ namespace Copper {
             get {
 
                 Vector3 ret;
-                InternalCalls.BoxColliderGetCenter(eID, out ret);
+                Internal_GetCenter(eID, out ret);
 
                 return ret;
                 
             }
-            set { InternalCalls.BoxColliderSetCenter(eID, value); }
+            set { Internal_SetCenter(eID, value); }
 
         }
         public Vector3 size {
@@ -29,14 +30,22 @@ namespace Copper {
             get {
 
                 Vector3 ret;
-                InternalCalls.BoxColliderGetSize(eID, out ret);
+                Internal_GetSize(eID, out ret);
 
                 return ret;
                 
             }
-            set { InternalCalls.BoxColliderSetSize(eID, value); }
+            set { Internal_SetSize(eID, value); }
 
         }
+
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool Internal_GetTrigger(uint eID);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_GetCenter(uint eID, out Vector3 center);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_GetSize(uint eID, out Vector3 size);
+
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetTrigger(uint eID, bool value);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetCenter(uint eID, Vector3 value);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetSize(uint eID, Vector3 value);
 
     }
 

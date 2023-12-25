@@ -189,17 +189,17 @@ namespace Copper {
             body->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true);
 
         // This hurts my eyes but I am like 99% sure there is no other way
-
-        typedef PxRigidDynamicLockFlag LockFlag;
+        // NOTE: As Always, there is :))))
+        /*typedef PxRigidDynamicLockFlag LockFlag;
         typedef PxRigidDynamicLockFlags LockFlags;
         LockFlags flags = positionLock[0] ? LockFlag::eLOCK_LINEAR_X : (LockFlag::Enum) 0;
         if (positionLock[1]) flags |= LockFlag::eLOCK_LINEAR_Y;
         if (positionLock[2]) flags |= LockFlag::eLOCK_LINEAR_Z;
         if (rotationLock[0]) flags |= LockFlag::eLOCK_ANGULAR_X;
         if (rotationLock[1]) flags |= LockFlag::eLOCK_ANGULAR_Y;
-        if (rotationLock[2]) flags |= LockFlag::eLOCK_ANGULAR_Z;
+        if (rotationLock[2]) flags |= LockFlag::eLOCK_ANGULAR_Z;*/
 
-        ((PxRigidDynamic*) body)->setRigidDynamicLockFlags(flags);
+        ((PxRigidDynamic*) body)->setRigidDynamicLockFlags((PxRigidDynamicLockFlag::Enum) lockMask);
 
     }
     void RigidBody::CreateStatic(PxShape* shape) {

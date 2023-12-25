@@ -30,6 +30,8 @@ namespace Editor {
 		bool ShowVector4(const std::string& name, Copper::Vector4* vec);
 		bool ShowColor(const std::string& name, Copper::Color* col);
 
+		bool ShowMask(const std::string& name, uint32_t& mask, int num, int maskOffset = 0, char startLabel = 'X');
+
 		bool ShowEntity(const std::string& name, Copper::InternalEntity** entity);
 
 		static bool IsDragDropTargetHovered() { return dragDropTargetHovered; }

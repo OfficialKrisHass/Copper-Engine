@@ -175,44 +175,19 @@ namespace Editor {
 
 		bool changed = false;
 
-		if (ShowBool("Static", &rb->isStatic) && !changed && IsSceneRuntimeRunning()) changed = true;
-		if (ShowBool("Gravity", &rb->gravity) && !changed && IsSceneRuntimeRunning()) changed = true;
+		if (ShowBool("Static", &rb->isStatic) && !changed) changed = true;
+		if (ShowBool("Gravity", &rb->gravity) && !changed) changed = true;
 
-		if (ShowFloat("Mass", &rb->mass) && !changed && IsSceneRuntimeRunning()) changed = true;
+		if (ShowFloat("Mass", &rb->mass) && !changed) changed = true;
+
+		ImGui::Text("Locks");
+		ImGui::Separator();
 
 		// Position Lock
+		if (ShowMask("Position", (uint32_t&) rb->lockMask, 3) && !changed) changed = true;
+		if (ShowMask("Rotation", (uint32_t&) rb->lockMask, 3, 3) && !changed) changed = true;
 
-		ImGui::Text("Lock Pos:");
-
-		ImGui::SameLine();
-		if (ImGui::Checkbox("X##Pos", &rb->positionLock[0]) && !changed && IsSceneRuntimeRunning())
-			changed = true;
-
-		ImGui::SameLine();
-		if (ImGui::Checkbox("Y##Pos", &rb->positionLock[1]) && !changed && IsSceneRuntimeRunning())
-			changed = true;
-
-		ImGui::SameLine();
-		if (ImGui::Checkbox("Z##Pos", &rb->positionLock[2]) && !changed && IsSceneRuntimeRunning())
-			changed = true;
-
-		// Rotation Lock
-
-		ImGui::Text("Lock Rot:");
-
-		ImGui::SameLine();
-		if (ImGui::Checkbox("X##Rot", &rb->rotationLock[0]) && !changed && IsSceneRuntimeRunning())
-			changed = true;
-
-		ImGui::SameLine();
-		if (ImGui::Checkbox("Y##Rot", &rb->rotationLock[1]) && !changed && IsSceneRuntimeRunning())
-			changed = true;
-
-		ImGui::SameLine();
-		if (ImGui::Checkbox("Z##Rot", &rb->rotationLock[2]) && !changed && IsSceneRuntimeRunning())
-			changed = true;
-
-		if (changed) rb->Setup();
+		if (changed && IsSceneRuntimeRunning()) rb->Setup();
 
 		ImGui::PopID();
 
@@ -587,6 +562,38 @@ namespace Editor {
 		if (ret) SetChanges(true);
 		return ret;
 		
+	}
+
+	bool Properties::ShowMask(const std::string& name, uint32_t& mask, int num, int maskOffset, char startLabel) {
+
+		ImGui::Text(name.c_str());
+
+		bool tmp;
+		bool ret = false;
+		std::string label = "";
+
+		for (int i = 0, bit = maskOffset; i < num; i++, maskOffset++) {
+
+			ImGui::SameLine();
+
+			tmp = mask & 1 << maskOffset;
+			label = (char) (startLabel + i);
+			label += "##" + name;
+
+			if (!ImGui::Checkbox(label.c_str(), &tmp))
+				continue;
+
+			ret = true;
+
+			if (tmp)
+				mask |= 1 << maskOffset;
+			else
+				mask &= ~(1 << maskOffset);
+
+		}
+
+		return ret;
+
 	}
 
 	bool Properties::ShowEntity(const std::string& name, InternalEntity** entity) {

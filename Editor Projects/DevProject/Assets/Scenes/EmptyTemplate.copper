@@ -149,14 +149,7 @@ Entities:
       Static: false
       Gravity: true
       Mass: 1
-      Position Lock:
-        - false
-        - false
-        - false
-      Rotation Lock:
-        - true
-        - true
-        - true
+      Lock Mask: 28
     Box Collider:
       Trigger: false
       Center: [0, 0, 0]
@@ -166,10 +159,10 @@ Entities:
       Fields:
         speed:
           Type: 3
-          Value: 0
+          Value: 1
         sensitivity:
           Type: 3
-          Value: 0
+          Value: 1
   Ground:
     ID: 3
     Transform:
@@ -294,14 +287,7 @@ Entities:
       Static: true
       Gravity: false
       Mass: 1
-      Position Lock:
-        - false
-        - false
-        - false
-      Rotation Lock:
-        - false
-        - false
-        - false
+      Lock Mask: 0
     Box Collider:
       Trigger: false
       Center: [0, 0, 0]

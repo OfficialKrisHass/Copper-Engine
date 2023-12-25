@@ -257,13 +257,7 @@ namespace Copper {
 
 			out << YAML::Key << "Mass" << YAML::Value << rb->mass;
 
-			out << YAML::Key << "Position Lock" << YAML::Value << YAML::BeginSeq; // Position Lock
-			out << rb->positionLock[0] << rb->positionLock[1] << rb->positionLock[2];
-			out << YAML::EndSeq; // Position Lock
-
-			out << YAML::Key << "Rotation Lock" << YAML::Value << YAML::BeginSeq; // Rotation Lock
-			out << rb->rotationLock[0] << rb->rotationLock[1] << rb->rotationLock[2];
-			out << YAML::EndSeq; // Rotation Lock
+			out << YAML::Key << "Lock Mask" << YAML::Value << (uint32_t) rb->lockMask;
 
 			out << YAML::EndMap; // Rigid Body
 
@@ -410,15 +404,7 @@ namespace Copper {
 
 			rb->mass = rbNode["Mass"].as<float>();
 
-			YAML::Node p = rbNode["Position Lock"];
-			rb->positionLock[0] = p[0].as<bool>();
-			rb->positionLock[1] = p[1].as<bool>();
-			rb->positionLock[2] = p[2].as<bool>();
-
-			YAML::Node r = rbNode["Rotation Lock"];
-			rb->rotationLock[0] = r[0].as<bool>();
-			rb->rotationLock[1] = r[1].as<bool>();
-			rb->rotationLock[2] = r[2].as<bool>();
+			rb->lockMask = rbNode["Lock Mask"].as<uint8_t>();
 
 		}
 		if (YAML::Node colliderNode = node["Box Collider"]) {

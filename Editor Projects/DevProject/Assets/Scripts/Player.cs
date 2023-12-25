@@ -8,6 +8,7 @@ class Player : Component {
     public float sensitivity= 1.0f;
 
     RigidBody rb;
+    Vector2 mouseRot;
 
     private void Create() {
 
@@ -24,10 +25,10 @@ class Player : Component {
 
         rb.AddForce(transform.forward * x + transform.right * z, ForceMode.Force);
 
-        float mouseX = Input.GetAxis("Mouse X") * sensitivity;
-        float mouseY = Input.GetAxis("Mouse Y") * sensitivity;
+        mouseRot.x = Input.GetAxis("Mouse X") * sensitivity;
+        mouseRot.y = Input.GetAxis("Mouse Y") * sensitivity;
 
-        transform.rotation += Quaternion.Euler(0.0f, mouseX, 0.0f);
+        transform.rotation = Quaternion.Euler(0.0f, mouseRot.x, 0.0f);
 
     }
 

@@ -82,12 +82,10 @@ namespace Editor {
         }
 
         if (!GetProject()) return;
-
         for(const fs::directory_entry& entry : fs::directory_iterator((GetProject().assetsPath / projectRelativeDir).string())) {
 
             fs::path fullPath = entry.path().string();
             fs::path path = fs::relative(fullPath, GetProject().assetsPath);
-
             std::string filename = path.filename().string();
             if(!entry.is_directory()) {  
                 

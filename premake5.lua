@@ -95,7 +95,7 @@ project "Copper-Engine"
         "VERSION_MAJOR=0",
         "VERSION_MINOR=2",
         "VERSION_PATCH=2",
-        "VERSION_TWEAK=31",
+        "VERSION_TWEAK=32",
         
         "SCENE_VERSION=0",
 
@@ -187,7 +187,7 @@ project "Copper-Editor"
         "{COPYDIR} lib/mono/lib ../Build/" .. outputDir .. "/Copper-Editor/lib/mono/lib",
 
         "{COPYDIR} lib/PhysX/windows/%{cfg.buildcfg} ../Build/" .. outputDir .. "/Copper-Editor",
-        "{COPYFILE} lib/mono/bin/%{cfg.buildcfg}/mono-2.0-sgen.dll ../Build/" .. outputDir .. "/Copper-Editor",
+        "{COPYFILE} lib/mono/bin/windows/%{cfg.buildcfg}/mono-2.0-sgen.dll ../Build/" .. outputDir .. "/Copper-Editor",
 
     }
 

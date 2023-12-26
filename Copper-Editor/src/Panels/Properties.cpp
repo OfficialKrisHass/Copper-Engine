@@ -59,13 +59,15 @@ namespace Editor {
 
 		if(DrawComponent<Transform>("Transform", entity)) {
 			
-			ShowVector3("Position", &entity->GetTransform()->position);
+			Transform* transform = entity->GetTransform();
 
-			Vector3 newRot = entity->GetTransform()->rotation.EulerAngles();
+			ShowVector3("Position", &transform->position);
+
+			Vector3 newRot = transform->rotation.EulerAngles();
 			if (ShowVector3("Rotation", &newRot));
-				entity->GetTransform()->rotation = Quaternion(newRot);
+				transform->rotation = Quaternion(newRot);
 
-			ShowVector3("Scale", &entity->GetTransform()->scale);
+			ShowVector3("Scale", &transform->scale);
 			
 		}
 
@@ -171,10 +173,21 @@ namespace Editor {
 		ImGui::PushID((int) (int64_t) rb);
 		if (!DrawComponent<RigidBody>("Rigid Body", rb->GetEntity())) { ImGui::PopID(); return; }
 
-		if (ShowBool("Static", &rb->isStatic) && IsSceneRuntimeRunning()) rb->Setup();
-		if (ShowBool("Gravity", &rb->gravity) && IsSceneRuntimeRunning()) rb->Setup();
+		bool changed = false;
 
-		if (ShowFloat("Mass", &rb->mass) && IsSceneRuntimeRunning()) rb->Setup();
+		if (ShowBool("Static", &rb->isStatic) && !changed) changed = true;
+		if (ShowBool("Gravity", &rb->gravity) && !changed) changed = true;
+
+		if (ShowFloat("Mass", &rb->mass) && !changed) changed = true;
+
+		ImGui::Text("Locks");
+		ImGui::Separator();
+
+		// Position Lock
+		if (ShowMask("Position", (uint32_t&) rb->lockMask, 3) && !changed) changed = true;
+		if (ShowMask("Rotation", (uint32_t&) rb->lockMask, 3, 3) && !changed) changed = true;
+
+		if (changed && IsSceneRuntimeRunning()) rb->Setup();
 
 		ImGui::PopID();
 
@@ -549,6 +562,38 @@ namespace Editor {
 		if (ret) SetChanges(true);
 		return ret;
 		
+	}
+
+	bool Properties::ShowMask(const std::string& name, uint32_t& mask, int num, int maskOffset, char startLabel) {
+
+		ImGui::Text(name.c_str());
+
+		bool tmp;
+		bool ret = false;
+		std::string label = "";
+
+		for (int i = 0, bit = maskOffset; i < num; i++, maskOffset++) {
+
+			ImGui::SameLine();
+
+			tmp = mask & 1 << maskOffset;
+			label = (char) (startLabel + i);
+			label += "##" + name;
+
+			if (!ImGui::Checkbox(label.c_str(), &tmp))
+				continue;
+
+			ret = true;
+
+			if (tmp)
+				mask |= 1 << maskOffset;
+			else
+				mask &= ~(1 << maskOffset);
+
+		}
+
+		return ret;
+
 	}
 
 	bool Properties::ShowEntity(const std::string& name, InternalEntity** entity) {

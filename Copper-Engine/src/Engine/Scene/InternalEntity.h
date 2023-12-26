@@ -12,12 +12,16 @@ namespace Copper {
 	class Transform;
 	class Scene;
 
+	std::ostream& operator<<(std::ostream& os, const class InternalEntity& entity);
+
 	class InternalEntity {
 
 		friend class Registry;
 		friend class Scene;
 		friend class OldSceneDeserialization;
 		friend class Entity;
+
+		friend std::ostream& operator<<(std::ostream& os, const InternalEntity& entity);
 
 	public:
 		InternalEntity() = default;
@@ -39,9 +43,9 @@ namespace Copper {
 
 		bool operator==(const InternalEntity& other) const { return id == other.id && scene == other.scene; }
 
-		operator bool() const { return id != INVALID_ENTITY_ID && scene != nullptr; }
-		operator uint32_t() const { return id; };
-		operator int32_t() const { return id; };
+		explicit operator bool() const { return id != INVALID_ENTITY_ID && scene != nullptr; }
+		explicit operator uint32_t() const { return id; };
+		explicit operator int32_t() const { return id; };
 
 	private:
 		uint32_t id = INVALID_ENTITY_ID;
@@ -61,5 +65,11 @@ namespace Copper {
 		}
 
 	};
+
+	inline std::ostream& operator<<(std::ostream& os, const InternalEntity& entity) {
+
+		return os << entity.id << " (" << entity.id << ")";
+
+	}
 
 }

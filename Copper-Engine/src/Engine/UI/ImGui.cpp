@@ -4,12 +4,12 @@
 #include "Engine/Core/Engine.h"
 
 #define IMGUI_IMPL_OPENGL_LOADER_GLAD
-#include <ImGui/../imgui_impl_opengl3.cpp>
-#include <ImGui/../imgui_impl_glfw.cpp>
+#include <imgui_impl_opengl3.cpp>
+#include <imgui_impl_glfw.cpp>
 
 #include <ImGui/imgui.h>
-#include <ImGui/../imgui_impl_opengl3.h>
-#include <ImGui/../imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+#include <imgui_impl_glfw.h>
 
 #include <ImGuizmo/ImGuizmo.h>
 
@@ -54,7 +54,7 @@ namespace Copper {
 		ImGui::SetCurrentContext(context);
 		ImGuiIO& io = ImGui::GetIO();
 
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NoMouseCursorChange;
 		if (docking) io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		if (viewports) io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 

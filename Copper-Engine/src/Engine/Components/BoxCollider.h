@@ -13,8 +13,8 @@ namespace Copper {
     public:
         bool trigger;
         
-        Vector3 center;
-        Vector3 size;
+        Vector3 center = Vector3::zero;
+        Vector3 size = Vector3::one;
 
     private:
         void Setup();

@@ -7,6 +7,8 @@ namespace Copper {
 	class InternalEntity;
 	class Scene;
 
+	std::ostream& operator<<(std::ostream& os, const class InternalEntity& entity);
+
 	class Entity {
 
 		friend Scene;
@@ -24,7 +26,7 @@ namespace Copper {
 
 		InternalEntity* operator->();
 
-		operator InternalEntity* () const;
+		operator InternalEntity*() const;
 		operator bool() const;
 
 	private:
@@ -32,5 +34,11 @@ namespace Copper {
 		Scene* scene = nullptr;
 
 	};
+
+	inline std::ostream& operator<<(std::ostream& os, const Entity& entity) {
+
+		return os << entity;
+
+	}
 
 }

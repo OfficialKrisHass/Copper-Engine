@@ -51,6 +51,12 @@ namespace Copper::PhysicsEngine {
 
     }
 
+    void CreateStaticRigidBody(PxRigidActor* body) {
+
+        //
+
+    }
+
     PxVec3 CopperToPhysX(const Vector3& vec) { return PxVec3(vec.x, vec.y, vec.z); }
     Vector3 PhysXToCopper(const PxVec3& vec) { return Vector3(vec.x, vec.y, vec.z); }
 
@@ -130,16 +136,26 @@ namespace Copper {
 
     void RigidBody::Setup() {
 
+        // In a case we changed some parameters we need to first delete the body
+        // NOTE: Maybe rename this to something like Generate or Regenerate ????
+
         if (body)
             GetScene()->RemovePhysicsBody(body);
 
         BoxCollider* collider = GetEntity()->GetComponent<BoxCollider>();
 
-        // Case 2: Rigid Body with a Collider
+        // Default Case 2: Rigid Body with no Collider - Why though ?
+        // NOTE: This is the default as its simpler then to create a shape
+        //       and then check if we were supposed to create said shape
+        //       .... and also I felt smarter when I came up with this :)
+
+        PxShape* shape = data.noColliderShape;
+
+        // Case 3: Rigid Body with a Collider
 
         if (collider) {
 
-            PxShape* shape = data.physics->createShape(PxBoxGeometry(CopperToPhysX(GetTransform()->scale * collider->size / 2.0f)), *data.material);
+            shape = data.physics->createShape(PxBoxGeometry(CopperToPhysX(GetTransform()->scale * collider->size / 2.0f)), *data.material);
             if (collider->trigger) {
 
                 shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
@@ -147,41 +163,15 @@ namespace Copper {
 
             }
 
-            if (isStatic)
-                body = PxCreateStatic(*data.physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape);
-            else {
-
-                body = PxCreateDynamic(*data.physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape, 1.0f);
-
-                ((PxRigidDynamic*) body)->setMass(mass);
-                if (!gravity)
-                    body->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true);
-
-            }
-
-            GetScene()->AddPhysicsBody(body);
-            shape->release();
-
-            body->setName(GetEntity()->name.c_str());
-            body->userData = (void*) GetEntity();
-
-            return;
-
         }
-
-        // Case 3: Rigid Body with no Collider - Why though ?
 
         if (isStatic)
-            body = PxCreateStatic(*data.physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *data.noColliderShape);
-        else {
+            CreateStatic(shape);
+        else
+            CreateDynamic(shape);
 
-            body = PxCreateDynamic(*data.physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *data.noColliderShape, 1.0f);
-
-            ((PxRigidDynamic*) body)->setMass(mass);
-            if (!gravity)
-                body->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true);
-
-        }
+        if (collider)
+            shape->release();
 
         GetScene()->AddPhysicsBody(body);
 
@@ -189,17 +179,44 @@ namespace Copper {
         body->userData = (void*) GetEntity();
 
     }
+
+    void RigidBody::CreateDynamic(PxShape* shape) {
+
+        body = PxCreateDynamic(*data.physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape, 1.0f);
+
+        ((PxRigidDynamic*) body)->setMass(mass);
+        if (!gravity)
+            body->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true);
+
+        // This hurts my eyes but I am like 99% sure there is no other way
+        // NOTE: As Always, there is :))))
+        /*typedef PxRigidDynamicLockFlag LockFlag;
+        typedef PxRigidDynamicLockFlags LockFlags;
+        LockFlags flags = positionLock[0] ? LockFlag::eLOCK_LINEAR_X : (LockFlag::Enum) 0;
+        if (positionLock[1]) flags |= LockFlag::eLOCK_LINEAR_Y;
+        if (positionLock[2]) flags |= LockFlag::eLOCK_LINEAR_Z;
+        if (rotationLock[0]) flags |= LockFlag::eLOCK_ANGULAR_X;
+        if (rotationLock[1]) flags |= LockFlag::eLOCK_ANGULAR_Y;
+        if (rotationLock[2]) flags |= LockFlag::eLOCK_ANGULAR_Z;*/
+
+        ((PxRigidDynamic*) body)->setRigidDynamicLockFlags((PxRigidDynamicLockFlag::Enum) lockMask);
+
+    }
+    void RigidBody::CreateStatic(PxShape* shape) {
+
+        body = PxCreateStatic(*data.physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape);
+
+    }
+
     void RigidBody::UpdatePositionAndRotation() {
 
-        if (!body) {
-
-            //LogError("The body does not exist :c");
+        if (!body || isStatic)
             return;
 
-        }
+        Transform* transform = GetTransform();
 
-        GetTransform()->position = PhysXToCopper(body->getGlobalPose().p);
-        GetTransform()->rotation = PhysXToCopper(body->getGlobalPose().q);
+        transform->position = PhysXToCopper(body->getGlobalPose().p);
+        transform->rotation = PhysXToCopper(body->getGlobalPose().q);
 
     }
 
@@ -207,7 +224,7 @@ namespace Copper {
 
         if (isStatic) {
 
-            LogError("Cant add force to a static rigidBody on entity {} ({})", GetEntity()->name, GetEntity()->ID());
+            LogError("Cant add force to a static rigidBody on entity {}", *GetEntity(), GetEntity()->ID());
             return;
 
         }
@@ -219,7 +236,7 @@ namespace Copper {
 
         if (isStatic) {
 
-            LogError("Cant add torque to a static rigidBody on entity {} ({})", GetEntity()->name, GetEntity()->ID());
+            LogError("Cant add torque to a static rigidBody on entity {}", *GetEntity());
             return;
 
         }

@@ -15,24 +15,24 @@ Entities:
   Camera:
     ID: 1
     Transform:
-      Position: [0, 0, 2.46020794]
+      Position: [0, 0, 0]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
-      Parent ID: 4294967295
+      Parent ID: 2
       Children: []
     Camera:
       Fov: 90
       Near Plane: 0.100000001
       Far Plane: 1000
       Size: [1920, 969]
-  Cube:
+  Player:
     ID: 2
     Transform:
       Position: [0, 0, 0]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
       Parent ID: 4294967295
-      Children: []
+      Children: [1]
     Mesh Renderer:
       Mesh:
         Data:
@@ -149,6 +149,7 @@ Entities:
       Static: false
       Gravity: true
       Mass: 1
+      Lock Mask: 28
     Box Collider:
       Trigger: false
       Center: [0, 0, 0]
@@ -156,9 +157,12 @@ Entities:
     Script Component:
       Name: Player
       Fields:
-        jumpForce:
+        speed:
           Type: 3
-          Value: 750
+          Value: 0
+        sensitivity:
+          Type: 3
+          Value: 0
   Ground:
     ID: 3
     Transform:
@@ -283,6 +287,7 @@ Entities:
       Static: true
       Gravity: false
       Mass: 1
+      Lock Mask: 0
     Box Collider:
       Trigger: false
       Center: [0, 0, 0]

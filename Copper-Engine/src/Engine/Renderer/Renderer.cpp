@@ -70,8 +70,6 @@ namespace Copper::Renderer {
 
 		// TODO: there is a lot of ways I have thought about optimizing this, use them
 		Matrix4 mat = transform->CreateMatrix();
-		Matrix4 noScale = mat;
-		CMath::ScaleMatrix(noScale, -transform->scale);
 
 		int numOfVertices = (int) data.vertices.size() / 9;
 

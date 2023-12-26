@@ -41,16 +41,6 @@ namespace Copper {
 
 				Transform* parent = scene->GetEntityFromID(parentID)->transform;
 				deserialized->transform->parent = parent;
-				for (uint32_t i = 0; i < parent->NumOfChildren(); i++) {
-
-					if (parent->children[i] == id) {
-
-						deserialized->transform->parentChildIndex = i;
-						break;
-
-					}
-
-				}
 
 			}
 			else if (id < parentID) {
@@ -61,7 +51,6 @@ namespace Copper {
 				deserialized = savedDeserialized;
 
 				deserialized->transform->parent = parent->transform;
-				deserialized->transform->parentChildIndex = 0;
 
 			}
 

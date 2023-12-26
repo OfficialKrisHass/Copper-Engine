@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace Copper {
 
@@ -17,11 +18,11 @@ namespace Copper {
 
         }
 
-        public Entity obj {
+        public Entity entity {
 
             get {
 
-                return InternalCalls.GetEntity(eID);
+                return Entity.Internal_GetEntity(eID);
 
             }
 
@@ -39,7 +40,7 @@ namespace Copper {
         public T AddComponent<T>() where T : Component, new() {
 
             T ret = new T();
-            InternalCalls.AddComponent(eID, typeof(T), ret);
+            Internal_AddComponent(eID, typeof(T), ret);
 
             return ret;
 
@@ -58,7 +59,7 @@ namespace Copper {
 
             }
 
-            if (!InternalCalls.GetComponent(eID, type, ret)) return null;
+            if (!Internal_GetComponent(eID, type, ret)) return null;
 
             Editor.Log(ret.eID.ToString());
 
@@ -67,9 +68,15 @@ namespace Copper {
         }
         public bool HasComponent<T>() where T : Component, new() {
 
-            return InternalCalls.HasComponent(eID, typeof(T));
+            return Internal_HasComponent(eID, typeof(T));
 
         }
+
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_AddComponent(uint eID, Type type, Component component);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool Internal_GetComponent(uint eID, Type type, Component component);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool Internal_HasComponent(uint eID, Type type);
+
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetComponentEID(Type type, Component component, uint eID);
 
     }
 

@@ -12,17 +12,15 @@ namespace Copper {
 
 	Matrix4 Camera::CreateViewMatrix() {
 
-		return CMath::ViewMatrix(GetTransform()->position, GetTransform()->Forward(), GetTransform()->Up());
+		return CMath::ViewMatrix(GetTransform()->GlobalPosition(), GetTransform()->Forward(), GetTransform()->Up());
 
 	}
 	Matrix4 Camera::CreateProjectionMatrix() {
 
-		Matrix4 ret;
-
 	#ifdef CU_EDITOR
-		ret = CMath::ProjectionMatrix(fov, static_cast<float>(size.x) / size.y, nearPlane, farPlane);
+		Matrix4 ret = CMath::ProjectionMatrix(fov, static_cast<float>(size.x) / size.y, nearPlane, farPlane);
 	#else
-		ret = CMath::ProjectionMatrix(fov, GetWindowAspectRatio(), nearPlane, farPlane);
+		Matrix4 ret = CMath::ProjectionMatrix(fov, GetWindowAspectRatio(), nearPlane, farPlane);
 	#endif
 
 		return ret;

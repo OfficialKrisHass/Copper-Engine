@@ -4,7 +4,7 @@
 
 #include "Engine/Scene/Component.h"
 
-namespace physx { class PxRigidActor; }
+namespace physx { class PxRigidActor; class PxShape; }
 #ifdef CU_EDITOR
     namespace Editor { class Properties; }
 #endif
@@ -37,9 +37,9 @@ namespace Copper {
         friend void Scripting::InternalCalls::RigidBodySetGravity(uint32_t eID, bool value);
         friend void Scripting::InternalCalls::RigidBodySetIsStatic(uint32_t eID, bool value);
         friend void Scripting::InternalCalls::RigidBodySetMass(uint32_t eID, float value);
-
+        
     public:
-        bool isStatic;
+        bool isStatic = false;
         bool gravity = true;
 
         float mass = 1.0f;
@@ -50,9 +50,22 @@ namespace Copper {
         void AddTorque(const Vector3& torque, const ForceMode mode);
 
     private:
-        physx::PxRigidActor* body;
+        physx::PxRigidActor* body = nullptr;
+
+        uint8_t lockMask = 0;
 
         void Setup();
+
+        void CreateDynamic(physx::PxShape* shape);
+        void CreateStatic(physx::PxShape* shape);
+
+    public:
+        enum LockFlags : uint8_t {
+
+            POS_X = 1 << 0, POS_Y = 1 << 1, POS_Z = 1 << 2,
+            ROT_X = 1 << 3, ROT_Y = 1 << 4, ROT_Z = 1 << 5,
+
+        };
 
     };
     

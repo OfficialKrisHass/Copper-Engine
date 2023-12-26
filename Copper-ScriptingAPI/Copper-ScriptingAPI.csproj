@@ -49,11 +49,12 @@
     <Compile Include="Source\Components\RigidBody.cs" />
     <Compile Include="Source\Components\Transform.cs" />
     <Compile Include="Source\Core\Input.cs" />
-    <Compile Include="Source\Core\InternalCalls.cs" />
     <Compile Include="Source\Core\KeyCodes.cs" />
     <Compile Include="Source\Editor\Editor.cs" />
     <Compile Include="Source\Math\Quaternion.cs" />
-    <Compile Include="Source\Math\Vector.cs" />
+    <Compile Include="Source\Math\Vector2.cs" />
+    <Compile Include="Source\Math\Vector3.cs" />
+    <Compile Include="Source\Math\Vector4.cs" />
     <Compile Include="Source\Scene\Entity.cs" />
   </ItemGroup>
   <ItemGroup>

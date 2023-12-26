@@ -9,6 +9,12 @@
 
 using namespace Copper;
 
+#ifdef CU_LINUX
+using std::experimental::filesystem::create_directories;
+#else
+using std::filesystem::create_directories;
+#endif
+
 namespace Editor {
 
     fs::path editingPath = "";
@@ -65,7 +71,7 @@ namespace Editor {
                 fs::path path = GetProject().assetsPath / projectRelativeDir;
                 path /= "New Folder";
 
-                fs::create_directories(path.string());
+                create_directories(path.string());
 
                 editingPath = path;
                 
@@ -76,12 +82,10 @@ namespace Editor {
         }
 
         if (!GetProject()) return;
-
         for(const fs::directory_entry& entry : fs::directory_iterator((GetProject().assetsPath / projectRelativeDir).string())) {
 
             fs::path fullPath = entry.path().string();
             fs::path path = fs::relative(fullPath, GetProject().assetsPath);
-
             std::string filename = path.filename().string();
             if(!entry.is_directory()) {  
                 
@@ -90,7 +94,7 @@ namespace Editor {
 
             }
 
-            if (path.extension() == "cum") continue;
+            if (path.extension() == ".cum") continue;
 
             ImGui::PushID(filename.c_str());
 
@@ -115,7 +119,7 @@ namespace Editor {
             if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
                 
                 if (entry.is_directory()) projectRelativeDir /= path.filename();
-                if (path.extension() == "copper") {
+                if (path.extension() == ".copper") {
 
                     OpenScene(GetProject().assetsPath / path);
                     

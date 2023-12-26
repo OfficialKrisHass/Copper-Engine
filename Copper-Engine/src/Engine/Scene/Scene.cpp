@@ -257,6 +257,8 @@ namespace Copper {
 
 			out << YAML::Key << "Mass" << YAML::Value << rb->mass;
 
+			out << YAML::Key << "Lock Mask" << YAML::Value << (uint32_t) rb->lockMask;
+
 			out << YAML::EndMap; // Rigid Body
 
 		}
@@ -324,7 +326,6 @@ namespace Copper {
 			entity = saved;
 
 			entity->transform->parent = parent->transform;
-			entity->transform->parentChildIndex = (int32_t) parent->transform->children.size();
 
 			parent->transform->children.push_back(entity->id);
 
@@ -343,7 +344,6 @@ namespace Copper {
 			entity = saved;
 
 			child->transform->parent = entity->transform;
-			child->transform->parentChildIndex = i;
 
 		}
 
@@ -403,6 +403,8 @@ namespace Copper {
 			rb->gravity = rbNode["Gravity"].as<bool>();
 
 			rb->mass = rbNode["Mass"].as<float>();
+
+			rb->lockMask = rbNode["Lock Mask"].as<uint8_t>();
 
 		}
 		if (YAML::Node colliderNode = node["Box Collider"]) {

@@ -5,6 +5,8 @@
 
 #include "Engine/Scene/Scene.h"
 
+#include "Engine/Utilities/Math.h"
+
 #include <GLM/glm.hpp>
 #include <GLM/ext/matrix_transform.hpp>
 #include <GLM/gtx/quaternion.hpp>
@@ -17,15 +19,15 @@ namespace Copper {
 
 		Matrix4 ret;
 
+		CMath::TranslateMatrix(ret, position);
+		ret = ret * (Matrix4) rotation;
+		CMath::ScaleMatrix(ret, scale);
+
 		if (parent) {
 
 			ret *= parent->CreateMatrix();
 
 		}
-
-		CMath::TranslateMatrix(ret, position);
-		ret = ret * (Matrix4) rotation;
-		CMath::ScaleMatrix(ret, scale);
 
 		return ret;
 
@@ -33,16 +35,33 @@ namespace Copper {
 
 	void Transform::Update() {
 
-		this->forward	= rotation * Vector3(0.0f, 0.0f, -1.0f);
-		this->right		= rotation * Vector3(1.0f, 0.0f,  0.0f);
-		this->up		= rotation * Vector3(0.0f, 1.0f,  0.0f);
+		this->forward	= GlobalRotation() * Vector3(0.0f, 0.0f, -1.0f);
+		this->right		= GlobalRotation() * Vector3(1.0f, 0.0f,  0.0f);
+		this->up		= GlobalRotation() * Vector3(0.0f, 1.0f,  0.0f);
+
+		Matrix4 globalMat = CreateMatrix();
+		glm::vec3 pos, rot, scale;
+		Math::DecomposeTransform(globalMat, pos, rot, scale);
+
+		this->globalPosition = pos;
+		this->globalRotation = (Vector3) rot;
+		this->globalScale = scale;
 
 	}
 
 	Vector3 Transform::GlobalPosition() const {
 
-		if (parent) return position + parent->GlobalPosition();
-		else return position;
+		return globalPosition;
+
+	}
+	Quaternion Transform::GlobalRotation() const {
+
+		return globalRotation;
+
+	}
+	Vector3 Transform::GlobalScale() const {
+
+		return globalScale;
 
 	}
 
@@ -51,76 +70,104 @@ namespace Copper {
 	void Transform::SetParent(Transform* parent) {
 
 		if (parent == this->parent) return;
+
+		// Case 1: Removing a parent (new parent == nullptr)
 		if (parent == nullptr) {
 
-			position = GlobalPosition();
-
-			this->parent->children.erase(this->parent->children.begin() + parentChildIndex);
-			this->parent = nullptr;
-
-			parentChildIndex = -1;
-
+			this->parent->RemoveChild(this);
 			return;
 
 		}
+
+		// Case 2: Changing a parent (old parent != nullptr)
 		if (this->parent) {
 
-			position += this->parent->GlobalPosition();
-
-			this->parent->children.erase(this->parent->children.begin() + parentChildIndex);
+			this->parent->RemoveChild(this);
+			Matrix4 local = CreateMatrix() * CMath::Inverse(parent->CreateMatrix());
 
 			this->parent = parent;
-			this->parentChildIndex = (uint32_t) parent->children.size();
-
 			parent->children.push_back(GetEntity()->ID());
 
-			position -= parent->GlobalPosition();
+			glm::vec3 pos, rot, scale;
+			Math::DecomposeTransform(local, pos, rot, scale);
+
+			this->position = pos;
+			this->rotation = (Vector3) rot;
+			this->scale = scale;
 
 			return;
 
 		}
 
-		this->parent = parent;
-		this->parentChildIndex = (uint32_t) parent->children.size();
+		// Case 3: Setting a parent (old parent == nullptr)
 
+		Matrix4 local = CreateMatrix() * CMath::Inverse(parent->CreateMatrix());
+
+		this->parent = parent;
 		parent->children.push_back(GetEntity()->ID());
 
-		position -= parent->GlobalPosition();
+		glm::vec3 pos, rot, scale;
+		Math::DecomposeTransform(local, pos, rot, scale);
+
+		this->position = pos;
+		this->rotation = (Vector3) rot;
+		this->scale = scale;
 
 	}
 
-	void Transform::AddChild(Transform* transform) {
+	void Transform::AddChild(Transform* child) {
 
-		if (transform->parent == this || !transform) return;
-		if (transform->parent) {
+		if (child->parent == this || !child) return;
+		if (child->parent)
+			child->parent->RemoveChild(child);
 
-			transform->position += transform->parent->GlobalPosition();
-			transform->parent->children.erase(transform->parent->children.begin() + transform->parentChildIndex);
+		Matrix4 childGlobal = child->CreateMatrix();
 
-		}
+		child->parent = this;
+		children.push_back(child->GetEntity()->ID());
 
-		transform->parent = this;
-		transform->parentChildIndex = (uint32_t) children.size();
+		Matrix4 childLocal = childGlobal * CMath::Inverse(CreateMatrix());
 
-		children.push_back(transform->GetEntity()->ID());
+		glm::vec3 pos, rot, scale;
+		Math::DecomposeTransform(childLocal, pos, rot, scale);
 
-		transform->position -= GlobalPosition();
+		child->position = pos;
+		child->rotation = (Vector3) rot;
+		child->scale = scale;
 
 	}
 	void Transform::RemoveChild(int index) {
 
+		if (index < 0 || index > children.size()) {
+
+			LogError("Can't remove an invalid index child. Parent: {}, index: {}", *GetEntity(), index);
+			return;
+
+		}
+
 		Transform* child = GetEntityFromID(children[index])->GetTransform();
 		
-		child->position = child->GlobalPosition();
 		child->parent = nullptr;
-		child->parentChildIndex = -1;
+
+		child->position = child->globalPosition;
+		child->rotation = child->globalRotation;
+		child->scale = child->globalScale;
 
 		children.erase(children.begin() + index);
 	
 	}
 	void Transform::RemoveChild(Transform* transform) {
 
-		RemoveChild(transform->parentChildIndex);
+		for (int i = 0; i < children.size(); i++) {
+
+			if (children[i] != transform->GetEntity()->ID()) continue;
+
+			RemoveChild(i);
+			return;
+
+		}
+
+		LogError("Can't remove a child. Parent: {}, Child: {}", *GetEntity(), *transform->GetEntity());
 
 	}
 

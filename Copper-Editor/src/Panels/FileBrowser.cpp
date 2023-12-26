@@ -9,12 +9,6 @@
 
 using namespace Copper;
 
-#ifdef CU_LINUX
-using std::experimental::filesystem::create_directories;
-#else
-using std::filesystem::create_directories;
-#endif
-
 namespace Editor {
 
     fs::path editingPath = "";
@@ -71,7 +65,7 @@ namespace Editor {
                 fs::path path = GetProject().assetsPath / projectRelativeDir;
                 path /= "New Folder";
 
-                create_directories(path.string());
+                fs::create_directories(path.string());
 
                 editingPath = path;
                 

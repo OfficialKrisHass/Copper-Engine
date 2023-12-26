@@ -119,7 +119,7 @@ namespace Editor {
 
 		system(cmd.c_str());
 	#else
-		const std::string cmd = "make --no-print-directory -C \"" + path.String() + "\" -f Makefile";
+		const std::string cmd = "make --no-print-directory -C \"" + path.string() + "\" -f Makefile";
 		system(cmd.c_str());
 	#endif
 

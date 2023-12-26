@@ -928,7 +928,7 @@ namespace Editor {
 #ifdef CU_LINUX
 	void RunPremake() {
 
-		const std::string path = data.project.path.String();
+		const std::string path = data.project.path.string();
 
 		// It hurts my eyes, but there is no other solution that I know of
 		//system(("cd \"" + data.project.path.String() + "\" ; ./premake/premake5 gmake2").c_str());

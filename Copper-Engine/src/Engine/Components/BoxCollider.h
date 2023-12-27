@@ -11,8 +11,6 @@ namespace Copper {
         friend Scene;
 
     public:
-        bool trigger;
-        
         Vector3 center = Vector3::zero;
         Vector3 size = Vector3::one;
 

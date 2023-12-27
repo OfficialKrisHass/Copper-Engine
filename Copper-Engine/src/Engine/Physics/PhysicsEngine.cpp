@@ -5,6 +5,7 @@
 
 #include "Engine/Components/RigidBody.h"
 #include "Engine/Components/BoxCollider.h"
+#include "Engine/Components/SphereCollider.h"
 
 #include "Engine/Physics/CollisionNotifier.cpp"
 
@@ -133,6 +134,29 @@ namespace Copper {
         GetScene()->AddPhysicsBody(body);
 
     }
+    void SphereCollider::Setup() {
+
+        RigidBody* rb = GetEntity()->GetComponent<RigidBody>();
+        if (rb) return;
+
+        // Case 1: Collider with no Rigid Body
+
+        PxShape* shape = data.physics->createShape(PxSphereGeometry(radius * GetTransform()->scale.x), *data.material);
+        if (trigger) {
+
+            shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
+            shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
+
+        }
+
+        PxRigidStatic* body = PxCreateStatic(*data.physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape);
+
+        body->setName(GetEntity()->name.c_str());
+        body->userData = (void*) GetEntity();
+
+        GetScene()->AddPhysicsBody(body);
+
+    }
 
     void RigidBody::Setup() {
 
@@ -142,7 +166,7 @@ namespace Copper {
         if (body)
             GetScene()->RemovePhysicsBody(body);
 
-        BoxCollider* collider = GetEntity()->GetComponent<BoxCollider>();
+        Collider* collider = GetEntity()->GetComponent<Collider>();
 
         // Default Case 2: Rigid Body with no Collider - Why though ?
         // NOTE: This is the default as its simpler then to create a shape
@@ -155,7 +179,11 @@ namespace Copper {
 
         if (collider) {
 
-            shape = data.physics->createShape(PxBoxGeometry(CopperToPhysX(GetTransform()->scale * collider->size / 2.0f)), *data.material);
+            if (collider->type == Collider::Type::Box)
+                shape = data.physics->createShape(PxBoxGeometry(CopperToPhysX(GetTransform()->scale * ((BoxCollider*) collider)->size / 2.0f)), *data.material);
+            else if (collider->type == Collider::Type::Sphere)
+                shape = data.physics->createShape(PxSphereGeometry(((SphereCollider*) collider)->radius * GetTransform()->scale.x), *data.material);
+
             if (collider->trigger) {
 
                 shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);

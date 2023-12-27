@@ -75,7 +75,9 @@ namespace Editor {
 		if (Camera* camera = entity->GetComponent<Camera>()) RenderCamera(camera);
 
 		if (RigidBody* rb = entity->GetComponent<RigidBody>()) RenderRigidBody(rb);
+
 		if (BoxCollider* collider = entity->GetComponent<BoxCollider>()) RenderBoxCollider(collider);
+		if (SphereCollider* collider = entity->GetComponent<SphereCollider>()) RenderSphereCollider(collider);
 
 		if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) RenderScriptComponent(script);
 
@@ -119,6 +121,11 @@ namespace Editor {
 			} else if (ImGui::MenuItem("Box Collider")) {
 
 				entity->AddComponent<BoxCollider>();
+				Editor::SetChanges(true);
+
+			} else if (ImGui::MenuItem("Sphere Collider")) {
+
+				entity->AddComponent<SphereCollider>();
 				Editor::SetChanges(true);
 
 			}
@@ -192,6 +199,7 @@ namespace Editor {
 		ImGui::PopID();
 
 	}
+	
 	void Properties::RenderBoxCollider(BoxCollider* collider) {
 
 		ImGui::PushID((int) (int64_t) collider);
@@ -200,6 +208,18 @@ namespace Editor {
 		ShowBool("Trigger", &collider->trigger);
 		ShowVector3("Center", &collider->center);
 		ShowVector3("Size", &collider->size);
+
+		ImGui::PopID();
+
+	}
+	void Properties::RenderSphereCollider(Copper::SphereCollider* collider) {
+
+		ImGui::PushID((int) (int64_t) collider);
+		if (!DrawComponent<SphereCollider>("Sphere Collider", collider->GetEntity())) { ImGui::PopID(); return; }
+
+		ShowBool("Trigger", &collider->trigger);
+		ShowFloat("Radius", &collider->radius);
+		ShowVector3("Center", &collider->center);
 
 		ImGui::PopID();
 

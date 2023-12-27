@@ -8,16 +8,21 @@ namespace Copper {
 
 	class Collider : public Component {
 
+		friend class Registry;
+		friend class RigidBody;
+
 	public:
 		enum Type : uint8_t {
 
 			Box = 1,
+			Sphere = 2,
 
 		};
 
-		Type type;
-
 		bool trigger = false;
+
+	protected:
+		Type type = (Type) 0;
 
 	};
 

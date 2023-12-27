@@ -17,6 +17,8 @@ namespace Copper {
 	private:
 		void Setup();
 
+		physx::PxShape* CreateShape() const override;
+
 	};
 
 }

@@ -29,7 +29,7 @@ Entities:
     ID: 2
     Transform:
       Position: [0, 0, 0]
-      Rotation: [1, 0, 0, 0]
+      Rotation: [0.989041626, 0, -0.147636786, 0]
       Scale: [1, 1, 1]
       Parent ID: 4294967295
       Children: [1]
@@ -295,9 +295,9 @@ Entities:
   Sphere:
     ID: 4
     Transform:
-      Position: [-0.717867732, 2.03714037, 0]
+      Position: [-0.532305598, 2.57880425, -0.0153856361]
       Rotation: [1, 0, 0, 0]
-      Scale: [1, 1, 1]
+      Scale: [1, 0.999999881, 1]
       Parent ID: 4294967295
       Children: []
     Mesh Renderer:

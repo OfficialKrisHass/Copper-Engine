@@ -118,7 +118,7 @@ namespace Copper {
 
         // Case 1: Collider with no Rigid Body
         
-        PxShape* shape = data.physics->createShape(PxBoxGeometry(CopperToPhysX(GetTransform()->scale * size / 2.0f)), *data.material);
+        PxShape* shape = CreateShape();
         if (trigger) {
 
             shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
@@ -141,7 +141,7 @@ namespace Copper {
 
         // Case 1: Collider with no Rigid Body
 
-        PxShape* shape = data.physics->createShape(PxSphereGeometry(radius * GetTransform()->scale.x), *data.material);
+        PxShape* shape = CreateShape();
         if (trigger) {
 
             shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
@@ -155,6 +155,17 @@ namespace Copper {
         body->userData = (void*) GetEntity();
 
         GetScene()->AddPhysicsBody(body);
+
+    }
+
+    PxShape* BoxCollider::CreateShape() const {
+
+        return data.physics->createShape(PxBoxGeometry(CopperToPhysX(GetTransform()->scale * size / 2.0f)), *data.material);
+
+    }
+    PxShape* SphereCollider::CreateShape() const {
+
+        return data.physics->createShape(PxSphereGeometry(radius * GetTransform()->scale.x), *data.material);
 
     }
 
@@ -179,10 +190,7 @@ namespace Copper {
 
         if (collider) {
 
-            if (collider->type == Collider::Type::Box)
-                shape = data.physics->createShape(PxBoxGeometry(CopperToPhysX(GetTransform()->scale * ((BoxCollider*) collider)->size / 2.0f)), *data.material);
-            else if (collider->type == Collider::Type::Sphere)
-                shape = data.physics->createShape(PxSphereGeometry(((SphereCollider*) collider)->radius * GetTransform()->scale.x), *data.material);
+            shape = collider->CreateShape();
 
             if (collider->trigger) {
 

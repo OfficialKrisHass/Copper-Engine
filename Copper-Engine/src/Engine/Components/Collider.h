@@ -4,6 +4,8 @@
 
 #include "Engine/Scene/Component.h"
 
+namespace physx { class PxShape; }
+
 namespace Copper {
 
 	class Collider : public Component {
@@ -23,6 +25,9 @@ namespace Copper {
 
 	protected:
 		Type type = (Type) 0;
+
+	private:
+		virtual physx::PxShape* CreateShape() const = 0;
 
 	};
 

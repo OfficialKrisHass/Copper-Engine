@@ -4,7 +4,9 @@
 #include "Engine/Events/RegistryEvent.h"
 
 #include "Engine/Scene/InternalEntity.h"
+
 #include "Engine/Components/Transform.h"
+#include "Engine/Components/BoxCollider.h"
 
 #include <vector>
 
@@ -208,6 +210,141 @@ namespace Copper {
 			entities[eID].cMask.reset(cID);
 
 			T* component = static_cast<T*>(pools[cID]->Get(eID));
+			componentRemovedEvent.component = (Component*) component;
+			componentRemovedEvent();
+
+			component->Removed();
+			component->valid = false;
+
+		}
+
+		template<> Collider* AddComponent<Collider>(uint32_t eID) {
+
+			LogError("Can't add a base Collider component to entity. Entity: {}", entities[eID]);
+			return nullptr;
+
+		}
+		template<> BoxCollider* AddComponent<BoxCollider>(uint32_t eID) {
+
+			if (eID == INVALID_ENTITY_ID) return nullptr;
+			if (!entities[eID]) return nullptr;
+
+			int cID = GetCID<Collider>();
+			GetCID<BoxCollider>(); // This is here just to reserve the next cID so other components dont take it
+
+			if (pools.size() < cID + 2) pools.resize(cID + 2, nullptr);
+			if (!pools[cID]) pools[cID] = new ComponentPool(sizeof(Collider::Type));
+			if (!pools[cID + 1]) pools[cID + 1] = new ComponentPool(sizeof(BoxCollider));
+
+			*(uint8_t*) pools[cID]->Add(eID) = Collider::Type::Box;
+			BoxCollider* component = new (pools[cID + 1]->Add(eID)) BoxCollider();
+
+			component->entity = &entities[eID];
+			component->transform = entities[eID].transform;
+			component->valid = true;
+
+			component->Added();
+
+			entities[eID].cMask.set(cID);
+			entities[eID].cMask.set(cID + 1);
+
+			componentAddedEvent.component = (Component*) component;
+			componentAddedEvent();
+
+			return component;
+
+		}
+
+		template<> Collider* GetComponent<Collider>(uint32_t eID) {
+
+			if (eID == INVALID_ENTITY_ID) return nullptr;
+			if (!entities[eID]) return nullptr;
+
+			int cID = GetCID<Collider>();
+			GetCID<BoxCollider>(); // This is here just to reserve the next cID so other components dont take it
+			if (!entities[eID].cMask.test(cID)) return nullptr;
+
+			uint8_t type = *(uint8_t*) pools[cID]->Get(eID);
+			Collider* component = static_cast<Collider*>(pools[cID + type]->Get(eID));
+			return component;
+
+		}
+		template<> BoxCollider* GetComponent<BoxCollider>(uint32_t eID) {
+
+			if (eID == INVALID_ENTITY_ID) return nullptr;
+			if (!entities[eID]) return nullptr;
+
+			int cID = GetCID<Collider>();
+			GetCID<BoxCollider>(); // This is here just to reserve the next cID so other components dont take it
+			if (!entities[eID].cMask.test(cID + 1)) return nullptr;
+
+			BoxCollider* component = static_cast<BoxCollider*>(pools[cID + 1]->Get(eID));
+			return component;
+
+		}
+
+		template<> bool HasComponent<Collider>(uint32_t eID) {
+
+			if (eID == INVALID_ENTITY_ID) return false;
+			if (!entities[eID]) return false;
+
+			int cID = GetCID<Collider>();
+			GetCID<BoxCollider>(); // This is here just to reserve the next cID so other components dont take it
+			return entities[eID].cMask.test(cID);
+
+		}
+		template<> bool HasComponent<BoxCollider>(uint32_t eID) {
+
+			if (eID == INVALID_ENTITY_ID) return false;
+			if (!entities[eID]) return false;
+
+			int cID = GetCID<Collider>();
+			GetCID<BoxCollider>(); // This is here just to reserve the next cID so other components dont take it
+			return entities[eID].cMask.test(cID + 1);
+
+		}
+
+		template<> void RemoveComponent<Collider>(uint32_t eID) {
+
+			if (eID == INVALID_ENTITY_ID) return;
+			if (!entities[eID]) return;
+
+			int cID = GetCID<Collider>();
+			GetCID<BoxCollider>(); // This is here just to reserve the next cID so other components dont take it
+			if (!entities[eID].cMask.test(cID)) return;
+
+			uint8_t type = *(uint8_t*) pools[cID]->Get(eID);
+
+			pools[cID + type]->Remove(eID);
+			entities[eID].cMask.reset(cID + type);
+
+			pools[cID]->Remove(eID);
+			entities[eID].cMask.reset(cID);
+
+			Collider* component = static_cast<Collider*>(pools[cID + type]->Get(eID));
+			componentRemovedEvent.component = (Component*) component;
+			componentRemovedEvent();
+
+			component->Removed();
+			component->valid = false;
+
+		}
+		template<> void RemoveComponent<BoxCollider>(uint32_t eID) {
+
+			if (eID == INVALID_ENTITY_ID) return;
+			if (!entities[eID]) return;
+
+			int cID = GetCID<Collider>();
+			GetCID<BoxCollider>(); // This is here just to reserve the next cID so other components dont take it
+			if (!entities[eID].cMask.test(cID + 1)) return;
+
+			pools[cID + 1]->Remove(eID);
+			entities[eID].cMask.reset(cID + 1);
+
+			pools[cID]->Remove(eID);
+			entities[eID].cMask.reset(cID);
+
+			BoxCollider* component = static_cast<BoxCollider*>(pools[cID + 1]->Get(eID));
 			componentRemovedEvent.component = (Component*) component;
 			componentRemovedEvent();
 

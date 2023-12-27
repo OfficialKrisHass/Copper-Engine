@@ -64,7 +64,7 @@ namespace Editor {
 			ShowVector3("Position", &transform->position);
 
 			Vector3 newRot = transform->rotation.EulerAngles();
-			if (ShowVector3("Rotation", &newRot));
+			if (ShowVector3("Rotation", &newRot))
 				transform->rotation = Quaternion(newRot);
 
 			ShowVector3("Scale", &transform->scale);

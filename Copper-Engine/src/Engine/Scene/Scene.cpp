@@ -14,6 +14,7 @@
 #include "Engine/Components/ScriptComponent.h"
 #include "Engine/Components/Light.h"
 #include "Engine/Components/RigidBody.h"
+#include "Engine/Components/Collider.h"
 #include "Engine/Components/BoxCollider.h"
 
 #include "Engine/Scripting/ScriptingCore.h"

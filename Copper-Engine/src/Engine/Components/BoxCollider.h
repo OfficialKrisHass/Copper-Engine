@@ -2,11 +2,11 @@
 
 #include "Engine/Core/Core.h"
 
-#include "Engine/Scene/Component.h"
+#include "Engine/Components/Collider.h"
 
 namespace Copper {
 
-    class BoxCollider : public Component {
+    class BoxCollider : public Collider {
 
         friend Scene;
 

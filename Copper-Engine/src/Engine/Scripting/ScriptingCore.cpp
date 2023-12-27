@@ -1,10 +1,15 @@
 #include "cupch.h"
 #include "ScriptingCore.h"
 
-#include "Engine/Utilities/FileUtils.h"
+#include "Engine/Core/Engine.h"
+
+#include "Engine/Scene/CopperECS.h"
+
+#include "Engine/Components/ScriptComponent.h"
 
 #include "Engine/Scripting/MonoUtils.h"
-#include "Engine/Scripting/InternalCalls.cpp"
+
+#include "Engine/Utilities/FileUtils.h"
 
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
@@ -12,6 +17,13 @@
 char domainName[] = "CUScriptRuntime";
 
 namespace Copper::Scripting {
+
+	namespace InternalCalls {
+		
+		void SetupInternalCalls();
+		void Initialize();
+	
+	}
 
 	struct ScriptingCoreData {
 
@@ -39,8 +51,6 @@ namespace Copper::Scripting {
 
 	ScriptingCoreData data;
 
-	void SetupInternalCalls();
-
 	void InitScriptComponents();
 	void InitScriptFields(const std::string& fullName, MonoClass* scriptClass);
 
@@ -65,7 +75,7 @@ namespace Copper::Scripting {
 		data.entityClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Entity");
 
 		//Setup ScriptingAPI
-		SetupInternalCalls();
+		InternalCalls::SetupInternalCalls();
 
 	}
 	void Shutdown() {
@@ -227,95 +237,6 @@ namespace Copper::Scripting {
 		}
 
 		return data.entities[eID];
-
-	}
-
-	void SetupInternalCalls() {
-		
-		//======== Logging ========
-
-		mono_add_internal_call("Copper.Editor::Internal_Log", (void*) InternalCalls::EditorLog);
-		mono_add_internal_call("Copper.Editor::Internal_LogWarn", (void*) InternalCalls::EditorLogWarn);
-		mono_add_internal_call("Copper.Editor::Internal_LogError", (void*) InternalCalls::EditorLogError);
-
-		//======== Input ========
-
-		mono_add_internal_call("Copper.Input::Internal_IsKey", (void*) InternalCalls::IsKey);
-		mono_add_internal_call("Copper.Input::Internal_IsKeyDown", (void*) InternalCalls::IsKeyDown);
-		mono_add_internal_call("Copper.Input::Internal_IsKeyReleased", (void*) InternalCalls::IsKeyReleased);
-
-		mono_add_internal_call("Copper.Input::Internal_GetAxis", (void*) InternalCalls::GetAxis);
-
-		mono_add_internal_call("Copper.Input::Internal_SetCursorVisible", (void*) InternalCalls::SetCursorVisible);
-		mono_add_internal_call("Copper.Input::Internal_SetCursorLocked", (void*) InternalCalls::SetCursorLocked);
-
-		//======== Entity ========
-
-		mono_add_internal_call("Copper.Entity::Internal_GetEntityName", (void*) InternalCalls::GetEntityName);
-		mono_add_internal_call("Copper.Entity::Internal_SetEntityName", (void*) InternalCalls::SetEntityName);
-
-		mono_add_internal_call("Copper.Entity::Internal_IsEntityValid", (void*) InternalCalls::IsEntityValid);
-
-		mono_add_internal_call("Copper.Entity::Internal_GetEntity", (void*) InternalCalls::GetEntity);
-
-		//======== Components ========
-
-		mono_add_internal_call("Copper.Component::Internal_AddComponent", (void*) InternalCalls::AddComponent);
-		mono_add_internal_call("Copper.Component::Internal_GetComponent", (void*) InternalCalls::GetComponent);
-		mono_add_internal_call("Copper.Component::Internal_HasComponent", (void*) InternalCalls::HasComponent);
-
-		mono_add_internal_call("Copper.Entity::Internal_SetComponentEID", (void*) InternalCalls::SetComponentEID);
-
-		//======== Transform ========
-
-		mono_add_internal_call("Copper.Transform::Internal_GetPosition", (void*) InternalCalls::GetPosition);
-		mono_add_internal_call("Copper.Transform::Internal_GetRotation", (void*) InternalCalls::GetRotation);
-		mono_add_internal_call("Copper.Transform::Internal_GetScale", (void*) InternalCalls::GetScale);
-		mono_add_internal_call("Copper.Transform::Internal_SetPosition", (void*) InternalCalls::SetPosition);
-		mono_add_internal_call("Copper.Transform::Internal_SetRotation", (void*) InternalCalls::SetRotation);
-		mono_add_internal_call("Copper.Transform::Internal_SetScale", (void*) InternalCalls::SetScale);
-									   
-		mono_add_internal_call("Copper.Transform::Internal_GetForward", (void*) InternalCalls::GetForward);
-		mono_add_internal_call("Copper.Transform::Internal_GetRight", (void*) InternalCalls::GetRight);
-		mono_add_internal_call("Copper.Transform::Internal_GetUp",    (void*) InternalCalls::GetUp);
-
-		//======== Camera ========
-
-		mono_add_internal_call("Copper.Camera::Internal_GetFOV", (void*) InternalCalls::CameraGetFOV);
-		mono_add_internal_call("Copper.Camera::Internal_GetNearPlane", (void*) InternalCalls::CameraGetNearPlane);
-		mono_add_internal_call("Copper.Camera::Internal_GetFarPlane", (void*) InternalCalls::CameraGetFarPlane);
-		mono_add_internal_call("Copper.Camera::Internal_SetFOV", (void*) InternalCalls::CameraSetFOV);
-		mono_add_internal_call("Copper.Camera::Internal_SetNearPlane", (void*) InternalCalls::CameraSetNearPlane);
-		mono_add_internal_call("Copper.Camera::Internal_SetFarPlane", (void*) InternalCalls::CameraSetFarPlane);
-
-		//======== RigidBody ========
-
-		mono_add_internal_call("Copper.RigidBody::Internal_GetIsStatic", (void*) InternalCalls::RigidBodyGetIsStatic);
-		mono_add_internal_call("Copper.RigidBody::Internal_GetGravity", (void*) InternalCalls::RigidBodyGetGravity);
-		mono_add_internal_call("Copper.RigidBody::Internal_GetMass", (void*) InternalCalls::RigidBodyGetMass);
-
-		mono_add_internal_call("Copper.RigidBody::Internal_SetIsStatic", (void*) InternalCalls::RigidBodySetIsStatic);
-		mono_add_internal_call("Copper.RigidBody::Internal_SetGravity", (void*) InternalCalls::RigidBodySetGravity);
-		mono_add_internal_call("Copper.RigidBody::Internal_SetMass", (void*) InternalCalls::RigidBodySetMass);
-
-
-		mono_add_internal_call("Copper.RigidBody::Internal_AddForce", (void*) InternalCalls::RigidBodyAddForce);
-		mono_add_internal_call("Copper.RigidBody::Internal_AddTorque", (void*) InternalCalls::RigidBodyAddTorque);
-
-		//======== BoxCollider ========
-
-		mono_add_internal_call("Copper.BoxCollider::Internal_GetTrigger", (void*) InternalCalls::BoxColliderGetTrigger);
-		mono_add_internal_call("Copper.BoxCollider::Internal_BoxGetCenter", (void*) InternalCalls::BoxColliderGetCenter);
-		mono_add_internal_call("Copper.BoxCollider::Internal_BoxGetSize", (void*) InternalCalls::BoxColliderGetSize);
-
-		mono_add_internal_call("Copper.BoxCollider::Internal_SetTrigger", (void*) InternalCalls::BoxColliderSetTrigger);
-		mono_add_internal_call("Copper.BoxCollider::Internal_BoxSetCenter", (void*) InternalCalls::BoxColliderSetCenter);
-		mono_add_internal_call("Copper.BoxCollider::Internal_BoxSetSize", (void*) InternalCalls::BoxColliderSetSize);
-
-		//======== Quaternion ========
-
-		mono_add_internal_call("Copper.Quaternion::Internal_ToEuler", (void*) InternalCalls::QuaternionToEulerAngles);
-		mono_add_internal_call("Copper.Quaternion::Internal_FromEuler", (void*) InternalCalls::QuaternionFromEulerAngles);
 
 	}
 

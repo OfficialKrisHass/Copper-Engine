@@ -13,9 +13,9 @@ namespace Copper {
 
     namespace Scripting::InternalCalls {    
 
-        static void RigidBodySetGravity(uint32_t eID, bool value);
-        static void RigidBodySetIsStatic(uint32_t eID, bool value);
-        static void RigidBodySetMass(uint32_t eID, float value);
+        void RigidBodySetGravity(uint32_t eID, bool value);
+        void RigidBodySetIsStatic(uint32_t eID, bool value);
+        void RigidBodySetMass(uint32_t eID, float value);
 
     }
 

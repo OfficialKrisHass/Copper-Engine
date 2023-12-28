@@ -24,8 +24,7 @@ namespace Copper {
 
 		friend InternalEntity;
 		friend class RigidBody;
-		friend class BoxCollider;
-		friend class SphereCollider;
+		friend class Collider;
 		friend class Entity;
 		friend class OldSceneVersionSerializer;
 

@@ -15,8 +15,6 @@ namespace Copper {
 		Vector3 center = Vector3::zero;
 
 	private:
-		void Setup();
-
 		physx::PxShape* CreateShape() const override;
 
 	};

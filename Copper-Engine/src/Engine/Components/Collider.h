@@ -11,6 +11,8 @@ namespace Copper {
 	class Collider : public Component {
 
 		friend class Registry;
+		friend class Scene;
+
 		friend class RigidBody;
 
 	public:
@@ -27,6 +29,8 @@ namespace Copper {
 		Type type = (Type) 0;
 
 	private:
+		void Setup();
+
 		virtual physx::PxShape* CreateShape() const = 0;
 
 	};

@@ -227,68 +227,12 @@ namespace Copper {
 		}
 		template<> BoxCollider* AddComponent<BoxCollider>(uint32_t eID) {
 
-			if (eID == INVALID_ENTITY_ID) return nullptr;
-			if (!entities[eID]) return nullptr;
-
-			int cID = GetCID<Collider>();
-			GetCID<BoxCollider>(); // This is here just to reserve the next cID so other components dont take it
-			GetCID<SphereCollider>(); // This is here just to reserve the next cID so other components dont take it
-
-			if (pools.size() < cID + 3) pools.resize(cID + 3, nullptr);
-			if (!pools[cID]) pools[cID] = new ComponentPool(sizeof(Collider::Type));
-			if (!pools[cID + 1]) pools[cID + 1] = new ComponentPool(sizeof(BoxCollider));
-
-			*(uint8_t*) pools[cID]->Add(eID) = Collider::Type::Box;
-			BoxCollider* component = new (pools[cID + 1]->Add(eID)) BoxCollider();
-
-			component->entity = &entities[eID];
-			component->transform = entities[eID].transform;
-			component->valid = true;
-
-			component->type = Collider::Type::Box;
-
-			component->Added();
-
-			entities[eID].cMask.set(cID);
-			entities[eID].cMask.set(cID + 1);
-
-			componentAddedEvent.component = (Component*) component;
-			componentAddedEvent();
-
-			return component;
+			return AddColliderComponent<BoxCollider>(eID, Collider::Type::Box);
 
 		}
 		template<> SphereCollider* AddComponent<SphereCollider>(uint32_t eID) {
 
-			if (eID == INVALID_ENTITY_ID) return nullptr;
-			if (!entities[eID]) return nullptr;
-
-			int cID = GetCID<Collider>();
-			GetCID<BoxCollider>(); // This is here just to reserve the next cID so other components dont take it
-			GetCID<SphereCollider>(); // This is here just to reserve the next cID so other components dont take it
-
-			if (pools.size() < cID + 3) pools.resize(cID + 3, nullptr);
-			if (!pools[cID]) pools[cID] = new ComponentPool(sizeof(Collider::Type));
-			if (!pools[cID + 2]) pools[cID + 2] = new ComponentPool(sizeof(SphereCollider));
-
-			*(uint8_t*) pools[cID]->Add(eID) = Collider::Type::Sphere;
-			SphereCollider* component = new (pools[cID + 2]->Add(eID)) SphereCollider();
-
-			component->entity = &entities[eID];
-			component->transform = entities[eID].transform;
-			component->valid = true;
-
-			component->type = Collider::Type::Sphere;
-
-			component->Added();
-
-			entities[eID].cMask.set(cID);
-			entities[eID].cMask.set(cID + 2);
-
-			componentAddedEvent.component = (Component*) component;
-			componentAddedEvent();
-
-			return component;
+			return AddColliderComponent<SphereCollider>(eID, Collider::Type::Sphere);
 
 		}
 
@@ -309,63 +253,28 @@ namespace Copper {
 		}
 		template<> BoxCollider* GetComponent<BoxCollider>(uint32_t eID) {
 
-			if (eID == INVALID_ENTITY_ID) return nullptr;
-			if (!entities[eID]) return nullptr;
-
-			int cID = GetCID<Collider>();
-			GetCID<BoxCollider>(); // This is here just to reserve the next cID so other components dont take it
-			if (!entities[eID].cMask.test(cID + 1)) return nullptr;
-
-			BoxCollider* component = static_cast<BoxCollider*>(pools[cID + 1]->Get(eID));
-			return component;
+			return GetColliderComponent<BoxCollider>(eID, Collider::Type::Box);
 
 		}
 		template<> SphereCollider* GetComponent<SphereCollider>(uint32_t eID) {
 
-			if (eID == INVALID_ENTITY_ID) return nullptr;
-			if (!entities[eID]) return nullptr;
-
-			int cID = GetCID<Collider>();
-			GetCID<BoxCollider>(); // This is here just to reserve the next cID so other components dont take it
-			GetCID<SphereCollider>(); // This is here just to reserve the next cID so other components dont take it
-			if (!entities[eID].cMask.test(cID + 2)) return nullptr;
-
-			SphereCollider* component = static_cast<SphereCollider*>(pools[cID + 2]->Get(eID));
-			return component;
+			return GetColliderComponent<SphereCollider>(eID, Collider::Type::Sphere);
 
 		}
 
 		template<> bool HasComponent<Collider>(uint32_t eID) {
 
-			if (eID == INVALID_ENTITY_ID) return false;
-			if (!entities[eID]) return false;
-
-			int cID = GetCID<Collider>();
-			GetCID<BoxCollider>(); // This is here just to reserve the next cID so other components dont take it
-			GetCID<SphereCollider>(); // This is here just to reserve the next cID so other components dont take it
-			return entities[eID].cMask.test(cID);
+			return HasColliderComponent(eID, 0);
 
 		}
 		template<> bool HasComponent<BoxCollider>(uint32_t eID) {
 
-			if (eID == INVALID_ENTITY_ID) return false;
-			if (!entities[eID]) return false;
-
-			int cID = GetCID<Collider>();
-			GetCID<BoxCollider>(); // This is here just to reserve the next cID so other components dont take it
-			GetCID<SphereCollider>(); // This is here just to reserve the next cID so other components dont take it
-			return entities[eID].cMask.test(cID + 1);
+			return HasColliderComponent(eID, Collider::Type::Box);
 
 		}
 		template<> bool HasComponent<SphereCollider>(uint32_t eID) {
 
-			if (eID == INVALID_ENTITY_ID) return false;
-			if (!entities[eID]) return false;
-
-			int cID = GetCID<Collider>();
-			GetCID<BoxCollider>(); // This is here just to reserve the next cID so other components dont take it
-			GetCID<SphereCollider>(); // This is here just to reserve the next cID so other components dont take it
-			return entities[eID].cMask.test(cID + 2);
+			return HasColliderComponent(eID, Collider::Type::Sphere);
 
 		}
 
@@ -376,6 +285,7 @@ namespace Copper {
 
 			int cID = GetCID<Collider>();
 			GetCID<BoxCollider>(); // This is here just to reserve the next cID so other components dont take it
+			GetCID<SphereCollider>(); // This is here just to reserve the next cID so other components dont take it
 			if (!entities[eID].cMask.test(cID)) return;
 
 			uint8_t type = *(uint8_t*) pools[cID]->Get(eID);
@@ -396,49 +306,12 @@ namespace Copper {
 		}
 		template<> void RemoveComponent<BoxCollider>(uint32_t eID) {
 
-			if (eID == INVALID_ENTITY_ID) return;
-			if (!entities[eID]) return;
-
-			int cID = GetCID<Collider>();
-			GetCID<BoxCollider>(); // This is here just to reserve the next cID so other components dont take it
-			if (!entities[eID].cMask.test(cID + 1)) return;
-
-			pools[cID + 1]->Remove(eID);
-			entities[eID].cMask.reset(cID + 1);
-
-			pools[cID]->Remove(eID);
-			entities[eID].cMask.reset(cID);
-
-			BoxCollider* component = static_cast<BoxCollider*>(pools[cID + 1]->Get(eID));
-			componentRemovedEvent.component = (Component*) component;
-			componentRemovedEvent();
-
-			component->Removed();
-			component->valid = false;
+			RemoveColliderComponent<BoxCollider>(eID, Collider::Type::Box);
 
 		}
 		template<> void RemoveComponent<SphereCollider>(uint32_t eID) {
 
-			if (eID == INVALID_ENTITY_ID) return;
-			if (!entities[eID]) return;
-
-			int cID = GetCID<Collider>();
-			GetCID<BoxCollider>(); // This is here just to reserve the next cID so other components dont take it
-			GetCID<SphereCollider>(); // This is here just to reserve the next cID so other components dont take it
-			if (!entities[eID].cMask.test(cID + 2)) return;
-
-			pools[cID + 2]->Remove(eID);
-			entities[eID].cMask.reset(cID + 2);
-
-			pools[cID]->Remove(eID);
-			entities[eID].cMask.reset(cID);
-
-			SphereCollider* component = static_cast<SphereCollider*>(pools[cID + 2]->Get(eID));
-			componentRemovedEvent.component = (Component*) component;
-			componentRemovedEvent();
-
-			component->Removed();
-			component->valid = false;
+			RemoveColliderComponent<BoxCollider>(eID, Collider::Type::Sphere);
 
 		}
 
@@ -511,6 +384,89 @@ namespace Copper {
 		std::vector<InternalEntity> entities;
 		std::vector<ComponentPool*> pools;
 		std::vector<uint32_t> gaps;
+
+		template<typename T> T* AddColliderComponent(uint32_t eID, uint8_t type) {
+
+			if (eID == INVALID_ENTITY_ID) return nullptr;
+			if (!entities[eID]) return nullptr;
+
+			int cID = GetCID<Collider>();
+			GetCID<BoxCollider>(); // This is here just to reserve the next cID so other components dont take it
+			GetCID<SphereCollider>(); // This is here just to reserve the next cID so other components dont take it
+
+			if (pools.size() < cID + 3) pools.resize(cID + 3, nullptr);
+			if (!pools[cID]) pools[cID] = new ComponentPool(sizeof(Collider::Type));
+			if (!pools[cID + type]) pools[cID + type] = new ComponentPool(sizeof(T));
+
+			*(uint8_t*) pools[cID]->Add(eID) = (Collider::Type) type;
+			T* component = new (pools[cID + type]->Add(eID)) T();
+
+			component->entity = &entities[eID];
+			component->transform = entities[eID].transform;
+			component->valid = true;
+
+			component->type = (Collider::Type) type;
+
+			component->Added();
+
+			entities[eID].cMask.set(cID);
+			entities[eID].cMask.set(cID + type);
+
+			componentAddedEvent.component = (Component*) component;
+			componentAddedEvent();
+
+			return component;
+
+		}
+		template<typename T> T* GetColliderComponent(uint32_t eID, uint8_t type) {
+
+			if (eID == INVALID_ENTITY_ID) return nullptr;
+			if (!entities[eID]) return nullptr;
+
+			int cID = GetCID<Collider>();
+			GetCID<BoxCollider>(); // This is here just to reserve the next cID so other components dont take it
+			GetCID<SphereCollider>(); // This is here just to reserve the next cID so other components dont take it
+			if (!entities[eID].cMask.test(cID + type)) return nullptr;
+
+			T* component = static_cast<T*>(pools[cID + type]->Get(eID));
+			return component;
+
+		}
+		bool HasColliderComponent(uint32_t eID, uint8_t type) {
+
+			if (eID == INVALID_ENTITY_ID) return false;
+			if (!entities[eID]) return false;
+
+			int cID = GetCID<Collider>();
+			GetCID<BoxCollider>(); // This is here just to reserve the next cID so other components dont take it
+			GetCID<SphereCollider>(); // This is here just to reserve the next cID so other components dont take it
+			return entities[eID].cMask.test(cID + type);
+
+		}
+		template<typename T> void RemoveColliderComponent(uint32_t eID, uint8_t type) {
+
+			if (eID == INVALID_ENTITY_ID) return;
+			if (!entities[eID]) return;
+
+			int cID = GetCID<Collider>();
+			GetCID<BoxCollider>(); // This is here just to reserve the next cID so other components dont take it
+			GetCID<SphereCollider>(); // This is here just to reserve the next cID so other components dont take it
+			if (!entities[eID].cMask.test(cID + type)) return;
+
+			pools[cID + type]->Remove(eID);
+			entities[eID].cMask.reset(cID + type);
+
+			pools[cID]->Remove(eID);
+			entities[eID].cMask.reset(cID);
+
+			T* component = static_cast<T*>(pools[cID + type]->Get(eID));
+			componentRemovedEvent.component = (Component*) component;
+			componentRemovedEvent();
+
+			component->Removed();
+			component->valid = false;
+
+		}
 
 	};
 

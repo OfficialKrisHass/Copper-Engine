@@ -43,6 +43,7 @@
 #include "Engine/Components/Collider.h"
 #include "Engine/Components/BoxCollider.h"
 #include "Engine/Components/SphereCollider.h"
+#include "Engine/Components/CapsuleCollider.h"
 
 //-------------------------
 //------Miscellaneous------

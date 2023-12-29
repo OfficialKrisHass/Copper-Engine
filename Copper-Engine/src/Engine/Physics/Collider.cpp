@@ -60,5 +60,11 @@ namespace Copper {
         return physics->createShape(PxSphereGeometry(radius * GetTransform()->scale.x), *material);
 
     }
+    PxShape* CapsuleCollider::CreateShape() const {
+
+        Transform* transform = GetTransform();
+        return physics->createShape(PxCapsuleGeometry(transform->scale.x * radius, transform->scale.y * height), *material);
+
+    }
 
 }

@@ -6,8 +6,10 @@
 #include "Engine/Scene/InternalEntity.h"
 
 #include "Engine/Components/Transform.h"
+
 #include "Engine/Components/BoxCollider.h"
 #include "Engine/Components/SphereCollider.h"
+#include "Engine/Components/CapsuleCollider.h"
 
 #include <vector>
 
@@ -235,6 +237,11 @@ namespace Copper {
 			return AddColliderComponent<SphereCollider>(eID, Collider::Type::Sphere);
 
 		}
+		template<> CapsuleCollider* AddComponent<CapsuleCollider>(uint32_t eID) {
+
+			return AddColliderComponent<CapsuleCollider>(eID, Collider::Type::Capsule);
+
+		}
 
 		template<> Collider* GetComponent<Collider>(uint32_t eID) {
 
@@ -261,6 +268,11 @@ namespace Copper {
 			return GetColliderComponent<SphereCollider>(eID, Collider::Type::Sphere);
 
 		}
+		template<> CapsuleCollider* GetComponent<CapsuleCollider>(uint32_t eID) {
+
+			return GetColliderComponent<CapsuleCollider>(eID, Collider::Type::Capsule);
+
+		}
 
 		template<> bool HasComponent<Collider>(uint32_t eID) {
 
@@ -275,6 +287,11 @@ namespace Copper {
 		template<> bool HasComponent<SphereCollider>(uint32_t eID) {
 
 			return HasColliderComponent(eID, Collider::Type::Sphere);
+
+		}
+		template<> bool HasComponent<CapsuleCollider>(uint32_t eID) {
+
+			return HasColliderComponent(eID, Collider::Type::Capsule);
 
 		}
 
@@ -312,6 +329,11 @@ namespace Copper {
 		template<> void RemoveComponent<SphereCollider>(uint32_t eID) {
 
 			RemoveColliderComponent<BoxCollider>(eID, Collider::Type::Sphere);
+
+		}
+		template<> void RemoveComponent<CapsuleCollider>(uint32_t eID) {
+
+			RemoveColliderComponent<CapsuleCollider>(eID, Collider::Type::Capsule);
 
 		}
 
@@ -393,6 +415,7 @@ namespace Copper {
 			int cID = GetCID<Collider>();
 			GetCID<BoxCollider>(); // This is here just to reserve the next cID so other components dont take it
 			GetCID<SphereCollider>(); // This is here just to reserve the next cID so other components dont take it
+			GetCID<CapsuleCollider>(); // This is here just to reserve the next cID so other components dont take it
 
 			if (pools.size() < cID + 3) pools.resize(cID + 3, nullptr);
 			if (!pools[cID]) pools[cID] = new ComponentPool(sizeof(Collider::Type));
@@ -426,6 +449,7 @@ namespace Copper {
 			int cID = GetCID<Collider>();
 			GetCID<BoxCollider>(); // This is here just to reserve the next cID so other components dont take it
 			GetCID<SphereCollider>(); // This is here just to reserve the next cID so other components dont take it
+			GetCID<CapsuleCollider>(); // This is here just to reserve the next cID so other components dont take it
 			if (!entities[eID].cMask.test(cID + type)) return nullptr;
 
 			T* component = static_cast<T*>(pools[cID + type]->Get(eID));
@@ -440,6 +464,7 @@ namespace Copper {
 			int cID = GetCID<Collider>();
 			GetCID<BoxCollider>(); // This is here just to reserve the next cID so other components dont take it
 			GetCID<SphereCollider>(); // This is here just to reserve the next cID so other components dont take it
+			GetCID<CapsuleCollider>(); // This is here just to reserve the next cID so other components dont take it
 			return entities[eID].cMask.test(cID + type);
 
 		}
@@ -451,6 +476,7 @@ namespace Copper {
 			int cID = GetCID<Collider>();
 			GetCID<BoxCollider>(); // This is here just to reserve the next cID so other components dont take it
 			GetCID<SphereCollider>(); // This is here just to reserve the next cID so other components dont take it
+			GetCID<CapsuleCollider>(); // This is here just to reserve the next cID so other components dont take it
 			if (!entities[eID].cMask.test(cID + type)) return;
 
 			pools[cID + type]->Remove(eID);

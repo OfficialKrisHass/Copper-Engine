@@ -288,6 +288,19 @@ namespace Copper {
 			out << YAML::EndMap; // Sphere Collider
 
 		}
+		if (CapsuleCollider* collider = entity->GetComponent<CapsuleCollider>()) {
+
+			out << YAML::Key << "Capsule Collider" << YAML::Value << YAML::BeginMap; // Sphere Collider
+
+			out << YAML::Key << "Trigger" << YAML::Value << collider->trigger;
+
+			out << YAML::Key << "Radius" << YAML::Value << collider->radius;
+			out << YAML::Key << "Height" << YAML::Value << collider->height;
+			out << YAML::Key << "Center" << YAML::Value << collider->center;
+
+			out << YAML::EndMap; // Sphere Collider
+
+		}
 
 		if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) {
 
@@ -439,6 +452,17 @@ namespace Copper {
 			collider->trigger = colliderNode["Trigger"].as<bool>();
 
 			collider->radius = colliderNode["Radius"].as<float>();
+			collider->center = colliderNode["Center"].as<Vector3>();
+
+		}
+		if (YAML::Node colliderNode = node["Capsule Collider"]) {
+
+			CapsuleCollider* collider = entity->AddComponent<CapsuleCollider>();
+
+			collider->trigger = colliderNode["Trigger"].as<bool>();
+
+			collider->radius = colliderNode["Radius"].as<float>();
+			collider->height = colliderNode["Height"].as<float>();
 			collider->center = colliderNode["Center"].as<Vector3>();
 
 		}

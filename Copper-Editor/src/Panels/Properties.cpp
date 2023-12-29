@@ -81,6 +81,7 @@ namespace Editor {
 
 		if (BoxCollider* collider = entity->GetComponent<BoxCollider>()) RenderBoxCollider(collider);
 		if (SphereCollider* collider = entity->GetComponent<SphereCollider>()) RenderSphereCollider(collider);
+		if (CapsuleCollider* collider = entity->GetComponent<CapsuleCollider>()) RenderCapsuleCollider(collider);
 
 		if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) RenderScriptComponent(script);
 
@@ -131,6 +132,11 @@ namespace Editor {
 			} else if (ImGui::MenuItem("Sphere Collider") && !collider) {
 
 				entity->AddComponent<SphereCollider>();
+				Editor::SetChanges(true);
+
+			} else if (ImGui::MenuItem("Capsule Collider") && !collider) {
+
+				entity->AddComponent<CapsuleCollider>();
 				Editor::SetChanges(true);
 
 			}
@@ -213,12 +219,23 @@ namespace Editor {
 		ImGui::PopID();
 
 	}
-	void Properties::RenderSphereCollider(Copper::SphereCollider* collider) {
+	void Properties::RenderSphereCollider(SphereCollider* collider) {
 
 		if (!DrawComponent<SphereCollider>("Sphere Collider", collider)) return;
 
 		ShowBool("Trigger", &collider->trigger);
 		ShowFloat("Radius", &collider->radius);
+		ShowVector3("Center", &collider->center);
+
+		ImGui::PopID();
+
+	}
+	void Properties::RenderCapsuleCollider(CapsuleCollider* collider) {
+
+		if (!DrawComponent<CapsuleCollider>("Capsule Collider", collider)) return;
+
+		ShowFloat("Radius", &collider->radius);
+		ShowFloat("Height", &collider->height);
 		ShowVector3("Center", &collider->center);
 
 		ImGui::PopID();

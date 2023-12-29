@@ -421,3 +421,133 @@ Entities:
       Trigger: false
       Radius: 0.5
       Center: [0, 0, 0]
+  Capsule:
+    ID: 5
+    Transform:
+      Position: [1.83351994, 0.998482347, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent ID: 4294967295
+      Children: []
+    Mesh Renderer:
+      Mesh:
+        Data:
+          - Position: [-0.5, -0.5, 0.5]
+            Normal: [0, 0, -1]
+            Color: [1, 0, 0, 1]
+          - Position: [0.5, -0.5, 0.5]
+            Normal: [0, 0, -1]
+            Color: [1, 0, 0, 1]
+          - Position: [0.5, 0.5, 0.5]
+            Normal: [0, 0, -1]
+            Color: [1, 0, 0, 1]
+          - Position: [-0.5, 0.5, 0.5]
+            Normal: [0, 0, -1]
+            Color: [1, 0, 0, 1]
+          - Position: [0.5, -0.5, -0.5]
+            Normal: [0, 0, 1]
+            Color: [0, 1, 1, 1]
+          - Position: [-0.5, -0.5, -0.5]
+            Normal: [0, 0, 1]
+            Color: [0, 1, 1, 1]
+          - Position: [-0.5, 0.5, -0.5]
+            Normal: [0, 0, 1]
+            Color: [0, 1, 1, 1]
+          - Position: [0.5, 0.5, -0.5]
+            Normal: [0, 0, 1]
+            Color: [0, 1, 1, 1]
+          - Position: [0.5, -0.5, 0.5]
+            Normal: [-1, 0, 0]
+            Color: [0, 1, 0, 1]
+          - Position: [0.5, -0.5, -0.5]
+            Normal: [-1, 0, 0]
+            Color: [0, 1, 0, 1]
+          - Position: [0.5, 0.5, -0.5]
+            Normal: [-1, 0, 0]
+            Color: [0, 1, 0, 1]
+          - Position: [0.5, 0.5, 0.5]
+            Normal: [-1, 0, 0]
+            Color: [0, 1, 0, 1]
+          - Position: [-0.5, -0.5, -0.5]
+            Normal: [1, 0, 0]
+            Color: [1, 0, 1, 1]
+          - Position: [-0.5, -0.5, 0.5]
+            Normal: [1, 0, 0]
+            Color: [1, 0, 1, 1]
+          - Position: [-0.5, 0.5, 0.5]
+            Normal: [1, 0, 0]
+            Color: [1, 0, 1, 1]
+          - Position: [-0.5, 0.5, -0.5]
+            Normal: [1, 0, 0]
+            Color: [1, 0, 1, 1]
+          - Position: [-0.5, 0.5, 0.5]
+            Normal: [0, -1, 0]
+            Color: [0, 0, 1, 1]
+          - Position: [0.5, 0.5, 0.5]
+            Normal: [0, -1, 0]
+            Color: [0, 0, 1, 1]
+          - Position: [0.5, 0.5, -0.5]
+            Normal: [0, -1, 0]
+            Color: [0, 0, 1, 1]
+          - Position: [-0.5, 0.5, -0.5]
+            Normal: [0, -1, 0]
+            Color: [0, 0, 1, 1]
+          - Position: [-0.5, -0.5, -0.5]
+            Normal: [0, 1, 0]
+            Color: [1, 1, 0, 1]
+          - Position: [0.5, -0.5, -0.5]
+            Normal: [0, 1, 0]
+            Color: [1, 1, 0, 1]
+          - Position: [0.5, -0.5, 0.5]
+            Normal: [0, 1, 0]
+            Color: [1, 1, 0, 1]
+          - Position: [-0.5, -0.5, 0.5]
+            Normal: [0, 1, 0]
+            Color: [1, 1, 0, 1]
+        Indices:
+          - 0
+          - 1
+          - 2
+          - 2
+          - 3
+          - 0
+          - 4
+          - 5
+          - 6
+          - 6
+          - 7
+          - 4
+          - 8
+          - 9
+          - 10
+          - 10
+          - 11
+          - 8
+          - 12
+          - 13
+          - 14
+          - 14
+          - 15
+          - 12
+          - 16
+          - 17
+          - 18
+          - 18
+          - 19
+          - 16
+          - 20
+          - 21
+          - 22
+          - 22
+          - 23
+          - 20
+    Rigid Body:
+      Static: false
+      Gravity: true
+      Mass: 1
+      Lock Mask: 0
+    Capsule Collider:
+      Trigger: false
+      Radius: 0.5
+      Height: 1
+      Center: [0, 0, 0]

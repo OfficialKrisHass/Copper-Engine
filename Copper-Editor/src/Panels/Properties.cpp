@@ -26,7 +26,8 @@ namespace Editor {
 
 	bool Properties::dragDropTargetHovered = false;
 
-	template<typename T> static bool DrawComponent(const std::string& name, InternalEntity* entity);
+	template<typename T> static bool DrawComponent(const std::string& name, T* component);
+	static bool DrawComponent(const std::string& name, Transform* component);
 
 	Properties::Properties() : Panel("Properties") {
 
@@ -57,7 +58,7 @@ namespace Editor {
 		ImGui::SameLine();
 		ImGui::Separator();
 
-		if(DrawComponent<Transform>("Transform", entity)) {
+		if(DrawComponent("Transform", entity->GetTransform())) {
 			
 			Transform* transform = entity->GetTransform();
 
@@ -68,6 +69,8 @@ namespace Editor {
 				transform->rotation = Quaternion(newRot);
 
 			ShowVector3("Scale", &transform->scale);
+
+			ImGui::PopID();
 			
 		}
 
@@ -155,8 +158,7 @@ namespace Editor {
 
 	void Properties::RenderLight(Light* light) {
 
-		ImGui::PushID((int) (int64_t) light);
-		if (!DrawComponent<Light>("Light", light->GetEntity())) { ImGui::PopID(); return; }
+		if (!DrawComponent<Light>("Light", light)) return;
 
 		ShowColor("Color", &light->color);
 		ShowFloat("Intensity", &light->intensity);
@@ -166,8 +168,7 @@ namespace Editor {
 	}
 	void Properties::RenderCamera(Camera* camera) {
 
-		ImGui::PushID((int) (int64_t) camera);
-		if (!DrawComponent<Camera>("Camera", camera->GetEntity())) { ImGui::PopID(); return; }
+		if (!DrawComponent<Camera>("Camera", camera)) return;
 
 		ShowFloat("FOV", &camera->fov);
 		ShowFloat("Near Plane", &camera->nearPlane);
@@ -179,8 +180,7 @@ namespace Editor {
 
 	void Properties::RenderRigidBody(RigidBody* rb) {
 
-		ImGui::PushID((int) (int64_t) rb);
-		if (!DrawComponent<RigidBody>("Rigid Body", rb->GetEntity())) { ImGui::PopID(); return; }
+		if (!DrawComponent<RigidBody>("Rigid Body", rb)) return;
 
 		bool changed = false;
 
@@ -204,8 +204,7 @@ namespace Editor {
 	
 	void Properties::RenderBoxCollider(BoxCollider* collider) {
 
-		ImGui::PushID((int) (int64_t) collider);
-		if (!DrawComponent<BoxCollider>("Box Collider", collider->GetEntity())) { ImGui::PopID(); return; }
+		if (!DrawComponent<BoxCollider>("Box Collider", collider)) return;
 
 		ShowBool("Trigger", &collider->trigger);
 		ShowVector3("Center", &collider->center);
@@ -216,8 +215,7 @@ namespace Editor {
 	}
 	void Properties::RenderSphereCollider(Copper::SphereCollider* collider) {
 
-		ImGui::PushID((int) (int64_t) collider);
-		if (!DrawComponent<SphereCollider>("Sphere Collider", collider->GetEntity())) { ImGui::PopID(); return; }
+		if (!DrawComponent<SphereCollider>("Sphere Collider", collider)) return;
 
 		ShowBool("Trigger", &collider->trigger);
 		ShowFloat("Radius", &collider->radius);
@@ -229,8 +227,7 @@ namespace Editor {
 
 	void Properties::RenderScriptComponent(ScriptComponent* script) {
 
-		ImGui::PushID((int) (int64_t) script);
-		if (!DrawComponent<ScriptComponent>(script->name, script->GetEntity())) { ImGui::PopID(); return; }
+		if (!DrawComponent<ScriptComponent>(script->name, script)) return;
 		if (!*script) {
 
 			ImGui::Text("This Script is invalid or doesn't exist anymore");
@@ -261,26 +258,30 @@ namespace Editor {
 
 	}
 
-	template<typename T> static bool DrawComponent(const std::string& name, InternalEntity* entity) {
+	template<typename T> static bool DrawComponent(const std::string& name, T* component) {
+
+		ImGui::PushID((int) (int64_t) component);
 
 		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
-
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2 {4, 4});
-		//ImGui::VerticalSeparator();
 
-		bool opened = ImGui::TreeNodeEx((void*) typeid(T).hash_code(), flags, name.c_str());
+		bool opened = ImGui::TreeNodeEx((void*) component, flags, name.c_str());
 
 		ImGui::PopStyleVar();
-		if (opened) ImGui::TreePop();
+		if (opened)
+			ImGui::TreePop();
+		else
+			ImGui::PopID();
 
 		if (ImGui::BeginPopupContextItem()) {
 
 			if (ImGui::MenuItem("Remove Component")) {
 				
-				entity->RemoveComponent<T>();
+				component->GetEntity()->RemoveComponent<T>();
 
 				SetChanges(true);
 				ImGui::EndPopup();
+				ImGui::PopID();
 
 				return false;
 			
@@ -289,6 +290,24 @@ namespace Editor {
 			ImGui::EndPopup();
 
 		}
+
+		return opened;
+
+	}
+	static bool DrawComponent(const std::string& name, Transform* component) {
+
+		ImGui::PushID((int) (int64_t) component);
+
+		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4, 4 });
+
+		bool opened = ImGui::TreeNodeEx((void*) component, flags, name.c_str());
+
+		ImGui::PopStyleVar();
+		if (opened)
+			ImGui::TreePop();
+		else
+			ImGui::PopID();
 
 		return opened;
 

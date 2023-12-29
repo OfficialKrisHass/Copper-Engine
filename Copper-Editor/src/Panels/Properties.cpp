@@ -97,6 +97,8 @@ namespace Editor {
 		}
 
 		if(ImGui::BeginPopup("##AddComponent")) {
+
+			Collider* collider = entity->GetComponent<Collider>();
 				
 			if (ImGui::MenuItem("Light")) {
 				
@@ -118,12 +120,12 @@ namespace Editor {
 				entity->AddComponent<RigidBody>();
 				Editor::SetChanges(true);
 
-			} else if (ImGui::MenuItem("Box Collider")) {
+			} else if (ImGui::MenuItem("Box Collider") && !collider) {
 
 				entity->AddComponent<BoxCollider>();
 				Editor::SetChanges(true);
 
-			} else if (ImGui::MenuItem("Sphere Collider")) {
+			} else if (ImGui::MenuItem("Sphere Collider") && !collider) {
 
 				entity->AddComponent<SphereCollider>();
 				Editor::SetChanges(true);

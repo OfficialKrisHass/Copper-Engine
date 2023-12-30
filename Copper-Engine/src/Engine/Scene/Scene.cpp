@@ -326,6 +326,7 @@ namespace Copper {
 					case ScriptField::Type::Vector3: SerializeScriptField<Vector3>(field, script, out); break;
 
 					case ScriptField::Type::Entity: SerializeScriptField<InternalEntity*>(field, script, out); break;
+					case ScriptField::Type::Transform: SerializeScriptField<Transform*>(field, script, out); break;
 
 				}
 
@@ -491,6 +492,7 @@ namespace Copper {
 					case ScriptField::Type::Vector3: DeserializeScriptField<Vector3>(field, script, fields[field.name]["Value"]); break;
 
 					case ScriptField::Type::Entity: DeserializeScriptField<InternalEntity*>(field, script, fields[field.name]["Value"]); break;
+					case ScriptField::Type::Transform: DeserializeScriptField<Transform*>(field, script, fields[field.name]["Value"]); break;
 
 				}
 
@@ -523,6 +525,27 @@ namespace Copper {
 
 		T tmp = fieldNode.as<T>();
 		instance->SetFieldValue(field, &tmp);
+
+	}
+
+	template<> void Scene::SerializeScriptField<Transform*>(const ScriptField& field, ScriptComponent* instance, YAML::Emitter& out) {
+
+		Transform* value;
+		instance->GetFieldValue(field, &value);
+
+		out << YAML::Key << field.name << YAML::Value << YAML::BeginMap; // Field
+
+		out << YAML::Key << "Type" << YAML::Value << (int) field.type;
+		out << YAML::Key << "Value" << YAML::Value << (value ? value->entity.id : INVALID_ENTITY_ID);
+
+		out << YAML::EndMap; // Field
+
+	}
+	template<> void Scene::DeserializeScriptField<Transform*>(const ScriptField& field, ScriptComponent* instance, const YAML::Node& fieldNode) {
+
+		uint32_t eID = fieldNode.as<uint32_t>();
+		Transform* transform = eID == INVALID_ENTITY_ID ? nullptr : GetEntityFromID(eID)->transform;
+		instance->SetFieldValue(field, &transform);
 
 	}
 

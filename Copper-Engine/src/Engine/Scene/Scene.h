@@ -111,6 +111,9 @@ namespace Copper {
 		template<typename T> void SerializeScriptField(const struct ScriptField& field, class ScriptComponent* instance, YAML::Emitter& out);
 		template<typename T> void DeserializeScriptField(const ScriptField& field, ScriptComponent* instance, const YAML::Node& fieldNode);
 
+		template<> void SerializeScriptField<Transform*>(const struct ScriptField& field, class ScriptComponent* instance, YAML::Emitter& out);
+		template<> void DeserializeScriptField<Transform*>(const ScriptField& field, ScriptComponent* instance, const YAML::Node& fieldNode);
+
 	};
 
 	Scene* GetScene();

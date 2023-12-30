@@ -163,6 +163,9 @@ Entities:
         sensitivity:
           Type: 3
           Value: 20
+        camera:
+          Type: 7
+          Value: 1
   Ground:
     ID: 3
     Transform:

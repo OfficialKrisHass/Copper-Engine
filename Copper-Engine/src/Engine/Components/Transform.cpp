@@ -19,15 +19,15 @@ namespace Copper {
 
 		Matrix4 ret;
 
-		CMath::TranslateMatrix(ret, position);
-		ret = ret * (Matrix4) rotation;
-		CMath::ScaleMatrix(ret, scale);
-
 		if (parent) {
 
 			ret *= parent->CreateMatrix();
 
 		}
+
+		CMath::TranslateMatrix(ret, position);
+		ret = ret * (Matrix4) rotation;
+		CMath::ScaleMatrix(ret, scale);
 
 		return ret;
 

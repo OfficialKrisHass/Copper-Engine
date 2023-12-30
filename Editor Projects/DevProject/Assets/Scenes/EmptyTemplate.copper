@@ -162,7 +162,7 @@ Entities:
           Value: 150
         sensitivity:
           Type: 3
-          Value: 10
+          Value: 20
   Ground:
     ID: 3
     Transform:

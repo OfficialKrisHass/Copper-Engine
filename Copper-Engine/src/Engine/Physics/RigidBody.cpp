@@ -104,13 +104,31 @@ namespace Copper {
 
     void RigidBody::UpdatePositionAndRotation() {
 
-        if (!body || isStatic)
-            return;
+        if (!body || isStatic) return;
 
         Transform* transform = GetTransform();
 
         transform->position = PhysXToCopper(body->getGlobalPose().p);
         transform->rotation = PhysXToCopper(body->getGlobalPose().q);
+
+    }
+
+    void RigidBody::SetPosition(const Vector3& position) {
+
+        if (!body || isStatic) return;
+
+        PxTransform pose = body->getGlobalPose();
+        pose.p = CopperToPhysX(position);
+        body->setGlobalPose(pose);
+
+    }
+    void RigidBody::SetRotation(const Quaternion& rotation) {
+
+        if (!body || isStatic) return;
+
+        PxTransform pose = body->getGlobalPose();
+        pose.q = CopperToPhysX(rotation);
+        body->setGlobalPose(pose);
 
     }
 

@@ -4,6 +4,8 @@
 
 #include "Engine/Scene/CopperECS.h"
 
+#include "Engine/Components/RigidBody.h"
+
 #include <mono/jit/jit.h>
 #include <mono/metadata/exception.h>
 
@@ -49,13 +51,27 @@ namespace Copper::Scripting::InternalCalls {
 	void SetPosition(uint32_t eID, Vector3* value) {
 
 		CheckValidEntity(eID);
-		GetEntityFromID(eID)->GetTransform()->position = *value;
+
+		InternalEntity* entity = GetEntityFromID(eID);
+		entity->GetTransform()->position = *value;
+
+		RigidBody* rb = entity->GetComponent<RigidBody>();
+		if (!rb) return;
+
+		rb->SetPosition(*value);
 
 	}
 	void SetRotation(uint32_t eID, Quaternion* value) {
 
 		CheckValidEntity(eID);
-		GetEntityFromID(eID)->GetTransform()->rotation = *value;
+
+		InternalEntity* entity = GetEntityFromID(eID);
+		entity->GetTransform()->rotation = *value;
+
+		RigidBody* rb = entity->GetComponent<RigidBody>();
+		if (!rb) return;
+
+		rb->SetRotation(*value);
 
 	}
 	void SetScale(uint32_t eID, Vector3* value) {

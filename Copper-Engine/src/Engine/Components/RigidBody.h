@@ -48,6 +48,9 @@ namespace Copper {
 
         void UpdatePositionAndRotation();
 
+        void SetPosition(const Vector3& position);
+        void SetRotation(const Quaternion& rotation);
+
         void AddForce(const Vector3& force, const ForceMode mode);
         void AddTorque(const Vector3& torque, const ForceMode mode);
 

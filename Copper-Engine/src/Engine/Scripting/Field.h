@@ -25,6 +25,7 @@ namespace Copper {
 			Vector3,
 
 			Entity,
+			Transform,
 
 		};
 

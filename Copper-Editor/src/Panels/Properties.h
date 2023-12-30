@@ -33,6 +33,7 @@ namespace Editor {
 		bool ShowMask(const std::string& name, uint32_t& mask, int num, int maskOffset = 0, char startLabel = 'X');
 
 		bool ShowEntity(const std::string& name, Copper::InternalEntity** entity);
+		bool ShowTransform(const std::string& name, Copper::Transform** transform);
 
 		static bool IsDragDropTargetHovered() { return dragDropTargetHovered; }
 	

@@ -74,7 +74,7 @@ namespace Copper::Scripting::MonoUtils {
 	}
 	ScriptField::Type TypeFromString(const std::string& string) {
 
-		if		(string == "System.Int32")   return ScriptField::Type::Int;
+		if (string == "System.Int32")   return ScriptField::Type::Int;
 		else if (string == "System.UInt32")  return ScriptField::Type::UInt;
 		else if (string == "System.Single")  return ScriptField::Type::Float;
 
@@ -82,6 +82,7 @@ namespace Copper::Scripting::MonoUtils {
 		else if (string == "Copper.Vector3") return ScriptField::Type::Vector3;
 
 		else if (string == "Copper.Entity")  return ScriptField::Type::Entity;
+		else if (string == "Copper.Transform") return ScriptField::Type::Transform;
 
 		return ScriptField::Type::None;
 

@@ -10,6 +10,8 @@
 
 #include <mono/metadata/object.h>
 
+#define RETURN_NULLPTR { *out = nullptr; return; }
+
 namespace Copper {
 
 	void ScriptComponent::Init(const std::string& name) {
@@ -156,18 +158,41 @@ namespace Copper {
 	}
 	void ScriptComponent::GetFieldValue(const ScriptField& field, InternalEntity** out) {
 
-		if (field.type != ScriptField::Type::Entity) { *out = nullptr; return; }
+		if (field.type != ScriptField::Type::Entity)
+			RETURN_NULLPTR;
 
 		MonoObject* entity = nullptr;
 		entity = mono_field_get_value_object(Scripting::GetAppDomain(), field.field, instance);
-		if (!entity) { *out = nullptr; return; }
+		if (!entity)
+			RETURN_NULLPTR;
 
 		uint32_t eID = INVALID_ENTITY_ID;
 		MonoClassField* eIDField = mono_class_get_field_from_name(Scripting::GetEntityMonoClass(), "id");
 		mono_field_get_value(entity, eIDField, &eID);
-		if (eID == INVALID_ENTITY_ID) { *out = nullptr; return; }
+		if (eID == INVALID_ENTITY_ID)
+			RETURN_NULLPTR
 
 		*out = GetEntityFromID(eID);
+
+	}
+
+	void ScriptComponent::GetFieldValue(const ScriptField& field, Transform** out) {
+
+		if (field.type != ScriptField::Type::Transform)
+			RETURN_NULLPTR
+
+		MonoObject* transform = nullptr;
+		transform = mono_field_get_value_object(Scripting::GetAppDomain(), field.field, instance);
+		if (!transform)
+			RETURN_NULLPTR;
+
+		int64_t componentPointer = NULL;
+		MonoClassField* componentPointerField = mono_class_get_field_from_name(Scripting::GetTransformMonoClass(), "componentPointer");
+		mono_field_get_value(transform, componentPointerField, &componentPointer);
+		if (componentPointer == NULL)
+			RETURN_NULLPTR;
+
+		*out = (Transform*) componentPointer;
 
 	}
 
@@ -182,6 +207,37 @@ namespace Copper {
 
 		uint32_t entityID = *value ? (*value)->ID() : INVALID_ENTITY_ID;
 		mono_field_set_value(instance, field.field, Scripting::GetScriptEntity(entityID));
+
+	}
+
+	void ScriptComponent::SetFieldValue(const ScriptField& field, Transform** value) {
+
+		if (field.type != ScriptField::Type::Transform) return;
+
+		if (*value == nullptr) {
+
+			mono_field_set_value(instance, field.field, nullptr);
+			return;
+
+		}
+
+		MonoClass* transformClass = Scripting::GetTransformMonoClass();
+		MonoObject* transform = mono_object_new(Scripting::GetAppDomain(), transformClass);
+		if (!transform) return;
+
+		MonoMethod* constructor = mono_class_get_method_from_name(transformClass, ".ctor", 1);
+		if (!constructor) return;
+
+		uint64_t eID = (*value)->GetEntity()->ID();
+		void* param = &eID;
+		MonoObject* exc = nullptr;
+		mono_runtime_invoke(constructor, transform, &param, &exc);
+
+		if (exc)
+			Scripting::MonoUtils::PrintExceptionDetails(exc);
+
+		mono_field_set_value(instance, field.field, transform);
+
 
 	}
 

@@ -266,6 +266,7 @@ namespace Editor {
 				case ScriptField::Type::Vector3:		RenderScriptField<Vector3>(script, field, BindShowFunc(ShowVector3)); break;
 
 				case ScriptField::Type::Entity:			RenderScriptField<InternalEntity*>(script, field, BindShowFunc(ShowEntity)); break;
+				case ScriptField::Type::Transform:		RenderScriptField<Transform*>(script, field, BindShowFunc(ShowTransform)); break;
 
 			}
 
@@ -659,8 +660,10 @@ namespace Editor {
 		bool ret = false;
 		std::string nodeText;
 
-		if (*entity) nodeText = (*entity)->name;
-		else nodeText = "None";
+		if (*entity)
+			nodeText = (*entity)->name;
+		else
+			nodeText = "None";
 		nodeText += " (Copper Object)";
 
 		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
@@ -679,6 +682,45 @@ namespace Editor {
 				dragDropTargetHovered = true;
 				ret = true;
 				*entity = GetEntityFromID(*(uint32_t*) payload->Data);
+
+			}
+
+			ImGui::EndDragDropTarget();
+
+		}
+
+		if (ret) SetChanges(true);
+		return ret;
+
+	}
+	bool Properties::ShowTransform(const std::string& name, Transform** transform) {
+
+		bool ret = false;
+		std::string nodeText;
+
+		if (*transform)
+			nodeText = (*transform)->GetEntity()->name;
+		else
+			nodeText = "None";
+		nodeText += " (Transform)";
+
+		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+		if (dragDropTargetHovered) ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4{ 0.25f, 0.25f, 0.25f, 1.0f });
+
+		ImGui::InputText(name.c_str(), &nodeText, ImGuiInputTextFlags_ReadOnly);
+
+		ImGui::PopItemFlag();
+		if (dragDropTargetHovered)
+			ImGui::PopStyleColor();
+
+		dragDropTargetHovered = ImGui::IsItemHovered();
+		if (ImGui::BeginDragDropTarget()) {
+
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE")) {
+
+				dragDropTargetHovered = true;
+				ret = true;
+				*transform = GetEntityFromID(*(uint32_t*) payload->Data)->GetTransform();
 
 			}
 

@@ -31,6 +31,7 @@ namespace Copper::Scripting {
 	MonoClass* GetVector3MonoClass();
 
 	MonoClass* GetEntityMonoClass();
+	MonoClass* GetTransformMonoClass();
 
 	MonoDomain* GetRootDomain();
 	MonoDomain* GetAppDomain();

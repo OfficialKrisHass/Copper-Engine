@@ -38,7 +38,10 @@ namespace Copper::Scripting {
 		MonoImage* projectAssemblyImage;
 
 		MonoClass* entityClass;
+
 		MonoClass* componentClass;
+		MonoClass* transformClass;
+
 		MonoClass* vector2Class;
 		MonoClass* vector3Class;
 
@@ -69,10 +72,13 @@ namespace Copper::Scripting {
 		data.apiAssembly = MonoUtils::LoadAssembly("assets/ScriptAPI/Copper-ScriptingAPI.dll");
 		data.apiAssemblyImage = mono_assembly_get_image(data.apiAssembly);
 
-		data.componentClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Component");
 		data.vector2Class = mono_class_from_name(data.apiAssemblyImage, "Copper", "Vector2");
 		data.vector3Class = mono_class_from_name(data.apiAssemblyImage, "Copper", "Vector3");
+
 		data.entityClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Entity");
+
+		data.componentClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Component");
+		data.transformClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Transform");
 
 		//Setup ScriptingAPI
 		InternalCalls::SetupInternalCalls();
@@ -113,10 +119,13 @@ namespace Copper::Scripting {
 		data.apiAssembly = MonoUtils::LoadAssembly("assets/ScriptAPI/Copper-ScriptingAPI.dll");
 		data.apiAssemblyImage = mono_assembly_get_image(data.apiAssembly);
 
-		data.componentClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Component");
 		data.vector2Class = mono_class_from_name(data.apiAssemblyImage, "Copper", "Vector2");
 		data.vector3Class = mono_class_from_name(data.apiAssemblyImage, "Copper", "Vector3");
+
 		data.entityClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Entity");
+
+		data.componentClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Component");
+		data.transformClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Transform");
 
 		//Load the Project Assembly
 		if (!LoadProjectAssembly(data.projectPath))
@@ -247,6 +256,8 @@ namespace Copper::Scripting {
 	MonoClass* GetVector3MonoClass() { return data.vector3Class; }
 
 	MonoClass* GetEntityMonoClass() { return data.entityClass; }
+
+	MonoClass* GetTransformMonoClass() { return data.transformClass; }
 
 	MonoDomain* GetRootDomain() { return data.root; }
 	MonoDomain* GetAppDomain() { return data.app; }

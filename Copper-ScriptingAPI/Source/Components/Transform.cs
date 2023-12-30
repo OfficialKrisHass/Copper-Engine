@@ -8,6 +8,7 @@ namespace Copper {
         protected Transform() {
 
             this.eID = 4294967295;
+            componentPointer = 0;
 
         }
         public Transform(uint eID) {

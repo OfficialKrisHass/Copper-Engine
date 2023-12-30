@@ -42,6 +42,10 @@ namespace Copper {
 	void AddPreShutdownEventFunc(std::function<bool(const Event&)> func);
 	void AddPostShutdownEventFunc(std::function<void()> func);
 
+	// Game
+
+	float DeltaTime();
+
 	// Editor Misc.
 
 #ifdef CU_EDITOR

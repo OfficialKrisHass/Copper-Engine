@@ -15,7 +15,7 @@ Entities:
   Camera:
     ID: 1
     Transform:
-      Position: [0, 0, 0]
+      Position: [0, 0.349999994, 0]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
       Parent ID: 2
@@ -30,7 +30,7 @@ Entities:
     Transform:
       Position: [0, 0, 0]
       Rotation: [1, 0, 0, 0]
-      Scale: [1, 1, 1]
+      Scale: [1, 2, 1]
       Parent ID: 4294967295
       Children: [1]
     Mesh Renderer:
@@ -159,10 +159,10 @@ Entities:
       Fields:
         speed:
           Type: 3
-          Value: 150
+          Value: 10
         sensitivity:
           Type: 3
-          Value: 20
+          Value: 3
         camera:
           Type: 7
           Value: 1
@@ -171,7 +171,7 @@ Entities:
     Transform:
       Position: [0, -1.55513918, 0]
       Rotation: [1, 0, 0, 0]
-      Scale: [10, 1, 10]
+      Scale: [100, 1, 100]
       Parent ID: 4294967295
       Children: []
     Mesh Renderer:

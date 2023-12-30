@@ -54,8 +54,11 @@ namespace Copper {
 		// Scene
 
 		Scene scene;
-		float lastFrameTime = 0.0f;
 		bool renderScene = true;
+
+		float lastFrameTime = 0.0f;
+		float deltaTime = 0.0f;
+
 
 		// Engine Events
 
@@ -141,7 +144,7 @@ namespace Copper {
 		while (data.engineState == EngineState::Running) {
 
 			float time = data.WindowRef().Time();
-			float deltaTime = time - data.lastFrameTime;
+			data.deltaTime = time - data.lastFrameTime;
 			data.lastFrameTime = time;
 
 			data.WindowRef().Update();
@@ -149,7 +152,7 @@ namespace Copper {
 			data.updateEvent();
 
 			data.fbo.Bind();
-			data.scene.Update(data.renderScene, deltaTime);
+			data.scene.Update(data.renderScene, data.deltaTime);
 			data.fbo.Unbind();
 
 			Renderer::ResizeViewport(data.WindowRef().Size());
@@ -225,6 +228,10 @@ namespace Copper {
 
 	void AddPreShutdownEventFunc(std::function<bool(const Event&)> func) { data.preShutdownEvent += func; }
 	void AddPostShutdownEventFunc(std::function<void()> func) { data.postShutdownEvent += func; }
+
+	// Game
+
+	float DeltaTime() { return data.deltaTime; }
 
 	// Declaration in Window.h
 

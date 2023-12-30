@@ -28,14 +28,20 @@ class Player : Component {
             return;
 
         }
+        if (camera == null) {
 
-        float x = Input.GetAxis("Keys_WS") * speed;
-        float z = Input.GetAxis("Keys_DA") * speed;
+            Editor.Log("Need to Assign Camera first!");
+            return;
+
+        }
+
+        float x = Input.GetAxis("Keys_WS") * speed * 3000.0f * Game.deltaTime;
+        float z = Input.GetAxis("Keys_DA") * speed * 3000.0f * Game.deltaTime;
 
         rb.AddForce(transform.forward * x + transform.right * z, ForceMode.Force);
 
-        mouseRot.x -= Input.GetAxis("Mouse X") * sensitivity;
-        mouseRot.y -= Input.GetAxis("Mouse Y") * sensitivity;
+        mouseRot.x -= Input.GetAxis("Mouse X") * sensitivity * 1000.0f * Game.deltaTime;
+        mouseRot.y -= Input.GetAxis("Mouse Y") * sensitivity * 1000.0f * Game.deltaTime;
 
         transform.rotation = Quaternion.Euler(0.0f, mouseRot.x, 0.0f);
         camera.rotation = Quaternion.Euler(mouseRot.y, 0.0f, 0.0f);

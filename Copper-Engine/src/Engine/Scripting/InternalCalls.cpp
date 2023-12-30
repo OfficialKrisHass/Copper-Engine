@@ -20,6 +20,10 @@ namespace Copper::Scripting::InternalCalls {
 	void EditorLogWarn(MonoString* msg);
 	void EditorLogError(MonoString* msg);
 
+	// Game
+	
+	float GetDeltaTime();
+
 	// Input
 
 	bool IsKey(int keyCode);
@@ -111,6 +115,10 @@ namespace Copper::Scripting::InternalCalls {
 		mono_add_internal_call("Copper.Editor::Internal_Log", (void*) EditorLog);
 		mono_add_internal_call("Copper.Editor::Internal_LogWarn", (void*) EditorLogWarn);
 		mono_add_internal_call("Copper.Editor::Internal_LogError", (void*) EditorLogError);
+
+		//======== Game ========
+
+		mono_add_internal_call("Copper.Game::Internal_GetDeltaTime", (void*) GetDeltaTime);
 
 		//======== Input ========
 

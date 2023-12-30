@@ -2,7 +2,7 @@ Name: DevProject
 Last Scene: Scenes\EmptyTemplate.copper
 Gizmo: 0
 Scene Camera:
-  Position: [-2.18998051, 0.917426884, -0.621733069]
-  Rotation: [-0.662187219, 0.176519409, 0.703678071, 0.187579632]
+  Position: [-0.545001864, 1.24359179, 3.04551363]
+  Rotation: [0.990187943, -0.113583706, 0.0808734074, 0.00927692745]
   Speed: 0.0299999993
   Sensitivity: 110

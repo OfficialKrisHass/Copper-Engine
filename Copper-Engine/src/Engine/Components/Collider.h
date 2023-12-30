@@ -4,6 +4,8 @@
 
 #include "Engine/Scene/Component.h"
 
+#define COLLIDER_TYPES 3
+
 namespace physx { class PxShape; }
 
 namespace Copper {

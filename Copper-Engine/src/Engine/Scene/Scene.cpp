@@ -123,6 +123,7 @@ namespace Copper {
 		this->path = path;
 
 		registry.Cleanup();
+		registry.Initialize();
 
 		runtimeRunning = false;
 		runtimeStarted = false;

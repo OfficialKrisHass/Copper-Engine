@@ -9,13 +9,18 @@
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Renderer/Mesh.h"
 
-#include "Engine/Components/Camera.h"
 #include "Engine/Components/MeshRenderer.h"
-#include "Engine/Components/ScriptComponent.h"
+#include "Engine/Components/Camera.h"
 #include "Engine/Components/Light.h"
+
+#include "Engine/Components/ScriptComponent.h"
+
 #include "Engine/Components/RigidBody.h"
+
 #include "Engine/Components/Collider.h"
 #include "Engine/Components/BoxCollider.h"
+#include "Engine/Components/SphereCollider.h"
+#include "Engine/Components/CapsuleCollider.h"
 
 #include "Engine/Scripting/ScriptingCore.h"
 

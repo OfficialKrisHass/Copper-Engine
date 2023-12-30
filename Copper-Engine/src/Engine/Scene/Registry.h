@@ -7,10 +7,6 @@
 
 #include "Engine/Components/Transform.h"
 
-#include "Engine/Components/BoxCollider.h"
-#include "Engine/Components/SphereCollider.h"
-#include "Engine/Components/CapsuleCollider.h"
-
 #include <vector>
 
 #define TRANSFORM_CID 0
@@ -19,15 +15,20 @@
 #define CAMERA_CID 2
 #define LIGHT_CID 3
 
-#define RIGIDBODY_CID 4
+#define SCRIPT_COMPONENT_CID 4
 
-#define COLLIDER_CID 5
-#define BOX_COLLIDER_CID 6
-#define SPHERE_COLLIDER_CID 7
-#define CAPSULE_COLLIDER_CID 8
+#define RIGIDBODY_CID 5
+#define COLLIDER_CID 6
+#define BOX_COLLIDER_CID 7
+#define SPHERE_COLLIDER_CID 8
+#define CAPSULE_COLLIDER_CID 9
 
 namespace Copper {
 
+	class Collider;
+	class BoxCollider;
+	class SphereCollider;
+	class CapsuleCollider;
 	extern int cCounter;
 
 	extern EntityEvent entityCreatedEvent;
@@ -238,117 +239,25 @@ namespace Copper {
 
 		}
 
-		template<> Collider* AddComponent<Collider>(uint32_t eID) {
+		template<> Collider* AddComponent<Collider>(uint32_t eID);
+		template<> BoxCollider* AddComponent<BoxCollider>(uint32_t eID);
+		template<> SphereCollider* AddComponent<SphereCollider>(uint32_t eID);
+		template<> CapsuleCollider* AddComponent<CapsuleCollider>(uint32_t eID);
 
-			LogError("Can't add a base Collider component to entity. Entity: {}", entities[eID]);
-			return nullptr;
+		template<> Collider* GetComponent<Collider>(uint32_t eID);
+		template<> BoxCollider* GetComponent<BoxCollider>(uint32_t eID);
+		template<> SphereCollider* GetComponent<SphereCollider>(uint32_t eID);
+		template<> CapsuleCollider* GetComponent<CapsuleCollider>(uint32_t eID);
 
-		}
-		template<> BoxCollider* AddComponent<BoxCollider>(uint32_t eID) {
+		template<> bool HasComponent<Collider>(uint32_t eID);
+		template<> bool HasComponent<BoxCollider>(uint32_t eID);
+		template<> bool HasComponent<SphereCollider>(uint32_t eID);
+		template<> bool HasComponent<CapsuleCollider>(uint32_t eID);
 
-			return AddColliderComponent<BoxCollider>(eID, Collider::Type::Box);
-
-		}
-		template<> SphereCollider* AddComponent<SphereCollider>(uint32_t eID) {
-
-			return AddColliderComponent<SphereCollider>(eID, Collider::Type::Sphere);
-
-		}
-		template<> CapsuleCollider* AddComponent<CapsuleCollider>(uint32_t eID) {
-
-			return AddColliderComponent<CapsuleCollider>(eID, Collider::Type::Capsule);
-
-		}
-
-		template<> Collider* GetComponent<Collider>(uint32_t eID) {
-
-			if (eID == INVALID_ENTITY_ID) return nullptr;
-			if (!entities[eID]) return nullptr;
-
-			int cID = GetCID<Collider>();
-			if (!entities[eID].cMask.test(cID)) return nullptr;
-
-			uint8_t type = *(uint8_t*) pools[cID]->Get(eID);
-			Collider* component = static_cast<Collider*>(pools[cID + type]->Get(eID));
-			return component;
-
-		}
-		template<> BoxCollider* GetComponent<BoxCollider>(uint32_t eID) {
-
-			return GetColliderComponent<BoxCollider>(eID, Collider::Type::Box);
-
-		}
-		template<> SphereCollider* GetComponent<SphereCollider>(uint32_t eID) {
-
-			return GetColliderComponent<SphereCollider>(eID, Collider::Type::Sphere);
-
-		}
-		template<> CapsuleCollider* GetComponent<CapsuleCollider>(uint32_t eID) {
-
-			return GetColliderComponent<CapsuleCollider>(eID, Collider::Type::Capsule);
-
-		}
-
-		template<> bool HasComponent<Collider>(uint32_t eID) {
-
-			return HasColliderComponent(eID, 0);
-
-		}
-		template<> bool HasComponent<BoxCollider>(uint32_t eID) {
-
-			return HasColliderComponent(eID, Collider::Type::Box);
-
-		}
-		template<> bool HasComponent<SphereCollider>(uint32_t eID) {
-
-			return HasColliderComponent(eID, Collider::Type::Sphere);
-
-		}
-		template<> bool HasComponent<CapsuleCollider>(uint32_t eID) {
-
-			return HasColliderComponent(eID, Collider::Type::Capsule);
-
-		}
-
-		template<> void RemoveComponent<Collider>(uint32_t eID) {
-
-			if (eID == INVALID_ENTITY_ID) return;
-			if (!entities[eID]) return;
-
-			int cID = GetCID<Collider>();
-			if (!entities[eID].cMask.test(cID)) return;
-
-			uint8_t type = *(uint8_t*) pools[cID]->Get(eID);
-
-			pools[cID + type]->Remove(eID);
-			entities[eID].cMask.reset(cID + type);
-
-			pools[cID]->Remove(eID);
-			entities[eID].cMask.reset(cID);
-
-			Collider* component = static_cast<Collider*>(pools[cID + type]->Get(eID));
-			componentRemovedEvent.component = (Component*) component;
-			componentRemovedEvent();
-
-			component->Removed();
-			component->valid = false;
-
-		}
-		template<> void RemoveComponent<BoxCollider>(uint32_t eID) {
-
-			RemoveColliderComponent<BoxCollider>(eID, Collider::Type::Box);
-
-		}
-		template<> void RemoveComponent<SphereCollider>(uint32_t eID) {
-
-			RemoveColliderComponent<BoxCollider>(eID, Collider::Type::Sphere);
-
-		}
-		template<> void RemoveComponent<CapsuleCollider>(uint32_t eID) {
-
-			RemoveColliderComponent<CapsuleCollider>(eID, Collider::Type::Capsule);
-
-		}
+		template<> void RemoveComponent<Collider>(uint32_t eID);
+		template<> void RemoveComponent<BoxCollider>(uint32_t eID);
+		template<> void RemoveComponent<SphereCollider>(uint32_t eID);
+		template<> void RemoveComponent<CapsuleCollider>(uint32_t eID);
 
 		void* GetComponent(int componentID, uint32_t eID) {
 
@@ -420,82 +329,10 @@ namespace Copper {
 		std::vector<ComponentPool*> pools;
 		std::vector<uint32_t> gaps;
 
-		template<typename T> T* AddColliderComponent(uint32_t eID, uint8_t type) {
-
-			if (eID == INVALID_ENTITY_ID) return nullptr;
-			if (!entities[eID]) return nullptr;
-
-			int cID = GetCID<Collider>();
-
-		#ifdef CU_DEBUG
-			if (pools.size() < cID + COLLIDER_TYPES + 1) pools.resize(cID + COLLIDER_TYPES + 1, nullptr);
-		#endif
-			if (!pools[cID]) pools[cID] = new ComponentPool(sizeof(Collider::Type));
-			if (!pools[cID + type]) pools[cID + type] = new ComponentPool(sizeof(T));
-
-			*(uint8_t*) pools[cID]->Add(eID) = (Collider::Type) type;
-			T* component = new (pools[cID + type]->Add(eID)) T();
-
-			component->entity = &entities[eID];
-			component->transform = entities[eID].transform;
-			component->valid = true;
-
-			component->type = (Collider::Type) type;
-
-			component->Added();
-
-			entities[eID].cMask.set(cID);
-			entities[eID].cMask.set(cID + type);
-
-			componentAddedEvent.component = (Component*) component;
-			componentAddedEvent();
-
-			return component;
-
-		}
-		template<typename T> T* GetColliderComponent(uint32_t eID, uint8_t type) {
-
-			if (eID == INVALID_ENTITY_ID) return nullptr;
-			if (!entities[eID]) return nullptr;
-
-			int cID = GetCID<Collider>();
-			if (!entities[eID].cMask.test(cID + type)) return nullptr;
-
-			T* component = static_cast<T*>(pools[cID + type]->Get(eID));
-			return component;
-
-		}
-		bool HasColliderComponent(uint32_t eID, uint8_t type) {
-
-			if (eID == INVALID_ENTITY_ID) return false;
-			if (!entities[eID]) return false;
-
-			int cID = GetCID<Collider>();
-			return entities[eID].cMask.test(cID + type);
-
-		}
-		template<typename T> void RemoveColliderComponent(uint32_t eID, uint8_t type) {
-
-			if (eID == INVALID_ENTITY_ID) return;
-			if (!entities[eID]) return;
-
-			int cID = GetCID<Collider>();
-			if (!entities[eID].cMask.test(cID + type)) return;
-
-			pools[cID + type]->Remove(eID);
-			entities[eID].cMask.reset(cID + type);
-
-			pools[cID]->Remove(eID);
-			entities[eID].cMask.reset(cID);
-
-			T* component = static_cast<T*>(pools[cID + type]->Get(eID));
-			componentRemovedEvent.component = (Component*) component;
-			componentRemovedEvent();
-
-			component->Removed();
-			component->valid = false;
-
-		}
+		template<typename T> T* AddColliderComponent(uint32_t eID, uint8_t type);
+		template<typename T> T* GetColliderComponent(uint32_t eID, uint8_t type);
+		bool HasColliderComponent(uint32_t eID, uint8_t type);
+		template<typename T> void RemoveColliderComponent(uint32_t eID, uint8_t type);
 
 	};
 

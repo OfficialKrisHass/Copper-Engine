@@ -5,6 +5,10 @@
 
 #include "Engine/Components/RigidBody.h"
 
+#include "Engine/Components/BoxCollider.h"
+#include "Engine/Components/SphereCollider.h"
+#include "Engine/Components/CapsuleCollider.h"
+
 #include <PxPhysicsAPI.h>
 
 namespace Copper {

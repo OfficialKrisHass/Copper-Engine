@@ -128,8 +128,8 @@ namespace Copper::Input {
 		if (event.mouseCoords == centre) return true;
 		if (!firstMouseLockedFrame) {
 
-			mousePosDiference.x = (float) (event.mouseCoords.x - centre.x) / GetWindowSize().x;
-			mousePosDiference.y = (float) (event.mouseCoords.y - centre.y + 63) / GetWindowSize().y;
+			mousePosDiference.x = ((float) event.mouseCoords.x - centre.x) / GetWindowSize().x;
+			mousePosDiference.y = ((float) event.mouseCoords.y - centre.y + 63) / GetWindowSize().y;
 
 		}
 		else {

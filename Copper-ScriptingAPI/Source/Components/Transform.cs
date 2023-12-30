@@ -13,6 +13,7 @@ namespace Copper {
         public Transform(uint eID) {
 
             this.eID = eID;
+            Internal_SetComponentPointer(typeof(Transform), this, eID);
 
         }
 
@@ -21,14 +22,14 @@ namespace Copper {
             get {
 
                 Vector3 output;
-                Internal_GetPosition(eID, out output);
+                Internal_GetPosition(componentPointer, out output);
 
                 return output;
 
             }
             set {
 
-                Internal_SetPosition(eID, value);
+                Internal_SetPosition(componentPointer, value);
 
             }
 
@@ -38,14 +39,14 @@ namespace Copper {
             get {
 
                 Quaternion output;
-                Internal_GetRotation(eID, out output);
+                Internal_GetRotation(componentPointer, out output);
 
                 return output;
 
             }
             set {
 
-                Internal_SetRotation(eID, value);
+                Internal_SetRotation(componentPointer, value);
 
             }
 
@@ -55,14 +56,14 @@ namespace Copper {
             get {
 
                 Vector3 output;
-                Internal_GetScale(eID, out output);
+                Internal_GetScale(componentPointer, out output);
 
                 return output;
 
             }
             set {
 
-                Internal_SetScale(eID, value);
+                Internal_SetScale(componentPointer, value);
 
             }
 
@@ -73,7 +74,7 @@ namespace Copper {
             get {
 
                 Vector3 output;
-                Internal_GetForward(eID, out output);
+                Internal_GetForward(componentPointer, out output);
                 return output;
 
             }
@@ -84,7 +85,7 @@ namespace Copper {
             get {
 
                 Vector3 output;
-                Internal_GetRight(eID, out output);
+                Internal_GetRight(componentPointer, out output);
                 return output;
 
             }
@@ -95,23 +96,25 @@ namespace Copper {
             get {
 
                 Vector3 output;
-                Internal_GetUp(eID, out output);
+                Internal_GetUp(componentPointer, out output);
                 return output;
 
             }
 
         }
 
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_GetPosition(uint eID, out Vector3 position);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_GetRotation(uint eID, out Quaternion rotation);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_GetScale(uint eID, out Vector3 scale);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetPosition(uint eID, Vector3 position);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetRotation(uint eID, Quaternion rotation);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetScale(uint eID, Vector3 scale);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_GetPosition(long componentPointer, out Vector3 position);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_GetRotation(long componentPointer, out Quaternion rotation);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_GetScale(long componentPointer, out Vector3 scale);
 
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_GetForward(uint eID, out Vector3 forward);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_GetRight(uint eID, out Vector3 right);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_GetUp(uint eID, out Vector3 up);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_GetForward(long componentPointer, out Vector3 forward);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_GetRight(long componentPointer, out Vector3 right);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_GetUp(long componentPointer, out Vector3 up);
+
+
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetPosition(long componentPointer, Vector3 position);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetRotation(long componentPointer, Quaternion rotation);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetScale(long componentPointer, Vector3 scale);
 
     }
 

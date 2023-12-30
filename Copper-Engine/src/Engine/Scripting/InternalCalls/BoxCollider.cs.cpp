@@ -9,55 +9,52 @@
 #include <mono/jit/jit.h>
 #include <mono/metadata/exception.h>
 
+#define CheckComponentPointer(componentPointer) if (!componentPointer) { CauseExceptionInvalid("BoxCollider Component Pointer"); return; }
+#define CheckComponentPointerWithReturn(componentPointer, ret) if (!componentPointer) { CauseExceptionInvalid("BoxCollider Component Pointer"); return ret; }
+
 namespace Copper::Scripting::InternalCalls {
 
-	bool BoxColliderGetTrigger(uint32_t eID) {
+	bool BoxColliderGetTrigger(int64_t componentPointer) {
 
-		CheckValidEntityWithReturn(eID, false);
+		CheckComponentPointerWithReturn(componentPointer, false);
 
-		InternalEntity* entity = GetEntityFromID(eID);
-		return entity->GetComponent<BoxCollider>()->trigger;
-
-	}
-	void BoxColliderGetCenter(uint32_t eID, Vector3* out) {
-
-		CheckValidEntity(eID);
-
-		InternalEntity* entity = GetEntityFromID(eID);
-		*out = entity->GetComponent<BoxCollider>()->center;
+		return ((BoxCollider*) componentPointer)->trigger;
 
 	}
-	void BoxColliderGetSize(uint32_t eID, Vector3* out) {
+	void BoxColliderGetCenter(int64_t componentPointer, Vector3* out) {
 
-		CheckValidEntity(eID);
+		CheckComponentPointer(componentPointer);
 
-		InternalEntity* entity = GetEntityFromID(eID);
-		*out = entity->GetComponent<BoxCollider>()->size;
+		*out = ((BoxCollider*) componentPointer)->center;
+
+	}
+	void BoxColliderGetSize(int64_t componentPointer, Vector3* out) {
+
+		CheckComponentPointer(componentPointer);
+
+		*out = ((BoxCollider*) componentPointer)->size;
 
 	}
 
-	void BoxColliderSetTrigger(uint32_t eID, bool value) {
+	void BoxColliderSetTrigger(int64_t componentPointer, bool value) {
 
-		CheckValidEntity(eID);
+		CheckComponentPointer(componentPointer);
 
-		InternalEntity* entity = GetEntityFromID(eID);
-		entity->GetComponent<BoxCollider>()->trigger = value;
-
-	}
-	void BoxColliderSetCenter(uint32_t eID, Vector3* value) {
-
-		CheckValidEntity(eID);
-
-		InternalEntity* entity = GetEntityFromID(eID);
-		entity->GetComponent<BoxCollider>()->center = *value;
+		((BoxCollider*) componentPointer)->trigger = value;
 
 	}
-	void BoxColliderSetSize(uint32_t eID, Vector3* value) {
+	void BoxColliderSetCenter(int64_t componentPointer, Vector3* value) {
 
-		CheckValidEntity(eID);
+		CheckComponentPointer(componentPointer);
 
-		InternalEntity* entity = GetEntityFromID(eID);
-		entity->GetComponent<BoxCollider>()->size = *value;
+		((BoxCollider*) componentPointer)->center = *value;
+
+	}
+	void BoxColliderSetSize(int64_t componentPointer, Vector3* value) {
+
+		CheckComponentPointer(componentPointer);
+
+		((BoxCollider*) componentPointer)->size = *value;
 
 	}
 

@@ -50,53 +50,57 @@ namespace Copper::Scripting::InternalCalls {
 	void AddComponent(uint32_t eID, MonoReflectionType* type, MonoObject* ret);
 	bool GetComponent(uint32_t eID, MonoReflectionType* type, MonoObject* ret);
 	bool HasComponent(uint32_t eID, MonoReflectionType* type);
+
 	void SetComponentEID(MonoReflectionType* type, MonoObject* component, uint32_t eID);
+
+	void SetComponentPointer(MonoReflectionType* type, MonoObject* component, uint32_t eID);
 
 	// Transform
 
-	void GetPosition(uint32_t eID, Vector3* out);
-	void GetRotation(uint32_t eID, Quaternion* out);
-	void GetScale(uint32_t eID, Vector3* out);
-	void GetForward(uint32_t eID, Vector3* out);
-	void GetRight(uint32_t eID, Vector3* out);
-	void GetUp(uint32_t eID, Vector3* out);
+	void GetPosition(int64_t componentPointer, Vector3* out);
+	void GetRotation(int64_t componentPointer, Quaternion* out);
+	void GetScale(int64_t componentPointer, Vector3* out);
 
-	void SetPosition(uint32_t eID, Vector3* value);
-	void SetRotation(uint32_t eID, Quaternion* value);
-	void SetScale(uint32_t eID, Vector3* value);
+	void GetForward(int64_t componentPointer, Vector3* out);
+	void GetRight(int64_t componentPointer, Vector3* out);
+	void GetUp(int64_t componentPointer, Vector3* out);
+
+	void SetPosition(int64_t componentPointer, Vector3* value);
+	void SetRotation(int64_t componentPointer, Quaternion* value);
+	void SetScale(int64_t componentPointer, Vector3* value);
 
 	//Camera
 
-	float CameraGetFOV(uint32_t eID);
-	float CameraGetNearPlane(uint32_t eID);
-	float CameraGetFarPlane(uint32_t eID);
+	float CameraGetFOV(int64_t componentPointer);
+	float CameraGetNearPlane(int64_t componentPointer);
+	float CameraGetFarPlane(int64_t componentPointer);
 
-	void CameraSetFOV(uint32_t eID, float value);
-	void CameraSetNearPlane(uint32_t eID, float value);
-	void CameraSetFarPlane(uint32_t eID, float value);
+	void CameraSetFOV(int64_t componentPointer, float value);
+	void CameraSetNearPlane(int64_t componentPointer, float value);
+	void CameraSetFarPlane(int64_t componentPointer, float value);
 
 	//RigidBody
 
-	bool RigidBodyGetIsStatic(uint32_t eID);
-	bool RigidBodyGetGravity(uint32_t eID);
-	float RigidBodyGetMass(uint32_t eID);
+	bool RigidBodyGetIsStatic(int64_t componentPointer);
+	bool RigidBodyGetGravity(int64_t componentPointer);
+	float RigidBodyGetMass(int64_t componentPointer);
 
-	void RigidBodySetIsStatic(uint32_t eID, bool value);
-	void RigidBodySetGravity(uint32_t eID, bool value);
-	void RigidBodySetMass(uint32_t eID, float value);
+	void RigidBodySetIsStatic(int64_t componentPointer, bool value);
+	void RigidBodySetGravity(int64_t componentPointer, bool value);
+	void RigidBodySetMass(int64_t componentPointer, float value);
 
-	void RigidBodyAddForce(uint32_t eID, Vector3* force, uint8_t mode);
-	void RigidBodyAddTorque(uint32_t eID, Vector3* torque, uint8_t mode);
+	void RigidBodyAddForce(int64_t componentPointer, Vector3* force, uint8_t mode);
+	void RigidBodyAddTorque(int64_t componentPointer, Vector3* torque, uint8_t mode);
 
 	// Box Collider
 
-	bool BoxColliderGetTrigger(uint32_t eID);
-	void BoxColliderGetCenter(uint32_t eID, Vector3* out);
-	void BoxColliderGetSize(uint32_t eID, Vector3* out);
+	bool BoxColliderGetTrigger(int64_t componentPointer);
+	void BoxColliderGetCenter(int64_t componentPointer, Vector3* out);
+	void BoxColliderGetSize(int64_t componentPointer, Vector3* out);
 
-	void BoxColliderSetCenter(uint32_t eID, Vector3* value);
-	void BoxColliderSetTrigger(uint32_t eID, bool value);
-	void BoxColliderSetSize(uint32_t eID, Vector3* value);
+	void BoxColliderSetCenter(int64_t componentPointer, Vector3* value);
+	void BoxColliderSetTrigger(int64_t componentPointer, bool value);
+	void BoxColliderSetSize(int64_t componentPointer, Vector3* value);
 
 #pragma endregion
 
@@ -133,13 +137,15 @@ namespace Copper::Scripting::InternalCalls {
 
 		mono_add_internal_call("Copper.Entity::Internal_GetEntity", (void*) GetEntity);
 
-		//======== Components ========
+		//======== Component ========
 
 		mono_add_internal_call("Copper.Component::Internal_AddComponent", (void*) AddComponent);
 		mono_add_internal_call("Copper.Component::Internal_GetComponent", (void*) GetComponent);
 		mono_add_internal_call("Copper.Component::Internal_HasComponent", (void*) HasComponent);
 
-		mono_add_internal_call("Copper.Entity::Internal_SetComponentEID", (void*) SetComponentEID);
+		mono_add_internal_call("Copper.Component::Internal_SetComponentEID", (void*) SetComponentEID);
+
+		mono_add_internal_call("Copper.Component::Internal_SetComponentPointer", (void*) SetComponentPointer);
 
 		//======== Transform ========
 

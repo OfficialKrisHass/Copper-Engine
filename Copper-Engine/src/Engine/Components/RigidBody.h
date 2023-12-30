@@ -15,9 +15,9 @@ namespace Copper {
 
     namespace Scripting::InternalCalls {    
 
-        void RigidBodySetGravity(uint32_t eID, bool value);
-        void RigidBodySetIsStatic(uint32_t eID, bool value);
-        void RigidBodySetMass(uint32_t eID, float value);
+        void RigidBodySetGravity(int64_t componentPointer, bool value);
+        void RigidBodySetIsStatic(int64_t componentPointer, bool value);
+        void RigidBodySetMass(int64_t componentPointer, float value);
 
     }
 
@@ -36,9 +36,9 @@ namespace Copper {
     #ifdef CU_EDITOR
         friend Editor::Properties;
     #endif
-        friend void Scripting::InternalCalls::RigidBodySetGravity(uint32_t eID, bool value);
-        friend void Scripting::InternalCalls::RigidBodySetIsStatic(uint32_t eID, bool value);
-        friend void Scripting::InternalCalls::RigidBodySetMass(uint32_t eID, float value);
+        friend void Scripting::InternalCalls::RigidBodySetGravity(int64_t componentPointer, bool value);
+        friend void Scripting::InternalCalls::RigidBodySetIsStatic(int64_t componentPointer, bool value);
+        friend void Scripting::InternalCalls::RigidBodySetMass(int64_t componentPointer, float value);
         
     public:
         bool isStatic = false;

@@ -8,73 +8,73 @@
 #include <mono/jit/jit.h>
 #include <mono/metadata/exception.h>
 
+#define CheckComponentPointer(componentPointer) if (!componentPointer) { CauseExceptionInvalid("RigidBody Component Pointer"); return; }
+#define CheckComponentPointerWithReturn(componentPointer, ret) if (!componentPointer) { CauseExceptionInvalid("RigidBody Component Pointer"); return ret; }
+
 namespace Copper::Scripting::InternalCalls {
 
-	bool RigidBodyGetIsStatic(uint32_t eID) {
+	bool RigidBodyGetIsStatic(int64_t componentPointer) {
 
-		CheckValidEntityWithReturn(eID, false);
+		CheckComponentPointerWithReturn(componentPointer, false);
 
-		InternalEntity* entity = GetEntityFromID(eID);
-		return entity->GetComponent<RigidBody>()->isStatic;
-
-	}
-	bool RigidBodyGetGravity(uint32_t eID) {
-
-		CheckValidEntityWithReturn(eID, true);
-
-		InternalEntity* entity = GetEntityFromID(eID);
-		return entity->GetComponent<RigidBody>()->gravity;
+		return ((RigidBody*) componentPointer)->isStatic;
 
 	}
-	float RigidBodyGetMass(uint32_t eID) {
+	bool RigidBodyGetGravity(int64_t componentPointer) {
 
-		CheckValidEntityWithReturn(eID, 0.0f);
+		CheckComponentPointerWithReturn(componentPointer, true);
 
-		InternalEntity* entity = GetEntityFromID(eID);
-		return entity->GetComponent<RigidBody>()->mass;
+		return ((RigidBody*) componentPointer)->gravity;
+
+	}
+	float RigidBodyGetMass(int64_t componentPointer) {
+
+		CheckComponentPointerWithReturn(componentPointer, 0.0f);
+
+		return ((RigidBody*) componentPointer)->mass;
 
 	}
 
-	void RigidBodySetIsStatic(uint32_t eID, bool value) {
+	void RigidBodySetIsStatic(int64_t componentPointer, bool value) {
 
-		CheckValidEntity(eID);
+		CheckComponentPointer(componentPointer);
 
-		RigidBody* rb = GetEntityFromID(eID)->GetComponent<RigidBody>();
+		RigidBody* rb = (RigidBody*) componentPointer;
 		rb->isStatic= value;
 		rb->Setup();
 
 	}
-	void RigidBodySetGravity(uint32_t eID, bool value) {
+	void RigidBodySetGravity(int64_t componentPointer, bool value) {
 
-		CheckValidEntity(eID);
+		CheckComponentPointer(componentPointer);
 
-		RigidBody* rb = GetEntityFromID(eID)->GetComponent<RigidBody>();
+		RigidBody* rb = (RigidBody*) componentPointer;
 		rb->gravity = value;
 		rb->Setup();
 
 	}
-	void RigidBodySetMass(uint32_t eID, float value) {
+	void RigidBodySetMass(int64_t componentPointer, float value) {
 
-		CheckValidEntity(eID);
+		CheckComponentPointer(componentPointer);
 
-		RigidBody* rb = GetEntityFromID(eID)->GetComponent<RigidBody>();
+		RigidBody* rb = (RigidBody*) componentPointer;
 		rb->mass = value;
 		rb->Setup();
 
 	}
 
-	void RigidBodyAddForce(uint32_t eID, Vector3* force, uint8_t mode) {
+	void RigidBodyAddForce(int64_t componentPointer, Vector3* force, uint8_t mode) {
 
-		CheckValidEntity(eID);
+		CheckComponentPointer(componentPointer);
 
-		GetEntityFromID(eID)->GetComponent<RigidBody>()->AddForce(*force, (ForceMode) mode);
+		((RigidBody*) componentPointer)->AddForce(*force, (ForceMode) mode);
 
 	}
-	void RigidBodyAddTorque(uint32_t eID, Vector3* torque, uint8_t mode) {
+	void RigidBodyAddTorque(int64_t componentPointer, Vector3* torque, uint8_t mode) {
 
-		CheckValidEntity(eID);
+		CheckComponentPointer(componentPointer);
 
-		GetEntityFromID(eID)->GetComponent<RigidBody>()->AddTorque(*torque, (ForceMode) mode);
+		((RigidBody*) componentPointer)->AddTorque(*torque, (ForceMode) mode);
 
 	}
 

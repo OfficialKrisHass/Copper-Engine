@@ -47,21 +47,21 @@ namespace Copper {
         }
         public T GetComponent<T>() where T : Component, new() {
 
-            T ret = new T();
-
             Type type = typeof(T);
             if (type.BaseType == typeof(BuiltInComponent)) {
 
                 if (!HasComponent<T>()) return null;
-                ret.eID = eID;
+                T component = new T();
 
-                return ret;
+                component.eID = eID;
+                Internal_SetComponentPointer(type, component as BuiltInComponent, eID);
+
+                return component as T;
 
             }
 
+            T ret = new T();
             if (!Internal_GetComponent(eID, type, ret)) return null;
-
-            Editor.Log(ret.eID.ToString());
 
             return ret;
 
@@ -77,6 +77,8 @@ namespace Copper {
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool Internal_HasComponent(uint eID, Type type);
 
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetComponentEID(Type type, Component component, uint eID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetComponentPointer(Type type, BuiltInComponent component, uint eID);
 
     }
 

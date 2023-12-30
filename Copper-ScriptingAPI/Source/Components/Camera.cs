@@ -7,29 +7,29 @@ namespace Copper {
 
         public float fov {
 
-            get { return Internal_GetFOV(eID); }
-            set { Internal_SetFOV(eID, value); }
+            get { return Internal_GetFOV(componentPointer); }
+            set { Internal_SetFOV(componentPointer, value); }
 
         }
         public float nearPlane {
 
-            get { return Internal_GetNearPlane(eID); }
-            set { Internal_SetNearPlane(eID, value); }
+            get { return Internal_GetNearPlane(componentPointer); }
+            set { Internal_SetNearPlane(componentPointer, value); }
 
         }
         public float farPlane {
 
-            get { return Internal_GetFarPlane(eID); }
-            set { Internal_SetFarPlane(eID, value); }
+            get { return Internal_GetFarPlane(componentPointer); }
+            set { Internal_SetFarPlane(componentPointer, value); }
 
         }
 
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static float Internal_GetFOV(uint eID);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static float Internal_GetNearPlane(uint eID);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static float Internal_GetFarPlane(uint eID);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetFOV(uint eID, float value);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetNearPlane(uint eID, float value);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetFarPlane(uint eID, float value);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static float Internal_GetFOV(long componentPointer);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static float Internal_GetNearPlane(long componentPointer);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static float Internal_GetFarPlane(long componentPointer);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetFOV(long componentPointer, float value);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetNearPlane(long componentPointer, float value);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetFarPlane(long componentPointer, float value);
 
     }
 

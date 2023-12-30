@@ -7,8 +7,8 @@ namespace Copper {
 
         public bool trigger {
 
-            get { return Internal_GetTrigger(eID); }
-            set { Internal_SetTrigger(eID, value); }
+            get { return Internal_GetTrigger(componentPointer); }
+            set { Internal_SetTrigger(componentPointer, value); }
 
         }
 
@@ -17,12 +17,12 @@ namespace Copper {
             get {
 
                 Vector3 ret;
-                Internal_GetCenter(eID, out ret);
+                Internal_GetCenter(componentPointer, out ret);
 
                 return ret;
                 
             }
-            set { Internal_SetCenter(eID, value); }
+            set { Internal_SetCenter(componentPointer, value); }
 
         }
         public Vector3 size {
@@ -30,22 +30,22 @@ namespace Copper {
             get {
 
                 Vector3 ret;
-                Internal_GetSize(eID, out ret);
+                Internal_GetSize(componentPointer, out ret);
 
                 return ret;
                 
             }
-            set { Internal_SetSize(eID, value); }
+            set { Internal_SetSize(componentPointer, value); }
 
         }
 
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool Internal_GetTrigger(uint eID);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_GetCenter(uint eID, out Vector3 center);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_GetSize(uint eID, out Vector3 size);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool Internal_GetTrigger(long componentPointer);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_GetCenter(long componentPointer, out Vector3 center);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_GetSize(long componentPointer, out Vector3 size);
 
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetTrigger(uint eID, bool value);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetCenter(uint eID, Vector3 value);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetSize(uint eID, Vector3 value);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetTrigger(long componentPointer, bool value);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetCenter(long componentPointer, Vector3 value);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetSize(long componentPointer, Vector3 value);
 
     }
 

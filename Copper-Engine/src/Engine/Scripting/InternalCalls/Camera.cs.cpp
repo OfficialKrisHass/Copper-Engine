@@ -8,54 +8,51 @@
 #include <mono/jit/jit.h>
 #include <mono/metadata/exception.h>
 
+#define CheckComponentPointer(componentPointer) if (!componentPointer) { CauseExceptionInvalid("Camera Component Pointer"); return; }
+#define CheckComponentPointerWithReturn(componentPointer, ret) if (!componentPointer) { CauseExceptionInvalid("Camera Component Pointer"); return ret; }
+
 namespace Copper::Scripting::InternalCalls {
 
-	float CameraGetFOV(uint32_t eID) {
+	float CameraGetFOV(int64_t componentPointer) {
 
-		CheckValidEntityWithReturn(eID, 0.0f);
+		CheckComponentPointerWithReturn(componentPointer, 0.0f);
 
-		InternalEntity* entity = GetEntityFromID(eID);
-		return entity->GetComponent<Camera>()->fov;
-
-	}
-	float CameraGetNearPlane(uint32_t eID) {
-
-		CheckValidEntityWithReturn(eID, 0.0f);
-
-		InternalEntity* entity = GetEntityFromID(eID);
-		return entity->GetComponent<Camera>()->nearPlane;
+		return ((Camera*) componentPointer)->fov;
 
 	}
-	float CameraGetFarPlane(uint32_t eID) {
+	float CameraGetNearPlane(int64_t componentPointer) {
 
-		CheckValidEntityWithReturn(eID, 0.0f);
+		CheckComponentPointerWithReturn(componentPointer, 0.0f);
 
-		InternalEntity* entity = GetEntityFromID(eID);
-		return entity->GetComponent<Camera>()->farPlane;
-
-	}
-	void CameraSetFOV(uint32_t eID, float value) {
-
-		CheckValidEntity(eID);
-
-		InternalEntity* entity = GetEntityFromID(eID);
-		entity->GetComponent<Camera>()->fov = value;
+		return ((Camera*) componentPointer)->nearPlane;
 
 	}
-	void CameraSetNearPlane(uint32_t eID, float value) {
+	float CameraGetFarPlane(int64_t componentPointer) {
 
-		CheckValidEntity(eID);
+		CheckComponentPointerWithReturn(componentPointer, 0.0f);
 
-		InternalEntity* entity = GetEntityFromID(eID);
-		entity->GetComponent<Camera>()->nearPlane = value;
+		return ((Camera*) componentPointer)->farPlane;
 
 	}
-	void CameraSetFarPlane(uint32_t eID, float value) {
+	void CameraSetFOV(int64_t componentPointer, float value) {
 
-		CheckValidEntity(eID);
+		CheckComponentPointer(componentPointer);
 
-		InternalEntity* entity = GetEntityFromID(eID);
-		entity->GetComponent<Camera>()->farPlane = value;
+		((Camera*) componentPointer)->fov = value;
+
+	}
+	void CameraSetNearPlane(int64_t componentPointer, float value) {
+
+		CheckComponentPointer(componentPointer);
+
+		((Camera*) componentPointer)->nearPlane = value;
+
+	}
+	void CameraSetFarPlane(int64_t componentPointer, float value) {
+
+		CheckComponentPointer(componentPointer);
+
+		((Camera*) componentPointer)->farPlane = value;
 
 	}
 

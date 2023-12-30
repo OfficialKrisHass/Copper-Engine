@@ -148,7 +148,7 @@ Entities:
     Rigid Body:
       Static: false
       Gravity: true
-      Mass: 1
+      Mass: 5
       Lock Mask: 56
     Box Collider:
       Trigger: false
@@ -159,10 +159,10 @@ Entities:
       Fields:
         speed:
           Type: 3
-          Value: 50
+          Value: 150
         sensitivity:
           Type: 3
-          Value: 20
+          Value: 10
   Ground:
     ID: 3
     Transform:

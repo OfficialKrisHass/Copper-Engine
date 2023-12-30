@@ -9,75 +9,80 @@
 #include <mono/jit/jit.h>
 #include <mono/metadata/exception.h>
 
+#define CheckComponentPointer(componentPointer) if (!componentPointer) { CauseExceptionInvalid("Transform Component Pointer"); return; }
+
 namespace Copper::Scripting::InternalCalls {
 
-	void GetPosition(uint32_t eID, Vector3* out) {
+	void GetPosition(int64_t componentPointer, Vector3* out) {
 
-		CheckValidEntity(eID);
-		*out = GetEntityFromID(eID)->GetTransform()->position;
-
-	}
-	void GetRotation(uint32_t eID, Quaternion* out) {
-
-		CheckValidEntity(eID);
-		*out = GetEntityFromID(eID)->GetTransform()->rotation;
+		CheckComponentPointer(componentPointer);
+		*out = ((Transform*) componentPointer)->position;
 
 	}
-	void GetScale(uint32_t eID, Vector3* out) {
+	void GetRotation(int64_t componentPointer, Quaternion* out) {
 
-		CheckValidEntity(eID);
-		*out = GetEntityFromID(eID)->GetTransform()->scale;
-
-	}
-	void GetForward(uint32_t eID, Vector3* out) {
-
-		CheckValidEntity(eID);
-		*out = GetEntityFromID(eID)->GetTransform()->Forward();
+		CheckComponentPointer(componentPointer);
+		*out = ((Transform*) componentPointer)->rotation;
 
 	}
-	void GetRight(uint32_t eID, Vector3* out) {
+	void GetScale(int64_t componentPointer, Vector3* out) {
 
-		CheckValidEntity(eID);
-		*out = GetEntityFromID(eID)->GetTransform()->Right();
-
-	}
-	void GetUp(uint32_t eID, Vector3* out) {
-
-		CheckValidEntity(eID);
-		*out = GetEntityFromID(eID)->GetTransform()->Up();
+		CheckComponentPointer(componentPointer);
+		*out = ((Transform*) componentPointer)->scale;
 
 	}
 
-	void SetPosition(uint32_t eID, Vector3* value) {
+	void GetForward(int64_t componentPointer, Vector3* out) {
 
-		CheckValidEntity(eID);
+		CheckComponentPointer(componentPointer);
+		*out = ((Transform*) componentPointer)->Forward();
 
-		InternalEntity* entity = GetEntityFromID(eID);
-		entity->GetTransform()->position = *value;
+	}
+	void GetRight(int64_t componentPointer, Vector3* out) {
 
+		CheckComponentPointer(componentPointer);
+		*out = ((Transform*) componentPointer)->Right();
+
+	}
+	void GetUp(int64_t componentPointer, Vector3* out) {
+
+		CheckComponentPointer(componentPointer);
+		*out = ((Transform*) componentPointer)->Up();
+
+	}
+
+	void SetPosition(int64_t componentPointer, Vector3* value) {
+
+		CheckComponentPointer(componentPointer);
+
+		Transform* transform = ((Transform*) componentPointer);
+		InternalEntity* entity = transform->GetEntity();
 		RigidBody* rb = entity->GetComponent<RigidBody>();
-		if (!rb) return;
 
+		transform->position = *value;
+
+		if (!rb) return;
 		rb->SetPosition(*value);
 
 	}
-	void SetRotation(uint32_t eID, Quaternion* value) {
+	void SetRotation(int64_t componentPointer, Quaternion* value) {
 
-		CheckValidEntity(eID);
+		CheckComponentPointer(componentPointer);
 
-		InternalEntity* entity = GetEntityFromID(eID);
-		entity->GetTransform()->rotation = *value;
-
+		Transform* transform = ((Transform*) componentPointer);
+		InternalEntity* entity = transform->GetEntity();
 		RigidBody* rb = entity->GetComponent<RigidBody>();
-		if (!rb) return;
 
+		transform->rotation = *value;
+
+		if (!rb) return;
 		rb->SetRotation(*value);
 
 	}
-	void SetScale(uint32_t eID, Vector3* value) {
+	void SetScale(int64_t componentPointer, Vector3* value) {
 
-		CheckValidEntity(eID);
-		GetEntityFromID(eID)->GetTransform()->scale = *value;
+		CheckComponentPointer(componentPointer);
+		((Transform*) componentPointer)->scale = *value;
 
 	}
 

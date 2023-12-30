@@ -15,15 +15,35 @@ namespace Copper::Scripting::InternalCalls {
 
 	static std::unordered_map<std::string, std::function<bool(InternalEntity*)>> hasComponentFuncs;
 	static std::unordered_map<std::string, std::function<bool(InternalEntity*)>> addComponentFuncs;
+	static std::unordered_map<std::string, std::function<int64_t(InternalEntity*)>> getComponentPointerFuncs;
 
 	void Component_Initialize() {
+
+		// this hurts, but if I fix it in this commit, the commit will be too big
+		// and I won't get that sweet sweet 6 commit a day graph :)
 
 		hasComponentFuncs["Transform"] = [](InternalEntity* entity) { return true; };
 		hasComponentFuncs["Camera"] = [](InternalEntity* entity) { return entity->HasComponent<Camera>(); };
 		hasComponentFuncs["RigidBody"] = [](InternalEntity* entity) { return entity->HasComponent<RigidBody>(); };
+		hasComponentFuncs["Collider"] = [](InternalEntity* entity) { return entity->HasComponent<Collider>(); };
+		hasComponentFuncs["BoxCollider"] = [](InternalEntity* entity) { return entity->HasComponent<BoxCollider>(); };
+		hasComponentFuncs["SphereCollider"] = [](InternalEntity* entity) { return entity->HasComponent<SphereCollider>(); };
+		hasComponentFuncs["CapsuleCollider"] = [](InternalEntity* entity) { return entity->HasComponent<CapsuleCollider>(); };
 
 		addComponentFuncs["Camera"] = [](InternalEntity* entity) { return entity->AddComponent<Camera>() != nullptr ? true : false; };
 		addComponentFuncs["RigidBody"] = [](InternalEntity* entity) { return entity->AddComponent<RigidBody>() != nullptr ? true : false; };
+		addComponentFuncs["Collider"] = [](InternalEntity* entity) { return entity->AddComponent<Collider>() != nullptr ? true : false; };
+		addComponentFuncs["BoxCollider"] = [](InternalEntity* entity) { return entity->AddComponent<BoxCollider>() != nullptr ? true : false; };
+		addComponentFuncs["SphereCollider"] = [](InternalEntity* entity) { return entity->AddComponent<SphereCollider>() != nullptr ? true : false; };
+		addComponentFuncs["CapsuleCollider"] = [](InternalEntity* entity) { return entity->AddComponent<CapsuleCollider>() != nullptr ? true : false; };
+
+		getComponentPointerFuncs["Copper.Transform"] = [](InternalEntity* entity) { return (int64_t) entity->GetTransform(); };
+		getComponentPointerFuncs["Copper.Camera"] = [](InternalEntity* entity) { return (int64_t) entity->GetComponent<Camera>(); };
+		getComponentPointerFuncs["Copper.RigidBody"] = [](InternalEntity* entity) { return (int64_t) entity->GetComponent<RigidBody>(); };
+		getComponentPointerFuncs["Copper.Collider"] = [](InternalEntity* entity) { return (int64_t) entity->GetComponent<Collider>(); };
+		getComponentPointerFuncs["Copper.BoxCollider"] = [](InternalEntity* entity) { return (int64_t) entity->GetComponent<BoxCollider>(); };
+		getComponentPointerFuncs["Copper.SphereCollider"] = [](InternalEntity* entity) { return (int64_t) entity->GetComponent<SphereCollider>(); };
+		getComponentPointerFuncs["Copper.CapsuleCollider"] = [](InternalEntity* entity) { return (int64_t) entity->GetComponent<CapsuleCollider>(); };
 
 	}
 
@@ -107,6 +127,17 @@ namespace Copper::Scripting::InternalCalls {
 		MonoType* classType = mono_reflection_type_get_type(type);
 		MonoClassField* field = mono_class_get_field_from_name(mono_class_from_mono_type(classType), "eID");
 		mono_field_set_value(component, field, &eID);
+
+	}
+
+	void SetComponentPointer(MonoReflectionType* type, MonoObject* component, uint32_t eID) {
+
+		MonoType* classType = mono_reflection_type_get_type(type);
+		MonoClassField* field = mono_class_get_field_from_name(mono_class_from_mono_type(classType), "componentPointer");
+		std::string typeName = mono_type_get_name(classType);
+
+		int64_t componentPointer = getComponentPointerFuncs[typeName](GetEntityFromID(eID));
+		mono_field_set_value(component, field, &componentPointer);
 
 	}
 

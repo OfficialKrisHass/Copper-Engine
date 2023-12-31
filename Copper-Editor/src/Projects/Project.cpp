@@ -124,7 +124,7 @@ namespace Editor {
 	#endif
 
 		if (firstBuild)
-			return Scripting::Reload(path / "Binaries" / (name + ".dll"));
+			return Scripting::Load(path / "Binaries" / (name + ".dll"));
 		else
 			return Scripting::Reload();
 

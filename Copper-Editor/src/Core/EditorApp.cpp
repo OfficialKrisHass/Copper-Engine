@@ -620,7 +620,7 @@ namespace Editor {
 		// so it will build the project and attempt to load it again, if that fails, it tries again 9 more times
 		// and then exit the application
 
-		bool reloadSuccess = Scripting::Reload(data.project.path / "Binaries" / (data.project.name + ".dll"), false);
+		bool reloadSuccess = Scripting::Load(data.project.path / "Binaries" / (data.project.name + ".dll"));
 		int i = 0;
 		while (!reloadSuccess && i < 10) {
 

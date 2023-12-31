@@ -17,8 +17,8 @@ namespace Copper::Scripting {
 	void Initialize();
 	void Shutdown();
 
-	bool LoadProjectAssembly(const fs::path& path);
-	bool Reload(const fs::path& path = "", bool initScriptComponents = true);
+	bool Load(const fs::path& path);
+	bool Reload();
 
 	MonoObject* AddScriptComponent(uint32_t eID, const std::string& name);
 

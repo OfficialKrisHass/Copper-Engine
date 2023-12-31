@@ -54,6 +54,8 @@ namespace Copper::Scripting {
 
 	ScriptingCoreData data;
 
+	void LoadScriptingAPI();
+
 	void InitScriptComponents();
 	void InitScriptFields(const std::string& fullName, MonoClass* scriptClass);
 
@@ -61,26 +63,14 @@ namespace Copper::Scripting {
 
 		VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the Scripting Engine");
 
-		//Initialize Mono
+		// Initialize Mono
+
 		mono_set_assemblies_path("lib/mono/lib");
 		data.root = mono_jit_init("CUJITRuntime");
 
-		//Load the ScriptingAPI
-		data.app = mono_domain_create_appdomain(domainName, nullptr);
-		mono_domain_set(data.app, true);
+		// Setup ScriptingAPI
 
-		data.apiAssembly = MonoUtils::LoadAssembly("assets/ScriptAPI/Copper-ScriptingAPI.dll");
-		data.apiAssemblyImage = mono_assembly_get_image(data.apiAssembly);
-
-		data.vector2Class = mono_class_from_name(data.apiAssemblyImage, "Copper", "Vector2");
-		data.vector3Class = mono_class_from_name(data.apiAssemblyImage, "Copper", "Vector3");
-
-		data.entityClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Entity");
-
-		data.componentClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Component");
-		data.transformClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Transform");
-
-		//Setup ScriptingAPI
+		LoadScriptingAPI();
 		InternalCalls::SetupInternalCalls();
 
 	}
@@ -91,28 +81,8 @@ namespace Copper::Scripting {
 
 	}
 
-	bool LoadProjectAssembly(const fs::path& path) {
+	void LoadScriptingAPI() {
 
-		data.projectPath = path;
-
-		data.projectAssembly = MonoUtils::LoadAssembly(path);
-		if (!data.projectAssembly)
-			return false;
-
-		data.projectAssemblyImage = mono_assembly_get_image(data.projectAssembly);
-
-		return true;
-
-
-	}
-	bool Reload(const fs::path& path, bool initScriptComponents) {
-
-		if (!path.empty()) data.projectPath = path;
-
-		mono_domain_set(mono_get_root_domain(), false);
-		mono_domain_unload(data.app);
-
-		//Load the Scripting API
 		data.app = mono_domain_create_appdomain(domainName, nullptr);
 		mono_domain_set(data.app, true);
 
@@ -127,14 +97,33 @@ namespace Copper::Scripting {
 		data.componentClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Component");
 		data.transformClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Transform");
 
-		//Load the Project Assembly
-		if (!LoadProjectAssembly(data.projectPath))
+	}
+	bool Load(const fs::path& path) {
+
+		data.projectPath = path;
+
+		// Load the assemblies
+		
+		LoadScriptingAPI();
+
+		data.projectAssembly = MonoUtils::LoadAssembly(path);
+		if (!data.projectAssembly)
 			return false;
+
+		data.projectAssemblyImage = mono_assembly_get_image(data.projectAssembly);
+
+		// Finalize
 
 		InitScriptComponents();
 		InternalCalls::Initialize();
 
-		if (!initScriptComponents) return true;
+	}
+	bool Reload() {
+
+		mono_domain_set(mono_get_root_domain(), false);
+		mono_domain_unload(data.app);
+
+		Load(data.projectPath);
 		
 		for (ScriptComponent* script : ComponentView<ScriptComponent>(GetScene())) {
 

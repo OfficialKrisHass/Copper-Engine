@@ -98,12 +98,18 @@ namespace Copper::Scripting::InternalCalls {
 
 	// Colliders
 	bool ColliderGetTrigger(int64_t componentPointer);
-
 	void ColliderSetTrigger(int64_t componentPointer, bool value);
 
 	void BoxColliderGetSize(int64_t componentPointer, Vector3* out);
-
 	void BoxColliderSetSize(int64_t componentPointer, Vector3* value);
+
+	float SphereColliderGetRadius(int64_t componentPointer);
+	void SphereColliderSetRadius(int64_t componentPointer, float value);
+
+	float CapsuleColliderGetRadius(int64_t componentPointer);
+	float CapsuleColliderGetHeight(int64_t componentPointer);
+	void CapsuleColliderSetRadius(int64_t componentPointer, float value);
+	void CapsuleColliderSetHeight(int64_t componentPointer, float value);
 
 #pragma endregion
 
@@ -197,6 +203,15 @@ namespace Copper::Scripting::InternalCalls {
 
 		mono_add_internal_call("Copper.BoxCollider::Internal_GetSize", (void*) BoxColliderGetSize);
 		mono_add_internal_call("Copper.BoxCollider::Internal_SetSize", (void*) BoxColliderSetSize);
+
+		mono_add_internal_call("Copper.SphereCollider::Internal_GetRadius", (void*) SphereColliderGetRadius);
+		mono_add_internal_call("Copper.SphereCollider::Internal_SetRadius", (void*) SphereColliderSetRadius);
+
+		mono_add_internal_call("Copper.CapsuleCollider::Internal_GetRadius", (void*) CapsuleColliderGetRadius);
+		mono_add_internal_call("Copper.CapsuleCollider::Internal_GetRadius", (void*) CapsuleColliderGetHeight);
+
+		mono_add_internal_call("Copper.CapsuleCollider::Internal_SetRadius", (void*) SphereColliderSetRadius);
+		mono_add_internal_call("Copper.CapsuleCollider::Internal_SetRadius", (void*) CapsuleColliderSetHeight);
 
 	}
 

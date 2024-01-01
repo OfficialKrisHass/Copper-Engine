@@ -47,8 +47,11 @@
     <Compile Include="Source\Components\BoxCollider.cs" />
     <Compile Include="Source\Components\BuiltInComponent.cs" />
     <Compile Include="Source\Components\Camera.cs" />
+    <Compile Include="Source\Components\CapsuleCollider.cs" />
+    <Compile Include="Source\Components\Collider.cs" />
     <Compile Include="Source\Components\Component.cs" />
     <Compile Include="Source\Components\RigidBody.cs" />
+    <Compile Include="Source\Components\SphereCollider.cs" />
     <Compile Include="Source\Components\Transform.cs" />
     <Compile Include="Source\Core\Game.cs" />
     <Compile Include="Source\Core\Input.cs" />

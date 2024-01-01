@@ -4,7 +4,10 @@
 
 #include "Engine/Scene/CopperECS.h"
 
+#include "Engine/Components/Collider.h"
 #include "Engine/Components/BoxCollider.h"
+#include "Engine/Components/SphereCollider.h"
+#include "Engine/Components/CapsuleCollider.h"
 
 #include <mono/jit/jit.h>
 #include <mono/metadata/exception.h>
@@ -41,6 +44,51 @@ namespace Copper::Scripting::InternalCalls {
 		CheckComponentPointer(componentPointer);
 
 		((BoxCollider*) componentPointer)->size = *value;
+
+	}
+
+	float SphereColliderGetRadius(int64_t componentPointer) {
+
+		CheckComponentPointerWithReturn(componentPointer, 0.0f);
+
+		return ((SphereCollider*) componentPointer)->radius;
+
+	}
+	void SphereColliderSetRadius(int64_t componentPointer, float value) {
+
+		CheckComponentPointer(componentPointer);
+
+		((SphereCollider*) componentPointer)->radius = value;
+
+	}
+
+	float CapsuleColliderGetRadius(int64_t componentPointer) {
+
+		CheckComponentPointerWithReturn(componentPointer, 0.0f);
+
+		return ((CapsuleCollider*) componentPointer)->radius;
+
+	}
+	float CapsuleColliderGetHeight(int64_t componentPointer) {
+		
+		CheckComponentPointerWithReturn(componentPointer, 0.0f);
+
+		return ((CapsuleCollider*) componentPointer)->height;
+
+	}
+
+	void CapsuleColliderSetRadius(int64_t componentPointer, float value) {
+
+		CheckComponentPointer(componentPointer);
+
+		((CapsuleCollider*) componentPointer)->radius = value;
+
+	}
+	void CapsuleColliderSetHeight(int64_t componentPointer, float value) {
+
+		CheckComponentPointer(componentPointer);
+
+		((CapsuleCollider*) componentPointer)->height = value;
 
 	}
 

@@ -21,11 +21,7 @@
     #define CU_ASSERT(x, ...)
 #endif
 
-#ifdef CU_WINDOWS
 namespace fs = std::filesystem;
-#elif CU_LINUX
-namespace fs = std::filesystem;
-#endif
 
 namespace Copper {
 

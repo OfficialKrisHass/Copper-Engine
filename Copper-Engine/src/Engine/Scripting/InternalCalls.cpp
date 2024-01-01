@@ -96,14 +96,13 @@ namespace Copper::Scripting::InternalCalls {
 	void RigidBodyAddForce(int64_t componentPointer, Vector3* force, uint8_t mode);
 	void RigidBodyAddTorque(int64_t componentPointer, Vector3* torque, uint8_t mode);
 
-	// Box Collider
+	// Colliders
+	bool ColliderGetTrigger(int64_t componentPointer);
 
-	bool BoxColliderGetTrigger(int64_t componentPointer);
-	void BoxColliderGetCenter(int64_t componentPointer, Vector3* out);
+	void ColliderSetTrigger(int64_t componentPointer, bool value);
+
 	void BoxColliderGetSize(int64_t componentPointer, Vector3* out);
 
-	void BoxColliderSetCenter(int64_t componentPointer, Vector3* value);
-	void BoxColliderSetTrigger(int64_t componentPointer, bool value);
 	void BoxColliderSetSize(int64_t componentPointer, Vector3* value);
 
 #pragma endregion
@@ -191,14 +190,12 @@ namespace Copper::Scripting::InternalCalls {
 		mono_add_internal_call("Copper.RigidBody::Internal_AddForce", (void*) RigidBodyAddForce);
 		mono_add_internal_call("Copper.RigidBody::Internal_AddTorque", (void*) RigidBodyAddTorque);
 
-		//======== BoxCollider ========
+		//======== Colliders ========
 
-		mono_add_internal_call("Copper.BoxCollider::Internal_GetTrigger", (void*) BoxColliderGetTrigger);
-		mono_add_internal_call("Copper.BoxCollider::Internal_GetCenter", (void*) BoxColliderGetCenter);
+		mono_add_internal_call("Copper.Collider::Internal_GetTrigger", (void*) ColliderGetTrigger);
+		mono_add_internal_call("Copper.Collider::Internal_SetTrigger", (void*) ColliderSetTrigger);
+
 		mono_add_internal_call("Copper.BoxCollider::Internal_GetSize", (void*) BoxColliderGetSize);
-
-		mono_add_internal_call("Copper.BoxCollider::Internal_SetTrigger", (void*) BoxColliderSetTrigger);
-		mono_add_internal_call("Copper.BoxCollider::Internal_SetCenter", (void*) BoxColliderSetCenter);
 		mono_add_internal_call("Copper.BoxCollider::Internal_SetSize", (void*) BoxColliderSetSize);
 
 	}

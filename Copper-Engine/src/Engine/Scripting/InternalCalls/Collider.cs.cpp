@@ -14,40 +14,26 @@
 
 namespace Copper::Scripting::InternalCalls {
 
-	bool BoxColliderGetTrigger(int64_t componentPointer) {
+	bool ColliderGetTrigger(int64_t componentPointer) {
 
 		CheckComponentPointerWithReturn(componentPointer, false);
 
-		return ((BoxCollider*) componentPointer)->trigger;
+		return ((Collider*) componentPointer)->trigger;
 
 	}
-	void BoxColliderGetCenter(int64_t componentPointer, Vector3* out) {
+	void ColliderSetTrigger(int64_t componentPointer, bool value) {
 
 		CheckComponentPointer(componentPointer);
 
-		*out = ((BoxCollider*) componentPointer)->center;
+		((Collider*) componentPointer)->trigger = value;
 
 	}
+
 	void BoxColliderGetSize(int64_t componentPointer, Vector3* out) {
 
 		CheckComponentPointer(componentPointer);
 
 		*out = ((BoxCollider*) componentPointer)->size;
-
-	}
-
-	void BoxColliderSetTrigger(int64_t componentPointer, bool value) {
-
-		CheckComponentPointer(componentPointer);
-
-		((BoxCollider*) componentPointer)->trigger = value;
-
-	}
-	void BoxColliderSetCenter(int64_t componentPointer, Vector3* value) {
-
-		CheckComponentPointer(componentPointer);
-
-		((BoxCollider*) componentPointer)->center = *value;
 
 	}
 	void BoxColliderSetSize(int64_t componentPointer, Vector3* value) {

@@ -30,6 +30,8 @@ namespace Copper {
             }
             set {
 
+                Editor.Log("WARNING!!!!");
+
                 Internal_SetPosition(componentPointer, value);
 
             }

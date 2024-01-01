@@ -17,6 +17,9 @@ extern "C" {
 
 namespace Copper {
 
+	typedef void (*UpdateFunc)(MonoObject* obj, MonoException** exc);
+	typedef void (*OnCollisionPersistFunc)(MonoObject* obj, MonoObject* other, MonoException** exc);
+
 	class ScriptComponent : public Component {
 
 	public:
@@ -51,12 +54,12 @@ namespace Copper {
 		MonoObject* instance = nullptr;
 
 		MonoMethod* create = nullptr;
-		void (*update) (MonoObject* obj, MonoException** exc) = nullptr;
+		UpdateFunc update = nullptr;
 
 		// Collision Eventss
 
 		MonoMethod* onCollisionBegin = nullptr;
-		void (*onCollisionPersist) (MonoObject* obj, MonoObject* other, MonoException** exc) = nullptr;
+		OnCollisionPersistFunc onCollisionPersist = nullptr;
 		MonoMethod* onCollisionEnd = nullptr;
 
 		// Trigger Events

@@ -39,11 +39,11 @@ namespace Copper {
 		MonoMethod* onCollisionPersistMethod = mono_class_get_method_from_name(klass, "OnCollisionPersist", 1);
 
 		if (updateMethod)
-			update = (void(*) (MonoObject*, MonoException**)) mono_method_get_unmanaged_thunk(updateMethod);
+			update = (UpdateFunc) mono_method_get_unmanaged_thunk(updateMethod);
 		else { update = nullptr; }
 
 		if (onCollisionPersistMethod)
-			onCollisionPersist = (void(*) (MonoObject*, MonoObject*, MonoException**)) mono_method_get_unmanaged_thunk(onCollisionPersistMethod);
+			onCollisionPersist = (OnCollisionPersistFunc) mono_method_get_unmanaged_thunk(onCollisionPersistMethod);
 		else { onCollisionPersist = nullptr; }
 
 	}
@@ -77,7 +77,7 @@ namespace Copper {
 
 		if (!update) return;
 
-		MonoException* exc;
+		MonoException* exc = nullptr;
 		update(instance, &exc);
 
 		if (!exc) return;

@@ -98,7 +98,10 @@ namespace Copper::Scripting::InternalCalls {
 
 	// Colliders
 	bool ColliderGetTrigger(int64_t componentPointer);
+	void ColliderGetCenter(int64_t componentPointer, Vector3* out);
+
 	void ColliderSetTrigger(int64_t componentPointer, bool value);
+	void ColliderSetCenter(int64_t componentPointer, Vector3* value);
 
 	void BoxColliderGetSize(int64_t componentPointer, Vector3* out);
 	void BoxColliderSetSize(int64_t componentPointer, Vector3* value);
@@ -199,7 +202,10 @@ namespace Copper::Scripting::InternalCalls {
 		//======== Colliders ========
 
 		mono_add_internal_call("Copper.Collider::Internal_GetTrigger", (void*) ColliderGetTrigger);
+		mono_add_internal_call("Copper.Collider::Internal_GetCenter", (void*) ColliderGetCenter);
+
 		mono_add_internal_call("Copper.Collider::Internal_SetTrigger", (void*) ColliderSetTrigger);
+		mono_add_internal_call("Copper.Collider::Internal_SetCenter", (void*) ColliderSetCenter);
 
 		mono_add_internal_call("Copper.BoxCollider::Internal_GetSize", (void*) BoxColliderGetSize);
 		mono_add_internal_call("Copper.BoxCollider::Internal_SetSize", (void*) BoxColliderSetSize);

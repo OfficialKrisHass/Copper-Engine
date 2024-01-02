@@ -11,7 +11,6 @@ namespace Copper {
         friend Scene;
 
     public:
-        Vector3 center = Vector3::zero;
         Vector3 size = Vector3::one;
 
     private:

@@ -27,6 +27,7 @@ namespace Copper {
 		};
 
 		bool trigger = false;
+		Vector3 center = Vector3::zero;
 
 	protected:
 		Type type = (Type) 0;

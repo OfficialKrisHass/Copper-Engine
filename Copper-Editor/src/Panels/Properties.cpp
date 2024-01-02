@@ -214,6 +214,9 @@ namespace Editor {
 
 		ShowBool("Trigger", &collider->trigger);
 		ShowVector3("Center", &collider->center);
+
+		ImGui::Separator();
+
 		ShowVector3("Size", &collider->size);
 
 		ImGui::PopID();
@@ -224,8 +227,11 @@ namespace Editor {
 		if (!DrawComponent<SphereCollider>("Sphere Collider", collider)) return;
 
 		ShowBool("Trigger", &collider->trigger);
-		ShowFloat("Radius", &collider->radius);
 		ShowVector3("Center", &collider->center);
+
+		ImGui::Separator();
+
+		ShowFloat("Radius", &collider->radius);
 
 		ImGui::PopID();
 
@@ -234,9 +240,13 @@ namespace Editor {
 
 		if (!DrawComponent<CapsuleCollider>("Capsule Collider", collider)) return;
 
+		ShowBool("Trigger", &collider->trigger);
+		ShowVector3("Center", &collider->center);
+
+		ImGui::Separator();
+
 		ShowFloat("Radius", &collider->radius);
 		ShowFloat("Height", &collider->height);
-		ShowVector3("Center", &collider->center);
 
 		ImGui::PopID();
 

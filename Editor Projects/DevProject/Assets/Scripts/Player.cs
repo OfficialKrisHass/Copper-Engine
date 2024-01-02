@@ -19,8 +19,6 @@ class Player : Component {
 
     public Transform camera;
 
-    Testing testing = null;
-
     RigidBody rb;
     Vector2 mouseRot;
 
@@ -33,6 +31,8 @@ class Player : Component {
 
     }
     private void Update() {
+
+        Testing testing = null;
 
         testing.Use();
 

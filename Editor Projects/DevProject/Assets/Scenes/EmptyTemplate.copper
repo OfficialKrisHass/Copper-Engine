@@ -422,8 +422,8 @@ Entities:
       Lock Mask: 0
     Sphere Collider:
       Trigger: false
-      Radius: 0.5
       Center: [0, 0, 0]
+      Radius: 0.5
   Capsule:
     ID: 5
     Transform:
@@ -551,6 +551,6 @@ Entities:
       Lock Mask: 0
     Capsule Collider:
       Trigger: false
+      Center: [0, 0, 0]
       Radius: 0.5
       Height: 1
-      Center: [0, 0, 0]

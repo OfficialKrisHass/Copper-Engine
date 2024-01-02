@@ -24,11 +24,26 @@ namespace Copper::Scripting::InternalCalls {
 		return ((Collider*) componentPointer)->trigger;
 
 	}
+	void ColliderGetCenter(int64_t componentPointer, Vector3* out) {
+
+		CheckComponentPointer(componentPointer);
+
+		*out = ((Collider*) componentPointer)->center;
+
+	}
+
 	void ColliderSetTrigger(int64_t componentPointer, bool value) {
 
 		CheckComponentPointer(componentPointer);
 
 		((Collider*) componentPointer)->trigger = value;
+
+	}
+	void ColliderSetCenter(int64_t componentPointer, Vector3* value) {
+
+		CheckComponentPointer(componentPointer);
+
+		((Collider*) componentPointer)->center = *value;
 
 	}
 

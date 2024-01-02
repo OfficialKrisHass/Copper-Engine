@@ -275,8 +275,8 @@ namespace Copper {
 			out << YAML::Key << "Box Collider" << YAML::Value << YAML::BeginMap; // Box Collider
 
 			out << YAML::Key << "Trigger" << YAML::Value << collider->trigger;
-
 			out << YAML::Key << "Center" << YAML::Value << collider->center;
+
 			out << YAML::Key << "Size" << YAML::Value << collider->size;
 
 			out << YAML::EndMap; // Box Collider
@@ -287,9 +287,9 @@ namespace Copper {
 			out << YAML::Key << "Sphere Collider" << YAML::Value << YAML::BeginMap; // Sphere Collider
 
 			out << YAML::Key << "Trigger" << YAML::Value << collider->trigger;
+			out << YAML::Key << "Center" << YAML::Value << collider->center;
 
 			out << YAML::Key << "Radius" << YAML::Value << collider->radius;
-			out << YAML::Key << "Center" << YAML::Value << collider->center;
 
 			out << YAML::EndMap; // Sphere Collider
 
@@ -299,10 +299,10 @@ namespace Copper {
 			out << YAML::Key << "Capsule Collider" << YAML::Value << YAML::BeginMap; // Sphere Collider
 
 			out << YAML::Key << "Trigger" << YAML::Value << collider->trigger;
+			out << YAML::Key << "Center" << YAML::Value << collider->center;
 
 			out << YAML::Key << "Radius" << YAML::Value << collider->radius;
 			out << YAML::Key << "Height" << YAML::Value << collider->height;
-			out << YAML::Key << "Center" << YAML::Value << collider->center;
 
 			out << YAML::EndMap; // Sphere Collider
 
@@ -447,8 +447,8 @@ namespace Copper {
 			BoxCollider* collider = entity->AddComponent<BoxCollider>();
 
 			collider->trigger = colliderNode["Trigger"].as<bool>();
-
 			collider->center = colliderNode["Center"].as<Vector3>();
+
 			collider->size = colliderNode["Size"].as<Vector3>();
 
 		}
@@ -457,9 +457,9 @@ namespace Copper {
 			SphereCollider* collider = entity->AddComponent<SphereCollider>();
 
 			collider->trigger = colliderNode["Trigger"].as<bool>();
+			collider->center = colliderNode["Center"].as<Vector3>();
 
 			collider->radius = colliderNode["Radius"].as<float>();
-			collider->center = colliderNode["Center"].as<Vector3>();
 
 		}
 		if (YAML::Node colliderNode = node["Capsule Collider"]) {
@@ -467,10 +467,10 @@ namespace Copper {
 			CapsuleCollider* collider = entity->AddComponent<CapsuleCollider>();
 
 			collider->trigger = colliderNode["Trigger"].as<bool>();
+			collider->center = colliderNode["Center"].as<Vector3>();
 
 			collider->radius = colliderNode["Radius"].as<float>();
 			collider->height = colliderNode["Height"].as<float>();
-			collider->center = colliderNode["Center"].as<Vector3>();
 
 		}
 

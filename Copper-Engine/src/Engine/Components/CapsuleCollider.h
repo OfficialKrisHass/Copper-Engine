@@ -13,7 +13,6 @@ namespace Copper {
     public:
         float radius = 0.5f;
         float height = 1.0f;
-        Vector3 center = Vector3::zero;
 
     private:
         physx::PxShape* CreateShape() const override;

@@ -35,12 +35,15 @@ namespace Copper {
     class RigidBody : public Component {
 
         friend class Scene;
-    #ifdef CU_EDITOR
-        friend Editor::Properties;
-    #endif
+        friend class Collider;
+
         friend void Scripting::InternalCalls::RigidBodySetGravity(int64_t componentPointer, bool value);
         friend void Scripting::InternalCalls::RigidBodySetIsStatic(int64_t componentPointer, bool value);
         friend void Scripting::InternalCalls::RigidBodySetMass(int64_t componentPointer, float value);
+
+    #ifdef CU_EDITOR
+        friend Editor::Properties;
+    #endif
         
     public:
         bool isStatic = false;
@@ -58,13 +61,14 @@ namespace Copper {
 
     private:
         physx::PxRigidActor* body = nullptr;
+        Collider* collider = nullptr;
 
         uint8_t lockMask = 0;
 
         void Setup();
 
-        void CreateDynamic(physx::PxShape* shape, const Collider* collider);
-        void CreateStatic(physx::PxShape* shape, const Collider* collider);
+        void CreateDynamic(physx::PxShape* shape);
+        void CreateStatic(physx::PxShape* shape);
 
     public:
         enum LockFlags : uint8_t {

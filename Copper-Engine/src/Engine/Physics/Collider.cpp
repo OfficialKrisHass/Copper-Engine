@@ -32,8 +32,13 @@ namespace Copper {
 
     void Collider::Setup() {
 
-        RigidBody* rb = GetEntity()->GetComponent<RigidBody>();
-        if (rb) return;
+        this->rb = GetEntity()->GetComponent<RigidBody>();
+        if (this->rb) {
+
+            this->rb->collider = this;
+            return;
+
+        }
 
         // Case 1: Collider with no Rigid Body
 

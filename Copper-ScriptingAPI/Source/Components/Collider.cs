@@ -10,7 +10,6 @@ namespace Copper {
             set { Internal_SetTrigger(componentPointer, value); }
 
         }
-
         public Vector3 center {
 
             get {
@@ -22,6 +21,22 @@ namespace Copper {
 
             }
             set { Internal_SetCenter(componentPointer, value); }
+
+        }
+
+        public RigidBody rb {
+
+            get {
+
+                if (!HasComponent<RigidBody>())  return null;
+
+                RigidBody ret = new RigidBody();
+                Internal_SetComponentEID(typeof(RigidBody), ret, eID);
+                Internal_SetComponentPointer(typeof(RigidBody), ret, eID);
+
+                return ret;
+
+            }
 
         }
 

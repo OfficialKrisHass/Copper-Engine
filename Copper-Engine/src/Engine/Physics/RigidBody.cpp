@@ -35,7 +35,7 @@ namespace Copper {
         if (body)
             GetScene()->RemovePhysicsBody(body);
 
-        Collider* collider = GetEntity()->GetComponent<Collider>();
+        this->collider = GetEntity()->GetComponent<Collider>();
 
         // Default Case 2: Rigid Body with no Collider - Why though ?
         // NOTE: This is the default as its simpler then to create a shape
@@ -46,11 +46,12 @@ namespace Copper {
 
         // Case 3: Rigid Body with a Collider
 
-        if (collider) {
+        if (this->collider) {
 
-            shape = collider->CreateShape();
+            shape = this->collider->CreateShape();
+            this->collider->rb = this;
 
-            if (collider->trigger) {
+            if (this->collider->trigger) {
 
                 shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
                 shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
@@ -60,11 +61,11 @@ namespace Copper {
         }
 
         if (isStatic)
-            CreateStatic(shape, collider);
+            CreateStatic(shape);
         else
-            CreateDynamic(shape, collider);
+            CreateDynamic(shape);
 
-        if (collider)
+        if (this->collider)
             shape->release();
 
         GetScene()->AddPhysicsBody(body);
@@ -74,10 +75,10 @@ namespace Copper {
 
     }
 
-    void RigidBody::CreateDynamic(PxShape* shape, const Collider* collider) {
+    void RigidBody::CreateDynamic(PxShape* shape) {
 
-        if(collider)
-            body = PxCreateDynamic(*physics, PxTransform(CopperToPhysX(GetTransform()->position - collider->center), CopperToPhysX(GetTransform()->rotation)), *shape, 1.0f);
+        if(this->collider)
+            body = PxCreateDynamic(*physics, PxTransform(CopperToPhysX(GetTransform()->position - this->collider->center), CopperToPhysX(GetTransform()->rotation)), *shape, 1.0f);
         else
             body = PxCreateDynamic(*physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape, 1.0f);
 
@@ -99,10 +100,10 @@ namespace Copper {
         ((PxRigidDynamic*) body)->setRigidDynamicLockFlags((PxRigidDynamicLockFlag::Enum) lockMask);
 
     }
-    void RigidBody::CreateStatic(PxShape* shape, const Collider* collider) {
+    void RigidBody::CreateStatic(PxShape* shape) {
 
-        if (collider)
-            body = PxCreateStatic(*physics, PxTransform(CopperToPhysX(GetTransform()->position - collider->center), CopperToPhysX(GetTransform()->rotation)), *shape);
+        if (this->collider)
+            body = PxCreateStatic(*physics, PxTransform(CopperToPhysX(GetTransform()->position - this->collider->center), CopperToPhysX(GetTransform()->rotation)), *shape);
         else
             body = PxCreateStatic(*physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape);
 
@@ -112,19 +113,13 @@ namespace Copper {
 
         if (!body || isStatic) return;
 
-        Collider* collider = GetEntity()->GetComponent<Collider>();
         Transform* transform = GetTransform();
 
-        if (collider) {
-
+        if (this->collider)
             transform->position = PhysXToCopper(body->getGlobalPose().p) + collider->center;
-            transform->rotation = PhysXToCopper(body->getGlobalPose().q);
+        else
+            transform->position = PhysXToCopper(body->getGlobalPose().p);
 
-            return;
-
-        }
-
-        transform->position = PhysXToCopper(body->getGlobalPose().p);
         transform->rotation = PhysXToCopper(body->getGlobalPose().q);
 
     }

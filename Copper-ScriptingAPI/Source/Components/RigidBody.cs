@@ -26,11 +26,26 @@ namespace Copper {
             set { Internal_SetGravity(componentPointer, value); }
 
         }
-
         public float mass {
 
             get { return Internal_GetMass(componentPointer); }
             set { Internal_SetMass(componentPointer, value); }
+
+        }
+
+        public Collider collider {
+
+            get {
+
+                if (!HasComponent<Collider>()) return null;
+
+                Collider ret = new Collider();
+                Internal_SetComponentEID(typeof(Collider), ret, eID);
+                Internal_SetComponentPointer(typeof(Collider), ret, eID);
+
+                return ret;
+
+            }
 
         }
 

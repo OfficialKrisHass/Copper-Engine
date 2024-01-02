@@ -31,6 +31,7 @@ namespace Copper {
 
 	protected:
 		Type type = (Type) 0;
+		RigidBody* rb = nullptr;
 
 	private:
 		void Setup();

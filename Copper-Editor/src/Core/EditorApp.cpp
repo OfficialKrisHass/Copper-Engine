@@ -327,7 +327,7 @@ namespace Editor {
 
 		ImGui::Image(reinterpret_cast<void*>((uint64_t) GetMainFBOTexture()), windowSize, ImVec2 {0, 1}, ImVec2 {1, 0});
 
-		if (ImGui::IsItemClicked() && IsSceneRuntimeRunning()) {
+		if (ImGui::IsItemClicked() && !AcceptInputDuringRuntime() && IsSceneRuntimeRunning()) {
 			
 			Input::SetCursorLocked(data.wasCursorLocked);
 			Input::SetCursorVisible(data.wasCursorVisible);
@@ -529,8 +529,6 @@ namespace Editor {
 		SaveScene();
 		data.scene->StartRuntime();
 
-		Input::SetCursorLocked(true);
-		Input::SetCursorVisible(false);
 		SetAcceptInputDuringRuntime(true);
 
 	}

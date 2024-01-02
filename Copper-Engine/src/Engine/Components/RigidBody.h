@@ -13,6 +13,8 @@ namespace physx { class PxRigidActor; class PxShape; }
 
 namespace Copper {
 
+    class Collider;
+
     namespace Scripting::InternalCalls {    
 
         void RigidBodySetGravity(int64_t componentPointer, bool value);
@@ -61,8 +63,8 @@ namespace Copper {
 
         void Setup();
 
-        void CreateDynamic(physx::PxShape* shape);
-        void CreateStatic(physx::PxShape* shape);
+        void CreateDynamic(physx::PxShape* shape, const Collider* collider);
+        void CreateStatic(physx::PxShape* shape, const Collider* collider);
 
     public:
         enum LockFlags : uint8_t {

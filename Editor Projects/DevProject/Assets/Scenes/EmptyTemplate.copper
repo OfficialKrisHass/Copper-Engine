@@ -24,7 +24,7 @@ Entities:
       Fov: 90
       Near Plane: 0.100000001
       Far Plane: 1000
-      Size: [1920, 969]
+      Size: [1176, 572]
   Player:
     ID: 2
     Transform:
@@ -159,13 +159,13 @@ Entities:
       Fields:
         speed:
           Type: 3
-          Value: 0
+          Value: 2
         sensitivity:
           Type: 3
-          Value: 0
+          Value: 5
         camera:
           Type: 7
-          Value: 4294967295
+          Value: 1
   Ground:
     ID: 3
     Transform:
@@ -551,6 +551,6 @@ Entities:
       Lock Mask: 0
     Capsule Collider:
       Trigger: false
-      Center: [0, 0, 0]
+      Center: [0, 0.5, 0]
       Radius: 0.5
       Height: 1

@@ -60,9 +60,9 @@ namespace Copper {
         }
 
         if (isStatic)
-            CreateStatic(shape);
+            CreateStatic(shape, collider);
         else
-            CreateDynamic(shape);
+            CreateDynamic(shape, collider);
 
         if (collider)
             shape->release();
@@ -74,9 +74,12 @@ namespace Copper {
 
     }
 
-    void RigidBody::CreateDynamic(PxShape* shape) {
+    void RigidBody::CreateDynamic(PxShape* shape, const Collider* collider) {
 
-        body = PxCreateDynamic(*physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape, 1.0f);
+        if(collider)
+            body = PxCreateDynamic(*physics, PxTransform(CopperToPhysX(GetTransform()->position - collider->center), CopperToPhysX(GetTransform()->rotation)), *shape, 1.0f);
+        else
+            body = PxCreateDynamic(*physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape, 1.0f);
 
         ((PxRigidDynamic*) body)->setMass(mass);
         if (!gravity)
@@ -96,9 +99,12 @@ namespace Copper {
         ((PxRigidDynamic*) body)->setRigidDynamicLockFlags((PxRigidDynamicLockFlag::Enum) lockMask);
 
     }
-    void RigidBody::CreateStatic(PxShape* shape) {
+    void RigidBody::CreateStatic(PxShape* shape, const Collider* collider) {
 
-        body = PxCreateStatic(*physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape);
+        if (collider)
+            body = PxCreateStatic(*physics, PxTransform(CopperToPhysX(GetTransform()->position - collider->center), CopperToPhysX(GetTransform()->rotation)), *shape);
+        else
+            body = PxCreateStatic(*physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape);
 
     }
 
@@ -106,7 +112,17 @@ namespace Copper {
 
         if (!body || isStatic) return;
 
+        Collider* collider = GetEntity()->GetComponent<Collider>();
         Transform* transform = GetTransform();
+
+        if (collider) {
+
+            transform->position = PhysXToCopper(body->getGlobalPose().p) + collider->center;
+            transform->rotation = PhysXToCopper(body->getGlobalPose().q);
+
+            return;
+
+        }
 
         transform->position = PhysXToCopper(body->getGlobalPose().p);
         transform->rotation = PhysXToCopper(body->getGlobalPose().q);

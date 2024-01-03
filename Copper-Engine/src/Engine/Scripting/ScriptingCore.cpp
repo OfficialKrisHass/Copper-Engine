@@ -18,6 +18,9 @@ char domainName[] = "CUScriptRuntime";
 
 namespace Copper::Scripting {
 
+	typedef std::unordered_map<std::string, void*> FieldValueMap;
+	typedef std::unordered_map<ScriptComponent*, FieldValueMap> ScriptValueMap;
+
 	namespace InternalCalls {
 		
 		void SetupInternalCalls();
@@ -58,6 +61,11 @@ namespace Copper::Scripting {
 
 	void InitScriptComponents();
 	void InitScriptFields(const std::string& fullName, MonoClass* scriptClass);
+
+	void SaveScriptValues(ScriptValueMap* out);
+	void SaveFieldValues(ScriptComponent* script, FieldValueMap* out);
+
+	void LoadFieldValues(ScriptComponent* script, const FieldValueMap& valueMap);
 
 	void Initialize() {
 
@@ -120,6 +128,9 @@ namespace Copper::Scripting {
 	}
 	bool Reload() {
 
+		ScriptValueMap savedValues;
+		SaveScriptValues(&savedValues);
+
 		mono_domain_set(mono_get_root_domain(), false);
 		mono_domain_unload(data.app);
 
@@ -128,6 +139,9 @@ namespace Copper::Scripting {
 		for (ScriptComponent* script : ComponentView<ScriptComponent>(GetScene())) {
 
 			script->Init(script->name);
+
+			if (savedValues.find(script) == savedValues.end()) continue;
+			LoadFieldValues(script, savedValues[script]);
 
 		}
 		return true;
@@ -138,6 +152,7 @@ namespace Copper::Scripting {
 
 		data.scriptComponents.clear();
 		data.scriptFields.clear();
+		data.entities.clear();
 
 		const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(data.projectAssemblyImage, MONO_TABLE_TYPEDEF);
 		int32_t numOfTypes = mono_table_info_get_rows(typeDefinitionsTable);
@@ -181,6 +196,60 @@ namespace Copper::Scripting {
 
 			scriptField.name = mono_field_get_name(field);
 			scriptField.type = MonoUtils::TypeFromString(mono_type_get_name(type));
+
+		}
+
+	}
+
+	void SaveScriptValues(ScriptValueMap* out) {
+
+		for (ScriptComponent* script : ComponentView<ScriptComponent>(GetScene())) {
+
+			FieldValueMap* valueMap = &(*out)[script];
+			SaveFieldValues(script, valueMap);
+
+		}
+
+	}
+	void SaveFieldValues(ScriptComponent* script, FieldValueMap* out) {
+
+		typedef ScriptField::Type Type;
+
+		std::vector<ScriptField> fields = data.scriptFields[script->name];
+		for (const ScriptField& field : fields) {
+
+			void* tmp = new char[FieldSize(field.type)];
+			(*out)[field.name] = tmp;
+
+			if (field.type == Type::Entity)
+				script->GetFieldValue(field, (InternalEntity**) tmp);
+			else if (field.type == Type::Transform)
+				script->GetFieldValue(field, (Transform**) tmp);
+			else
+				script->GetFieldValue(field, tmp);
+
+		}
+
+	}
+
+	void LoadFieldValues(ScriptComponent* script, const FieldValueMap& valueMap) {
+
+		typedef ScriptField::Type Type;
+
+		std::vector<ScriptField> fields = data.scriptFields[script->name];
+		for (const ScriptField& field : fields) {
+
+			if (valueMap.find(field.name) == valueMap.end()) continue;
+
+			void* tmp = valueMap.at(field.name);
+			if (field.type == Type::Entity)
+				script->SetFieldValue(field, (InternalEntity**) tmp);
+			else if (field.type == Type::Transform)
+				script->SetFieldValue(field, (Transform**) tmp);
+			else
+				script->SetFieldValue(field, tmp);
+
+			delete tmp;
 
 		}
 

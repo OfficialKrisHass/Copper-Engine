@@ -279,6 +279,8 @@ namespace Copper::Scripting {
 
 	MonoObject* GetScriptEntity(uint32_t eID) {
 
+		if (eID == INVALID_ENTITY_ID) return nullptr;
+
 		if (data.entities.size() < eID + 1) {
 
 			data.entities.resize(eID + 1, nullptr);

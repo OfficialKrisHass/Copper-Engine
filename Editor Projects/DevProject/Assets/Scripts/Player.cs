@@ -5,9 +5,11 @@ using Copper;
 class Player : Component {
 
     public float speed = 1.0f;
-    public float sensitivity= 1.0f;
+    public float sensitivity = 1.0f;
 
     public Transform camera;
+    public Entity testEntity;
+    public Entity testEntity2;
 
     RigidBody rb;
     Vector2 mouseRot;

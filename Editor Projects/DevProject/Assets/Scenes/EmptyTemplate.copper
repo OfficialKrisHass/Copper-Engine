@@ -175,6 +175,12 @@ Entities:
         camera:
           Type: 7
           Value: 1
+        testEntity:
+          Type: 6
+          Value: 4294967295
+        testEntity2:
+          Type: 6
+          Value: 4294967295
   Ground:
     ID: 3
     Transform:

@@ -25,6 +25,7 @@
 #include "Panels/Properties.h"
 #include "Panels/FileBrowser.h"
 #include "Panels/Console.h"
+#include "Panels/ThemeEditor.h"
 
 #include "Viewport/SceneCamera.h"
 
@@ -86,6 +87,10 @@ namespace Editor {
 		Properties properties;
 		FileBrowser fileBrowser;
 		Console console;
+		ThemeEditor themeEditor;
+
+		// Theme Editor
+		bool themeEditorOpen = false;
 
 		// Scripting
 
@@ -152,6 +157,7 @@ namespace Editor {
 		data.properties = Properties();
 		data.fileBrowser = FileBrowser("");
 		data.console = Console();
+		data.themeEditor = ThemeEditor();
 
 		data.sceneCam = SceneCamera(data.viewportSize);
 
@@ -160,6 +166,8 @@ namespace Editor {
 		ProjectFileWatcher::AddFileChangeCallback(FileChangedCallback);
 
 		LoadEditorData();
+
+		data.themeEditor.LoadTheme("assets/Themes/Default.cutheme");
 
 	#ifdef CU_LINUX
 		RunPremake();
@@ -236,6 +244,7 @@ namespace Editor {
 		data.fileBrowser.UIRender();
 		data.properties.UIRender();
 		data.sceneHierarchy.UIRender();
+		if (data.themeEditorOpen) data.themeEditor.UIRender();
 		RenderGamePanel();
 		RenderViewport();
 
@@ -505,6 +514,30 @@ namespace Editor {
 
 				ImGui::EndMenu();
 				
+			}
+
+			if (ImGui::BeginMenu("Theme")) {
+
+				if (ImGui::MenuItem("Open Theme Editor"))
+					data.themeEditorOpen = true;
+
+				if (ImGui::MenuItem("Save Theme", 0, false)) {
+
+					fs::path path = Utilities::SaveDialog("Save Theme", { "Copper Editor Theme Files (.cutheme)", "*.cutheme" }, "assets\\Themes");
+					if (!path.empty())
+						data.themeEditor.SaveTheme(path);
+
+				}
+				if (ImGui::MenuItem("Load Theme", 0, false)) {
+
+					fs::path path = Utilities::OpenDialog("Load Theme", { "Copper Editor Theme Files (.cutheme)", "*.cutheme" }, "assets/Themes");
+					if (!path.empty())
+						data.themeEditor.LoadTheme(path);
+
+				}
+
+				ImGui::EndMenu();
+
 			}
 
 			if(ImGui::BeginMenu("Camera")) {

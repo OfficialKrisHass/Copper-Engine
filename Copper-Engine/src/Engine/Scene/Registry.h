@@ -163,7 +163,7 @@ namespace Copper {
 
 			for (ComponentPool* pool : pools) {
 
-				if (!pool->Valid(eID)) continue;
+				if (!pool || !pool->Valid(eID)) continue;
 				pool->Remove(eID);
 
 			}

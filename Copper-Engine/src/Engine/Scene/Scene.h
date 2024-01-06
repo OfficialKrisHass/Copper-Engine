@@ -29,8 +29,14 @@ namespace Copper {
 		friend class OldSceneVersionSerializer;
 
 	public:
-		std::string name;
-		fs::path path;
+		Scene() {
+
+			registry.Initialize();
+
+		}
+
+		std::string name = "";
+		fs::path path = "";
 
 		Camera* cam = nullptr;
 
@@ -82,9 +88,9 @@ namespace Copper {
 	private:
 		Registry registry;
 
-		Light* light;
+		Light* light = nullptr;
 
-		physx::PxScene* physicsScene;
+		physx::PxScene* physicsScene = nullptr;
 
 		bool runtimeRunning = false;
 		bool runtimeStarted = false;

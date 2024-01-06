@@ -1,0 +1,147 @@
+Version: 0
+Name: TestingDev
+Entities:
+  Camera:
+    ID: 0
+    Transform:
+      Position: [0, 0, 1.28999996]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent ID: 4294967295
+      Children: []
+    Camera:
+      Fov: 90
+      Near Plane: 0.100000001
+      Far Plane: 1000
+      Size: [1176, 572]
+  Light:
+    ID: 1
+    Transform:
+      Position: [-1.99087703, 2.54211855, 2.52278471]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent ID: 4294967295
+      Children: []
+    Light:
+      Color: [1, 1, 1, 1]
+      Intensity: 1
+  Cube:
+    ID: 2
+    Transform:
+      Position: [0, 0, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent ID: 4294967295
+      Children: []
+    Mesh Renderer:
+      Mesh:
+        Data:
+          - Position: [-0.5, -0.5, 0.5]
+            Normal: [0, 0, -1]
+            Color: [1, 0, 0, 1]
+          - Position: [0.5, -0.5, 0.5]
+            Normal: [0, 0, -1]
+            Color: [1, 0, 0, 1]
+          - Position: [0.5, 0.5, 0.5]
+            Normal: [0, 0, -1]
+            Color: [1, 0, 0, 1]
+          - Position: [-0.5, 0.5, 0.5]
+            Normal: [0, 0, -1]
+            Color: [1, 0, 0, 1]
+          - Position: [0.5, -0.5, -0.5]
+            Normal: [0, 0, 1]
+            Color: [0, 1, 1, 1]
+          - Position: [-0.5, -0.5, -0.5]
+            Normal: [0, 0, 1]
+            Color: [0, 1, 1, 1]
+          - Position: [-0.5, 0.5, -0.5]
+            Normal: [0, 0, 1]
+            Color: [0, 1, 1, 1]
+          - Position: [0.5, 0.5, -0.5]
+            Normal: [0, 0, 1]
+            Color: [0, 1, 1, 1]
+          - Position: [0.5, -0.5, 0.5]
+            Normal: [-1, 0, 0]
+            Color: [0, 1, 0, 1]
+          - Position: [0.5, -0.5, -0.5]
+            Normal: [-1, 0, 0]
+            Color: [0, 1, 0, 1]
+          - Position: [0.5, 0.5, -0.5]
+            Normal: [-1, 0, 0]
+            Color: [0, 1, 0, 1]
+          - Position: [0.5, 0.5, 0.5]
+            Normal: [-1, 0, 0]
+            Color: [0, 1, 0, 1]
+          - Position: [-0.5, -0.5, -0.5]
+            Normal: [1, 0, 0]
+            Color: [1, 0, 1, 1]
+          - Position: [-0.5, -0.5, 0.5]
+            Normal: [1, 0, 0]
+            Color: [1, 0, 1, 1]
+          - Position: [-0.5, 0.5, 0.5]
+            Normal: [1, 0, 0]
+            Color: [1, 0, 1, 1]
+          - Position: [-0.5, 0.5, -0.5]
+            Normal: [1, 0, 0]
+            Color: [1, 0, 1, 1]
+          - Position: [-0.5, 0.5, 0.5]
+            Normal: [0, -1, 0]
+            Color: [0, 0, 1, 1]
+          - Position: [0.5, 0.5, 0.5]
+            Normal: [0, -1, 0]
+            Color: [0, 0, 1, 1]
+          - Position: [0.5, 0.5, -0.5]
+            Normal: [0, -1, 0]
+            Color: [0, 0, 1, 1]
+          - Position: [-0.5, 0.5, -0.5]
+            Normal: [0, -1, 0]
+            Color: [0, 0, 1, 1]
+          - Position: [-0.5, -0.5, -0.5]
+            Normal: [0, 1, 0]
+            Color: [1, 1, 0, 1]
+          - Position: [0.5, -0.5, -0.5]
+            Normal: [0, 1, 0]
+            Color: [1, 1, 0, 1]
+          - Position: [0.5, -0.5, 0.5]
+            Normal: [0, 1, 0]
+            Color: [1, 1, 0, 1]
+          - Position: [-0.5, -0.5, 0.5]
+            Normal: [0, 1, 0]
+            Color: [1, 1, 0, 1]
+        Indices:
+          - 0
+          - 1
+          - 2
+          - 2
+          - 3
+          - 0
+          - 4
+          - 5
+          - 6
+          - 6
+          - 7
+          - 4
+          - 8
+          - 9
+          - 10
+          - 10
+          - 11
+          - 8
+          - 12
+          - 13
+          - 14
+          - 14
+          - 15
+          - 12
+          - 16
+          - 17
+          - 18
+          - 18
+          - 19
+          - 16
+          - 20
+          - 21
+          - 22
+          - 22
+          - 23
+          - 20

@@ -1,5 +1,5 @@
 Version: 0
-Name: TestingDev
+Name: TestingDev.copper
 Entities:
   Camera:
     ID: 0

@@ -96,6 +96,8 @@ namespace Copper {
 	void Scene::Serialize(const fs::path& path) {
 
 		this->path = path;
+		this->path.replace_extension("copper");
+
 		this->name = path.filename().string();
 
 		YAML::Emitter out;
@@ -117,7 +119,7 @@ namespace Copper {
 		out << YAML::EndMap; // Entities
 
 		out << YAML::EndMap; // Main
-		std::ofstream file(path);
+		std::ofstream file(this->path);
 		file << out.c_str();
 
 	}

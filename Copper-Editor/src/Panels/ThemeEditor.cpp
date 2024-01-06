@@ -116,8 +116,11 @@ namespace Editor {
 
 		out << YAML::EndMap; // Main
 
+		fs::path finalPath = path;
+		finalPath.replace_extension("cutheme");
+
 		std::ofstream file;
-		file.open(path.string() + ".cutheme");
+		file.open(finalPath.string());
 		file << out.c_str();
 		file.close();
 

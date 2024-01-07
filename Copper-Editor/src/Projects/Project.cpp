@@ -21,24 +21,12 @@ namespace Editor {
 
 		out << YAML::BeginMap; //Main
 
-		//Main Project Stuff
 		out << YAML::Key << "Name" << YAML::Value << name;
 		out << YAML::Key << "Last Scene" << YAML::Value << lastOpenedScene;
 
-		//Viewport
+		// Viewport
 		out << YAML::Key << "Gizmo" << YAML::Value << gizmoType;
 
-		//Scene Camera
-		out << YAML::Key << "Scene Camera" << YAML::Value << YAML::BeginMap; //Scene Camera
-
-		out << YAML::Key << "Position" << YAML::Value << GetSceneCam().GetTransform()->position;
-		out << YAML::Key << "Rotation" << YAML::Value << GetSceneCam().GetTransform()->rotation;
-
-		out << YAML::Key << "Speed" << YAML::Value << GetSceneCam().speed;
-		out << YAML::Key << "Sensitivity" << YAML::Value << GetSceneCam().sensitivity;
-
-		//End
-		out << YAML::EndMap; //Scene Camera
 		out << YAML::EndMap; //Main
 
 		std::ofstream file(path / "Project.cu");
@@ -64,19 +52,12 @@ namespace Editor {
 
 		try {
 
-		//Main Project Stuff
 		name = main["Name"].as<std::string>();
 		lastOpenedScene = assetsPath / main["Last Scene"].as<std::string>();
 
-		//Viewport
+		// Viewport
+
 		gizmoType = main["Gizmo"].as<int>();
-
-		//Scene Camera
-		YAML::Node sceneCamera = main["Scene Camera"];
-		GetSceneCam().transform = new Transform(sceneCamera["Position"].as<Vector3>(), sceneCamera["Rotation"].as<Quaternion>(), Vector3::one);
-
-		GetSceneCam().speed = sceneCamera["Speed"].as<float>();
-		GetSceneCam().sensitivity = sceneCamera["Sensitivity"].as<float>();
 
 		} catch(YAML::Exception e) {
 

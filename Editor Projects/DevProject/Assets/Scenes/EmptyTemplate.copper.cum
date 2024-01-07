@@ -1,7 +1,12 @@
-Objects:
+Entity Order:
   - 0
   - 1
   - 2
   - 3
   - 4
   - 5
+Scene Camera:
+  Position: [0.493234068, 4.31492567, 3.83606958]
+  Rotation: [0.900438666, -0.408181638, 0.136915401, 0.0620656982]
+  Speed: 0.0299999993
+  Sensitivity: 100

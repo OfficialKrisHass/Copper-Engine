@@ -749,7 +749,7 @@ namespace Editor {
 		if(!data.scene->path.empty()) {
 
 			data.scene->Serialize(data.scene->path);
-			data.sceneMeta.Serialize(data.scene);
+			data.sceneMeta.Serialize();
 
 			data.changes = false;
 			data.title = "Copper Editor - TestProject: ";
@@ -778,7 +778,7 @@ namespace Editor {
 		}
 
 		data.scene->Serialize(path);
-		data.sceneMeta.Serialize(data.scene);
+		data.sceneMeta.Serialize();
 
 		data.changes = false;
 		data.title = "Copper Editor - TestProject: ";

@@ -1,5 +1,5 @@
 Version: 0
-Name: Physics
+Name: Physics.copper
 Entities:
   Light:
     ID: 0
@@ -136,10 +136,7 @@ Entities:
       Static: false
       Gravity: true
       Mass: 1
-    Box Collider:
-      Trigger: false
-      Center: [0, 0, 0]
-      Size: [1, 1, 1]
+      Lock Mask: 0
   Ground:
     ID: 2
     Transform:
@@ -264,10 +261,7 @@ Entities:
       Static: true
       Gravity: true
       Mass: 1
-    Box Collider:
-      Trigger: false
-      Center: [0, 0, 0]
-      Size: [1, 1, 1]
+      Lock Mask: 0
   B:
     ID: 3
     Transform:
@@ -392,7 +386,4 @@ Entities:
       Static: false
       Gravity: true
       Mass: 1
-    Box Collider:
-      Trigger: false
-      Center: [0, 0, 0]
-      Size: [1, 1, 1]
+      Lock Mask: 0

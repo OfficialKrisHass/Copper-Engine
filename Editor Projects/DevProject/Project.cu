@@ -1,5 +1,5 @@
 Name: DevProject
-Last Scene: Scenes\TestingDev.copper
+Last Scene: Scenes\EmptyTemplate.copper
 Gizmo: 0
 Scene Camera:
   Position: [-3.44222927, 5.06288099, 0.775086582]

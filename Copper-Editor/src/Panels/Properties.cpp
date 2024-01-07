@@ -17,6 +17,11 @@
 
 #define BindShowFunc(func) [this](auto&&... args) -> decltype(auto) { return this->func(std::forward<decltype(args)>(args)...); }
 
+#define DISABLED_BUTTON(label, size) ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);\
+									 ImGui::Button(label, size);\
+									 ImGui::PopItemFlag()
+#define MULTILINE_DRAG(label)
+
 #define DragIntSpeed 1.0f
 #define DragFloatSpeed 0.01f
 
@@ -420,45 +425,50 @@ namespace Editor {
 
 		bool ret = false;
 
+		const float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+
+		const ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };
+		const ImVec4 buttonColor = ImGui::GetStyle().Colors[ImGuiCol_WindowBg];
+
+		// Init
+
 		ImGui::PushID(name.c_str());
 
-		//Settings
-		ImGui::PushMultiItemsWidths(4, ImGui::CalcItemWidth());
+		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2 {0, 0});
+		ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
 
-		//Vars
-		float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
-		ImVec2 buttonSize = {lineHeight + 3.0f, lineHeight};
-
-		//X
-		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4 {0.1f, 0.1f, 0.1f, 1.0f});
-		ImGui::Button("X", buttonSize);
-		ImGui::PopItemFlag();
-		ImGui::PopStyleColor();
+		// X
+		
+		DISABLED_BUTTON("X", buttonSize);
 
 		ImGui::SameLine();
 		if (ImGui::DragFloat("##X", &vec->x, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
-		//Y
-		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4 {0.1f, 0.1f, 0.1f, 1.0f});
-		ImGui::Button("Y", buttonSize);
-		ImGui::PopItemFlag();
-		ImGui::PopStyleColor();
+		// Y
+		
+		DISABLED_BUTTON("Y", buttonSize);
 
 		ImGui::SameLine();
 		if (ImGui::DragFloat("##Y", &vec->y, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
+		ImGui::SameLine(0.0f, 7.0f);
 
-		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+		// Text
 
-		//End
+		ImGui::Text(name.c_str());
+		ImGui::PopItemWidth();
+
+
+		// Cleanup
 		ImGui::PopStyleVar();
-		ImGui::Columns(1);
+		ImGui::PopStyleColor();
+		
+		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 		ImGui::PopID();
+
 
 		if (ret) SetChanges(true);
 		return ret;
@@ -467,63 +477,59 @@ namespace Editor {
 	bool Properties::ShowVector3(const std::string& name, Vector3* vec) {
 
 		bool ret = false;
-		
+
+		const float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+
+		const ImVec2 buttonSize = { lineHeight, lineHeight };
+		const ImVec4 buttonColor = ImGui::GetStyle().Colors[ImGuiCol_WindowBg];
+
+		// Init
+
 		ImGui::PushID(name.c_str());
 
-		//Settings
 		ImGui::PushMultiItemsWidths(4, ImGui::CalcItemWidth());
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2 {0, 0});
+		ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
 
-		//Vars
-		float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
-		ImVec2 buttonSize = {lineHeight, lineHeight};
+		// X
 
-		//X
-		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4 {0.1f, 0.1f, 0.1f, 1.0f});
-		ImGui::Button("X", buttonSize);
-		ImGui::PopItemFlag();
-		ImGui::PopStyleColor();
+		DISABLED_BUTTON("X", buttonSize);
 
 		ImGui::SameLine();
 		if (ImGui::DragFloat("##X", &vec->x, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
-		//Y
-		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4 {0.1f, 0.1f, 0.1f, 1.0f});
-		ImGui::Button("Y", buttonSize);
-		ImGui::PopItemFlag();
-		ImGui::PopStyleColor();
+		// Y
+
+		DISABLED_BUTTON("Y", buttonSize);
 
 		ImGui::SameLine();
 		if (ImGui::DragFloat("##Y", &vec->y, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
-		//Z
-		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4 {0.1f, 0.1f, 0.1f, 1.0f});
-		ImGui::Button("Z", buttonSize);
-		ImGui::PopItemFlag();
-		ImGui::PopStyleColor();
+		// Z
+
+		DISABLED_BUTTON("Z", buttonSize);
 
 		ImGui::SameLine();
 		if (ImGui::DragFloat("##Z", &vec->z, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
 		ImGui::SameLine(0.0f, 7.0f);
 
-		//Text
+		// Text
+
 		ImGui::Text(name.c_str());
 		ImGui::PopItemWidth();
 
+		// Cleanup
 
-		//End
 		ImGui::PopStyleVar();
-		ImGui::PopID();
+		ImGui::PopStyleColor();
 
 		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+		ImGui::PopID();
 
 		if(ret) SetChanges(true);
 		return ret;
@@ -532,69 +538,67 @@ namespace Editor {
 	bool Properties::ShowVector4(const std::string& name, Vector4* vec) {
 
 		bool ret = false;
+
+		const float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
 		
+		const ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };
+		const ImVec4 buttonColor = ImGui::GetStyle().Colors[ImGuiCol_WindowBg];
+
+		// Init
+
 		ImGui::PushID(name.c_str());
 
-		//Settings
-		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+		ImGui::PushMultiItemsWidths(5, ImGui::CalcItemWidth());
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2 {0, 0});
+		ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
 
-		//Vars
-		float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
-		ImVec2 buttonSize = {lineHeight + 3.0f, lineHeight};
+		// X
 
-		//X
-		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4 {0.1f, 0.1f, 0.1f, 1.0f});
-		ImGui::Button("X", buttonSize);
-		ImGui::PopItemFlag();
-		ImGui::PopStyleColor();
+		DISABLED_BUTTON("X", buttonSize);
 
 		ImGui::SameLine();
 		if (ImGui::DragFloat("##X", &vec->x, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
-		//Y
-		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4 {0.1f, 0.1f, 0.1f, 1.0f});
-		ImGui::Button("Y", buttonSize);
-		ImGui::PopItemFlag();
-		ImGui::PopStyleColor();
+		// Y
+		
+		DISABLED_BUTTON("Y", buttonSize);
 
 		ImGui::SameLine();
 		if (ImGui::DragFloat("##Y", &vec->y, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
-		//Z
-		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4 {0.1f, 0.1f, 0.1f, 1.0f});
-		ImGui::Button("Z", buttonSize);
-		ImGui::PopItemFlag();
-		ImGui::PopStyleColor();
+		// Z
+		
+		DISABLED_BUTTON("Z", buttonSize);
 
 		ImGui::SameLine();
 		if (ImGui::DragFloat("##Z", &vec->z, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
-		//W
-		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4 {0.1f, 0.1f, 0.1f, 1.0f});
-		ImGui::Button("W", buttonSize);
-		ImGui::PopItemFlag();
-		ImGui::PopStyleColor();
+		// W
+		
+		DISABLED_BUTTON("W", buttonSize);
 
 		ImGui::SameLine();
 		if (ImGui::DragFloat("##W", &vec->w, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
 		ImGui::PopItemWidth();
+		ImGui::SameLine(0.0f, 7.0f);
+
+		// Text
+
+		ImGui::Text(name.c_str());
+		ImGui::PopItemWidth();
+
+		// Cleanup
+
+		ImGui::PopStyleVar();
+		ImGui::PopStyleColor();
 
 		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
-
-		//End
-		ImGui::PopStyleVar();
-		ImGui::Columns(1);
 		ImGui::PopID();
 
 		if (ret) SetChanges(true);
@@ -603,28 +607,13 @@ namespace Editor {
 	}
 	bool Properties::ShowColor(const std::string& name, Color* col) {
 
+		bool ret = false;
+
 		ImGui::PushID(name.c_str());
 
-		bool ret = false;
-		float colors[] {
-
-			col->r,
-			col->g,
-			col->b
-
-		};
-
-		ret = ImGui::ColorEdit3("##Color", colors);
+		ret = ImGui::ColorEdit3("##Color", &col->r);
 		ImGui::SameLine();
 		ImGui::Text(name.c_str());
-
-		if (ret) {
-
-			col->r = colors[0];
-			col->g = colors[1];
-			col->b = colors[2];
-
-		}
 
 		ImGui::PopID();
 

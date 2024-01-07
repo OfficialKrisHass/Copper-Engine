@@ -10,12 +10,8 @@ Entities:
       Parent ID: 4294967295
       Children: []
     Light:
-      Color: [1, 0.999989986, 0.999989986, 1]
+      Color: [1, 1, 1, 1]
       Intensity: 1
-    Script Component:
-      Name: Tests
-      Fields:
-        {}
   Camera:
     ID: 1
     Transform:
@@ -28,7 +24,7 @@ Entities:
       Fov: 90
       Near Plane: 0.100000001
       Far Plane: 1000
-      Size: [1176, 572]
+      Size: [1920, 969]
   Player:
     ID: 2
     Transform:

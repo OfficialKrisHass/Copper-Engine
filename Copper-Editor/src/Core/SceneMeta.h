@@ -13,6 +13,8 @@ namespace Editor::MetaFile {
 
 		std::vector<uint32_t> objectIDs;
 
+		Copper::InternalEntity* GetEntity(uint32_t index) const;
+
 	private:
 		Copper::Scene* scene;
 

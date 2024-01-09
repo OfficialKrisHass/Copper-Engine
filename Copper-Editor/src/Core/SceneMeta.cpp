@@ -107,4 +107,10 @@ namespace Editor::MetaFile {
 
 	}
 
+	InternalEntity* SceneMeta::GetEntity(uint32_t index) const {
+
+		return GetEntityFromID(objectIDs[index]);
+
+	}
+
 }

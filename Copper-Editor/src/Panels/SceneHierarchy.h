@@ -34,8 +34,10 @@ namespace Editor {
 		virtual void UI() override;
 
 		void DrawEntityNode(Copper::InternalEntity* entity);
-
 		void PopupWindow();
+
+		void RemoveParentTarget();
+		void MoveEntityLastTarget();
 
 		void MoveEntity(uint32_t nodeIndex) const;
 

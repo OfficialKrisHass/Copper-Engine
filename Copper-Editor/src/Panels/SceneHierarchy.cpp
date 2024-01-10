@@ -10,6 +10,8 @@
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_internal.h>
 
+#define MOVE_RECT_HEIGHT 4.0f
+
 using namespace Copper;
 
 namespace Editor {
@@ -37,46 +39,8 @@ namespace Editor {
 
 		}
 
-		ImRect windowRect;
-		windowRect.Min = ImGui::GetWindowPos();
-
-		windowRect.Max.x = windowRect.Min.x + ImGui::GetWindowWidth();
-		windowRect.Max.y = windowRect.Min.y + ImGui::GetWindowHeight();
-		windowRect.Min.y = ImGui::GetItemRectMax().y + 7;
-
-		if (ImGui::BeginDragDropTargetCustom(windowRect, ImGuiID(310320231753))) {
-
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE"))
-				GetEntityFromID(*(uint32_t*) payload->Data)->GetTransform()->SetParent(nullptr);
-
-			ImGui::EndDragDropTarget();
-
-		}
-
-		const float itemMinX = ImGui::GetItemRectMin().x;
-		const ImVec2 itemMax = ImGui::GetItemRectMax();
-		const ImRect reorderRect = { { itemMinX, itemMax.y }, { itemMax.x, itemMax.y + 4.0f} };
-		if (ImGui::BeginDragDropTargetCustom(reorderRect, ImGuiID(679875643556))) {
-
-			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE");
-			if (!payload || *(uint32_t*) payload->Data == currentNodeIndex - 1) {
-
-				ImGui::EndDragDropTarget();
-				currentNodeIndex = -1;
-
-				return;
-
-			}
-
-			uint32_t nodeIndex = *(uint32_t*) payload->Data;
-			std::vector<uint32_t>& objectIDs = GetSceneMeta()->objectIDs;
-
-			objectIDs.push_back(objectIDs[nodeIndex]);
-			objectIDs.erase(objectIDs.begin() + nodeIndex);
-
-			ImGui::EndDragDropTarget();
-
-		}
+		RemoveParentTarget();
+		MoveEntityLastTarget();
 
 		currentNodeIndex = -1;
 
@@ -113,9 +77,8 @@ namespace Editor {
 
 		}
 
-		const float height = 4.0f;
 		const ImVec2 itemMin = ImGui::GetItemRectMin();
-		const ImRect reorderRect = ImRect({ itemMin.x, itemMin.y - height }, { ImGui::GetItemRectMax().x, itemMin.y });
+		const ImRect reorderRect = ImRect({ itemMin.x, itemMin.y - MOVE_RECT_HEIGHT }, { ImGui::GetItemRectMax().x, itemMin.y });
 		if (ImGui::BeginDragDropTargetCustom(reorderRect, (int64_t) entity)) {
 
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE"))
@@ -158,7 +121,6 @@ namespace Editor {
 		ImGui::PopID();
 
 	}
-
 	void SceneHierarchy::PopupWindow() {
 
 		if (ImGui::MenuItem("Entity", 0, false, scene)) {
@@ -223,6 +185,43 @@ namespace Editor {
 			SetChanges(true);
 
 		}
+
+	}
+
+	void SceneHierarchy::RemoveParentTarget() {
+
+		const ImVec2 regionMax = ImGui::GetWindowContentRegionMax();
+		const ImRect windowRect{ { ImGui::GetWindowContentRegionMin().x + 1, ImGui::GetItemRectMax().y + 2 }, { regionMax.x, regionMax.y + 80 } };
+		if (!ImGui::BeginDragDropTargetCustom(windowRect, ImGuiID(310320231753))) return;
+
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE"))
+			GetEntityFromID(*(uint32_t*) payload->Data)->GetTransform()->SetParent(nullptr);
+
+		ImGui::EndDragDropTarget();
+
+	}
+	void SceneHierarchy::MoveEntityLastTarget() {
+
+		const float itemMinX = ImGui::GetItemRectMin().x;
+		const ImVec2 itemMax = ImGui::GetItemRectMax();
+		const ImRect reorderRect = { { itemMinX, itemMax.y }, { itemMax.x, itemMax.y + MOVE_RECT_HEIGHT } };
+		if (!ImGui::BeginDragDropTargetCustom(reorderRect, ImGuiID(679875643556))) return;
+
+		const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE");
+		if (!payload || *(uint32_t*) payload->Data == currentNodeIndex - 1) {
+
+			ImGui::EndDragDropTarget();
+			return;
+
+		}
+
+		uint32_t nodeIndex = *(uint32_t*) payload->Data;
+		std::vector<uint32_t>& objectIDs = GetSceneMeta()->objectIDs;
+
+		objectIDs.push_back(objectIDs[nodeIndex]);
+		objectIDs.erase(objectIDs.begin() + nodeIndex);
+
+		ImGui::EndDragDropTarget();
 
 	}
 

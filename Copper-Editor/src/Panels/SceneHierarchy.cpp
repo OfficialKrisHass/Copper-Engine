@@ -27,9 +27,9 @@ namespace Editor {
 
 		}
 
-		for (uint32_t eID : GetSceneMeta()->objectIDs) {
+		for (currentNodeIndex = 0; currentNodeIndex < GetSceneMeta()->objectIDs.size(); currentNodeIndex++) {
 
-			InternalEntity* entity = GetEntityFromID(eID);
+			InternalEntity* entity = GetSceneMeta()->GetEntity(currentNodeIndex);
 			if (!entity) continue;
 			if (entity->GetTransform()->Parent()) continue;
 
@@ -53,6 +53,33 @@ namespace Editor {
 
 		}
 
+		const float itemMinX = ImGui::GetItemRectMin().x;
+		const ImVec2 itemMax = ImGui::GetItemRectMax();
+		const ImRect reorderRect = { { itemMinX, itemMax.y }, { itemMax.x, itemMax.y + 4.0f} };
+		if (ImGui::BeginDragDropTargetCustom(reorderRect, ImGuiID(679875643556))) {
+
+			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE");
+			if (!payload || *(uint32_t*) payload->Data == currentNodeIndex - 1) {
+
+				ImGui::EndDragDropTarget();
+				currentNodeIndex = -1;
+
+				return;
+
+			}
+
+			uint32_t nodeIndex = *(uint32_t*) payload->Data;
+			std::vector<uint32_t>& objectIDs = GetSceneMeta()->objectIDs;
+
+			objectIDs.push_back(objectIDs[nodeIndex]);
+			objectIDs.erase(objectIDs.begin() + nodeIndex);
+
+			ImGui::EndDragDropTarget();
+
+		}
+
+		currentNodeIndex = -1;
+
 	}
 
 	void SceneHierarchy::DrawEntityNode(InternalEntity* entity) {
@@ -72,8 +99,8 @@ namespace Editor {
 
 		if (ImGui::BeginDragDropSource()) {
 
-			uint32_t id = entity->ID();
-			ImGui::SetDragDropPayload("SCH_ENTITY_NODE", &id, sizeof(uint32_t), ImGuiCond_Once);
+			uint32_t data = currentNodeIndex;
+			ImGui::SetDragDropPayload("SCH_ENTITY_NODE", &data, sizeof(uint32_t), ImGuiCond_Once);
 			ImGui::EndDragDropSource();
 
 		}
@@ -81,6 +108,18 @@ namespace Editor {
 
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE"))
 				entity->GetTransform()->AddChild(GetEntityFromID(*(uint32_t*) payload->Data)->GetTransform());
+
+			ImGui::EndDragDropTarget();
+
+		}
+
+		const float height = 4.0f;
+		const ImVec2 itemMin = ImGui::GetItemRectMin();
+		const ImRect reorderRect = ImRect({ itemMin.x, itemMin.y - height }, { ImGui::GetItemRectMax().x, itemMin.y });
+		if (ImGui::BeginDragDropTargetCustom(reorderRect, (int64_t) entity)) {
+
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE"))
+				MoveEntity(*(uint32_t*) payload->Data);
 
 			ImGui::EndDragDropTarget();
 
@@ -184,6 +223,17 @@ namespace Editor {
 			SetChanges(true);
 
 		}
+
+	}
+
+	void SceneHierarchy::MoveEntity(uint32_t nodeIndex) const {
+
+		if (nodeIndex == currentNodeIndex || nodeIndex == currentNodeIndex - 1) return;
+
+		std::vector<uint32_t>& objectIDs = GetSceneMeta()->objectIDs;
+
+		objectIDs.insert(objectIDs.begin() + currentNodeIndex, objectIDs[nodeIndex]);
+		objectIDs.erase(objectIDs.begin() + (nodeIndex > currentNodeIndex ? nodeIndex + 1 : nodeIndex));
 
 	}
 

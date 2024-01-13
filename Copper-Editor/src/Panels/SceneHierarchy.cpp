@@ -71,7 +71,7 @@ namespace Editor {
 		if (ImGui::BeginDragDropTarget()) {
 
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE"))
-				entity->GetTransform()->AddChild(GetEntityFromID(*(uint32_t*) payload->Data)->GetTransform());
+				entity->GetTransform()->AddChild(GetSceneMeta()->GetEntity(*(uint32_t*) payload->Data)->GetTransform());
 
 			ImGui::EndDragDropTarget();
 
@@ -195,7 +195,7 @@ namespace Editor {
 		if (!ImGui::BeginDragDropTargetCustom(windowRect, ImGuiID(310320231753))) return;
 
 		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE"))
-			GetEntityFromID(*(uint32_t*) payload->Data)->GetTransform()->SetParent(nullptr);
+			GetSceneMeta()->GetEntity(*(uint32_t*) payload->Data)->GetTransform()->SetParent(nullptr);
 
 		ImGui::EndDragDropTarget();
 

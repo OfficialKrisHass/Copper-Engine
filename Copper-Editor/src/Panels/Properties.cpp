@@ -680,7 +680,8 @@ namespace Editor {
 
 				dragDropTargetHovered = true;
 				ret = true;
-				*entity = GetEntityFromID(*(uint32_t*) payload->Data);
+				uint32_t nodeIndex = *(uint32_t*) payload->Data;
+				*entity = GetSceneMeta()->GetEntity(nodeIndex);
 
 			}
 
@@ -719,7 +720,7 @@ namespace Editor {
 
 				dragDropTargetHovered = true;
 				ret = true;
-				*transform = GetEntityFromID(*(uint32_t*) payload->Data)->GetTransform();
+				*transform = GetSceneMeta()->GetEntity(*(uint32_t*) payload->Data)->GetTransform();
 
 			}
 

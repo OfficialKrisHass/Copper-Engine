@@ -20,7 +20,7 @@ namespace Editor {
 
 		void ColorEditor();
 
-		class ImGuiStyle* style = nullptr;
+		struct ImGuiStyle* style = nullptr;
 
 	};
 

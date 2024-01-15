@@ -125,6 +125,8 @@ namespace Copper::Scripting {
 		InitScriptComponents();
 		InternalCalls::Initialize();
 
+		return true;
+
 	}
 	bool Reload() {
 

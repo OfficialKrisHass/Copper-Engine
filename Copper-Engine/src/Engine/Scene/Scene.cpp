@@ -502,7 +502,7 @@ namespace Copper {
 
 		}
 
-		} catch (const YAML::BadConversion& e) {
+		} catch (YAML::Exception e) {
 
 			LogError("Encountered an exception when trying to deserialize entity {} ({}): {}", entity->id, entity->name, e.msg);
 

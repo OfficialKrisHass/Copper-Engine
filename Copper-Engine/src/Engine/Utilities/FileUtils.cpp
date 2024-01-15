@@ -56,7 +56,7 @@ namespace Copper::Utilities {
 
 	fs::path OpenDialog(const std::string& title, const std::vector<std::string>& filters, const fs::path& initialDir) {
 
-		std::vector<std::string> ret = pfd::open_file(title, initialDir.string(), filters, false).result();
+		std::vector<std::string> ret = pfd::open_file(title, initialDir.string(), filters).result();
 		return ret.size() != 0 ? ret[0] : "";
 
 	}

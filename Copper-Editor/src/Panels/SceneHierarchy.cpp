@@ -79,7 +79,7 @@ namespace Editor {
 
 		const ImVec2 itemMin = ImGui::GetItemRectMin();
 		const ImRect reorderRect = ImRect({ itemMin.x, itemMin.y - MOVE_RECT_HEIGHT }, { ImGui::GetItemRectMax().x, itemMin.y });
-		if (ImGui::BeginDragDropTargetCustom(reorderRect, (int64_t) entity)) {
+		if (ImGui::BeginDragDropTargetCustom(reorderRect, (uint32_t) (uint64_t) entity)) {
 
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE"))
 				MoveEntity(*(uint32_t*) payload->Data);
@@ -108,7 +108,7 @@ namespace Editor {
 
 		if (opened) {
 
-			for (int i = 0; i < entity->GetTransform()->NumOfChildren(); i++) {
+			for (uint32_t i = 0; i < entity->GetTransform()->NumOfChildren(); i++) {
 
 				DrawEntityNode(entity->GetTransform()->GetChild(i)->GetEntity());
 
@@ -225,7 +225,7 @@ namespace Editor {
 
 	}
 
-	void SceneHierarchy::MoveEntity(uint32_t nodeIndex) const {
+	void SceneHierarchy::MoveEntity(int32_t nodeIndex) const {
 
 		if (nodeIndex == currentNodeIndex || nodeIndex == currentNodeIndex - 1) return;
 

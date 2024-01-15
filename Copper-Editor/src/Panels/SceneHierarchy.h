@@ -39,7 +39,7 @@ namespace Editor {
 		void RemoveParentTarget();
 		void MoveEntityLastTarget();
 
-		void MoveEntity(uint32_t nodeIndex) const;
+		void MoveEntity(int32_t nodeIndex) const;
 
 	};
 

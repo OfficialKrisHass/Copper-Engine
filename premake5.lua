@@ -86,6 +86,8 @@ project "Copper-Engine"
         "CU_EDITOR",
         "CU_WINDOWS",
 
+        "YAML_CPP_STATIC_DEFINE",
+
         "INCLUDE_GLM",
         "GLM_ENABLE_EXPERIMENTAL",
 
@@ -95,7 +97,7 @@ project "Copper-Engine"
         "VERSION_MAJOR=0",
         "VERSION_MINOR=2",
         "VERSION_PATCH=2",
-        "VERSION_TWEAK=83",
+        "VERSION_TWEAK=84",
         
         "SCENE_VERSION=0",
 
@@ -173,6 +175,8 @@ project "Copper-Editor"
         "CU_EDITOR",
         "CU_WINDOWS",
         "INCLUDE_GLM",
+
+        "YAML_CPP_STATIC_DEFINE",
         
         "GLM_ENABLE_EXPERIMENTAL",
         "_CRT_SECURE_NO_WARNINGS",

@@ -9,7 +9,6 @@ class Player : Component {
 
     public Transform camera;
     public Entity testEntity;
-    public Entity testEntity2;
 
     RigidBody rb;
     Vector2 mouseRot;

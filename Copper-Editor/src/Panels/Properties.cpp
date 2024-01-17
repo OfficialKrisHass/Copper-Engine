@@ -708,8 +708,7 @@ namespace Editor {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE")) {
 
 				ret = true;
-				uint32_t nodeIndex = *(uint32_t*) payload->Data;
-				*entity = GetSceneMeta()->GetEntity(nodeIndex);
+				*entity = (InternalEntity*) payload->Data;
 
 			}
 
@@ -774,7 +773,7 @@ namespace Editor {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE")) {
 
 				ret = true;
-				*transform = GetSceneMeta()->GetEntity(*(uint32_t*) payload->Data)->GetTransform();
+				*transform = ((InternalEntity*) payload->Data)->GetTransform();
 
 			}
 

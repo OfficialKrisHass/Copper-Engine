@@ -29,17 +29,12 @@ namespace Editor {
 		Copper::Entity selectedEntity = nullptr;
 		Copper::Scene* scene = nullptr;
 
-		int32_t currentNodeIndex = -1;
-
 		virtual void UI() override;
 
 		void DrawEntityNode(Copper::InternalEntity* entity);
 		void PopupWindow();
 
 		void RemoveParentTarget();
-		void MoveEntityLastTarget();
-
-		void MoveEntity(int32_t nodeIndex) const;
 
 	};
 

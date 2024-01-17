@@ -16,16 +16,6 @@ namespace Editor::MetaFile {
 		YAML::Emitter out;
 		out << YAML::BeginMap; // Main
 
-		// Entity Order
-
-		out << YAML::Key << "Entity Order" << YAML::Value << YAML::BeginSeq; // Entity Order
-		for (uint32_t objID : objectIDs) {
-
-			out << objID;
-
-		}
-		out << YAML::EndSeq; // Entity Order
-
 		// Scene Camera
 
 		out << YAML::Key << "Scene Camera" << YAML::Value << YAML::BeginMap; // Scene Camera
@@ -48,12 +38,11 @@ namespace Editor::MetaFile {
 	}
 	void SceneMeta::Deserialize(Scene* scene) {
 
-		objectIDs.clear();
 		this->scene = scene;
 
 		if (!exists(scene->path.string() + ".cum")) {
 
-			InitDefault();
+			Serialize();
 			return;
 
 		}
@@ -72,13 +61,6 @@ namespace Editor::MetaFile {
 
 		try {
 
-		YAML::Node order = main["Entity Order"];
-		for (int i = 0; i < order.size(); i++) {
-
-			objectIDs.push_back(order[i].as<uint32_t>());
-
-		}
-
 		YAML::Node sceneCam = main["Scene Camera"];
 		SceneCamera& cam = GetSceneCam();
 
@@ -94,22 +76,6 @@ namespace Editor::MetaFile {
 			return;
 
 		}
-
-	}
-
-	void SceneMeta::InitDefault() {
-
-		objectIDs.reserve(GetNumOfEntities());
-		for (InternalEntity* entity : EntityView(GetScene()))
-			objectIDs.push_back(entity->ID());
-
-		Serialize();
-
-	}
-
-	InternalEntity* SceneMeta::GetEntity(uint32_t index) const {
-
-		return GetEntityFromID(objectIDs[index]);
 
 	}
 

@@ -33,13 +33,14 @@ add_executable(Copper-Editor ${sources})
 
 # Compiler setup
 set_target_properties(Copper-Editor PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/Build/${OUTPUT_DIR}/Copper-Editor")
-target_compile_definitions(Copper-Editor PRIVATE ${defines})
 target_compile_options(Copper-Engine PRIVATE -I/usr/include/mono-2.0 -D_REENTRANT)
-target_link_options(Copper-Engine PRIVATE -lPhysXExtensions_static_64 -lPhysX_static_64 -lPhysXPvdSDK_static_64 -lPhysXCooking_static_64 -lPhysXCommon_static_64 -lPhysXFoundation_static_64)
 
 target_include_directories(Copper-Editor PRIVATE ${includeDirs})
+target_compile_definitions(Copper-Editor PRIVATE ${defines})
 
 # Libaries
+target_link_directories(Copper-Editor PRIVATE lib/mono/bin/linux/${CMAKE_BUILD_TYPE} lib/PhysX/linux/${CMAKE_BUILD_TYPE})
 target_link_libraries(Copper-Editor PRIVATE Copper-Engine glfw GLAD ImGui yaml-cpp assimp
                                             monosgen-2.0 /usr/lib/libpthread.a
-                                            -lX11 -lstdc++fs)
+                                            -lX11 -lstdc++fs
+                                            PhysXExtensions_static_64 PhysX_static_64 PhysXPvdSDK_static_64 PhysXCooking_static_64 PhysXCommon_static_64 PhysXFoundation_static_64)

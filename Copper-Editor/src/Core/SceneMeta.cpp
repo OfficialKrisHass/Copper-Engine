@@ -1,47 +1,48 @@
 #include "SceneMeta.h"
 
-#include "Panels/SceneHierarchy.h"
+#include "Core/EditorApp.h"
 
 #include <yaml-cpp/yaml.h>
 #include "Engine/YAMLOverloads/Everything.h"
 
 using namespace Copper;
 
+using std::filesystem::exists;
+
 namespace Editor::MetaFile {
 
-	void SceneMeta::Serialize(Scene* scene) {
+	void SceneMeta::Serialize() {
 
 		YAML::Emitter out;
-		out << YAML::BeginMap;
+		out << YAML::BeginMap; // Main
 
-		out << YAML::Key << "Objects" << YAML::Value << YAML::BeginSeq;
-		for (uint32_t objID : objectIDs) {
+		// Scene Camera
 
-			out << objID;
+		out << YAML::Key << "Scene Camera" << YAML::Value << YAML::BeginMap; // Scene Camera
+		const SceneCamera& sceneCam = GetSceneCam();
 
-		}
-		out << YAML::EndSeq; //Objects
+		out << YAML::Key << "Position" << YAML::Value << sceneCam.GetTransform()->position;
+		out << YAML::Key << "Rotation" << YAML::Value << sceneCam.GetTransform()->rotation;
 
-		out << YAML::EndMap; //Main Map
+		out << YAML::Key << "Speed" << YAML::Value << GetSceneCam().speed;
+		out << YAML::Key << "Sensitivity" << YAML::Value << GetSceneCam().sensitivity;
+
+		out << YAML::EndMap; // SceneCamera
+
+		out << YAML::EndMap; // Main
 		std::ofstream file;
-		file.open(scene->path.String() + ".cum");
+		file.open(scene->path.string() + ".cum");
 		file << out.c_str();
 		file.close();
 
 	}
 	void SceneMeta::Deserialize(Scene* scene) {
 
-		objectIDs.clear();
+		this->scene = scene;
 
-		if (!std::experimental::filesystem::exists(scene->path.String() + "cum")) {
+		if (!exists(scene->path.string() + ".cum")) {
 
-			for (InternalEntity* entity : EntityView(scene)) {
-
-				objectIDs.push_back(entity->ID());
-
-			}
-			Serialize(scene);
-
+			Serialize();
 			return;
 
 		}
@@ -49,19 +50,30 @@ namespace Editor::MetaFile {
 		YAML::Node main;
 		try {
 			
-			main = YAML::LoadFile(scene->path.String() + ".cum");
+			main = YAML::LoadFile(scene->path.string() + ".cum");
 		
 		} catch (YAML::ParserException e) {
 
-			LogError("Failed to Read The Scene Meta Data file\n{}\n    {}", scene->path.String(), e.what());
+			LogError("Failed to Read The Scene Meta Data file ({})\n    {}", scene->path.string(), e.what());
 			return;
 
 		}
 
-		YAML::Node objects = main["Objects"];
-		for (int i = 0; i < objects.size(); i++) {
+		try {
 
-			objectIDs.push_back(objects[i].as<uint32_t>());
+		YAML::Node sceneCam = main["Scene Camera"];
+		SceneCamera& cam = GetSceneCam();
+
+		cam.GetTransform()->position = sceneCam["Position"].as<Vector3>();
+		cam.GetTransform()->rotation = sceneCam["Rotation"].as<Quaternion>();
+
+		cam.speed = sceneCam["Speed"].as<float>();
+		cam.sensitivity = sceneCam["Sensitivity"].as<float>();
+
+		} catch (YAML::Exception e) {
+
+			Log("Encountered an exception when trying to Deserializae the {} Scene meta file!\n\t{}", scene->name, e.msg);
+			return;
 
 		}
 

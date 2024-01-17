@@ -38,7 +38,11 @@ namespace Copper {
 
 		VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the OpenGL Renderer API");
 
-		if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) LogError("Failed to load GLAD!");
+		if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
+
+			LogError("Failed to load GLAD!");
+
+		}
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

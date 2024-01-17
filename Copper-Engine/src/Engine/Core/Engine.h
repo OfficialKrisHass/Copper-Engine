@@ -9,6 +9,7 @@
 namespace Copper {
 
 	class Event;
+	class Args;
 
 	namespace EngineCore {
 
@@ -22,13 +23,12 @@ namespace Copper {
 
 		};
 
-		void Initialize(int argc, char* argv[]);
+		void Initialize(const Args& arguments);
 
 		EngineState GetEngineState();
 		std::string EngineStateToString(EngineState state);
 
-		uint32_t GetNumArguments();
-		const std::string& GetArgument(uint32_t index);
+		const Args* GetArguments();
 
 	}
 
@@ -41,6 +41,10 @@ namespace Copper {
 
 	void AddPreShutdownEventFunc(std::function<bool(const Event&)> func);
 	void AddPostShutdownEventFunc(std::function<void()> func);
+
+	// Game
+
+	float DeltaTime();
 
 	// Editor Misc.
 

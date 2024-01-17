@@ -4,12 +4,31 @@
 #include "Engine/Events/RegistryEvent.h"
 
 #include "Engine/Scene/InternalEntity.h"
+
 #include "Engine/Components/Transform.h"
 
 #include <vector>
 
+#define TRANSFORM_CID 0
+
+#define MESH_RENDERER_CID 1
+#define CAMERA_CID 2
+#define LIGHT_CID 3
+
+#define SCRIPT_COMPONENT_CID 4
+
+#define RIGIDBODY_CID 5
+#define COLLIDER_CID 6
+#define BOX_COLLIDER_CID 7
+#define SPHERE_COLLIDER_CID 8
+#define CAPSULE_COLLIDER_CID 9
+
 namespace Copper {
 
+	class Collider;
+	class BoxCollider;
+	class SphereCollider;
+	class CapsuleCollider;
 	extern int cCounter;
 
 	extern EntityEvent entityCreatedEvent;
@@ -55,6 +74,8 @@ namespace Copper {
 		};
 
 	public:
+		void Initialize();
+
 		InternalEntity* CreateEntity(Scene* scene, Vector3 position, Quaternion rotation, Vector3 scale, const std::string& name) {
 
 			uint32_t id;
@@ -125,7 +146,7 @@ namespace Copper {
 			//Update the Parent
 			if (Transform* parent = entities[eID].transform->parent) {
 
-				parent->children.erase(parent->children.begin() + entities[eID].transform->parentChildIndex);
+				parent->RemoveChild(entities[eID].transform);
 
 			}
 
@@ -142,7 +163,7 @@ namespace Copper {
 
 			for (ComponentPool* pool : pools) {
 
-				if (!pool->Valid(eID)) continue;
+				if (!pool || !pool->Valid(eID)) continue;
 				pool->Remove(eID);
 
 			}
@@ -156,7 +177,9 @@ namespace Copper {
 
 			int cID = GetCID<T>();
 
+		#ifdef CU_DEBUG
 			if (pools.size() < cID + 1) pools.resize(cID + 1, nullptr);
+		#endif
 			if (!pools[cID]) pools[cID] = new ComponentPool(sizeof(T));
 
 			T* component = new (pools[cID]->Add(eID)) T();
@@ -214,6 +237,61 @@ namespace Copper {
 			component->Removed();
 			component->valid = false;
 
+		}
+
+		template<> Collider* AddComponent<Collider>(uint32_t eID);
+		template<> BoxCollider* AddComponent<BoxCollider>(uint32_t eID);
+		template<> SphereCollider* AddComponent<SphereCollider>(uint32_t eID);
+		template<> CapsuleCollider* AddComponent<CapsuleCollider>(uint32_t eID);
+
+		template<> Collider* GetComponent<Collider>(uint32_t eID);
+		template<> BoxCollider* GetComponent<BoxCollider>(uint32_t eID);
+		template<> SphereCollider* GetComponent<SphereCollider>(uint32_t eID);
+		template<> CapsuleCollider* GetComponent<CapsuleCollider>(uint32_t eID);
+
+		template<> bool HasComponent<Collider>(uint32_t eID);
+		template<> bool HasComponent<BoxCollider>(uint32_t eID);
+		template<> bool HasComponent<SphereCollider>(uint32_t eID);
+		template<> bool HasComponent<CapsuleCollider>(uint32_t eID);
+
+		template<> void RemoveComponent<Collider>(uint32_t eID);
+		template<> void RemoveComponent<BoxCollider>(uint32_t eID);
+		template<> void RemoveComponent<SphereCollider>(uint32_t eID);
+		template<> void RemoveComponent<CapsuleCollider>(uint32_t eID);
+
+		void* GetComponent(int componentID, uint32_t eID) {
+
+			if (eID == INVALID_ENTITY_ID) return nullptr;
+			if (!entities[eID]) return nullptr;
+			if (!entities[eID].cMask.test(componentID)) return nullptr;
+
+			void* component = static_cast<void*>(pools[componentID]->Get(eID));
+			return component;
+
+		}
+		bool HasComponent(int componentID, uint32_t eID) {
+
+			if (eID == INVALID_ENTITY_ID) return false;
+			if (!entities[eID]) return false;
+
+			return entities[eID].cMask.test(componentID);
+
+		}
+		void RemoveComponent(int componentID, uint32_t eID) {
+
+			if (eID == INVALID_ENTITY_ID) return;
+			if (!entities[eID]) return;
+			if (!entities[eID].cMask.test(componentID)) return;
+
+			pools[componentID]->Remove(eID);
+			entities[eID].cMask.reset(componentID);
+
+			Component* component = static_cast<Component*>(pools[componentID]->Get(eID));
+			componentRemovedEvent.component = component;
+			componentRemovedEvent();
+
+			component->Removed();
+			component->valid = false;
 
 		}
 
@@ -250,6 +328,11 @@ namespace Copper {
 		std::vector<InternalEntity> entities;
 		std::vector<ComponentPool*> pools;
 		std::vector<uint32_t> gaps;
+
+		template<typename T> T* AddColliderComponent(uint32_t eID, uint8_t type);
+		template<typename T> T* GetColliderComponent(uint32_t eID, uint8_t type);
+		bool HasColliderComponent(uint32_t eID, uint8_t type);
+		template<typename T> void RemoveColliderComponent(uint32_t eID, uint8_t type);
 
 	};
 

@@ -1,345 +1,223 @@
 #include "cupch.h"
 
-#include "Engine/Core/Engine.h"
-
-#include "Engine/Input/Input.h"
-#include "Engine/Input/AxisManager.h"
-
-#include "Engine/Scripting/ScriptingCore.h"
-#include "Engine/Scripting/MonoUtils.h"
-
-#include "Engine/Scene/CopperECS.h"
-
-#include "Engine/Components/ScriptComponent.h"
-#include "Engine/Components/Camera.h"
-
 #include <mono/jit/jit.h>
-#include <mono/metadata/exception.h>
-
-#define CauseExceptionInvalid(argument) mono_raise_exception(mono_get_exception_argument_null(argument))
-#define CauseException(message, argument)  mono_raise_exception(mono_get_exception_argument(argument, message))
-
-#define CheckValidEntity(eID) if (eID == INVALID_ENTITY_ID || eID >= GetNumOfEntities() || !(*GetEntityFromID(eID))) {\
-						      CauseExceptionInvalid("Entity"); return; }
-#define CheckValidEntityWithReturn(eID, ret) if (eID == INVALID_ENTITY_ID || eID >= GetNumOfEntities() || !(*GetEntityFromID(eID))) {\
-											 CauseExceptionInvalid("Entity"); return ret; }
 
 namespace Copper::Scripting::InternalCalls {
 
-	static std::unordered_map<std::string, std::function<bool(InternalEntity*)>> hasComponentFuncs;
-	static std::unordered_map<std::string, std::function<bool(InternalEntity*)>> addComponentFuncs;
+	void Component_Initialize();
 
-	inline void Initialize() {
+	void Initialize() {
 
-		hasComponentFuncs["Transform"] = [](InternalEntity* entity) { return true; };
-		hasComponentFuncs["Camera"] =    [](InternalEntity* entity) { return entity->HasComponent<Camera>(); };
-
-		addComponentFuncs["Camera"] = [](InternalEntity* entity) { return entity->AddComponent<Camera>() != nullptr ? true : false; };
+		Component_Initialize();
 
 	}
 
-	//Logging
-	static void EditorLog(MonoString* msg) {
-		
-		Log(MonoUtils::MonoToString(msg));
+#pragma region Function Declarations
 
-	}
-	static void EditorLogWarn(MonoString* msg) {
-		
-		LogWarn(MonoUtils::MonoToString(msg));
+	// Editor
+
+	void EditorLog(MonoString* msg);
+	void EditorLogWarn(MonoString* msg);
+	void EditorLogError(MonoString* msg);
+
+	// Game
 	
-	}
-	static void EditorLogError(MonoString* msg) {
-		
-		LogError(MonoUtils::MonoToString(msg));
+	float GetDeltaTime();
 
-	}
+	// Input
 
-	//Input
-	static bool IsKey(int keyCode) {
-		
-	#ifdef CU_EDITOR
-		if (!AcceptInputDuringRuntime()) return false;
-	#endif
-		return Input::IsKey((KeyCode) keyCode);
-	
-	}
-	static bool IsKeyDown(int keyCode) {
-		
-	#ifdef CU_EDITOR
-		if (!AcceptInputDuringRuntime()) return false;
-	#endif
-		return Input::IsKeyDown((KeyCode) keyCode);
-	
-	}
-	static bool IsKeyReleased(int keyCode) {
-		
-	#ifdef CU_EDITOR
-		if (!AcceptInputDuringRuntime()) return false;
-	#endif
-		return Input::IsKeyReleased((KeyCode) keyCode);
-	
-	}
+	bool IsKey(int keyCode);
+	bool IsKeyDown(int keyCode);
+	bool IsKeyReleased(int keyCode);
 
-	static float GetAxis(MonoString* axisName) {
+	float GetAxis(MonoString* axisName);
 
-	#ifdef CU_EDITOR
-		if (!AcceptInputDuringRuntime()) return 0.0f;
-	#endif
-		return Input::GetAxis(MonoUtils::MonoToString(axisName));
+	void SetCursorVisible(bool visible);
+	void SetCursorLocked(bool locked);
 
-	}
+	// Quaternion
 
-	static void SetCursorVisible(bool visible) {
+	Vector3 QuaternionToEulerAngles(Quaternion* quaternion);
+	Quaternion QuaternionFromEulerAngles(Vector3* euler);
 
-	#ifdef CU_EDITOR
-		if (!AcceptInputDuringRuntime()) return;
-	#endif
-		Input::SetCursorVisible(visible);
+	// Entity
 
-	}
-	static void SetCursorLocked(bool locked) {
+	MonoString* GetEntityName(uint32_t eID);
+	void SetEntityName(uint32_t eID, MonoString* out);
 
-	#ifdef CU_EDITOR
-		if (!AcceptInputDuringRuntime()) return;
-	#endif
-		Input::SetCursorLocked(locked);
+	bool IsEntityValid(uint32_t eID);
 
-	}
+	MonoObject* GetEntity(uint32_t eID);
 
-	//Entity
-	static MonoString* GetEntityName(uint32_t eID) {
+	// Component
 
-		CheckValidEntityWithReturn(eID, nullptr);
-		InternalEntity* entity = GetEntityFromID(eID);
+	void AddComponent(uint32_t eID, MonoReflectionType* type, MonoObject* ret);
+	bool GetComponent(uint32_t eID, MonoReflectionType* type, MonoObject* ret);
+	bool HasComponent(uint32_t eID, MonoReflectionType* type);
 
-		return MonoUtils::StringToMono(entity->name);
+	void SetComponentEID(MonoReflectionType* type, MonoObject* component, uint32_t eID);
 
-	}
-	static void SetEntityName(uint32_t eID, MonoString* out) {
+	void SetComponentPointer(MonoReflectionType* type, MonoObject* component, uint32_t eID);
 
-		CheckValidEntity(eID);
-		InternalEntity* entity = GetEntityFromID(eID);
+	// Transform
 
-		entity->name = MonoUtils::MonoToString(out);
+	void GetPosition(int64_t componentPointer, Vector3* out);
+	void GetRotation(int64_t componentPointer, Quaternion* out);
+	void GetScale(int64_t componentPointer, Vector3* out);
 
-	}
+	void GetForward(int64_t componentPointer, Vector3* out);
+	void GetRight(int64_t componentPointer, Vector3* out);
+	void GetUp(int64_t componentPointer, Vector3* out);
 
-	static bool IsEntityValid(uint32_t eID) {
-
-		if (eID == INVALID_ENTITY_ID || eID >= GetNumOfEntities() || !(*GetEntityFromID(eID))) return false;
-		return true;
-
-	}
-
-	static MonoObject* GetEntity(uint32_t eID) {
-
-		CheckValidEntityWithReturn(eID, nullptr);
-
-		MonoObject* ret = mono_object_new(Scripting::GetAppDomain(), Scripting::GetEntityMonoClass());
-		mono_runtime_object_init(ret);
-
-		MonoClassField* eIDField = mono_class_get_field_from_name(Scripting::GetEntityMonoClass(), "id");
-		mono_field_set_value(ret, eIDField, &eID);
-
-		return ret;
-
-	}
-
-	//Components
-	static void AddComponent(uint32_t eID, MonoReflectionType* type, MonoObject* ret) {
-
-		CheckValidEntity(eID);
-
-		MonoType* managedType = mono_reflection_type_get_type(type);
-		std::string typeName = mono_type_get_name(managedType);
-
-		std::string scriptName = typeName;
-		MonoUtils::RemoveNamespace(scriptName);
-
-		InternalEntity* entity = GetEntityFromID(eID);
-
-		MonoClassField* field = mono_class_get_field_from_name(mono_class_from_mono_type(managedType), "eID");
-		mono_field_set_value(ret, field, &eID);
-
-		if (addComponentFuncs.find(scriptName) != addComponentFuncs.end()) {
-
-			if (addComponentFuncs[scriptName](entity)) return;
-			CauseException("Only one component of this type can be on a single object. Type", scriptName.c_str());
-			
-		} else {
-
-			ScriptComponent* script = entity->AddComponent<ScriptComponent>();
-			script->Init(typeName);
-
-		}
-
-	}
-	static bool GetComponent(uint32_t eID, MonoReflectionType* type, MonoObject* ret) {
-
-		CheckValidEntityWithReturn(eID, false);
-
-		InternalEntity* entity = GetEntityFromID(eID);
-
-		MonoType* classType = mono_reflection_type_get_type(type);
-		std::string name = mono_type_get_name(classType);
-
-		MonoClassField* field = mono_class_get_field_from_name(mono_class_from_mono_type(classType), "eID");
-		mono_field_set_value(ret, field, &eID);
-
-		ScriptComponent* script = entity->GetComponent<ScriptComponent>();
-		if (script->name != name) return false;
-
-		script->CopyTo(ret);
-
-		return true;
-
-	}
-	static bool HasComponent(uint32_t eID, MonoReflectionType* type) {
-
-		CheckValidEntityWithReturn(eID, false);
-
-		MonoType* managedType = mono_reflection_type_get_type(type);
-		std::string typeName = mono_type_get_name(managedType);
-
-		std::string scriptName = typeName;
-		MonoUtils::RemoveNamespace(scriptName);
-
-		InternalEntity* entity = GetEntityFromID(eID);
-
-		if (hasComponentFuncs.find(scriptName) != hasComponentFuncs.end()) {
-
-			return hasComponentFuncs[scriptName](entity);
-
-		} else {
-
-			ScriptComponent* script = entity->GetComponent<ScriptComponent>();
-			if (script->name != typeName) return false;
-
-		}
-
-		return false;
-
-	}
-
-	static void SetComponentObjID(MonoReflectionType* type, MonoObject* component, uint32_t eID) {
-
-		MonoType* classType = mono_reflection_type_get_type(type);
-		MonoClassField* field = mono_class_get_field_from_name(mono_class_from_mono_type(classType), "eID");
-		mono_field_set_value(component, field, &eID);
-
-	}
-
-	//Transform
-	static void GetPosition(uint32_t eID, Vector3* out) {
-
-		CheckValidEntity(eID);
-		*out = GetEntityFromID(eID)->GetTransform()->position;
-
-	}
-	static void GetRotation(uint32_t eID, Quaternion* out) {
-
-		CheckValidEntity(eID);
-		*out = GetEntityFromID(eID)->GetTransform()->rotation;
-
-	}
-	static void GetScale(uint32_t eID, Vector3* out) {
-
-		CheckValidEntity(eID);
-		*out = GetEntityFromID(eID)->GetTransform()->scale;
-
-	}
-	static void SetPosition(uint32_t eID, Vector3* value) {
-
-		CheckValidEntity(eID);
-		GetEntityFromID(eID)->GetTransform()->position = *value;
-
-	}
-	static void SetRotation(uint32_t eID, Quaternion* value) {
-
-		CheckValidEntity(eID);
-		GetEntityFromID(eID)->GetTransform()->rotation = *value;
-
-	}
-	static void SetScale(uint32_t eID, Vector3* value) {
-
-		CheckValidEntity(eID);
-		GetEntityFromID(eID)->GetTransform()->scale = *value;
-
-	}
-
-	static void GetForward(uint32_t eID, Vector3* out) {
-
-		CheckValidEntity(eID);
-		*out = GetEntityFromID(eID)->GetTransform()->Forward();
-
-	}
-	static void GetRight(uint32_t eID, Vector3* out)   {
-
-		CheckValidEntity(eID);
-		*out = GetEntityFromID(eID)->GetTransform()->Right();
-	
-	}
-	static void GetUp(uint32_t eID, Vector3* out)      {
-
-		CheckValidEntity(eID);
-		*out = GetEntityFromID(eID)->GetTransform()->Up();
-	
-	}
+	void SetPosition(int64_t componentPointer, Vector3* value);
+	void SetRotation(int64_t componentPointer, Quaternion* value);
+	void SetScale(int64_t componentPointer, Vector3* value);
 
 	//Camera
-	static float CameraGetFOV(uint32_t eID) {
 
-		CheckValidEntityWithReturn(eID, 0.0f);
+	float CameraGetFOV(int64_t componentPointer);
+	float CameraGetNearPlane(int64_t componentPointer);
+	float CameraGetFarPlane(int64_t componentPointer);
 
-		InternalEntity* entity = GetEntityFromID(eID);
-		return entity->GetComponent<Camera>()->fov;
+	void CameraSetFOV(int64_t componentPointer, float value);
+	void CameraSetNearPlane(int64_t componentPointer, float value);
+	void CameraSetFarPlane(int64_t componentPointer, float value);
 
-	}
-	static float CameraGetNearPlane(uint32_t eID) {
+	//RigidBody
 
-		CheckValidEntityWithReturn(eID, 0.0f);
+	bool RigidBodyGetIsStatic(int64_t componentPointer);
+	bool RigidBodyGetGravity(int64_t componentPointer);
+	float RigidBodyGetMass(int64_t componentPointer);
 
-		InternalEntity* entity = GetEntityFromID(eID);
-		return entity->GetComponent<Camera>()->nearPlane;
+	void RigidBodySetIsStatic(int64_t componentPointer, bool value);
+	void RigidBodySetGravity(int64_t componentPointer, bool value);
+	void RigidBodySetMass(int64_t componentPointer, float value);
 
-	}
-	static float CameraGetFarPlane(uint32_t eID) {
+	void RigidBodyAddForce(int64_t componentPointer, Vector3* force, uint8_t mode);
+	void RigidBodyAddTorque(int64_t componentPointer, Vector3* torque, uint8_t mode);
 
-		CheckValidEntityWithReturn(eID, 0.0f);
+	// Colliders
+	bool ColliderGetTrigger(int64_t componentPointer);
+	void ColliderGetCenter(int64_t componentPointer, Vector3* out);
 
-		InternalEntity* entity = GetEntityFromID(eID);
-		return entity->GetComponent<Camera>()->farPlane;
+	void ColliderSetTrigger(int64_t componentPointer, bool value);
+	void ColliderSetCenter(int64_t componentPointer, Vector3* value);
 
-	}
-	static void CameraSetFOV(uint32_t eID, float value) {
+	void BoxColliderGetSize(int64_t componentPointer, Vector3* out);
+	void BoxColliderSetSize(int64_t componentPointer, Vector3* value);
 
-		CheckValidEntity(eID);
+	float SphereColliderGetRadius(int64_t componentPointer);
+	void SphereColliderSetRadius(int64_t componentPointer, float value);
 
-		InternalEntity* entity = GetEntityFromID(eID);
-		entity->GetComponent<Camera>()->fov = value;
+	float CapsuleColliderGetRadius(int64_t componentPointer);
+	float CapsuleColliderGetHeight(int64_t componentPointer);
+	void CapsuleColliderSetRadius(int64_t componentPointer, float value);
+	void CapsuleColliderSetHeight(int64_t componentPointer, float value);
 
-	}
-	static void CameraSetNearPlane(uint32_t eID, float value) {
+#pragma endregion
 
-		CheckValidEntity(eID);
+	void SetupInternalCalls() {
 
-		InternalEntity* entity = GetEntityFromID(eID);
-		entity->GetComponent<Camera>()->nearPlane = value;
+		//======== Editor ========
 
-	}
-	static void CameraSetFarPlane(uint32_t eID, float value) {
+		mono_add_internal_call("Copper.Editor::Internal_Log", (void*) EditorLog);
+		mono_add_internal_call("Copper.Editor::Internal_LogWarn", (void*) EditorLogWarn);
+		mono_add_internal_call("Copper.Editor::Internal_LogError", (void*) EditorLogError);
 
-		CheckValidEntity(eID);
+		//======== Game ========
 
-		InternalEntity* entity = GetEntityFromID(eID);
-		entity->GetComponent<Camera>()->farPlane = value;
+		mono_add_internal_call("Copper.Game::Internal_GetDeltaTime", (void*) GetDeltaTime);
 
-	}
+		//======== Input ========
 
-	static Vector3 QuaternionEulerAngles(Quaternion* quaternion) {
+		mono_add_internal_call("Copper.Input::Internal_IsKey", (void*) IsKey);
+		mono_add_internal_call("Copper.Input::Internal_IsKeyDown", (void*) IsKeyDown);
+		mono_add_internal_call("Copper.Input::Internal_IsKeyReleased", (void*) IsKeyReleased);
 
-		return quaternion->EulerAngles();
+		mono_add_internal_call("Copper.Input::Internal_GetAxis", (void*) GetAxis);
+
+		mono_add_internal_call("Copper.Input::Internal_SetCursorVisible", (void*) SetCursorVisible);
+		mono_add_internal_call("Copper.Input::Internal_SetCursorLocked", (void*) SetCursorLocked);
+
+		//======== Quaternion ========
+
+		mono_add_internal_call("Copper.Quaternion::Internal_ToEuler", (void*) QuaternionToEulerAngles);
+		mono_add_internal_call("Copper.Quaternion::Internal_FromEuler", (void*) QuaternionFromEulerAngles);
+
+		//======== Entity ========
+
+		mono_add_internal_call("Copper.Entity::Internal_GetEntityName", (void*) GetEntityName);
+		mono_add_internal_call("Copper.Entity::Internal_SetEntityName", (void*) SetEntityName);
+
+		mono_add_internal_call("Copper.Entity::Internal_IsEntityValid", (void*) IsEntityValid);
+
+		mono_add_internal_call("Copper.Entity::Internal_GetEntity", (void*) GetEntity);
+
+		//======== Component ========
+
+		mono_add_internal_call("Copper.Component::Internal_AddComponent", (void*) AddComponent);
+		mono_add_internal_call("Copper.Component::Internal_GetComponent", (void*) GetComponent);
+		mono_add_internal_call("Copper.Component::Internal_HasComponent", (void*) HasComponent);
+
+		mono_add_internal_call("Copper.Component::Internal_SetComponentEID", (void*) SetComponentEID);
+
+		mono_add_internal_call("Copper.Component::Internal_SetComponentPointer", (void*) SetComponentPointer);
+
+		//======== Transform ========
+
+		mono_add_internal_call("Copper.Transform::Internal_GetPosition", (void*) GetPosition);
+		mono_add_internal_call("Copper.Transform::Internal_GetRotation", (void*) GetRotation);
+		mono_add_internal_call("Copper.Transform::Internal_GetScale", (void*) GetScale);
+		mono_add_internal_call("Copper.Transform::Internal_GetForward", (void*) GetForward);
+		mono_add_internal_call("Copper.Transform::Internal_GetRight", (void*) GetRight);
+		mono_add_internal_call("Copper.Transform::Internal_GetUp", (void*) GetUp);
+
+		mono_add_internal_call("Copper.Transform::Internal_SetPosition", (void*) SetPosition);
+		mono_add_internal_call("Copper.Transform::Internal_SetRotation", (void*) SetRotation);
+		mono_add_internal_call("Copper.Transform::Internal_SetScale", (void*) SetScale);
+
+		//======== Camera ========
+
+		mono_add_internal_call("Copper.Camera::Internal_GetFOV", (void*) CameraGetFOV);
+		mono_add_internal_call("Copper.Camera::Internal_GetNearPlane", (void*) CameraGetNearPlane);
+		mono_add_internal_call("Copper.Camera::Internal_GetFarPlane", (void*) CameraGetFarPlane);
+
+		mono_add_internal_call("Copper.Camera::Internal_SetFOV", (void*) CameraSetFOV);
+		mono_add_internal_call("Copper.Camera::Internal_SetNearPlane", (void*) CameraSetNearPlane);
+		mono_add_internal_call("Copper.Camera::Internal_SetFarPlane", (void*) CameraSetFarPlane);
+
+		//======== RigidBody ========
+
+		mono_add_internal_call("Copper.RigidBody::Internal_GetIsStatic", (void*) RigidBodyGetIsStatic);
+		mono_add_internal_call("Copper.RigidBody::Internal_GetGravity", (void*) RigidBodyGetGravity);
+		mono_add_internal_call("Copper.RigidBody::Internal_GetMass", (void*) RigidBodyGetMass);
+
+		mono_add_internal_call("Copper.RigidBody::Internal_SetIsStatic", (void*) RigidBodySetIsStatic);
+		mono_add_internal_call("Copper.RigidBody::Internal_SetGravity", (void*) RigidBodySetGravity);
+		mono_add_internal_call("Copper.RigidBody::Internal_SetMass", (void*) RigidBodySetMass);
+
+		mono_add_internal_call("Copper.RigidBody::Internal_AddForce", (void*) RigidBodyAddForce);
+		mono_add_internal_call("Copper.RigidBody::Internal_AddTorque", (void*) RigidBodyAddTorque);
+
+		//======== Colliders ========
+
+		mono_add_internal_call("Copper.Collider::Internal_GetTrigger", (void*) ColliderGetTrigger);
+		mono_add_internal_call("Copper.Collider::Internal_GetCenter", (void*) ColliderGetCenter);
+
+		mono_add_internal_call("Copper.Collider::Internal_SetTrigger", (void*) ColliderSetTrigger);
+		mono_add_internal_call("Copper.Collider::Internal_SetCenter", (void*) ColliderSetCenter);
+
+		mono_add_internal_call("Copper.BoxCollider::Internal_GetSize", (void*) BoxColliderGetSize);
+		mono_add_internal_call("Copper.BoxCollider::Internal_SetSize", (void*) BoxColliderSetSize);
+
+		mono_add_internal_call("Copper.SphereCollider::Internal_GetRadius", (void*) SphereColliderGetRadius);
+		mono_add_internal_call("Copper.SphereCollider::Internal_SetRadius", (void*) SphereColliderSetRadius);
+
+		mono_add_internal_call("Copper.CapsuleCollider::Internal_GetRadius", (void*) CapsuleColliderGetRadius);
+		mono_add_internal_call("Copper.CapsuleCollider::Internal_GetRadius", (void*) CapsuleColliderGetHeight);
+
+		mono_add_internal_call("Copper.CapsuleCollider::Internal_SetRadius", (void*) SphereColliderSetRadius);
+		mono_add_internal_call("Copper.CapsuleCollider::Internal_SetRadius", (void*) CapsuleColliderSetHeight);
 
 	}
 

@@ -9,6 +9,7 @@
 #include <vector>
 #include <map>
 #include <bitset>
+#include <filesystem>
 
 #include "Engine/Core/Core.h"
 #include "Engine/Core/Log.h"

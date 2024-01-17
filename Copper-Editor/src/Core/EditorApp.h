@@ -16,11 +16,12 @@ namespace Editor {
 
 	void NewScene();
 	void OpenScene();
-	void OpenScene(const Filesystem::Path& path);
+	void OpenScene(const fs::path& path);
 	void SaveScene();
 	void SaveSceneAs();
 
-	Project GetProject();
+	const Project& GetProject();
+	SceneCamera& GetSceneCam();
 	MetaFile::SceneMeta* GetSceneMeta();
 	Copper::UVector2I GetViewportSize();
 

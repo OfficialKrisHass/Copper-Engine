@@ -10,6 +10,8 @@
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_internal.h>
 
+#define MOVE_RECT_HEIGHT 4.0f
+
 using namespace Copper;
 
 namespace Editor {
@@ -20,8 +22,6 @@ namespace Editor {
 
 	void SceneHierarchy::UI() {
 
-		CU_ASSERT(scene, "SceneHierarchy::scene is nullptr... HOW ???!!??!!");
-
 		if (ImGui::BeginPopupContextWindow("##Scene Hierarchy")) {
 
 			PopupWindow();
@@ -29,9 +29,8 @@ namespace Editor {
 
 		}
 
-		for (uint32_t eID : GetSceneMeta()->objectIDs) {
+		for (InternalEntity* entity : EntityView(GetScene())) {
 
-			InternalEntity* entity = GetEntityFromID(eID);
 			if (!entity) continue;
 			if (entity->GetTransform()->Parent()) continue;
 
@@ -39,21 +38,7 @@ namespace Editor {
 
 		}
 
-		ImRect windowRect;
-		windowRect.Min = ImGui::GetWindowPos();
-
-		windowRect.Max.x = windowRect.Min.x + ImGui::GetWindowWidth();
-		windowRect.Max.y = windowRect.Min.y + ImGui::GetWindowHeight();
-		windowRect.Min.y = ImGui::GetItemRectMax().y + 7;
-
-		if (ImGui::BeginDragDropTargetCustom(windowRect, ImGuiID(310320231753))) {
-
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE"))
-				GetEntityFromID(*(uint32_t*) payload->Data)->GetTransform()->SetParent(nullptr);
-
-			ImGui::EndDragDropTarget();
-
-		}
+		RemoveParentTarget();
 
 	}
 
@@ -74,15 +59,14 @@ namespace Editor {
 
 		if (ImGui::BeginDragDropSource()) {
 
-			uint32_t id = entity->ID();
-			ImGui::SetDragDropPayload("SCH_ENTITY_NODE", &id, sizeof(uint32_t), ImGuiCond_Once);
+			ImGui::SetDragDropPayload("SCH_ENTITY_NODE", entity, sizeof(uint32_t), ImGuiCond_Once);
 			ImGui::EndDragDropSource();
 
 		}
 		if (ImGui::BeginDragDropTarget()) {
 
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE"))
-				entity->GetTransform()->AddChild(GetEntityFromID(*(uint32_t*) payload->Data)->GetTransform());
+				entity->GetTransform()->AddChild(((InternalEntity*) payload->Data)->GetTransform());
 
 			ImGui::EndDragDropTarget();
 
@@ -108,7 +92,7 @@ namespace Editor {
 
 		if (opened) {
 
-			for (int i = 0; i < entity->GetTransform()->NumOfChildren(); i++) {
+			for (uint32_t i = 0; i < entity->GetTransform()->NumOfChildren(); i++) {
 
 				DrawEntityNode(entity->GetTransform()->GetChild(i)->GetEntity());
 
@@ -121,10 +105,9 @@ namespace Editor {
 		ImGui::PopID();
 
 	}
-
 	void SceneHierarchy::PopupWindow() {
 
-		if (ImGui::MenuItem("Entity")) {
+		if (ImGui::MenuItem("Entity", 0, false, scene)) {
 
 			selectedEntity = scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one);
 			SetChanges(true);
@@ -135,7 +118,7 @@ namespace Editor {
 
 		if (ImGui::BeginMenu("3D Objects")) {
 
-			if (ImGui::MenuItem("Plane")) {
+			if (ImGui::MenuItem("Plane", 0, false, scene)) {
 
 				selectedEntity = scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Plane");
 				MeshRenderer* renderer = selectedEntity->AddComponent<MeshRenderer>();
@@ -150,7 +133,7 @@ namespace Editor {
 				SetChanges(true);
 
 			}
-			if (ImGui::MenuItem("Cube")) {
+			if (ImGui::MenuItem("Cube", 0, false, scene)) {
 
 				selectedEntity = scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Cube");
 				MeshRenderer* renderer = selectedEntity->AddComponent<MeshRenderer>();
@@ -170,7 +153,7 @@ namespace Editor {
 
 		}
 
-		if (ImGui::MenuItem("Light")) {
+		if (ImGui::MenuItem("Light", 0, false, scene)) {
 
 			selectedEntity = scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Light");
 			Light* l = selectedEntity->AddComponent<Light>();
@@ -178,7 +161,7 @@ namespace Editor {
 			SetChanges(true);
 
 		}
-		if (ImGui::MenuItem("Camera")) {
+		if (ImGui::MenuItem("Camera", 0, false, scene)) {
 
 			selectedEntity = scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Camera");
 			Camera* c = selectedEntity->AddComponent<Camera>();
@@ -186,6 +169,19 @@ namespace Editor {
 			SetChanges(true);
 
 		}
+
+	}
+
+	void SceneHierarchy::RemoveParentTarget() {
+
+		const ImVec2 regionMax = ImGui::GetWindowContentRegionMax();
+		const ImRect windowRect{ { ImGui::GetWindowContentRegionMin().x + 1, ImGui::GetItemRectMax().y + 2 }, { regionMax.x, regionMax.y + 80 } };
+		if (!ImGui::BeginDragDropTargetCustom(windowRect, ImGuiID(310320231753))) return;
+
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE"))
+			((InternalEntity*) payload->Data)->GetTransform()->SetParent(nullptr);
+
+		ImGui::EndDragDropTarget();
 
 	}
 

@@ -5,29 +5,59 @@ using Copper;
 class Player : Component {
 
     public float speed = 1.0f;
-    public float sensitivity;
+    public float sensitivity = 1.0f;
 
-    public Entity camera;
+    public Transform camera;
+    public Entity testEntity;
+
+    RigidBody rb;
+    Vector2 mouseRot;
 
     private void Create() {
+
+        rb = GetComponent<RigidBody>();
 
         Input.SetCursorLocked(true);
         Input.SetCursorVisible(false);
 
+        if (rb == null) {
+
+            Editor.LogError("Player has no RigidBody component!");
+
+        }
+
     }
     private void Update() {
 
-        float moveX = Input.GetAxis("Keys_DA") * speed;
-        float moveZ = Input.GetAxis("Keys_WS") * speed;
+        if (camera == null) {
 
-        float mouseX = Input.GetAxis("Mouse X") * sensitivity;
-        float mouseY = Input.GetAxis("Mouse Y") * sensitivity;
+            Editor.LogError("Camera has not been assigned!");
+            return;
 
-        transform.position += transform.right * moveX + transform.forward * moveZ;
-        camera.transform.position += transform.right * moveX + transform.forward * moveZ;
+        }
 
-        transform.rotation += new Vector3(0.0f, mouseX, 0.0f);
-        camera.transform.rotation += new Vector3(mouseY, mouseX, 0.0f);
+        HandleMovement();
+        HandleMouse();
+
+    }
+
+    private void HandleMovement() {
+
+        float x = Input.GetAxis("Keys_WS") * speed;
+        float y = Input.GetAxis("Keys_DA") * speed;
+
+        Vector3 force = transform.forward * x + transform.right * y;
+
+        rb.AddForce(force * Game.deltaTime * 10000.0f, ForceMode.Force);
+
+    }
+    private void HandleMouse() {
+
+        mouseRot.x -= Input.GetAxis("Mouse X") * sensitivity * Game.deltaTime * 1000.0f;
+        mouseRot.y -= Input.GetAxis("Mouse Y") * sensitivity * Game.deltaTime * 1000.0f;
+
+        transform.rotation = Quaternion.Euler(0.0f, mouseRot.x, 0.0f);
+        camera.rotation = Quaternion.Euler(mouseRot.y, 0.0f, 0.0f);
 
     }
 

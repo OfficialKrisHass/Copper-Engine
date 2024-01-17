@@ -17,6 +17,9 @@ extern "C" {
 
 namespace Copper {
 
+	typedef void (*UpdateFunc)(MonoObject* obj, MonoException** exc);
+	typedef void (*OnCollisionPersistFunc)(MonoObject* obj, MonoObject* other, MonoException** exc);
+
 	class ScriptComponent : public Component {
 
 	public:
@@ -32,17 +35,39 @@ namespace Copper {
 		void InvokeCreate();
 		void InvokeUpdate();
 
+		void InvokeOnCollisionBegin(InternalEntity* other);
+		void InvokeOnCollisionPersist(InternalEntity* other);
+		void InvokeOnCollisionEnd(InternalEntity* other);
+
+		void InvokeOnTriggerEnter(InternalEntity* other);
+		void InvokeOnTriggerLeave(InternalEntity* other);
+
 		void GetFieldValue(const ScriptField& field, void* out);
 		void GetFieldValue(const ScriptField& field, InternalEntity** out);
+		void GetFieldValue(const ScriptField& field, Transform** out);
 
 		void SetFieldValue(const ScriptField& field, void* value);
 		void SetFieldValue(const ScriptField& field, InternalEntity** value);
+		void SetFieldValue(const ScriptField& field, Transform** value);
 
 	private:
 		MonoObject* instance = nullptr;
 
 		MonoMethod* create = nullptr;
-		void (*update) (MonoObject* obj, MonoException** exc) = nullptr;
+		UpdateFunc update = nullptr;
+
+		// Collision Eventss
+
+		MonoMethod* onCollisionBegin = nullptr;
+		OnCollisionPersistFunc onCollisionPersist = nullptr;
+		MonoMethod* onCollisionEnd = nullptr;
+
+		// Trigger Events
+
+		MonoMethod* onTriggerEnter = nullptr;
+		MonoMethod* onTriggerLeave = nullptr;
+
+		void Invalidate();
 
 	};
 

@@ -1,6 +1,9 @@
 [submodule "Copper-Engine/lib/Copper-Math"]
 	path = Copper-Engine/lib/Copper-Math
-	url = https://github.com/OfficialChrisHusky/Copper-Math
+	url = https://github.com/OfficialChrisHusky/Copper-Math.git
 [submodule "Copper-Engine/lib/ImGui/ImGui"]
 	path = Copper-Engine/lib/ImGui/ImGui
 	url = https://github.com/ocornut/imgui.git
+[submodule "Copper-Engine/lib/yaml-cpp"]
+	path = Copper-Engine/lib/yaml-cpp
+	url = https://github.com/OfficialChrisHusky/yaml-cpp.git

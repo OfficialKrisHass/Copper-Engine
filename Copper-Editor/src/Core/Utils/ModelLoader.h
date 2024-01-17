@@ -13,7 +13,7 @@ namespace Editor {
 	public:
 		std::vector<Copper::Mesh> meshes;
 
-		void LoadMesh(const Copper::Filesystem::Path& path);
+		void LoadMesh(const fs::path& path);
 
 	private:
 

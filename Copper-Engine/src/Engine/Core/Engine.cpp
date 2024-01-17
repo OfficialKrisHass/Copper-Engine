@@ -2,6 +2,7 @@
 #include "Engine.h"
 
 #include "Engine/Core/Window.h"
+#include "Engine/Core/Args.h"
 
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Renderer/Buffer.h"
@@ -14,9 +15,11 @@
 
 #include "Engine/Input/AxisManager.h"
 
-#include "Engine/Scripting/ScriptingCore.h"
-
 #include "Engine/Scene/CopperECS.h"
+
+#include "Engine/Physics/PhysicsEngine.h"
+
+#include "Engine/Scripting/ScriptingCore.h"
 
 #include "Engine/Components/Camera.h"
 
@@ -35,7 +38,7 @@ namespace Copper {
 		// Core variables
 
 		EngineState engineState = EngineState::Entry;
-		std::vector<std::string> arguments;
+		const Args* arguments;
 
 		//Rendering
 	
@@ -51,8 +54,11 @@ namespace Copper {
 		// Scene
 
 		Scene scene;
-		float lastFrameTime = 0.0f;
 		bool renderScene = true;
+
+		float lastFrameTime = 0.0f;
+		float deltaTime = 0.0f;
+
 
 		// Engine Events
 
@@ -83,25 +89,18 @@ namespace Copper {
 	void Shutdown();
 
 #pragma region EngineCore
-	void EngineCore::Initialize(int argc, char* argv[]) {
+	void EngineCore::Initialize(const Args& args) {
 
 		// This is the only function that has to do this as this is the only exposed function
 		VERIFY_STATE_INTERNAL(EngineState::Entry, "Initialize the Engine");
 		data.engineState = EngineState::Initialization;
+		data.arguments = &args;
 
-		// TODO: Implement our own argument system
-		for (int i = 0; i < argc; i++) {
-
-			if (Filesystem::Path(argv[i]).Extension() == ".exe") continue;
-
-			data.arguments.push_back(argv[i]);
-
-		}
-
-		Logger::Initialize();
+		// Window & Renderer Initialization
 
 	#ifdef CU_EDITOR
 		data.window = GetEditorWindow();
+		CHECK(data.window, "Editor Window returned nullptr! Check if you have created a window in AppEntryPoint and provided a GetEditorWindow function!");
 		RendererAPI::Initialize();
 		data.fbo = FrameBuffer(UVector2I(1280, 720)); // TODO: Possibly find a solution that doesnt mean we have to have an invalid size for the first few frames
 	#else
@@ -117,10 +116,20 @@ namespace Copper {
 		Renderer::SetShader(Shader("assets/Shaders/vertexDefault.glsl", "assets/Shaders/fragmentDefault.glsl"));
 		data.mainUIContext.Initialize(data.WindowRef(), true);
 
+		// Input
+
 		Input::Init();
 		Input::InitializeAxisManager();
 
+		// Physics
+
+		PhysicsEngine::Initialize();
+
+		// Scripting
+
 		Scripting::Initialize();
+
+		// Finalization
 
 		data.engineState = EngineState::PostInitialization;
 		data.postInitEvent();
@@ -135,7 +144,7 @@ namespace Copper {
 		while (data.engineState == EngineState::Running) {
 
 			float time = data.WindowRef().Time();
-			float deltaTime = time - data.lastFrameTime;
+			data.deltaTime = time - data.lastFrameTime;
 			data.lastFrameTime = time;
 
 			data.WindowRef().Update();
@@ -143,7 +152,7 @@ namespace Copper {
 			data.updateEvent();
 
 			data.fbo.Bind();
-			data.scene.Update(data.renderScene, deltaTime);
+			data.scene.Update(data.renderScene, data.deltaTime);
 			data.fbo.Unbind();
 
 			Renderer::ResizeViewport(data.WindowRef().Size());
@@ -186,8 +195,7 @@ namespace Copper {
 
 	}
 
-	uint32_t EngineCore::GetNumArguments() { return (uint32_t) data.arguments.size(); }
-	const std::string& EngineCore::GetArgument(uint32_t index) { return data.arguments[index]; }
+	const Args* EngineCore::GetArguments() { return data.arguments; }
 #pragma endregion
 
 	bool OnWindowClose(const Event& e) {
@@ -220,6 +228,10 @@ namespace Copper {
 
 	void AddPreShutdownEventFunc(std::function<bool(const Event&)> func) { data.preShutdownEvent += func; }
 	void AddPostShutdownEventFunc(std::function<void()> func) { data.postShutdownEvent += func; }
+
+	// Game
+
+	float DeltaTime() { return data.deltaTime; }
 
 	// Declaration in Window.h
 

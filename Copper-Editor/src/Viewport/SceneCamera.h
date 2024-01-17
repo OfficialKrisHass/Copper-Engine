@@ -10,7 +10,7 @@ namespace Editor {
 
 	public:
 		SceneCamera() = default;
-		SceneCamera(Copper::UVector2I size) : Camera(size) {}
+		SceneCamera(Copper::UVector2I size);
 
 		void Update();
 		

@@ -1,17 +1,32 @@
 #include "cupch.h"
 #include "ScriptingCore.h"
 
-#include "Engine/Utilities/FileUtils.h"
+#include "Engine/Core/Engine.h"
+
+#include "Engine/Scene/CopperECS.h"
+
+#include "Engine/Components/ScriptComponent.h"
 
 #include "Engine/Scripting/MonoUtils.h"
-#include "Engine/Scripting/InternalCalls.cpp"
 
-//#include "Engine/Scene/Registry.h"
+#include "Engine/Utilities/FileUtils.h"
 
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
 
+char domainName[] = "CUScriptRuntime";
+
 namespace Copper::Scripting {
+
+	typedef std::unordered_map<std::string, void*> FieldValueMap;
+	typedef std::unordered_map<ScriptComponent*, FieldValueMap> ScriptValueMap;
+
+	namespace InternalCalls {
+		
+		void SetupInternalCalls();
+		void Initialize();
+	
+	}
 
 	struct ScriptingCoreData {
 
@@ -21,49 +36,50 @@ namespace Copper::Scripting {
 		MonoAssembly* apiAssembly;
 		MonoImage* apiAssemblyImage;
 
-		Filesystem::Path projectPath;
+		fs::path projectPath;
 		MonoAssembly* projectAssembly;
 		MonoImage* projectAssemblyImage;
 
 		MonoClass* entityClass;
+
 		MonoClass* componentClass;
+		MonoClass* transformClass;
+
 		MonoClass* vector2Class;
 		MonoClass* vector3Class;
 
 		std::vector<std::string> scriptComponents;
 		std::unordered_map<std::string, std::vector<ScriptField>> scriptFields;
 
+		std::vector<MonoObject*> entities;
+
 	};
 
 	ScriptingCoreData data;
 
-	void SetupInternalCalls();
+	void LoadScriptingAPI();
 
 	void InitScriptComponents();
 	void InitScriptFields(const std::string& fullName, MonoClass* scriptClass);
+
+	void SaveScriptValues(ScriptValueMap* out);
+	void SaveFieldValues(ScriptComponent* script, FieldValueMap* out);
+
+	void LoadFieldValues(ScriptComponent* script, const FieldValueMap& valueMap);
 
 	void Initialize() {
 
 		VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the Scripting Engine");
 
-		//Initialize Mono
+		// Initialize Mono
+
 		mono_set_assemblies_path("lib/mono/lib");
 		data.root = mono_jit_init("CUJITRuntime");
 
-		//Load the ScriptingAPI
-		data.app = mono_domain_create_appdomain("CUScriptRuntime", nullptr);
-		mono_domain_set(data.app, true);
+		// Setup ScriptingAPI
 
-		data.apiAssembly = MonoUtils::LoadAssembly("assets/ScriptAPI/Copper-ScriptingAPI.dll");
-		data.apiAssemblyImage = mono_assembly_get_image(data.apiAssembly);
-
-		data.componentClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Component");
-		data.vector2Class = mono_class_from_name(data.apiAssemblyImage, "Copper", "Vector2");
-		data.vector3Class = mono_class_from_name(data.apiAssemblyImage, "Copper", "Vector3");
-		data.entityClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Entity");
-
-		//Setup ScriptingAPI
-		SetupInternalCalls();
+		LoadScriptingAPI();
+		InternalCalls::SetupInternalCalls();
 
 	}
 	void Shutdown() {
@@ -73,104 +89,64 @@ namespace Copper::Scripting {
 
 	}
 
-	void LoadProjectAssembly(const Filesystem::Path& path) {
+	void LoadScriptingAPI() {
 
-		data.projectPath = path;
-		data.projectAssembly = MonoUtils::LoadAssembly(path);
-		data.projectAssemblyImage = mono_assembly_get_image(data.projectAssembly);
-
-
-	}
-	void Reload(const Filesystem::Path& path, bool initScriptComponents) {
-
-		if (path != "") data.projectPath = path;
-
-		mono_domain_set(mono_get_root_domain(), false);
-		mono_domain_unload(data.app);
-
-		//Load the Scripting API
-		data.app = mono_domain_create_appdomain("CUScriptRuntime", nullptr);
+		data.app = mono_domain_create_appdomain(domainName, nullptr);
 		mono_domain_set(data.app, true);
 
 		data.apiAssembly = MonoUtils::LoadAssembly("assets/ScriptAPI/Copper-ScriptingAPI.dll");
 		data.apiAssemblyImage = mono_assembly_get_image(data.apiAssembly);
 
-		data.componentClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Component");
 		data.vector2Class = mono_class_from_name(data.apiAssemblyImage, "Copper", "Vector2");
 		data.vector3Class = mono_class_from_name(data.apiAssemblyImage, "Copper", "Vector3");
+
 		data.entityClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Entity");
 
-		//Load the Project Assembly
-		LoadProjectAssembly(data.projectPath);
+		data.componentClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Component");
+		data.transformClass = mono_class_from_name(data.apiAssemblyImage, "Copper", "Transform");
+
+	}
+	bool Load(const fs::path& path) {
+
+		data.projectPath = path;
+
+		// Load the assemblies
+		
+		LoadScriptingAPI();
+
+		data.projectAssembly = MonoUtils::LoadAssembly(path);
+		if (!data.projectAssembly)
+			return false;
+
+		data.projectAssemblyImage = mono_assembly_get_image(data.projectAssembly);
+
+		// Finalize
 
 		InitScriptComponents();
 		InternalCalls::Initialize();
 
-		if (!initScriptComponents) return;
-		Scene* test = GetScene();
-		for (Component* component : ComponentView<ScriptComponent>(GetScene())) {
-
-			ScriptComponent* script = (ScriptComponent*) component;
-			script->Init(script->name);
-
-		}
+		return true;
 
 	}
+	bool Reload() {
 
-	void SetupInternalCalls() {
+		ScriptValueMap savedValues;
+		SaveScriptValues(&savedValues);
+
+		mono_domain_set(mono_get_root_domain(), false);
+		mono_domain_unload(data.app);
+
+		Load(data.projectPath);
 		
-		//Logging
-		mono_add_internal_call("Copper.InternalCalls::Log", (void*) InternalCalls::EditorLog);
-		mono_add_internal_call("Copper.InternalCalls::LogWarn", (void*) InternalCalls::EditorLogWarn);
-		mono_add_internal_call("Copper.InternalCalls::LogError", (void*) InternalCalls::EditorLogError);
+		for (ScriptComponent* script : ComponentView<ScriptComponent>(GetScene())) {
 
-		//Input
-		mono_add_internal_call("Copper.InternalCalls::IsKey", (void*) InternalCalls::IsKey);
-		mono_add_internal_call("Copper.InternalCalls::IsKeyDown", (void*) InternalCalls::IsKeyDown);
-		mono_add_internal_call("Copper.InternalCalls::IsKeyReleased", (void*) InternalCalls::IsKeyReleased);
+			script->Init(script->name);
 
-		mono_add_internal_call("Copper.InternalCalls::GetAxis", (void*) InternalCalls::GetAxis);
+			if (savedValues.find(script) == savedValues.end()) continue;
+			LoadFieldValues(script, savedValues[script]);
 
-		mono_add_internal_call("Copper.InternalCalls::SetCursorVisible", (void*) InternalCalls::SetCursorVisible);
-		mono_add_internal_call("Copper.InternalCalls::SetCursorLocked", (void*) InternalCalls::SetCursorLocked);
-
-		//Object
-		mono_add_internal_call("Copper.InternalCalls::GetEntityName", (void*) InternalCalls::GetEntityName);
-		mono_add_internal_call("Copper.InternalCalls::SetEntityName", (void*) InternalCalls::SetEntityName);
-
-		mono_add_internal_call("Copper.InternalCalls::IsEntityValid", (void*) InternalCalls::IsEntityValid);
-
-		mono_add_internal_call("Copper.InternalCalls::GetEntity", (void*) InternalCalls::GetEntity);
-
-		//Components
-		mono_add_internal_call("Copper.InternalCalls::AddComponent", (void*) InternalCalls::AddComponent);
-		mono_add_internal_call("Copper.InternalCalls::GetComponent", (void*) InternalCalls::GetComponent);
-		mono_add_internal_call("Copper.InternalCalls::HasComponent", (void*) InternalCalls::HasComponent);
-
-		mono_add_internal_call("Copper.InternalCalls::SetComponentEID", (void*) InternalCalls::SetComponentObjID);
-
-		//Transform
-		mono_add_internal_call("Copper.InternalCalls::GetPosition", (void*) InternalCalls::GetPosition);
-		mono_add_internal_call("Copper.InternalCalls::GetRotation", (void*) InternalCalls::GetRotation);
-		mono_add_internal_call("Copper.InternalCalls::GetScale", (void*) InternalCalls::GetScale);
-		mono_add_internal_call("Copper.InternalCalls::SetPosition", (void*) InternalCalls::SetPosition);
-		mono_add_internal_call("Copper.InternalCalls::SetRotation", (void*) InternalCalls::SetRotation);
-		mono_add_internal_call("Copper.InternalCalls::SetScale", (void*) InternalCalls::SetScale);
-
-		mono_add_internal_call("Copper.InternalCalls::GetForward", (void*) InternalCalls::GetForward);
-		mono_add_internal_call("Copper.InternalCalls::GetRight", (void*) InternalCalls::GetRight);
-		mono_add_internal_call("Copper.InternalCalls::GetUp",    (void*) InternalCalls::GetUp);
-
-		//Camera
-		mono_add_internal_call("Copper.InternalCalls::CameraGetFOV", (void*) InternalCalls::CameraGetFOV);
-		mono_add_internal_call("Copper.InternalCalls::CameraGetNearPlane", (void*) InternalCalls::CameraGetNearPlane);
-		mono_add_internal_call("Copper.InternalCalls::CameraGetFarPlane", (void*) InternalCalls::CameraGetFarPlane);
-		mono_add_internal_call("Copper.InternalCalls::CameraSetFOV", (void*) InternalCalls::CameraSetFOV);
-		mono_add_internal_call("Copper.InternalCalls::CameraSetNearPlane", (void*) InternalCalls::CameraSetNearPlane);
-		mono_add_internal_call("Copper.InternalCalls::CameraSetFarPlane", (void*) InternalCalls::CameraSetFarPlane);
-
-		//Quaternion
-		mono_add_internal_call("Copper.InternalCalls::QuaternionEulerAngles", (void*) InternalCalls::QuaternionEulerAngles);
+		}
+		return true;
 
 	}
 
@@ -178,6 +154,7 @@ namespace Copper::Scripting {
 
 		data.scriptComponents.clear();
 		data.scriptFields.clear();
+		data.entities.clear();
 
 		const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(data.projectAssemblyImage, MONO_TABLE_TYPEDEF);
 		int32_t numOfTypes = mono_table_info_get_rows(typeDefinitionsTable);
@@ -226,6 +203,60 @@ namespace Copper::Scripting {
 
 	}
 
+	void SaveScriptValues(ScriptValueMap* out) {
+
+		for (ScriptComponent* script : ComponentView<ScriptComponent>(GetScene())) {
+
+			FieldValueMap* valueMap = &(*out)[script];
+			SaveFieldValues(script, valueMap);
+
+		}
+
+	}
+	void SaveFieldValues(ScriptComponent* script, FieldValueMap* out) {
+
+		typedef ScriptField::Type Type;
+
+		std::vector<ScriptField> fields = data.scriptFields[script->name];
+		for (const ScriptField& field : fields) {
+
+			void* tmp = new char[FieldSize(field.type)];
+			(*out)[field.name] = tmp;
+
+			if (field.type == Type::Entity)
+				script->GetFieldValue(field, (InternalEntity**) tmp);
+			else if (field.type == Type::Transform)
+				script->GetFieldValue(field, (Transform**) tmp);
+			else
+				script->GetFieldValue(field, tmp);
+
+		}
+
+	}
+
+	void LoadFieldValues(ScriptComponent* script, const FieldValueMap& valueMap) {
+
+		typedef ScriptField::Type Type;
+
+		std::vector<ScriptField> fields = data.scriptFields[script->name];
+		for (const ScriptField& field : fields) {
+
+			if (valueMap.find(field.name) == valueMap.end()) continue;
+
+			void* tmp = valueMap.at(field.name);
+			if (field.type == Type::Entity)
+				script->SetFieldValue(field, (InternalEntity**) tmp);
+			else if (field.type == Type::Transform)
+				script->SetFieldValue(field, (Transform**) tmp);
+			else
+				script->SetFieldValue(field, tmp);
+
+			delete tmp;
+
+		}
+
+	}
+
 	MonoObject* AddScriptComponent(uint32_t eID, const std::string& name) {
 
 		std::string scriptName = name;
@@ -236,8 +267,6 @@ namespace Copper::Scripting {
 
 		MonoObject* instance = mono_object_new(data.app, script);
 		if (!instance) { LogError("Failed to Instantiate {} C# class", name); return nullptr; }
-
-		mono_runtime_object_init(instance);
 
 		MonoMethod* componentConstructor = mono_class_get_method_from_name(data.componentClass, ".ctor", 1);
 		if (!componentConstructor) { LogError("Failed to get the Component Constructor!"); return nullptr; }
@@ -250,6 +279,38 @@ namespace Copper::Scripting {
 
 	}
 
+	MonoObject* GetScriptEntity(uint32_t eID) {
+
+		if (eID == INVALID_ENTITY_ID) return nullptr;
+
+		if (data.entities.size() < eID + 1) {
+
+			data.entities.resize(eID + 1, nullptr);
+
+		}
+		if (!data.entities[eID]) {
+
+			MonoObject* entity = mono_object_new(data.app, data.entityClass);
+			if (!entity) { LogError("Failed to Create C# Entity, ID: {}", eID); return nullptr; }
+
+			MonoMethod* constructor = mono_class_get_method_from_name(data.entityClass, ".ctor", 1);
+			if (!constructor) { LogError("Failed to Get the Entity Constructor Method, ID: {}", eID); return nullptr; }
+
+			void* param = &eID;
+			MonoObject* exc = nullptr;
+			mono_runtime_invoke(constructor, entity, &param, &exc);
+
+			if (exc)
+				Scripting::MonoUtils::PrintExceptionDetails(exc);
+
+			data.entities[eID] = entity;
+
+		}
+
+		return data.entities[eID];
+
+	}
+
 	std::vector<std::string> GetScriptComponents() { return data.scriptComponents; }
 	std::vector<ScriptField> GetScriptFields(const std::string& scriptName) { return data.scriptFields[scriptName]; }
 
@@ -257,6 +318,8 @@ namespace Copper::Scripting {
 	MonoClass* GetVector3MonoClass() { return data.vector3Class; }
 
 	MonoClass* GetEntityMonoClass() { return data.entityClass; }
+
+	MonoClass* GetTransformMonoClass() { return data.transformClass; }
 
 	MonoDomain* GetRootDomain() { return data.root; }
 	MonoDomain* GetAppDomain() { return data.app; }

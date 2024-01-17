@@ -1,5 +1,8 @@
 #include "EditorApp.h"
 
+#include "Engine/Core/Args.h"
+#include "Engine/Core/Core.h"
+
 #include "Engine/Utilities/Math.h"
 
 #include "Engine/Scripting/ScriptingCore.h"
@@ -16,17 +19,20 @@
 
 #include "Projects/Project.h"
 #include "Projects/ProjectTemplate.h"
+#include "Projects/ProjectChecker.h"
 
 #include "Panels/SceneHierarchy.h"
 #include "Panels/Properties.h"
 #include "Panels/FileBrowser.h"
 #include "Panels/Console.h"
+#include "Panels/ThemeEditor.h"
 
 #include "Viewport/SceneCamera.h"
 
 #include <GLM/gtc/type_ptr.hpp>
 
 #include <ImGui/imgui.h>
+#include <ImGui/imgui_internal.h>
 #include <ImGuizmo/ImGuizmo.h>
 
 #include <yaml-cpp/yaml.h>
@@ -41,6 +47,7 @@ namespace Editor {
 
 		// Core Data
 
+		const Args* arguments;
 		EditorState state;
 		Window window;
 		std::string title;
@@ -63,6 +70,8 @@ namespace Editor {
 		FrameBuffer viewportFBO;
 		bool canLookViewport;
 
+		SceneCamera sceneCam;
+
 		// Game Panel
 
 		UVector2I gamePanelSize;
@@ -79,6 +88,10 @@ namespace Editor {
 		Properties properties;
 		FileBrowser fileBrowser;
 		Console console;
+		ThemeEditor themeEditor;
+
+		// Theme Editor
+		bool themeEditorOpen = false;
 
 		// Scripting
 
@@ -94,7 +107,7 @@ namespace Editor {
 	void Shutdown();
 
 	void LoadEditorData();
-	void SaveEditorData();
+	void SaveEditorData(bool saveProject = true);
 
 	void RenderDockspace();
 	void RenderGamePanel();
@@ -103,10 +116,10 @@ namespace Editor {
 	void RenderMenu();
 
 	void NewProject();
-	void OpenProject(const Filesystem::Path& path);
+	void OpenProject(const fs::path& path);
 	void OpenProject();
 
-	void FileChangedCallback(const Filesystem::Path& path, const ProjectFileWatcher::FileChangeType& changeType);
+	void FileChangedCallback(const fs::path& path, const ProjectFileWatcher::FileChangeType& changeType);
 	void CopyScriptingAPI();
 
 	void StartEditorRuntime();
@@ -118,6 +131,10 @@ namespace Editor {
 
 	bool OnEntityCreated(const Event& e);
 	bool OnEntityRemoved(const Event& e);
+
+#ifdef CU_LINUX
+	void RunPremake();
+#endif
 
 	void Initialize() {
 
@@ -141,13 +158,21 @@ namespace Editor {
 		data.properties = Properties();
 		data.fileBrowser = FileBrowser("");
 		data.console = Console();
+		data.themeEditor = ThemeEditor();
+
+		data.sceneCam = SceneCamera(data.viewportSize);
 
 		data.properties.SetSelectedObject(data.sceneHierarchy.GetSelectedEntity());
-
-		ProjectFileWatcher::AddFilter("cs");
-		ProjectFileWatcher::AddFileChangeCallback(FileChangedCallback);
 		
+		ProjectFileWatcher::AddFileChangeCallback(FileChangedCallback);
+
 		LoadEditorData();
+
+		data.themeEditor.LoadTheme("assets/Themes/Default.cutheme");
+
+	#ifdef CU_LINUX
+		RunPremake();
+	#endif
 
 	}
 	void Shutdown() {
@@ -156,7 +181,7 @@ namespace Editor {
 
 	}
 
-	void SaveEditorData() {
+	void SaveEditorData(bool saveProject) {
 
 		YAML::Emitter out;
 
@@ -169,20 +194,44 @@ namespace Editor {
 		std::ofstream file("assets/EditorData.cu");
 		file << out.c_str();
 
-		data.project.Save();
+		if (saveProject && data.project) data.project.Save();
 
 	}
 	void LoadEditorData() {
 
+		if (!fs::exists("assets/EditorData.cu")) {
+
+			LogWarn("EditorData.cu is missing, generating a default one");
+
+			data.project.path = "";
+			SaveEditorData(false);
+
+		}
+
 		YAML::Node main;
-		try { main = YAML::LoadFile("assets/EditorData.cu"); } catch (YAML::ParserException e) {
+		try { main = YAML::LoadFile("assets/EditorData.cu"); } catch (YAML::Exception e) {
 
 			LogError("Failed to Read The Editor Data save file\n    {1}", e.what());
 			return;
 
 		}
 
-		OpenProject(main["Last Project"].as<std::string>());
+		if (data.arguments->Count() > 1) {
+
+			OpenProject(data.arguments->GetArg(0));
+			return;
+
+		}
+		
+		std::string path = main["Last Project"].as<std::string>();
+		if (!std::filesystem::exists(path)) {
+
+			OpenProject();
+			return;
+
+		}
+
+		OpenProject(path);
 
 	}
 
@@ -196,6 +245,7 @@ namespace Editor {
 		data.fileBrowser.UIRender();
 		data.properties.UIRender();
 		data.sceneHierarchy.UIRender();
+		if (data.themeEditorOpen) data.themeEditor.UIRender();
 		RenderGamePanel();
 		RenderViewport();
 
@@ -222,8 +272,8 @@ namespace Editor {
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 
-			window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-			window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+			window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
+							ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
 		}
 
@@ -269,7 +319,7 @@ namespace Editor {
 			return;
 
 		}
-		if (!data.scene->cam) {
+		if (!data.project || !data.scene->cam) {
 
 			ImGui::Text("No Camera Available!");
 
@@ -287,7 +337,7 @@ namespace Editor {
 
 		ImGui::Image(reinterpret_cast<void*>((uint64_t) GetMainFBOTexture()), windowSize, ImVec2 {0, 1}, ImVec2 {1, 0});
 
-		if (ImGui::IsItemClicked() && IsSceneRuntimeRunning()) {
+		if (ImGui::IsItemClicked() && !AcceptInputDuringRuntime() && IsSceneRuntimeRunning()) {
 			
 			Input::SetCursorLocked(data.wasCursorLocked);
 			Input::SetCursorVisible(data.wasCursorVisible);
@@ -312,8 +362,6 @@ namespace Editor {
 
 		}
 
-		ImGui::GetWindowPos();
-
 		//TODO: Either Change ImGui To use UVector2I or edit Copper Code to use ImVec2
 		//      so that we don't have to allocate memory for the UVector2I
 		ImVec2 windowSize = ImGui::GetContentRegionAvail();
@@ -330,7 +378,7 @@ namespace Editor {
 			//We don't need to Call SetWindowSize because if the Viewport size is changed
 			//it only affects the Viewport, not the Actualy Game Engine and the Main Game Panel
 			data.viewportFBO.Resize(data.viewportSize);
-			data.project.sceneCam.Resize(data.viewportSize);
+			data.sceneCam.Resize(data.viewportSize);
 
 		}
 
@@ -338,8 +386,8 @@ namespace Editor {
 		data.viewportFBO.Bind();
 		Renderer::ClearColor(0.18f, 0.18f, 0.18f);
 
-		data.project.sceneCam.Update();
-		data.scene->Render(&data.project.sceneCam);
+		data.sceneCam.Update();
+		if (data.scene) data.scene->Render(&data.sceneCam);
 
 		//After we are done rendering we are safe to unbind the FBO unless we want to modify it any way
 		data.viewportFBO.Unbind();
@@ -359,8 +407,8 @@ namespace Editor {
 			float wHeight = (float) ImGui::GetWindowHeight();
 			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, wWidth, wHeight);
 
-			Matrix4 camProjection = data.project.sceneCam.CreateProjectionMatrix();
-			Matrix4 camView = data.project.sceneCam.CreateViewMatrix();
+			Matrix4 camProjection = data.sceneCam.CreateProjectionMatrix();
+			Matrix4 camView = data.sceneCam.CreateViewMatrix();
 			glm::mat4 transform = selectedObj->GetTransform()->CreateMatrix();
 
 			// Snapping
@@ -395,7 +443,7 @@ namespace Editor {
 		}
 
 		data.canLookViewport = ImGui::IsItemHovered();
-		data.project.sceneCam.SetCanLook(data.canLookViewport);
+		data.sceneCam.SetCanLook(data.canLookViewport);
 		
 		ImGui::End();
 		ImGui::PopStyleVar();
@@ -419,11 +467,11 @@ namespace Editor {
 
 		if (data.state == Edit) {
 
-			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t) data.playIcon.GetID()), buttonSize, {0, 1}, {1, 0})) StartEditorRuntime();
+			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t) data.playIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project) StartEditorRuntime();
 
 		} else if (data.state == Play) {
 
-			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t) data.stopIcon.GetID()), buttonSize, {0, 1}, {1, 0})) StopEditorRuntime();
+			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t) data.stopIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project) StopEditorRuntime();
 
 		}
 
@@ -440,19 +488,19 @@ namespace Editor {
 
 				if (ImGui::MenuItem("New Project")) NewProject();
 				if (ImGui::MenuItem("Open Project")) OpenProject();
-				if (ImGui::MenuItem("Save Project", "Ctrl+Shift+S")) { data.project.Save(); SaveEditorData(); SaveScene(); }
+				if (ImGui::MenuItem("Save Project", "Ctrl+Shift+S", false, data.project)) { data.project.Save(); SaveEditorData(); SaveScene(); }
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem("Create Template")) CreateTemplateFromProject(data.project);
+				if (ImGui::MenuItem("Create Template", 0, false, data.project)) CreateTemplateFromProject(data.project);
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem("Build Solution", "Ctrl+B")) data.project.BuildSolution();
+				if (ImGui::MenuItem("Build Solution", "Ctrl+B", false, data.project)) data.project.BuildSolution();
 				
 				ImGui::Separator();
 
-				if (ImGui::MenuItem("Copy Copper Scripting API")) CopyScriptingAPI();
+				if (ImGui::MenuItem("Copy Copper Scripting API", 0, false, data.project)) CopyScriptingAPI();
 
 				ImGui::EndMenu();
 
@@ -460,19 +508,43 @@ namespace Editor {
 
 			if(ImGui::BeginMenu("File")) {
 
-				if(ImGui::MenuItem("New Scene"))				NewScene();
-				if(ImGui::MenuItem("Open Scene"))				OpenScene();
-				if(ImGui::MenuItem("Save Scene", "Ctr+S"))		SaveScene();
-				if(ImGui::MenuItem("Save Ass", "Ctrl+Alt+S"))	SaveSceneAs();
+				if(ImGui::MenuItem("New Scene", 0, false, data.project))				NewScene();
+				if(ImGui::MenuItem("Open Scene", 0, false, data.project))				OpenScene();
+				if(ImGui::MenuItem("Save Scene", "Ctr+S", false, data.project))		SaveScene();
+				if(ImGui::MenuItem("Save Ass", "Ctrl+Alt+S", false, data.project))	SaveSceneAs();
 
 				ImGui::EndMenu();
 				
 			}
 
+			if (ImGui::BeginMenu("Theme")) {
+
+				if (ImGui::MenuItem("Open Theme Editor"))
+					data.themeEditorOpen = true;
+
+				if (ImGui::MenuItem("Save Theme", 0, false)) {
+
+					fs::path path = Utilities::SaveDialog("Save Theme", { "Copper Editor Theme Files (.cutheme)", "*.cutheme" }, "assets\\Themes");
+					if (!path.empty())
+						data.themeEditor.SaveTheme(path);
+
+				}
+				if (ImGui::MenuItem("Load Theme", 0, false)) {
+
+					fs::path path = Utilities::OpenDialog("Load Theme", { "Copper Editor Theme Files (.cutheme)", "*.cutheme" }, "assets/Themes");
+					if (!path.empty())
+						data.themeEditor.LoadTheme(path);
+
+				}
+
+				ImGui::EndMenu();
+
+			}
+
 			if(ImGui::BeginMenu("Camera")) {
 
-				if (ImGui::DragFloat("Speed", &data.project.sceneCam.speed, 0.01f, 0.001f, 50.0f, "%.4f")) SetChanges(true);
-				if (ImGui::DragFloat("Sensitivity", &data.project.sceneCam.sensitivity, 0.1f, 1.0f, 1000.0f)) SetChanges(true);
+				if (ImGui::DragFloat("Speed", &data.sceneCam.speed, 0.01f, 0.001f, 50.0f, "%.4f")) SetChanges(true);
+				if (ImGui::DragFloat("Sensitivity", &data.sceneCam.sensitivity, 0.1f, 1.0f, 1000.0f)) SetChanges(true);
 
 				ImGui::EndMenu();
 				
@@ -491,8 +563,6 @@ namespace Editor {
 		SaveScene();
 		data.scene->StartRuntime();
 
-		Input::SetCursorLocked(true);
-		Input::SetCursorVisible(false);
 		SetAcceptInputDuringRuntime(true);
 
 	}
@@ -502,7 +572,7 @@ namespace Editor {
 			Input::SetCursorLocked(false);
 
 		data.state = Edit;
-		Filesystem::Path savedPath = data.scene->path;
+		fs::path savedPath = data.scene->path;
 		Entity savedSelectedEntity = *data.sceneHierarchy.GetSelectedEntity();
 
 		data.scene = GetScene();
@@ -517,9 +587,14 @@ namespace Editor {
 
 	}
 
-	void FileChangedCallback(const Filesystem::Path& path, const ProjectFileWatcher::FileChangeType& changeType) {
+	void FileChangedCallback(const fs::path& path, const ProjectFileWatcher::FileChangeType& changeType) {
 
 		data.scriptChanges = true;
+
+	#ifdef CU_LINUX
+		if (changeType == ProjectFileWatcher::FileChangeType::Created || changeType == ProjectFileWatcher::FileChangeType::Deleted)
+			RunPremake();
+	#endif
 
 	}
 
@@ -527,17 +602,20 @@ namespace Editor {
 
 		//Open the Folder Dialog
 		//TODO : Either make our own Folder Open Dialog or Start using the Windows new System
-		//TODO : Fixed... well for linux
-		Filesystem::Path path = Utilities::FolderOpenDialog((!data.project.path.Empty()) ? data.project.path.ParentPath() : ROOT_DIR);
-		if (path.Empty()) { LogWarn("Path is Invalid or Empty"); return; }
+		//TODO #2 : Fixed... well for linux
+		fs::path path = Utilities::FolderOpenDialog("New Project", data.project ? data.project.path.parent_path() : ROOT_DIR);
+		if (path.empty()) { LogWarn("Path is Invalid or Empty"); return; }
 
 		//Create the Project
-		data.project = Project(path.File().String(), path);
+		data.project = Project(path.filename().string(), path);
 		FileBrowser::SetRelativeDir("");
 
-		CreateProjectFromTemplate("assets/Templates/DevProject", data.project);
+		CreateProjectFromTemplate("assets/Templates/LinuxTesting", data.project);
 
-		//Setup the FileBrowser
+	#ifdef CU_LINUX
+		RunPremake();
+	#endif
+		
 		data.project.BuildSolution(true);
 
 		OpenScene(data.project.assetsPath / data.project.lastOpenedScene);
@@ -547,11 +625,20 @@ namespace Editor {
 		Input::SetWindowTitle(data.title);
 
 	}
-	void OpenProject(const Filesystem::Path& path) {
+	void OpenProject(const fs::path& path) {
 		
-		data.project.Load(path);
+		try { data.project.Load(path); }
+		catch (YAML::Exception e) { LogError("Something went wrong trying to open the Project file.\n    {}", e.what()); }
+
 		data.scene = GetScene();
 		FileBrowser::SetRelativeDir("");
+
+		if (uint16_t issueFlags = ProjectChecker::CheckProject(data.project)) {
+
+			if (Input::WarningPopup("Corrupted Project", "This project is missing some of the core folders and/or files that are required by the Editor to function properly, would you like to attempt to fix the Project ?") == Input::PopupResult::Yes)
+				ProjectChecker::FixProject(data.project, issueFlags);
+
+		}
 
 		ProjectFileWatcher::Stop();
 		ProjectFileWatcher::SetDirectory(data.project.assetsPath);
@@ -561,15 +648,34 @@ namespace Editor {
 		data.title = "Copper Editor - " + data.project.name + ": ";
 		Input::SetWindowTitle(data.title);
 
-		Scripting::Reload(data.project.path / "Binaries" / data.project.name + ".dll", false);
+		// In a completely new project, or a cleaned project, this should fail as the Assembly does not exist
+		// so it will build the project and attempt to load it again, if that fails, it tries again 9 more times
+		// and then exit the application
+
+		bool reloadSuccess = Scripting::Load(data.project.path / "Binaries" / (data.project.name + ".dll"));
+		int i = 0;
+		while (!reloadSuccess && i < 10) {
+
+			LogError("Failed to Load the Project Assembly, attempt #{}", i);
+
+			reloadSuccess = data.project.BuildSolution();
+			i++;
+
+		}
+		if (!reloadSuccess) {
+
+			Input::ErrorPopup("Build failed", "Failed to build the project multiple times, Look into the log to see more information. Exiting application now");
+			exit(-1);
+
+		}
 
 		OpenScene(data.project.lastOpenedScene);
 
 	}
 	void OpenProject() {
 
-		Filesystem::Path path = Utilities::FolderOpenDialog((!data.project.path.Empty()) ? data.project.path.ParentPath() : ROOT_DIR);
-		if (path.Empty()) { LogWarn("path is Invalid or empty"); return; }
+		fs::path path = Utilities::FolderOpenDialog("Open Project", data.project ? data.project.path.parent_path() : ROOT_DIR);
+		if (path.empty()) { LogWarn("path is Invalid or empty"); return; }
 
 		OpenProject(path);
 
@@ -589,18 +695,18 @@ namespace Editor {
 	void NewScene() {
 
 		*data.scene = Scene();
-		data.sceneMeta.objectIDs.clear();
 
 		data.sceneHierarchy.SetScene(data.scene);
 		
 	}
-	void OpenScene(const Filesystem::Path& path) {
+	void OpenScene(const fs::path& path) {
 
 		if(data.changes) {
 
-			switch(Input::WarningPopup("Unsaved Changes", "There are Unsaved Changes, if you open another scene you will lose these Changes.")) {
+			switch(Input::WarningPopup("Unsaved Changes", "There are unsaved changes made to this scene, do you wish to save before opening a new scene ?")) {
 
-			case Input::PopupResult::Ok: break;
+			case Input::PopupResult::Yes: SaveScene(); break;
+			case Input::PopupResult::No: break;
 			case Input::PopupResult::Cancel: return;
 				
 			}
@@ -617,32 +723,32 @@ namespace Editor {
 		data.title += data.scene->name;
 		Input::SetWindowTitle(data.title);
 
-		data.project.lastOpenedScene = path.RelativeTo(data.project.assetsPath);
+		data.project.lastOpenedScene = fs::relative(path, data.project.assetsPath);
 		
 	}
 	void OpenScene() {
 
-		Filesystem::Path path = Utilities::OpenDialog("Copper Scene (*.copper)\n*.copper", data.project.assetsPath);
+		fs::path result = Utilities::OpenDialog("Open Scene", { "Copper Scene Files (.copper)", "*.copper" }, data.project.assetsPath);
 
-		if(path.Empty()) { LogWarn("The Path Specified is empty or is not a Copper Scene File\n {}", path); return; }
+		if(result.empty()) { LogWarn("The Path Specified is empty or is not a Copper Scene File\n {}", result); return; }
 
-		Filesystem::Path relativeToProjectAssets = path.RelativeTo(data.project.assetsPath);
-		if (relativeToProjectAssets.Empty()) {
+		fs::path relativeToProjectAssets = fs::relative(result, data.project.assetsPath);
+		if (relativeToProjectAssets.empty()) {
 
 			Input::ErrorPopup("Invalid Scene Path", "The scene you have tried to Open is outside of the Assets folder of this Project.");
 			return;
 
 		}
 
-		OpenScene(path);
+		OpenScene(result);
 		
 	}
 	void SaveScene() {
 		
-		if(!data.scene->path.Empty()) {
+		if(!data.scene->path.empty()) {
 
 			data.scene->Serialize(data.scene->path);
-			data.sceneMeta.Serialize(data.scene);
+			data.sceneMeta.Serialize();
 
 			data.changes = false;
 			data.title = "Copper Editor - TestProject: ";
@@ -658,27 +764,25 @@ namespace Editor {
 	}
 	void SaveSceneAs() {
 
-		Filesystem::Path path = Utilities::SaveDialog("Copper Scene (*.copper)\n*.copper", data.project.assetsPath);
+		fs::path path = Utilities::SaveDialog("Save Scene As", { "Copper Scene Files (.copper)", "*.copper" }, data.project.assetsPath);
 
-		if(!path.Empty()) {
+		if (path.empty()) return;
 
-			Filesystem::Path relativeToProjectAssets = path.RelativeTo(data.project.assetsPath);
-			if (relativeToProjectAssets.Empty()) {
+		fs::path relativeToProjectAssets = fs::relative(path, data.project.assetsPath);
+		if (relativeToProjectAssets.empty()) {
 
-				Input::ErrorPopup("Invalid Scene", "The Place you want to save this scene is outside of this Project or starts with '..'");
-				return;
+			Input::ErrorPopup("Invalid Scene", "The Place you want to save this scene is outside of this Project or starts with '..'");
+			return;
 
-			}
-
-			data.scene->Serialize(path);
-			data.sceneMeta.Serialize(data.scene);
-
-			data.changes = false;
-			data.title = "Copper Editor - TestProject: ";
-			data.title += data.scene->name;
-			Input::SetWindowTitle(data.title);
-			
 		}
+
+		data.scene->Serialize(path);
+		data.sceneMeta.Serialize();
+
+		data.changes = false;
+		data.title = "Copper Editor - TestProject: ";
+		data.title += data.scene->name;
+		Input::SetWindowTitle(data.title);
 		
 	}
 
@@ -770,26 +874,47 @@ namespace Editor {
 	}
 	bool OnWindowClose(const Event& e) {
 
-		//Input::WarningPopup("Test Error", "With a random ass Description uwu");
-
 		if (!data.changes) return true;
 
-		switch (Input::WarningPopup("Unsaved Changes", "There are Unsaved Changes, if you close the Editor your changes will be lost. Are you Sure you want to Close the Editor ?")) {
+		Input::PopupResult test = Input::WarningPopup("Unsaved Changes", "There are Unsaved Changes in the project, do you wish to save the Project before exiting ?");
 
-			case Input::PopupResult::Ok: return true;
-			case Input::PopupResult::Cancel: return false;
+		switch (test) {
+
+			case Input::PopupResult::Yes: {
+				
+				SaveScene();
+				SaveEditorData();
+				
+				return true;
+				break;
+			
+			}
+			case Input::PopupResult::No: {
+				
+				return true;
+				break;
+			
+			}
+			case Input::PopupResult::Cancel: {
+
+				return false;
+				break;
+
+			}
+			default: {
+
+				return false;
+				break;
+
+			}
 
 		}
-
-		return true;
 
 	}
 
 	bool OnEntityCreated(const Event& e) {
 
 		EntityEvent* event = (EntityEvent*) &e;
-
-		data.sceneMeta.objectIDs.push_back(event->entity.ID());
 
 		return true;
 
@@ -798,19 +923,12 @@ namespace Editor {
 
 		EntityEvent* event = (EntityEvent*) &e;
 
-		for (int i = 0; i < data.sceneMeta.objectIDs.size(); i++) {
-
-			if (data.sceneMeta.objectIDs[i] != event->entity.ID()) continue;
-			data.sceneMeta.objectIDs.erase(data.sceneMeta.objectIDs.begin() + i);
-			break;
-
-		}
-
 		return true;
 
 	}
 	
-	Project GetProject() { return data.project; }
+	const Project& GetProject() { return data.project; }
+	SceneCamera& GetSceneCam() { return data.sceneCam; }
 
 	MetaFile::SceneMeta* GetSceneMeta() { return &data.sceneMeta; }
 
@@ -828,12 +946,28 @@ namespace Editor {
 		
 	}
 
+#ifdef CU_LINUX
+	void RunPremake() {
+
+		const std::string path = data.project.path.string();
+
+		// It hurts my eyes, but there is no other solution that I know of
+		//system(("cd \"" + data.project.path.String() + "\" ; ./premake/premake5 gmake2").c_str());
+
+		// Turns out there is :)
+		system(("./util/premake/premake5 --file=\"" + path + "premake5.lua\" gmake2").c_str());
+
+	}
+#endif
+
 }
 
 #pragma region EntryPoint
 #include <Engine/Core/Entry.h>
 
-void AppEntryPoint() {
+void AppEntryPoint(const Args& arguments) {
+
+	Editor::data.arguments = &arguments;
 
 	Editor::data.window = Window("Copper Editor", 1280, 720);
 

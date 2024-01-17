@@ -445,7 +445,7 @@ General defines
 	(reinterpret_cast<size_t>(&reinterpret_cast<Class*>(PX_OFFSETOF_BASE)->Member) - size_t(PX_OFFSETOF_BASE))
 
 // check that exactly one of NDEBUG and _DEBUG is defined
-#if defined(NDEBUG) ^ defined(_DEBUG)
+#if defined(NDEBUG) & defined(_DEBUG)
 #error Exactly one of NDEBUG and _DEBUG needs to be defined!
 #endif
 

@@ -3356,8 +3356,13 @@ static stbi_uc *stbi__resample_row_hv_2_simd(stbi_uc *out, stbi_uc *in_near, stb
 		// insert the previous pixel value (from t1).
 		// "next" is current row shifted left by 1 pixel, with first pixel
 		// of next block of 8 pixels added in.
-		__m128i prv0 = ((__m128i)__builtin_ia32_pslldqi128 ((__m128i)(curr), 2 * 8));
-		__m128i nxt0 = ((__m128i)__builtin_ia32_psrldqi128 ((__m128i)(curr), 2 * 8));
+	#ifdef CU_LINUX
+		__m128i prv0 = ((__m128i)__builtin_ia32_pslldqi128((__m128i)(curr), 2 * 8));
+		__m128i nxt0 = ((__m128i)__builtin_ia32_psrldqi128((__m128i)(curr), 2 * 8));
+	#elif CU_WINDOWS
+		__m128i prv0 = _mm_slli_si128(curr, 2);
+		__m128i nxt0 = _mm_srli_si128(curr, 2);
+	#endif
 		__m128i prev = _mm_insert_epi16(prv0, t1, 0);
 		__m128i next = _mm_insert_epi16(nxt0, 3 * in_near[i + 8] + in_far[i + 8], 7);
 

@@ -5,12 +5,11 @@
 #include "Engine/Scene/InternalEntity.h"
 #include "Engine/Scene/Registry.h"
 
-#include "Engine/Filesystem/Path.h"
-
 #define ENTITY_DEFAULT_PROPERTIES_DECLARATION const Vector3& position = Vector3::zero, const Quaternion& rotation = Quaternion(1.0f, 0.0f, 0.0f, 0.0f), const Vector3& scale = Vector3::one, const std::string& name = "Entity"
 #define ENTITY_PROPERTIES_DECLARATION const Vector3& position, const Quaternion& rotation, const Vector3& scale, const std::string& name
 
 namespace YAML { class Emitter; class Node; }
+namespace physx { class PxScene; class PxRigidActor; }
 
 namespace Copper {
 
@@ -19,15 +18,25 @@ namespace Copper {
 	class Light;
 	class Camera;
 
+	class RigidBody;
+
 	class Scene {
 
 		friend InternalEntity;
+		friend class RigidBody;
+		friend class Collider;
 		friend class Entity;
 		friend class OldSceneVersionSerializer;
 
 	public:
-		std::string name;
-		Filesystem::Path path;
+		Scene() {
+
+			registry.Initialize();
+
+		}
+
+		std::string name = "";
+		fs::path path = "";
 
 		Camera* cam = nullptr;
 
@@ -64,8 +73,8 @@ namespace Copper {
 
 		void Render(Camera* cam);
 
-		void Serialize(const Filesystem::Path& path);
-		bool Deserialize(const Filesystem::Path& path);
+		void Serialize(const fs::path& path);
+		bool Deserialize(const fs::path& path);
 
 		Registry::ComponentPool* GetComponentPool(int cID) {
 
@@ -79,17 +88,37 @@ namespace Copper {
 	private:
 		Registry registry;
 
-		Light* light;
+		Light* light = nullptr;
+
+		physx::PxScene* physicsScene = nullptr;
 
 		bool runtimeRunning = false;
 		bool runtimeStarted = false;
+
+		// Defined in PhysicsEngine.cpp so that we dont have physx includes in Scene.cpp
+
+		bool physicsInitialized = false;
+
+		void InitializePhysics();
+		void UpdatePhysics(float deltaTime);
+		void ShutdownPhysics();
+
+		void AddPhysicsBody(physx::PxRigidActor* body);
+		void RemovePhysicsBody(physx::PxRigidActor* body);
+
+		physx::PxScene* GetPhysicsScene() { return physicsScene; }
+
+		// Serialization
+
 
 		void SerializeEntity(InternalEntity* entity, YAML::Emitter& out);
 		void DeserializeEntity(InternalEntity* entity, const YAML::Node& node);
 
 		template<typename T> void SerializeScriptField(const struct ScriptField& field, class ScriptComponent* instance, YAML::Emitter& out);
-		//template<> void SerializeScriptField<InternalEntity*>(const struct ScriptField& field, class ScriptComponent* instance, class YAML::Emitter& out);
 		template<typename T> void DeserializeScriptField(const ScriptField& field, ScriptComponent* instance, const YAML::Node& fieldNode);
+
+		template<> void SerializeScriptField<Transform*>(const struct ScriptField& field, class ScriptComponent* instance, YAML::Emitter& out);
+		template<> void DeserializeScriptField<Transform*>(const ScriptField& field, ScriptComponent* instance, const YAML::Node& fieldNode);
 
 	};
 

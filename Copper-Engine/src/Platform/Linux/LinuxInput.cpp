@@ -7,6 +7,7 @@
 #include "Engine/Events/MouseEvent.h"
 
 #include <GLFW/glfw3.h>
+#include <portable-file-dialogs.h>
 
 #ifdef CU_EDITOR
     extern Copper::UVector2I GetViewportCentre();
@@ -36,6 +37,14 @@ namespace Copper::Input {
 		GetWindow().AddKeyReleasedEventFunc(OnKeyReleased);
 
 		GetWindow().AddMouseMoveEventFunc(OnMouseMove);
+
+		if (!pfd::settings::available()) {
+
+			LogError("Portable File Dialogs are not avilable on this platform! You might be missing these packages:\nKDE: KDialog\nGnome: Zenity/Matedialog/Qarma");
+
+		}
+
+		pfd::settings::verbose(true);
 
 	}
 	void Update() {
@@ -119,8 +128,8 @@ namespace Copper::Input {
 		if (event.mouseCoords == centre) return true;
 		if (!firstMouseLockedFrame) {
 
-			mousePosDiference.x = (event.mouseCoords.x - centre.x) / GetWindowSize().x;
-			mousePosDiference.y = (event.mouseCoords.y - centre.y + 63) / GetWindowSize().y;
+			mousePosDiference.x = ((float) event.mouseCoords.x - centre.x) / GetWindowSize().x;
+			mousePosDiference.y = ((float) event.mouseCoords.y - centre.y + 63) / GetWindowSize().y;
 
 		} else {
 

@@ -4,17 +4,18 @@
 
 using namespace Copper;
 
+// TODO : THIS SHIT IS NOT WORKING FOR SOME REASON, WTF
+
 namespace Editor::ProjectFileWatcher {
 
 	struct ProjectFileWatcherData {
 
-		Filesystem::Path directory;
-		std::vector<std::string> filters;
+		fs::path directory;
 		bool running;
 
 		Unique<filewatch::FileWatch<std::string>> fw;
 
-		std::vector<std::function<void(const Filesystem::Path&, const FileChangeType& changeType)>> callbacks;
+		std::vector<std::function<void(const fs::path&, const FileChangeType& changeType)>> callbacks;
 
 	};
 	ProjectFileWatcherData data;
@@ -23,10 +24,10 @@ namespace Editor::ProjectFileWatcher {
 
 	void Start() {
 
-		if (data.directory.Empty()) { LogError("Can't FileWatch an empty Directory!"); return; }
+		if (data.directory.empty()) { LogError("Can't FileWatch an empty Directory!"); return; }
 
 		data.running = true;
-		data.fw = CreateUnique<filewatch::FileWatch<std::string>>(data.directory.String(), FileChangeCallback);
+		data.fw = CreateUnique<filewatch::FileWatch<std::string>>(data.directory.string(), FileChangeCallback);
 
 	}
 	void Stop() {
@@ -40,20 +41,10 @@ namespace Editor::ProjectFileWatcher {
 
 		if (!data.running) return;
 
-		Filesystem::Path fsPath(path);
+		fs::path fsPath(path);
 		
-		//We have to do this the stupid way of holding each filter as a string
-		//instead of having a single string that has all of the filters because
-		//for some weird F*CKING reason, if I tried to get an index of a character
-		//in the filter string, the value would become random when the code enters
-		//a loop. I couldn't even change the variable to hold a different value
-		bool extensionCorrect = false;
-		for (const std::string& filter : data.filters) {
-
-			if (fsPath.Extension() == filter) { extensionCorrect = true; break; }
-
-		}
-		if (!extensionCorrect) return;
+		if (fsPath.extension() != ".cs")
+			return;
 
 		FileChangeType type;
 		switch (changeType) {
@@ -70,9 +61,8 @@ namespace Editor::ProjectFileWatcher {
 
 	}
 
-	void SetDirectory(const Filesystem::Path& directory) { data.directory = directory; }
-	void AddFilter(const std::string& filter) { data.filters.push_back(filter); }
+	void SetDirectory(const fs::path& directory) { data.directory = directory; }
 
-	void AddFileChangeCallback(std::function<void(const Filesystem::Path&, const FileChangeType& changeType)> func) { data.callbacks.push_back(func); }
+	void AddFileChangeCallback(std::function<void(const fs::path&, const FileChangeType& changeType)> func) { data.callbacks.push_back(func); }
 
 }

@@ -30,7 +30,10 @@ namespace Editor {
 		bool ShowVector4(const std::string& name, Copper::Vector4* vec);
 		bool ShowColor(const std::string& name, Copper::Color* col);
 
+		bool ShowMask(const std::string& name, uint32_t& mask, int num, int maskOffset = 0, char startLabel = 'X');
+
 		bool ShowEntity(const std::string& name, Copper::InternalEntity** entity);
+		bool ShowTransform(const std::string& name, Copper::Transform** transform);
 
 		static bool IsDragDropTargetHovered() { return dragDropTargetHovered; }
 	
@@ -45,6 +48,12 @@ namespace Editor {
 
 		void RenderLight(Copper::Light* light);
 		void RenderCamera(Copper::Camera* camera);
+
+		void RenderRigidBody(Copper::RigidBody* rb);
+
+		void RenderBoxCollider(Copper::BoxCollider* collider);
+		void RenderSphereCollider(Copper::SphereCollider* collider);
+		void RenderCapsuleCollider(Copper::CapsuleCollider* collider);
 
 		void RenderScriptComponent(Copper::ScriptComponent* script);
 

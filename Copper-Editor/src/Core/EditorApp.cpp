@@ -695,7 +695,6 @@ namespace Editor {
 	void NewScene() {
 
 		*data.scene = Scene();
-		data.sceneMeta.objectIDs.clear();
 
 		data.sceneHierarchy.SetScene(data.scene);
 		
@@ -917,22 +916,12 @@ namespace Editor {
 
 		EntityEvent* event = (EntityEvent*) &e;
 
-		data.sceneMeta.objectIDs.push_back(event->entity.ID());
-
 		return true;
 
 	}
 	bool OnEntityRemoved(const Event& e) {
 
 		EntityEvent* event = (EntityEvent*) &e;
-
-		for (int i = 0; i < data.sceneMeta.objectIDs.size(); i++) {
-
-			if (data.sceneMeta.objectIDs[i] != event->entity.ID()) continue;
-			data.sceneMeta.objectIDs.erase(data.sceneMeta.objectIDs.begin() + i);
-			break;
-
-		}
 
 		return true;
 

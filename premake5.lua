@@ -95,9 +95,9 @@ project "Copper-Engine"
         "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
         
         "VERSION_MAJOR=0",
-        "VERSION_MINOR=2",
-        "VERSION_PATCH=2",
-        "VERSION_TWEAK=88",
+        "VERSION_MINOR=3",
+        "VERSION_PATCH=0",
+        "VERSION_TWEAK=1",
         
         "SCENE_VERSION=0",
 

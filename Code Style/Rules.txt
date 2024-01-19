@@ -1,0 +1,33 @@
+- General
+1. Everything must be inside the Copper namespace
+2. Opening curly braces must be on the same line with a space before
+3. An empty line must be after an opening curly brace, and also before a closing opening
+4. Comments must include a space before and start with a space
+5. & and * right after type
+6. static, const, etc before type
+7. Use typedefs instead of default types
+
+- Header files
+1. Use pragma once instead if infdef
+2. Public, protected then private
+3. De/Constructors at the very top
+4. Variables first
+5. Functions after variables
+6. Variables that need a function to be called to be updated should never be Public
+7. Non const variables that only specific classes can change should never be Public
+8. Use const for functions that should be const
+9. Try to avoid including unnecessary header files
+10. Function parameters that are only going to be read, and are below 8 bytes can be passed by value
+11. Parameters above 8 bytes that won't be modified should be a const reference
+12. Parameters that will get modified should be a pointer
+13. Use classes only when needed (instead namespaces when possible)
+14. Use structs instead of classes for data holding and minimal amount of functions
+15. Do not include namespace or classes in the function names (e.g. InitializeCore, DeleteEntity);
+
+- Source files
+1. First include should be a precompiled header if there is one
+2. Second include should be the related header file (if there is one)
+3. Followed by all other includes
+4. After that defines
+5. Use statis for global scope functions that are used only by their own file
+6. Static functions definitions go all the way to the top

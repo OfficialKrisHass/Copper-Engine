@@ -5,39 +5,15 @@
 #endif
 
 #include "Engine/Core/Log.h"
+#include "Engine/Core/Debug.h"
 
 #define CMATH_PARENT_NAMESPACE Copper
 #include <CMath/CMath.h>
-
 #include "Engine/Renderer/Color.h"
-
-#include <memory>
-
-#define CHECK(x, ...) { if(!(x)) { LogError(__VA_ARGS__); } }
-
-#ifdef CU_DEBUG
-    #define CU_ASSERT(x, ...) CHECK(x, __VA_ARGS__);
-#else
-    #define CU_ASSERT(x, ...)
-#endif
-
-namespace fs = std::filesystem;
 
 namespace Copper {
 
-    template<typename T> using Unique = std::unique_ptr<T>;
-    template<typename T, typename ... Args> constexpr  Unique<T> CreateUnique(Args&& ... args) {
-
-        return std::make_unique<T>(std::forward<Args>(args)...);
-        
-    }
-
-    template<typename T> using Shared = std::shared_ptr<T>;
-    template<typename T, typename ... Args> constexpr  Shared<T> CreateShared(Args&& ... args) {
-
-        return std::make_shared<T>(std::forward<Args>(args)...);
-        
-    }
+    namespace fs = std::filesystem;
 
     using CMath::Vector2;
     using CMath::Vector3;
@@ -60,5 +36,17 @@ namespace Copper {
     using CMath::Quaternion;
     using CMath::QuaternionI;
     using CMath::UQuaternionI;
+
+    typedef char                int8;
+    typedef unsigned char       uint8;
+
+    typedef short               int16;
+    typedef unsigned short      uint16;
+
+    typedef int                 int32;
+    typedef unsigned int        uint32;
+
+    typedef long int            int64;
+    typedef unsigned long int   uint64;
     
 }

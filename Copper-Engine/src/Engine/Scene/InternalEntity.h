@@ -68,7 +68,7 @@ namespace Copper {
 
 	inline std::ostream& operator<<(std::ostream& os, const InternalEntity& entity) {
 
-		return os << entity.id << " (" << entity.id << ")";
+		return os << entity.name << " (" << entity.id << ")";
 
 	}
 

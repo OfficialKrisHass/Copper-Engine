@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED true)
 
 set(SCENE_VERSION 0)
 
-project(Copper-Engine VERSION 0.3.0.5 LANGUAGES CXX C)
+project(Copper-Engine VERSION 0.3.0.6 LANGUAGES CXX C)
 message(STATUS "Building with configuration - ${CMAKE_BUILD_TYPE}")
 
 set(OUTPUT_DIR linux-x86_64-${CMAKE_BUILD_TYPE})

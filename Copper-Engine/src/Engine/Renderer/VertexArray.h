@@ -18,10 +18,10 @@ namespace Copper {
 		void SetVertexBuffer(VertexBuffer* vbo);
 		void SetIndexBuffer(IndexBuffer* ibo);
 
-		inline uint32_t Count() const { return ibo->Count(); }
+		inline uint32 Count() const { return ibo->Count(); }
 
 	private:
-		uint32_t ID;
+		uint32 m_id;
 		IndexBuffer* ibo;
 
 	};

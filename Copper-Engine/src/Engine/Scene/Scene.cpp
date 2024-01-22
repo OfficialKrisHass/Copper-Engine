@@ -6,9 +6,6 @@
 #include "Engine/Scene/CopperECS.h"
 #include "Engine/Scene/OldSceneDeserialization.h"
 
-#include "Engine/Renderer/Renderer.h"
-#include "Engine/Renderer/Mesh.h"
-
 #include "Engine/Components/MeshRenderer.h"
 #include "Engine/Components/Camera.h"
 #include "Engine/Components/Light.h"
@@ -22,6 +19,9 @@
 #include "Engine/Components/SphereCollider.h"
 #include "Engine/Components/CapsuleCollider.h"
 
+#include "Engine/Renderer/Renderer.h"
+#include "Engine/Renderer/Mesh.h"
+
 #include "Engine/Scripting/ScriptingCore.h"
 
 #include "Engine/YAMLOverloads/Everything.h"
@@ -31,13 +31,13 @@
 
 namespace Copper {
 
-	int cCounter = 0;
+	uint32 cCounter = 0;
 
-	std::unordered_map<uint32_t, std::function<bool(const YAML::Node&, Scene*)>> oldDeserializeFunctions;
+	std::unordered_map<uint32, std::function<bool(const YAML::Node&, Scene*)>> oldDeserializeFunctions;
 
 	void Scene::StartRuntime() {
 
-		runtimeRunning = true;
+		m_runtimeRunning = true;
 
 		InitializePhysics();
 
@@ -53,45 +53,41 @@ namespace Copper {
 
 		Renderer::ClearColor(0.18f, 0.18f, 0.18f);
 
-		if (runtimeRunning) UpdatePhysics(deltaTime);
+		if (m_runtimeRunning) UpdatePhysics(deltaTime);
 
 		for (InternalEntity* entity : EntityView(this)) {
 
-			entity->transform->Update();
+			entity->m_transform->Update();
 
-			if (runtimeRunning && entity->HasComponent<RigidBody>()) entity->GetComponent<RigidBody>()->UpdatePositionAndRotation();
+			if (m_runtimeRunning && entity->HasComponent<RigidBody>()) entity->GetComponent<RigidBody>()->UpdatePositionAndRotation();
 
-			if (Light* lightComponent = entity->GetComponent<Light>()) light = lightComponent;
+			if (Light* lightComponent = entity->GetComponent<Light>()) m_light = lightComponent;
 			if (Camera* cameraComponent = entity->GetComponent<Camera>()) cam = cameraComponent;
 			if (MeshRenderer* renderer = entity->GetComponent<MeshRenderer>()) {
 
 				for (Mesh mesh : renderer->meshes) {
 
-					Renderer::AddMesh(&mesh, entity->transform);
+					Renderer::AddMesh(&mesh, entity->m_transform);
 
 				}
 
 			}
 
-			if (!runtimeRunning) continue;
+			if (!m_runtimeRunning) continue;
 			if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) {
 
-				if (!runtimeStarted) script->InvokeCreate();
+				if (!m_runtimeStarted) script->InvokeCreate();
 				script->InvokeUpdate();
 
 			}
 
 		}
-		if (runtimeRunning && !runtimeStarted) runtimeStarted = true;
+		if (m_runtimeRunning && !m_runtimeStarted) m_runtimeStarted = true;
 
 		if (cam && render) Render(cam);
 
 	}
-	void Scene::Render(Camera* camera) {
-
-		Renderer::RenderFrame(camera, light);
-
-	}
+	void Scene::Render(Camera* camera) { Renderer::RenderFrame(camera, m_light); }
 
 	void Scene::Serialize(const fs::path& path) {
 
@@ -125,16 +121,16 @@ namespace Copper {
 	}
 	bool Scene::Deserialize(const fs::path& path) {
 
-		if (physicsInitialized) ShutdownPhysics();
+		if (m_physicsInitialized) ShutdownPhysics();
 
 		this->path = path;
 
-		registry.Cleanup();
-		registry.Initialize();
+		m_registry.Cleanup();
+		m_registry.Initialize();
 
-		runtimeRunning = false;
-		runtimeStarted = false;
-		light = nullptr;
+		m_runtimeRunning = false;
+		m_runtimeStarted = false;
+		m_light = nullptr;
 		cam = nullptr;
 
 		YAML::Node data;
@@ -153,7 +149,7 @@ namespace Copper {
 
 		}
 
-		uint32_t sceneVersion = versionNode.as<uint32_t>();
+		uint32 sceneVersion = versionNode.as<uint32>();
 		if (oldDeserializeFunctions.find(sceneVersion) != oldDeserializeFunctions.end()) return oldDeserializeFunctions[sceneVersion](data, this);
 		CU_ASSERT(sceneVersion == SCENE_VERSION, "The Scene you tried to open has an invalid version of {}\n    Path: {}", sceneVersion, path.string());
 
@@ -163,7 +159,7 @@ namespace Copper {
 		for (YAML::const_iterator it = entities.begin(); it != entities.end(); ++it) {
 
 			std::string name = it->first.as<std::string>();
-			uint32_t id = it->second["ID"].as<uint32_t>();
+			uint32 id = it->second["ID"].as<uint32>();
 			InternalEntity* entity = CreateEntityFromID(id, Vector3::zero, Quaternion(), Vector3::one, name, false);
 
 			DeserializeEntity(entity, it->second);
@@ -178,19 +174,19 @@ namespace Copper {
 
 		out << YAML::Key << entity->name << YAML::Value << YAML::BeginMap; // Entity
 
-		out << YAML::Key << "ID" << YAML::Value << entity->id;
+		out << YAML::Key << "ID" << YAML::Value << entity->m_id;
 		out << YAML::Key << "Transform" << YAML::Value << YAML::BeginMap; // Transform
 
-		out << YAML::Key << "Position" << YAML::Value << entity->transform->position;
-		out << YAML::Key << "Rotation" << YAML::Value << entity->transform->rotation;
-		out << YAML::Key << "Scale" << YAML::Value << entity->transform->scale;
+		out << YAML::Key << "Position" << YAML::Value << entity->m_transform->position;
+		out << YAML::Key << "Rotation" << YAML::Value << entity->m_transform->rotation;
+		out << YAML::Key << "Scale" << YAML::Value << entity->m_transform->scale;
 
 		out << YAML::Key << "Parent ID" << YAML::Value;
-		if (entity->transform->parent) out << entity->transform->parent->entity.id;
+		if (entity->m_transform->m_parent) out << entity->m_transform->m_parent->m_entity.m_id;
 		else out << INVALID_ENTITY_ID;
 
 		out << YAML::Key << "Children" << YAML::Value << YAML::Flow << YAML::BeginSeq; // Children
-		for (uint32_t childID : entity->transform->children) {
+		for (uint32 childID : entity->m_transform->m_children) {
 
 			out << childID;
 
@@ -266,7 +262,7 @@ namespace Copper {
 
 			out << YAML::Key << "Mass" << YAML::Value << rb->mass;
 
-			out << YAML::Key << "Lock Mask" << YAML::Value << (uint32_t) rb->lockMask;
+			out << YAML::Key << "Lock Mask" << YAML::Value << (uint32) rb->m_lockMask;
 
 			out << YAML::EndMap; // Rigid Body
 
@@ -320,8 +316,8 @@ namespace Copper {
 
 				switch (field.type) {
 
-					case ScriptField::Type::Int: SerializeScriptField<int>(field, script, out); break;
-					case ScriptField::Type::UInt: SerializeScriptField<unsigned int>(field, script, out); break;
+					case ScriptField::Type::Int: SerializeScriptField<int32>(field, script, out); break;
+					case ScriptField::Type::UInt: SerializeScriptField<uint32>(field, script, out); break;
 					case ScriptField::Type::Float: SerializeScriptField<float>(field, script, out); break;
 
 					case ScriptField::Type::Vector2: SerializeScriptField<Vector2>(field, script, out); break;
@@ -347,39 +343,39 @@ namespace Copper {
 		try {
 
 		YAML::Node transform = node["Transform"];
-		entity->transform->position = transform["Position"].as<Vector3>();
-		entity->transform->rotation = transform["Rotation"].as<Quaternion>();
-		entity->transform->scale = transform["Scale"].as<Vector3>();
+		entity->m_transform->position = transform["Position"].as<Vector3>();
+		entity->m_transform->rotation = transform["Rotation"].as<Quaternion>();
+		entity->m_transform->scale = transform["Scale"].as<Vector3>();
 
 		//Set the Parent
-		uint32_t parentID = transform["Parent ID"].as<uint32_t>();
-		if (parentID == INVALID_ENTITY_ID) entity->transform->parent = nullptr;
-		else if(entity->id < parentID) {
+		uint32 parentID = transform["Parent ID"].as<uint32>();
+		if (parentID == INVALID_ENTITY_ID) entity->m_transform->m_parent = nullptr;
+		else if(entity->m_id < parentID) {
 
 			//This little maneuver is gonna cost us 51 miliseconds
 			Entity saved = entity;
 			InternalEntity* parent = CreateEntityFromID(parentID, Vector3::zero, Quaternion(), Vector3::one, "Empty Parent");
 			entity = saved;
 
-			entity->transform->parent = parent->transform;
+			entity->m_transform->m_parent = parent->m_transform;
 
-			parent->transform->children.push_back(entity->id);
+			parent->m_transform->m_children.push_back(entity->m_id);
 
 		}
 
 		//Set the children
-		for (int i = 0; i < transform["Children"].size(); i++) {
+		for (uint32 i = 0; i < transform["Children"].size(); i++) {
 
-			uint32_t childID = transform["Children"][i].as<uint32_t>();
-			if (childID < entity->id) continue;
+			uint32 childID = transform["Children"][i].as<uint32>();
+			if (childID < entity->m_id) continue;
 			
-			entity->transform->children.push_back(childID);
+			entity->m_transform->m_children.push_back(childID);
 
 			Entity saved = entity;
 			InternalEntity* child = CreateEntityFromID(childID, Vector3::zero, Quaternion(), Vector3::one, "Empty Child");
 			entity = saved;
 
-			child->transform->parent = entity->transform;
+			child->m_transform->m_parent = entity->m_transform;
 
 		}
 
@@ -391,7 +387,7 @@ namespace Copper {
 			Mesh mesh;
 
 			YAML::Node dataNode = meshNode["Data"];
-			for (int i = 0; i < dataNode.size(); i++) {
+			for (uint32 i = 0; i < dataNode.size(); i++) {
 
 				YAML::Node vertex = dataNode[i];
 
@@ -402,9 +398,9 @@ namespace Copper {
 			}
 
 			YAML::Node indicesNode = meshNode["Indices"];
-			for (int i = 0; i < indicesNode.size(); i++) {
+			for (uint32 i = 0; i < indicesNode.size(); i++) {
 
-				mesh.indices.push_back(indicesNode[i].as<uint32_t>());
+				mesh.indices.push_back(indicesNode[i].as<uint32>());
 
 			}
 
@@ -440,7 +436,7 @@ namespace Copper {
 
 			rb->mass = rbNode["Mass"].as<float>();
 
-			rb->lockMask = rbNode["Lock Mask"].as<uint8_t>();
+			rb->m_lockMask = rbNode["Lock Mask"].as<uint8>();
 
 		}
 
@@ -486,8 +482,8 @@ namespace Copper {
 
 				switch (field.type) {
 
-					case ScriptField::Type::Int: DeserializeScriptField<int>(field, script, fields[field.name]["Value"]); break;
-					case ScriptField::Type::UInt: DeserializeScriptField<unsigned int>(field, script, fields[field.name]["Value"]); break;
+					case ScriptField::Type::Int: DeserializeScriptField<int32>(field, script, fields[field.name]["Value"]); break;
+					case ScriptField::Type::UInt: DeserializeScriptField<uint32>(field, script, fields[field.name]["Value"]); break;
 					case ScriptField::Type::Float: DeserializeScriptField<float>(field, script, fields[field.name]["Value"]); break;
 
 					case ScriptField::Type::Vector2: DeserializeScriptField<Vector2>(field, script, fields[field.name]["Value"]); break;
@@ -504,7 +500,7 @@ namespace Copper {
 
 		} catch (YAML::Exception e) {
 
-			LogError("Encountered an exception when trying to deserialize entity {} ({}): {}", entity->id, entity->name, e.msg);
+			LogError("Encountered an exception when trying to deserialize entity {}: {}", *entity, e.msg);
 
 		}
 
@@ -517,7 +513,7 @@ namespace Copper {
 
 		out << YAML::Key << field.name << YAML::Value << YAML::BeginMap; // Field
 
-		out << YAML::Key << "Type" << YAML::Value << (int) field.type;
+		out << YAML::Key << "Type" << YAML::Value << (int32) field.type;
 		out << YAML::Key << "Value" << YAML::Value << value;
 
 		out << YAML::EndMap; // Field
@@ -537,16 +533,16 @@ namespace Copper {
 
 		out << YAML::Key << field.name << YAML::Value << YAML::BeginMap; // Field
 
-		out << YAML::Key << "Type" << YAML::Value << (int) field.type;
-		out << YAML::Key << "Value" << YAML::Value << (value ? value->entity.id : INVALID_ENTITY_ID);
+		out << YAML::Key << "Type" << YAML::Value << (int32) field.type;
+		out << YAML::Key << "Value" << YAML::Value << (value ? value->m_entity.m_id : INVALID_ENTITY_ID);
 
 		out << YAML::EndMap; // Field
 
 	}
 	template<> void Scene::DeserializeScriptField<Transform*>(const ScriptField& field, ScriptComponent* instance, const YAML::Node& fieldNode) {
 
-		uint32_t eID = fieldNode.as<uint32_t>();
-		Transform* transform = eID == INVALID_ENTITY_ID ? nullptr : GetEntityFromID(eID)->transform;
+		uint32 eID = fieldNode.as<uint32>();
+		Transform* transform = eID == INVALID_ENTITY_ID ? nullptr : GetEntityFromID(eID)->m_transform;
 		instance->SetFieldValue(field, &transform);
 
 	}

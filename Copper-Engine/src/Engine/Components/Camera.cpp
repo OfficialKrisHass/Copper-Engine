@@ -5,17 +5,14 @@
 
 #include "Engine/Components/Transform.h"
 
-#include <GLM/ext/matrix_clip_space.hpp>
-#include <GLM/ext/matrix_transform.hpp>
-
 namespace Copper {
 
-	Matrix4 Camera::CreateViewMatrix() {
+	Matrix4 Camera::CreateViewMatrix() const {
 
 		return CMath::ViewMatrix(GetTransform()->GlobalPosition(), GetTransform()->Forward(), GetTransform()->Up());
 
 	}
-	Matrix4 Camera::CreateProjectionMatrix() {
+	Matrix4 Camera::CreateProjectionMatrix() const {
 
 	#ifdef CU_EDITOR
 		Matrix4 ret = CMath::ProjectionMatrix(fov, static_cast<float>(size.x) / size.y, nearPlane, farPlane);

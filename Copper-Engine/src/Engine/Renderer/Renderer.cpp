@@ -15,14 +15,14 @@ namespace Copper::Renderer {
 
 	struct RendererData {
 
-		static const uint32_t maxVertices = 20000;
+		static const uint32 maxVertices = 20000;
 
 		VertexArray vao;
 		VertexBuffer vbo;
 		IndexBuffer ibo;
 
 		std::vector<float> vertices;
-		std::vector<uint32_t> indices;
+		std::vector<uint32> indices;
 		
 	};
 
@@ -38,7 +38,7 @@ namespace Copper::Renderer {
 		data.vbo = VertexBuffer(data.maxVertices * sizeof(float));
 		data.vbo.SetLayout({ {"Position", ElementType::Float3}, {"Color", ElementType::Float3}, {"Normal", ElementType::Float3} });
 
-		data.ibo = IndexBuffer((uint32_t) (data.maxVertices * 1.5f * sizeof(uint32_t)));
+		data.ibo = IndexBuffer((uint32) (data.maxVertices * 1.5f * sizeof(uint32)));
 
 		data.vao.SetVertexBuffer(&data.vbo);
 		data.vao.SetIndexBuffer(&data.ibo);
@@ -53,7 +53,7 @@ namespace Copper::Renderer {
 		data.vbo.SetData(data.vertices);
 		data.ibo.SetData(data.indices);
 
-		api.Render(&data.vao, (uint32_t) data.indices.size(), cam, light);
+		api.Render(&data.vao, (uint32) data.indices.size(), cam, light);
 		
 		
 	}
@@ -71,9 +71,9 @@ namespace Copper::Renderer {
 		// TODO: there is a lot of ways I have thought about optimizing this, use them
 		Matrix4 mat = transform->CreateMatrix();
 
-		int numOfVertices = (int) data.vertices.size() / 9;
+		uint32 numOfVertices = (uint32) data.vertices.size() / 9;
 
-		for (int i = 0; i < mesh->vertices.size(); i++) {
+		for (uint32 i = 0; i < mesh->vertices.size(); i++) {
 
 			Vector3 position;
 			Vector3 normal;
@@ -89,7 +89,7 @@ namespace Copper::Renderer {
 
 		}
 
-		for (int i = 0; i < mesh->indices.size(); i++) {
+		for (uint32 i = 0; i < mesh->indices.size(); i++) {
 
 			data.indices.push_back(mesh->indices[i] + numOfVertices);
 

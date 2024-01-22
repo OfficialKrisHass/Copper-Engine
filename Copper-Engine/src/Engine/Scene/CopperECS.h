@@ -3,7 +3,7 @@
 #include "Scene.h"
 #include "Entity.h"
 #include "Registry.h"
-#include "Component.h"
+#include "Engine/Components/Component.h"
 
 #include "ComponentView.h"
 #include "EntityView.h"

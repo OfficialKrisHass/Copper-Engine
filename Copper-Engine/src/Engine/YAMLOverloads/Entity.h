@@ -33,7 +33,7 @@ namespace YAML {
         }
         static bool decode(const Node& node, Copper::InternalEntity*& entity) {
 
-            uint32_t id = node.as<uint32_t>();
+            uint32 id = node.as<uint32>();
 
             if(id == INVALID_ENTITY_ID) entity = nullptr;
             else if(id < GetNumOfEntities()) entity = GetEntityFromID(id);

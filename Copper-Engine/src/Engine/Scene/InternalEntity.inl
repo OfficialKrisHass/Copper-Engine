@@ -4,13 +4,13 @@
 
 namespace Copper {
 
-    template<typename T> T* InternalEntity::AddComponent() { return scene->registry.template AddComponent<T>(id); }
-    template<typename T> T* InternalEntity::GetComponent() { return scene->registry.template GetComponent<T>(id); }
-    template<typename T> bool InternalEntity::HasComponent() { return scene->registry.template HasComponent<T>(id); }
-    template<typename T> void InternalEntity::RemoveComponent() { scene->registry.template RemoveComponent<T>(id); }
+    template<typename T> T* InternalEntity::AddComponent() { return m_scene->m_registry.template AddComponent<T>(m_id); }
+    template<typename T> T* InternalEntity::GetComponent() { return m_scene->m_registry.template GetComponent<T>(m_id); }
+    template<typename T> bool InternalEntity::HasComponent() { return m_scene->m_registry.template HasComponent<T>(m_id); }
+    template<typename T> void InternalEntity::RemoveComponent() { m_scene->m_registry.template RemoveComponent<T>(m_id); }
 
-    inline void* InternalEntity::GetComponent(int componentID) { return scene->registry.GetComponent(componentID, id); }
-	inline bool InternalEntity::HasComponent(int componentID) { return scene->registry.HasComponent(componentID, id); }
-	inline void InternalEntity::RemoveComponent(int componentID) { scene->registry.RemoveComponent(componentID, id); }
+    inline void* InternalEntity::GetComponent(int componentID) { return m_scene->m_registry.GetComponent(componentID, m_id); }
+	inline bool InternalEntity::HasComponent(int componentID) { return m_scene->m_registry.HasComponent(componentID, m_id); }
+	inline void InternalEntity::RemoveComponent(int componentID) { m_scene->m_registry.RemoveComponent(componentID, m_id); }
 
 }

@@ -26,9 +26,9 @@ namespace Copper::Scripting::InternalCalls {
 
 	// Input
 
-	bool IsKey(int keyCode);
-	bool IsKeyDown(int keyCode);
-	bool IsKeyReleased(int keyCode);
+	bool IsKey(int32 keyCode);
+	bool IsKeyDown(int32 keyCode);
+	bool IsKeyReleased(int32 keyCode);
 
 	float GetAxis(MonoString* axisName);
 
@@ -42,77 +42,77 @@ namespace Copper::Scripting::InternalCalls {
 
 	// Entity
 
-	MonoString* GetEntityName(uint32_t eID);
-	void SetEntityName(uint32_t eID, MonoString* out);
+	MonoString* GetEntityName(uint32 eID);
+	void SetEntityName(uint32 eID, MonoString* out);
 
-	bool IsEntityValid(uint32_t eID);
+	bool IsEntityValid(uint32 eID);
 
-	MonoObject* GetEntity(uint32_t eID);
+	MonoObject* GetEntity(uint32 eID);
 
 	// Component
 
-	void AddComponent(uint32_t eID, MonoReflectionType* type, MonoObject* ret);
-	bool GetComponent(uint32_t eID, MonoReflectionType* type, MonoObject* ret);
-	bool HasComponent(uint32_t eID, MonoReflectionType* type);
+	void AddComponent(uint32 eID, MonoReflectionType* type, MonoObject* ret);
+	bool GetComponent(uint32 eID, MonoReflectionType* type, MonoObject* ret);
+	bool HasComponent(uint32 eID, MonoReflectionType* type);
 
-	void SetComponentEID(MonoReflectionType* type, MonoObject* component, uint32_t eID);
+	void SetComponentEID(MonoReflectionType* type, MonoObject* component, uint32 eID);
 
-	void SetComponentPointer(MonoReflectionType* type, MonoObject* component, uint32_t eID);
+	void SetComponentPointer(MonoReflectionType* type, MonoObject* component, uint32 eID);
 
 	// Transform
 
-	void GetPosition(int64_t componentPointer, Vector3* out);
-	void GetRotation(int64_t componentPointer, Quaternion* out);
-	void GetScale(int64_t componentPointer, Vector3* out);
+	void GetPosition(uint64 componentPointer, Vector3* out);
+	void GetRotation(uint64 componentPointer, Quaternion* out);
+	void GetScale(uint64 componentPointer, Vector3* out);
 
-	void GetForward(int64_t componentPointer, Vector3* out);
-	void GetRight(int64_t componentPointer, Vector3* out);
-	void GetUp(int64_t componentPointer, Vector3* out);
+	void GetForward(uint64 componentPointer, Vector3* out);
+	void GetRight(uint64 componentPointer, Vector3* out);
+	void GetUp(uint64 componentPointer, Vector3* out);
 
-	void SetPosition(int64_t componentPointer, Vector3* value);
-	void SetRotation(int64_t componentPointer, Quaternion* value);
-	void SetScale(int64_t componentPointer, Vector3* value);
+	void SetPosition(uint64 componentPointer, Vector3* value);
+	void SetRotation(uint64 componentPointer, Quaternion* value);
+	void SetScale(uint64 componentPointer, Vector3* value);
 
 	//Camera
 
-	float CameraGetFOV(int64_t componentPointer);
-	float CameraGetNearPlane(int64_t componentPointer);
-	float CameraGetFarPlane(int64_t componentPointer);
+	float CameraGetFOV(uint64 componentPointer);
+	float CameraGetNearPlane(uint64 componentPointer);
+	float CameraGetFarPlane(uint64 componentPointer);
 
-	void CameraSetFOV(int64_t componentPointer, float value);
-	void CameraSetNearPlane(int64_t componentPointer, float value);
-	void CameraSetFarPlane(int64_t componentPointer, float value);
+	void CameraSetFOV(uint64 componentPointer, float value);
+	void CameraSetNearPlane(uint64 componentPointer, float value);
+	void CameraSetFarPlane(uint64 componentPointer, float value);
 
 	//RigidBody
 
-	bool RigidBodyGetIsStatic(int64_t componentPointer);
-	bool RigidBodyGetGravity(int64_t componentPointer);
-	float RigidBodyGetMass(int64_t componentPointer);
+	bool RigidBodyGetIsStatic(uint64 componentPointer);
+	bool RigidBodyGetGravity(uint64 componentPointer);
+	float RigidBodyGetMass(uint64 componentPointer);
 
-	void RigidBodySetIsStatic(int64_t componentPointer, bool value);
-	void RigidBodySetGravity(int64_t componentPointer, bool value);
-	void RigidBodySetMass(int64_t componentPointer, float value);
+	void RigidBodySetIsStatic(uint64 componentPointer, bool value);
+	void RigidBodySetGravity(uint64 componentPointer, bool value);
+	void RigidBodySetMass(uint64 componentPointer, float value);
 
-	void RigidBodyAddForce(int64_t componentPointer, Vector3* force, uint8_t mode);
-	void RigidBodyAddTorque(int64_t componentPointer, Vector3* torque, uint8_t mode);
+	void RigidBodyAddForce(uint64 componentPointer, Vector3* force, uint8_t mode);
+	void RigidBodyAddTorque(uint64 componentPointer, Vector3* torque, uint8_t mode);
 
 	// Colliders
-	bool ColliderGetTrigger(int64_t componentPointer);
-	void ColliderGetCenter(int64_t componentPointer, Vector3* out);
+	bool ColliderGetTrigger(uint64 componentPointer);
+	void ColliderGetCenter(uint64 componentPointer, Vector3* out);
 
-	void ColliderSetTrigger(int64_t componentPointer, bool value);
-	void ColliderSetCenter(int64_t componentPointer, Vector3* value);
+	void ColliderSetTrigger(uint64 componentPointer, bool value);
+	void ColliderSetCenter(uint64 componentPointer, Vector3* value);
 
-	void BoxColliderGetSize(int64_t componentPointer, Vector3* out);
-	void BoxColliderSetSize(int64_t componentPointer, Vector3* value);
+	void BoxColliderGetSize(uint64 componentPointer, Vector3* out);
+	void BoxColliderSetSize(uint64 componentPointer, Vector3* value);
 
-	float SphereColliderGetRadius(int64_t componentPointer);
-	void SphereColliderSetRadius(int64_t componentPointer, float value);
+	float SphereColliderGetRadius(uint64 componentPointer);
+	void SphereColliderSetRadius(uint64 componentPointer, float value);
 
-	float CapsuleColliderGetRadius(int64_t componentPointer);
-	float CapsuleColliderGetHeight(int64_t componentPointer);
-	void CapsuleColliderSetRadius(int64_t componentPointer, float value);
-	void CapsuleColliderSetHeight(int64_t componentPointer, float value);
+	float CapsuleColliderGetRadius(uint64 componentPointer);
+	float CapsuleColliderGetHeight(uint64 componentPointer);
+	void CapsuleColliderSetRadius(uint64 componentPointer, float value);
+	void CapsuleColliderSetHeight(uint64 componentPointer, float value);
 
 #pragma endregion
 

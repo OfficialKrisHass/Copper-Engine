@@ -5,6 +5,8 @@
 
 #include "Engine/Components/Collider.h"
 
+#include "Engine/Physics/PhysicsEngine.h"
+
 #include <PxPhysicsAPI.h>
 
 namespace Copper {
@@ -14,14 +16,7 @@ namespace Copper {
     namespace PhysicsEngine {
 
         extern PxPhysics* physics;
-
         extern PxShape* noColliderShape;
-    
-        extern PxVec3 CopperToPhysX(const Vector3& vec);
-        extern PxQuat CopperToPhysX(const Quaternion& vec);
-
-        extern Vector3 PhysXToCopper(const PxVec3& vec);
-        extern Quaternion PhysXToCopper(const PxQuat& vec);
 
     }
 
@@ -32,10 +27,10 @@ namespace Copper {
         // In a case we changed some parameters we need to first delete the body
         // NOTE: Maybe rename this to something like Generate or Regenerate ????
 
-        if (body)
-            GetScene()->RemovePhysicsBody(body);
+        if (m_body)
+            GetScene()->RemovePhysicsBody(m_body);
 
-        this->collider = GetEntity()->GetComponent<Collider>();
+        this->m_collider = GetEntity()->GetComponent<Collider>();
 
         // Default Case 2: Rigid Body with no Collider - Why though ?
         // NOTE: This is the default as its simpler then to create a shape
@@ -46,12 +41,12 @@ namespace Copper {
 
         // Case 3: Rigid Body with a Collider
 
-        if (this->collider) {
+        if (this->m_collider) {
 
-            shape = this->collider->CreateShape();
-            this->collider->rb = this;
+            shape = this->m_collider->CreateShape();
+            this->m_collider->m_rb = this;
 
-            if (this->collider->trigger) {
+            if (this->m_collider->trigger) {
 
                 shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
                 shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
@@ -65,26 +60,26 @@ namespace Copper {
         else
             CreateDynamic(shape);
 
-        if (this->collider)
+        if (this->m_collider)
             shape->release();
 
-        GetScene()->AddPhysicsBody(body);
+        GetScene()->AddPhysicsBody(m_body);
 
-        body->setName(GetEntity()->name.c_str());
-        body->userData = (void*) GetEntity();
+        m_body->setName(GetEntity()->name.c_str());
+        m_body->userData = (void*) GetEntity();
 
     }
 
     void RigidBody::CreateDynamic(PxShape* shape) {
 
-        if(this->collider)
-            body = PxCreateDynamic(*physics, PxTransform(CopperToPhysX(GetTransform()->position - this->collider->center), CopperToPhysX(GetTransform()->rotation)), *shape, 1.0f);
+        if(this->m_collider)
+            m_body = PxCreateDynamic(*physics, PxTransform(CopperToPhysX(GetTransform()->position - this->m_collider->center), CopperToPhysX(GetTransform()->rotation)), *shape, 1.0f);
         else
-            body = PxCreateDynamic(*physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape, 1.0f);
+            m_body = PxCreateDynamic(*physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape, 1.0f);
 
-        ((PxRigidDynamic*) body)->setMass(mass);
+        ((PxRigidDynamic*) m_body)->setMass(mass);
         if (!gravity)
-            body->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true);
+            m_body->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true);
 
         // This hurts my eyes but I am like 99% sure there is no other way
         // NOTE: As Always, there is :))))
@@ -97,49 +92,49 @@ namespace Copper {
         if (rotationLock[1]) flags |= LockFlag::eLOCK_ANGULAR_Y;
         if (rotationLock[2]) flags |= LockFlag::eLOCK_ANGULAR_Z;*/
 
-        ((PxRigidDynamic*) body)->setRigidDynamicLockFlags((PxRigidDynamicLockFlag::Enum) lockMask);
+        ((PxRigidDynamic*) m_body)->setRigidDynamicLockFlags((PxRigidDynamicLockFlag::Enum) m_lockMask);
 
     }
     void RigidBody::CreateStatic(PxShape* shape) {
 
-        if (this->collider)
-            body = PxCreateStatic(*physics, PxTransform(CopperToPhysX(GetTransform()->position - this->collider->center), CopperToPhysX(GetTransform()->rotation)), *shape);
+        if (this->m_collider)
+            m_body = PxCreateStatic(*physics, PxTransform(CopperToPhysX(GetTransform()->position - this->m_collider->center), CopperToPhysX(GetTransform()->rotation)), *shape);
         else
-            body = PxCreateStatic(*physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape);
+            m_body = PxCreateStatic(*physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape);
 
     }
 
     void RigidBody::UpdatePositionAndRotation() {
 
-        if (!body || isStatic) return;
+        if (!m_body || isStatic) return;
 
         Transform* transform = GetTransform();
 
-        if (this->collider)
-            transform->position = PhysXToCopper(body->getGlobalPose().p) + collider->center;
+        if (this->m_collider)
+            transform->position = PhysXToCopper(m_body->getGlobalPose().p) + m_collider->center;
         else
-            transform->position = PhysXToCopper(body->getGlobalPose().p);
+            transform->position = PhysXToCopper(m_body->getGlobalPose().p);
 
-        transform->rotation = PhysXToCopper(body->getGlobalPose().q);
+        transform->rotation = PhysXToCopper(m_body->getGlobalPose().q);
 
     }
 
     void RigidBody::SetPosition(const Vector3& position) {
 
-        if (!body || isStatic) return;
+        if (!m_body || isStatic) return;
 
-        PxTransform pose = body->getGlobalPose();
+        PxTransform pose = m_body->getGlobalPose();
         pose.p = CopperToPhysX(position);
-        body->setGlobalPose(pose);
+        m_body->setGlobalPose(pose);
 
     }
     void RigidBody::SetRotation(const Quaternion& rotation) {
 
-        if (!body || isStatic) return;
+        if (!m_body || isStatic) return;
 
-        PxTransform pose = body->getGlobalPose();
+        PxTransform pose = m_body->getGlobalPose();
         pose.q = CopperToPhysX(rotation);
-        body->setGlobalPose(pose);
+        m_body->setGlobalPose(pose);
 
     }
 
@@ -152,7 +147,7 @@ namespace Copper {
 
         }
 
-        ((PxRigidDynamic*) body)->addForce(CopperToPhysX(force), (PxForceMode::Enum) mode);
+        ((PxRigidDynamic*) m_body)->addForce(CopperToPhysX(force), (PxForceMode::Enum) mode);
 
     }
     void RigidBody::AddTorque(const Vector3& torque, const ForceMode mode) {
@@ -164,7 +159,7 @@ namespace Copper {
 
         }
 
-        ((PxRigidDynamic*) body)->addTorque(CopperToPhysX(torque), (PxForceMode::Enum) mode);
+        ((PxRigidDynamic*) m_body)->addTorque(CopperToPhysX(torque), (PxForceMode::Enum) mode);
 
     }
 

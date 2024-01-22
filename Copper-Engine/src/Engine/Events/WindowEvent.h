@@ -14,7 +14,7 @@ namespace Copper {
 	public:
 		WindowFocusedEvent() = default;
 
-		bool focused;
+		bool focused = false;
 
 	};
 
@@ -22,10 +22,10 @@ namespace Copper {
 
 	public:
 		WindowResizeEvent() = default;
-		WindowResizeEvent(uint32_t width, uint32_t height) : width(width), height(height) {}
+		WindowResizeEvent(uint32 width, uint32 height) : width(width), height(height) {}
 
-		uint32_t width;
-		uint32_t height;
+		uint32 width = 0;
+		uint32 height = 0;
 
 	};
 

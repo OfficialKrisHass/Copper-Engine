@@ -30,7 +30,7 @@ namespace Copper {
 
 	public:
 		Window() = default;
-		Window(const std::string& title, uint32_t width, uint32_t height, bool maximize = true);
+		Window(const std::string& title, uint32 width, uint32 height, bool maximize = true);
 
 		void Update();
 		void Shutdown();
@@ -42,8 +42,8 @@ namespace Copper {
 		bool IsKeyPressed(enum KeyCode keycode) const;
 		bool IsButtonPressed(enum MouseCode mousecode) const;
 
-		uint32_t Width() const;
-		uint32_t Height() const;
+		uint32 Width() const;
+		uint32 Height() const;
 		UVector2I Size() const;
 		float AspectRatio() const;
 

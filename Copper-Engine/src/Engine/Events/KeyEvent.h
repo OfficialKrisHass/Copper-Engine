@@ -12,7 +12,7 @@ namespace Copper {
 		KeyEvent() = default;
 		KeyEvent(KeyCode key) : key(key) {}
 
-		KeyCode key;
+		KeyCode key = KeyCode::None;
 
 	};
 

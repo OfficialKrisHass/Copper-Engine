@@ -12,8 +12,7 @@ namespace Copper {
 		std::vector<Vector3> vertices;
 		std::vector<Vector3> normals;
 		std::vector<Color> colors;
-		//std::vector<Vector2> uvs;
-		std::vector<uint32_t> indices;
+		std::vector<uint32> indices;
 
 	};
 

@@ -157,11 +157,11 @@ namespace Copper::Scripting {
 		data.entities.clear();
 
 		const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(data.projectAssemblyImage, MONO_TABLE_TYPEDEF);
-		int32_t numOfTypes = mono_table_info_get_rows(typeDefinitionsTable);
+		uint32 numOfTypes = mono_table_info_get_rows(typeDefinitionsTable);
 
-		for (int i = 0; i < numOfTypes; i++) {
+		for (uint32 i = 0; i < numOfTypes; i++) {
 			
-			uint32_t cols[MONO_TYPEDEF_SIZE];
+			uint32 cols[MONO_TYPEDEF_SIZE];
 			mono_metadata_decode_row(typeDefinitionsTable, i, cols, MONO_TYPEDEF_SIZE);
 
 			const char* nameSpace = mono_metadata_string_heap(data.projectAssemblyImage, cols[MONO_TYPEDEF_NAMESPACE]);
@@ -257,7 +257,7 @@ namespace Copper::Scripting {
 
 	}
 
-	MonoObject* AddScriptComponent(uint32_t eID, const std::string& name) {
+	MonoObject* AddScriptComponent(uint32 eID, const std::string& name) {
 
 		std::string scriptName = name;
 		std::string nameSpace = MonoUtils::RemoveNamespace(scriptName);
@@ -279,7 +279,7 @@ namespace Copper::Scripting {
 
 	}
 
-	MonoObject* GetScriptEntity(uint32_t eID) {
+	MonoObject* GetScriptEntity(uint32 eID) {
 
 		if (eID == INVALID_ENTITY_ID) return nullptr;
 

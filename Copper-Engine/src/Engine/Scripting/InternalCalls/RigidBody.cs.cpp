@@ -13,21 +13,21 @@
 
 namespace Copper::Scripting::InternalCalls {
 
-	bool RigidBodyGetIsStatic(int64_t componentPointer) {
+	bool RigidBodyGetIsStatic(uint64 componentPointer) {
 
 		CheckComponentPointerWithReturn(componentPointer, false);
 
 		return ((RigidBody*) componentPointer)->isStatic;
 
 	}
-	bool RigidBodyGetGravity(int64_t componentPointer) {
+	bool RigidBodyGetGravity(uint64 componentPointer) {
 
 		CheckComponentPointerWithReturn(componentPointer, true);
 
 		return ((RigidBody*) componentPointer)->gravity;
 
 	}
-	float RigidBodyGetMass(int64_t componentPointer) {
+	float RigidBodyGetMass(uint64 componentPointer) {
 
 		CheckComponentPointerWithReturn(componentPointer, 0.0f);
 
@@ -35,7 +35,7 @@ namespace Copper::Scripting::InternalCalls {
 
 	}
 
-	void RigidBodySetIsStatic(int64_t componentPointer, bool value) {
+	void RigidBodySetIsStatic(uint64 componentPointer, bool value) {
 
 		CheckComponentPointer(componentPointer);
 
@@ -44,7 +44,7 @@ namespace Copper::Scripting::InternalCalls {
 		rb->Setup();
 
 	}
-	void RigidBodySetGravity(int64_t componentPointer, bool value) {
+	void RigidBodySetGravity(uint64 componentPointer, bool value) {
 
 		CheckComponentPointer(componentPointer);
 
@@ -53,7 +53,7 @@ namespace Copper::Scripting::InternalCalls {
 		rb->Setup();
 
 	}
-	void RigidBodySetMass(int64_t componentPointer, float value) {
+	void RigidBodySetMass(uint64 componentPointer, float value) {
 
 		CheckComponentPointer(componentPointer);
 
@@ -63,14 +63,14 @@ namespace Copper::Scripting::InternalCalls {
 
 	}
 
-	void RigidBodyAddForce(int64_t componentPointer, Vector3* force, uint8_t mode) {
+	void RigidBodyAddForce(uint64 componentPointer, Vector3* force, uint8_t mode) {
 
 		CheckComponentPointer(componentPointer);
 
 		((RigidBody*) componentPointer)->AddForce(*force, (ForceMode) mode);
 
 	}
-	void RigidBodyAddTorque(int64_t componentPointer, Vector3* torque, uint8_t mode) {
+	void RigidBodyAddTorque(uint64 componentPointer, Vector3* torque, uint8_t mode) {
 
 		CheckComponentPointer(componentPointer);
 

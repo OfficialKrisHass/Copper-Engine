@@ -16,12 +16,11 @@
 #include "Engine/Input/AxisManager.h"
 
 #include "Engine/Scene/CopperECS.h"
+#include "Engine/Components/Camera.h"
 
 #include "Engine/Physics/PhysicsEngine.h"
 
 #include "Engine/Scripting/ScriptingCore.h"
-
-#include "Engine/Components/Camera.h"
 
 #ifdef CU_EDITOR
 extern Copper::Window* GetEditorWindow();
@@ -69,7 +68,7 @@ namespace Copper {
 		SimpleEvent postShutdownEvent;
 
 		// Helper function to get a reference to the window no matter if we are using the editor or not
-		Window& WindowRef() {
+		Window& Window() {
 
 		#ifdef CU_EDITOR
 			return *window;
@@ -92,6 +91,7 @@ namespace Copper {
 	void EngineCore::Initialize(const Args& args) {
 
 		// This is the only function that has to do this as this is the only exposed function
+
 		VERIFY_STATE_INTERNAL(EngineState::Entry, "Initialize the Engine");
 		data.engineState = EngineState::Initialization;
 		data.arguments = &args;
@@ -106,15 +106,15 @@ namespace Copper {
 	#else
 		data.window = Window("Copper Engine", 1280, 720);
 		RendererAPI::Initialize();
-		data.fbo = FrameBuffer(data.WindowRef().Size());
+		data.fbo = FrameBuffer(data.Window().Size());
 	#endif
 
-		data.WindowRef().AddWindowCloseEventFunc(OnWindowClose);
-		data.WindowRef().AddWindowResizeEventFunc(OnWindowResize);
+		data.Window().AddWindowCloseEventFunc(OnWindowClose);
+		data.Window().AddWindowResizeEventFunc(OnWindowResize);
 
 		Renderer::Initialize();
 		Renderer::SetShader(Shader("assets/Shaders/vertexDefault.glsl", "assets/Shaders/fragmentDefault.glsl"));
-		data.mainUIContext.Initialize(data.WindowRef(), true);
+		data.mainUIContext.Initialize(data.Window(), true);
 
 		// Input
 
@@ -143,11 +143,11 @@ namespace Copper {
 
 		while (data.engineState == EngineState::Running) {
 
-			float time = data.WindowRef().Time();
+			float time = data.Window().Time();
 			data.deltaTime = time - data.lastFrameTime;
 			data.lastFrameTime = time;
 
-			data.WindowRef().Update();
+			data.Window().Update();
 
 			data.updateEvent();
 
@@ -155,7 +155,7 @@ namespace Copper {
 			data.scene.Update(data.renderScene, data.deltaTime);
 			data.fbo.Unbind();
 
-			Renderer::ResizeViewport(data.WindowRef().Size());
+			Renderer::ResizeViewport(data.Window().Size());
 
 			data.mainUIContext.Begin();
 			data.uiUpdateEvent();
@@ -173,7 +173,7 @@ namespace Copper {
 	void Shutdown() {
 
 		data.mainUIContext.Shutdown();
-		data.WindowRef().Shutdown();
+		data.Window().Shutdown();
 		data.postShutdownEvent();
 
 	}
@@ -195,7 +195,7 @@ namespace Copper {
 
 	}
 
-	const Args* EngineCore::GetArguments() { return data.arguments; }
+	const Args& EngineCore::GetArguments() { return *data.arguments; }
 #pragma endregion
 
 	bool OnWindowClose(const Event& e) {
@@ -211,8 +211,8 @@ namespace Copper {
 		// Editor handles resizing on its own
 
 	#ifndef CU_EDITOR
-		data.fbo.Resize(data.WindowRef().Size());
-		data.scene.cam->Resize(data.WindowRef().Size());
+		data.fbo.Resize(data.Window().Size());
+		data.scene.cam->Resize(data.Window().Size());
 	#endif
 
 		return true;
@@ -235,7 +235,7 @@ namespace Copper {
 
 	// Declaration in Window.h
 
-	Window& GetWindow() { return data.WindowRef(); }
+	Window& GetWindow() { return data.Window(); }
 	UVector2I GetWindowSize() {
 		
 	#ifdef CU_EDITOR
@@ -255,7 +255,7 @@ namespace Copper {
 
 	}
 
-	void SetMainWindowAsCurrent() { data.WindowRef().SetAsCurrentContext(); }
+	void SetMainWindowAsCurrent() { data.Window().SetAsCurrentContext(); }
 	void SetWindowSize(const UVector2I& size) {
 
 	#ifdef CU_EDITOR
@@ -271,7 +271,7 @@ namespace Copper {
 
 	// Declaration in FrameBuffer.h
 
-	uint32_t GetMainFBOTexture() { return data.fbo.GetColorAttachment(); }
+	uint32 GetMainFBOTexture() { return data.fbo.GetColorAttachment(); }
 
 	// Declaration in ImGui.h
 
@@ -283,14 +283,14 @@ namespace Copper {
 	Scene* GetScene() { return &data.scene; }
 	void SetShouldRenderScene(bool value) { data.renderScene = value; }
 
-	uint32_t GetNumOfEntities() { return data.scene.GetNumOfEntities(); }
+	uint32 GetNumOfEntities() { return data.scene.GetNumOfEntities(); }
 	bool IsSceneRuntimeRunning() { return data.scene.IsRuntimeRunning(); }
 
 	InternalEntity* CreateEntity(ENTITY_PROPERTIES_DECLARATION) { return data.scene.CreateEntity(position, rotation, scale, name); }
-	InternalEntity* CreateEntityFromID(uint32_t id, ENTITY_PROPERTIES_DECLARATION, bool returnIfExists) { return data.scene.CreateEntityFromID(id, position, rotation, scale, name, returnIfExists); }
-	InternalEntity* GetEntityFromID(uint32_t id) { return data.scene.GetEntityFromID(id); }
+	InternalEntity* CreateEntityFromID(uint32 id, ENTITY_PROPERTIES_DECLARATION, bool returnIfExists) { return data.scene.CreateEntityFromID(id, position, rotation, scale, name, returnIfExists); }
+	InternalEntity* GetEntityFromID(uint32 id) { return data.scene.GetEntityFromID(id); }
 	void RemoveEntity(InternalEntity* entity) { data.scene.RemoveEntity(entity); }
-	void RemoveEntityFromID(uint32_t id) { data.scene.RemoveEntityFromID(id); }
+	void RemoveEntityFromID(uint32 id) { data.scene.RemoveEntityFromID(id); }
 
 // Editor misc.
 #ifdef CU_EDITOR

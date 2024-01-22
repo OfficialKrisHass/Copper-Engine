@@ -15,26 +15,10 @@
 
 namespace Copper {
 
-	/*float windowBG[3];
-	float Button[3];
-	float ButtonH[3];
-	float ButtonA[3];
-	float Frame[3];
-	float FrameH[3];
-	float FrameA[3];
-	float Tab[3];
-	float TabH[3];
-	float TabA[3];
-	float TabU[3];
-	float TabUA[3];
-	float Title[3];
-	float TitleA[3];
-	float TitleC[3];*/
-
 	std::string mainFontPath = "";
 	float mainFontSize = 0.0f;
 
-	uint32_t uiCount = 0;
+	uint32 uiCount = 0;
 
 	void UIContext::Initialize(const Window& window, bool gizmo, bool docking, bool viewports) {
 
@@ -142,41 +126,5 @@ namespace Copper {
 	}
 
 	void UIContext::SetAsCurrent() { ImGui::SetCurrentContext(context); }
-
-	/*void ThemeEditor() {
-		ImGui::Begin("Theme Editor");
-		ImGui::DragFloat3("Window BG", windowBG, 0.001f, 0.0f, 1.0f);
-		ImGui::DragFloat3("Button", Button, 0.001f, 0.0f, 1.0f);
-		ImGui::DragFloat3("Button Hovered", ButtonH, 0.001f, 0.0f, 1.0f);
-		ImGui::DragFloat3("Button Active", ButtonA, 0.001f, 0.0f, 1.0f);
-		ImGui::DragFloat3("Frame BG", Frame, 0.001f, 0.0f, 1.0f);
-		ImGui::DragFloat3("Frame BG Hovered", FrameH, 0.001f, 0.0f, 1.0f);
-		ImGui::DragFloat3("Frame BG Active", FrameA, 0.001f, 0.0f, 1.0f);
-		ImGui::DragFloat3("Tab", Tab, 0.001f, 0.0f, 1.0f);
-		ImGui::DragFloat3("Tab Hovered", TabH, 0.001f, 0.0f, 1.0f);
-		ImGui::DragFloat3("Tab Active", TabA, 0.001f, 0.0f, 1.0f);
-		ImGui::DragFloat3("Tab Unfocused", TabU, 0.001f, 0.0f, 1.0f);
-		ImGui::DragFloat3("Tab Unfocused Active", TabUA, 0.001f, 0.0f, 1.0f);
-		ImGui::DragFloat3("Title BG", Title, 0.001f, 0.0f, 1.0f);
-		ImGui::DragFloat3("Title BG Active", TitleA, 0.001f, 0.0f, 1.0f);
-		ImGui::DragFloat3("Title BG Collapsed", TitleC, 0.001f, 0.0f, 1.0f);
-		ImGui::End();
-		auto& colors = ImGui::GetStyle().Colors;
-		colors[ImGuiCol_WindowBg] = ImVec4(windowBG[0], windowBG[1], windowBG[2], 1.0f);
-		colors[ImGuiCol_Button] =        ImVec4{ Button[0], Button[1], Button[2], 1.0f };
-		colors[ImGuiCol_ButtonHovered] = ImVec4{ ButtonH[0], ButtonH[1], ButtonH[2], 1.0f };
-		colors[ImGuiCol_ButtonActive] =  ImVec4{ ButtonA[0], ButtonA[1], ButtonA[2], 1.0f };
-		colors[ImGuiCol_FrameBg] =        ImVec4{ Frame[0], Frame[1], Frame[2], 1.0f };
-		colors[ImGuiCol_FrameBgHovered] = ImVec4{ FrameH[0], FrameH[1], FrameH[2], 1.0f };
-		colors[ImGuiCol_FrameBgActive] =  ImVec4{ FrameA[0], FrameA[1], FrameA[2], 1.0f };
-		colors[ImGuiCol_Tab] =                ImVec4{ Tab[0], Tab[1], Tab[2], 1.0f };
-		colors[ImGuiCol_TabHovered] =         ImVec4{ TabH[0], TabH[1], TabH[2], 1.0f };
-		colors[ImGuiCol_TabActive] =          ImVec4{ TabA[0], TabA[1], TabA[2], 1.0f };
-		colors[ImGuiCol_TabUnfocused] =       ImVec4{ TabU[0], TabU[1], TabU[2], 1.0f };
-		colors[ImGuiCol_TabUnfocusedActive] = ImVec4{ TabUA[0], TabUA[1], TabUA[2], 1.0f };
-		colors[ImGuiCol_TitleBg] =          ImVec4{ Title[0], Title[1], Title[2], 1.0f };
-		colors[ImGuiCol_TitleBgActive] =    ImVec4{ TitleA[0], TitleA[1], TitleA[2], 1.0f };
-		colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ TitleC[0], TitleC[1], TitleC[2], 1.0f };
-	}*/
 
 }

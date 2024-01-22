@@ -2,9 +2,9 @@
 
 #include "Engine/Core/Core.h"
 
-#include "Engine/Scripting/Field.h"
+#include "Engine/Components/Component.h"
 
-#include "Engine/Scene/Component.h"
+#include "Engine/Scripting/Field.h"
 
 extern "C" {
 
@@ -28,7 +28,6 @@ namespace Copper {
 		std::string name = "";
 
 		void Init(const std::string& name);
-		//void Init(uint32_t objID, const std::string& name);
 
 		void CopyTo(MonoObject* other);
 		
@@ -51,21 +50,21 @@ namespace Copper {
 		void SetFieldValue(const ScriptField& field, Transform** value);
 
 	private:
-		MonoObject* instance = nullptr;
+		MonoObject* m_instance = nullptr;
 
-		MonoMethod* create = nullptr;
-		UpdateFunc update = nullptr;
+		MonoMethod* m_create = nullptr;
+		UpdateFunc m_update = nullptr;
 
 		// Collision Eventss
 
-		MonoMethod* onCollisionBegin = nullptr;
-		OnCollisionPersistFunc onCollisionPersist = nullptr;
-		MonoMethod* onCollisionEnd = nullptr;
+		MonoMethod* m_onCollisionBegin = nullptr;
+		OnCollisionPersistFunc m_onCollisionPersist = nullptr;
+		MonoMethod* m_onCollisionEnd = nullptr;
 
 		// Trigger Events
 
-		MonoMethod* onTriggerEnter = nullptr;
-		MonoMethod* onTriggerLeave = nullptr;
+		MonoMethod* m_onTriggerEnter = nullptr;
+		MonoMethod* m_onTriggerLeave = nullptr;
 
 		void Invalidate();
 

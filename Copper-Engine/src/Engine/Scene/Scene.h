@@ -5,20 +5,12 @@
 #include "Engine/Scene/InternalEntity.h"
 #include "Engine/Scene/Registry.h"
 
-#define ENTITY_DEFAULT_PROPERTIES_DECLARATION const Vector3& position = Vector3::zero, const Quaternion& rotation = Quaternion(1.0f, 0.0f, 0.0f, 0.0f), const Vector3& scale = Vector3::one, const std::string& name = "Entity"
-#define ENTITY_PROPERTIES_DECLARATION const Vector3& position, const Quaternion& rotation, const Vector3& scale, const std::string& name
-
 namespace YAML { class Emitter; class Node; }
 namespace physx { class PxScene; class PxRigidActor; }
 
 namespace Copper {
 
 	namespace Filesystem { class Path; }
-
-	class Light;
-	class Camera;
-
-	class RigidBody;
 
 	class Scene {
 
@@ -31,42 +23,25 @@ namespace Copper {
 	public:
 		Scene() {
 
-			registry.Initialize();
+			m_registry.Initialize();
 
 		}
 
 		std::string name = "";
 		fs::path path = "";
 
-		Camera* cam = nullptr;
+		class Camera* cam = nullptr;
 
-		InternalEntity* CreateEntity(ENTITY_DEFAULT_PROPERTIES_DECLARATION) {
+		InternalEntity* CreateEntity(ENTITY_DEFAULT_PROPERTIES_DECLARATION) { return m_registry.CreateEntity(this, position, rotation, scale, name); }
+		InternalEntity* CreateEntityFromID(uint32 id, ENTITY_DEFAULT_PROPERTIES_DECLARATION, bool returnIfExists = true) {
 
-			return registry.CreateEntity(this, position, rotation, scale, name);
-
-		}
-		InternalEntity* CreateEntityFromID(uint32_t id, ENTITY_DEFAULT_PROPERTIES_DECLARATION, bool returnIfExists = true) {
-
-			InternalEntity* ret = registry.CreateEntityFromID(id, this, position, rotation, scale, name, returnIfExists);
-
+			InternalEntity* ret = m_registry.CreateEntityFromID(id, this, position, rotation, scale, name, returnIfExists);
 			return ret;
 
 		}
-		InternalEntity* GetEntityFromID(uint32_t id) {
-
-			return registry.GetEntityFromID(id);
-
-		}
-		void RemoveEntity(InternalEntity* entity) {
-
-			registry.RemoveEntity(entity->id);
-
-		}
-		void RemoveEntityFromID(uint32_t id) {
-
-			registry.RemoveEntity(id);
-
-		}
+		InternalEntity* GetEntityFromID(uint32 id) { return m_registry.GetEntityFromID(id); }
+		void RemoveEntity(InternalEntity* entity) { m_registry.RemoveEntity(entity->m_id); }
+		void RemoveEntityFromID(uint32 id) { m_registry.RemoveEntity(id); }
 
 		void StartRuntime();
 		void Update(bool render, float deltaTime);
@@ -76,28 +51,24 @@ namespace Copper {
 		void Serialize(const fs::path& path);
 		bool Deserialize(const fs::path& path);
 
-		Registry::ComponentPool* GetComponentPool(int cID) {
+		Registry::ComponentPool* GetComponentPool(int32 cID) { return m_registry.GetComponentPool(cID); }
+		uint32 GetNumOfEntities() { return (uint32) m_registry.m_entities.size(); }
 
-			return registry.GetComponentPool(cID);
-
-		}
-		uint32_t GetNumOfEntities() { return (uint32_t) registry.entities.size(); }
-
-		bool IsRuntimeRunning() { return runtimeRunning; }
+		bool IsRuntimeRunning() { return m_runtimeRunning; }
 
 	private:
-		Registry registry;
+		Registry m_registry;
 
-		Light* light = nullptr;
+		class Light* m_light = nullptr;
 
-		physx::PxScene* physicsScene = nullptr;
+		physx::PxScene* m_physicsScene = nullptr;
 
-		bool runtimeRunning = false;
-		bool runtimeStarted = false;
+		bool m_runtimeRunning = false;
+		bool m_runtimeStarted = false;
 
 		// Defined in PhysicsEngine.cpp so that we dont have physx includes in Scene.cpp
 
-		bool physicsInitialized = false;
+		bool m_physicsInitialized = false;
 
 		void InitializePhysics();
 		void UpdatePhysics(float deltaTime);
@@ -106,10 +77,9 @@ namespace Copper {
 		void AddPhysicsBody(physx::PxRigidActor* body);
 		void RemovePhysicsBody(physx::PxRigidActor* body);
 
-		physx::PxScene* GetPhysicsScene() { return physicsScene; }
+		physx::PxScene* GetPhysicsScene() { return m_physicsScene; }
 
 		// Serialization
-
 
 		void SerializeEntity(InternalEntity* entity, YAML::Emitter& out);
 		void DeserializeEntity(InternalEntity* entity, const YAML::Node& node);
@@ -121,17 +91,10 @@ namespace Copper {
 		template<> void DeserializeScriptField<Transform*>(const ScriptField& field, ScriptComponent* instance, const YAML::Node& fieldNode);
 
 	};
-
+	
 	Scene* GetScene();
-	void SetShouldRenderScene(bool value);
-
-	uint32_t GetNumOfEntities();
 	bool IsSceneRuntimeRunning();
 
-	InternalEntity* CreateEntity(ENTITY_DEFAULT_PROPERTIES_DECLARATION);
-	InternalEntity* CreateEntityFromID(uint32_t id, ENTITY_DEFAULT_PROPERTIES_DECLARATION, bool returnIfExists = true);
-	InternalEntity* GetEntityFromID(uint32_t id);
-	void RemoveEntity(InternalEntity* entity);
-	void RemoveEntityFromID(uint32_t id);
+	void SetShouldRenderScene(bool value);
 
 }

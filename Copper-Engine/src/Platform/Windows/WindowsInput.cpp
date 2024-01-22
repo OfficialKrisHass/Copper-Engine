@@ -15,7 +15,7 @@ extern Copper::UVector2I GetViewportCentre();
 
 namespace Copper::Input {
 
-	std::unordered_map<KeyCode, std::pair<uint32_t, bool>> keys;
+	std::unordered_map<KeyCode, std::pair<uint32, bool>> keys;
 
 	bool mouseVisible = true;
 	bool mouseLocked = false;
@@ -79,7 +79,7 @@ namespace Copper::Input {
 
 	bool IsButton(MouseCode button) {
 
-		return glfwGetMouseButton(GetGLFWwindow, (int)button) == GLFW_PRESS ? true : false;
+		return glfwGetMouseButton(GetGLFWwindow, (int32) button) == GLFW_PRESS ? true : false;
 
 	}
 

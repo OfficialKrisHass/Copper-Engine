@@ -14,9 +14,9 @@
 
 namespace Copper {
 
-	uint32_t windowCount = 0;
+	uint32 windowCount = 0;
 
-	Window::Window(const std::string& title, uint32_t width, uint32_t height, bool maximize) {
+	Window::Window(const std::string& title, uint32 width, uint32 height, bool maximize) {
 
 		data.title = title;
 
@@ -61,7 +61,7 @@ namespace Copper {
 		windowCount--;
 
 	}
-	
+
 	void Window::SetAsCurrentContext() {
 
 		glfwMakeContextCurrent(WINDOW);
@@ -77,7 +77,7 @@ namespace Copper {
 			data.windowCloseEvent();
 
 		});
-		glfwSetWindowFocusCallback(WINDOW, [](GLFWwindow* window, int focused) {
+		glfwSetWindowFocusCallback(WINDOW, [](GLFWwindow* window, int32 focused) {
 
 			WindowData& data = GETWINDATA;
 
@@ -86,7 +86,7 @@ namespace Copper {
 			data.windowFocusedEvent.Clear();
 
 		});
-		glfwSetWindowSizeCallback(WINDOW, [](GLFWwindow* window, int width, int height) {
+		glfwSetWindowSizeCallback(WINDOW, [](GLFWwindow* window, int32 width, int32 height) {
 
 			WindowData& data = GETWINDATA;
 
@@ -97,42 +97,42 @@ namespace Copper {
 
 		});
 
-		glfwSetKeyCallback(WINDOW, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+		glfwSetKeyCallback(WINDOW, [](GLFWwindow* window, int32 key, int32 scancode, int32 action, int32 mods) {
 
 			WindowData& data = GETWINDATA;
 
 			switch (action) {
 
-				case GLFW_PRESS:
-				{
+			case GLFW_PRESS:
+			{
 
-					data.keyPressedEvent.key = (KeyCode) key;
-					data.keyPressedEvent.Call();
-					data.keyPressedEvent.Clear();
+				data.keyPressedEvent.key = (KeyCode) key;
+				data.keyPressedEvent.Call();
+				data.keyPressedEvent.Clear();
 
-					break;
+				break;
 
-				}
-				case GLFW_REPEAT:
-				{
+			}
+			case GLFW_REPEAT:
+			{
 
-					data.keyPressedEvent.key = (KeyCode) key;
-					data.keyPressedEvent.Call();
-					data.keyPressedEvent.Clear();
+				data.keyPressedEvent.key = (KeyCode) key;
+				data.keyPressedEvent.Call();
+				data.keyPressedEvent.Clear();
 
-					break;
+				break;
 
-				}
-				case GLFW_RELEASE:
-				{
+			}
+			case GLFW_RELEASE:
+			{
 
-					data.keyReleasedEvent.key = (KeyCode) key;
-					data.keyReleasedEvent.Call();
-					data.keyReleasedEvent.Clear();
+				data.keyReleasedEvent.key = (KeyCode) key;
+				data.keyReleasedEvent.Call();
+				data.keyReleasedEvent.Clear();
 
-					break;
+				break;
 
-				}
+			}
 
 			}
 
@@ -142,8 +142,8 @@ namespace Copper {
 
 			WindowData& data = GETWINDATA;
 
-			data.mouseMoveEvent.mouseCoords.x = (float) x;
-			data.mouseMoveEvent.mouseCoords.y = (float) y;
+			data.mouseMoveEvent.mouseCoords.x = (uint32) x;
+			data.mouseMoveEvent.mouseCoords.y = (uint32) y;
 			data.mouseMoveEvent();
 
 		});
@@ -152,36 +152,36 @@ namespace Copper {
 
 	bool Window::IsKeyPressed(KeyCode keycode) const {
 
-		return glfwGetKey(WINDOW, (int) keycode) == GLFW_PRESS;
+		return glfwGetKey(WINDOW, (int32) keycode) == GLFW_PRESS;
 
 	}
 	bool Window::IsButtonPressed(MouseCode mousecode) const {
 
-		return glfwGetMouseButton(WINDOW, (int) mousecode) == GLFW_PRESS;
+		return glfwGetMouseButton(WINDOW, (int32) mousecode) == GLFW_PRESS;
 
 	}
 
-	uint32_t Window::Width() const {
+	uint32 Window::Width() const {
 
-		uint32_t ret;
+		uint32 ret;
 
-		glfwGetWindowSize(WINDOW, (int*) &ret, nullptr);
+		glfwGetWindowSize(WINDOW, (int32*) &ret, nullptr);
 
 		return ret;
 
 	}
-	uint32_t Window::Height() const {
+	uint32 Window::Height() const {
 
 		uint32_t ret;
 
-		glfwGetWindowSize(WINDOW, nullptr, (int*) &ret);
+		glfwGetWindowSize(WINDOW, nullptr, (int32*) &ret);
 
 		return ret;
 
 	}
 	UVector2I Window::Size() const {
 
-		int x, y;
+		int32 x, y;
 		glfwGetWindowSize(WINDOW, &x, &y);
 
 		return UVector2I(x, y);
@@ -191,7 +191,7 @@ namespace Copper {
 
 		UVector2I ret;
 
-		glfwGetWindowSize(WINDOW, (int*) &ret.x, (int*) &ret.y);
+		glfwGetWindowSize(WINDOW, (int32*) &ret.x, (int32*) &ret.y);
 
 		return static_cast<float>(ret.x) / ret.y;
 

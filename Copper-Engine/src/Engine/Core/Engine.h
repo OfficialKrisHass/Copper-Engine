@@ -13,7 +13,7 @@ namespace Copper {
 
 	namespace EngineCore {
 
-		enum class EngineState : uint8_t {
+		enum class EngineState : uint8 {
 
 			Entry,
 			Initialization,
@@ -28,7 +28,7 @@ namespace Copper {
 		EngineState GetEngineState();
 		std::string EngineStateToString(EngineState state);
 
-		const Args* GetArguments();
+		const Args& GetArguments();
 
 	}
 

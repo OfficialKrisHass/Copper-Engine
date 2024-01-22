@@ -32,7 +32,7 @@ namespace Copper::Utilities {
 		return ret;
 
 	}
-	char* ReadFileBinary(const fs::path& path, uint32_t* outSize) {
+	char* ReadFileBinary(const fs::path& path, uint32* outSize) {
 		
 		std::ifstream stream;
 		stream.open(path.string(), std::ios::binary | std::ios::ate);
@@ -41,7 +41,7 @@ namespace Copper::Utilities {
 
 		std::streampos end = stream.tellg();
 		stream.seekg(0, std::ios::beg);
-		uint32_t size = (uint32_t) (end - stream.tellg());
+		uint32 size = (uint32) (end - stream.tellg());
 
 		if (size == 0) { LogError("Assembly is empty.\nPath: {0}", path.string()); return nullptr; }
 

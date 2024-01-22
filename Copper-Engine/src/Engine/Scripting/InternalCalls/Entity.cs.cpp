@@ -10,7 +10,7 @@
 
 namespace Copper::Scripting::InternalCalls {
 
-	MonoString* GetEntityName(uint32_t eID) {
+	MonoString* GetEntityName(uint32 eID) {
 
 		CheckValidEntityWithReturn(eID, nullptr);
 		InternalEntity* entity = GetEntityFromID(eID);
@@ -18,7 +18,7 @@ namespace Copper::Scripting::InternalCalls {
 		return MonoUtils::StringToMono(entity->name);
 
 	}
-	void SetEntityName(uint32_t eID, MonoString* out) {
+	void SetEntityName(uint32 eID, MonoString* out) {
 
 		CheckValidEntity(eID);
 		InternalEntity* entity = GetEntityFromID(eID);
@@ -27,14 +27,14 @@ namespace Copper::Scripting::InternalCalls {
 
 	}
 
-	bool IsEntityValid(uint32_t eID) {
+	bool IsEntityValid(uint32 eID) {
 
 		if (eID == INVALID_ENTITY_ID || eID >= GetNumOfEntities() || !(*GetEntityFromID(eID))) return false;
 		return true;
 
 	}
 
-	MonoObject* GetEntity(uint32_t eID) {
+	MonoObject* GetEntity(uint32 eID) {
 
 		CheckValidEntityWithReturn(eID, nullptr);
 

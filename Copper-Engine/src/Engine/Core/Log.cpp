@@ -9,8 +9,8 @@
 
 namespace Copper {
 
-	std::shared_ptr<spdlog::logger> Logger::logger;
-	std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> Logger::ringbufferSink;
+	std::shared_ptr<spdlog::logger> Logger::m_logger;
+	std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> Logger::m_ringbufferSink;
 	std::shared_ptr<spdlog::sinks::stdout_color_sink_mt> colorSink;
 	std::shared_ptr<spdlog::sinks::basic_file_sink_mt> fileSink;
 
@@ -18,21 +18,18 @@ namespace Copper {
 
 		if (EngineCore::GetEngineState() != EngineCore::EngineState::Entry) return;
 
-		ringbufferSink = std::make_shared<spdlog::sinks::ringbuffer_sink_mt>(100);
+		m_ringbufferSink = std::make_shared<spdlog::sinks::ringbuffer_sink_mt>(100);
 		colorSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-		//fileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("Log.txt");
 
-		ringbufferSink->set_pattern("%l:%v");
+		m_ringbufferSink->set_pattern("%l:%v");
 		colorSink->set_pattern("%^[%T] %n: %v%$");
-		//fileSink->set_pattern("[%T] %n: %v");
 
 		std::vector<spdlog::sink_ptr> sinks;
-		sinks.push_back(ringbufferSink);
+		sinks.push_back(m_ringbufferSink);
 		sinks.push_back(colorSink);
-		//sinks.push_back(fileSink);
 
-		logger = std::make_shared<spdlog::logger>("Logger", sinks.begin(), sinks.end());
-		logger->set_level(spdlog::level::trace);
+		m_logger = std::make_shared<spdlog::logger>("Logger", sinks.begin(), sinks.end());
+		m_logger->set_level(spdlog::level::trace);
 
 	}
 

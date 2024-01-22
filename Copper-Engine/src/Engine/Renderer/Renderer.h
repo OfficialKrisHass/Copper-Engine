@@ -38,14 +38,14 @@ namespace Copper {
 		void ClearColor(float r, float g, float b);
 		void ResizeViewport(const UVector2I& size);
 
-		void Render(VertexArray* vao, uint32_t count, Camera* cam, Light* light);
+		void Render(VertexArray* vao, uint32 count, Camera* cam, Light* light);
 		void EndFrame();
 
-		void SetShader(const Shader& shader) { this->shader = shader; }
-		Shader* GetShader() { return &this->shader; }
+		void SetShader(const Shader& shader) { this->m_shader = shader; }
+		Shader* GetShader() { return &this->m_shader; }
 		
 	private:
-		Shader shader;
+		Shader m_shader;
 
 	};
 

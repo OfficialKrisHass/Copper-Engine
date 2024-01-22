@@ -2,7 +2,9 @@
 
 namespace Copper {
 
-	enum class KeyCode : uint16_t {
+	enum class KeyCode : uint16 {
+
+		None = 0,
 
 		Space = 32,
 		Apostrophe = 39,
@@ -128,7 +130,7 @@ namespace Copper {
 
 	};
 
-	enum class MouseCode : uint16_t {
+	enum class MouseCode : uint16 {
 		
 		Button1 = 0,
 		Button2 = 1,

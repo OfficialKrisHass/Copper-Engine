@@ -29,6 +29,9 @@ namespace Copper::Input {
 			return 0.0f;
 		
 		}
+
+		// Mouse Axis
+
 		if (isMouseAxis) {
 
 			float ret = 0.0f;
@@ -39,6 +42,8 @@ namespace Copper::Input {
 			return ret;
 
 		}
+
+		// Keyboard axis
 
 		float ret = 0.0f;
 		Axis axis = axises[axisName];

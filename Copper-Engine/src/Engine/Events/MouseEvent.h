@@ -10,7 +10,7 @@ namespace Copper {
 		MouseMoveEvent() = default;
 		MouseMoveEvent(UVector2I mouseCoords) : mouseCoords(mouseCoords) {}
 
-		UVector2I mouseCoords;
+		UVector2I mouseCoords = UVector2I::zero;
 
 	};
 

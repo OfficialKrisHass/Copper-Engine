@@ -7,60 +7,60 @@ namespace Copper {
 
 	VertexBuffer::VertexBuffer(std::vector<float> vertices) {
 
-		glGenBuffers(1, &ID);
+		glGenBuffers(1, &m_id);
 
-		glBindBuffer(GL_ARRAY_BUFFER, ID);
+		glBindBuffer(GL_ARRAY_BUFFER, m_id);
 		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
 
 	}
-	VertexBuffer::VertexBuffer(uint32_t size) {
+	VertexBuffer::VertexBuffer(uint32 size) {
 
-		glGenBuffers(1, &ID);
+		glGenBuffers(1, &m_id);
 
-		glBindBuffer(GL_ARRAY_BUFFER, ID);
+		glBindBuffer(GL_ARRAY_BUFFER, m_id);
 		glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_STATIC_DRAW);
 
 	}
 
 	void VertexBuffer::SetData(const std::vector<float>& vertices) {
 
-		glBindBuffer(GL_ARRAY_BUFFER, ID);
+		glBindBuffer(GL_ARRAY_BUFFER, m_id);
 		glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(float), vertices.data());
 
 	}
 
-	void VertexBuffer::Bind() const { glBindBuffer(GL_ARRAY_BUFFER, ID); }
+	void VertexBuffer::Bind() const { glBindBuffer(GL_ARRAY_BUFFER, m_id); }
 	void VertexBuffer::Unbind() const { glBindBuffer(GL_ARRAY_BUFFER, 0); }
 
 
 
-	IndexBuffer::IndexBuffer(std::vector<uint32_t> indices) : count((uint32_t) indices.size()) {
+	IndexBuffer::IndexBuffer(std::vector<uint32> indices) : m_count((uint32) indices.size()) {
 
-		glGenBuffers(1, &ID);
+		glGenBuffers(1, &m_id);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ID);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint32_t), indices.data(), GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint32), indices.data(), GL_STATIC_DRAW);
 
 	}
-	IndexBuffer::IndexBuffer(uint32_t size) : count(size / sizeof(uint32_t)) {
+	IndexBuffer::IndexBuffer(uint32 size) : m_count(size / sizeof(uint32)) {
 
-		glGenBuffers(1, &ID);
+		glGenBuffers(1, &m_id);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ID);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, nullptr, GL_STATIC_DRAW);
 
 	}
 
-	void IndexBuffer::SetData(const std::vector<uint32_t>& indices) {
+	void IndexBuffer::SetData(const std::vector<uint32>& indices) {
 
-		count = (uint32_t) indices.size();
+		m_count = (uint32) indices.size();
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ID);
-		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indices.size() * sizeof(uint32_t), indices.data());
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indices.size() * sizeof(uint32), indices.data());
 
 	}
 
-	void IndexBuffer::Bind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ID); }
+	void IndexBuffer::Bind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id); }
 	void IndexBuffer::Unbind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); }
 
 }

@@ -13,45 +13,45 @@
 
 namespace Copper::Scripting::InternalCalls {
 
-	void GetPosition(int64_t componentPointer, Vector3* out) {
+	void GetPosition(uint64 componentPointer, Vector3* out) {
 
 		CheckComponentPointer(componentPointer);
 		*out = ((Transform*) componentPointer)->position;
 
 	}
-	void GetRotation(int64_t componentPointer, Quaternion* out) {
+	void GetRotation(uint64 componentPointer, Quaternion* out) {
 
 		CheckComponentPointer(componentPointer);
 		*out = ((Transform*) componentPointer)->rotation;
 
 	}
-	void GetScale(int64_t componentPointer, Vector3* out) {
+	void GetScale(uint64 componentPointer, Vector3* out) {
 
 		CheckComponentPointer(componentPointer);
 		*out = ((Transform*) componentPointer)->scale;
 
 	}
 
-	void GetForward(int64_t componentPointer, Vector3* out) {
+	void GetForward(uint64 componentPointer, Vector3* out) {
 
 		CheckComponentPointer(componentPointer);
 		*out = ((Transform*) componentPointer)->Forward();
 
 	}
-	void GetRight(int64_t componentPointer, Vector3* out) {
+	void GetRight(uint64 componentPointer, Vector3* out) {
 
 		CheckComponentPointer(componentPointer);
 		*out = ((Transform*) componentPointer)->Right();
 
 	}
-	void GetUp(int64_t componentPointer, Vector3* out) {
+	void GetUp(uint64 componentPointer, Vector3* out) {
 
 		CheckComponentPointer(componentPointer);
 		*out = ((Transform*) componentPointer)->Up();
 
 	}
 
-	void SetPosition(int64_t componentPointer, Vector3* value) {
+	void SetPosition(uint64 componentPointer, Vector3* value) {
 
 		CheckComponentPointer(componentPointer);
 
@@ -65,7 +65,7 @@ namespace Copper::Scripting::InternalCalls {
 		rb->SetPosition(*value);
 
 	}
-	void SetRotation(int64_t componentPointer, Quaternion* value) {
+	void SetRotation(uint64 componentPointer, Quaternion* value) {
 
 		CheckComponentPointer(componentPointer);
 
@@ -79,7 +79,7 @@ namespace Copper::Scripting::InternalCalls {
 		rb->SetRotation(*value);
 
 	}
-	void SetScale(int64_t componentPointer, Vector3* value) {
+	void SetScale(uint64 componentPointer, Vector3* value) {
 
 		CheckComponentPointer(componentPointer);
 		((Transform*) componentPointer)->scale = *value;

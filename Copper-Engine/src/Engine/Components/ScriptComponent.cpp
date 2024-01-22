@@ -18,45 +18,44 @@ namespace Copper {
 
 		this->name = name;
 
-		instance = Scripting::AddScriptComponent(GetEntity()->ID(), name);
-		if (!instance) {
+		m_instance = Scripting::AddScriptComponent(GetEntity()->ID(), name);
+		if (!m_instance) {
 
 			Invalidate();
 			return;
 
 		}
 
-		valid = true;
-		MonoClass* klass = mono_object_get_class(instance);
+		MonoClass* klass = mono_object_get_class(m_instance);
 
-		create = mono_class_get_method_from_name(klass, "Create", 0);
-		onCollisionBegin = mono_class_get_method_from_name(klass, "OnCollisionBegin", 1);
-		onCollisionEnd = mono_class_get_method_from_name(klass, "OnCollisionEnd", 1);
-		onTriggerEnter = mono_class_get_method_from_name(klass, "OnTriggerEnter", 1);
-		onTriggerLeave = mono_class_get_method_from_name(klass, "OnTriggerLeave", 1);
+		m_create = mono_class_get_method_from_name(klass, "Create", 0);
+		m_onCollisionBegin = mono_class_get_method_from_name(klass, "OnCollisionBegin", 1);
+		m_onCollisionEnd = mono_class_get_method_from_name(klass, "OnCollisionEnd", 1);
+		m_onTriggerEnter = mono_class_get_method_from_name(klass, "OnTriggerEnter", 1);
+		m_onTriggerLeave = mono_class_get_method_from_name(klass, "OnTriggerLeave", 1);
 		
-		MonoMethod* updateMethod = mono_class_get_method_from_name(klass, "Update", 0);
-		MonoMethod* onCollisionPersistMethod = mono_class_get_method_from_name(klass, "OnCollisionPersist", 1);
+		MonoMethod* update = mono_class_get_method_from_name(klass, "Update", 0);
+		MonoMethod* onCollisionPersist = mono_class_get_method_from_name(klass, "OnCollisionPersist", 1);
 
-		if (updateMethod)
-			update = (UpdateFunc) mono_method_get_unmanaged_thunk(updateMethod);
-		else { update = nullptr; }
+		if (update)
+			m_update = (UpdateFunc) mono_method_get_unmanaged_thunk(update);
+		else { m_update = nullptr; }
 
-		if (onCollisionPersistMethod)
-			onCollisionPersist = (OnCollisionPersistFunc) mono_method_get_unmanaged_thunk(onCollisionPersistMethod);
-		else { onCollisionPersist = nullptr; }
+		if (onCollisionPersist)
+			m_onCollisionPersist = (OnCollisionPersistFunc) mono_method_get_unmanaged_thunk(onCollisionPersist);
+		else { m_onCollisionPersist = nullptr; }
 
 	}
 
 	void ScriptComponent::CopyTo(MonoObject* other) {
 
-		if (instance == other) return;
+		if (m_instance == other) return;
 
 		for (ScriptField& field : Scripting::GetScriptFields(name)) {
 
-			int tmp;
+			int32 tmp;
 			GetFieldValue(field, &tmp);
-			mono_field_set_value(other, field.field, &tmp);
+			mono_field_set_value(other, field.m_field, &tmp);
 
 		}
 
@@ -64,35 +63,35 @@ namespace Copper {
 
 	void ScriptComponent::InvokeCreate() {
 
-		if (!create) return;
+		if (!m_create) return;
 
 		MonoObject* exc = nullptr;
-		mono_runtime_invoke(create, instance, nullptr, &exc);
+		mono_runtime_invoke(m_create, m_instance, nullptr, &exc);
 
-		if (!exc) return;
-		Scripting::MonoUtils::PrintExceptionDetails(exc);
+		if (exc)
+			Scripting::MonoUtils::PrintExceptionDetails(exc);
 
 	}
 	void ScriptComponent::InvokeUpdate() {
 
-		if (!update) return;
+		if (!m_update) return;
 
 		MonoException* exc = nullptr;
-		update(instance, &exc);
+		m_update(m_instance, &exc);
 
-		if (!exc) return;
-		Scripting::MonoUtils::PrintExceptionDetails((MonoObject*) exc);
+		if (exc)
+			Scripting::MonoUtils::PrintExceptionDetails((MonoObject*) exc);
 
 	}
 
     void ScriptComponent::InvokeOnCollisionBegin(InternalEntity *other) {
 
-		if (!onCollisionBegin || !other)
+		if (!m_onCollisionBegin || !other)
 			return;
 
 		void* param = (void*) Scripting::GetScriptEntity(other->ID());
 		MonoObject* exc = nullptr;
-		mono_runtime_invoke(onCollisionBegin, instance, &param, &exc);
+		mono_runtime_invoke(m_onCollisionBegin, m_instance, &param, &exc);
 
 		if (exc)
 			Scripting::MonoUtils::PrintExceptionDetails(exc);
@@ -100,11 +99,11 @@ namespace Copper {
     }
     void ScriptComponent::InvokeOnCollisionPersist(InternalEntity *other) {
 
-		if (!onCollisionPersist || !other)
+		if (!m_onCollisionPersist || !other)
 			return;
 
 		MonoException* exc;
-		onCollisionPersist(instance, Scripting::GetScriptEntity(other->ID()), &exc);
+		m_onCollisionPersist(m_instance, Scripting::GetScriptEntity(other->ID()), &exc);
 
 		if (exc)
 			Scripting::MonoUtils::PrintExceptionDetails((MonoObject*) exc);
@@ -112,12 +111,12 @@ namespace Copper {
     }
 	void ScriptComponent::InvokeOnCollisionEnd(InternalEntity *other) {
 
-		if (!onCollisionEnd || !other)
+		if (!m_onCollisionEnd || !other)
 			return;
 		
 		void* param = (void*) Scripting::GetScriptEntity(other->ID());
 		MonoObject* exc = nullptr;
-		mono_runtime_invoke(onCollisionEnd, instance, &param, &exc);
+		mono_runtime_invoke(m_onCollisionEnd, m_instance, &param, &exc);
 
 		if (exc)
 			Scripting::MonoUtils::PrintExceptionDetails(exc);
@@ -126,12 +125,12 @@ namespace Copper {
 
     void ScriptComponent::InvokeOnTriggerEnter(InternalEntity *other) {
 
-		if (!onTriggerEnter || !other)
+		if (!m_onTriggerEnter || !other)
 			return;
 
 		void* param = (void*) Scripting::GetScriptEntity(other->ID());
 		MonoObject* exc = nullptr;
-		mono_runtime_invoke(onTriggerEnter, instance, &param, &exc);
+		mono_runtime_invoke(m_onTriggerEnter, m_instance, &param, &exc);
 
 		if (exc)
 			Scripting::MonoUtils::PrintExceptionDetails(exc);
@@ -139,12 +138,12 @@ namespace Copper {
     }
 	void ScriptComponent::InvokeOnTriggerLeave(InternalEntity *other) {
 
-		if (!onTriggerLeave)
+		if (!m_onTriggerLeave)
 			return;
 
 		void* param = (void*) Scripting::GetScriptEntity(other->ID());
 		MonoObject* exc = nullptr;
-		mono_runtime_invoke(onTriggerLeave, instance, &param, &exc);
+		mono_runtime_invoke(m_onTriggerLeave, m_instance, &param, &exc);
 
 		if (exc)
 			Scripting::MonoUtils::PrintExceptionDetails(exc);
@@ -153,24 +152,23 @@ namespace Copper {
 
     void ScriptComponent::GetFieldValue(const ScriptField& field, void* out) {
 
-		mono_field_get_value(instance, field.field, out);
+		mono_field_get_value(m_instance, field.m_field, out);
 
 	}
 	void ScriptComponent::GetFieldValue(const ScriptField& field, InternalEntity** out) {
 
-		if (field.type != ScriptField::Type::Entity)
-			RETURN_NULLPTR;
+		if (field.type != ScriptField::Type::Entity) RETURN_NULLPTR;
 
 		MonoObject* entity = nullptr;
-		entity = mono_field_get_value_object(Scripting::GetAppDomain(), field.field, instance);
-		if (!entity)
-			RETURN_NULLPTR;
+		entity = mono_field_get_value_object(Scripting::GetAppDomain(), field.m_field, m_instance);
 
-		uint32_t eID = INVALID_ENTITY_ID;
+		if (!entity) RETURN_NULLPTR;
+
+		uint32 eID = INVALID_ENTITY_ID;
 		MonoClassField* eIDField = mono_class_get_field_from_name(Scripting::GetEntityMonoClass(), "id");
 		mono_field_get_value(entity, eIDField, &eID);
-		if (eID == INVALID_ENTITY_ID)
-			RETURN_NULLPTR
+
+		if (eID == INVALID_ENTITY_ID) RETURN_NULLPTR
 
 		*out = GetEntityFromID(eID);
 
@@ -178,19 +176,18 @@ namespace Copper {
 
 	void ScriptComponent::GetFieldValue(const ScriptField& field, Transform** out) {
 
-		if (field.type != ScriptField::Type::Transform)
-			RETURN_NULLPTR
+		if (field.type != ScriptField::Type::Transform) RETURN_NULLPTR
 
 		MonoObject* transform = nullptr;
-		transform = mono_field_get_value_object(Scripting::GetAppDomain(), field.field, instance);
-		if (!transform)
-			RETURN_NULLPTR;
+		transform = mono_field_get_value_object(Scripting::GetAppDomain(), field.m_field, m_instance);
 
-		int64_t componentPointer = NULL;
+		if (!transform) RETURN_NULLPTR;
+
+		uint64 componentPointer = NULL;
 		MonoClassField* componentPointerField = mono_class_get_field_from_name(Scripting::GetTransformMonoClass(), "componentPointer");
 		mono_field_get_value(transform, componentPointerField, &componentPointer);
-		if (componentPointer == NULL)
-			RETURN_NULLPTR;
+
+		if (componentPointer == NULL) RETURN_NULLPTR;
 
 		*out = (Transform*) componentPointer;
 
@@ -198,15 +195,15 @@ namespace Copper {
 
 	void ScriptComponent::SetFieldValue(const ScriptField& field, void* value) {
 
-		mono_field_set_value(instance, field.field, value);
+		mono_field_set_value(m_instance, field.m_field, value);
 
 	}
 	void ScriptComponent::SetFieldValue(const ScriptField& field, InternalEntity** value) {
 
 		if (field.type != ScriptField::Type::Entity) return;
 
-		uint32_t entityID = *value ? (*value)->ID() : INVALID_ENTITY_ID;
-		mono_field_set_value(instance, field.field, Scripting::GetScriptEntity(entityID));
+		uint32 entityID = *value ? (*value)->ID() : INVALID_ENTITY_ID;
+		mono_field_set_value(m_instance, field.m_field, Scripting::GetScriptEntity(entityID));
 
 	}
 
@@ -216,19 +213,21 @@ namespace Copper {
 
 		if (*value == nullptr) {
 
-			mono_field_set_value(instance, field.field, nullptr);
+			mono_field_set_value(m_instance, field.m_field, nullptr);
 			return;
 
 		}
 
 		MonoClass* transformClass = Scripting::GetTransformMonoClass();
 		MonoObject* transform = mono_object_new(Scripting::GetAppDomain(), transformClass);
+
 		if (!transform) return;
 
 		MonoMethod* constructor = mono_class_get_method_from_name(transformClass, ".ctor", 1);
+
 		if (!constructor) return;
 
-		uint64_t eID = (*value)->GetEntity()->ID();
+		uint32 eID = (*value)->GetEntity()->ID();
 		void* param = &eID;
 		MonoObject* exc = nullptr;
 		mono_runtime_invoke(constructor, transform, &param, &exc);
@@ -236,23 +235,22 @@ namespace Copper {
 		if (exc)
 			Scripting::MonoUtils::PrintExceptionDetails(exc);
 
-		mono_field_set_value(instance, field.field, transform);
+		mono_field_set_value(m_instance, field.m_field, transform);
 
 
 	}
 
 	void ScriptComponent::Invalidate() {
 
-		valid = false;
-		create = nullptr;
-		update = nullptr;
+		m_create = nullptr;
+		m_update = nullptr;
 
-		onCollisionBegin = nullptr;
-		onCollisionPersist = nullptr;
-		onCollisionEnd = nullptr;
+		m_onCollisionBegin = nullptr;
+		m_onCollisionPersist = nullptr;
+		m_onCollisionEnd = nullptr;
 
-		onTriggerEnter = nullptr;
-		onTriggerLeave = nullptr;
+		m_onTriggerEnter = nullptr;
+		m_onTriggerLeave = nullptr;
 
 	}
 

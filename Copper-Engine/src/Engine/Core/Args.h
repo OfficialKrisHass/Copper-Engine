@@ -7,25 +7,25 @@ namespace Copper {
     class Args {
 
     public:
-        Args(int argc, char* argv[]) {
+        Args(uint32 argc, char* argv[]) {
             
-            args.resize(argc, nullptr);
-            for (int i = 1; i < argc; i++) {
+            m_args.resize(argc, nullptr);
+            for (uint32 i = 1; i < argc; i++) {
             
 #ifdef CU_LINUX
                 if (std::string(argv[i]) == "./Copper-Editor") continue;
 #endif
-                args[i] = argv[i];
+                m_args[i] = argv[i];
 
             }
 
         }
 
-        inline uint32_t Count() const { return (uint32_t) args.size(); }
-        inline char* GetArg(const uint32_t index) const { return args[index]; }
+        inline uint32 Count() const { return (uint32) m_args.size(); }
+        inline char* GetArg(const uint32 index) const { return m_args[index]; }
 
     private:
-        std::vector<char*> args;
+        std::vector<char*> m_args;
 
     };
 

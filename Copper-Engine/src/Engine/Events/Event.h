@@ -11,44 +11,39 @@ namespace Copper {
 	public:
 		Event() = default;
 
-		void Call() {
+		inline void Call() { (*this)(); }
+		inline void Clear() { m_success = true; }
 
-			(*this)();
-
-		}
-
-		void Clear() { success = true; }
-
-		inline Event& operator+=(std::function<bool(const Event&)> func) { callbacks.push_back(func); return *this; }
+		inline Event& operator+=(std::function<bool(const Event&)> func) { m_callbacks.push_back(func); return *this; }
 		inline bool operator()() {
 
-			for (int i = 0; i < callbacks.size() && success; i++) {
+			for (int i = 0; i < m_callbacks.size() && m_success; i++) {
 
-				success = callbacks[i](*this);
+				m_success = m_callbacks[i](*this);
 
 			}
 
-			bool tmp = success;
-			success = true;
+			bool tmp = m_success;
+			m_success = true;
 
 			return tmp;
 
 		}
 
 	private:
-		std::vector<std::function<bool(const Event&)>> callbacks;
-		bool success = true;
+		std::vector<std::function<bool(const Event&)>> m_callbacks;
+		bool m_success = true;
 
 	};
 
 	class SimpleEvent {
 
 	public:
-		inline SimpleEvent& operator+=(std::function<void()> func) { callbacks.push_back(func); return *this; }
-		inline void operator()() { for (size_t i = 0; i < callbacks.size(); i++) { callbacks[i](); } }
+		inline SimpleEvent& operator+=(std::function<void()> func) { m_callbacks.push_back(func); return *this; }
+		inline void operator()() { for (size_t i = 0; i < m_callbacks.size(); i++) { m_callbacks[i](); } }
 
 	private:
-		std::vector<std::function<void()>> callbacks;
+		std::vector<std::function<void()>> m_callbacks;
 
 	};
 

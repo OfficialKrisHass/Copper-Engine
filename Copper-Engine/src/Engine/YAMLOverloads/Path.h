@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Engine/Core/Core.h"
+
 #include <yaml-cpp/yaml.h>
 
 namespace Copper {
@@ -15,6 +17,7 @@ namespace Copper {
 
 namespace YAML {
 
+    using namespace Copper;
     template<> struct convert<fs::path> {
 
         static Node encode(const fs::path& path) {

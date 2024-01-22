@@ -9,8 +9,8 @@ namespace Copper::Input {
 
 	struct Axis {
 
-		KeyCode positive;
-		KeyCode negative;
+		KeyCode positive = KeyCode::None;
+		KeyCode negative = KeyCode::None;
 
 		float positiveValue =  1.0f;
 		float negativeValue = -1.0f;
@@ -19,7 +19,7 @@ namespace Copper::Input {
 
 	struct MouseAxis {
 
-		bool isX;
+		bool isX = true;
 
 		float positiveValue =  1.0f;
 		float negativeValue = -1.0f;

@@ -20,9 +20,9 @@ namespace Copper::Scripting {
 	bool Load(const fs::path& path);
 	bool Reload();
 
-	MonoObject* AddScriptComponent(uint32_t eID, const std::string& name);
+	MonoObject* AddScriptComponent(uint32 eID, const std::string& name);
 
-	MonoObject* GetScriptEntity(uint32_t eID);
+	MonoObject* GetScriptEntity(uint32 eID);
 
 	std::vector<std::string> GetScriptComponents();
 	std::vector<ScriptField> GetScriptFields(const std::string& scriptName);

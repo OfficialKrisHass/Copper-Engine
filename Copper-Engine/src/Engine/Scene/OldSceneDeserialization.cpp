@@ -30,17 +30,17 @@ namespace Copper {
 			uint32_t id = it->first.as<uint32_t>();
 			InternalEntity* deserialized = scene->CreateEntityFromID(id, Vector3::zero, Vector3::zero, Vector3::one, name, false);
 
-			deserialized->transform->position = entity["Transform"]["Position"].as<Vector3>();
-			deserialized->transform->rotation = entity["Transform"]["Rotation"].as<Quaternion>();
-			deserialized->transform->scale = entity["Transform"]["Scale"].as<Vector3>();
+			deserialized->m_transform->position = entity["Transform"]["Position"].as<Vector3>();
+			deserialized->m_transform->rotation = entity["Transform"]["Rotation"].as<Quaternion>();
+			deserialized->m_transform->scale = entity["Transform"]["Scale"].as<Vector3>();
 
 			uint32_t parentID = entity["Transform"]["Parent"].as<uint32_t>();
 
-			if (parentID == INVALID_ENTITY_ID) deserialized->transform->parent = nullptr;
+			if (parentID == INVALID_ENTITY_ID) deserialized->m_transform->m_parent = nullptr;
 			else if (id > parentID) {
 
-				Transform* parent = scene->GetEntityFromID(parentID)->transform;
-				deserialized->transform->parent = parent;
+				Transform* parent = scene->GetEntityFromID(parentID)->m_transform;
+				deserialized->m_transform->m_parent = parent;
 
 			}
 			else if (id < parentID) {
@@ -50,13 +50,13 @@ namespace Copper {
 				InternalEntity* parent = scene->CreateEntityFromID(parentID, Vector3::zero, Vector3::zero, Vector3::one, "Empty Parent");
 				deserialized = savedDeserialized;
 
-				deserialized->transform->parent = parent->transform;
+				deserialized->m_transform->m_parent = parent->m_transform;
 
 			}
 
 			for (int i = 0; i < entity["Transform"]["Children"].size(); i++) {
 
-				deserialized->transform->children.push_back(entity["Transform"]["Children"][i].as<int>());
+				deserialized->m_transform->m_children.push_back(entity["Transform"]["Children"][i].as<int>());
 
 			}
 

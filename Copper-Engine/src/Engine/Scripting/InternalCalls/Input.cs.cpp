@@ -12,7 +12,7 @@
 
 namespace Copper::Scripting::InternalCalls {
 
-	bool IsKey(int keyCode) {
+	bool IsKey(int32 keyCode) {
 
 	#ifdef CU_EDITOR
 		if (!AcceptInputDuringRuntime()) return false;
@@ -20,7 +20,7 @@ namespace Copper::Scripting::InternalCalls {
 		return Input::IsKey((KeyCode) keyCode);
 
 	}
-	bool IsKeyDown(int keyCode) {
+	bool IsKeyDown(int32 keyCode) {
 
 	#ifdef CU_EDITOR
 		if (!AcceptInputDuringRuntime()) return false;
@@ -28,7 +28,7 @@ namespace Copper::Scripting::InternalCalls {
 		return Input::IsKeyDown((KeyCode) keyCode);
 
 	}
-	bool IsKeyReleased(int keyCode) {
+	bool IsKeyReleased(int32 keyCode) {
 
 	#ifdef CU_EDITOR
 		if (!AcceptInputDuringRuntime()) return false;

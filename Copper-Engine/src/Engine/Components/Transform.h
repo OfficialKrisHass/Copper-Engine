@@ -2,13 +2,7 @@
 
 #include "Engine/Core/Core.h"
 
-#include "Engine/Scene/Component.h"
-
-#include "cupch.h"
-
-#include <GLM/mat4x4.hpp>
-
-#include <GLM/gtx/euler_angles.hpp>
+#include "Engine/Components/Component.h"
 
 namespace Copper {
 
@@ -27,25 +21,29 @@ namespace Copper {
 		Quaternion rotation = Quaternion(1.0f, 0.0, 0.0f, 0.0f);
 		Vector3 scale = Vector3::one;
 
-		Vector3 GlobalPosition() const;
-		Quaternion GlobalRotation() const;
-		Vector3 GlobalScale() const;
+		inline Vector3 GlobalPosition() const { return m_globalPosition; }
+		inline Quaternion GlobalRotation() const { return m_globalRotation; }
+		inline Vector3 GlobalScale() const { return m_globalScale; }
 
-		//Parent
+		// Parent
+
 		void SetParent(Transform* parent);
-		Transform* Parent() const { return parent; }
+		inline Transform* Parent() const { return m_parent; }
 
-		//Children
+		// Children
+
 		void AddChild(Transform* transform);
 		void RemoveChild(Transform* transform);
-		void RemoveChild(int index);
-		Transform* GetChild(int index) const;
+		void RemoveChild(uint32 index);
+		Transform* GetChild(uint32 index) const { return GetEntityFromID(m_children[index])->GetTransform(); }
 
-		uint32_t NumOfChildren() const { return (uint32_t) children.size(); }
+		uint32 NumOfChildren() const { return (uint32) m_children.size(); }
 
-		const Vector3& Forward() const { return forward; }
-		const Vector3& Right()   const { return right; }
-		const Vector3& Up()      const { return up; }
+		// Directionals
+
+		const Vector3& Forward() const { return m_forward; }
+		const Vector3& Right()   const { return m_right; }
+		const Vector3& Up()      const { return m_up; }
 
 		Matrix4 CreateMatrix();
 
@@ -54,19 +52,21 @@ namespace Copper {
 		void Update();
 
 	private:
-		Vector3 forward;
-		Vector3 right;
-		Vector3 up;
+		Vector3 m_forward;
+		Vector3 m_right;
+		Vector3 m_up;
 
-		Vector3 globalPosition;
-		Quaternion globalRotation;
-		Vector3 globalScale;
+		Vector3 m_globalPosition;
+		Quaternion m_globalRotation;
+		Vector3 m_globalScale;
 
-		//Parent Data
-		Transform* parent = nullptr;
+		// Parent Data
 
-		//Children Data
-		std::vector<int32_t> children;
+		Transform* m_parent = nullptr;
+
+		// Children Data
+
+		std::vector<uint32> m_children;
 
 	};
 

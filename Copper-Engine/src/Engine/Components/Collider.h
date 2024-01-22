@@ -2,7 +2,7 @@
 
 #include "Engine/Core/Core.h"
 
-#include "Engine/Scene/Component.h"
+#include "Engine/Components/Component.h"
 
 #define COLLIDER_TYPES 3
 
@@ -18,20 +18,24 @@ namespace Copper {
 		friend class RigidBody;
 
 	public:
-		enum Type : uint8_t {
-
-			Box = 1,
-			Sphere = 2,
-			Capsule = 3,
-
-		};
+		enum Type;
 
 		bool trigger = false;
 		Vector3 center = Vector3::zero;
 
+		enum Type : uint8 {
+
+			None,
+
+			Box,
+			Sphere,
+			Capsule,
+
+		};
+
 	protected:
-		Type type = (Type) 0;
-		RigidBody* rb = nullptr;
+		Type m_type = Type::None;
+		RigidBody* m_rb = nullptr;
 
 	private:
 		void Setup();

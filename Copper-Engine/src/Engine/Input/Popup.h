@@ -4,7 +4,9 @@
 
 namespace Copper::Input {
 
-    enum PopupResult : int32_t {
+    enum PopupResult : uint32 {
+
+        Invalid = 0,
 
         Ok,
         Yes,
@@ -13,8 +15,6 @@ namespace Copper::Input {
         Abort,
         Ignore,
         Cancel,
-
-        Invalid
 
     };
 

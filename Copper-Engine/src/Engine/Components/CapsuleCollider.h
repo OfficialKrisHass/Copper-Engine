@@ -2,6 +2,7 @@
 
 #include "Engine/Core/Core.h"
 
+#include "Engine/Components/Component.h"
 #include "Engine/Components/Collider.h"
 
 namespace Copper {

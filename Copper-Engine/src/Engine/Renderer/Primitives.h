@@ -27,7 +27,7 @@ namespace Copper {
         Color(1.0f, 1.0f, 1.0f),
 
     };
-    inline std::vector<uint32_t> planeIndices {
+    inline std::vector<uint32> planeIndices {
 
         0, 1, 2,
         2, 3, 0
@@ -134,7 +134,7 @@ namespace Copper {
         Color(1.0f, 1.0f, 0.0f),
 
     };
-    inline std::vector<uint32_t> cubeIndices {
+    inline std::vector<uint32> cubeIndices {
 
         //Front
         0, 1, 2,

@@ -7,72 +7,65 @@ namespace Copper {
 	class EntityView {
 
 	private:
+		struct Iterator;
+
+	public:
+		EntityView(Scene* scene) : m_scene(scene) {
+
+			if (scene->GetNumOfEntities() == 0) {
+
+				m_beginIndex = 1;
+				m_endIndex = 0;
+				return;
+
+			}
+
+			m_endIndex = scene->GetNumOfEntities() - 1;
+
+			while (m_beginIndex != m_endIndex + 1 && !(scene->GetEntityFromID(m_beginIndex))) { m_beginIndex++; }
+			while (m_endIndex >= m_beginIndex && !(scene->GetEntityFromID(m_endIndex))) { m_endIndex--; }
+
+		}
+
+		const struct Iterator begin() const { return Iterator(m_beginIndex, m_scene, m_endIndex); }
+		const struct Iterator end() const { return Iterator(m_endIndex, m_scene); }
+
+	private:
+		Scene* m_scene = nullptr;
+		uint32_t m_beginIndex = 0;
+		uint32_t m_endIndex = 0;
+
 		struct Iterator {
 
-			Iterator(uint32_t index, Scene* scene, uint32_t endIndex = 0) : index(index), scene(scene), endIndex(endIndex) {}
+		public:
+			Iterator(uint32_t index, Scene* scene, uint32_t endIndex = 0) : m_index(index), m_scene(scene), m_endIndex(endIndex) {}
 
-			InternalEntity* operator*() {
+			InternalEntity* operator*() { return m_scene->GetEntityFromID(m_index); }
 
-				return scene->GetEntityFromID(index);
+			bool operator!=(const Iterator& other) { return m_index != other.m_index + 1; }
 
-			}
-
-			bool operator!=(const Iterator& other) {
-
-				return index != other.index + 1;
-
-			}
 			Iterator& operator++() {
 
-				if (index == endIndex) {
+				if (m_index == m_endIndex) {
 
-					index++;
+					m_index++;
 					return *this;
 
 				}
 
-				do {
-
-					index++;
-
-				} while (!(scene->GetEntityFromID(index)));
+				do m_index++;
+				while (!(m_scene->GetEntityFromID(m_index)));
 
 				return *this;
 
 			}
 
 		private:
-			uint32_t index;
-			Scene* scene;
-			uint32_t endIndex;
+			uint32_t m_index;
+			Scene* m_scene;
+			uint32_t m_endIndex;
 
 		};
-
-	public:
-		EntityView(Scene* scene) : scene(scene) {
-
-			if (scene->GetNumOfEntities() == 0) {
-
-				beginIndex = 1;
-				endIndex = 0;
-				return;
-
-			}
-
-			endIndex = scene->GetNumOfEntities() - 1;
-
-			while (beginIndex != endIndex + 1 && !(scene->GetEntityFromID(beginIndex))) { beginIndex++; }
-			while (endIndex >= beginIndex && !(scene->GetEntityFromID(endIndex))) { endIndex--; }
-
-		}
-
-		const Iterator begin() const { return Iterator(beginIndex, scene, endIndex); }
-		const Iterator end() const { return Iterator(endIndex, scene); }
-
-	private:
-		Scene* scene = nullptr;
-		uint32_t beginIndex = 0;
-		uint32_t endIndex = 0;
 
 	};
 

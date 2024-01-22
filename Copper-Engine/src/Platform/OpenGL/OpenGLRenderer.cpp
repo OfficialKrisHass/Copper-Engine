@@ -23,7 +23,7 @@ namespace Copper {
 		-1.0f,  1.0f, 0.0f,		0.0f, 1.0f
 
 	};
-	static const uint32_t gameRectIndices[6] {
+	static const uint32 gameRectIndices[6] {
 
 		0, 1, 2,
 		2, 3, 0
@@ -31,7 +31,7 @@ namespace Copper {
 	};
 #endif
 
-	uint32_t gameRectVAO;
+	uint32 gameRectVAO;
 	Shader gameRectShader;
 
 	void RendererAPI::Initialize() {
@@ -75,11 +75,11 @@ namespace Copper {
 		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 20, gameRectVertices, GL_STATIC_DRAW);
 
 		//IBO
-		uint32_t ibo;
+		uint32 ibo;
 		glGenBuffers(1, &ibo);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * 6, gameRectIndices, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32) * 6, gameRectIndices, GL_STATIC_DRAW);
 
 		//Load the data into the VAO
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -110,20 +110,20 @@ namespace Copper {
 
 	}
 	
-	void RendererAPI::Render(VertexArray* vao, uint32_t count, Camera* cam, Light* light) {
+	void RendererAPI::Render(VertexArray* vao, uint32 count, Camera* cam, Light* light) {
 
 		vao->Bind();
-		shader.Bind();
+		m_shader.Bind();
 
 		// TODO: Fix the CMath implementation of LoadMat4 not working
-		shader.LoadMat4("ProjectionView", cam->CreateProjectionMatrix() * cam->CreateViewMatrix());
-		shader.LoadVec3("camPos", cam->GetTransform()->position);
+		m_shader.LoadMat4("ProjectionView", cam->CreateProjectionMatrix() * cam->CreateViewMatrix());
+		m_shader.LoadVec3("camPos", cam->GetTransform()->position);
 
 		if (light) {
 
-			shader.LoadVec3("light.position", light->GetTransform()->GlobalPosition());
-			shader.LoadVec3("light.color", light->color);
-			shader.LoadFloat("light.intensity", light->intensity);
+			m_shader.LoadVec3("light.position", light->GetTransform()->GlobalPosition());
+			m_shader.LoadVec3("light.color", light->color);
+			m_shader.LoadFloat("light.intensity", light->intensity);
 
 		}
 

@@ -6,7 +6,8 @@
 
 namespace Copper::Input {
 
-	//Input
+	// Input
+
 	void Init();
 	void Update();
 
@@ -16,22 +17,21 @@ namespace Copper::Input {
 
 	bool IsButton(MouseCode button);
 
-	//Setters
+	// Setters
+
 	void SetCursorVisible(bool visible);
 	void SetCursorLocked(bool locked);
 	void SetCursorPosition(float x, float y);
 
 	void SetWindowTitle(const std::string& title);
 
-	//Getters
+	// Getters
+
 	void GetCursorPosition(double* x, double* y);
 	float GetCursorPosDifferenceX();
 	float GetCursorPosDifferenceY();
 
 	bool IsCursorLocked();
 	bool IsCursorVisible();
-
-	//Controls
-	void WrapCursor();
 
 }

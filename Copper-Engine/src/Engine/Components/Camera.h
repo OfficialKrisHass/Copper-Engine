@@ -2,7 +2,7 @@
 
 #include "Engine/Core/Core.h"
 
-#include "Engine/Scene/Component.h"
+#include "Engine/Components/Component.h"
 
 #ifdef CU_EDITOR
 namespace Editor { struct Project; }
@@ -21,17 +21,19 @@ namespace Copper {
 		Camera() = default;
 		Camera(const UVector2I& size) : size(size) {}
 
-		Matrix4 CreateViewMatrix();
-		Matrix4 CreateProjectionMatrix();
-
-		void Resize(const UVector2I& size) { this->size = size; }
-
 		float fov = 90.0f;
 		float nearPlane = 0.1f;
 		float farPlane = 1000.0f;
 
+		Matrix4 CreateViewMatrix() const;
+		Matrix4 CreateProjectionMatrix() const;
+
+		inline void Resize(const UVector2I& size) { this->size = size; }
+
 	protected:
+	#ifdef CU_EDITOR
 		UVector2I size = UVector2I(1280, 720);
+	#endif
 
 
 	};

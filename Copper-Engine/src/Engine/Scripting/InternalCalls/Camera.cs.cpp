@@ -13,42 +13,42 @@
 
 namespace Copper::Scripting::InternalCalls {
 
-	float CameraGetFOV(int64_t componentPointer) {
+	float CameraGetFOV(uint64 componentPointer) {
 
 		CheckComponentPointerWithReturn(componentPointer, 0.0f);
 
 		return ((Camera*) componentPointer)->fov;
 
 	}
-	float CameraGetNearPlane(int64_t componentPointer) {
+	float CameraGetNearPlane(uint64 componentPointer) {
 
 		CheckComponentPointerWithReturn(componentPointer, 0.0f);
 
 		return ((Camera*) componentPointer)->nearPlane;
 
 	}
-	float CameraGetFarPlane(int64_t componentPointer) {
+	float CameraGetFarPlane(uint64 componentPointer) {
 
 		CheckComponentPointerWithReturn(componentPointer, 0.0f);
 
 		return ((Camera*) componentPointer)->farPlane;
 
 	}
-	void CameraSetFOV(int64_t componentPointer, float value) {
+	void CameraSetFOV(uint64 componentPointer, float value) {
 
 		CheckComponentPointer(componentPointer);
 
 		((Camera*) componentPointer)->fov = value;
 
 	}
-	void CameraSetNearPlane(int64_t componentPointer, float value) {
+	void CameraSetNearPlane(uint64 componentPointer, float value) {
 
 		CheckComponentPointer(componentPointer);
 
 		((Camera*) componentPointer)->nearPlane = value;
 
 	}
-	void CameraSetFarPlane(int64_t componentPointer, float value) {
+	void CameraSetFarPlane(uint64 componentPointer, float value) {
 
 		CheckComponentPointer(componentPointer);
 

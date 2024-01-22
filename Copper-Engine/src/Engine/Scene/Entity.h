@@ -4,20 +4,15 @@
 
 namespace Copper {
 
-	class InternalEntity;
-	class Scene;
-
-	std::ostream& operator<<(std::ostream& os, const class InternalEntity& entity);
-
 	class Entity {
 
-		friend Scene;
+		friend class Scene;
 
 	public:
 		Entity() = default;
-		Entity(InternalEntity* entity);
+		Entity(class InternalEntity* entity);
 
-		inline uint32_t ID() const { return id; }
+		inline uint32_t ID() const { return m_id; }
 
 		bool operator==(const Entity& other) const;
 		bool operator==(InternalEntity* other) const;
@@ -30,8 +25,8 @@ namespace Copper {
 		operator bool() const;
 
 	private:
-		uint32_t id = 4'294'967'295;
-		Scene* scene = nullptr;
+		uint32_t m_id = 4'294'967'295;
+		Scene* m_scene = nullptr;
 
 	};
 

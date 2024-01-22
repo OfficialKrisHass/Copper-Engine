@@ -9,6 +9,8 @@
 #include "Engine/Components/SphereCollider.h"
 #include "Engine/Components/CapsuleCollider.h"
 
+#include "Engine/Physics/PhysicsEngine.h"
+
 #include <PxPhysicsAPI.h>
 
 namespace Copper {
@@ -20,22 +22,16 @@ namespace Copper {
         extern PxPhysics* physics;
         extern PxMaterial* material;
 
-        extern PxVec3 CopperToPhysX(const Vector3& vec);
-        extern PxQuat CopperToPhysX(const Quaternion& vec);
-
-        extern Vector3 PhysXToCopper(const PxVec3& vec);
-        extern Quaternion PhysXToCopper(const PxQuat& vec);
-
     }
 
     using namespace PhysicsEngine;
 
     void Collider::Setup() {
 
-        this->rb = GetEntity()->GetComponent<RigidBody>();
-        if (this->rb) {
+        m_rb = GetEntity()->GetComponent<RigidBody>();
+        if (m_rb) {
 
-            this->rb->collider = this;
+            m_rb->m_collider = this;
             return;
 
         }

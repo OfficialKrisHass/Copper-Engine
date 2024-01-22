@@ -14,9 +14,10 @@ namespace Copper {
 
 		friend ScriptComponent;
 
-		enum class Type : uint32_t {
+		enum class Type : uint32 {
 
 			None,
+
 			Int,
 			UInt,
 			Float,
@@ -32,14 +33,19 @@ namespace Copper {
 		std::string name;
 		Type type = Type::None;
 
-		void SetMonoField(MonoClassField* field) { if (!field) return; this->field = field; }
+		void SetMonoField(MonoClassField* field) {
+			
+			if (!field) return;
+			this->m_field = field;
+		
+		}
 
 	private:
-		MonoClassField* field = nullptr;
+		MonoClassField* m_field = nullptr;
 
 	};
 
-	inline uint32_t FieldSize(const ScriptField::Type type) {
+	inline uint32 FieldSize(const ScriptField::Type type) {
 
 		typedef ScriptField::Type Type;
 
@@ -59,7 +65,7 @@ namespace Copper {
 
 		}
 
-		LogError("Couldn't get Type ({}) size!", (uint32_t) type);
+		LogError("Couldn't get Type ({}) size!", (uint32) type);
 		return 0;
 
 	}

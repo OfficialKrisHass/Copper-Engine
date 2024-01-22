@@ -11,7 +11,7 @@ namespace Copper {
 		Bool,
 
 	};
-	static uint32_t CalculateSize(ElementType type) {
+	static uint32 CalculateSize(ElementType type) {
 
 		switch (type) {
 
@@ -32,14 +32,15 @@ namespace Copper {
 	}
 	struct Element {
 
+	public:
 		ElementType type;
-		uint32_t size;
-		uint32_t offset;
+		uint32 size;
+		uint32 offset;
 
 		Element() = default;
 		Element(const char* name, ElementType type) : type(type), size(CalculateSize(type)), offset(0) {}
 
-		uint32_t Dimensions() const {
+		uint32 Dimensions() const {
 
 			switch (type) {
 
@@ -68,7 +69,7 @@ namespace Copper {
 	public:
 		VertexBuffer() = default;
 		VertexBuffer(std::vector<float> vertices);
-		VertexBuffer(uint32_t size);
+		VertexBuffer(uint32 size);
 
 		void Bind() const;
 		void Unbind() const;
@@ -81,22 +82,22 @@ namespace Copper {
 		std::vector<Element>::const_iterator begin() const { return elements.begin(); }
 		std::vector<Element>::const_iterator end() const { return elements.end(); }
 
-		uint32_t Stride() const { return stride; }
+		uint32 Stride() const { return m_stride; }
 
 	private:
-		uint32_t ID;
-		uint32_t stride = 0;
+		uint32 m_id;
+		uint32 m_stride = 0;
 		std::vector<Element> elements;
 
 		void CalculateStuff() {
 
-			uint32_t offset = 0;
+			uint32 offset = 0;
 
 			for (Element& e : elements) {
 
 				e.offset = offset;
 				offset += e.size;
-				stride += e.size;
+				m_stride += e.size;
 
 			}
 
@@ -108,19 +109,19 @@ namespace Copper {
 
 	public:
 		IndexBuffer() = default;
-		IndexBuffer(std::vector<uint32_t> indices);
-		IndexBuffer(uint32_t size);
+		IndexBuffer(std::vector<uint32> indices);
+		IndexBuffer(uint32 size);
 
 		void Bind() const;
 		void Unbind() const;
 
-		void SetData(const std::vector<uint32_t>& indices);
+		void SetData(const std::vector<uint32>& indices);
 
-		uint32_t Count() const { return count; }
+		uint32 Count() const { return m_count; }
 
 	private:
-		uint32_t ID;
-		uint32_t count;
+		uint32 m_id;
+		uint32 m_count;
 
 	};
 

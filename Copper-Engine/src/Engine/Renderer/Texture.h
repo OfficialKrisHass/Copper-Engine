@@ -6,16 +6,16 @@ namespace Copper {
 
     public:
         Texture() = default;
-        Texture(uint32_t width, uint32_t height);
+        Texture(uint32 width, uint32 height);
         Texture(UVector2I size);
         Texture(const std::string& path);
 
-        inline uint32_t GetID() { return this->ID; }
+        inline uint32 GetID() { return this->m_id; }
         
     private:
-        uint32_t ID;
-        UVector2I size;
-        std::string path;
+        uint32 m_id;
+        UVector2I m_size;
+        std::string m_path;
         
     };
     

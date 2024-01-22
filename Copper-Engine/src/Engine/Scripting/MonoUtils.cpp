@@ -13,7 +13,7 @@ namespace Copper::Scripting::MonoUtils {
 
 	MonoAssembly* LoadAssembly(const fs::path& path) {
 
-		uint32_t dataSize;
+		uint32 dataSize;
 		char* data = Utilities::ReadFileBinary(path.string(), &dataSize);
 		if (!data) return nullptr;
 

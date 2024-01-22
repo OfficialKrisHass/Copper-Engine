@@ -30,12 +30,12 @@ namespace Copper {
 	public:
 		static void Initialize();
 
-		inline static std::shared_ptr<spdlog::logger> GetLogger() { return logger; }
-		inline static std::vector<std::string> GetLastLogMessages() { return ringbufferSink->last_formatted(); }
+		inline static std::shared_ptr<spdlog::logger> GetLogger() { return m_logger; }
+		inline static std::vector<std::string> GetLastLogMessages() { return m_ringbufferSink->last_formatted(); }
 
 	private:
-		static std::shared_ptr<spdlog::logger> logger;
-		static std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> ringbufferSink;
+		static std::shared_ptr<spdlog::logger> m_logger;
+		static std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> m_ringbufferSink;
 
 	};
 

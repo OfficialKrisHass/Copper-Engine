@@ -30,18 +30,18 @@ namespace Copper {
 
 		this->ibo = ibo;
 
-		glGenVertexArrays(1, &ID);
-		glBindVertexArray(ID);
+		glGenVertexArrays(1, &m_id);
+		glBindVertexArray(m_id);
 
 	}
 
 	void VertexArray::SetVertexBuffer(VertexBuffer* vbo) {
 
-		uint32_t index = 0;
+		uint32 index = 0;
 		for (const Element& e : *vbo) {
 
 			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(index, e.Dimensions(), DataTypeToOpenGL(e.type), GL_FALSE, vbo->Stride(), (void*) (uint64_t) e.offset);
+			glVertexAttribPointer(index, e.Dimensions(), DataTypeToOpenGL(e.type), GL_FALSE, vbo->Stride(), (void*) (uint64) e.offset);
 
 			index++;
 
@@ -51,7 +51,7 @@ namespace Copper {
 	void VertexArray::SetIndexBuffer(IndexBuffer* ibo) { this->ibo = ibo; }
 
 
-	void VertexArray::Bind() const { glBindVertexArray(ID); }
+	void VertexArray::Bind() const { glBindVertexArray(m_id); }
 	void VertexArray::Unbind() const { glBindVertexArray(0); }
 
 }

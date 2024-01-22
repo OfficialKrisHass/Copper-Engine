@@ -19,7 +19,7 @@ extern "C" {
 namespace Copper::Scripting::MonoUtils {
 
 	//Enums
-	enum class FieldAccessibility : uint8_t {
+	enum class FieldAccessibility : uint8 {
 
 		None = 0,
 		Public = (1 << 0),

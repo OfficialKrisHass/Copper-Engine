@@ -8,28 +8,28 @@
 
 namespace Copper {
 
-	int success;
+	int32 success;
 	char infoLog[512];
 
 	Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath) {
 
-		CreateShader(vertexPath, GL_VERTEX_SHADER, vertex);
-		CreateShader(fragmentPath, GL_FRAGMENT_SHADER, fragment);
+		CreateShader(vertexPath, GL_VERTEX_SHADER, m_vertex);
+		CreateShader(fragmentPath, GL_FRAGMENT_SHADER, m_fragment);
 
-		ID = glCreateProgram();
+		m_id = glCreateProgram();
 
-		glAttachShader(ID, vertex);
-		glAttachShader(ID, fragment);
-		glLinkProgram(ID);
+		glAttachShader(m_id, m_vertex);
+		glAttachShader(m_id, m_fragment);
+		glLinkProgram(m_id);
 
-		CheckShader(ID);
+		CheckShader(m_id);
 
-		glDeleteShader(vertex);
-		glDeleteShader(fragment);
+		glDeleteShader(m_vertex);
+		glDeleteShader(m_fragment);
 
 	}
 
-	void Shader::CreateShader(const std::string& path, int type, uint32_t& id) {
+	void Shader::CreateShader(const std::string& path, uint32 type, uint32& id) {
 
 		id = glCreateShader(type);
 
@@ -43,7 +43,7 @@ namespace Copper {
 
 	}
 
-	void Shader::CheckShader(uint32_t id, int type) {
+	void Shader::CheckShader(uint32 id, uint32 type) {
 
 		glGetShaderiv(id, GL_COMPILE_STATUS, &success);
 
@@ -61,7 +61,7 @@ namespace Copper {
 
 	}
 
-	void Shader::CheckShader(uint32_t id) {
+	void Shader::CheckShader(uint32 id) {
 
 		glGetProgramiv(id, GL_LINK_STATUS, &success);
 
@@ -75,14 +75,14 @@ namespace Copper {
 
 	}
 
-	void Shader::LoadInt(const std::string& name, int value) const { glUniform1i(glGetUniformLocation(ID, name.c_str()), value); }
-	void Shader::LoadUInt(const std::string& name, uint32_t value) const { glUniform1ui(glGetUniformLocation(ID, name.c_str()), value); }
-	void Shader::LoadFloat(const std::string& name, float value) const { glUniform1f(glGetUniformLocation(ID, name.c_str()), value); }
-	void Shader::LoadMat4(const std::string& name, const Matrix4& mat) const { glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &(mat.cols[0].x)); }
-	void Shader::LoadMat4TEST(const std::string& name, const glm::mat4& mat) const { glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat)); }
-	void Shader::LoadVec3(const std::string& name, const Vector3& vec) const { glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, &(vec.x)); }
+	void Shader::LoadInt(const std::string& name, int32 value) const { glUniform1i(glGetUniformLocation(m_id, name.c_str()), value); }
+	void Shader::LoadUInt(const std::string& name, uint32 value) const { glUniform1ui(glGetUniformLocation(m_id, name.c_str()), value); }
+	void Shader::LoadFloat(const std::string& name, float value) const { glUniform1f(glGetUniformLocation(m_id, name.c_str()), value); }
+	void Shader::LoadMat4(const std::string& name, const Matrix4& mat) const { glUniformMatrix4fv(glGetUniformLocation(m_id, name.c_str()), 1, GL_FALSE, &(mat.cols[0].x)); }
+	void Shader::LoadMat4TEST(const std::string& name, const glm::mat4& mat) const { glUniformMatrix4fv(glGetUniformLocation(m_id, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat)); }
+	void Shader::LoadVec3(const std::string& name, const Vector3& vec) const { glUniform3fv(glGetUniformLocation(m_id, name.c_str()), 1, &(vec.x)); }
 
-	void Shader::Bind() const { glUseProgram(ID); }
+	void Shader::Bind() const { glUseProgram(m_id); }
 	void Shader::Unbind() const { glUseProgram(0); }
 
 }

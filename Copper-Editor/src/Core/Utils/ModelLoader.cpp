@@ -12,8 +12,8 @@ namespace Editor {
 
 		if (!scene) { LogError("Error Parsing FBX model file!\nPath: {0}\nError:\n\n{1}", path.string(), importer.GetErrorString()); return; }
 
-		uint32_t numVertices = 0;
-		uint32_t numIndices = 0;
+		uint32 numVertices = 0;
+		uint32 numIndices = 0;
 
 		for (int i = 0; i < meshes.size(); i++) {
 
@@ -22,9 +22,9 @@ namespace Editor {
 
 		}
 
-		positions.reserve(numVertices);
-		normals.reserve(numVertices);
-		indices.reserve(numIndices);
+		m_positions.reserve(numVertices);
+		m_normals.reserve(numVertices);
+		m_indices.reserve(numIndices);
 
 		ProccessNode(scene->mRootNode, scene);
 
@@ -34,14 +34,14 @@ namespace Editor {
 
 	void Model::ProccessNode(aiNode* node, const aiScene* scene) {
 
-		for (unsigned int i = 0; i < node->mNumMeshes; i++) {
+		for (uint32 i = 0; i < node->mNumMeshes; i++) {
 
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 			meshes.push_back(ProccessMesh(mesh));
 
 		}
 
-		for (unsigned int i = 0; i < node->mNumChildren; i++) {
+		for (uint32 i = 0; i < node->mNumChildren; i++) {
 
 			ProccessNode(node->mChildren[i], scene);
 
@@ -53,7 +53,7 @@ namespace Editor {
 
 		Mesh ret;
 
-		for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
+		for (uint32 i = 0; i < mesh->mNumVertices; i++) {
 
 			const aiVector3D& position = mesh->mVertices[i];
 			const aiVector3D& normal = mesh->mNormals[i];
@@ -63,7 +63,7 @@ namespace Editor {
 
 		}
 
-		for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
+		for (uint32 i = 0; i < mesh->mNumFaces; i++) {
 
 			aiFace& face = mesh->mFaces[i];
 
@@ -74,7 +74,8 @@ namespace Editor {
 		}
 
 		std::vector<Color> colors;
-		for (unsigned int i = 0; i < mesh->mNumVertices; i++) { colors.push_back(Color::white); }
+		for (uint32 i = 0; i < mesh->mNumVertices; i++)
+			colors.push_back(Color::white);
 		ret.colors = colors;
 
 		return ret;

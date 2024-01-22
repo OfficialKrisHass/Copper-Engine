@@ -4,6 +4,8 @@
 
 #include <yaml-cpp/yaml.h>
 
+#include <fstream>
+
 #define COLOR_EDIT(color, text) ImGui::ColorEdit3(text, (float*) &style->Colors[color])
 #define WRITE_COLOR(color) out << YAML::Key << color << YAML::Value << *(Color*) &(this->style->Colors[color])
 
@@ -148,7 +150,7 @@ namespace Editor {
 
 		for (YAML::const_iterator it = colors.begin(); it != colors.end(); ++it) {
 
-			int col = it->first.as<int>();
+			uint32 col = it->first.as<uint32>();
 			Color value = it->second.as<Color>();
 			this->style->Colors[col] = *(ImVec4*) &value;
 

@@ -18,14 +18,14 @@ using std::filesystem::create_directories;
 namespace Editor {
 
     fs::path editingPath = "";
-    fs::path FileBrowser::projectRelativeDir = "";
+    fs::path FileBrowser::m_projectRelativeDir = "";
 
     Texture directoryIcon;
     Texture fileIcon;
 
     FileBrowser::FileBrowser(const fs::path& initialDir) : Panel("File Browser") {
         
-        projectRelativeDir = initialDir;
+        m_projectRelativeDir = initialDir;
 
         directoryIcon = Texture("assets/Icons/DirectoryIcon.png");
         fileIcon = Texture("assets/Icons/FileIcon.png");
@@ -36,13 +36,13 @@ namespace Editor {
         
         ImGui::GetFont()->FontSize -= 2.0f;
         
-        if(projectRelativeDir != "") {
+        if(m_projectRelativeDir != "") {
 
             ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0));
             
             if(ImGui::Button("<-", ImVec2(30, 30))) {
 
-                projectRelativeDir = projectRelativeDir.parent_path();
+                m_projectRelativeDir = m_projectRelativeDir.parent_path();
                 
             }
 
@@ -51,7 +51,7 @@ namespace Editor {
         }
 
         ImGui::SameLine();
-        ImGui::Text(projectRelativeDir.string().c_str());
+        ImGui::Text(m_projectRelativeDir.string().c_str());
         ImGui::GetFont()->FontSize += 2.0f;
 
         const float padding = 16.0f;
@@ -59,7 +59,7 @@ namespace Editor {
         const float cellSize = thumbnailSize + padding;
         const float panelWidth = ImGui::GetContentRegionAvail().x;
 
-        int columns = (int) (panelWidth / cellSize);
+        uint32 columns = (uint32) (panelWidth / cellSize);
         if(columns < 1) columns = 1;
 
         ImGui::Columns(columns, 0, false);
@@ -68,7 +68,7 @@ namespace Editor {
 
             if(ImGui::MenuItem("Folder", 0, false, GetProject().name != "")) {
 
-                fs::path path = GetProject().assetsPath / projectRelativeDir;
+                fs::path path = GetProject().assetsPath / m_projectRelativeDir;
                 path /= "New Folder";
 
                 create_directories(path.string());
@@ -82,7 +82,7 @@ namespace Editor {
         }
 
         if (!GetProject()) return;
-        for(const fs::directory_entry& entry : fs::directory_iterator((GetProject().assetsPath / projectRelativeDir).string())) {
+        for(const fs::directory_entry& entry : fs::directory_iterator((GetProject().assetsPath / m_projectRelativeDir).string())) {
 
             fs::path fullPath = entry.path().string();
             fs::path path = fs::relative(fullPath, GetProject().assetsPath);
@@ -98,7 +98,7 @@ namespace Editor {
 
             ImGui::PushID(filename.c_str());
 
-            uint64_t icon = entry.is_directory() ? (uint64_t) directoryIcon.GetID() : (uint64_t) fileIcon.GetID();
+            uint64 icon = entry.is_directory() ? (uint64) directoryIcon.GetID() : (uint64) fileIcon.GetID();
             ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
             if(ImGui::ImageButton(reinterpret_cast<ImTextureID>(icon), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 }) && !entry.is_directory()) {
 
@@ -118,7 +118,7 @@ namespace Editor {
             
             if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
                 
-                if (entry.is_directory()) projectRelativeDir /= path.filename();
+                if (entry.is_directory()) m_projectRelativeDir /= path.filename();
                 if (path.extension() == ".copper") {
 
                     OpenScene(GetProject().assetsPath / path);

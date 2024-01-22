@@ -2,11 +2,13 @@
 
 #include "Core/EditorApp.h"
 
-#include <yaml-cpp/yaml.h>
 #include "Engine/YAMLOverloads/Everything.h"
 
-using namespace Copper;
+#include <yaml-cpp/yaml.h>
 
+#include <fstream>
+
+using namespace Copper;
 using std::filesystem::exists;
 
 namespace Editor::MetaFile {
@@ -31,14 +33,14 @@ namespace Editor::MetaFile {
 
 		out << YAML::EndMap; // Main
 		std::ofstream file;
-		file.open(scene->path.string() + ".cum");
+		file.open(m_scene->path.string() + ".cum");
 		file << out.c_str();
 		file.close();
 
 	}
 	void SceneMeta::Deserialize(Scene* scene) {
 
-		this->scene = scene;
+		this->m_scene = scene;
 
 		if (!exists(scene->path.string() + ".cum")) {
 

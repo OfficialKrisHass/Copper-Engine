@@ -13,7 +13,7 @@ namespace Editor::ProjectFileWatcher {
 		fs::path directory;
 		bool running;
 
-		Unique<filewatch::FileWatch<std::string>> fw;
+		std::unique_ptr<filewatch::FileWatch<std::string>> fw;
 
 		std::vector<std::function<void(const fs::path&, const FileChangeType& changeType)>> callbacks;
 
@@ -27,7 +27,7 @@ namespace Editor::ProjectFileWatcher {
 		if (data.directory.empty()) { LogError("Can't FileWatch an empty Directory!"); return; }
 
 		data.running = true;
-		data.fw = CreateUnique<filewatch::FileWatch<std::string>>(data.directory.string(), FileChangeCallback);
+		data.fw = std::make_unique<filewatch::FileWatch<std::string>>(data.directory.string(), FileChangeCallback);
 
 	}
 	void Stop() {

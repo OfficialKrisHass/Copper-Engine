@@ -13,13 +13,13 @@ namespace Editor {
 
 		void SetSelectedObject(Copper::Entity* entity) {
 			
-			this->selectedEntity = entity;
+			this->m_selectedEntity = entity;
 			
 		}
 
 		bool ShowBool(const std::string& name, bool* show);
-		bool ShowInt(const std::string& name, int* show);
-		bool ShowUInt(const std::string& name, unsigned int* show);
+		bool ShowInt(const std::string& name, Copper::int32* show);
+		bool ShowUInt(const std::string& name, Copper::uint32* show);
 		bool ShowFloat(const std::string& name, float* show);
 		bool ShowDouble(const std::string& name, double *show);
 		bool ShowString(const std::string& name, std::string* show);
@@ -30,17 +30,13 @@ namespace Editor {
 		bool ShowVector4(const std::string& name, Copper::Vector4* vec);
 		bool ShowColor(const std::string& name, Copper::Color* col);
 
-		bool ShowMask(const std::string& name, uint32_t& mask, int num, int maskOffset = 0, char startLabel = 'X');
+		bool ShowMask(const std::string& name, Copper::uint32& mask, Copper::uint32 num, Copper::uint32 maskOffset = 0, char startLabel = 'X');
 
 		bool ShowEntity(const std::string& name, Copper::InternalEntity** entity);
 		bool ShowTransform(const std::string& name, Copper::Transform** transform);
-
-		static bool IsDragDropTargetHovered() { return dragDropTargetHovered; }
 	
 	private:
-		Copper::Entity* selectedEntity = nullptr;
-
-		static bool dragDropTargetHovered;
+		Copper::Entity* m_selectedEntity = nullptr;
 
 		virtual void UI() override;
 

@@ -2,17 +2,19 @@
 
 #include "Projects/Project.h"
 
+#include <fstream>
+
 #define CHECK_FOLDER(folderName, folderPath, x) if (!std::filesystem::exists(path + folderPath)) { LogError("Project '{}' is missing the {} folder", project.name, folderName); ret |= BIT(x); }
 #define CHECK_FILE(fileName, filePath, x) if (!std::filesystem::exists(path + filePath)) { LogError("Project '{}' is missing the {} file", project.name, fileName); ret |= BIT(x); }
 
-#define FLAG(x, flag) x & (uint16_t) flag
+#define FLAG(x, flag) x & (uint16) flag
 
 namespace Editor::ProjectChecker {
 
-	uint16_t CheckProject(const Project& project) {
+	uint16 CheckProject(const Project& project) {
 
 		const std::string path = project.path.string() + "/";
-		uint16_t ret = 0;
+		uint16 ret = 0;
 
 		// Base folders
 
@@ -43,7 +45,7 @@ namespace Editor::ProjectChecker {
 		return ret;
 		
 	}
-	void FixProject(Project& project, const uint16_t issueFlags) {
+	void FixProject(Project& project, const uint16 issueFlags) {
 
 		if (FLAG(issueFlags, MissingAssets)) std::filesystem::create_directories(project.path / "Assets");
 		if (FLAG(issueFlags, MissingBinaries)) std::filesystem::create_directories(project.path / "Binaries");

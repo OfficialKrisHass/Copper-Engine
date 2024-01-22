@@ -16,7 +16,7 @@ using namespace Copper;
 
 namespace Editor {
 
-	uint32_t clickedEntityID = INVALID_ENTITY_ID;
+	uint32 clickedEntityID = INVALID_ENTITY_ID;
 
 	SceneHierarchy::SceneHierarchy() : Panel("Scene Hierarchy") { }
 
@@ -44,22 +44,18 @@ namespace Editor {
 
 	void SceneHierarchy::DrawEntityNode(InternalEntity* entity) {
 
-		ImGui::PushID((int) (uint64_t) entity);
+		ImGui::PushID((uint32) (uint64) entity);
 
-		ImGuiTreeNodeFlags flags = ((selectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
+		ImGuiTreeNodeFlags flags = ((m_selectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 		bool opened = ImGui::TreeNodeEx(entity, flags, entity->name.c_str());
 
 		if (ImGui::IsItemClicked()) clickedEntityID = entity->ID();
-		if (ImGui::IsMouseReleased(0) && entity->ID() == clickedEntityID) {
-
-			if (Properties::IsDragDropTargetHovered()) clickedEntityID = INVALID_ENTITY_ID;
-			else selectedEntity = entity;
-
-		}
+		if (ImGui::IsMouseReleased(0) && entity->ID() == clickedEntityID)
+			m_selectedEntity = entity;
 
 		if (ImGui::BeginDragDropSource()) {
 
-			ImGui::SetDragDropPayload("SCH_ENTITY_NODE", entity, sizeof(uint32_t), ImGuiCond_Once);
+			ImGui::SetDragDropPayload("SCH_ENTITY_NODE", entity, sizeof(uint32), ImGuiCond_Once);
 			ImGui::EndDragDropSource();
 
 		}
@@ -76,8 +72,8 @@ namespace Editor {
 
 			if (ImGui::MenuItem("Remove")) {
 
-				scene->RemoveEntity(entity);
-				selectedEntity = nullptr;
+				m_scene->RemoveEntity(entity);
+				m_selectedEntity = nullptr;
 
 				ImGui::EndPopup();
 				ImGui::PopID();
@@ -92,7 +88,7 @@ namespace Editor {
 
 		if (opened) {
 
-			for (uint32_t i = 0; i < entity->GetTransform()->NumOfChildren(); i++) {
+			for (uint32 i = 0; i < entity->GetTransform()->NumOfChildren(); i++) {
 
 				DrawEntityNode(entity->GetTransform()->GetChild(i)->GetEntity());
 
@@ -107,9 +103,9 @@ namespace Editor {
 	}
 	void SceneHierarchy::PopupWindow() {
 
-		if (ImGui::MenuItem("Entity", 0, false, scene)) {
-
-			selectedEntity = scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one);
+		if (ImGui::MenuItem("Entity", 0, false, m_scene)) {
+			
+			m_selectedEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one);
 			SetChanges(true);
 
 		}
@@ -118,10 +114,10 @@ namespace Editor {
 
 		if (ImGui::BeginMenu("3D Objects")) {
 
-			if (ImGui::MenuItem("Plane", 0, false, scene)) {
+			if (ImGui::MenuItem("Plane", 0, false, m_scene)) {
 
-				selectedEntity = scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Plane");
-				MeshRenderer* renderer = selectedEntity->AddComponent<MeshRenderer>();
+				m_selectedEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Plane");
+				MeshRenderer* renderer = m_selectedEntity->AddComponent<MeshRenderer>();
 				Mesh mesh;
 
 				mesh.vertices = planeVertices;
@@ -133,10 +129,10 @@ namespace Editor {
 				SetChanges(true);
 
 			}
-			if (ImGui::MenuItem("Cube", 0, false, scene)) {
+			if (ImGui::MenuItem("Cube", 0, false, m_scene)) {
 
-				selectedEntity = scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Cube");
-				MeshRenderer* renderer = selectedEntity->AddComponent<MeshRenderer>();
+				m_selectedEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Cube");
+				MeshRenderer* renderer = m_selectedEntity->AddComponent<MeshRenderer>();
 				Mesh mesh;
 
 				mesh.vertices = cubeVertices;
@@ -153,18 +149,18 @@ namespace Editor {
 
 		}
 
-		if (ImGui::MenuItem("Light", 0, false, scene)) {
+		if (ImGui::MenuItem("Light", 0, false, m_scene)) {
 
-			selectedEntity = scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Light");
-			Light* l = selectedEntity->AddComponent<Light>();
+			m_selectedEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Light");
+			Light* l = m_selectedEntity->AddComponent<Light>();
 
 			SetChanges(true);
 
 		}
-		if (ImGui::MenuItem("Camera", 0, false, scene)) {
+		if (ImGui::MenuItem("Camera", 0, false, m_scene)) {
 
-			selectedEntity = scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Camera");
-			Camera* c = selectedEntity->AddComponent<Camera>();
+			m_selectedEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Camera");
+			Camera* c = m_selectedEntity->AddComponent<Camera>();
 
 			SetChanges(true);
 

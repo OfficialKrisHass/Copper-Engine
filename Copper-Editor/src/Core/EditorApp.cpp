@@ -331,11 +331,11 @@ namespace Editor {
 		}
 
 		ImVec2 windowSize = ImGui::GetContentRegionAvail();
-		data.gamePanelSize = UVector2I((uint32_t) windowSize.x, (uint32_t) windowSize.y);
+		data.gamePanelSize = UVector2I((uint32) windowSize.x, (uint32) windowSize.y);
 
 		SetWindowSize(data.gamePanelSize);
 
-		ImGui::Image(reinterpret_cast<void*>((uint64_t) GetMainFBOTexture()), windowSize, ImVec2 {0, 1}, ImVec2 {1, 0});
+		ImGui::Image(reinterpret_cast<void*>((uint64) GetMainFBOTexture()), windowSize, ImVec2 {0, 1}, ImVec2 {1, 0});
 
 		if (ImGui::IsItemClicked() && !AcceptInputDuringRuntime() && IsSceneRuntimeRunning()) {
 			
@@ -367,11 +367,11 @@ namespace Editor {
 		ImVec2 windowSize = ImGui::GetContentRegionAvail();
 		ImVec2 windowPos = ImGui::GetWindowPos();
 
-		data.viewportSize = UVector2I((uint32_t) windowSize.x, (uint32_t) windowSize.y);
+		data.viewportSize = UVector2I((uint32) windowSize.x, (uint32) windowSize.y);
 
 		data.viewportCentre = data.viewportSize / 2;
-		data.viewportCentre.x += (uint32_t) windowPos.x;
-		data.viewportCentre.y += (uint32_t) windowPos.y;
+		data.viewportCentre.x += (uint32) windowPos.x;
+		data.viewportCentre.y += (uint32) windowPos.y;
 
 		if (data.viewportFBO.Width() != data.viewportSize.x || data.viewportFBO.Height() != data.viewportSize.y) {
 
@@ -392,7 +392,7 @@ namespace Editor {
 		//After we are done rendering we are safe to unbind the FBO unless we want to modify it any way
 		data.viewportFBO.Unbind();
 
-		ImGui::Image(reinterpret_cast<void*>((uint64_t) data.viewportFBO.GetColorAttachment()), windowSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+		ImGui::Image(reinterpret_cast<void*>((uint64) data.viewportFBO.GetColorAttachment()), windowSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
 		//Gizmos that I stol... I mean, taken inspiration from The Chernos Game Engine series
 		//Yeah, I definitely didn't copy this entire chunk of code that I don't understand but
@@ -467,11 +467,11 @@ namespace Editor {
 
 		if (data.state == Edit) {
 
-			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t) data.playIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project) StartEditorRuntime();
+			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64) data.playIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project) StartEditorRuntime();
 
 		} else if (data.state == Play) {
 
-			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64_t) data.stopIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project) StopEditorRuntime();
+			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64) data.stopIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project) StopEditorRuntime();
 
 		}
 
@@ -653,7 +653,7 @@ namespace Editor {
 		// and then exit the application
 
 		bool reloadSuccess = Scripting::Load(data.project.path / "Binaries" / (data.project.name + ".dll"));
-		int i = 0;
+		uint32 i = 0;
 		while (!reloadSuccess && i < 10) {
 
 			LogError("Failed to Load the Project Assembly, attempt #{}", i);

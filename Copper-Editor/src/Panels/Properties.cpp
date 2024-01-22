@@ -33,8 +33,6 @@ using namespace Copper;
 
 namespace Editor {
 
-	bool Properties::dragDropTargetHovered = false;
-
 	template<typename T> static bool DrawComponent(const std::string& name, T* component);
 	static bool DrawComponent(const std::string& name, Transform* component);
 
@@ -44,7 +42,7 @@ namespace Editor {
 
 	void Properties::UI() {
 
-		if (!*selectedEntity) return;
+		if (!*m_selectedEntity) return;
 
 		RenderEntity();
 
@@ -52,7 +50,7 @@ namespace Editor {
 
 	void Properties::RenderEntity() {
 
-		InternalEntity* entity = *selectedEntity;
+		InternalEntity* entity = *m_selectedEntity;
 
 		char buffer[128] = {};
 		std::strncpy(buffer, entity->name.c_str(), sizeof(buffer));
@@ -208,8 +206,8 @@ namespace Editor {
 		ImGui::Separator();
 
 		// Position Lock
-		if (ShowMask("Position", (uint32_t&) rb->lockMask, 3) && !changed) changed = true;
-		if (ShowMask("Rotation", (uint32_t&) rb->lockMask, 3, 3) && !changed) changed = true;
+		if (ShowMask("Position", (uint32&) rb->m_lockMask, 3) && !changed) changed = true;
+		if (ShowMask("Rotation", (uint32&) rb->m_lockMask, 3, 3) && !changed) changed = true;
 
 		if (changed && IsSceneRuntimeRunning()) rb->Setup();
 
@@ -277,8 +275,8 @@ namespace Editor {
 
 			switch (field.type) {
 
-				case ScriptField::Type::Int:			RenderScriptField<int>(script, field, BindShowFunc(ShowInt)); break;
-				case ScriptField::Type::UInt:			RenderScriptField<unsigned int>(script, field, BindShowFunc(ShowUInt)); break;
+				case ScriptField::Type::Int:			RenderScriptField<int32>(script, field, BindShowFunc(ShowInt)); break;
+				case ScriptField::Type::UInt:			RenderScriptField<uint32>(script, field, BindShowFunc(ShowUInt)); break;
 				case ScriptField::Type::Float:			RenderScriptField<float>(script, field, BindShowFunc(ShowFloat)); break;
 
 				case ScriptField::Type::Vector2:		RenderScriptField<Vector2>(script, field, BindShowFunc(ShowVector2)); break;
@@ -297,7 +295,7 @@ namespace Editor {
 
 	template<typename T> static bool DrawComponent(const std::string& name, T* component) {
 
-		ImGui::PushID((int) (int64_t) component);
+		ImGui::PushID((uint32) (uint64) component);
 
 		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2 {4, 4});
@@ -333,7 +331,7 @@ namespace Editor {
 	}
 	static bool DrawComponent(const std::string& name, Transform* component) {
 
-		ImGui::PushID((int) (int64_t) component);
+		ImGui::PushID((uint32) (uint64) component);
 
 		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4, 4 });
@@ -369,7 +367,7 @@ namespace Editor {
 		return ret;
 
 	}
-	bool Properties::ShowInt(const std::string& name, int* show) {
+	bool Properties::ShowInt(const std::string& name, int32* show) {
 
 		bool ret = false;
 		ret = ImGui::DragInt(name.c_str(), show, DragIntSpeed);
@@ -378,7 +376,7 @@ namespace Editor {
 		return ret;
 		
 	}
-	bool Properties::ShowUInt(const std::string& name, unsigned int* show) {
+	bool Properties::ShowUInt(const std::string& name, uint32* show) {
 
 		bool ret = false;
 		ret = ImGui::DragInt(name.c_str(), (int*) show, DragIntSpeed);
@@ -626,7 +624,7 @@ namespace Editor {
 		
 	}
 
-	bool Properties::ShowMask(const std::string& name, uint32_t& mask, int num, int maskOffset, char startLabel) {
+	bool Properties::ShowMask(const std::string& name, uint32& mask, uint32 num, uint32 maskOffset, char startLabel) {
 
 		ImGui::Text(name.c_str());
 
@@ -634,7 +632,7 @@ namespace Editor {
 		bool ret = false;
 		std::string label = "";
 
-		for (int i = 0, bit = maskOffset; i < num; i++, maskOffset++) {
+		for (uint32 i = 0, bit = maskOffset; i < num; i++, maskOffset++) {
 
 			ImGui::SameLine();
 
@@ -660,7 +658,7 @@ namespace Editor {
 
 	bool Properties::ShowEntity(const std::string& name, InternalEntity** entity) {
 
-		ImGuiID id = ImGuiID(name.c_str());
+		ImGuiID id = ImGuiID((uint32) (uint64) name.c_str());
 		ImGui::PushID(id);
 
 		bool ret = false;
@@ -703,7 +701,7 @@ namespace Editor {
 		// sometimes it does, sometimes not, Love it :)))))))))))
 		// TODO: Fix
 
-		if (ImGui::BeginDragDropTargetCustom({ cursorPos, cursorPos + frameSize }, ImGuiID(name.c_str()))) {
+		if (ImGui::BeginDragDropTargetCustom({ cursorPos, cursorPos + frameSize }, ImGuiID((uint32) (uint64) name.c_str()))) {
 
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE")) {
 
@@ -726,7 +724,7 @@ namespace Editor {
 
 		bool ret = false;
 
-		ImGuiID id = ImGuiID(name.c_str());
+		ImGuiID id = ImGuiID((uint32) (uint64) name.c_str());
 		ImGui::PushID(id);
 
 		std::string nodeText;
@@ -768,7 +766,7 @@ namespace Editor {
 		// sometimes it does, sometimes not, Love it :)))))))))))
 		// TODO: Fix
 
-		if (ImGui::BeginDragDropTargetCustom({ cursorPos, cursorPos + frameSize }, ImGuiID(name.c_str()))) {
+		if (ImGui::BeginDragDropTargetCustom({ cursorPos, cursorPos + frameSize }, ImGuiID((uint32) (uint64) name.c_str()))) {
 
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE")) {
 

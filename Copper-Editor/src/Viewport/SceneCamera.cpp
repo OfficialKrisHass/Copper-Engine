@@ -16,33 +16,33 @@ namespace Editor {
 
 	SceneCamera::SceneCamera(UVector2I size) : Camera(size) {
 
-		this->transform = new Transform(Vector3::zero, Vector3::zero, Vector3::one);
+		this->m_transform = new Transform(Vector3::zero, Vector3::zero, Vector3::one);
 
 	}
 
 	void SceneCamera::Update() {
 		
-		transform->Update();
+		m_transform->Update();
 
-		if(!canLook) return;
+		if(!m_canLook) return;
 
 		if (Input::IsButton(MouseCode::Button2)) {
 
-			if (Input::IsKey(KeyCode::W)) { transform->position +=  transform->Forward() * speed; }
-			if (Input::IsKey(KeyCode::S)) { transform->position += -transform->Forward() * speed; }
-			if (Input::IsKey(KeyCode::A)) { transform->position += -transform->Right() * speed; }
-			if (Input::IsKey(KeyCode::D)) { transform->position +=  transform->Right() * speed; }
+			if (Input::IsKey(KeyCode::W)) { m_transform->position +=  m_transform->Forward() * speed; }
+			if (Input::IsKey(KeyCode::S)) { m_transform->position += -m_transform->Forward() * speed; }
+			if (Input::IsKey(KeyCode::A)) { m_transform->position += -m_transform->Right() * speed; }
+			if (Input::IsKey(KeyCode::D)) { m_transform->position +=  m_transform->Right() * speed; }
 		
-			if (Input::IsKey(KeyCode::Space))       { transform->position +=  transform->Up() * speed; }
-			if (Input::IsKey(KeyCode::LeftControl)) { transform->position += -transform->Up() * speed; }
+			if (Input::IsKey(KeyCode::Space))       { m_transform->position +=  m_transform->Up() * speed; }
+			if (Input::IsKey(KeyCode::LeftControl)) { m_transform->position += -m_transform->Up() * speed; }
 			
 			Input::SetCursorVisible(false);
 
-			if (firstClick) {
+			if (m_firstClick) {
 
 				Input::SetCursorPosition((float) GetWindow().Width() / 2, (float) GetWindow().Height() / 2);
 
-				firstClick = false;
+				m_firstClick = false;
 
 			}
 
@@ -53,14 +53,14 @@ namespace Editor {
 			
 			rotX -= sensitivity * (float) (mouseY - (GetWindow().Height() / 2)) / GetWindow().Height();
 			rotY -= sensitivity * (float) (mouseX - (GetWindow().Width() / 2)) / GetWindow().Width();
-			transform->rotation = Quaternion(rotX, rotY, 0.0f);
+			m_transform->rotation = Quaternion(rotX, rotY, 0.0f);
 			
 			Input::SetCursorPosition((float) GetWindow().Width() / 2, (float) GetWindow().Height() / 2);
 
 		} else {
 
 			Input::SetCursorVisible(true);
-			firstClick = true;
+			m_firstClick = true;
 
 		}
 

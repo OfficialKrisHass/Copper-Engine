@@ -12,8 +12,8 @@ namespace Editor {
 	public:
 		ThemeEditor() : Panel("Theme Editor") {}
 
-		void SaveTheme(const fs::path& path);
-		void LoadTheme(const fs::path& path);
+		void SaveTheme(const Copper::fs::path& path);
+		void LoadTheme(const Copper::fs::path& path);
 
 	private:
 		virtual void UI() override;

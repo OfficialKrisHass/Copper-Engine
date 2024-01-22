@@ -1,5 +1,7 @@
 #include "ProjectTemplate.h"
 
+#include <fstream>
+
 #ifdef CU_LINUX
 using std::experimental::filesystem::create_directories;
 #else

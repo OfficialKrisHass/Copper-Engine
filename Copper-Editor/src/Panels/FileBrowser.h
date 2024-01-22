@@ -11,12 +11,12 @@ namespace Editor {
         
     public:
         FileBrowser() = default;
-        FileBrowser(const fs::path& initialDir);
+        FileBrowser(const Copper::fs::path& initialDir);
 
-        static void SetRelativeDir(const fs::path& value) { projectRelativeDir = value; }
+        static void SetRelativeDir(const Copper::fs::path& value) { m_projectRelativeDir = value; }
 
     private:
-        static fs::path projectRelativeDir;
+        static Copper::fs::path m_projectRelativeDir;
         
         virtual void UI() override;
     

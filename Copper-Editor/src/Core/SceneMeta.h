@@ -11,7 +11,7 @@ namespace Editor::MetaFile {
 		void Deserialize(Copper::Scene* scene);
 
 	private:
-		Copper::Scene* scene;
+		Copper::Scene* m_scene;
 
 	};
 

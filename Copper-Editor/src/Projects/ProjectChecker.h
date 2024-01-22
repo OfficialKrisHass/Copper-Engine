@@ -6,7 +6,7 @@
 
 namespace Editor::ProjectChecker {
 
-	enum ProjectIssue : uint16_t {
+	enum ProjectIssue : Copper::uint16 {
 
 		MissingAssets = BIT(0),
 		MissingBinaries = BIT(1),
@@ -26,7 +26,7 @@ namespace Editor::ProjectChecker {
 
 	};
 
-	uint16_t CheckProject(const Project& project);
-	void FixProject(Project& project, const uint16_t issueFlags);
+	Copper::uint16 CheckProject(const Project& project);
+	void FixProject(Project& project, const Copper::uint16 issueFlags);
 	
 }

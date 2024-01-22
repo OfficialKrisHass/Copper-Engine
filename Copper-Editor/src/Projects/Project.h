@@ -10,13 +10,14 @@ namespace Editor {
 
 	struct Project {
 
+	public:
 		std::string name;
 
 		fs::path path;
 		fs::path assetsPath;
 		fs::path lastOpenedScene;
 
-		int gizmoType = 0;
+		Copper::uint32 gizmoType = 0;
 
 		Project() : name(""), path(""), assetsPath("") {}
 		Project(const std::string& name, const fs::path& path);

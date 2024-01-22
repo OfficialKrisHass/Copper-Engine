@@ -4,8 +4,11 @@
 
 #include "Engine/Scripting/ScriptingCore.h"
 
-#include <yaml-cpp/yaml.h>
 #include "Engine/YAMLOverloads/Everything.h"
+
+#include <yaml-cpp/yaml.h>
+
+#include <fstream>
 
 using namespace Copper;
 
@@ -57,7 +60,7 @@ namespace Editor {
 
 		// Viewport
 
-		gizmoType = main["Gizmo"].as<int>();
+		gizmoType = main["Gizmo"].as<uint32>();
 
 		} catch(YAML::Exception e) {
 

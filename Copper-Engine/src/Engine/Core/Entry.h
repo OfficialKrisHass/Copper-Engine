@@ -1,20 +1,22 @@
 #pragma once
 
+// This file needs be included by the executable, and only once
+
 #include "Engine/Core/Engine.h"
 #include "Engine/Core/Args.h"
 
-extern void AppEntryPoint(const Copper::Args& arguments);
+// Gets called before the engine Initialization, use this for app init
+extern void AppEntryPoint();
 
 int main(int argc, char* argv[]) {
 
 	using namespace Copper;
 
 	Logger::Initialize();
-
-	Args arguments(argc, argv);
+	Args::Setup(argc, argv);
 	
-	AppEntryPoint(arguments);
-	EngineCore::Initialize(arguments);
+	AppEntryPoint();
+	EngineCore::Initialize();
 
 	return 0;
 

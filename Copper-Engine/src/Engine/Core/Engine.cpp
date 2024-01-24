@@ -37,7 +37,6 @@ namespace Copper {
 		// Core variables
 
 		EngineState engineState = EngineState::Entry;
-		const Args* arguments;
 
 		//Rendering
 	
@@ -88,13 +87,12 @@ namespace Copper {
 	void Shutdown();
 
 #pragma region EngineCore
-	void EngineCore::Initialize(const Args& args) {
+	void EngineCore::Initialize() {
 
 		// This is the only function that has to do this as this is the only exposed function
 
 		VERIFY_STATE_INTERNAL(EngineState::Entry, "Initialize the Engine");
 		data.engineState = EngineState::Initialization;
-		data.arguments = &args;
 
 		// Window & Renderer Initialization
 
@@ -195,7 +193,6 @@ namespace Copper {
 
 	}
 
-	const Args& EngineCore::GetArguments() { return *data.arguments; }
 #pragma endregion
 
 	bool OnWindowClose(const Event& e) {

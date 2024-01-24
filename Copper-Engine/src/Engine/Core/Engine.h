@@ -9,7 +9,6 @@
 namespace Copper {
 
 	class Event;
-	class Args;
 
 	namespace EngineCore {
 
@@ -23,12 +22,10 @@ namespace Copper {
 
 		};
 
-		void Initialize(const Args& arguments);
+		void Initialize();
 
 		EngineState GetEngineState();
 		std::string EngineStateToString(EngineState state);
-
-		const Args& GetArguments();
 
 	}
 

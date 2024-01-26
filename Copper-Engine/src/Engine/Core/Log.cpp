@@ -10,11 +10,15 @@
 namespace Copper {
 
 	std::shared_ptr<spdlog::logger> Logger::m_logger;
+
 	std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> Logger::m_ringbufferSink;
 	std::shared_ptr<spdlog::sinks::stdout_color_sink_mt> colorSink;
-	std::shared_ptr<spdlog::sinks::basic_file_sink_mt> fileSink;
+
+	// TODO: Add a log file like every other fucking app in the world
 
 	void Logger::Initialize() {
+
+		// Can't use the macro since it uses the logger which is not initialized yet, duh
 
 		if (EngineCore::GetEngineState() != EngineCore::EngineState::Entry) return;
 

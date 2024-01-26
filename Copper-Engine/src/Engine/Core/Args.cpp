@@ -9,6 +9,9 @@ namespace Copper::Args {
 		arguments.resize(argc);
 		for (uint32 i = 0; i < argc; i++) {
 
+			// TODO: Find a way to make this check general, from what I could find online, there is a chance the
+			// first argument may not be the executable name
+
 			if (i == 0) {
 
 				std::string tmp = argv[0];

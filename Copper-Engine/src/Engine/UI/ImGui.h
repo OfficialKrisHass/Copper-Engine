@@ -10,6 +10,8 @@ namespace Copper {
 	class UIContext {
 
 	public:
+		UIContext() = default;
+
 		void Initialize(const Window& window, bool gizmo = false, bool docking = true, bool viewports = true);
 		void Shutdown();
 
@@ -21,11 +23,11 @@ namespace Copper {
 		void SetAsCurrent();
 	
 	private:
-		bool gizmo;
-		bool docking;
-		bool viewports;
+		bool gizmo = false;
+		bool docking = true;
+		bool viewports = true;
 
-		ImGuiContext* context;
+		ImGuiContext* context = nullptr;
 
 	};
 

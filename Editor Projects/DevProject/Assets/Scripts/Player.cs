@@ -6,9 +6,9 @@ class Player : Component {
 
     public float speed = 1.0f;
     public float sensitivity = 1.0f;
+    public float jumpHeight = 1.0f;
 
     public Transform camera;
-    public Entity testEntity;
 
     RigidBody rb;
     Vector2 mouseRot;
@@ -49,6 +49,9 @@ class Player : Component {
         Vector3 force = transform.forward * x + transform.right * y;
 
         rb.AddForce(force * Game.deltaTime * 10000.0f, ForceMode.Force);
+
+        if (Input.IsKeyDown(KeyCode.Space))
+            rb.AddForce(transform.up * jumpHeight, ForceMode.Force);
 
     }
     private void HandleMouse() {

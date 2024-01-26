@@ -2,6 +2,10 @@
 
 #include "Engine/Core/Core.h"
 
+// Wrapper for platform dependant Vertex and Index buffers, source is in Platform/<API>/<API>Buffer.cpp
+// TODO: Maybe remove this so it is not exposed ?
+// TODO: Or at least make my own implementation and not the one I stole from the Cherno
+
 namespace Copper {
 
 	enum class ElementType {
@@ -85,7 +89,7 @@ namespace Copper {
 		uint32 Stride() const { return m_stride; }
 
 	private:
-		uint32 m_id;
+		uint32 m_id = 0;
 		uint32 m_stride = 0;
 		std::vector<Element> elements;
 
@@ -109,7 +113,7 @@ namespace Copper {
 
 	public:
 		IndexBuffer() = default;
-		IndexBuffer(std::vector<uint32> indices);
+		IndexBuffer(const std::vector<uint32>& indices);
 		IndexBuffer(uint32 size);
 
 		void Bind() const;
@@ -120,8 +124,8 @@ namespace Copper {
 		uint32 Count() const { return m_count; }
 
 	private:
-		uint32 m_id;
-		uint32 m_count;
+		uint32 m_id = 0;
+		uint32 m_count = 0;
 
 	};
 

@@ -24,7 +24,7 @@ Entities:
       Fov: 90
       Near Plane: 0.100000001
       Far Plane: 1000
-      Size: [1920, 969]
+      Size: [1248, 569]
   Player:
     ID: 2
     Transform:
@@ -159,16 +159,16 @@ Entities:
       Fields:
         speed:
           Type: 3
-          Value: 2
+          Value: 0.100000001
         sensitivity:
           Type: 3
           Value: 5
+        jumpHeight:
+          Type: 3
+          Value: 2
         camera:
           Type: 7
           Value: 1
-        testEntity:
-          Type: 6
-          Value: 4294967295
   Ground:
     ID: 3
     Transform:

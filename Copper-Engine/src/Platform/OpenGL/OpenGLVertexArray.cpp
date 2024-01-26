@@ -9,19 +9,21 @@ namespace Copper {
 
 		switch (type) {
 
-		case ElementType::Float:	return GL_FLOAT;
-		case ElementType::Float2:	return GL_FLOAT;
-		case ElementType::Float3:  return GL_FLOAT;
-		case ElementType::Float4:  return GL_FLOAT;
-		case ElementType::Int:		return GL_INT;
-		case ElementType::Int2:	return GL_INT;
-		case ElementType::Int3:	return GL_INT;
-		case ElementType::Int4:	return GL_INT;
-		case ElementType::Bool:	return GL_BOOL;
+		case ElementType::Float:
+		case ElementType::Float2:
+		case ElementType::Float3:
+		case ElementType::Float4:   return GL_FLOAT;
 
+		case ElementType::Int:
+		case ElementType::Int2:
+		case ElementType::Int3:
+		case ElementType::Int4:		return GL_INT;
+
+		case ElementType::Bool:		return GL_BOOL;
 
 		}
 
+		LogWarn("Couldn't get the OpenGL data type for {} (ElementType)", type);
 		return 0;
 
 	}
@@ -49,7 +51,6 @@ namespace Copper {
 
 	}
 	void VertexArray::SetIndexBuffer(IndexBuffer* ibo) { this->ibo = ibo; }
-
 
 	void VertexArray::Bind() const { glBindVertexArray(m_id); }
 	void VertexArray::Unbind() const { glBindVertexArray(0); }

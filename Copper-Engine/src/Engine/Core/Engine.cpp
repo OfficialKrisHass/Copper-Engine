@@ -34,20 +34,20 @@ namespace Copper {
 
 	struct EngineData {
 
-		// Core variables
+		// Core
 
 		EngineState engineState = EngineState::Entry;
 
-		//Rendering
+		// Renderer
 	
-	#ifdef CU_EDITOR // Editor creates its own window and then passes it to the Engine
-		Window* window;
+	#ifdef CU_EDITOR
+		Window* window = nullptr; // Editor creates its own window and then passes it to the Engine
 		bool acceptInputRuntime = true;
-	#else // Every other app lets the Engine create the window
+	#else
 		Window window;
 	#endif
-		FrameBuffer fbo;
-		UIContext mainUIContext;
+		FrameBuffer fbo = FrameBuffer();
+		UIContext mainUIContext = UIContext();
 
 		// Scene
 
@@ -57,7 +57,6 @@ namespace Copper {
 		float lastFrameTime = 0.0f;
 		float deltaTime = 0.0f;
 
-
 		// Engine Events
 
 		SimpleEvent postInitEvent;
@@ -66,7 +65,7 @@ namespace Copper {
 		Event preShutdownEvent;
 		SimpleEvent postShutdownEvent;
 
-		// Helper function to get a reference to the window no matter if we are using the editor or not
+		// Helper func to get the Window no matter if its a pointer or not
 		Window& Window() {
 
 		#ifdef CU_EDITOR
@@ -89,8 +88,6 @@ namespace Copper {
 #pragma region EngineCore
 	void EngineCore::Initialize() {
 
-		// This is the only function that has to do this as this is the only exposed function
-
 		VERIFY_STATE_INTERNAL(EngineState::Entry, "Initialize the Engine");
 		data.engineState = EngineState::Initialization;
 
@@ -98,20 +95,18 @@ namespace Copper {
 
 	#ifdef CU_EDITOR
 		data.window = GetEditorWindow();
-		CHECK(data.window, "Editor Window returned nullptr! Check if you have created a window in AppEntryPoint and provided a GetEditorWindow function!");
-		RendererAPI::Initialize();
-		data.fbo = FrameBuffer(UVector2I(1280, 720)); // TODO: Possibly find a solution that doesnt mean we have to have an invalid size for the first few frames
+		CU_ASSERT(data.window, "Editor Window returned nullptr! Check if you have created a window in AppEntryPoint and provided a GetEditorWindow function!");
 	#else
 		data.window = Window("Copper Engine", 1280, 720);
-		RendererAPI::Initialize();
-		data.fbo = FrameBuffer(data.Window().Size());
 	#endif
 
 		data.Window().AddWindowCloseEventFunc(OnWindowClose);
 		data.Window().AddWindowResizeEventFunc(OnWindowResize);
 
 		Renderer::Initialize();
-		Renderer::SetShader(Shader("assets/Shaders/vertexDefault.glsl", "assets/Shaders/fragmentDefault.glsl"));
+		Renderer::SetShaderPath("assets/Shaders/vertexDefault.glsl", "assets/Shaders/fragmentDefault.glsl");
+		data.fbo = FrameBuffer(UVector2I(1280, 720)); // TODO: Find a solution to this (maybe store the resolution somewhere ?)
+
 		data.mainUIContext.Initialize(data.Window(), true);
 
 		// Input
@@ -132,6 +127,7 @@ namespace Copper {
 		data.engineState = EngineState::PostInitialization;
 		data.postInitEvent();
 
+		// Call it from here so that it doesn't have to be an exposed function
 		Run();
 
 	}
@@ -141,12 +137,15 @@ namespace Copper {
 
 		while (data.engineState == EngineState::Running) {
 
+			// Calculate delta time
+
 			float time = data.Window().Time();
 			data.deltaTime = time - data.lastFrameTime;
 			data.lastFrameTime = time;
 
-			data.Window().Update();
+			// Update
 
+			data.Window().Update();
 			data.updateEvent();
 
 			data.fbo.Bind();
@@ -155,15 +154,21 @@ namespace Copper {
 
 			Renderer::ResizeViewport(data.Window().Size());
 
+			// UI Time window
+
 			data.mainUIContext.Begin();
 			data.uiUpdateEvent();
 			data.mainUIContext.End();
+
+			// Finalize
 
 			Renderer::EndFrame();
 
 			Input::Update();
 
 		}
+
+		// Again call this from here so it doesn't have to be exposed
 
 		Shutdown();
 
@@ -172,6 +177,7 @@ namespace Copper {
 
 		data.mainUIContext.Shutdown();
 		data.Window().Shutdown();
+
 		data.postShutdownEvent();
 
 	}

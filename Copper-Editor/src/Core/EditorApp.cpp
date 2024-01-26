@@ -959,6 +959,8 @@ namespace Editor {
 
 void AppEntryPoint() {
 
+	// In the editor case, we have our own window that is bigger then the engine region
+	// so we have to create and store it ourselves
 	Editor::data.window = Window("Copper Editor", 1280, 720);
 
 	AddPostInitEventFunc(Editor::Initialize);

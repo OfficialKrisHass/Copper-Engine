@@ -7,8 +7,6 @@
 
 #include <spdlog/sinks/ringbuffer_sink.h>
 
-namespace Copper {
-
 #ifdef CU_DEBUG
 
 #define Log(...)		Copper::Logger::GetLogger()->trace(__VA_ARGS__)
@@ -25,6 +23,11 @@ namespace Copper {
 
 #endif
 
+namespace Copper {
+
+	// TODO: maybe remove in favour of a custom console in Editor ?
+	
+	// Internal class aka DO NOT USE THIS
 	class Logger {
 
 	public:

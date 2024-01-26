@@ -3,7 +3,13 @@
 
 #include <glad/glad.h>
 
+// OpenGL Implementation for the Vertex and Index Buffers
+
 namespace Copper {
+
+	//--------------
+	// Vertex Buffer
+	//--------------
 
 	VertexBuffer::VertexBuffer(std::vector<float> vertices) {
 
@@ -32,9 +38,11 @@ namespace Copper {
 	void VertexBuffer::Bind() const { glBindBuffer(GL_ARRAY_BUFFER, m_id); }
 	void VertexBuffer::Unbind() const { glBindBuffer(GL_ARRAY_BUFFER, 0); }
 
+	//-------------s
+	// Index Buffer
+	//-------------
 
-
-	IndexBuffer::IndexBuffer(std::vector<uint32> indices) : m_count((uint32) indices.size()) {
+	IndexBuffer::IndexBuffer(const std::vector<uint32>& indices) : m_count((uint32) indices.size()) {
 
 		glGenBuffers(1, &m_id);
 

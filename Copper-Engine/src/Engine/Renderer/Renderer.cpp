@@ -33,6 +33,8 @@ namespace Copper::Renderer {
 
 		VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the Renderer");
 
+		RendererAPI::Initialize();
+
 		data.vao = VertexArray(nullptr);
 		
 		data.vbo = VertexBuffer(data.maxVertices * sizeof(float));
@@ -100,10 +102,10 @@ namespace Copper::Renderer {
 	void ClearColor(float r, float g, float b) { api.ClearColor(r, g, b); }
 	void ResizeViewport(const UVector2I& size) { api.ResizeViewport(size); }
 
-	void SetShader(const Shader& shader) {
+	void SetShaderPath(const std::string& vertexPath, const std::string& fragmentPath) {
 		
 		VERIFY_STATE(EngineCore::EngineState::Initialization, "Set the Shader");
-		api.SetShader(shader);
+		api.SetShader(vertexPath, fragmentPath);
 		
 	}
 	Shader* GetShader() { return api.GetShader(); }

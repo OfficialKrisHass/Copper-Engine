@@ -29,7 +29,7 @@ namespace Copper::Input {
 
 	bool OnMouseMove(const Event& e);
 
-	void Init() {
+	void Initialize(const Window& window) {
 
 		VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize Input");
 

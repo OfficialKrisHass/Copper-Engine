@@ -13,7 +13,13 @@
 extern Copper::UVector2I GetViewportCentre();
 #endif
 
+#define GLFW_WINDOW(win) (GLFWwindow*) window.GetWindowPtr()
+
+// TODO: Rework this to make it less complicated
+
 namespace Copper::Input {
+
+	Window& window;
 
 	std::unordered_map<KeyCode, std::pair<uint32, bool>> keys;
 
@@ -29,20 +35,22 @@ namespace Copper::Input {
 
 	bool OnMouseMove(const Event& e);
 
-	void Init() {
+	void Initialize(Window& win) {
 
 		VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize Input");
+		window = win;
 
-		GetWindow().AddKeyPressedEventFunc(OnKeyPressed);
-		GetWindow().AddKeyReleasedEventFunc(OnKeyReleased);
+		window.AddKeyPressedEventFunc(OnKeyPressed);
+		window.AddKeyReleasedEventFunc(OnKeyReleased);
 
-		GetWindow().AddMouseMoveEventFunc(OnMouseMove);
+		window.AddMouseMoveEventFunc(OnMouseMove);
 
-		if (!pfd::settings::available()) {
-
-			LogError("Portable File Dialogs are not avilable on this platform! You might be missing these packages:\nKDE: KDialog\nGnome: Zenity/Matedialog/Qarma");
-
-		}
+		if (!pfd::settings::available())
+		#ifdef CU_LINUX
+			LogError("Portable File Dialogs are not available! You might be missing these packages:\n\tKDE: KDialog\n\tGnome: Zenity/Matedialog/Qarma");
+		#elif CU_WINDOWS
+			LogError("Portable File Dialogs are not available!");
+		#endif
 
 		pfd::settings::verbose(true);
 
@@ -79,7 +87,7 @@ namespace Copper::Input {
 
 	bool IsButton(MouseCode button) {
 
-		return glfwGetMouseButton(GetGLFWwindow, (int32) button) == GLFW_PRESS ? true : false;
+		return glfwGetMouseButton(GLFW_WINDOW(window), (int32) button) == GLFW_PRESS ? true : false;
 
 	}
 
@@ -148,7 +156,7 @@ namespace Copper::Input {
 
 	void SetCursorVisible(bool visible) {
 
-		glfwSetInputMode(GetGLFWwindow, GLFW_CURSOR, visible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_HIDDEN);
+		glfwSetInputMode(GLFW_WINDOW(window), GLFW_CURSOR, visible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_HIDDEN);
 		mouseVisible = visible;
 
 	}
@@ -160,19 +168,19 @@ namespace Copper::Input {
 	}
 	void SetCursorPosition(float x, float y) {
 
-		glfwSetCursorPos(GetGLFWwindow, x, y);
+		glfwSetCursorPos(GLFW_WINDOW(window), x, y);
 
 	}
 
 	void SetWindowTitle(const std::string& title) {
 
-		glfwSetWindowTitle(GetGLFWwindow, title.c_str());
+		glfwSetWindowTitle(GLFW_WINDOW(window), title.c_str());
 
 	}
 
 	void GetCursorPosition(double* x, double* y) {
 
-		glfwGetCursorPos(GetGLFWwindow, x, y);
+		glfwGetCursorPos(GLFW_WINDOW(window), x, y);
 
 	}
 

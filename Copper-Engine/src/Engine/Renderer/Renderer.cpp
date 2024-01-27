@@ -11,6 +11,8 @@
 
 #include <GLM/ext/matrix_transform.hpp>
 
+// TODO: Implement a proper batch renderer
+
 namespace Copper::Renderer {
 
 	struct RendererData {

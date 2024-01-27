@@ -4,11 +4,13 @@
 
 #include "KeyCodes.h"
 
+// Source is in Platform/<Platform>/<Platform>Input.cpp
+
 namespace Copper::Input {
 
 	// Input
 
-	void Init();
+	void Initialize(const Window& window);
 	void Update();
 
 	bool IsKey(KeyCode key);

@@ -65,7 +65,7 @@ namespace Copper {
 		Event preShutdownEvent;
 		SimpleEvent postShutdownEvent;
 
-		// Helper func to get the Window no matter if its a pointer or not
+		// Helper func to get the Window without macros everywhere
 		Window& Window() {
 
 		#ifdef CU_EDITOR
@@ -111,7 +111,7 @@ namespace Copper {
 
 		// Input
 
-		Input::Init();
+		Input::Initialize(data.Window());
 		Input::InitializeAxisManager();
 
 		// Physics

@@ -25,6 +25,8 @@ namespace Copper::Renderer {
 
 		std::vector<float> vertices;
 		std::vector<uint32> indices;
+
+		bool wireframe = false;
 		
 	};
 
@@ -104,12 +106,20 @@ namespace Copper::Renderer {
 	void ClearColor(float r, float g, float b) { api.ClearColor(r, g, b); }
 	void ResizeViewport(const UVector2I& size) { api.ResizeViewport(size); }
 
+	void SetWireframe(bool value) {
+		
+		data.wireframe = value;
+		api.SetWireframe(value);
+	
+	}
 	void SetShaderPath(const std::string& vertexPath, const std::string& fragmentPath) {
 		
 		VERIFY_STATE(EngineCore::EngineState::Initialization, "Set the Shader");
-		api.SetShader(vertexPath, fragmentPath);
+		api.SetShaderPath(vertexPath, fragmentPath);
 		
 	}
+
+	bool GetWireframe() { return data.wireframe; }
 	Shader* GetShader() { return api.GetShader(); }
 
 

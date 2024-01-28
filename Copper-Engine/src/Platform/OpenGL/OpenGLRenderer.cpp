@@ -53,7 +53,6 @@ namespace Copper {
 		glCullFace(GL_BACK);
 		glFrontFace(GL_CCW);
 
-		glPointSize(10.0f);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	// Copper Engine deafultly renders to the main FBO, meaning every app has to take the texture there and render it to a rect taking up the entire screen
@@ -146,6 +145,15 @@ namespace Copper {
 		
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	#endif
+
+	}
+
+	void RendererAPI::SetWireframe(bool value) {
+
+		if (value)
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		else
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	}
 

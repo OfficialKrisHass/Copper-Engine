@@ -470,6 +470,14 @@ namespace Editor {
 
 		}
 
+		// Wireframe toggle
+		
+		bool wireframe = Renderer::GetWireframe();
+
+		ImGui::SameLine();
+		if (ImGui::Checkbox("Wireframe", &wireframe))
+			Renderer::SetWireframe(wireframe);
+
 		ImGui::PopStyleVar(2);
 		ImGui::PopStyleColor(3);
 		ImGui::End();

@@ -25,7 +25,10 @@ namespace Copper {
 
 		void AddMesh(Mesh* mesh, Transform* transform);
 
+		void SetWireframe(bool value = true);
 		void SetShaderPath(const std::string& vertexPath, const std::string& fragmentPath);
+
+		bool GetWireframe();
 		Shader* GetShader();
 
 	}
@@ -41,7 +44,9 @@ namespace Copper {
 		void Render(VertexArray* vao, uint32 count, Camera* cam, Light* light);
 		void EndFrame();
 
-		void SetShader(const std::string& vertexPath, const std::string& fragmentPath) { this->m_shader = Shader(vertexPath, fragmentPath); }
+		void SetWireframe(bool value);
+		void SetShaderPath(const std::string& vertexPath, const std::string& fragmentPath) { this->m_shader = Shader(vertexPath, fragmentPath); }
+
 		Shader* GetShader() { return &this->m_shader; }
 		
 	private:

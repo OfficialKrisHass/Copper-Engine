@@ -6,11 +6,13 @@
 
 // Source is in Platform/<Platform>/<Platform>Input.cpp
 
+namespace Copper { class Window; }
+
 namespace Copper::Input {
 
 	// Input
 
-	void Initialize(const Window& window);
+	void Initialize(Window& window);
 	void Update();
 
 	bool IsKey(KeyCode key);

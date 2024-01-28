@@ -73,9 +73,9 @@ namespace Copper {
     void RigidBody::CreateDynamic(PxShape* shape) {
 
         if(this->m_collider)
-            m_body = PxCreateDynamic(*physics, PxTransform(CopperToPhysX(GetTransform()->position - this->m_collider->center), CopperToPhysX(GetTransform()->rotation)), *shape, 1.0f);
+            m_body = PxCreateDynamic(*physics, PxTransform(CopperToPhysX(GetTransform()->Position() - this->m_collider->center), CopperToPhysX(GetTransform()->Rotation())), *shape, 1.0f);
         else
-            m_body = PxCreateDynamic(*physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape, 1.0f);
+            m_body = PxCreateDynamic(*physics, PxTransform(CopperToPhysX(GetTransform()->Position()), CopperToPhysX(GetTransform()->Rotation())), *shape, 1.0f);
 
         ((PxRigidDynamic*) m_body)->setMass(mass);
         if (!gravity)
@@ -98,9 +98,9 @@ namespace Copper {
     void RigidBody::CreateStatic(PxShape* shape) {
 
         if (this->m_collider)
-            m_body = PxCreateStatic(*physics, PxTransform(CopperToPhysX(GetTransform()->position - this->m_collider->center), CopperToPhysX(GetTransform()->rotation)), *shape);
+            m_body = PxCreateStatic(*physics, PxTransform(CopperToPhysX(GetTransform()->Position() - this->m_collider->center), CopperToPhysX(GetTransform()->Rotation())), *shape);
         else
-            m_body = PxCreateStatic(*physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape);
+            m_body = PxCreateStatic(*physics, PxTransform(CopperToPhysX(GetTransform()->Position()), CopperToPhysX(GetTransform()->Rotation())), *shape);
 
     }
 
@@ -111,11 +111,11 @@ namespace Copper {
         Transform* transform = GetTransform();
 
         if (this->m_collider)
-            transform->position = PhysXToCopper(m_body->getGlobalPose().p) + m_collider->center;
+            transform->SetPosition( PhysXToCopper(m_body->getGlobalPose().p) + m_collider->center);
         else
-            transform->position = PhysXToCopper(m_body->getGlobalPose().p);
+            transform->SetPosition(PhysXToCopper(m_body->getGlobalPose().p));
 
-        transform->rotation = PhysXToCopper(m_body->getGlobalPose().q);
+        transform->SetRotation(PhysXToCopper(m_body->getGlobalPose().q));
 
     }
 

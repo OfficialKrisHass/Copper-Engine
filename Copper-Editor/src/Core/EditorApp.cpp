@@ -401,7 +401,7 @@ namespace Editor {
 
 			Matrix4 camProjection = data.sceneCam.CreateProjectionMatrix();
 			Matrix4 camView = data.sceneCam.CreateViewMatrix();
-			glm::mat4 transform = selectedObj->GetTransform()->CreateMatrix();
+			glm::mat4 transform = selectedObj->GetTransform()->TransformMatrix();
 
 			// Snapping
 			bool snap = Input::IsKey(KeyCode::LeftControl);
@@ -421,9 +421,9 @@ namespace Editor {
 				Math::DecomposeTransform(transform, position, rotation, scale);
 
 				//glm::vec3 deltaRotation = (Vector3) rotation - selectedObj->GetTransform()->rotation;
-				selectedObj->GetTransform()->position = position;
+				selectedObj->GetTransform()->SetPosition(position);
 				//selectedObj->GetTransform()->rotation += deltaRotation;
-				selectedObj->GetTransform()->scale = scale;
+				selectedObj->GetTransform()->SetScale(scale);
 
 				//The rotation doesn't work for some reason, it keeps wiggling around
 				//Unfortunately I'm dum dum so this is what you get :) uwu

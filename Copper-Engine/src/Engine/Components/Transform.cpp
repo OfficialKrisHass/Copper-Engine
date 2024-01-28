@@ -7,40 +7,77 @@
 
 #include "Engine/Utilities/Math.h"
 
+#define POSITION_CHANGED 1 // 1 << 0
+#define ROTATION_CHANGED 2 // 1 << 1
+#define SCALE_CHANGED 4 // 1 << 2
+
 namespace Copper {
 
-	Vector3 VecFromGLM(const glm::vec3& vec) { return Vector3(vec.x, vec.y, vec.z); }
-
-	Matrix4 Transform::CreateMatrix() {
-
-		Matrix4 ret;
-
-		if (m_parent)
-			ret *= m_parent->CreateMatrix();
-
-		CMath::TranslateMatrix(ret, this->position);
-		ret = ret * (Matrix4) this->rotation;
-		CMath::ScaleMatrix(ret, this->scale);
-
-		return ret;
-
-	}
+	Transform::Transform() : m_changed(POSITION_CHANGED | ROTATION_CHANGED | SCALE_CHANGED) {}
+	Transform::Transform(const Vector3& position, const Quaternion& rotation, const Vector3& scale) : m_position(position), m_rotation(rotation), m_scale(scale), m_changed(POSITION_CHANGED | ROTATION_CHANGED | SCALE_CHANGED) {}
+	Transform::Transform(const Vector3& position, const Vector3& rotation, const Vector3& scale) : m_position(position), m_rotation(rotation), m_scale(scale), m_changed(POSITION_CHANGED | ROTATION_CHANGED | SCALE_CHANGED) {}
 
 	void Transform::Update() {
 
-		m_forward	= GlobalRotation() * Vector3(0.0f, 0.0f, -1.0f);
-		m_right		= GlobalRotation() * Vector3(1.0f, 0.0f,  0.0f);
-		m_up		= GlobalRotation() * Vector3(0.0f, 1.0f,  0.0f);
+		if (m_changed == 0) return;
 
-		Matrix4 globalMat = CreateMatrix();
+		CalculateMatrix();
 		glm::vec3 pos, rot, scale;
-		Math::DecomposeTransform(globalMat, pos, rot, scale);
+		Math::DecomposeTransform(m_mat, pos, rot, scale);
 
-		m_globalPosition = pos;
-		m_globalRotation = (Vector3) rot;
-		m_globalScale = scale;
+		if (m_changed & POSITION_CHANGED)
+			m_globalPosition = pos;
+
+		if (m_changed & SCALE_CHANGED)
+			m_globalScale = scale;
+
+		if (m_changed & ROTATION_CHANGED) {
+
+			m_globalRotation = (Vector3) rot;
+
+			m_forward = m_globalRotation * Vector3(0.0f, 0.0f, -1.0f);
+			m_right = m_globalRotation * Vector3(1.0f, 0.0f, 0.0f);
+			m_up = m_globalRotation * Vector3(0.0f, 1.0f, 0.0f);
+
+		}
+
+		m_changed = 0;
+		m_calculated = false;
 
 	}
+	
+	void Transform::SetPosition(const Vector3& position) {
+
+		m_position = position;
+		m_changed |= POSITION_CHANGED;
+
+		for (uint32 id : m_children)
+			GetEntityFromID(id)->GetTransform()->SetChanged(m_changed);
+
+	}
+
+	void Transform::SetRotation(const Quaternion& rotation) {
+
+		m_rotation = rotation;
+		m_changed |= ROTATION_CHANGED;
+
+		for (uint32 id : m_children)
+			GetEntityFromID(id)->GetTransform()->SetChanged(m_changed);
+
+	}
+
+	void Transform::SetScale(const Vector3& scale) {
+
+		m_scale = scale;
+		m_changed |= SCALE_CHANGED;
+
+		for (uint32 id : m_children)
+			GetEntityFromID(id)->GetTransform()->SetChanged(m_changed);
+
+	}
+
+
+	// Parent
 
 	void Transform::SetParent(Transform* parent) {
 
@@ -60,7 +97,7 @@ namespace Copper {
 		if (m_parent) {
 
 			m_parent->RemoveChild(this);
-			Matrix4 local = CreateMatrix() * CMath::Inverse(parent->CreateMatrix());
+			Matrix4 local = m_mat * CMath::Inverse(parent->m_mat);
 
 			m_parent = parent;
 			parent->m_children.push_back(GetEntity()->ID());
@@ -68,9 +105,9 @@ namespace Copper {
 			glm::vec3 pos, rot, scale;
 			Math::DecomposeTransform(local, pos, rot, scale);
 
-			this->position = pos;
-			this->rotation = (Vector3) rot;
-			this->scale = scale;
+			m_position = pos;
+			m_rotation = (Vector3) rot;
+			m_scale = scale;
 
 			return;
 
@@ -78,7 +115,7 @@ namespace Copper {
 
 		// Case 3: Setting a parent (old parent == nullptr)
 
-		Matrix4 local = CreateMatrix() * CMath::Inverse(parent->CreateMatrix());
+		Matrix4 local = m_mat * CMath::Inverse(parent->m_mat);
 
 		m_parent = parent;
 		parent->m_children.push_back(GetEntity()->ID());
@@ -86,11 +123,13 @@ namespace Copper {
 		glm::vec3 pos, rot, scale;
 		Math::DecomposeTransform(local, pos, rot, scale);
 
-		this->position = pos;
-		this->rotation = (Vector3) rot;
-		this->scale = scale;
+		m_position = pos;
+		m_rotation = (Vector3) rot;
+		m_scale = scale;
 
 	}
+
+	// Children
 
 	void Transform::AddChild(Transform* child) {
 
@@ -98,19 +137,19 @@ namespace Copper {
 		if (child->m_parent)
 			child->m_parent->RemoveChild(child);
 
-		Matrix4 childGlobal = child->CreateMatrix();
+		Matrix4 childGlobal = child->m_mat;
 
 		child->m_parent = this;
 		m_children.push_back(child->GetEntity()->ID());
 
-		Matrix4 childLocal = childGlobal * CMath::Inverse(CreateMatrix());
+		Matrix4 childLocal = childGlobal * CMath::Inverse(m_mat);
 
 		glm::vec3 pos, rot, scale;
 		Math::DecomposeTransform(childLocal, pos, rot, scale);
 
-		child->position = pos;
-		child->rotation = (Vector3) rot;
-		child->scale = scale;
+		child->m_position = pos;
+		child->m_rotation = (Vector3) rot;
+		child->m_scale = scale;
 
 	}
 	void Transform::RemoveChild(uint32 index) {
@@ -126,9 +165,9 @@ namespace Copper {
 		
 		child->m_parent = nullptr;
 
-		child->position = child->m_globalPosition;
-		child->rotation = child->m_globalRotation;
-		child->scale = child->m_globalScale;
+		child->m_position = child->m_globalPosition;
+		child->m_rotation = child->m_globalRotation;
+		child->m_scale = child->m_globalScale;
 
 		m_children.erase(m_children.begin() + index);
 	
@@ -148,9 +187,31 @@ namespace Copper {
 
 	}
 
-	bool Transform::operator==(const Transform& other) const {
+	void Transform::CalculateMatrix() {
 
-		return GetEntity() == other.GetEntity();
+		if (m_calculated) return;
+		m_mat = Matrix4(1.0f);
+
+		if (m_parent) {
+
+			m_parent->CalculateMatrix();
+			m_mat *= m_parent->m_mat;
+
+		}
+
+		CMath::TranslateMatrix(m_mat, m_position);
+		m_mat = m_mat * (Matrix4) m_rotation;
+		CMath::ScaleMatrix(m_mat, m_scale);
+
+		m_calculated = true;
+
+	}
+
+	void Transform::SetChanged(ChangeMask value) {
+
+		m_changed = value;
+		for (uint32 id : m_children)
+			GetEntityFromID(id)->GetTransform()->SetChanged(value);
 
 	}
 	

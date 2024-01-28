@@ -177,9 +177,9 @@ namespace Copper {
 		out << YAML::Key << "ID" << YAML::Value << entity->m_id;
 		out << YAML::Key << "Transform" << YAML::Value << YAML::BeginMap; // Transform
 
-		out << YAML::Key << "Position" << YAML::Value << entity->m_transform->position;
-		out << YAML::Key << "Rotation" << YAML::Value << entity->m_transform->rotation;
-		out << YAML::Key << "Scale" << YAML::Value << entity->m_transform->scale;
+		out << YAML::Key << "Position" << YAML::Value << entity->m_transform->m_position;
+		out << YAML::Key << "Rotation" << YAML::Value << entity->m_transform->m_rotation;
+		out << YAML::Key << "Scale" << YAML::Value << entity->m_transform->m_scale;
 
 		out << YAML::Key << "Parent ID" << YAML::Value;
 		if (entity->m_transform->m_parent) out << entity->m_transform->m_parent->m_entity.m_id;
@@ -343,9 +343,9 @@ namespace Copper {
 		try {
 
 		YAML::Node transform = node["Transform"];
-		entity->m_transform->position = transform["Position"].as<Vector3>();
-		entity->m_transform->rotation = transform["Rotation"].as<Quaternion>();
-		entity->m_transform->scale = transform["Scale"].as<Vector3>();
+		entity->m_transform->SetPosition(transform["Position"].as<Vector3>());
+		entity->m_transform->SetRotation(transform["Rotation"].as<Quaternion>());
+		entity->m_transform->SetScale(transform["Scale"].as<Vector3>());
 
 		//Set the Parent
 		uint32 parentID = transform["Parent ID"].as<uint32>();

@@ -23,7 +23,7 @@ namespace Copper {
 
 		}
 
-		LogWarn("Couldn't get the OpenGL data type for {} (ElementType)", type);
+		LogWarn("Couldn't get the OpenGL data type for {} (ElementType)", (uint32) type);
 		return 0;
 
 	}

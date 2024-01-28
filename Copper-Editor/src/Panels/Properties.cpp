@@ -69,13 +69,17 @@ namespace Editor {
 			
 			Transform* transform = entity->GetTransform();
 
-			ShowVector3("Position", &transform->position);
+			Vector3 pos = transform->Position();
+			if (ShowVector3("Position", &pos))
+				transform->SetPosition(pos);
 
-			Vector3 newRot = transform->rotation.EulerAngles();
+			Vector3 newRot = transform->Rotation().EulerAngles();
 			if (ShowVector3("Rotation", &newRot))
-				transform->rotation = Quaternion(newRot);
+				transform->SetRotation(Quaternion(newRot));
 
-			ShowVector3("Scale", &transform->scale);
+			Vector3 scale = transform->Scale();
+			if (ShowVector3("Scale", &scale))
+				transform->SetScale(scale);
 
 			ImGui::PopID();
 			

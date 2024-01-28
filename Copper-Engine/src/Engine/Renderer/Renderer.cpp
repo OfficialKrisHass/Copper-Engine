@@ -73,7 +73,7 @@ namespace Copper::Renderer {
 	void AddMesh(Mesh* mesh, Transform* transform) {
 
 		// TODO: there is a lot of ways I have thought about optimizing this, use them
-		Matrix4 mat = transform->CreateMatrix();
+		const Matrix4& mat = transform->TransformMatrix();
 
 		uint32 numOfVertices = (uint32) data.vertices.size() / 9;
 

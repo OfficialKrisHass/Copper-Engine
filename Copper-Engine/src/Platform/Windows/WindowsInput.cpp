@@ -13,13 +13,13 @@
 extern Copper::UVector2I GetViewportCentre();
 #endif
 
-#define GLFW_WINDOW(win) (GLFWwindow*) window.GetWindowPtr()
+#define GLFW_WINDOW(win) (GLFWwindow*) win->GetWindowPtr()
 
 // TODO: Rework this to make it less complicated
 
 namespace Copper::Input {
 
-	Window& window;
+	Window* window;
 
 	std::unordered_map<KeyCode, std::pair<uint32, bool>> keys;
 
@@ -38,12 +38,12 @@ namespace Copper::Input {
 	void Initialize(Window& win) {
 
 		VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize Input");
-		window = win;
+		window = &win;
 
-		window.AddKeyPressedEventFunc(OnKeyPressed);
-		window.AddKeyReleasedEventFunc(OnKeyReleased);
+		window->AddKeyPressedEventFunc(OnKeyPressed);
+		window->AddKeyReleasedEventFunc(OnKeyReleased);
 
-		window.AddMouseMoveEventFunc(OnMouseMove);
+		window->AddMouseMoveEventFunc(OnMouseMove);
 
 		if (!pfd::settings::available())
 		#ifdef CU_LINUX

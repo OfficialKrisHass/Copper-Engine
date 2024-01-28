@@ -97,9 +97,9 @@ namespace Copper {
 			m_entities[id].m_scene = scene;
 			
 			m_entities[id].m_transform = AddComponent<Transform>(id);
-			m_entities[id].m_transform->position = position;
-			m_entities[id].m_transform->rotation = rotation;
-			m_entities[id].m_transform->scale = scale;
+			m_entities[id].m_transform->m_position = position;
+			m_entities[id].m_transform->m_rotation = rotation;
+			m_entities[id].m_transform->m_scale = scale;
 
 			entityCreatedEvent.entity = &m_entities[id];
 			entityCreatedEvent();
@@ -119,9 +119,9 @@ namespace Copper {
 			m_entities[eID].m_scene = scene;
 
 			if (!m_entities[eID].m_transform) m_entities[eID].m_transform = AddComponent<Transform>(eID);
-			m_entities[eID].m_transform->position = position;
-			m_entities[eID].m_transform->rotation = rotation;
-			m_entities[eID].m_transform->scale = scale;
+			m_entities[eID].m_transform->m_position = position;
+			m_entities[eID].m_transform->m_rotation = rotation;
+			m_entities[eID].m_transform->m_scale = scale;
 
 			if (newEntity) {
 

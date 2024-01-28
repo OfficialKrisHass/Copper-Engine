@@ -46,7 +46,7 @@ namespace Copper {
 
         }
 
-        PxRigidStatic* body = PxCreateStatic(*physics, PxTransform(CopperToPhysX(GetTransform()->position), CopperToPhysX(GetTransform()->rotation)), *shape);
+        PxRigidStatic* body = PxCreateStatic(*physics, PxTransform(CopperToPhysX(GetTransform()->Position()), CopperToPhysX(GetTransform()->Rotation())), *shape);
 
         body->setName(GetEntity()->name.c_str());
         body->userData = (void*) GetEntity();
@@ -57,18 +57,18 @@ namespace Copper {
 
     PxShape* BoxCollider::CreateShape() const {
 
-        return physics->createShape(PxBoxGeometry(CopperToPhysX(GetTransform()->scale * size / 2.0f)), *material);
+        return physics->createShape(PxBoxGeometry(CopperToPhysX(GetTransform()->Scale() * size / 2.0f)), *material);
 
     }
     PxShape* SphereCollider::CreateShape() const {
 
-        return physics->createShape(PxSphereGeometry(radius * GetTransform()->scale.x), *material);
+        return physics->createShape(PxSphereGeometry(radius * GetTransform()->Scale().x), *material);
 
     }
     PxShape* CapsuleCollider::CreateShape() const {
 
         Transform* transform = GetTransform();
-        return physics->createShape(PxCapsuleGeometry(transform->scale.x * radius, transform->scale.y * height), *material);
+        return physics->createShape(PxCapsuleGeometry(transform->Scale().x * radius, transform->Scale().y * height), *material);
 
     }
 

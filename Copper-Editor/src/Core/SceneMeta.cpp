@@ -23,8 +23,8 @@ namespace Editor::MetaFile {
 		out << YAML::Key << "Scene Camera" << YAML::Value << YAML::BeginMap; // Scene Camera
 		const SceneCamera& sceneCam = GetSceneCam();
 
-		out << YAML::Key << "Position" << YAML::Value << sceneCam.GetTransform()->position;
-		out << YAML::Key << "Rotation" << YAML::Value << sceneCam.GetTransform()->rotation;
+		out << YAML::Key << "Position" << YAML::Value << sceneCam.GetTransform()->Position();
+		out << YAML::Key << "Rotation" << YAML::Value << sceneCam.GetTransform()->Rotation();
 
 		out << YAML::Key << "Speed" << YAML::Value << GetSceneCam().speed;
 		out << YAML::Key << "Sensitivity" << YAML::Value << GetSceneCam().sensitivity;
@@ -66,8 +66,8 @@ namespace Editor::MetaFile {
 		YAML::Node sceneCam = main["Scene Camera"];
 		SceneCamera& cam = GetSceneCam();
 
-		cam.GetTransform()->position = sceneCam["Position"].as<Vector3>();
-		cam.GetTransform()->rotation = sceneCam["Rotation"].as<Quaternion>();
+		cam.GetTransform()->SetPosition(sceneCam["Position"].as<Vector3>());
+		cam.GetTransform()->SetRotation(sceneCam["Rotation"].as<Quaternion>());
 
 		cam.speed = sceneCam["Speed"].as<float>();
 		cam.sensitivity = sceneCam["Sensitivity"].as<float>();

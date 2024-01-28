@@ -28,13 +28,13 @@ namespace Editor {
 
 		if (Input::IsButton(MouseCode::Button2)) {
 
-			if (Input::IsKey(KeyCode::W)) { m_transform->position +=  m_transform->Forward() * speed; }
-			if (Input::IsKey(KeyCode::S)) { m_transform->position += -m_transform->Forward() * speed; }
-			if (Input::IsKey(KeyCode::A)) { m_transform->position += -m_transform->Right() * speed; }
-			if (Input::IsKey(KeyCode::D)) { m_transform->position +=  m_transform->Right() * speed; }
+			if (Input::IsKey(KeyCode::W)) { m_transform->AddPosition( m_transform->Forward() * speed); }
+			if (Input::IsKey(KeyCode::S)) { m_transform->AddPosition(-m_transform->Forward() * speed); }
+			if (Input::IsKey(KeyCode::A)) { m_transform->AddPosition(-m_transform->Right() * speed); }
+			if (Input::IsKey(KeyCode::D)) { m_transform->AddPosition( m_transform->Right() * speed); }
 		
-			if (Input::IsKey(KeyCode::Space))       { m_transform->position +=  m_transform->Up() * speed; }
-			if (Input::IsKey(KeyCode::LeftControl)) { m_transform->position += -m_transform->Up() * speed; }
+			if (Input::IsKey(KeyCode::Space))       { m_transform->AddPosition( m_transform->Up() * speed); }
+			if (Input::IsKey(KeyCode::LeftControl)) { m_transform->AddPosition(-m_transform->Up() * speed); }
 			
 			Input::SetCursorVisible(false);
 
@@ -53,7 +53,7 @@ namespace Editor {
 			
 			rotX -= sensitivity * (float) (mouseY - (GetWindow().Height() / 2)) / GetWindow().Height();
 			rotY -= sensitivity * (float) (mouseX - (GetWindow().Width() / 2)) / GetWindow().Width();
-			m_transform->rotation = Quaternion(rotX, rotY, 0.0f);
+			m_transform->SetRotation(Quaternion(rotX, rotY, 0.0f));
 			
 			Input::SetCursorPosition((float) GetWindow().Width() / 2, (float) GetWindow().Height() / 2);
 

@@ -16,19 +16,19 @@ namespace Copper::Scripting::InternalCalls {
 	void GetPosition(uint64 componentPointer, Vector3* out) {
 
 		CheckComponentPointer(componentPointer);
-		*out = ((Transform*) componentPointer)->position;
+		*out = ((Transform*) componentPointer)->Position();
 
 	}
 	void GetRotation(uint64 componentPointer, Quaternion* out) {
 
 		CheckComponentPointer(componentPointer);
-		*out = ((Transform*) componentPointer)->rotation;
+		*out = ((Transform*) componentPointer)->Rotation();
 
 	}
 	void GetScale(uint64 componentPointer, Vector3* out) {
 
 		CheckComponentPointer(componentPointer);
-		*out = ((Transform*) componentPointer)->scale;
+		*out = ((Transform*) componentPointer)->Scale();
 
 	}
 
@@ -59,7 +59,7 @@ namespace Copper::Scripting::InternalCalls {
 		InternalEntity* entity = transform->GetEntity();
 		RigidBody* rb = entity->GetComponent<RigidBody>();
 
-		transform->position = *value;
+		transform->SetPosition(*value);
 
 		if (!rb) return;
 		rb->SetPosition(*value);
@@ -73,7 +73,7 @@ namespace Copper::Scripting::InternalCalls {
 		InternalEntity* entity = transform->GetEntity();
 		RigidBody* rb = entity->GetComponent<RigidBody>();
 
-		transform->rotation = *value;
+		transform->SetRotation(*value);
 
 		if (!rb) return;
 		rb->SetRotation(*value);
@@ -82,7 +82,7 @@ namespace Copper::Scripting::InternalCalls {
 	void SetScale(uint64 componentPointer, Vector3* value) {
 
 		CheckComponentPointer(componentPointer);
-		((Transform*) componentPointer)->scale = *value;
+		((Transform*) componentPointer)->SetScale(*value);
 
 	}
 

@@ -30,9 +30,9 @@ namespace Copper {
 			uint32_t id = it->first.as<uint32_t>();
 			InternalEntity* deserialized = scene->CreateEntityFromID(id, Vector3::zero, Vector3::zero, Vector3::one, name, false);
 
-			deserialized->m_transform->position = entity["Transform"]["Position"].as<Vector3>();
-			deserialized->m_transform->rotation = entity["Transform"]["Rotation"].as<Quaternion>();
-			deserialized->m_transform->scale = entity["Transform"]["Scale"].as<Vector3>();
+			deserialized->m_transform->m_position = entity["Transform"]["Position"].as<Vector3>();
+			deserialized->m_transform->m_rotation = entity["Transform"]["Rotation"].as<Quaternion>();
+			deserialized->m_transform->m_scale = entity["Transform"]["Scale"].as<Vector3>();
 
 			uint32_t parentID = entity["Transform"]["Parent"].as<uint32_t>();
 

@@ -12,7 +12,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-namespace Copper {
+namespace Copper::RendererAPI {
 
 #ifndef CU_EDITOR
 	static const float gameRectVertices[20] {
@@ -34,7 +34,9 @@ namespace Copper {
 	uint32 gameRectVAO;
 	Shader gameRectShader;
 
-	void RendererAPI::Initialize() {
+	Shader shader;
+
+	void Initialize() {
 
 		VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the OpenGL Renderer API");
 
@@ -97,39 +99,39 @@ namespace Copper {
 
 	}
 
-	void RendererAPI::ClearColor(float r, float g, float b) {
+	void ClearColor(const Color& color) {
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glClearColor(r, g, b, 1.0f);
+		glClearColor(color.r, color.g, color.b, 1.0f);
 
 	}
-	void RendererAPI::ResizeViewport(const UVector2I& size) {
+	void ResizeViewport(const UVector2I& size) {
 
 		glViewport(0, 0, size.x, size.y);
 
 	}
 	
-	void RendererAPI::Render(VertexArray* vao, uint32 count, Camera* cam, Light* light) {
+	void Render(VertexArray* vao, uint32 count, Camera* cam, Light* light) {
 
 		vao->Bind();
-		m_shader.Bind();
+		shader.Bind();
 
 		// TODO: Fix the CMath implementation of LoadMat4 not working
-		m_shader.LoadMat4("ProjectionView", cam->CreateProjectionMatrix() * cam->CreateViewMatrix());
-		m_shader.LoadVec3("camPos", cam->GetTransform()->Position());
+		shader.LoadMat4("ProjectionView", cam->CreateProjectionMatrix() * cam->CreateViewMatrix());
+		shader.LoadVec3("camPos", cam->GetTransform()->Position());
 
 		if (light) {
 
-			m_shader.LoadVec3("light.position", light->GetTransform()->GlobalPosition());
-			m_shader.LoadVec3("light.color", light->color);
-			m_shader.LoadFloat("light.intensity", light->intensity);
+			shader.LoadVec3("light.position", light->GetTransform()->GlobalPosition());
+			shader.LoadVec3("light.color", light->color);
+			shader.LoadFloat("light.intensity", light->intensity);
 
 		}
 
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);
 
 	}
-	void RendererAPI::EndFrame() {
+	void EndFrame() {
 	
 	// Take what was rendered to the main FBO and render it onto the gameRect
 	#ifndef CU_EDITOR
@@ -148,7 +150,7 @@ namespace Copper {
 
 	}
 
-	void RendererAPI::SetWireframe(bool value) {
+	void SetWireframe(bool value) {
 
 		if (value)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -156,5 +158,6 @@ namespace Copper {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	}
+	void SetShaderPath(const std::string& vertexPath, const std::string& fragmentPath) { shader = Shader(vertexPath, fragmentPath); }
 
 }

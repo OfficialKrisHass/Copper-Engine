@@ -51,7 +51,7 @@ namespace Copper {
 	}
 	void Scene::Update(bool render, float deltaTime) {
 
-		Renderer::ClearColor(0.18f, 0.18f, 0.18f);
+		Renderer::ClearColor(Color(0.18f, 0.18f, 0.18f));
 
 		if (m_runtimeRunning) UpdatePhysics(deltaTime);
 

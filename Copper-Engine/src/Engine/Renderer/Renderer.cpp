@@ -31,7 +31,6 @@ namespace Copper::Renderer {
 	};
 
 	RendererData data;
-	RendererAPI api;
 
 	void Initialize() {
 
@@ -59,7 +58,7 @@ namespace Copper::Renderer {
 		data.vbo.SetData(data.vertices);
 		data.ibo.SetData(data.indices);
 
-		api.Render(&data.vao, (uint32) data.indices.size(), cam, light);
+		RendererAPI::Render(&data.vao, (uint32) data.indices.size(), cam, light);
 		
 		
 	}
@@ -68,7 +67,7 @@ namespace Copper::Renderer {
 		data.vertices.clear();
 		data.indices.clear();
 
-		api.EndFrame();
+		RendererAPI::EndFrame();
 
 	}
 
@@ -103,24 +102,23 @@ namespace Copper::Renderer {
 
 	}
 
-	void ClearColor(float r, float g, float b) { api.ClearColor(r, g, b); }
-	void ResizeViewport(const UVector2I& size) { api.ResizeViewport(size); }
+	void ClearColor(const Color& color) { RendererAPI::ClearColor(color); }
+	void ResizeViewport(const UVector2I& size) { RendererAPI::ResizeViewport(size); }
 
 	void SetWireframe(bool value) {
 		
 		data.wireframe = value;
-		api.SetWireframe(value);
+		RendererAPI::SetWireframe(value);
 	
 	}
 	void SetShaderPath(const std::string& vertexPath, const std::string& fragmentPath) {
 		
 		VERIFY_STATE(EngineCore::EngineState::Initialization, "Set the Shader");
-		api.SetShaderPath(vertexPath, fragmentPath);
+		RendererAPI::SetShaderPath(vertexPath, fragmentPath);
 		
 	}
 
 	bool GetWireframe() { return data.wireframe; }
-	Shader* GetShader() { return api.GetShader(); }
 
 
 }

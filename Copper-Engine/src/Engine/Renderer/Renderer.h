@@ -20,9 +20,6 @@ namespace Copper {
 		void ClearColor(const Color& color);
 		void ResizeViewport(const UVector2I& size);
 
-		void RenderFrame(Camera* cam, Light* light);
-		void EndFrame();
-
 		void AddMesh(Mesh* mesh, Transform* transform);
 
 		void SetWireframe(bool value = true);

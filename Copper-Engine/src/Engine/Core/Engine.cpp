@@ -31,6 +31,7 @@ extern Copper::Window* GetEditorWindow();
 namespace Copper {
 
 	using namespace EngineCore;
+	namespace Renderer { extern void EndFrame(); }
 
 	struct EngineData {
 

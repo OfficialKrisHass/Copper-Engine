@@ -31,6 +31,8 @@
 
 namespace Copper {
 
+	namespace Renderer { extern void RenderFrame(Camera* cam, Light* light); }
+
 	uint32 cCounter = 0;
 
 	std::unordered_map<uint32, std::function<bool(const YAML::Node&, Scene*)>> oldDeserializeFunctions;

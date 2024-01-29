@@ -11,20 +11,31 @@
 
 #include <GLM/ext/matrix_transform.hpp>
 
-// TODO: Implement a proper batch renderer
-
 namespace Copper::Renderer {
+
+	constexpr uint32 MaxVertices = 20'000;
+	constexpr uint32 MaxIndices = (uint32) (MaxVertices * 1.5f);
+
+	struct Vertex {
+
+		Vector3 position;
+		Vector3 color;
+		Vector3 normal;
+
+	};
 
 	struct RendererData {
 
-		static const uint32 maxVertices = 20000;
+		uint32 verticesCount = 0;
+		uint32 indicesCount = 0;
+		uint32 drawCalls = 0;
 
 		VertexArray vao;
 		VertexBuffer vbo;
 		IndexBuffer ibo;
 
-		std::vector<float> vertices;
-		std::vector<uint32> indices;
+		Vertex vertices[MaxVertices];
+		uint32 indices[MaxIndices];
 
 		bool wireframe = false;
 		
@@ -40,10 +51,10 @@ namespace Copper::Renderer {
 
 		data.vao = VertexArray(nullptr);
 		
-		data.vbo = VertexBuffer(data.maxVertices * sizeof(float));
+		data.vbo = VertexBuffer(MaxVertices * sizeof(float));
 		data.vbo.SetLayout({ {"Position", ElementType::Float3}, {"Color", ElementType::Float3}, {"Normal", ElementType::Float3} });
 
-		data.ibo = IndexBuffer((uint32) (data.maxVertices * 1.5f * sizeof(uint32)));
+		data.ibo = IndexBuffer(MaxIndices * sizeof(uint32));
 
 		data.vao.SetVertexBuffer(&data.vbo);
 		data.vao.SetIndexBuffer(&data.ibo);
@@ -53,57 +64,89 @@ namespace Copper::Renderer {
 
 	}
 
-	void RenderFrame(Camera* cam, Light* light) {
+	void StartFrame() {
 
-		data.vbo.SetData(data.vertices);
-		data.ibo.SetData(data.indices);
+		data.drawCalls = 0;
 
-		RendererAPI::Render(&data.vao, (uint32) data.indices.size(), cam, light);
-		
-		
+		StartBatch();
+
+	}
+	void RenderFrame() {
+
+		RenderBatch();
+
 	}
 	void EndFrame() {
 
-		data.vertices.clear();
-		data.indices.clear();
-
 		RendererAPI::EndFrame();
+
+		Log("Draw Calls: {}", data.drawCalls);
+
+	}
+
+	void Render(Camera* cam) {
+
+		RendererAPI::SetCamera(cam);
+		RendererAPI::Render(&data.vao, data.indicesCount);
+
+	}
+
+	void StartBatch() {
+
+		data.verticesCount = 0;
+		data.indicesCount = 0;
+
+	}
+	void RenderBatch() {
+
+		data.vbo.SetData((float*) data.vertices, data.verticesCount * 9);
+		data.ibo.SetData(data.indices, data.indicesCount);
+
+		RendererAPI::Render(&data.vao, data.indicesCount);
+
+		data.drawCalls++;
+
+	}
+	void NewBatch() {
+
+		RenderBatch();
+		StartBatch();
 
 	}
 
 	void AddMesh(Mesh* mesh, Transform* transform) {
 
-		// TODO: there is a lot of ways I have thought about optimizing this, use them
-		const Matrix4& mat = transform->TransformMatrix();
+		const Matrix4& transformMat = transform->TransformMatrix();
 
-		uint32 numOfVertices = (uint32) data.vertices.size() / 9;
+		const uint32 indicesCount = (uint32) mesh->indices.size();
+		const uint32 verticesCount = (uint32) mesh->vertices.size();
 
-		for (uint32 i = 0; i < mesh->vertices.size(); i++) {
+		if (data.indicesCount + indicesCount > MaxIndices ||
+			data.verticesCount + verticesCount > MaxVertices)
+			NewBatch();
 
-			Vector3 position;
-			Vector3 normal;
-			Color color;
+		for (uint32 i = 0; i < verticesCount; i++) {
 
-			position = mat * Vector4(mesh->vertices[i], 1.0f);
-			normal = (Matrix3) mat * mesh->normals[i];
-			color = mesh->colors[i];
+			Vertex& vertex = data.vertices[data.verticesCount + i];
 
-			data.vertices.push_back(position.x); data.vertices.push_back(position.y); data.vertices.push_back(position.z);
-			data.vertices.push_back(color.r); data.vertices.push_back(color.g); data.vertices.push_back(color.b);
-			data.vertices.push_back(normal.x); data.vertices.push_back(normal.y); data.vertices.push_back(normal.z);
+			vertex.position = transformMat * Vector4(mesh->vertices[i], 1.0f);
+			vertex.normal = (Matrix3) transformMat * mesh->normals[i];
+			vertex.color = mesh->colors[i];
 
 		}
+		for (uint32 i = 0; i < indicesCount; i++)
+			data.indices[data.indicesCount + i] = mesh->indices[i] + data.verticesCount;
 
-		for (uint32 i = 0; i < mesh->indices.size(); i++) {
-
-			data.indices.push_back(mesh->indices[i] + numOfVertices);
-
-		}
+		data.verticesCount += verticesCount;
+		data.indicesCount += indicesCount;
 
 	}
 
 	void ClearColor(const Color& color) { RendererAPI::ClearColor(color); }
 	void ResizeViewport(const UVector2I& size) { RendererAPI::ResizeViewport(size); }
+
+	void SetCamera(Camera* cam) { RendererAPI::SetCamera(cam); }
+	void SetLight(Light* light) { RendererAPI::SetLight(light); }
 
 	void SetWireframe(bool value) {
 		

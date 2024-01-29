@@ -28,10 +28,10 @@ namespace Copper {
 
 	}
 
-	void VertexBuffer::SetData(const std::vector<float>& vertices) {
+	void VertexBuffer::SetData(float* vertices, uint32 count) {
 
 		glBindBuffer(GL_ARRAY_BUFFER, m_id);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(float), vertices.data());
+		glBufferSubData(GL_ARRAY_BUFFER, 0, count * sizeof(float), vertices);
 
 	}
 
@@ -59,12 +59,12 @@ namespace Copper {
 
 	}
 
-	void IndexBuffer::SetData(const std::vector<uint32>& indices) {
+	void IndexBuffer::SetData(uint32* indices, uint32 count) {
 
-		m_count = (uint32) indices.size();
+		m_count = count;
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
-		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indices.size() * sizeof(uint32), indices.data());
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, count * sizeof(uint32), indices);
 
 	}
 

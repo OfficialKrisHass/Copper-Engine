@@ -79,7 +79,7 @@ namespace Copper {
 		void Unbind() const;
 
 		void SetLayout(const std::initializer_list<Element>& elements) { this->elements = elements; CalculateStuff(); }
-		void SetData(const std::vector<float>& vertices);
+		void SetData(float* vertices, uint32 count);
 
 		std::vector<Element>::iterator begin() { return elements.begin(); }
 		std::vector<Element>::iterator end() { return elements.end(); }
@@ -119,7 +119,7 @@ namespace Copper {
 		void Bind() const;
 		void Unbind() const;
 
-		void SetData(const std::vector<uint32>& indices);
+		void SetData(uint32* indices, uint32 count);
 
 		uint32 Count() const { return m_count; }
 

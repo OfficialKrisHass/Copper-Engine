@@ -31,7 +31,7 @@ extern Copper::Window* GetEditorWindow();
 namespace Copper {
 
 	using namespace EngineCore;
-	namespace Renderer { extern void EndFrame(); }
+	namespace Renderer { void EndFrame(); }
 
 	struct EngineData {
 
@@ -53,7 +53,6 @@ namespace Copper {
 		// Scene
 
 		Scene scene;
-		bool renderScene = true;
 
 		float lastFrameTime = 0.0f;
 		float deltaTime = 0.0f;
@@ -150,7 +149,7 @@ namespace Copper {
 			data.updateEvent();
 
 			data.fbo.Bind();
-			data.scene.Update(data.renderScene, data.deltaTime);
+			data.scene.Update(data.deltaTime);
 			data.fbo.Unbind();
 
 			Renderer::ResizeViewport(data.Window().Size());
@@ -285,7 +284,6 @@ namespace Copper {
 	// Declaration in Scene.h
 	
 	Scene* GetScene() { return &data.scene; }
-	void SetShouldRenderScene(bool value) { data.renderScene = value; }
 
 	uint32 GetNumOfEntities() { return data.scene.GetNumOfEntities(); }
 	bool IsSceneRuntimeRunning() { return data.scene.IsRuntimeRunning(); }

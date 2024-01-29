@@ -31,7 +31,12 @@
 
 namespace Copper {
 
-	namespace Renderer { extern void RenderFrame(Camera* cam, Light* light); }
+	namespace Renderer {
+
+		extern void StartFrame();
+		extern void RenderFrame();
+
+	}
 
 	uint32 cCounter = 0;
 
@@ -51,20 +56,27 @@ namespace Copper {
 		}
 
 	}
-	void Scene::Update(bool render, float deltaTime) {
+	void Scene::Update(float deltaTime) {
 
 		Renderer::ClearColor(Color(0.18f, 0.18f, 0.18f));
+		Renderer::StartFrame();
 
 		if (m_runtimeRunning) UpdatePhysics(deltaTime);
 
 		for (InternalEntity* entity : EntityView(this)) {
 
+			if (m_runtimeRunning)
+				RuntimeUpdateEntity(entity, deltaTime);
+
 			entity->m_transform->Update();
 
-			if (m_runtimeRunning && entity->HasComponent<RigidBody>()) entity->GetComponent<RigidBody>()->UpdatePositionAndRotation();
+			if (Light* lightComponent = entity->GetComponent<Light>()) Renderer::SetLight(lightComponent);
+			if (Camera* cameraComponent = entity->GetComponent<Camera>()) {
 
-			if (Light* lightComponent = entity->GetComponent<Light>()) m_light = lightComponent;
-			if (Camera* cameraComponent = entity->GetComponent<Camera>()) cam = cameraComponent;
+				Renderer::SetCamera(cameraComponent);
+				cam = cameraComponent;
+
+			}
 			if (MeshRenderer* renderer = entity->GetComponent<MeshRenderer>()) {
 
 				for (Mesh mesh : renderer->meshes) {
@@ -75,21 +87,27 @@ namespace Copper {
 
 			}
 
-			if (!m_runtimeRunning) continue;
-			if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) {
-
-				if (!m_runtimeStarted) script->InvokeCreate();
-				script->InvokeUpdate();
-
-			}
-
 		}
 		if (m_runtimeRunning && !m_runtimeStarted) m_runtimeStarted = true;
 
-		if (cam && render) Render(cam);
+		Renderer::RenderFrame();
 
 	}
-	void Scene::Render(Camera* camera) { Renderer::RenderFrame(camera, m_light); }
+	void Scene::RuntimeUpdateEntity(InternalEntity* entity, float deltaTIme) {
+
+		if (RigidBody* rb = entity->GetComponent<RigidBody>())
+			rb->UpdatePositionAndRotation();
+
+		if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) {
+
+			if (!m_runtimeStarted)
+				script->InvokeCreate();
+			script->InvokeUpdate();
+
+		}
+		
+
+	}
 
 	void Scene::Serialize(const fs::path& path) {
 
@@ -132,7 +150,8 @@ namespace Copper {
 
 		m_runtimeRunning = false;
 		m_runtimeStarted = false;
-		m_light = nullptr;
+		m_physicsInitialized = false;
+
 		cam = nullptr;
 
 		YAML::Node data;

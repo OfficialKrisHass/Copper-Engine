@@ -36,6 +36,9 @@ namespace Copper::RendererAPI {
 
 	Shader shader;
 
+	Camera* cam;
+	Light* light;
+
 	void Initialize() {
 
 		VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the OpenGL Renderer API");
@@ -111,7 +114,7 @@ namespace Copper::RendererAPI {
 
 	}
 	
-	void Render(VertexArray* vao, uint32 count, Camera* cam, Light* light) {
+	void Render(VertexArray* vao, uint32 count) {
 
 		vao->Bind();
 		shader.Bind();
@@ -149,6 +152,9 @@ namespace Copper::RendererAPI {
 	#endif
 
 	}
+
+	void SetCamera(Camera* camera) { cam = camera; }
+	void SetLight(Light* light1) { light = light1; }
 
 	void SetWireframe(bool value) {
 

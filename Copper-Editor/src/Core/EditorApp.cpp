@@ -301,7 +301,6 @@ namespace Editor {
 		//to save some performance
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2 {0, 0});
 		bool open = ImGui::Begin("Game");
-		SetShouldRenderScene(open);
 
 		if (!open) {
 
@@ -379,7 +378,7 @@ namespace Editor {
 		Renderer::ClearColor(Color(0.18f, 0.18f, 0.18f));
 
 		data.sceneCam.Update();
-		if (data.scene) data.scene->Render(&data.sceneCam);
+		if (data.scene) Renderer::Render(&data.sceneCam);
 
 		//After we are done rendering we are safe to unbind the FBO unless we want to modify it any way
 		data.viewportFBO.Unbind();

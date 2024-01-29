@@ -44,9 +44,7 @@ namespace Copper {
 		void RemoveEntityFromID(uint32 id) { m_registry.RemoveEntity(id); }
 
 		void StartRuntime();
-		void Update(bool render, float deltaTime);
-
-		void Render(Camera* cam);
+		void Update(float deltaTime);
 
 		void Serialize(const fs::path& path);
 		bool Deserialize(const fs::path& path);
@@ -59,16 +57,17 @@ namespace Copper {
 	private:
 		Registry m_registry;
 
-		class Light* m_light = nullptr;
-
 		physx::PxScene* m_physicsScene = nullptr;
 
 		bool m_runtimeRunning = false;
 		bool m_runtimeStarted = false;
+		bool m_physicsInitialized = false;
+
+		// Runtime
+
+		void RuntimeUpdateEntity(InternalEntity* entity, float deltaTime);
 
 		// Defined in PhysicsEngine.cpp so that we dont have physx includes in Scene.cpp
-
-		bool m_physicsInitialized = false;
 
 		void InitializePhysics();
 		void UpdatePhysics(float deltaTime);
@@ -94,7 +93,5 @@ namespace Copper {
 	
 	Scene* GetScene();
 	bool IsSceneRuntimeRunning();
-
-	void SetShouldRenderScene(bool value);
 
 }

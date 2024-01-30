@@ -71,23 +71,9 @@ namespace Copper::Renderer {
 		StartBatch();
 
 	}
-	void RenderFrame() {
-
-		RenderBatch();
-
-	}
 	void EndFrame() {
 
 		RendererAPI::EndFrame();
-
-		Log("Draw Calls: {}", data.drawCalls);
-
-	}
-
-	void Render(Camera* cam) {
-
-		RendererAPI::SetCamera(cam);
-		RendererAPI::Render(&data.vao, data.indicesCount);
 
 	}
 
@@ -98,6 +84,8 @@ namespace Copper::Renderer {
 
 	}
 	void RenderBatch() {
+
+		if (data.verticesCount == 0 || data.indicesCount == 0) return;
 
 		data.vbo.SetData((float*) data.vertices, data.verticesCount * 9);
 		data.ibo.SetData(data.indices, data.indicesCount);
@@ -139,6 +127,13 @@ namespace Copper::Renderer {
 
 		data.verticesCount += verticesCount;
 		data.indicesCount += indicesCount;
+
+	}
+
+	void Render(Camera* cam) {
+
+		RendererAPI::SetCamera(cam);
+		RendererAPI::Render(&data.vao, data.indicesCount);
 
 	}
 

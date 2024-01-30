@@ -34,7 +34,6 @@ namespace Copper {
 	namespace Renderer {
 
 		extern void StartFrame();
-		extern void RenderFrame();
 
 		extern void Render(Camera* cam);
 
@@ -92,7 +91,7 @@ namespace Copper {
 		}
 		if (m_runtimeRunning && !m_runtimeStarted) m_runtimeStarted = true;
 
-		Renderer::RenderFrame();
+		Renderer::RenderBatch();
 
 	}
 	void Scene::RuntimeUpdateEntity(InternalEntity* entity, float deltaTIme) {

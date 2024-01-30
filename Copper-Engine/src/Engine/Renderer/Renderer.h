@@ -24,8 +24,6 @@ namespace Copper {
 		void RenderBatch();
 		void NewBatch();
 
-		void Render(Camera* cam);
-
 		void AddMesh(Mesh* mesh, Transform* transform);
 
 		void SetCamera(Camera* cam);

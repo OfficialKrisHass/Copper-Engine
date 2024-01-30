@@ -378,7 +378,7 @@ namespace Editor {
 		Renderer::ClearColor(Color(0.18f, 0.18f, 0.18f));
 
 		data.sceneCam.Update();
-		if (data.scene) Renderer::Render(&data.sceneCam);
+		if (data.scene) data.scene->Render(&data.sceneCam);
 
 		//After we are done rendering we are safe to unbind the FBO unless we want to modify it any way
 		data.viewportFBO.Unbind();

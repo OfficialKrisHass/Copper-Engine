@@ -36,6 +36,8 @@ namespace Copper {
 		extern void StartFrame();
 		extern void RenderFrame();
 
+		extern void Render(Camera* cam);
+
 	}
 
 	uint32 cCounter = 0;
@@ -108,6 +110,8 @@ namespace Copper {
 		
 
 	}
+
+	void Scene::Render(Camera* cam) { Renderer::Render(cam); }
 
 	void Scene::Serialize(const fs::path& path) {
 

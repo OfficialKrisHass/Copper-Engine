@@ -12,14 +12,15 @@ namespace Copper {
 
 		void Resize(const UVector2I& size);
 
-		void Bind();
-		void Unbind();
+		void Bind() const;
+		void Unbind() const;
 
-		inline uint32 GetColorAttachment() { return m_color; }
+		inline uint32 ColorTextureID() const { return m_color; }
+		inline uint32 DepthTextureID() const { return m_depth; }
 
-		inline uint32 Width() { return m_size.x; }
-		inline uint32 Height() { return m_size.y; }
-		inline UVector2I Size() { return m_size; }
+		inline uint32 Width() const { return m_size.x; }
+		inline uint32 Height() const { return m_size.y; }
+		inline UVector2I Size() const { return m_size; }
 
 	private:
 		uint32 m_id = 0;

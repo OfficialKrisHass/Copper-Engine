@@ -5,19 +5,19 @@
 
 namespace Copper {
 
-	static GLenum DataTypeToOpenGL(ElementType type) {
+	constexpr GLenum TypeToOpenGL(ElementType type) {
 
 		switch (type) {
 
 		case ElementType::Float:
-		case ElementType::Float2:
-		case ElementType::Float3:
-		case ElementType::Float4:   return GL_FLOAT;
+		case ElementType::Vec2:
+		case ElementType::Vec3:
+		case ElementType::Vec4:		return GL_FLOAT;
 
 		case ElementType::Int:
-		case ElementType::Int2:
-		case ElementType::Int3:
-		case ElementType::Int4:		return GL_INT;
+		case ElementType::Vec2I:
+		case ElementType::Vec3I:
+		case ElementType::Vec4I:	return GL_INT;
 
 		case ElementType::Bool:		return GL_BOOL;
 
@@ -39,13 +39,13 @@ namespace Copper {
 
 	void VertexArray::SetVertexBuffer(VertexBuffer* vbo) {
 
-		uint32 index = 0;
-		for (const Element& e : *vbo) {
+		uint32 count = vbo->ElementCount();
+		for (uint32 i = 0; i < count; i++) {
 
-			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(index, e.Dimensions(), DataTypeToOpenGL(e.type), GL_FALSE, vbo->Stride(), (void*) (uint64) e.offset);
+			ElementType type = vbo->GetType(i);
 
-			index++;
+			glEnableVertexAttribArray(i);
+			glVertexAttribPointer(i, TypeDimensions(type), TypeToOpenGL(type), GL_FALSE, vbo->Stride(), (void*) (uint64) vbo->GetOffset(i));
 
 		}
 

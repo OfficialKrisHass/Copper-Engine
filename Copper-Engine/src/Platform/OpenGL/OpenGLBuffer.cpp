@@ -11,20 +11,14 @@ namespace Copper {
 	// Vertex Buffer
 	//--------------
 
-	VertexBuffer::VertexBuffer(std::vector<float> vertices) {
+	VertexBuffer::VertexBuffer(float* vertices, uint32 size, const std::initializer_list<ElementType>& layout) {
 
 		glGenBuffers(1, &m_id);
 
 		glBindBuffer(GL_ARRAY_BUFFER, m_id);
-		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_DYNAMIC_DRAW);
 
-	}
-	VertexBuffer::VertexBuffer(uint32 size) {
-
-		glGenBuffers(1, &m_id);
-
-		glBindBuffer(GL_ARRAY_BUFFER, m_id);
-		glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_STATIC_DRAW);
+		CalculateOffsetsAndStride(layout);
 
 	}
 
@@ -42,29 +36,24 @@ namespace Copper {
 	// Index Buffer
 	//-------------
 
-	IndexBuffer::IndexBuffer(const std::vector<uint32>& indices) : m_count((uint32) indices.size()) {
+	IndexBuffer::IndexBuffer(uint32* indices, uint32 size) {
 
 		glGenBuffers(1, &m_id);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint32), indices.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, indices, GL_DYNAMIC_DRAW);
 
-	}
-	IndexBuffer::IndexBuffer(uint32 size) : m_count(size / sizeof(uint32)) {
-
-		glGenBuffers(1, &m_id);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, nullptr, GL_STATIC_DRAW);
+		m_count = size / sizeof(uint32);
+		Log(sizeof(uint32));
 
 	}
 
 	void IndexBuffer::SetData(uint32* indices, uint32 count) {
 
-		m_count = count;
-
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
 		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, count * sizeof(uint32), indices);
+
+		m_count = count;
 
 	}
 

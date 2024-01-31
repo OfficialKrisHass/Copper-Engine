@@ -34,8 +34,8 @@ namespace Copper::Renderer {
 		VertexBuffer vbo;
 		IndexBuffer ibo;
 
-		Vertex vertices[MaxVertices];
-		uint32 indices[MaxIndices];
+		Vertex* vertices = new Vertex[MaxVertices];
+		uint32* indices = new uint32[MaxIndices];
 
 		bool wireframe = false;
 		
@@ -51,10 +51,14 @@ namespace Copper::Renderer {
 
 		data.vao = VertexArray(nullptr);
 		
-		data.vbo = VertexBuffer(MaxVertices * sizeof(float));
-		data.vbo.SetLayout({ {"Position", ElementType::Float3}, {"Color", ElementType::Float3}, {"Normal", ElementType::Float3} });
+		data.vbo = VertexBuffer(nullptr, MaxVertices * sizeof(float), {
 
-		data.ibo = IndexBuffer(MaxIndices * sizeof(uint32));
+			ElementType::Vec3, // Position
+			ElementType::Vec3, // Color
+			ElementType::Vec3, // Normal
+
+		});
+		data.ibo = IndexBuffer(nullptr, MaxIndices * sizeof(uint32));
 
 		data.vao.SetVertexBuffer(&data.vbo);
 		data.vao.SetIndexBuffer(&data.ibo);

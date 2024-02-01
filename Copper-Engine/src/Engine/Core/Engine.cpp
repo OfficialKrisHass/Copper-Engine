@@ -274,7 +274,7 @@ namespace Copper {
 
 	// Declaration in FrameBuffer.h
 
-	uint32 GetMainFBOTexture() { return data.fbo.GetColorAttachment(); }
+	uint32 GetMainFBOTexture() { return data.fbo.ColorTextureID(); }
 
 	// Declaration in ImGui.h
 

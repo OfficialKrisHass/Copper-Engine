@@ -1,13 +1,13 @@
 #pragma once
+// Source is in Platform/<API>/<API>Buffer.cpp
 
 #include "Engine/Core/Core.h"
 
 #include "Engine/Renderer/ElementType.h"
 
-// Wrapper for platform dependant Vertex and Index buffers, source is in Platform/<API>/<API>Buffer.cpp
-
 namespace Copper {
 
+	// Higher level, platform indenpendant wrapper for the VertexBuffer
 	class VertexBuffer {
 
 	public:
@@ -34,6 +34,7 @@ namespace Copper {
 
 	};
 
+	// Higher level, platform indenpendant wrapper for the IndexBuffer
 	class IndexBuffer {
 
 	public:

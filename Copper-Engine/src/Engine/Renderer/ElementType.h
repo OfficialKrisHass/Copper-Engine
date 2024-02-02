@@ -14,6 +14,7 @@ namespace Copper {
 		Vec2I, Vec3I, Vec4I,
 
 	};
+
 	constexpr uint32 TypeSize(ElementType type) {
 
 		switch (type) {

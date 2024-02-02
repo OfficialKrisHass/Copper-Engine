@@ -5,11 +5,7 @@
 
 namespace Copper {
 
-	FrameBuffer::FrameBuffer(const UVector2I& size) : m_size(size) {
-		
-		Recreate();
-	
-	}
+	FrameBuffer::FrameBuffer(const UVector2I& size) : m_size(size) { Recreate(); }
 
 	void FrameBuffer::Recreate() {
 

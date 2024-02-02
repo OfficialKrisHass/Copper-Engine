@@ -1,14 +1,14 @@
 #pragma once
+// Source is in Platform/<API>/<API>VertexArray.cpp
 
 #include "Engine/Core/Core.h"
 
 #include "Engine/Renderer/Buffer.h"
 
-// Wrapper for platform dependant vertex array, source is in Platform/<API>/<API>VertexArray.cpp
-// TODO: Maybe remove this so it is not exposed ?
 
 namespace Copper {
 
+	// Higher level, platform indenpendant wrapper for the VertexArray
 	class VertexArray {
 
 	public:

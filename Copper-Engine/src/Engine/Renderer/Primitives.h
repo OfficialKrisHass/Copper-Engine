@@ -3,7 +3,7 @@
 namespace Copper {
 
 #pragma region Plane
-    inline std::vector<Vector3> planeVertices {
+    inline const std::vector<Vector3> planeVertices {
 
         Vector3(-0.5f, 0.0f,  0.5f),
         Vector3(0.5f, 0.0f,  0.5f),
@@ -11,7 +11,7 @@ namespace Copper {
         Vector3(-0.5f, 0.0f, -0.5f),
 
     };
-    inline std::vector<Vector3> planeNormals {
+    inline const std::vector<Vector3> planeNormals {
 
         Vector3(0.0f, -1.0f, 0.0f),
         Vector3(0.0f, -1.0f, 0.0f),
@@ -19,7 +19,7 @@ namespace Copper {
         Vector3(0.0f, -1.0f, 0.0f),
 
     };
-    inline std::vector<Color> planeColors {
+    inline const std::vector<Color> planeColors {
 
         Color(1.0f, 1.0f, 1.0f),
         Color(1.0f, 1.0f, 1.0f),
@@ -27,7 +27,7 @@ namespace Copper {
         Color(1.0f, 1.0f, 1.0f),
 
     };
-    inline std::vector<uint32> planeIndices {
+    inline const std::vector<uint32> planeIndices {
 
         0, 1, 2,
         2, 3, 0
@@ -35,128 +35,166 @@ namespace Copper {
     };
 #pragma endregion
 #pragma region Cube
-    inline std::vector<Vector3> cubeVertices {
-        //Front
+    inline const std::vector<Vector3> cubeVertices {
+
+        // Front
+
         Vector3(-0.5f, -0.5f,  0.5f),
         Vector3(0.5f, -0.5f,  0.5f),
         Vector3(0.5f,  0.5f,  0.5f),
         Vector3(-0.5f,  0.5f,  0.5f),
-        //Back
+
+        // Back
+
         Vector3(0.5f, -0.5f, -0.5f),
         Vector3(-0.5f, -0.5f, -0.5f),
         Vector3(-0.5f,  0.5f, -0.5f),
         Vector3(0.5f,  0.5f, -0.5f),
-        //Right
+
+        // Right
         Vector3(0.5f, -0.5f,  0.5f),
         Vector3(0.5f, -0.5f, -0.5f),
         Vector3(0.5f,  0.5f, -0.5f),
         Vector3(0.5f,  0.5f,  0.5f),
-        //Left
+
+        // Left
+
         Vector3(-0.5f, -0.5f, -0.5f),
         Vector3(-0.5f, -0.5f,  0.5f),
         Vector3(-0.5f,  0.5f,  0.5f),
         Vector3(-0.5f,  0.5f, -0.5f),
-        //Up
+
+        // Up
         Vector3(-0.5f,  0.5f,  0.5f),
         Vector3(0.5f,  0.5f,  0.5f),
         Vector3(0.5f,  0.5f, -0.5f),
         Vector3(-0.5f,  0.5f, -0.5f),
-        //Down
+
+        // Down
         Vector3(-0.5f, -0.5f, -0.5f),
         Vector3(0.5f, -0.5f, -0.5f),
         Vector3(0.5f, -0.5f,  0.5f),
         Vector3(-0.5f, -0.5f,  0.5f),
 
     };
-    inline std::vector<Vector3> cubeNormals {
-        //Front
+    inline const std::vector<Vector3> cubeNormals {
+
+        // Front
+
         Vector3(0.0f,  0.0f, -1.0f),
         Vector3(0.0f,  0.0f, -1.0f),
         Vector3(0.0f,  0.0f, -1.0f),
         Vector3(0.0f,  0.0f, -1.0f),
-        //Back
+
+        // Back
+
         Vector3(0.0f,  0.0f,  1.0f),
         Vector3(0.0f,  0.0f,  1.0f),
         Vector3(0.0f,  0.0f,  1.0f),
         Vector3(0.0f,  0.0f,  1.0f),
-        //Right
+
+        // Right
+
         Vector3(-1.0f,  0.0f,  0.0f),
         Vector3(-1.0f,  0.0f,  0.0f),
         Vector3(-1.0f,  0.0f,  0.0f),
         Vector3(-1.0f,  0.0f,  0.0f),
-        //Left
+
+        // Left
+
         Vector3(1.0f,  0.0f,  0.0f),
         Vector3(1.0f,  0.0f,  0.0f),
         Vector3(1.0f,  0.0f,  0.0f),
         Vector3(1.0f,  0.0f,  0.0f),
-        //Up
+
+        // Up
+
         Vector3(0.0f, -1.0f,  0.0f),
         Vector3(0.0f, -1.0f,  0.0f),
         Vector3(0.0f, -1.0f,  0.0f),
         Vector3(0.0f, -1.0f,  0.0f),
-        //Down
+
+        // Down
+
         Vector3(0.0f,  1.0f,  0.0f),
         Vector3(0.0f,  1.0f,  0.0f),
         Vector3(0.0f,  1.0f,  0.0f),
         Vector3(0.0f,  1.0f,  0.0f),
 
     };
-    inline std::vector<Color> cubeColors {
-        //Front
+    inline const std::vector<Color> cubeColors {
+
+        // Front
+
         Color(1.0f, 0.0f, 0.0f),
         Color(1.0f, 0.0f, 0.0f),
         Color(1.0f, 0.0f, 0.0f),
         Color(1.0f, 0.0f, 0.0f),
-        //Back
+
+        // Back
         Color(0.0f, 1.0f, 1.0f),
         Color(0.0f, 1.0f, 1.0f),
         Color(0.0f, 1.0f, 1.0f),
         Color(0.0f, 1.0f, 1.0f),
-        //Right
+
+        // Right
+
         Color(0.0f, 1.0f, 0.0f),
         Color(0.0f, 1.0f, 0.0f),
         Color(0.0f, 1.0f, 0.0f),
         Color(0.0f, 1.0f, 0.0f),
-        //Left
+
+        // Left
+
         Color(1.0f, 0.0f, 1.0f),
         Color(1.0f, 0.0f, 1.0f),
         Color(1.0f, 0.0f, 1.0f),
         Color(1.0f, 0.0f, 1.0f),
-        //Up
+
+        // Up
+
         Color(0.0f, 0.0f, 1.0f),
         Color(0.0f, 0.0f, 1.0f),
         Color(0.0f, 0.0f, 1.0f),
         Color(0.0f, 0.0f, 1.0f),
-        //Down
+
+        // Down
+
         Color(1.0f, 1.0f, 0.0f),
         Color(1.0f, 1.0f, 0.0f),
         Color(1.0f, 1.0f, 0.0f),
         Color(1.0f, 1.0f, 0.0f),
 
     };
-    inline std::vector<uint32> cubeIndices {
+    inline const std::vector<uint32> cubeIndices {
 
-        //Front
+        // Front
+
         0, 1, 2,
         2, 3, 0,
 
-        //Back
+        // Back
+
         4, 5, 6,
         6, 7, 4,
 
-        //Right
+        // Right
+
         8, 9, 10,
         10, 11, 8,
 
-        //Left
+        // Left
+
         12, 13, 14,
         14, 15, 12,
 
-        //Up
+        // Up
+
         16, 17, 18,
         18, 19, 16,
 
-        //Down
+        // Down
+
         20, 21, 22,
         22, 23, 20
 

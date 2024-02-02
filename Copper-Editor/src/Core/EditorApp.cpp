@@ -383,7 +383,7 @@ namespace Editor {
 		//After we are done rendering we are safe to unbind the FBO unless we want to modify it any way
 		data.viewportFBO.Unbind();
 
-		ImGui::Image(reinterpret_cast<void*>((uint64) data.viewportFBO.GetColorAttachment()), windowSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+		ImGui::Image(reinterpret_cast<void*>((uint64) data.viewportFBO.ColorTextureID()), windowSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
 		//Gizmos that I stol... I mean, taken inspiration from The Chernos Game Engine series
 		//Yeah, I definitely didn't copy this entire chunk of code that I don't understand but

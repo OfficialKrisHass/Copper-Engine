@@ -29,7 +29,7 @@ namespace Copper {
 		glGenTextures(1, &m_color);
 		glBindTexture(GL_TEXTURE_2D, m_color);
 
-		glTexStorage2D(GL_TEXTURE_2D, 0, GL_RGB8, m_size.x, m_size.y);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, m_size.x, m_size.y, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -40,7 +40,7 @@ namespace Copper {
 		glGenTextures(1, &m_depth);
 		glBindTexture(GL_TEXTURE_2D, m_depth);
 
-		glTexStorage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, m_size.x, m_size.y);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, m_size.x, m_size.y, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_depth, 0);
 

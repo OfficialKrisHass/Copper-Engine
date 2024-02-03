@@ -257,6 +257,8 @@ namespace Copper {
 
 			out << YAML::Key << "Light" << YAML::Value << YAML::BeginMap; // Light
 
+			out << YAML::Key << "Type" << YAML::Value << (uint32) light->type;
+
 			out << YAML::Key << "Color" << YAML::Value << light->color;
 			out << YAML::Key << "Intensity" << YAML::Value << light->intensity;
 
@@ -434,6 +436,8 @@ namespace Copper {
 		if (YAML::Node lightNode = node["Light"]) {
 
 			Light* light = entity->AddComponent<Light>();
+
+			light->type = (Light::Type) lightNode["Type"].as<uint32>();
 
 			light->color = lightNode["Color"].as<Color>();
 			light->intensity = lightNode["Intensity"].as<float>();

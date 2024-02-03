@@ -125,7 +125,11 @@ namespace Copper::RendererAPI {
 
 		if (light) {
 
+			shader.LoadInt("light.type", (uint32) light->type);
+
 			shader.LoadVec3("light.position", light->GetTransform()->GlobalPosition());
+			shader.LoadVec3("light.direction", light->GetTransform()->Forward());
+
 			shader.LoadVec3("light.color", light->color);
 			shader.LoadFloat("light.intensity", light->intensity);
 

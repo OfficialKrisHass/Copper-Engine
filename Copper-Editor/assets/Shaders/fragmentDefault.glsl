@@ -1,8 +1,12 @@
 #version 330 core
 
 struct Light {
+
+	int type;
 	
 	vec3 position;
+	vec3 direction;
+
 	vec3 color;
 	float intensity;
 	
@@ -18,24 +22,35 @@ uniform vec3 camPos;
 out vec4 FragColor;
 
 void main() {
+
+	vec3 normal = normalize(a_normal);
+	vec3 viewDir = normalize(camPos - a_position);
+
+	vec3 lightColor = light.color * light.intensity;
+	vec3 lightDir;
+
+	if (light.type == 0)
+		lightDir = normalize(a_position - light.position);
+	else
+		lightDir = normalize(light.direction);
+
+	// Ambient
+
+	float ambientStrength = 0.1f;
+	vec3 ambient = ambientStrength * lightColor;
+
+	// Diffuse
 	
-	//Ambient Light
-	vec3 ambient = vec3(0.1f, 0.1f, 0.1f);
+	vec3 diffuse = max(dot(normal, lightDir), 0.0f) * lightColor;
+
+	// Specular
+
+	float specularStrength = 0.5f;
+	vec3 reflectDir = reflect(lightDir, normal);
+	vec3 specular = pow(max(dot(viewDir, reflectDir), 0.0f), 32) * specularStrength * lightColor;
+
 	
-	//Diffuse Light
-	vec3 diffuseColor = vec3(1.0f, 1.0f, 1.0f);
-	vec3 posToLightDirVec = normalize(a_position - light.position);
-	float diffuse = clamp(dot(posToLightDirVec, a_normal), 0.0f, 1.0f);
-	vec3 diffuseFinal = diffuse * (diffuseColor * (light.color * light.intensity));
-	
-	//Specular Light
-	vec3 lightToPosDirVec = normalize(light.position - a_position);
-	vec3 reflectDirVec = normalize(reflect(lightToPosDirVec, normalize(a_normal)));
-	vec3 posToViewDirVec = normalize(a_position - camPos);
-	float specularConstant = pow(max(dot(posToViewDirVec, reflectDirVec), 0.0f), 100.0f);
-	vec3 specularFinal = vec3(1.0f, 1.0f, 1.0f) * specularConstant;
-	
-	//Final Fragment Color
-	FragColor = (vec4(diffuseColor, 1.0)) * (vec4(ambient, 1.0f) + vec4(diffuseFinal, 1.0f) + vec4(specularFinal, 1.0f));
+	vec3 final = (ambient + diffuse + specular) * a_color;
+	FragColor = vec4(final, 1.0f);
 
 }

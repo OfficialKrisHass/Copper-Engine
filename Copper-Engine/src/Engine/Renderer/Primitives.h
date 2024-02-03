@@ -126,44 +126,44 @@ namespace Copper {
 
         // Front
 
-        Color(1.0f, 0.0f, 0.0f),
-        Color(1.0f, 0.0f, 0.0f),
-        Color(1.0f, 0.0f, 0.0f),
-        Color(1.0f, 0.0f, 0.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
 
         // Back
-        Color(0.0f, 1.0f, 1.0f),
-        Color(0.0f, 1.0f, 1.0f),
-        Color(0.0f, 1.0f, 1.0f),
-        Color(0.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
 
         // Right
 
-        Color(0.0f, 1.0f, 0.0f),
-        Color(0.0f, 1.0f, 0.0f),
-        Color(0.0f, 1.0f, 0.0f),
-        Color(0.0f, 1.0f, 0.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
 
         // Left
 
-        Color(1.0f, 0.0f, 1.0f),
-        Color(1.0f, 0.0f, 1.0f),
-        Color(1.0f, 0.0f, 1.0f),
-        Color(1.0f, 0.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
 
         // Up
 
-        Color(0.0f, 0.0f, 1.0f),
-        Color(0.0f, 0.0f, 1.0f),
-        Color(0.0f, 0.0f, 1.0f),
-        Color(0.0f, 0.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
 
         // Down
 
-        Color(1.0f, 1.0f, 0.0f),
-        Color(1.0f, 1.0f, 0.0f),
-        Color(1.0f, 1.0f, 0.0f),
-        Color(1.0f, 1.0f, 0.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
+        Color(1.0f, 1.0f, 1.0f),
 
     };
     inline const std::vector<uint32> cubeIndices {

@@ -30,10 +30,11 @@ namespace Editor {
 		bool ShowVector4(const std::string& name, Copper::Vector4* vec);
 		bool ShowColor(const std::string& name, Copper::Color* col);
 
-		bool ShowMask(const std::string& name, Copper::uint32& mask, Copper::uint32 num, Copper::uint32 maskOffset = 0, char startLabel = 'X');
-
 		bool ShowEntity(const std::string& name, Copper::InternalEntity** entity);
 		bool ShowTransform(const std::string& name, Copper::Transform** transform);
+
+		bool ShowDropDown(const std::string& name, const char* items[], Copper::uint32 count, Copper::uint32* selected);
+		bool ShowMask(const std::string& name, Copper::uint32& mask, Copper::uint32 num, Copper::uint32 maskOffset = 0, char startLabel = 'X');
 	
 	private:
 		Copper::Entity* m_selectedEntity = nullptr;

@@ -33,6 +33,8 @@ using namespace Copper;
 
 namespace Editor {
 
+	static const char* s_lightTypes[] = { "Point", "Directional" };
+
 	template<typename T> static bool DrawComponent(const std::string& name, T* component);
 	static bool DrawComponent(const std::string& name, Transform* component);
 
@@ -176,6 +178,8 @@ namespace Editor {
 	void Properties::RenderLight(Light* light) {
 
 		if (!DrawComponent<Light>("Light", light)) return;
+
+		ShowDropDown("Type", s_lightTypes, LIGHT_TYPES, (uint32*) &light->type);
 
 		ShowColor("Color", &light->color);
 		ShowFloat("Intensity", &light->intensity);
@@ -628,38 +632,6 @@ namespace Editor {
 		
 	}
 
-	bool Properties::ShowMask(const std::string& name, uint32& mask, uint32 num, uint32 maskOffset, char startLabel) {
-
-		ImGui::Text(name.c_str());
-
-		bool tmp;
-		bool ret = false;
-		std::string label = "";
-
-		for (uint32 i = 0, bit = maskOffset; i < num; i++, maskOffset++) {
-
-			ImGui::SameLine();
-
-			tmp = mask & 1 << maskOffset;
-			label = (char) (startLabel + i);
-			label += "##" + name;
-
-			if (!ImGui::Checkbox(label.c_str(), &tmp))
-				continue;
-
-			ret = true;
-
-			if (tmp)
-				mask |= 1 << maskOffset;
-			else
-				mask &= ~(1 << maskOffset);
-
-		}
-
-		return ret;
-
-	}
-
 	bool Properties::ShowEntity(const std::string& name, InternalEntity** entity) {
 
 		ImGuiID id = ImGuiID((uint32) (uint64) name.c_str());
@@ -786,6 +758,61 @@ namespace Editor {
 		ImGui::PopID();
 
 		if (ret) SetChanges(true);
+		return ret;
+
+	}
+
+	bool Properties::ShowDropDown(const std::string& name, const char* items[], uint32 count, uint32* selected) {
+
+		bool ret = false;
+
+		if (ImGui::BeginCombo(name.c_str(), items[*selected])) {
+
+			for (int i = 0; i < count; i++) {
+
+				const bool isSelected = (i == *selected);
+				if (ImGui::Selectable(items[i], isSelected))
+					*selected = i;
+
+				if (isSelected)
+					ImGui::SetItemDefaultFocus();
+
+			}
+			ImGui::EndCombo();
+
+		}
+
+		return ret;
+
+	}
+	bool Properties::ShowMask(const std::string& name, uint32& mask, uint32 num, uint32 maskOffset, char startLabel) {
+
+		ImGui::Text(name.c_str());
+
+		bool tmp;
+		bool ret = false;
+		std::string label = "";
+
+		for (uint32 i = 0, bit = maskOffset; i < num; i++, maskOffset++) {
+
+			ImGui::SameLine();
+
+			tmp = mask & 1 << maskOffset;
+			label = (char) (startLabel + i);
+			label += "##" + name;
+
+			if (!ImGui::Checkbox(label.c_str(), &tmp))
+				continue;
+
+			ret = true;
+
+			if (tmp)
+				mask |= 1 << maskOffset;
+			else
+				mask &= ~(1 << maskOffset);
+
+		}
+
 		return ret;
 
 	}

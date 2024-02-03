@@ -210,12 +210,16 @@ namespace Editor {
 
 		if (ShowFloat("Mass", &rb->mass) && !changed) changed = true;
 
-		ImGui::Text("Locks");
-		ImGui::Separator();
+		if (ImGui::TreeNode("Locks")) {
 
-		// Position Lock
-		if (ShowMask("Position", (uint32&) rb->m_lockMask, 3) && !changed) changed = true;
-		if (ShowMask("Rotation", (uint32&) rb->m_lockMask, 3, 3) && !changed) changed = true;
+			// Position Lock
+
+			if (ShowMask("Position", (uint32&) rb->m_lockMask, 3) && !changed) changed = true;
+			if (ShowMask("Rotation", (uint32&) rb->m_lockMask, 3, 3) && !changed) changed = true;
+
+			ImGui::TreePop();
+				
+		}
 
 		if (changed && IsSceneRuntimeRunning()) rb->Setup();
 
@@ -229,8 +233,6 @@ namespace Editor {
 
 		ShowBool("Trigger", &collider->trigger);
 		ShowVector3("Center", &collider->center);
-
-		ImGui::Separator();
 
 		ShowVector3("Size", &collider->size);
 

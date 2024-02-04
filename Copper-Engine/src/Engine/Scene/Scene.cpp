@@ -71,7 +71,7 @@ namespace Copper {
 
 			entity->m_transform->Update();
 
-			if (Light* lightComponent = entity->GetComponent<Light>()) Renderer::SetLight(lightComponent);
+			if (Light* lightComponent = entity->GetComponent<Light>()) Renderer::AddLight(lightComponent);
 			if (Camera* cameraComponent = entity->GetComponent<Camera>()) {
 
 				Renderer::SetCamera(cameraComponent);

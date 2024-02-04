@@ -8,7 +8,7 @@
 namespace Copper {
 
 	int32 success = 0;
-	char infoLog[512];
+	char infoLog[2048];
 
 	static constexpr const char* ShaderTypeToString(uint32 type) {
 
@@ -67,8 +67,8 @@ namespace Copper {
 
 		if (success) return;
 
-		glGetShaderInfoLog(id, 512, NULL, infoLog);
-		LogError("{} Compilation Failed!\n\n{}", ShaderTypeToString(type), infoLog);
+		glGetShaderInfoLog(id, 2048, NULL, infoLog);
+		LogError("{} Compilation Failed!\n\t{}", ShaderTypeToString(type), infoLog);
 
 	}
 	void CheckShaderLink(uint32 id) {
@@ -78,7 +78,7 @@ namespace Copper {
 		if (success) return;
 
 		glGetProgramInfoLog(id, 512, NULL, infoLog);
-		LogError("Shader Linking Failed!\n\n{}", infoLog);
+		LogError("Shader Linking Failed!\n\t{}", infoLog);
 
 	}
 

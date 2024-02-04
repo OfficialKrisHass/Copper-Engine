@@ -1,11 +1,14 @@
 #version 330 core
 
+#define POINT_LIGHT 0
+#define DIRECTIONAL_LIGHT 1
+
+#define MAX_LIGHTS 8
+
 struct Light {
 
 	int type;
-	
-	vec3 position;
-	vec3 direction;
+	vec3 posOrDir;
 
 	vec3 color;
 	float intensity;
@@ -16,44 +19,63 @@ in vec3 a_position;
 in vec3 a_color;
 in vec3 a_normal;
 
+uniform vec3 camPos;
+uniform Light lights[MAX_LIGHTS];
+uniform int lightCount;
+
 uniform vec3 ambientDirection;
 uniform vec3 ambientColor;
 
-uniform Light light;
-uniform vec3 camPos;
+uniform float ambientStrength;
+uniform float specularStrength;
 
 out vec4 FragColor;
+
+vec3 LightColor(vec3 direction, vec3 color, vec3 normal, vec3 viewDir);
+vec3 AmbientLightColor(vec3 direction, vec3 color, vec3 normal);
 
 void main() {
 
 	vec3 normal = normalize(a_normal);
 	vec3 viewDir = normalize(camPos - a_position);
 
-	vec3 lightColor = light.color * light.intensity;
-	vec3 lightDir;
+	vec3 lightResult = vec3(0.0f);
+	for (int i = 0; i < lightCount; i++) {
 
-	if (light.type == 0)
-		lightDir = normalize(a_position - light.position);
-	else
-		lightDir = normalize(light.direction);
+		Light light = lights[i];
 
-	// Ambient
+		vec3 lightDir;
+		if (light.type == POINT_LIGHT)
+			lightDir = normalize(a_position - light.posOrDir);
+		else
+			lightDir = normalize(light.posOrDir);
 
-	float ambientStrength = 0.1f;
-	vec3 ambient = ambientStrength * lightColor;
+		lightResult += LightColor(lightDir, light.color * light.intensity, normal, viewDir);
 
-	// Diffuse
-	
-	vec3 diffuse = max(dot(normal, lightDir), 0.0f) * lightColor;
-	vec3 ambientDirectional = max(dot(normal, normalize(ambientDirection)), 0.0f) * ambientColor * ambientStrength;
+	}
+	lightResult += AmbientLightColor(ambientDirection, ambientColor, normal);
 
-	// Specular
+	FragColor = vec4(lightResult * a_color, 1.0f);
 
-	float specularStrength = 0.5f;
-	vec3 reflectDir = reflect(lightDir, normal);
-	vec3 specular = pow(max(dot(viewDir, reflectDir), 0.0f), 32) * specularStrength * lightColor;
-	
-	vec3 final = (ambient + ambientDirectional + diffuse + specular) * a_color;
-	FragColor = vec4(final, 1.0f);
+}
+
+vec3 LightColor(vec3 direction, vec3 color, vec3 normal, vec3 viewDir) {
+
+	vec3 ambient = color * ambientStrength;
+
+	vec3 diffuse = max(dot(normal, direction), 0.0f) * color;
+
+	vec3 reflectDir = reflect(direction, normal);
+	vec3 specular = pow(max(dot(viewDir, reflectDir), 0.0f), 32) * specularStrength * color;
+
+	return ambient + diffuse + specular;
+
+}
+vec3 AmbientLightColor(vec3 direction, vec3 color, vec3 normal) {
+
+	vec3 ambient = color * ambientStrength;
+	vec3 diffuse = max(dot(normal, direction), 0.0f) * color * ambientStrength;
+
+	return ambient + diffuse;
 
 }

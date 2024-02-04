@@ -6,6 +6,8 @@
 
 #define LIGHT_TYPES 2
 
+#define MAX_LIGHTS 8
+
 namespace Copper {
 
     class Light : public Component {

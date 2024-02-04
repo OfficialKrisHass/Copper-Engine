@@ -40,7 +40,15 @@ namespace Copper {
 
 	public:
 		inline SimpleEvent& operator+=(std::function<void()> func) { m_callbacks.push_back(func); return *this; }
-		inline void operator()() { for (size_t i = 0; i < m_callbacks.size(); i++) { m_callbacks[i](); } }
+		inline void operator()() {
+			
+			for (size_t i = 0; i < m_callbacks.size(); i++) {
+				
+				m_callbacks[i]();
+			
+			}
+		
+		}
 
 	private:
 		std::vector<std::function<void()>> m_callbacks;

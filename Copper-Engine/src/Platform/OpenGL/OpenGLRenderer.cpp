@@ -36,8 +36,8 @@ namespace Copper::RendererAPI {
 
 	Shader shader;
 
+	Vector3 ambientDirection = Vector3(-0.489834040, 0.210472092, 0.846028447);
 	Camera* cam;
-	Light* light;
 
 	void Initialize() {
 
@@ -114,29 +114,43 @@ namespace Copper::RendererAPI {
 
 	}
 	
-	void Render(VertexArray* vao, uint32 count) {
+	void Render(VertexArray* vao, uint32 count, Light** lights, uint32 lightCount) {
 
 		vao->Bind();
 		shader.Bind();
 
-		// TODO: Fix the CMath implementation of LoadMat4 not working
+		// Vertex Shader
 		shader.LoadMat4("ProjectionView", cam->CreateProjectionMatrix() * cam->CreateViewMatrix());
+
+		// Fragment
+
 		shader.LoadVec3("camPos", cam->GetTransform()->Position());
+		
+		// Lights
 
-		if (light) {
+		CU_ASSERT(lightCount < MAX_LIGHTS + 1, "You have reached more lights then allowed ({}), current number of lights: {}", MAX_LIGHTS, lightCount);
 
-			shader.LoadVec3("ambientDirection", -light->GetTransform()->Forward());
-			shader.LoadVec3("ambientColor", Color::white);
+		std::string lightStr = "lights[x].";
+		for (uint32 i = 0; i < lightCount; i++) {
 
-			shader.LoadInt("light.type", (uint32) light->type);
+			lightStr[7] = '0' + i;
+			Light* light = lights[i];
+			CU_ASSERT(light, "lights[{}] is nullptr!", i);
 
-			shader.LoadVec3("light.position", light->GetTransform()->GlobalPosition());
-			shader.LoadVec3("light.direction", light->GetTransform()->Forward());
+			shader.LoadInt(lightStr + "type", (uint32) light->type);
+			shader.LoadVec3(lightStr + "posOrDir", light->type == Light::Type::Point ? light->GetTransform()->GlobalPosition() : light->GetTransform()->Forward());
 
-			shader.LoadVec3("light.color", light->color);
-			shader.LoadFloat("light.intensity", light->intensity);
+			shader.LoadVec3(lightStr + "color", light->color);
+			shader.LoadFloat(lightStr + "intensity", light->intensity);
 
 		}
+		shader.LoadInt("lightCount", lightCount);
+
+		shader.LoadVec3("ambientDirection", ambientDirection);
+		shader.LoadVec3("ambientColor", Color::white);
+
+		shader.LoadFloat("ambientStrength", 0.1f);
+		shader.LoadFloat("specularStrength", 0.5f);
 
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);
 
@@ -161,7 +175,6 @@ namespace Copper::RendererAPI {
 	}
 
 	void SetCamera(Camera* camera) { cam = camera; }
-	void SetLight(Light* light1) { light = light1; }
 
 	void SetWireframe(bool value) {
 

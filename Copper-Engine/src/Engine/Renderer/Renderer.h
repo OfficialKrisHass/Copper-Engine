@@ -25,9 +25,9 @@ namespace Copper {
 		void NewBatch();
 
 		void AddMesh(Mesh* mesh, Transform* transform);
+		void AddLight(Light* light);
 
 		void SetCamera(Camera* cam);
-		void SetLight(Light* light);
 
 		void SetWireframe(bool value = true);
 		void SetShaderPath(const std::string& vertexPath, const std::string& fragmentPath);
@@ -45,11 +45,10 @@ namespace Copper {
 		void ClearColor(const Color& color);
 		void ResizeViewport(const UVector2I& size);
 
-		void Render(VertexArray* vao, uint32 count);
+		void Render(VertexArray* vao, uint32 count, Light** lights, uint32 lightCount);
 		void EndFrame();
 
 		void SetCamera(Camera* cam);
-		void SetLight(Light* light);
 
 		void SetWireframe(bool value);
 		void SetShaderPath(const std::string& vertexPath, const std::string& fragmentPath);

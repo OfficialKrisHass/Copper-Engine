@@ -8,6 +8,7 @@
 #include "Engine/Renderer/Mesh.h"
 
 #include "Engine/Components/Transform.h"
+#include "Engine/Components/Light.h"
 
 #include <GLM/ext/matrix_transform.hpp>
 
@@ -36,6 +37,9 @@ namespace Copper::Renderer {
 
 		Vertex* vertices = new Vertex[MaxVertices];
 		uint32* indices = new uint32[MaxIndices];
+
+		Light** lights = new Light*[MAX_LIGHTS];
+		uint32 lightCount = 0;
 
 		bool wireframe = false;
 		
@@ -71,6 +75,7 @@ namespace Copper::Renderer {
 	void StartFrame() {
 
 		data.drawCalls = 0;
+		data.lightCount = 0;
 
 		StartBatch();
 
@@ -94,7 +99,7 @@ namespace Copper::Renderer {
 		data.vbo.SetData((float*) data.vertices, data.verticesCount * 9);
 		data.ibo.SetData(data.indices, data.indicesCount);
 
-		RendererAPI::Render(&data.vao, data.indicesCount);
+		RendererAPI::Render(&data.vao, data.indicesCount, data.lights, data.lightCount);
 
 		data.drawCalls++;
 
@@ -133,11 +138,19 @@ namespace Copper::Renderer {
 		data.indicesCount += indicesCount;
 
 	}
+	void AddLight(Light* light) {
+
+		CU_ASSERT(data.lightCount < MAX_LIGHTS, "Can't add another light, reached maximum amount of lights allowed ({})", MAX_LIGHTS);
+
+		data.lights[data.lightCount] = light;
+		data.lightCount++;
+
+	}
 
 	void Render(Camera* cam) {
 
 		RendererAPI::SetCamera(cam);
-		RendererAPI::Render(&data.vao, data.indicesCount);
+		RendererAPI::Render(&data.vao, data.indicesCount, data.lights, data.lightCount);
 
 	}
 
@@ -145,7 +158,6 @@ namespace Copper::Renderer {
 	void ResizeViewport(const UVector2I& size) { RendererAPI::ResizeViewport(size); }
 
 	void SetCamera(Camera* cam) { RendererAPI::SetCamera(cam); }
-	void SetLight(Light* light) { RendererAPI::SetLight(light); }
 
 	void SetWireframe(bool value) {
 		

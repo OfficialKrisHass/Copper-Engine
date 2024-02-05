@@ -17,6 +17,9 @@ namespace Copper::Renderer {
 	constexpr uint32 MaxVertices = 20'000;
 	constexpr uint32 MaxIndices = (uint32) (MaxVertices * 1.5f);
 
+	constexpr uint32 MaxLines = 10'000;
+	constexpr uint32 MaxLineVertices = MaxLines * 2;
+
 	struct Vertex {
 
 		Vector3 position;
@@ -24,22 +27,43 @@ namespace Copper::Renderer {
 		Vector3 normal;
 
 	};
+	struct LineVertex {
+
+		Vector3 pos;
+		Vector3 color;
+
+	};
 
 	struct RendererData {
 
-		uint32 verticesCount = 0;
-		uint32 indicesCount = 0;
-		uint32 drawCalls = 0;
+		// 3D Geometry
 
 		VertexArray vao;
 		VertexBuffer vbo;
 		IndexBuffer ibo;
 
+		uint32 verticesCount = 0;
+		uint32 indicesCount = 0;
+
 		Vertex* vertices = new Vertex[MaxVertices];
 		uint32* indices = new uint32[MaxIndices];
 
-		Light** lights = new Light*[MAX_LIGHTS];
+		// Lights
+
+		Light** lights = new Light * [MAX_LIGHTS];
 		uint32 lightCount = 0;
+
+		// Lines
+
+		VertexArray lineVao;
+		VertexBuffer lineVbo;
+
+		uint32 lineVertexCount = 0;
+		LineVertex* lineVertices = new LineVertex[MaxLineVertices];
+
+		// Misc.
+
+		uint32 drawCalls = 0;
 
 		bool wireframe = false;
 		
@@ -52,6 +76,8 @@ namespace Copper::Renderer {
 		VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the Renderer");
 
 		RendererAPI::Initialize();
+
+		// 3D Geometry
 
 		data.vao = VertexArray(nullptr);
 		
@@ -70,12 +96,29 @@ namespace Copper::Renderer {
 		data.vbo.Unbind();
 		data.vao.Unbind();
 
+		// Lines
+
+		data.lineVao = VertexArray(nullptr);
+
+		data.lineVbo = VertexBuffer(nullptr, MaxLineVertices * sizeof(LineVertex), {
+
+			ElementType::Vec3, // Position
+			ElementType::Vec3, // Color
+
+		});
+		data.lineVao.SetVertexBuffer(&data.lineVbo);
+
+		data.lineVbo.Unbind();
+		data.lineVao.Unbind();
+
 	}
 
 	void StartFrame() {
 
 		data.drawCalls = 0;
 		data.lightCount = 0;
+
+		data.lineVertexCount = 0;
 
 		StartBatch();
 
@@ -111,6 +154,17 @@ namespace Copper::Renderer {
 
 	}
 
+	void RenderLines() {
+
+		if (data.lineVertexCount == 0) return;
+
+		data.lineVbo.SetData((float*) data.lineVertices, data.lineVertexCount * 6);
+		RendererAPI::RenderLines(&data.lineVao, data.lineVertexCount);
+
+		data.drawCalls++;
+
+	}
+
 	void AddMesh(Mesh* mesh, Transform* transform) {
 
 		const Matrix4& transformMat = transform->TransformMatrix();
@@ -138,6 +192,29 @@ namespace Copper::Renderer {
 		data.indicesCount += indicesCount;
 
 	}
+	void AddLine(const Vector3& start, const Vector3& end, const Color& color, Transform* transform) {
+
+		if (data.lineVertexCount >= MaxLineVertices) {
+
+			LogError("Max amount of lines reached ({})", MaxLines);
+			return;
+
+		}
+
+		const Matrix4& transformMat = transform->TransformMatrix();
+
+		LineVertex* vertex = &data.lineVertices[data.lineVertexCount];
+		vertex->pos = transformMat * Vector4(start, 1.0f);
+		vertex->color = color;
+
+		vertex = &data.lineVertices[data.lineVertexCount + 1];
+		vertex->pos = transformMat * Vector4(end, 1.0f);
+		vertex->color = color;
+
+		data.lineVertexCount += 2;
+
+	}
+
 	void AddLight(Light* light) {
 
 		CU_ASSERT(data.lightCount < MAX_LIGHTS, "Can't add another light, reached maximum amount of lights allowed ({})", MAX_LIGHTS);
@@ -151,6 +228,7 @@ namespace Copper::Renderer {
 
 		RendererAPI::SetCamera(cam);
 		RendererAPI::Render(&data.vao, data.indicesCount, data.lights, data.lightCount);
+		RendererAPI::RenderLines(&data.lineVao, data.lineVertexCount);
 
 	}
 

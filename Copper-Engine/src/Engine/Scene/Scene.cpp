@@ -71,7 +71,12 @@ namespace Copper {
 
 			entity->m_transform->Update();
 
-			if (Light* lightComponent = entity->GetComponent<Light>()) Renderer::AddLight(lightComponent);
+			if (Light* lightComponent = entity->GetComponent<Light>()) {
+				
+				Renderer::AddLight(lightComponent);
+				Renderer::AddLine(Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Color::green, entity->m_transform);
+			
+			}
 			if (Camera* cameraComponent = entity->GetComponent<Camera>()) {
 
 				Renderer::SetCamera(cameraComponent);
@@ -92,6 +97,7 @@ namespace Copper {
 		if (m_runtimeRunning && !m_runtimeStarted) m_runtimeStarted = true;
 
 		Renderer::RenderBatch();
+		Renderer::RenderLines();
 
 	}
 	void Scene::RuntimeUpdateEntity(InternalEntity* entity, float deltaTIme) {

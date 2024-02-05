@@ -97,7 +97,7 @@ project "Copper-Engine"
         "VERSION_MAJOR=0",
         "VERSION_MINOR=3",
         "VERSION_PATCH=0",
-        "VERSION_TWEAK=31",
+        "VERSION_TWEAK=32",
         
         "SCENE_VERSION=0",
 

@@ -35,6 +35,7 @@ namespace Copper::RendererAPI {
 	Shader gameRectShader;
 
 	Shader shader;
+	Shader lineShader;
 
 	Vector3 ambientDirection = Vector3(-0.489834040, 0.210472092, 0.846028447);
 	Camera* cam;
@@ -59,6 +60,8 @@ namespace Copper::RendererAPI {
 		glFrontFace(GL_CCW);
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		lineShader = Shader("assets/Shaders/lineVertex.glsl", "assets/Shaders/lineFragment.glsl");
 
 	// Copper Engine deafultly renders to the main FBO, meaning every app has to take the texture there and render it to a rect taking up the entire screen
 	// TODO: Maybe we dont have to have or own shaders for this ? since it is just the basic shader, no lightning or MVPs ?
@@ -120,6 +123,7 @@ namespace Copper::RendererAPI {
 		shader.Bind();
 
 		// Vertex Shader
+
 		shader.LoadMat4("ProjectionView", cam->CreateProjectionMatrix() * cam->CreateViewMatrix());
 
 		// Fragment
@@ -153,6 +157,17 @@ namespace Copper::RendererAPI {
 		shader.LoadFloat("specularStrength", 0.5f);
 
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);
+
+	}
+	void RenderLines(VertexArray* vao, uint32 vertexCount) {
+
+		vao->Bind();
+		lineShader.Bind();
+
+		lineShader.LoadMat4("ProjectionView", cam->CreateProjectionMatrix() * cam->CreateViewMatrix());
+
+		glLineWidth(2.0f);
+		glDrawArrays(GL_LINES, 0, vertexCount);
 
 	}
 	void EndFrame() {

@@ -24,7 +24,11 @@ namespace Copper {
 		void RenderBatch();
 		void NewBatch();
 
+		void RenderLines();
+
 		void AddMesh(Mesh* mesh, Transform* transform);
+		void AddLine(const Vector3& start, const Vector3& end, const Color& color, Transform* transform);
+
 		void AddLight(Light* light);
 
 		void SetCamera(Camera* cam);
@@ -46,6 +50,7 @@ namespace Copper {
 		void ResizeViewport(const UVector2I& size);
 
 		void Render(VertexArray* vao, uint32 count, Light** lights, uint32 lightCount);
+		void RenderLines(VertexArray* vao, uint32 vertexCount);
 		void EndFrame();
 
 		void SetCamera(Camera* cam);

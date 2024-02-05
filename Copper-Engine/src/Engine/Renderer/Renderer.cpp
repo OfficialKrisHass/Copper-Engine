@@ -192,6 +192,7 @@ namespace Copper::Renderer {
 		data.indicesCount += indicesCount;
 
 	}
+
 	void AddLine(const Vector3& start, const Vector3& end, const Color& color, Transform* transform) {
 
 		if (data.lineVertexCount >= MaxLineVertices) {
@@ -212,6 +213,42 @@ namespace Copper::Renderer {
 		vertex->color = color;
 
 		data.lineVertexCount += 2;
+
+	}
+	void AddCube(const Vector3& centre, const Vector3& size, const Color& color, Transform* transform) {
+
+		const Vector3 half = size / 2.0f;
+
+		// Bottom
+
+		static const Vector3 v0 = Vector3(-half.x, -half.y,  half.z);
+		static const Vector3 v1 = Vector3( half.x, -half.y,  half.z);
+		static const Vector3 v2 = Vector3( half.x, -half.y, -half.z);
+		static const Vector3 v3 = Vector3(-half.x, -half.y, -half.z);
+
+		// Top
+
+		static const Vector3 v4 = Vector3(-half.x,  half.y,  half.z);
+		static const Vector3 v5 = Vector3( half.x,  half.y,  half.z);
+		static const Vector3 v6 = Vector3 (half.x,  half.y, -half.z);
+		static const Vector3 v7 = Vector3(-half.x,  half.y, -half.z);
+
+		// Lines
+
+		AddLine(centre + v0, centre + v1, color, transform);
+		AddLine(centre + v1, centre + v2, color, transform);
+		AddLine(centre + v2, centre + v3, color, transform);
+		AddLine(centre + v3, centre + v0, color, transform);
+
+		AddLine(centre + v4, centre + v5, color, transform);
+		AddLine(centre + v5, centre + v6, color, transform);
+		AddLine(centre + v6, centre + v7, color, transform);
+		AddLine(centre + v7, centre + v4, color, transform);
+
+		AddLine(centre + v0, centre + v4, color, transform);
+		AddLine(centre + v1, centre + v5, color, transform);
+		AddLine(centre + v2, centre + v6, color, transform);
+		AddLine(centre + v3, centre + v7, color, transform);
 
 	}
 

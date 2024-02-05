@@ -166,7 +166,7 @@ namespace Copper::RendererAPI {
 
 		lineShader.LoadMat4("ProjectionView", cam->CreateProjectionMatrix() * cam->CreateViewMatrix());
 
-		glLineWidth(2.0f);
+		glLineWidth(3.0f);
 		glDrawArrays(GL_LINES, 0, vertexCount);
 
 	}

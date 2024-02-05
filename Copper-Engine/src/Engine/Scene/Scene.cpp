@@ -85,13 +85,13 @@ namespace Copper {
 			}
 			if (MeshRenderer* renderer = entity->GetComponent<MeshRenderer>()) {
 
-				for (Mesh mesh : renderer->meshes) {
-
+				for (Mesh mesh : renderer->meshes)
 					Renderer::AddMesh(&mesh, entity->m_transform);
 
-				}
-
 			}
+
+			if (Collider* collider = entity->GetComponent<Collider>())
+				Renderer::AddCube(Vector3::zero, Vector3::one, Color::red, entity->m_transform);
 
 		}
 		if (m_runtimeRunning && !m_runtimeStarted) m_runtimeStarted = true;

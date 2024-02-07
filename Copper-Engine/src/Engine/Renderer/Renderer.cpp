@@ -193,7 +193,7 @@ namespace Copper::Renderer {
 
 	}
 
-	void AddLine(const Vector3& start, const Vector3& end, const Color& color, Transform* transform) {
+	void AddLine(const Vector3& start, const Vector3& end, const Color& color) {
 
 		if (data.lineVertexCount >= MaxLineVertices) {
 
@@ -202,17 +202,20 @@ namespace Copper::Renderer {
 
 		}
 
-		const Matrix4& transformMat = transform->TransformMatrix();
-
 		LineVertex* vertex = &data.lineVertices[data.lineVertexCount];
-		vertex->pos = transformMat * Vector4(start, 1.0f);
+		vertex->pos = start;
 		vertex->color = color;
 
 		vertex = &data.lineVertices[data.lineVertexCount + 1];
-		vertex->pos = transformMat * Vector4(end, 1.0f);
+		vertex->pos = end;
 		vertex->color = color;
 
 		data.lineVertexCount += 2;
+
+	}
+	void AddLine(const Vector3& start, const Vector3& end, const Color& color, Transform* transform) {
+
+		AddLine(transform->TransformMatrix() * Vector4(start, 1.0f), transform->TransformMatrix() * Vector4(end, 1.0f), color);
 
 	}
 	void AddCube(const Vector3& centre, const Vector3& size, const Color& color, Transform* transform) {
@@ -221,17 +224,17 @@ namespace Copper::Renderer {
 
 		// Bottom
 
-		static const Vector3 v0 = Vector3(-half.x, -half.y,  half.z);
-		static const Vector3 v1 = Vector3( half.x, -half.y,  half.z);
-		static const Vector3 v2 = Vector3( half.x, -half.y, -half.z);
+		static const Vector3 v0 = Vector3(-half.x, -half.y, half.z);
+		static const Vector3 v1 = Vector3(half.x, -half.y, half.z);
+		static const Vector3 v2 = Vector3(half.x, -half.y, -half.z);
 		static const Vector3 v3 = Vector3(-half.x, -half.y, -half.z);
 
 		// Top
 
-		static const Vector3 v4 = Vector3(-half.x,  half.y,  half.z);
-		static const Vector3 v5 = Vector3( half.x,  half.y,  half.z);
-		static const Vector3 v6 = Vector3 (half.x,  half.y, -half.z);
-		static const Vector3 v7 = Vector3(-half.x,  half.y, -half.z);
+		static const Vector3 v4 = Vector3(-half.x, half.y, half.z);
+		static const Vector3 v5 = Vector3(half.x, half.y, half.z);
+		static const Vector3 v6 = Vector3(half.x, half.y, -half.z);
+		static const Vector3 v7 = Vector3(-half.x, half.y, -half.z);
 
 		// Lines
 

@@ -22,6 +22,8 @@
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Renderer/Mesh.h"
 
+#include "Engine/Physics/Raycast.h"
+
 #include "Engine/Scripting/ScriptingCore.h"
 
 #include "Engine/YAMLOverloads/Everything.h"
@@ -81,6 +83,18 @@ namespace Copper {
 
 				Renderer::SetCamera(cameraComponent);
 				cam = cameraComponent;
+
+				if (AcceptInputDuringRuntime() && Input::IsButton(MouseCode::Button1)) {
+
+					Raycast ray = Raycast(entity->m_transform->m_globalPosition, entity->m_transform->m_forward, 1000.0f, true);
+					if (ray) {
+
+						const Raycast::Data& data = ray.GetData();
+						Renderer::AddLine(data.position, data.position + data.normal, Color::blue);
+
+					}
+
+				}
 
 			}
 			if (MeshRenderer* renderer = entity->GetComponent<MeshRenderer>()) {

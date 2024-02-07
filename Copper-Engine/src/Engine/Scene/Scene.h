@@ -15,9 +15,13 @@ namespace Copper {
 	class Scene {
 
 		friend InternalEntity;
+		friend class Entity;
+
 		friend class RigidBody;
 		friend class Collider;
-		friend class Entity;
+
+		friend class Raycast;
+
 		friend class OldSceneVersionSerializer;
 
 	public:

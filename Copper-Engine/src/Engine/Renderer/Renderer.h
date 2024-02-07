@@ -28,6 +28,7 @@ namespace Copper {
 
 		void AddMesh(Mesh* mesh, Transform* transform);
 
+		void AddLine(const Vector3& start, const Vector3& end, const Color& color);
 		void AddLine(const Vector3& start, const Vector3& end, const Color& color, Transform* transform);
 		void AddCube(const Vector3& centre, const Vector3& size, const Color& color, Transform* transform);
 

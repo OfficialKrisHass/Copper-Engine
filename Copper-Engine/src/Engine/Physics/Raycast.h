@@ -7,28 +7,35 @@ namespace Copper {
 	class Raycast {
 
 	public:
-		inline Raycast(const Vector3& origin, const Vector3& direction, float maxDistance, bool fire = true) : m_origin(origin), m_direction(direction), m_dist(maxDistance) {
+		struct Data {
+
+			bool hit = false;
+
+			Vector3 position;
+			Vector3 normal;
+			float distance = 0.0f;
+
+			class InternalEntity* entity = nullptr;
+
+			inline operator bool() const { return hit; }
+
+		};
+
+		inline Raycast(const Vector3& origin, const Vector3& direction, float maxDistance = 1000.0f, bool fire = true) : m_origin(origin), m_direction(direction), m_dist(maxDistance) {
 
 			if (!fire) return;
 			Fire();
 
 		}
 
-		bool Fire();
+		static bool Fire(const Vector3& origin, const Vector3& direction, Data* data, float maxDistance = 1000.0f);
+		bool Fire() { return Fire(m_origin, m_direction, &m_hitData, m_dist); }
 
-		struct Data {
-
-			bool hit = false;
-
-			float distance = 0.0f;
-			Vector3 position;
-			Vector3 normal;
-
-			class InternalEntity* entity = nullptr;
-
-		};
+		// Getters
 
 		inline const Data& GetData() const { return m_hitData; }
+
+		inline bool Hit() const { return m_hitData.hit; }
 		
 		inline float Distance() const { return m_hitData.distance; }
 		inline const Vector3& Position() const { return m_hitData.position; }
@@ -36,14 +43,16 @@ namespace Copper {
 		
 		inline InternalEntity* Entity() const { return m_hitData.entity; }
 
-		inline operator bool() const { return m_hitData.hit; }
+		// Operator overloading
+
+		inline operator bool() const { return m_hitData; }
 
 
 
 	private:
 		Vector3 m_origin = Vector3::zero;
 		Vector3 m_direction = Vector3(0.0f, 0.0f, -1.0f);
-		float m_dist = 0.0f;
+		float m_dist = 1000.0f;
 
 		Data m_hitData;
 

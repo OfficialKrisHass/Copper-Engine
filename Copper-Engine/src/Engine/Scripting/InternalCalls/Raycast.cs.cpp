@@ -10,20 +10,9 @@
 
 namespace Copper::Scripting::InternalCalls {
 
-	bool RaycastFire(Vector3* origin, Vector3* direction, float maxDistance, Raycast::Data* hitData) {
+	bool RaycastFire(Vector3* origin, Vector3* direction, Raycast::Data* hitData, float maxDistance) {
 
-		const Raycast raycast = Raycast(*origin, *direction, maxDistance);
-		const Raycast::Data& data = raycast.GetData();
-
-		if (!data.hit) {
-
-			hitData->hit = false;
-			return false;
-
-		}
-
-		*hitData = data;
-		return true;
+		return Raycast::Fire(*origin, *direction, hitData, maxDistance);;
 
 	}
 

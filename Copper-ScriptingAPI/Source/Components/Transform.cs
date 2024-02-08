@@ -82,11 +82,6 @@ namespace Copper {
                 return output;
 
             }
-            set {
-
-                Internal_SetGlobalPosition(componentPointer, value);
-
-            }
 
         }
         public Quaternion globalRotation {
@@ -99,11 +94,6 @@ namespace Copper {
                 return output;
 
             }
-            set {
-
-                Internal_SetGlobalRotation(componentPointer, value);
-
-            }
 
         }
         public Vector3 globalScale {
@@ -114,11 +104,6 @@ namespace Copper {
                 Internal_GetGlobalScale(componentPointer, out output);
 
                 return output;
-
-            }
-            set {
-
-                Internal_SetGlobalScale(componentPointer, value);
 
             }
 
@@ -172,9 +157,6 @@ namespace Copper {
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetPosition(long componentPointer, Vector3 position);
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetRotation(long componentPointer, Quaternion rotation);
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetScale(long componentPointer, Vector3 scale);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetGlobalPosition(long componentPointer, Vector3 position);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetGlobalRotation(long componentPointer, Quaternion rotation);
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static void Internal_SetGlobalScale(long componentPointer, Vector3 scale);
 
     }
 

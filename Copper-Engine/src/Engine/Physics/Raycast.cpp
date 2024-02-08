@@ -15,11 +15,7 @@ namespace Copper {
 	class FilterCallback : public PxQueryFilterCallback {
 
 	public:
-		virtual PxQueryHitType::Enum preFilter(const PxFilterData& filterData, const PxShape* shape, const PxRigidActor* actor, PxHitFlags& queryFlags) override {
-
-			return PxQueryHitType::eBLOCK;
-
-		}
+		virtual PxQueryHitType::Enum preFilter(const PxFilterData& filterData, const PxShape* shape, const PxRigidActor* actor, PxHitFlags& queryFlags) override { return PxQueryHitType::eBLOCK; }
 		virtual PxQueryHitType::Enum postFilter(const PxFilterData& filterData, const PxQueryHit& hit) override {
 
 			const PxRaycastHit& rayHit = (PxRaycastHit&) hit;
@@ -30,13 +26,10 @@ namespace Copper {
 
 		}
 
-	private:
-		//
-
 	};
 	FilterCallback filterCallback;
 
-	bool Raycast::Fire() {
+	bool Raycast::Fire(const Vector3& origin, const Vector3& direction, Data* data, float maxDistance) {
 
 		Scene* scene = GetScene();
 		if (!scene->m_runtimeRunning) return false;
@@ -45,15 +38,15 @@ namespace Copper {
 		PxQueryFilterData filterData = PxQueryFilterData(PxQueryFlag::eDYNAMIC | PxQueryFlag::eSTATIC | PxQueryFlag::ePOSTFILTER);
 
 		PxRaycastBuffer out;
-		if (!scene->m_physicsScene->raycast(PVec3(m_origin), PVec3(m_direction), m_dist, out, hitFlags, filterData, &filterCallback)) return false;
+		if (!scene->m_physicsScene->raycast(PVec3(origin), PVec3(direction), maxDistance, out, hitFlags, filterData, &filterCallback)) return false;
 
-		m_hitData.hit = true;
+		data->hit = true;
 
-		m_hitData.distance = out.block.distance;
-		m_hitData.position = CVec3(out.block.position);
-		m_hitData.normal = CVec3(out.block.normal);
+		data->position = CVec3(out.block.position);
+		data->normal = CVec3(out.block.normal);
+		data->distance = out.block.distance;
 
-		m_hitData.entity = (InternalEntity*) out.block.actor->userData;
+		data->entity = (InternalEntity*) out.block.actor->userData;
 
 		return true;
 

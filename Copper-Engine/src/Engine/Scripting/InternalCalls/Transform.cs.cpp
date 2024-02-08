@@ -32,6 +32,25 @@ namespace Copper::Scripting::InternalCalls {
 
 	}
 
+	void GetGlobalPosition(uint64 componentPointer, Vector3* out) {
+
+		CheckComponentPointer(componentPointer);
+		*out = ((Transform*) componentPointer)->GlobalPosition();
+
+	}
+	void GetGlobalRotation(uint64 componentPointer, Quaternion* out) {
+
+		CheckComponentPointer(componentPointer);
+		*out = ((Transform*) componentPointer)->GlobalRotation();
+
+	}
+	void GetGlobalScale(uint64 componentPointer, Vector3* out) {
+
+		CheckComponentPointer(componentPointer);
+		*out = ((Transform*) componentPointer)->GlobalScale();
+
+	}
+
 	void GetForward(uint64 componentPointer, Vector3* out) {
 
 		CheckComponentPointer(componentPointer);

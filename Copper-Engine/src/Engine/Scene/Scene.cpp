@@ -89,15 +89,11 @@ namespace Copper {
 				Renderer::SetCamera(cameraComponent);
 				cam = cameraComponent;
 
-				if (AcceptInputDuringRuntime() && Input::IsButton(MouseCode::Button1)) {
+				if (m_runtimeRunning) {
 
-					Raycast ray = Raycast(entity->m_transform->m_globalPosition, entity->m_transform->m_forward, 1000.0f, true);
-					if (ray) {
-
-						const Raycast::Data& data = ray.GetData();
-						Renderer::AddLine(data.position, data.position + data.normal, Color::blue);
-
-					}
+					Raycast::Data hitData;
+					if (Raycast::Fire(entity->m_transform->m_globalPosition, entity->m_transform->m_forward, &hitData)) 
+						Renderer::AddLine(hitData.position, hitData.position + hitData.normal, Color::blue);
 
 				}
 

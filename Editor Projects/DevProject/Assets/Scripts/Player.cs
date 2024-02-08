@@ -39,11 +39,12 @@ class Player : Component {
         HandleMovement();
         HandleMouse();
 
-        Raycast raycast = new Raycast(camera.position, camera.forward);
-        if (!raycast.hit) return;
+        if (!Input.IsKey(KeyCode.Q)) return;
 
-        Editor.Log("Hit: " + raycast.entity.name);
-        Editor.Log("\tPosition: " + raycast.position);
+        Raycast.Data hitData;
+        if (!Raycast.Fire(camera.globalPosition, camera.forward, out hitData)) return;
+
+        Editor.Log("Hit: " + hitData.entity.name);
 
     }
 

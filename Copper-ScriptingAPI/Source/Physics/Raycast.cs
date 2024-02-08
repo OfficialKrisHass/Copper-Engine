@@ -31,12 +31,9 @@ namespace Copper {
         public float distance {  get => m_hitData.distance; }
 
         public Entity entity { get => m_hitData.entity; }
-
-        public bool Fire() {
-
-            return Internal_Fire(m_origin, m_direction, m_maxDistance, out m_hitData);
-
-        }
+        
+        public static bool Fire(Vector3 origin, Vector3 direction, out Data hitData, float maxDistance = 1000.0f) { return Internal_Fire(origin, direction, out hitData, maxDistance); }
+        public bool Fire() { return Fire(m_origin, m_direction, out m_hitData, m_maxDistance); }
 
         public struct Data {
 
@@ -47,12 +44,11 @@ namespace Copper {
             public readonly float distance;
 
             private IntPtr m_unmanagedEntityPointer;
-
             public Entity entity { get { return Internal_DataGetEntity(m_unmanagedEntityPointer); } }
 
         }
 
-        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool Internal_Fire(Vector3 origin, Vector3 direction, float maxDistance, out Data hitData);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal extern static bool Internal_Fire(Vector3 origin, Vector3 direction, out Data hitData, float maxDistance);
 
         [MethodImpl(MethodImplOptions.InternalCall)] internal extern static Entity Internal_DataGetEntity(IntPtr unmanagedPointer);
 

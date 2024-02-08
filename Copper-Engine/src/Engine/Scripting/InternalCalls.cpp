@@ -67,6 +67,10 @@ namespace Copper::Scripting::InternalCalls {
 	void GetRotation(uint64 componentPointer, Quaternion* out);
 	void GetScale(uint64 componentPointer, Vector3* out);
 
+	void GetGlobalPosition(uint64 componentPointer, Vector3* out);
+	void GetGlobalRotation(uint64 componentPointer, Quaternion* out);
+	void GetGlobalScale(uint64 componentPointer, Vector3* out);
+
 	void GetForward(uint64 componentPointer, Vector3* out);
 	void GetRight(uint64 componentPointer, Vector3* out);
 	void GetUp(uint64 componentPointer, Vector3* out);
@@ -99,6 +103,7 @@ namespace Copper::Scripting::InternalCalls {
 	void RigidBodyAddTorque(uint64 componentPointer, Vector3* torque, uint8_t mode);
 
 	// Colliders
+
 	bool ColliderGetTrigger(uint64 componentPointer);
 	void ColliderGetCenter(uint64 componentPointer, Vector3* out);
 
@@ -118,7 +123,7 @@ namespace Copper::Scripting::InternalCalls {
 
 	// Raycast
 
-	bool RaycastFire(Vector3* origin, Vector3* direction, float distance, Raycast::Data* hitData);
+	bool RaycastFire(Vector3* origin, Vector3* direction, Raycast::Data* hitData, float distance);
 
 	MonoObject* RaycastDataGetEntity(InternalEntity* entity);
 
@@ -176,6 +181,11 @@ namespace Copper::Scripting::InternalCalls {
 		mono_add_internal_call("Copper.Transform::Internal_GetPosition", (void*) GetPosition);
 		mono_add_internal_call("Copper.Transform::Internal_GetRotation", (void*) GetRotation);
 		mono_add_internal_call("Copper.Transform::Internal_GetScale", (void*) GetScale);
+		
+		mono_add_internal_call("Copper.Transform::Internal_GetGlobalPosition", (void*) GetGlobalPosition);
+		mono_add_internal_call("Copper.Transform::Internal_GetGlobalRotation", (void*) GetGlobalRotation);
+		mono_add_internal_call("Copper.Transform::Internal_GetGlobalScale", (void*) GetGlobalScale);
+
 		mono_add_internal_call("Copper.Transform::Internal_GetForward", (void*) GetForward);
 		mono_add_internal_call("Copper.Transform::Internal_GetRight", (void*) GetRight);
 		mono_add_internal_call("Copper.Transform::Internal_GetUp", (void*) GetUp);

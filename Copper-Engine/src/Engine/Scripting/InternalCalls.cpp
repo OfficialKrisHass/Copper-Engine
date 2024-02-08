@@ -1,5 +1,7 @@
 #include "cupch.h"
 
+#include "Engine/Physics/Raycast.h"
+
 #include <mono/jit/jit.h>
 
 namespace Copper::Scripting::InternalCalls {
@@ -73,7 +75,7 @@ namespace Copper::Scripting::InternalCalls {
 	void SetRotation(uint64 componentPointer, Quaternion* value);
 	void SetScale(uint64 componentPointer, Vector3* value);
 
-	//Camera
+	// Camera
 
 	float CameraGetFOV(uint64 componentPointer);
 	float CameraGetNearPlane(uint64 componentPointer);
@@ -83,7 +85,7 @@ namespace Copper::Scripting::InternalCalls {
 	void CameraSetNearPlane(uint64 componentPointer, float value);
 	void CameraSetFarPlane(uint64 componentPointer, float value);
 
-	//RigidBody
+	// RigidBody
 
 	bool RigidBodyGetIsStatic(uint64 componentPointer);
 	bool RigidBodyGetGravity(uint64 componentPointer);
@@ -113,6 +115,12 @@ namespace Copper::Scripting::InternalCalls {
 	float CapsuleColliderGetHeight(uint64 componentPointer);
 	void CapsuleColliderSetRadius(uint64 componentPointer, float value);
 	void CapsuleColliderSetHeight(uint64 componentPointer, float value);
+
+	// Raycast
+
+	bool RaycastFire(Vector3* origin, Vector3* direction, float distance, Raycast::Data* hitData);
+
+	MonoObject* RaycastDataGetEntity(InternalEntity* entity);
 
 #pragma endregion
 
@@ -218,6 +226,11 @@ namespace Copper::Scripting::InternalCalls {
 
 		mono_add_internal_call("Copper.CapsuleCollider::Internal_SetRadius", (void*) SphereColliderSetRadius);
 		mono_add_internal_call("Copper.CapsuleCollider::Internal_SetRadius", (void*) CapsuleColliderSetHeight);
+
+		//======== Raycast ========
+		mono_add_internal_call("Copper.Raycast::Internal_Fire", (void*) RaycastFire);
+
+		mono_add_internal_call("Copper.Raycast::Internal_DataGetEntity", (void*) RaycastDataGetEntity);
 
 	}
 

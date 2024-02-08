@@ -39,6 +39,12 @@ class Player : Component {
         HandleMovement();
         HandleMouse();
 
+        Raycast raycast = new Raycast(camera.position, camera.forward);
+        if (!raycast.hit) return;
+
+        Editor.Log("Hit: " + raycast.entity.name);
+        Editor.Log("\tPosition: " + raycast.position);
+
     }
 
     private void HandleMovement() {

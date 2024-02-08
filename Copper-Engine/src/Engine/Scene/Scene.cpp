@@ -59,6 +59,11 @@ namespace Copper {
 		}
 
 	}
+	void Scene::StopRuntime() {
+
+		Renderer::ClearLights();
+
+	}
 	void Scene::Update(float deltaTime) {
 
 		Renderer::ClearColor(Color(0.18f, 0.18f, 0.18f));

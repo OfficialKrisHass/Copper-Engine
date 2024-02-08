@@ -577,7 +577,7 @@ namespace Editor {
 		fs::path savedPath = data.scene->path;
 		Entity savedSelectedEntity = *data.sceneHierarchy.GetSelectedEntity();
 
-		data.scene = GetScene();
+		data.scene->StopRuntime();
 		data.scene->Deserialize(savedPath);
 		data.sceneMeta.Deserialize(data.scene);
 

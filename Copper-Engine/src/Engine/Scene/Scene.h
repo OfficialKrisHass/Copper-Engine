@@ -48,6 +48,7 @@ namespace Copper {
 		void RemoveEntityFromID(uint32 id) { m_registry.RemoveEntity(id); }
 
 		void StartRuntime();
+		void StopRuntime();
 		void Update(float deltaTime);
 
 		void Render(Camera* cam);

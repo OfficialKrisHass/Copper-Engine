@@ -50,7 +50,7 @@ namespace Copper::Renderer {
 
 		// Lights
 
-		Light** lights = new Light * [MAX_LIGHTS];
+		Light** lights = new Light*[MAX_LIGHTS];
 		uint32 lightCount = 0;
 
 		// Lines
@@ -261,6 +261,11 @@ namespace Copper::Renderer {
 
 		data.lights[data.lightCount] = light;
 		data.lightCount++;
+
+	}
+	void ClearLights() {
+
+		data.lightCount = 0;
 
 	}
 

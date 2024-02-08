@@ -33,6 +33,7 @@ namespace Copper {
 		void AddCube(const Vector3& centre, const Vector3& size, const Color& color, Transform* transform);
 
 		void AddLight(Light* light);
+		void ClearLights();
 
 		void SetCamera(Camera* cam);
 

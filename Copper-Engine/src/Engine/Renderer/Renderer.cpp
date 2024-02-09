@@ -269,11 +269,12 @@ namespace Copper::Renderer {
 
 	}
 
-	void Render(Camera* cam) {
+	void Render(Camera* cam, bool gizmos) {
 
 		RendererAPI::SetCamera(cam);
 		RendererAPI::Render(&data.vao, data.indicesCount, data.lights, data.lightCount);
-		RendererAPI::RenderLines(&data.lineVao, data.lineVertexCount);
+		if (gizmos)
+			Renderer::RenderLines();
 
 	}
 

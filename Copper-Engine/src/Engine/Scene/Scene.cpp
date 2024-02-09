@@ -37,7 +37,7 @@ namespace Copper {
 
 		extern void StartFrame();
 
-		extern void Render(Camera* cam);
+		extern void Render(Camera* cam, bool gizmos);
 
 	}
 
@@ -112,7 +112,6 @@ namespace Copper {
 		if (m_runtimeRunning && !m_runtimeStarted) m_runtimeStarted = true;
 
 		Renderer::RenderBatch();
-		Renderer::RenderLines();
 
 	}
 	void Scene::RuntimeUpdateEntity(InternalEntity* entity, float deltaTIme) {
@@ -131,7 +130,7 @@ namespace Copper {
 
 	}
 
-	void Scene::Render(Camera* cam) { Renderer::Render(cam); }
+	void Scene::Render(Camera* cam, bool gizmos) { Renderer::Render(cam, gizmos); }
 
 	void Scene::Serialize(const fs::path& path) {
 

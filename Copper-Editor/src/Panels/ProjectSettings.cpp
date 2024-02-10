@@ -5,6 +5,7 @@
 
 #define Page_General FLAG(0)
 #define Page_Physics FLAG(1)
+#define Page_Rendering FLAG(2)
 
 namespace Editor::ProjectSettings {
 
@@ -17,6 +18,7 @@ namespace Editor::ProjectSettings {
 
 	static void GeneralPage();
 	static void PhysicsPage();
+	static void RenderingPage();
 
 	void UIRender() {
 
@@ -45,7 +47,8 @@ namespace Editor::ProjectSettings {
 
 		if (ImGui::Button("General", buttonSize))
 			currentPage = Page_General;
-
+		if (ImGui::Button("Rendering", buttonSize))
+			currentPage = Page_Rendering;
 		if (ImGui::Button("Physics", buttonSize))
 			currentPage = Page_Physics;
 
@@ -58,6 +61,8 @@ namespace Editor::ProjectSettings {
 
 		if (currentPage & Page_General)
 			GeneralPage();
+		else if (currentPage & Page_Rendering)
+			RenderingPage();
 		else if (currentPage & Page_Physics)
 			PhysicsPage();
 
@@ -75,6 +80,11 @@ namespace Editor::ProjectSettings {
 	void GeneralPage() {
 
 		ImGui::Text("General Page");
+
+	}
+	void RenderingPage() {
+
+		//
 
 	}
 	void PhysicsPage() {

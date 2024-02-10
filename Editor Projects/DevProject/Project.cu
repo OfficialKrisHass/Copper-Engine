@@ -1,3 +1,3 @@
 Name: DevProject
 Last Scene: Scenes\EmptyTemplate.copper
-Gizmo: 1
+Gizmo: 0

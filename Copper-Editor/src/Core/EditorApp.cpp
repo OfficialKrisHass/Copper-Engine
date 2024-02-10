@@ -25,6 +25,7 @@
 #include "Panels/Properties.h"
 #include "Panels/FileBrowser.h"
 #include "Panels/Console.h"
+#include "Panels/ProjectSettings.h"
 #include "Panels/ThemeEditor.h"
 
 #include "Viewport/SceneCamera.h"
@@ -240,6 +241,8 @@ namespace Editor {
 		if (data.themeEditorOpen) data.themeEditor.UIRender();
 		RenderGamePanel();
 		RenderViewport();
+
+		ProjectSettings::UIRender();
 
 		ImGui::End(); //Dockspace
 
@@ -499,6 +502,10 @@ namespace Editor {
 				ImGui::Separator();
 
 				if (ImGui::MenuItem("Build Solution", "Ctrl+B", false, data.project)) data.project.BuildSolution();
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("Project Settings")) ProjectSettings::Open();
 				
 				ImGui::Separator();
 

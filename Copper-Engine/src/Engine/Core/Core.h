@@ -11,6 +11,8 @@
 #include <CMath/CMath.h>
 #include "Engine/Renderer/Color.h"
 
+#define FLAG(bit) (1 << bit)
+
 namespace Copper {
 
     namespace fs = std::filesystem;

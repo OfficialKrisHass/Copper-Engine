@@ -51,7 +51,7 @@ namespace Copper {
 		void StopRuntime();
 		void Update(float deltaTime);
 
-		void Render(Camera* cam);
+		void Render(Camera* cam, bool gizmos = true);
 
 		void Serialize(const fs::path& path);
 		bool Deserialize(const fs::path& path);

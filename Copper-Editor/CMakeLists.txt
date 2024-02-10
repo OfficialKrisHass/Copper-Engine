@@ -5,6 +5,7 @@ message(STATUS "BUILDING Copper-Editor")
 include(${PROJECT_SOURCE_DIR}/Copper-Editor/src/Core/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Editor/src/Panels/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Editor/src/Projects/CMakeLists.txt)
+include(${PROJECT_SOURCE_DIR}/Copper-Editor/src/UI/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Editor/src/Viewport/CMakeLists.txt)
 
 list(TRANSFORM sources PREPEND ${PROJECT_SOURCE_DIR}/Copper-Editor/)

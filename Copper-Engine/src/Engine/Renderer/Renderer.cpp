@@ -65,6 +65,8 @@ namespace Copper::Renderer {
 
 		uint32 drawCalls = 0;
 
+		Color skyboxColor = Color(0.18f, 0.18f, 0.18f);
+
 		bool wireframe = false;
 		
 	};
@@ -119,6 +121,8 @@ namespace Copper::Renderer {
 		data.lightCount = 0;
 
 		data.lineVertexCount = 0;
+
+		RendererAPI::ClearColor(data.skyboxColor);
 
 		StartBatch();
 
@@ -278,9 +282,6 @@ namespace Copper::Renderer {
 
 	}
 
-	void ClearColor(const Color& color) { RendererAPI::ClearColor(color); }
-	void ResizeViewport(const UVector2I& size) { RendererAPI::ResizeViewport(size); }
-
 	void SetCamera(Camera* cam) { RendererAPI::SetCamera(cam); }
 
 	void SetWireframe(bool value) {
@@ -297,6 +298,11 @@ namespace Copper::Renderer {
 	}
 
 	bool GetWireframe() { return data.wireframe; }
+
+	Color& AmbientColor() { return RendererAPI::AmbientColor(); }
+	Vector3& AmbientDirection() { return RendererAPI::AmbientDirection(); }
+
+	Color& SkyboxColor() { return data.skyboxColor; }
 
 
 }

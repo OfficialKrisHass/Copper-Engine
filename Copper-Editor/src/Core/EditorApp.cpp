@@ -378,7 +378,7 @@ namespace Editor {
 
 		//We need to Clear the Color because if we don't we just get a black image
 		data.viewportFBO.Bind();
-		Renderer::ClearColor(Color(0.18f, 0.18f, 0.18f));
+		RendererAPI::ClearColor(Color(0.18f, 0.18f, 0.18f));
 
 		data.sceneCam.Update();
 		if (data.scene) data.scene->Render(&data.sceneCam);

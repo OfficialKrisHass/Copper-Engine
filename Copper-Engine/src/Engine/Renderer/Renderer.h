@@ -16,9 +16,6 @@ namespace Copper {
 	namespace Renderer {
 
 		void Initialize();
-		
-		void ClearColor(const Color& color);
-		void ResizeViewport(const UVector2I& size);
 
 		void StartBatch();
 		void RenderBatch();
@@ -42,6 +39,11 @@ namespace Copper {
 
 		bool GetWireframe();
 
+		Color& AmbientColor();
+		Vector3& AmbientDirection();
+
+		Color& SkyboxColor();
+
 	}
 
 	// A very low Level wrapper for the renderer api
@@ -61,6 +63,9 @@ namespace Copper {
 
 		void SetWireframe(bool value);
 		void SetShaderPath(const std::string& vertexPath, const std::string& fragmentPath);
+
+		Color& AmbientColor();
+		Vector3& AmbientDirection();
 
 	}
 

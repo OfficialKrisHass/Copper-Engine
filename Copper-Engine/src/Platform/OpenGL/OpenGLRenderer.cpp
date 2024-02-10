@@ -37,8 +37,10 @@ namespace Copper::RendererAPI {
 	Shader shader;
 	Shader lineShader;
 
-	Vector3 ambientDirection = Vector3(-0.489834040, 0.210472092, 0.846028447);
 	Camera* cam;
+
+	Color ambientColor = Color::white;
+	Vector3 ambientDirection = Vector3(-0.489834040, 0.210472092, 0.846028447);
 
 	void Initialize() {
 
@@ -151,7 +153,7 @@ namespace Copper::RendererAPI {
 		shader.LoadInt("lightCount", lightCount);
 
 		shader.LoadVec3("ambientDirection", ambientDirection);
-		shader.LoadVec3("ambientColor", Color::white);
+		shader.LoadVec3("ambientColor", ambientColor);
 
 		shader.LoadFloat("ambientStrength", 0.1f);
 		shader.LoadFloat("specularStrength", 0.5f);
@@ -200,5 +202,8 @@ namespace Copper::RendererAPI {
 
 	}
 	void SetShaderPath(const std::string& vertexPath, const std::string& fragmentPath) { shader = Shader(vertexPath, fragmentPath); }
+
+	Color& AmbientColor() { return ambientColor; }
+	Vector3& AmbientDirection() { return ambientDirection; }
 
 }

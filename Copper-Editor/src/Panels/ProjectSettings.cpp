@@ -1,11 +1,18 @@
 #include "ProjectSettings.h"
 
+#include "UI/TypeWidgets.h"
+
+#include "Engine/Renderer/Renderer.h"
+
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_internal.h>
 
 #define Page_General FLAG(0)
-#define Page_Physics FLAG(1)
-#define Page_Rendering FLAG(2)
+#define Page_Rendering FLAG(1)
+#define Page_Physics FLAG(2)
+
+#define Page(name) Page_##name
+#define PageOption(name) if (ImGui::Button(#name, buttonSize)) currentPage = Page(name)
 
 namespace Editor::ProjectSettings {
 
@@ -16,9 +23,9 @@ namespace Editor::ProjectSettings {
 	typedef uint16 Page;
 	Page currentPage = 0;
 
-	static void GeneralPage();
-	static void PhysicsPage();
-	static void RenderingPage();
+	static void ShowGeneralPage();
+	static void ShowPhysicsPage();
+	static void ShowRenderingPage();
 
 	void UIRender() {
 
@@ -45,12 +52,9 @@ namespace Editor::ProjectSettings {
 
 		// Page select
 
-		if (ImGui::Button("General", buttonSize))
-			currentPage = Page_General;
-		if (ImGui::Button("Rendering", buttonSize))
-			currentPage = Page_Rendering;
-		if (ImGui::Button("Physics", buttonSize))
-			currentPage = Page_Physics;
+		PageOption(General);
+		PageOption(Rendering);
+		PageOption(Physics);
 
 		ImGui::PopStyleVar(2);
 		ImGui::PopStyleColor();
@@ -59,12 +63,12 @@ namespace Editor::ProjectSettings {
 
 		ImGui::TableSetColumnIndex(1);
 
-		if (currentPage & Page_General)
-			GeneralPage();
-		else if (currentPage & Page_Rendering)
-			RenderingPage();
-		else if (currentPage & Page_Physics)
-			PhysicsPage();
+		if (currentPage & Page(General))
+			ShowGeneralPage();
+		else if (currentPage & Page(Rendering))
+			ShowRenderingPage();
+		else if (currentPage & Page(Physics))
+			ShowPhysicsPage();
 
 		// Finish
 
@@ -77,17 +81,28 @@ namespace Editor::ProjectSettings {
 
 	void Open() { isOpen = true; }
 
-	void GeneralPage() {
+	void ShowGeneralPage() {
 
 		ImGui::Text("General Page");
 
 	}
-	void RenderingPage() {
+	void ShowRenderingPage() {
 
-		//
+		if (ImGui::CollapsingHeader("Ambient light")) {
+
+			UI::EditColor("Color", &Renderer::AmbientColor());
+			UI::EditVector3("Direction", &Renderer::AmbientDirection());
+
+		}
+
+		if (ImGui::CollapsingHeader("Skybox")) {
+
+			UI::EditColor("Skybox color", &Renderer::SkyboxColor());
+
+		}
 
 	}
-	void PhysicsPage() {
+	void ShowPhysicsPage() {
 
 		ImGui::Text("Physics Page");
 

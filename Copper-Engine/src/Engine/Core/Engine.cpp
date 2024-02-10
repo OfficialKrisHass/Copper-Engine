@@ -152,7 +152,7 @@ namespace Copper {
 			data.scene.Update(data.deltaTime);
 			data.fbo.Unbind();
 
-			Renderer::ResizeViewport(data.Window().Size());
+			RendererAPI::ResizeViewport(data.Window().Size());
 
 			// UI Time window
 

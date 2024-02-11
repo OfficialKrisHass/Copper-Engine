@@ -3,6 +3,7 @@
 #include "Engine/Core/Core.h"
 
 #include "Engine/Renderer/Shader.h"
+#include "Engine/Renderer/Texture.h"
 
 namespace Copper {
 
@@ -55,7 +56,7 @@ namespace Copper {
 		void ClearColor(const Color& color);
 		void ResizeViewport(const UVector2I& size);
 
-		void Render(VertexArray* vao, uint32 count, Light** lights, uint32 lightCount);
+		void Render(VertexArray* vao, uint32 count, Light** lights, uint32 lightCount, Texture* texture);
 		void RenderLines(VertexArray* vao, uint32 vertexCount);
 		void EndFrame();
 

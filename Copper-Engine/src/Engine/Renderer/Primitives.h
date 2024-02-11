@@ -27,6 +27,15 @@ namespace Copper {
         Color(1.0f, 1.0f, 1.0f),
 
     };
+    inline const std::vector<Vector2> planeUvs{
+
+        Vector2(0.0f, 1.0f),
+        Vector2(1.0f, 1.0f),
+        Vector2(1.0f, 0.0f),
+        Vector2(0.0f, 0.0f),
+
+    };
+
     inline const std::vector<uint32> planeIndices {
 
         0, 1, 2,
@@ -52,6 +61,7 @@ namespace Copper {
         Vector3(0.5f,  0.5f, -0.5f),
 
         // Right
+
         Vector3(0.5f, -0.5f,  0.5f),
         Vector3(0.5f, -0.5f, -0.5f),
         Vector3(0.5f,  0.5f, -0.5f),
@@ -65,12 +75,14 @@ namespace Copper {
         Vector3(-0.5f,  0.5f, -0.5f),
 
         // Up
+
         Vector3(-0.5f,  0.5f,  0.5f),
         Vector3(0.5f,  0.5f,  0.5f),
         Vector3(0.5f,  0.5f, -0.5f),
         Vector3(-0.5f,  0.5f, -0.5f),
 
         // Down
+
         Vector3(-0.5f, -0.5f, -0.5f),
         Vector3(0.5f, -0.5f, -0.5f),
         Vector3(0.5f, -0.5f,  0.5f),
@@ -132,6 +144,7 @@ namespace Copper {
         Color(1.0f, 1.0f, 1.0f),
 
         // Back
+
         Color(1.0f, 1.0f, 1.0f),
         Color(1.0f, 1.0f, 1.0f),
         Color(1.0f, 1.0f, 1.0f),
@@ -166,6 +179,52 @@ namespace Copper {
         Color(1.0f, 1.0f, 1.0f),
 
     };
+    inline const std::vector<Vector2> cubeUvs {
+
+        // Front
+
+        Vector2(0.0f, 1.0f),
+        Vector2(1.0f, 1.0f),
+        Vector2(1.0f, 0.0f),
+        Vector2(0.0f, 0.0f),
+
+        // Back
+
+        Vector2(0.0f, 1.0f),
+        Vector2(1.0f, 1.0f),
+        Vector2(1.0f, 0.0f),
+        Vector2(0.0f, 0.0f),
+
+        // Right
+
+        Vector2(0.0f, 1.0f),
+        Vector2(1.0f, 1.0f),
+        Vector2(1.0f, 0.0f),
+        Vector2(0.0f, 0.0f),
+
+        // Left
+
+        Vector2(0.0f, 1.0f),
+        Vector2(1.0f, 1.0f),
+        Vector2(1.0f, 0.0f),
+        Vector2(0.0f, 0.0f),
+
+        // Up
+
+        Vector2(0.0f, 1.0f),
+        Vector2(1.0f, 1.0f),
+        Vector2(1.0f, 0.0f),
+        Vector2(0.0f, 0.0f),
+
+        // Down
+
+        Vector2(0.0f, 1.0f),
+        Vector2(1.0f, 1.0f),
+        Vector2(1.0f, 0.0f),
+        Vector2(0.0f, 0.0f),
+
+    };
+
     inline const std::vector<uint32> cubeIndices {
 
         // Front

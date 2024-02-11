@@ -21,6 +21,7 @@
 
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Renderer/Mesh.h"
+#include "Engine/Renderer/Primitives.h"
 
 #include "Engine/Physics/Raycast.h"
 
@@ -439,6 +440,7 @@ namespace Copper {
 				mesh.vertices.push_back(vertex["Position"].as<Vector3>());
 				mesh.normals.push_back(vertex["Normal"].as<Vector3>());
 				mesh.colors.push_back(vertex["Color"].as<Color>());
+				mesh.uvs.push_back(cubeUvs[i]);
 
 			}
 

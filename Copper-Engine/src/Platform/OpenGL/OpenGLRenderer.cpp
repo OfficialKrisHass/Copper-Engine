@@ -119,10 +119,11 @@ namespace Copper::RendererAPI {
 
 	}
 	
-	void Render(VertexArray* vao, uint32 count, Light** lights, uint32 lightCount) {
+	void Render(VertexArray* vao, uint32 count, Light** lights, uint32 lightCount, Texture* texture) {
 
 		vao->Bind();
 		shader.Bind();
+		texture->Bind();
 
 		// Vertex Shader
 

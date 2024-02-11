@@ -25,6 +25,7 @@ namespace Copper::Renderer {
 		Vector3 position;
 		Vector3 color;
 		Vector3 normal;
+		Vector2 uv;
 
 	};
 	struct LineVertex {
@@ -68,6 +69,9 @@ namespace Copper::Renderer {
 		Color skyboxColor = Color(0.18f, 0.18f, 0.18f);
 
 		bool wireframe = false;
+
+		// Tmp.
+		Texture wallTexture;
 		
 	};
 
@@ -88,6 +92,7 @@ namespace Copper::Renderer {
 			ElementType::Vec3, // Position
 			ElementType::Vec3, // Color
 			ElementType::Vec3, // Normal
+			ElementType::Vec2, // UV
 
 		});
 		data.ibo = IndexBuffer(nullptr, MaxIndices * sizeof(uint32));
@@ -112,6 +117,8 @@ namespace Copper::Renderer {
 
 		data.lineVbo.Unbind();
 		data.lineVao.Unbind();
+
+		data.wallTexture.Create("assets/Textures/wall.png");
 
 	}
 
@@ -143,10 +150,10 @@ namespace Copper::Renderer {
 
 		if (data.verticesCount == 0 || data.indicesCount == 0) return;
 
-		data.vbo.SetData((float*) data.vertices, data.verticesCount * 9);
+		data.vbo.SetData((float*) data.vertices, data.verticesCount * 11);
 		data.ibo.SetData(data.indices, data.indicesCount);
 
-		RendererAPI::Render(&data.vao, data.indicesCount, data.lights, data.lightCount);
+		RendererAPI::Render(&data.vao, data.indicesCount, data.lights, data.lightCount, &data.wallTexture);
 
 		data.drawCalls++;
 
@@ -187,6 +194,7 @@ namespace Copper::Renderer {
 			vertex.position = transformMat * Vector4(mesh->vertices[i], 1.0f);
 			vertex.normal = (Matrix3) transformMat * mesh->normals[i];
 			vertex.color = mesh->colors[i];
+			vertex.uv = mesh->uvs[i];
 
 		}
 		for (uint32 i = 0; i < indicesCount; i++)
@@ -276,7 +284,7 @@ namespace Copper::Renderer {
 	void Render(Camera* cam, bool gizmos) {
 
 		RendererAPI::SetCamera(cam);
-		RendererAPI::Render(&data.vao, data.indicesCount, data.lights, data.lightCount);
+		RendererAPI::Render(&data.vao, data.indicesCount, data.lights, data.lightCount, &data.wallTexture);
 		if (gizmos)
 			Renderer::RenderLines();
 

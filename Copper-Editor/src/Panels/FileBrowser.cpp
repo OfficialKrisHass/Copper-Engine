@@ -27,8 +27,8 @@ namespace Editor {
         
         m_projectRelativeDir = initialDir;
 
-        directoryIcon = Texture("assets/Icons/DirectoryIcon.png");
-        fileIcon = Texture("assets/Icons/FileIcon.png");
+        directoryIcon.Create("assets/Icons/DirectoryIcon.png", Texture::Format::RGBA);
+        fileIcon.Create("assets/Icons/FileIcon.png", Texture::Format::RGBA);
 
     }
 
@@ -98,7 +98,7 @@ namespace Editor {
 
             ImGui::PushID(filename.c_str());
 
-            uint64 icon = entry.is_directory() ? (uint64) directoryIcon.GetID() : (uint64) fileIcon.GetID();
+            uint64 icon = entry.is_directory() ? (uint64) directoryIcon.ID() : (uint64) fileIcon.ID();
             ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
             if(ImGui::ImageButton(reinterpret_cast<ImTextureID>(icon), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 }) && !entry.is_directory()) {
 

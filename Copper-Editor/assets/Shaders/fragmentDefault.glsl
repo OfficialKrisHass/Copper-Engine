@@ -18,6 +18,7 @@ struct Light {
 in vec3 a_position;
 in vec3 a_color;
 in vec3 a_normal;
+in vec2 a_uv;
 
 uniform vec3 camPos;
 uniform Light lights[MAX_LIGHTS];
@@ -28,6 +29,8 @@ uniform vec3 ambientColor;
 
 uniform float ambientStrength;
 uniform float specularStrength;
+
+uniform sampler2D wallTexture;
 
 out vec4 FragColor;
 
@@ -55,7 +58,7 @@ void main() {
 	}
 	lightResult += AmbientLightColor(ambientDirection, ambientColor, normal);
 
-	FragColor = vec4(lightResult * a_color, 1.0f);
+	FragColor = texture(wallTexture, a_uv) * vec4(lightResult * a_color, 1.0f);
 
 }
 

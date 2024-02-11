@@ -151,8 +151,8 @@ namespace Editor {
 		data.gamePanelSize = UVector2I(1280, 720);
 		data.viewportFBO = FrameBuffer(data.viewportSize);
 		
-		data.playIcon = Texture("assets/Icons/PlayButton.png");
-		data.stopIcon = Texture("assets/Icons/StopButton.png");
+		data.playIcon.Create("assets/Icons/PlayButton.png", Texture::Format::RGBA);
+		data.stopIcon.Create("assets/Icons/StopButton.png", Texture::Format::RGBA);
 		
 		data.sceneHierarchy = SceneHierarchy();
 		data.properties = Properties();
@@ -464,11 +464,11 @@ namespace Editor {
 
 		if (data.state == Edit) {
 
-			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64) data.playIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project) StartEditorRuntime();
+			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64) data.playIcon.ID()), buttonSize, {0, 1}, {1, 0}) && data.project) StartEditorRuntime();
 
 		} else if (data.state == Play) {
 
-			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64) data.stopIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project) StopEditorRuntime();
+			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64) data.stopIcon.ID()), buttonSize, {0, 1}, {1, 0}) && data.project) StopEditorRuntime();
 
 		}
 

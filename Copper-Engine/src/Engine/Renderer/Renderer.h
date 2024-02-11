@@ -56,7 +56,7 @@ namespace Copper {
 		void ClearColor(const Color& color);
 		void ResizeViewport(const UVector2I& size);
 
-		void Render(VertexArray* vao, uint32 count, Light** lights, uint32 lightCount, Texture* texture);
+		void Render(VertexArray* vao, uint32 count, Light** lights, uint32 lightCount, Texture* texture, Texture* texture2);
 		void RenderLines(VertexArray* vao, uint32 vertexCount);
 		void EndFrame();
 

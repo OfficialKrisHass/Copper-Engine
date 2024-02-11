@@ -25,7 +25,9 @@ namespace Copper::Renderer {
 		Vector3 position;
 		Vector3 color;
 		Vector3 normal;
+
 		Vector2 uv;
+		float textureIndex;
 
 	};
 	struct LineVertex {
@@ -72,6 +74,7 @@ namespace Copper::Renderer {
 
 		// Tmp.
 		Texture wallTexture;
+		Texture gridboxTexture;
 		
 	};
 
@@ -92,7 +95,9 @@ namespace Copper::Renderer {
 			ElementType::Vec3, // Position
 			ElementType::Vec3, // Color
 			ElementType::Vec3, // Normal
+
 			ElementType::Vec2, // UV
+			ElementType::Float, // Texture Index
 
 		});
 		data.ibo = IndexBuffer(nullptr, MaxIndices * sizeof(uint32));
@@ -119,6 +124,7 @@ namespace Copper::Renderer {
 		data.lineVao.Unbind();
 
 		data.wallTexture.Create("assets/Textures/wall.png");
+		data.gridboxTexture.Create("assets/Textures/gridbox.png");
 
 	}
 
@@ -150,10 +156,10 @@ namespace Copper::Renderer {
 
 		if (data.verticesCount == 0 || data.indicesCount == 0) return;
 
-		data.vbo.SetData((float*) data.vertices, data.verticesCount * 11);
+		data.vbo.SetData((float*) data.vertices, data.verticesCount * 12);
 		data.ibo.SetData(data.indices, data.indicesCount);
 
-		RendererAPI::Render(&data.vao, data.indicesCount, data.lights, data.lightCount, &data.wallTexture);
+		RendererAPI::Render(&data.vao, data.indicesCount, data.lights, data.lightCount, &data.wallTexture, &data.gridboxTexture);
 
 		data.drawCalls++;
 
@@ -187,6 +193,7 @@ namespace Copper::Renderer {
 			data.verticesCount + verticesCount > MaxVertices)
 			NewBatch();
 
+		uint32 texIndex = transform->GetEntity()->name == "Ground" ? 1 : 0;
 		for (uint32 i = 0; i < verticesCount; i++) {
 
 			Vertex& vertex = data.vertices[data.verticesCount + i];
@@ -195,6 +202,7 @@ namespace Copper::Renderer {
 			vertex.normal = (Matrix3) transformMat * mesh->normals[i];
 			vertex.color = mesh->colors[i];
 			vertex.uv = mesh->uvs[i];
+			vertex.textureIndex = texIndex;
 
 		}
 		for (uint32 i = 0; i < indicesCount; i++)
@@ -284,7 +292,7 @@ namespace Copper::Renderer {
 	void Render(Camera* cam, bool gizmos) {
 
 		RendererAPI::SetCamera(cam);
-		RendererAPI::Render(&data.vao, data.indicesCount, data.lights, data.lightCount, &data.wallTexture);
+		RendererAPI::Render(&data.vao, data.indicesCount, data.lights, data.lightCount, &data.wallTexture, &data.gridboxTexture);
 		if (gizmos)
 			Renderer::RenderLines();
 

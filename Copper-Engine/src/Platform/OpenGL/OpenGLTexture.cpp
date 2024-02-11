@@ -59,7 +59,12 @@ namespace Copper {
 
     }
 
-    void Texture::Bind() const { glBindTexture(GL_TEXTURE_2D, m_id); }
+    void Texture::Bind(uint32 unit) const {
+        
+        glActiveTexture(GL_TEXTURE0 + unit);
+        glBindTexture(GL_TEXTURE_2D, m_id);
+    
+    }
     void Texture::Unbind() const { glBindTexture(GL_TEXTURE_2D, 0); }
     
 }

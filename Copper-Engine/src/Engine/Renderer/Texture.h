@@ -27,7 +27,7 @@ namespace Copper {
 
 		void Delete();
 
-		void Bind() const;
+		void Bind(uint32 unit = 0) const;
 		void Unbind() const;
 
 		uint32 ID() const { return m_id; }

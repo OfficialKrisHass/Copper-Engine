@@ -375,9 +375,12 @@ namespace Editor::UI {
 		bool ret = false;
 		std::string nodeText;
 
-		if (*texture)
-			nodeText = texture->Name();
-		else
+		if (*texture) {
+
+			fs::path tmp = texture->Path();
+			nodeText = tmp.filename().string();
+
+		} else
 			nodeText = "None";
 		nodeText += " (Texture)";
 

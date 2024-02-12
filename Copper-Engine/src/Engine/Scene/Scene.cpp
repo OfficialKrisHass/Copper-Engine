@@ -267,6 +267,9 @@ namespace Copper {
 					out << index;
 				out << YAML::EndSeq; // Indices
 
+				// TODO: Textures should be saved in asset storage instead
+				out << YAML::Key << "Texture" << YAML::Value << mesh.texture.Path();
+
 				out << YAML::EndMap; // Mesh
 
 			}
@@ -451,6 +454,9 @@ namespace Copper {
 				mesh.indices.push_back(indicesNode[i].as<uint32>());
 
 			}
+
+			// TODO: Once again, textures should be stored in the asset storage
+			mesh.texture.Create(meshNode["Texture"].as<std::string>());
 
 			renderer->meshes.push_back(mesh);
 

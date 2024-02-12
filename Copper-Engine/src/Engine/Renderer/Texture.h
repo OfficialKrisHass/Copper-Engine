@@ -20,7 +20,7 @@ namespace Copper {
 		inline Texture(const std::string& filePath, Format format = Format::RGB) { Create(filePath, format); }
 
 		inline void Create(const UVector2I& size, Format format = Format::RGB, uint8* pixels = nullptr) { Create(size.x, size.y, format, pixels); }
-		void Create(uint32 width, uint32 height, Format format = Format::RGB, uint8* pixels = nullptr, const std::string& name = "Texture");
+		void Create(uint32 width, uint32 height, Format format = Format::RGB, uint8* pixels = nullptr);
 		void Create(const std::string& filePath, Format format = Format::RGB);
 
 		inline void SetPixels(uint8* pixels, Format format = Format::RGB) { Create(m_size.x, m_size.y, format, pixels); }
@@ -35,7 +35,7 @@ namespace Copper {
 		inline uint32 ID() const { return m_id; }
 		inline const UVector2I& Size() const { return m_size; }
 
-		inline const std::string& Name() const { return m_name; }
+		inline const std::string& Path() const { return m_path; }
 
 		inline operator bool() const { return Valid(); }
 
@@ -43,8 +43,8 @@ namespace Copper {
 		uint32 m_id = 0;
 		UVector2I m_size = UVector2I::zero;
 		
-		// Tmp.
-		std::string m_name = "";
+		// TODO: Textures shouldn't store their path
+		std::string m_path = "";
 
 	};
 

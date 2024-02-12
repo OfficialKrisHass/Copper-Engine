@@ -255,6 +255,7 @@ namespace Copper {
 					out << YAML::Key << "Position" << YAML::Value << mesh.vertices[i];
 					out << YAML::Key << "Normal" << YAML::Value << mesh.normals[i];
 					out << YAML::Key << "Color" << YAML::Value << mesh.colors[i];
+					out << YAML::Key << "UV" << YAML::Value << mesh.uvs[i];
 
 					out << YAML::EndMap; // Vertex
 
@@ -440,7 +441,7 @@ namespace Copper {
 				mesh.vertices.push_back(vertex["Position"].as<Vector3>());
 				mesh.normals.push_back(vertex["Normal"].as<Vector3>());
 				mesh.colors.push_back(vertex["Color"].as<Color>());
-				mesh.uvs.push_back(cubeUvs[i]);
+				mesh.uvs.push_back(vertex["UV"].as<Vector2>());
 
 			}
 

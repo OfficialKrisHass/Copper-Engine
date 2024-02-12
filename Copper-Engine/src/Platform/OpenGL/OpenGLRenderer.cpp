@@ -119,16 +119,18 @@ namespace Copper::RendererAPI {
 
 	}
 	
-	void Render(VertexArray* vao, uint32 count, Light** lights, uint32 lightCount, Texture* texture, Texture* texture2) {
+	void Render(VertexArray* vao, uint32 count, Light** lights, uint32 lightCount, Texture** textures, uint32 textureCount) {
 
 		vao->Bind();
 		shader.Bind();
 
-		texture->Bind(0);
-		texture2->Bind(1);
+		uint32 samplersLocation = shader.UniformLocation("textures");
+		for (uint32 i = 0; i < textureCount; i++) {
 
-		shader.LoadInt("wallTexture", 0);
-		shader.LoadInt("gridboxTexture", 1);
+			textures[i]->Bind(i);
+			shader.LoadInt(samplersLocation + i, i);
+
+		}
 
 		// Vertex Shader
 

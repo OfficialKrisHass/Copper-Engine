@@ -2,6 +2,8 @@
 
 #include "Engine/Core/Core.h"
 
+#include "Engine/Renderer/Texture.h"
+
 namespace Copper {
 
 	class Mesh {
@@ -15,6 +17,8 @@ namespace Copper {
 		std::vector<Vector2> uvs;
 
 		std::vector<uint32> indices;
+
+		Texture texture;
 
 	};
 

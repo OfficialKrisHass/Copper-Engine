@@ -367,6 +367,70 @@ namespace Editor::UI {
 
 	}
 
+	bool EditTexture(const std::string& name, Copper::Texture* texture) {
+
+		ImGuiID id = ImGuiID((uint32) (uint64) name.c_str());
+		ImGui::PushID(id);
+
+		bool ret = false;
+		std::string nodeText;
+
+		if (*texture)
+			nodeText = texture->Name();
+		else
+			nodeText = "None";
+		nodeText += " (Texture)";
+
+		const ImGuiStyle& style = ImGui::GetStyle();
+		const ImVec2 cursorPos = ImGui::GetCurrentWindow()->DC.CursorPos;
+
+		const float textSizeY = ImGui::CalcTextSize(name.c_str(), nullptr, true).y;
+		const ImVec2 frameSize = ImGui::CalcItemSize({ 0, 0 }, ImGui::CalcItemWidth(), textSizeY + style.FramePadding.y * 2.0f);
+
+		const bool hovered = ImGui::IsMouseHoveringRect(cursorPos, cursorPos + frameSize);
+
+		// Frame
+
+		if (hovered)
+			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImGui::GetColorU32(ImGuiCol_FrameBgHovered));
+
+		ImGui::BeginChildFrame(id, frameSize);
+		ImGui::Text(nodeText.c_str());
+		ImGui::EndChildFrame();
+
+		if (hovered)
+			ImGui::PopStyleColor();
+
+		// Name
+
+		ImGui::SameLine(0.0f, style.ItemInnerSpacing.x);
+		ImGui::Text(name.c_str());
+
+		// Drag Drop
+
+		// For some reason the rect sometimes flickers, and it seems to be based entirely on randomness
+		// sometimes it does, sometimes not, Love it :)))))))))))
+		// TODO: Fix
+
+		if (ImGui::BeginDragDropTargetCustom({ cursorPos, cursorPos + frameSize }, ImGuiID((uint32) (uint64) name.c_str()))) {
+
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FB_TEXTURE_PATH")) {
+
+				ret = true;
+				texture->Create((const char*) payload->Data);
+
+			}
+
+			ImGui::EndDragDropTarget();
+
+		}
+
+		ImGui::PopID();
+
+		return ret;
+
+	}
+
 	bool EditDropDown(const std::string& name, const char* items[], uint32 count, uint32* selected) {
 
 		bool ret = false;

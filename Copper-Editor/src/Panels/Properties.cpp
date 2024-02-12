@@ -80,6 +80,7 @@ namespace Editor {
 			
 		}
 
+		if (MeshRenderer* renderer = entity->GetComponent<MeshRenderer>()) RenderMeshRenderer(renderer);
 		if (Light* light = entity->GetComponent<Light>()) RenderLight(light);
 		if (Camera* camera = entity->GetComponent<Camera>()) RenderCamera(camera);
 
@@ -168,6 +169,15 @@ namespace Editor {
 		
 	}
 
+	void Properties::RenderMeshRenderer(Copper::MeshRenderer* renderer) {
+
+		if (!DrawComponent<MeshRenderer>("Mesh Renderer", renderer)) return;
+
+		UI::EditTexture("Texture", &renderer->meshes[0].texture);
+
+		ImGui::PopID();
+
+	}
 	void Properties::RenderLight(Light* light) {
 
 		if (!DrawComponent<Light>("Light", light)) return;

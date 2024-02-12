@@ -4,6 +4,7 @@
 #define DIRECTIONAL_LIGHT 1
 
 #define MAX_LIGHTS 8
+#define MAX_TEXTURES 16
 
 struct Light {
 
@@ -31,8 +32,7 @@ uniform vec3 ambientColor;
 uniform float ambientStrength;
 uniform float specularStrength;
 
-uniform sampler2D wallTexture;
-uniform sampler2D gridboxTexture;
+uniform sampler2D textures[MAX_TEXTURES];
 
 out vec4 FragColor;
 
@@ -60,13 +60,7 @@ void main() {
 	}
 	lightResult += AmbientLightColor(ambientDirection, ambientColor, normal);
 
-	vec4 textureColor;
-	switch(a_texIndex) {
-
-		case 0: textureColor = texture(wallTexture, a_uv); break;
-		case 1: textureColor = texture(gridboxTexture, a_uv); break;
-
-	}
+	vec4 textureColor = texture(textures[a_texIndex], a_uv);
 
 	FragColor = textureColor * vec4(lightResult * a_color, 1.0f);
 

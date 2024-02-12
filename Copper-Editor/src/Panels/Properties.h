@@ -24,6 +24,7 @@ namespace Editor {
 
 		void RenderEntity();
 
+		void RenderMeshRenderer(Copper::MeshRenderer* renderer);
 		void RenderLight(Copper::Light* light);
 		void RenderCamera(Copper::Camera* camera);
 

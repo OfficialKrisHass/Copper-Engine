@@ -82,18 +82,20 @@ namespace Copper {
 
 	}
 
-	void Shader::LoadInt(const std::string& name, int32 value) const { glUniform1i(glGetUniformLocation(m_id, name.c_str()), value); }
-	void Shader::LoadUInt(const std::string& name, uint32 value) const { glUniform1ui(glGetUniformLocation(m_id, name.c_str()), value); }
-	void Shader::LoadFloat(const std::string& name, float value) const { glUniform1f(glGetUniformLocation(m_id, name.c_str()), value); }
+	uint32 Shader::UniformLocation(const std::string& name) const { return (uint32) glGetUniformLocation(m_id, name.c_str()); }
 
-	void Shader::LoadVec2(const std::string& name, const Vector2& vec) const { glUniform2fv(glGetUniformLocation(m_id, name.c_str()), 1, &(vec.x)); }
-	void Shader::LoadVec3(const std::string& name, const Vector3& vec) const { glUniform3fv(glGetUniformLocation(m_id, name.c_str()), 1, &(vec.x)); }
-	void Shader::LoadVec4(const std::string& name, const Vector4& vec) const { glUniform4fv(glGetUniformLocation(m_id, name.c_str()), 1, &(vec.x)); }
+	void Shader::LoadInt(uint32 location, int32 value) const { glUniform1i(location, value); }
+	void Shader::LoadUInt(uint32 location, uint32 value) const { glUniform1ui(location, value); }
+	void Shader::LoadFloat(uint32 location, float value) const { glUniform1f(location, value); }
 
-	void Shader::LoadColor(const std::string& name, const Color& col) const { glUniform4fv(glGetUniformLocation(m_id, name.c_str()), 1, &(col.r)); }
+	void Shader::LoadVec2(uint32 location, const Vector2& vec) const { glUniform2fv(location, 1, &(vec.x)); }
+	void Shader::LoadVec3(uint32 location, const Vector3& vec) const { glUniform3fv(location, 1, &(vec.x)); }
+	void Shader::LoadVec4(uint32 location, const Vector4& vec) const { glUniform4fv(location, 1, &(vec.x)); }
 
-	void Shader::LoadMat3(const std::string& name, const Matrix3& mat) const { glUniformMatrix3fv(glGetUniformLocation(m_id, name.c_str()), 1, GL_FALSE, &(mat.cols[0].x)); }
-	void Shader::LoadMat4(const std::string& name, const Matrix4& mat) const { glUniformMatrix4fv(glGetUniformLocation(m_id, name.c_str()), 1, GL_FALSE, &(mat.cols[0].x)); }
+	void Shader::LoadColor(uint32 location, const Color& col) const { glUniform4fv(location, 1, &(col.r)); }
+
+	void Shader::LoadMat3(uint32 location, const Matrix3& mat) const { glUniformMatrix3fv(location, 1, GL_FALSE, &(mat.cols[0].x)); }
+	void Shader::LoadMat4(uint32 location, const Matrix4& mat) const { glUniformMatrix4fv(location, 1, GL_FALSE, &(mat.cols[0].x)); }
 
 	void Shader::Bind() const { glUseProgram(m_id); }
 	void Shader::Unbind() const { glUseProgram(0); }

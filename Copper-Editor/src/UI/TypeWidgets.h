@@ -23,6 +23,8 @@ namespace Editor::UI {
 	bool EditEntity(const std::string& name, Copper::InternalEntity** entity);
 	bool EditTransform(const std::string& name, Copper::Transform** transform);
 
+	bool EditTexture(const std::string& name, Copper::Texture* texture);
+
 	bool EditDropDown(const std::string& name, const char* items[], Copper::uint32 count, Copper::uint32* selected);
 	bool EditMask(const std::string& name, Copper::uint32& mask, Copper::uint32 num, Copper::uint32 maskOffset = 0, char startLabel = 'X');
 

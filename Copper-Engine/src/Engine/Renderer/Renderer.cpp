@@ -16,6 +16,7 @@ namespace Copper::Renderer {
 
 	constexpr uint32 MaxVertices = 20'000;
 	constexpr uint32 MaxIndices = (uint32) (MaxVertices * 1.5f);
+	constexpr uint32 MaxTextures = 16;
 
 	constexpr uint32 MaxLines = 10'000;
 	constexpr uint32 MaxLineVertices = MaxLines * 2;
@@ -51,6 +52,13 @@ namespace Copper::Renderer {
 		Vertex* vertices = new Vertex[MaxVertices];
 		uint32* indices = new uint32[MaxIndices];
 
+		// Textures
+
+		Texture** textures = new Texture*[MaxTextures];
+		uint32 textureCount = 0;
+
+		Texture* whiteTexture = new Texture();
+
 		// Lights
 
 		Light** lights = new Light*[MAX_LIGHTS];
@@ -71,10 +79,6 @@ namespace Copper::Renderer {
 		Color skyboxColor = Color(0.18f, 0.18f, 0.18f);
 
 		bool wireframe = false;
-
-		// Tmp.
-		Texture wallTexture;
-		Texture gridboxTexture;
 		
 	};
 
@@ -108,6 +112,13 @@ namespace Copper::Renderer {
 		data.vbo.Unbind();
 		data.vao.Unbind();
 
+		// Textures
+
+		uint32 white = 0xffffffff;
+		data.whiteTexture->Create(1, 1, Texture::Format::RGBA, (uint8*) &white);
+		data.textures[0] = data.whiteTexture;
+		data.textureCount = 1;
+
 		// Lines
 
 		data.lineVao = VertexArray(nullptr);
@@ -122,9 +133,6 @@ namespace Copper::Renderer {
 
 		data.lineVbo.Unbind();
 		data.lineVao.Unbind();
-
-		data.wallTexture.Create("assets/Textures/wall.png");
-		data.gridboxTexture.Create("assets/Textures/gridbox.png");
 
 	}
 
@@ -151,6 +159,8 @@ namespace Copper::Renderer {
 		data.verticesCount = 0;
 		data.indicesCount = 0;
 
+		data.textureCount = 1;
+
 	}
 	void RenderBatch() {
 
@@ -159,7 +169,7 @@ namespace Copper::Renderer {
 		data.vbo.SetData((float*) data.vertices, data.verticesCount * 12);
 		data.ibo.SetData(data.indices, data.indicesCount);
 
-		RendererAPI::Render(&data.vao, data.indicesCount, data.lights, data.lightCount, &data.wallTexture, &data.gridboxTexture);
+		RendererAPI::Render(&data.vao, data.indicesCount, data.lights, data.lightCount, data.textures, data.textureCount);
 
 		data.drawCalls++;
 
@@ -190,10 +200,28 @@ namespace Copper::Renderer {
 		const uint32 verticesCount = (uint32) mesh->vertices.size();
 
 		if (data.indicesCount + indicesCount > MaxIndices ||
-			data.verticesCount + verticesCount > MaxVertices)
+			data.verticesCount + verticesCount > MaxVertices ||
+			data.textureCount >= MaxTextures)
 			NewBatch();
 
-		uint32 texIndex = transform->GetEntity()->name == "Ground" ? 1 : 0;
+		uint32 texIndex = 0;
+		for (uint32 i = 1; i < data.textureCount; i++) {
+
+			if (data.textures[i] != &mesh->texture) continue;
+
+			texIndex = i;
+			break;
+
+		}
+		if (texIndex == 0 && mesh->texture) {
+
+			texIndex = data.textureCount;
+
+			data.textures[data.textureCount] = &mesh->texture;
+			data.textureCount++;
+
+		}
+
 		for (uint32 i = 0; i < verticesCount; i++) {
 
 			Vertex& vertex = data.vertices[data.verticesCount + i];
@@ -292,7 +320,7 @@ namespace Copper::Renderer {
 	void Render(Camera* cam, bool gizmos) {
 
 		RendererAPI::SetCamera(cam);
-		RendererAPI::Render(&data.vao, data.indicesCount, data.lights, data.lightCount, &data.wallTexture, &data.gridboxTexture);
+		RendererAPI::Render(&data.vao, data.indicesCount, data.lights, data.lightCount, data.textures, data.textureCount);
 		if (gizmos)
 			Renderer::RenderLines();
 

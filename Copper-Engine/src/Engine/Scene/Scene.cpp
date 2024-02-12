@@ -100,7 +100,7 @@ namespace Copper {
 			}
 			if (MeshRenderer* renderer = entity->GetComponent<MeshRenderer>()) {
 
-				for (Mesh mesh : renderer->meshes)
+				for (Mesh& mesh : renderer->meshes)
 					Renderer::AddMesh(&mesh, entity->m_transform);
 
 			}

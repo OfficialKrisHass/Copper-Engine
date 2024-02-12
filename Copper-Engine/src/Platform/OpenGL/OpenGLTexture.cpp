@@ -6,13 +6,15 @@
 
 namespace Copper {
 
-    void Texture::Create(uint32 width, uint32 height, Format format, uint8* pixels) {
+    void Texture::Create(uint32 width, uint32 height, Format format, uint8* pixels, const std::string& name) {
 
         if (m_id != 0)
             Delete();
 
         m_size.x = width;
         m_size.y = height;
+
+        m_name = name;
 
         // Create the texture
 
@@ -46,7 +48,8 @@ namespace Copper {
 
         }
 
-        Create(width, height, format, pixels);
+        fs::path path = filePath;
+        Create(width, height, format, pixels, path.filename().string());
 
         stbi_image_free(pixels);
 

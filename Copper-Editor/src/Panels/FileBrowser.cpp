@@ -107,11 +107,20 @@ namespace Editor {
             }
             ImGui::PopStyleColor();
 
-            if ((path.extension() == "fbx" || path.extension() == "gltf" || path.extension() == "obj") && ImGui::BeginDragDropSource()) {
+            if ((path.extension() == ".fbx" || path.extension() == ".gltf" || path.extension() == ".obj") && ImGui::BeginDragDropSource()) {
 
                 char* itemPath = (char*) path.string().c_str();
 
                 ImGui::SetDragDropPayload("MODEL", itemPath, (path.string().size() + 1) * sizeof(char), ImGuiCond_Once);
+                ImGui::EndDragDropSource();
+
+            }
+            if ((path.extension() == ".png" || path.extension() == ".jpg") && ImGui::BeginDragDropSource()) {
+
+                std::string tmp = (GetProject().assetsPath / path).string();
+                const char* texturePath = tmp.c_str();
+
+                ImGui::SetDragDropPayload("FB_TEXTURE_PATH", texturePath, (tmp.size() + 1), ImGuiCond_Once);
                 ImGui::EndDragDropSource();
 
             }

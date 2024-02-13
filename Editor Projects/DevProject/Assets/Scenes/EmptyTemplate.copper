@@ -25,7 +25,7 @@ Entities:
       Fov: 90
       Near Plane: 0.100000001
       Far Plane: 1000
-      Size: [1920, 969]
+      Size: [1176, 526]
   Player:
     ID: 2
     Transform:
@@ -171,6 +171,7 @@ Entities:
           - 23
           - 20
         Texture: ""
+        Albedo: [1, 1, 1, 1]
     Rigid Body:
       Static: false
       Gravity: true
@@ -340,6 +341,7 @@ Entities:
           - 23
           - 20
         Texture: C:\Programming\Copper-Engine\Editor Projects\DevProject\Assets\Textures\gridbox.png
+        Albedo: [1, 1, 1, 1]
     Rigid Body:
       Static: true
       Gravity: false
@@ -494,6 +496,7 @@ Entities:
           - 23
           - 20
         Texture: C:\Programming\Copper-Engine\Editor Projects\DevProject\Assets\Textures\gridbox.png
+        Albedo: [1, 0, 0, 1]
     Rigid Body:
       Static: false
       Gravity: true
@@ -648,6 +651,7 @@ Entities:
           - 23
           - 20
         Texture: ""
+        Albedo: [1, 1, 1, 1]
     Rigid Body:
       Static: false
       Gravity: true
@@ -839,6 +843,7 @@ Entities:
           - 23
           - 20
         Texture: C:\Programming\Copper-Engine\Editor Projects\DevProject\Assets\Textures\wall.jpg
+        Albedo: [1, 1, 1, 1]
     Rigid Body:
       Static: false
       Gravity: true

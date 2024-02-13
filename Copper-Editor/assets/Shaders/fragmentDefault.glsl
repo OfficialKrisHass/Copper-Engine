@@ -4,7 +4,7 @@
 #define DIRECTIONAL_LIGHT 1
 
 #define MAX_LIGHTS 8
-#define MAX_TEXTURES 16
+#define MAX_MATERIALS 16
 
 struct Light {
 
@@ -16,13 +16,23 @@ struct Light {
 	
 };
 
+struct Material {
+
+	sampler2D texture;
+	vec4 albedo;
+
+};
+
 in vec3 a_position;
 in vec3 a_color;
 in vec3 a_normal;
 in vec2 a_uv;
-flat in int a_texIndex;
+flat in int a_matIndex;
 
 uniform vec3 camPos;
+
+// Lighting uniforms
+
 uniform Light lights[MAX_LIGHTS];
 uniform int lightCount;
 
@@ -32,7 +42,9 @@ uniform vec3 ambientColor;
 uniform float ambientStrength;
 uniform float specularStrength;
 
-uniform sampler2D textures[MAX_TEXTURES];
+// Material uniforms
+
+uniform Material materials[MAX_MATERIALS];
 
 out vec4 FragColor;
 
@@ -60,7 +72,7 @@ void main() {
 	}
 	lightResult += AmbientLightColor(ambientDirection, ambientColor, normal);
 
-	vec4 textureColor = texture(textures[a_texIndex], a_uv);
+	vec4 textureColor = texture(materials[a_matIndex].texture, a_uv) * materials[a_matIndex].albedo;
 
 	FragColor = textureColor * vec4(lightResult * a_color, 1.0f);
 

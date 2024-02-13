@@ -40,7 +40,7 @@ namespace Copper::RendererAPI {
 	Camera* cam;
 
 	Color ambientColor = Color::white;
-	Vector3 ambientDirection = Vector3(-0.489834040, 0.210472092, 0.846028447);
+	Vector3 ambientDirection = Vector3(-0.489834040f, 0.210472092f, 0.846028447f);
 
 	void Initialize() {
 
@@ -119,16 +119,18 @@ namespace Copper::RendererAPI {
 
 	}
 	
-	void Render(VertexArray* vao, uint32 count, Light** lights, uint32 lightCount, Texture** textures, uint32 textureCount) {
+	void Render(VertexArray* vao, uint32 count, Light** lights, uint32 lightCount, Material** materials, uint32 materialCount) {
 
 		vao->Bind();
 		shader.Bind();
 
-		uint32 samplersLocation = shader.UniformLocation("textures");
-		for (uint32 i = 0; i < textureCount; i++) {
+		for (uint32 i = 0; i < materialCount; i++) {
 
-			textures[i]->Bind(i);
-			shader.LoadInt(samplersLocation + i, i);
+			const std::string materialName = "materials[" + std::to_string(i) + "].";
+			materials[i]->texture.Bind(i);
+
+			shader.LoadInt(materialName + "texture", i); // texture
+			shader.LoadColor(materialName + "albedo", materials[i]->albedo); // albedo
 
 		}
 

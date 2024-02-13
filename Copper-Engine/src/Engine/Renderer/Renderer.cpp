@@ -6,6 +6,7 @@
 #include "Engine/Renderer/VertexArray.h"
 #include "Engine/Renderer/Buffer.h"
 #include "Engine/Renderer/Mesh.h"
+#include "Engine/Renderer/Material.h"
 
 #include "Engine/Components/Transform.h"
 #include "Engine/Components/Light.h"
@@ -16,7 +17,8 @@ namespace Copper::Renderer {
 
 	constexpr uint32 MaxVertices = 20'000;
 	constexpr uint32 MaxIndices = (uint32) (MaxVertices * 1.5f);
-	constexpr uint32 MaxTextures = 16;
+
+	constexpr uint32 MaxMaterials = 16;
 
 	constexpr uint32 MaxLines = 10'000;
 	constexpr uint32 MaxLineVertices = MaxLines * 2;
@@ -28,7 +30,7 @@ namespace Copper::Renderer {
 		Vector3 normal;
 
 		Vector2 uv;
-		float textureIndex;
+		float materialIndex;
 
 	};
 	struct LineVertex {
@@ -52,12 +54,12 @@ namespace Copper::Renderer {
 		Vertex* vertices = new Vertex[MaxVertices];
 		uint32* indices = new uint32[MaxIndices];
 
-		// Textures
+		// Materials
 
-		Texture** textures = new Texture*[MaxTextures];
-		uint32 textureCount = 0;
+		Material** materials = new Material*[MaxMaterials];
+		uint32 materialCount = 0;
 
-		Texture* whiteTexture = new Texture();
+		Material whiteMaterial;
 
 		// Lights
 
@@ -101,7 +103,7 @@ namespace Copper::Renderer {
 			ElementType::Vec3, // Normal
 
 			ElementType::Vec2, // UV
-			ElementType::Float, // Texture Index
+			ElementType::Float, // Material Index
 
 		});
 		data.ibo = IndexBuffer(nullptr, MaxIndices * sizeof(uint32));
@@ -115,9 +117,9 @@ namespace Copper::Renderer {
 		// Textures
 
 		uint32 white = 0xffffffff;
-		data.whiteTexture->Create(1, 1, Texture::Format::RGBA, (uint8*) &white);
-		data.textures[0] = data.whiteTexture;
-		data.textureCount = 1;
+		data.whiteMaterial.texture.Create(1, 1, Texture::Format::RGBA, (uint8*) &white);
+		data.materials[0] = &data.whiteMaterial;
+		data.materialCount = 1;
 
 		// Lines
 
@@ -159,7 +161,7 @@ namespace Copper::Renderer {
 		data.verticesCount = 0;
 		data.indicesCount = 0;
 
-		data.textureCount = 1;
+		data.materialCount = 1;
 
 	}
 	void RenderBatch() {
@@ -169,7 +171,7 @@ namespace Copper::Renderer {
 		data.vbo.SetData((float*) data.vertices, data.verticesCount * 12);
 		data.ibo.SetData(data.indices, data.indicesCount);
 
-		RendererAPI::Render(&data.vao, data.indicesCount, data.lights, data.lightCount, data.textures, data.textureCount);
+		RendererAPI::Render(&data.vao, data.indicesCount, data.lights, data.lightCount, data.materials, data.materialCount);
 
 		data.drawCalls++;
 
@@ -201,24 +203,24 @@ namespace Copper::Renderer {
 
 		if (data.indicesCount + indicesCount > MaxIndices ||
 			data.verticesCount + verticesCount > MaxVertices ||
-			data.textureCount >= MaxTextures)
+			data.materialCount >= MaxMaterials)
 			NewBatch();
 
-		uint32 texIndex = 0;
-		for (uint32 i = 1; i < data.textureCount; i++) {
+		uint32 matIndex = 0;
+		for (uint32 i = 1; i < data.materialCount; i++) {
 
-			if (data.textures[i] != &mesh->texture) continue;
+			if (data.materials[i] != &mesh->material) continue;
 
-			texIndex = i;
+			matIndex = i;
 			break;
 
 		}
-		if (texIndex == 0 && mesh->texture) {
+		if (matIndex == 0 && mesh->material) {
 
-			texIndex = data.textureCount;
+			matIndex = data.materialCount;
 
-			data.textures[data.textureCount] = &mesh->texture;
-			data.textureCount++;
+			data.materials[data.materialCount] = &mesh->material;
+			data.materialCount++;
 
 		}
 
@@ -229,8 +231,9 @@ namespace Copper::Renderer {
 			vertex.position = transformMat * Vector4(mesh->vertices[i], 1.0f);
 			vertex.normal = (Matrix3) transformMat * mesh->normals[i];
 			vertex.color = mesh->colors[i];
+
 			vertex.uv = mesh->uvs[i];
-			vertex.textureIndex = texIndex;
+			vertex.materialIndex = matIndex;
 
 		}
 		for (uint32 i = 0; i < indicesCount; i++)
@@ -320,7 +323,7 @@ namespace Copper::Renderer {
 	void Render(Camera* cam, bool gizmos) {
 
 		RendererAPI::SetCamera(cam);
-		RendererAPI::Render(&data.vao, data.indicesCount, data.lights, data.lightCount, data.textures, data.textureCount);
+		RendererAPI::Render(&data.vao, data.indicesCount, data.lights, data.lightCount, data.materials, data.materialCount);
 		if (gizmos)
 			Renderer::RenderLines();
 

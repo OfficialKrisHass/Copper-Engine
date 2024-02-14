@@ -9,58 +9,56 @@ namespace Copper::Profiler {
 	static const char* CopperEngine = "Copper-Engine";
 	static constexpr uint32 CopperEngineLen = 13;
 
-	struct Scope {
+	static std::vector<Scope*> scopeStack;
 
-		Scope() = default;
-		Scope(const char* name, const char* file) : name(name) {
+	static const char* RemovePath(const char* file);
 
-			uint32 i = 0;
-			uint32 j = 0;
-			while (file[i]) {
+	Scope::Scope(const char* name, const char* file) {
 
-				if (file[i] != CopperEngine[j]) {
-					
-					j = 0;
-					i++;
+		this->name = name;
+		this->file = RemovePath(file);
 
-					continue;
-					
-				}
+		scopeStack.push_back(this);
 
-				j++;
-				i++;
-
-				if (j == CopperEngineLen) break;
-
-			}
-
-			this->file = &file[i + 1];
-
-		}
-
-		const char* name = nullptr;
-		const char* file = nullptr;
-
-	};
-
-	std::vector<Scope> scopeStack;
-
-	void StartScope(const char* name, const char* file) {
-
-		scopeStack.push_back(Scope(name, file));
 
 	}
-	void EndScope() {
+	Scope::~Scope() {
 
 		scopeStack.pop_back();
 
 	}
 
+	const char* RemovePath(const char* file) {
+
+		uint32 i = 0;
+		uint32 j = 0;
+		while (file[i]) {
+
+			if (file[i] != CopperEngine[j]) {
+
+				j = 0;
+				i++;
+
+				continue;
+
+			}
+
+			j++;
+			i++;
+
+			if (j == CopperEngineLen) break;
+
+		}
+
+		return &file[i + 1];
+
+	}
+
 	void PrintScopeStack() {
 
-		for (const Scope& scope : scopeStack) {
+		for (const Scope* scope : scopeStack) {
 
-			Log("{}: {}", scope.name, scope.file);
+			Log("{}: {}", scope->name, scope->file);
 
 		}
 

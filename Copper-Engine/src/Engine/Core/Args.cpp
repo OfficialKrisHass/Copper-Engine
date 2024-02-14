@@ -1,12 +1,15 @@
 #include "cupch.h"
 
+// TODO: Remove profiler include
+#include "Engine/Debug/Profiler.h"
+
 namespace Copper::Args {
 
 	std::vector<std::string> arguments;
 
 	void Setup(uint32 argc, char* argv[]) {
 
-		CUP_FUNCTION_START();
+		CUP_FUNCTION();
 
 		arguments.resize(argc);
 		for (uint32 i = 0; i < argc; i++) {
@@ -28,8 +31,6 @@ namespace Copper::Args {
 			arguments[i] = argv[i];
 
 		}
-
-		CUP_SCOPE_END();
 
 	}
 

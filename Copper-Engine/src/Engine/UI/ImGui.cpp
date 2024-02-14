@@ -13,6 +13,9 @@
 
 #include <ImGuizmo/ImGuizmo.h>
 
+// TODO: Remove profiler include
+#include "Engine/Debug/Profiler.h"
+
 namespace Copper {
 
 	std::string mainFontPath = "";

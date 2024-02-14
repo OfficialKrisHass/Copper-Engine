@@ -12,7 +12,7 @@ extern void AppEntryPoint();
 
 int main(int argc, char* argv[]) {
 
-	CUP_FUNCTION_START();
+	CUP_FUNCTION();
 
 	using namespace Copper;
 
@@ -21,8 +21,6 @@ int main(int argc, char* argv[]) {
 	
 	AppEntryPoint();
 	EngineCore::Initialize();
-
-	CUP_SCOPE_END();
 
 	return 0;
 

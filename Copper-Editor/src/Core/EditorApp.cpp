@@ -15,6 +15,9 @@
 #include "Core/SceneMeta.h"
 #include "Core/ProjectFileWatcher.h"
 
+// TODO: Remove profiler include
+#include "Engine/Debug/Profiler.h"
+
 #include "Core/Utils/ModelLoader.h"
 
 #include "Projects/Project.h"
@@ -138,7 +141,7 @@ namespace Editor {
 
 	void Initialize() {
 
-		CUP_FUNCTION_START();
+		CUP_FUNCTION();
 
 		GetWindow().AddWindowFocusedEventFunc(Editor::OnWindowFocused);
 		GetWindow().AddKeyPressedEventFunc(Editor::OnKeyPressed);
@@ -175,8 +178,6 @@ namespace Editor {
 	#ifdef CU_LINUX
 		RunPremake();
 	#endif
-
-		CUP_SCOPE_END();
 
 	}
 	void Shutdown() {
@@ -980,7 +981,7 @@ namespace Editor {
 
 void AppEntryPoint() {
 
-	CUP_FUNCTION_START();
+	CUP_FUNCTION();
 
 	// In the editor case, we have our own window that is bigger then the engine region
 	// so we have to create and store it ourselves
@@ -990,8 +991,6 @@ void AppEntryPoint() {
 	AddUIUpdateEventFunc(Editor::UIUpdate);
 	AddPreShutdownEventFunc(Editor::OnWindowClose);
 	AddPostShutdownEventFunc(Editor::Shutdown);
-
-	CUP_SCOPE_END();
 
 }
 #pragma endregion 

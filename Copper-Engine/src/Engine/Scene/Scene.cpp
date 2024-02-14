@@ -29,6 +29,9 @@
 
 #include "Engine/YAMLOverloads/Everything.h"
 
+// TODO: Remove profiler include
+#include "Engine/Debug/Profiler.h"
+
 #include <fstream>
 #include <yaml-cpp/yaml.h>
 
@@ -67,7 +70,7 @@ namespace Copper {
 	}
 	void Scene::Update(float deltaTime) {
 
-		CUP_FUNCTION_START();
+		CUP_FUNCTION();
 
 		Renderer::StartFrame();
 
@@ -114,8 +117,6 @@ namespace Copper {
 		if (m_runtimeRunning && !m_runtimeStarted) m_runtimeStarted = true;
 
 		Renderer::RenderBatch();
-
-		CUP_SCOPE_END();
 
 	}
 	void Scene::RuntimeUpdateEntity(InternalEntity* entity, float deltaTIme) {

@@ -7,6 +7,9 @@
 #include <spdlog/sinks/ansicolor_sink.h>
 #include <spdlog/sinks/basic_file_sink.h>
 
+// TODO: Remove profiler include
+#include "Engine/Debug/Profiler.h"
+
 namespace Copper {
 
 	std::shared_ptr<spdlog::logger> Logger::m_logger;
@@ -18,7 +21,7 @@ namespace Copper {
 
 	void Logger::Initialize() {
 
-		CUP_FUNCTION_START();
+		CUP_FUNCTION();
 
 		// Can't use the macro since it uses the logger which is not initialized yet, duh
 
@@ -36,8 +39,6 @@ namespace Copper {
 
 		m_logger = std::make_shared<spdlog::logger>("Logger", sinks.begin(), sinks.end());
 		m_logger->set_level(spdlog::level::trace);
-
-		CUP_SCOPE_END();
 
 	}
 

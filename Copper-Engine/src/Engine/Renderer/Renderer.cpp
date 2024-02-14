@@ -13,6 +13,9 @@
 
 #include <GLM/ext/matrix_transform.hpp>
 
+// TODO: Remove profiler include
+#include "Engine/Debug/Profiler.h"
+
 namespace Copper::Renderer {
 
 	constexpr uint32 MaxVertices = 20'000;
@@ -88,7 +91,7 @@ namespace Copper::Renderer {
 
 	void Initialize() {
 
-		CUP_FUNCTION_START();
+		CUP_FUNCTION();
 		VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the Renderer");
 
 		RendererAPI::Initialize();
@@ -137,13 +140,11 @@ namespace Copper::Renderer {
 		data.lineVbo.Unbind();
 		data.lineVao.Unbind();
 
-		CUP_SCOPE_END();
-
 	}
 
 	void StartFrame() {
 
-		CUP_FUNCTION_START();
+		CUP_FUNCTION();
 
 		data.drawCalls = 0;
 		data.lightCount = 0;
@@ -154,41 +155,30 @@ namespace Copper::Renderer {
 
 		StartBatch();
 
-		CUP_SCOPE_END();
-
 	}
 	void EndFrame() {
 
-		CUP_FUNCTION_START();
+		CUP_FUNCTION();
 
 		RendererAPI::EndFrame();
-
-		CUP_SCOPE_END();
 
 	}
 
 	void StartBatch() {
 
-		CUP_FUNCTION_START();
+		CUP_FUNCTION();
 
 		data.verticesCount = 0;
 		data.indicesCount = 0;
 
 		data.materialCount = 1;
 
-		CUP_SCOPE_END();
-
 	}
 	void RenderBatch() {
 
-		CUP_FUNCTION_START();
+		CUP_FUNCTION();
 
-		if (data.verticesCount == 0 || data.indicesCount == 0) {
-
-			CUP_SCOPE_END();
-			return;
-
-		}
+		if (data.verticesCount == 0 || data.indicesCount == 0) return;
 
 		data.vbo.SetData((float*) data.vertices, data.verticesCount * 12);
 		data.ibo.SetData(data.indices, data.indicesCount);
@@ -197,43 +187,32 @@ namespace Copper::Renderer {
 
 		data.drawCalls++;
 
-		CUP_SCOPE_END();
-
 	}
 	void NewBatch() {
 
-		CUP_FUNCTION_START();
+		CUP_FUNCTION();
 
 		RenderBatch();
 		StartBatch();
-
-		CUP_SCOPE_END();
 
 	}
 
 	void RenderLines() {
 
-		CUP_FUNCTION_START();
+		CUP_FUNCTION();
 
-		if (data.lineVertexCount == 0) {
-
-			CUP_SCOPE_END();
-			return;
-
-		}
+		if (data.lineVertexCount == 0) return;
 
 		data.lineVbo.SetData((float*) data.lineVertices, data.lineVertexCount * 6);
 		RendererAPI::RenderLines(&data.lineVao, data.lineVertexCount);
 
 		data.drawCalls++;
 
-		CUP_SCOPE_END();
-
 	}
 
 	void AddMesh(Mesh* mesh, Transform* transform) {
 
-		CUP_FUNCTION_START();
+		CUP_FUNCTION();
 
 		const Matrix4& transformMat = transform->TransformMatrix();
 
@@ -281,18 +260,15 @@ namespace Copper::Renderer {
 		data.verticesCount += verticesCount;
 		data.indicesCount += indicesCount;
 
-		CUP_SCOPE_END();
-
 	}
 
 	void AddLine(const Vector3& start, const Vector3& end, const Color& color) {
 
-		CUP_FUNCTION_START();
+		CUP_FUNCTION();
 
 		if (data.lineVertexCount >= MaxLineVertices) {
 
 			LogError("Max amount of lines reached ({})", MaxLines);
-			CUP_SCOPE_END();
 			return;
 
 		}
@@ -307,8 +283,6 @@ namespace Copper::Renderer {
 
 		data.lineVertexCount += 2;
 
-		CUP_SCOPE_END();
-
 	}
 	void AddLine(const Vector3& start, const Vector3& end, const Color& color, Transform* transform) {
 
@@ -317,7 +291,7 @@ namespace Copper::Renderer {
 	}
 	void AddCube(const Vector3& centre, const Vector3& size, const Color& color, Transform* transform) {
 
-		CUP_FUNCTION_START();
+		CUP_FUNCTION();
 
 		const Vector3 half = size / 2.0f;
 
@@ -352,42 +326,34 @@ namespace Copper::Renderer {
 		AddLine(centre + v2, centre + v6, color, transform);
 		AddLine(centre + v3, centre + v7, color, transform);
 
-		CUP_SCOPE_END();
-
 	}
 
 	void AddLight(Light* light) {
 
-		CUP_FUNCTION_START();
+		CUP_FUNCTION();
 
 		CU_ASSERT(data.lightCount < MAX_LIGHTS, "Can't add another light, reached maximum amount of lights allowed ({})", MAX_LIGHTS);
 
 		data.lights[data.lightCount] = light;
 		data.lightCount++;
 
-		CUP_SCOPE_END();
-
 	}
 	void ClearLights() {
 
-		CUP_FUNCTION_START();
+		CUP_FUNCTION();
 
 		data.lightCount = 0;
-
-		CUP_SCOPE_END();
 
 	}
 
 	void Render(Camera* cam, bool gizmos) {
 
-		CUP_FUNCTION_START();
+		CUP_FUNCTION();
 
 		RendererAPI::SetCamera(cam);
 		RendererAPI::Render(&data.vao, data.indicesCount, data.lights, data.lightCount, data.materials, data.materialCount);
 		if (gizmos)
 			Renderer::RenderLines();
-
-		CUP_SCOPE_END();
 
 	}
 

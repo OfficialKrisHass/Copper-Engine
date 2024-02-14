@@ -9,6 +9,9 @@
 #include <GLFW/glfw3.h>
 #include <portable-file-dialogs.h>
 
+// TODO: Remove profiler include
+#include "Engine/Debug/Profiler.h"
+
 #ifdef CU_EDITOR
 extern Copper::UVector2I GetViewportCentre();
 #endif

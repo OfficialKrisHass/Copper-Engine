@@ -2,21 +2,29 @@
 
 namespace Copper::Profiler {
 
-	void StartScope(const char* name, const char* file);
-	void EndScope();
+	class Scope {
+
+	public:
+		Scope(const char* name, const char* file);
+		~Scope();
+
+		const char* name = nullptr;
+		const char* file = nullptr;
+
+	};
 
 	void PrintScopeStack();
 
 }
 
 #ifdef CU_DEBUG
-#define CUP_SCOPE_START(name) ::Copper::Profiler::StartScope(name, __FILE__)
-#define CUP_FUNCTION_START() CUP_SCOPE_START(__FUNCTION__)
+// THank the c++ compiler for being wonky that we have to pass the line macro through 2 macro functions in order
+// to ## it :)))))))
+#define __CUP_SCOPE(name, line) ::Copper::Profiler::Scope CU_SCOPE_##line = ::Copper::Profiler::Scope(name, __FILE__);
 
-#define CUP_SCOPE_END() ::Copper::Profiler::EndScope()
+#define CUP_SCOPE(name, line) __CUP_SCOPE(name, line)
+#define CUP_FUNCTION() CUP_SCOPE(__FUNCTION__, __LINE__)
 #elif
-#define CUP_SCOPE_START(name)
-#define CUP_FUNCTION_START()
-
-#define CUP_END_SCOPE()
+#define CUP_SCOPE(name, line)
+#define CUP_FUNCTION()
 #endif

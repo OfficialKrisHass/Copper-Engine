@@ -10,11 +10,18 @@
 
 #include <mono/metadata/object.h>
 
+// TODO: Remove profiler include
+#include "Engine/Debug/Profiler.h"
+
 #define RETURN_NULLPTR { *out = nullptr; return; }
+
+#define Test Jajaj
 
 namespace Copper {
 
 	void ScriptComponent::Init(const std::string& name) {
+
+		CUP_FUNCTION();
 
 		this->name = name;
 
@@ -48,6 +55,8 @@ namespace Copper {
 	}
 
 	void ScriptComponent::CopyTo(MonoObject* other) {
+
+		CUP_FUNCTION();
 
 		if (m_instance == other) return;
 

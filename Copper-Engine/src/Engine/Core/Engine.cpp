@@ -90,7 +90,7 @@ namespace Copper {
 #pragma region EngineCore
 	void EngineCore::Initialize() {
 
-		CUP_FUNCTION_START();
+		CUP_FUNCTION();
 
 		VERIFY_STATE_INTERNAL(EngineState::Entry, "Initialize the Engine");
 		data.engineState = EngineState::Initialization;
@@ -134,12 +134,10 @@ namespace Copper {
 		// Call it from here so that it doesn't have to be an exposed function
 		Run();
 
-		CUP_SCOPE_END();
-
 	}
 	void Run() {
 
-		CUP_FUNCTION_START();
+		CUP_FUNCTION();
 
 		data.engineState = EngineState::Running;
 
@@ -180,19 +178,15 @@ namespace Copper {
 
 		Shutdown();
 
-		CUP_SCOPE_END();
-
 	}
 	void Shutdown() {
 
-		CUP_FUNCTION_START();
+		CUP_FUNCTION();
 
 		data.mainUIContext.Shutdown();
 		data.Window().Shutdown();
 
 		data.postShutdownEvent();
-
-		CUP_SCOPE_END();
 
 	}
 
@@ -217,17 +211,10 @@ namespace Copper {
 
 	bool OnWindowClose(const Event& e) {
 
-		CUP_FUNCTION_START();
+		CUP_FUNCTION();
 
-		if (!data.preShutdownEvent()) {
-
-			CUP_SCOPE_END();
-			return false;
-
-		}
+		if (!data.preShutdownEvent()) return false;
 		data.engineState = EngineState::Shutdown;
-
-		CUP_SCOPE_END();
 
 		return true;
 

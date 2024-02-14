@@ -7,6 +7,9 @@
 #include "Engine/Input/KeyCodes.h"
 #include "Engine/Input/Input.h"
 
+// TODO: Remove profiler include
+#include "Engine/Debug/Profiler.h"
+
 #include <GLFW/glfw3.h>
 
 #define WINDOW (GLFWwindow*) windowPtr
@@ -18,7 +21,7 @@ namespace Copper {
 
 	Window::Window(const std::string& title, uint32 width, uint32 height, bool maximize) {
 
-		CUP_FUNCTION_START();
+		CUP_FUNCTION();
 
 		data.title = title;
 
@@ -48,29 +51,23 @@ namespace Copper {
 
 		SetupEvents();
 
-		CUP_SCOPE_END();
-
 	}
 	void Window::Update() {
 
-		CUP_FUNCTION_START();
+		CUP_FUNCTION();
 
 		glfwPollEvents();
 		glfwSwapBuffers(WINDOW);
 
-		CUP_SCOPE_END();
-
 	}
 	void Window::Shutdown() {
 
-		CUP_FUNCTION_START();
+		CUP_FUNCTION();
 
 		glfwDestroyWindow(WINDOW);
 
 		if (windowCount == 1) glfwTerminate();
 		windowCount--;
-
-		CUP_SCOPE_END();
 
 	}
 
@@ -82,7 +79,7 @@ namespace Copper {
 
 	void Window::SetupEvents() {
 
-		CUP_FUNCTION_START();
+		CUP_FUNCTION();
 
 		glfwSetWindowCloseCallback(WINDOW, [](GLFWwindow* window) {
 
@@ -161,8 +158,6 @@ namespace Copper {
 			data.mouseMoveEvent();
 
 			});
-
-		CUP_SCOPE_END();
 
 	}
 

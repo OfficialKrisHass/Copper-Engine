@@ -9,9 +9,6 @@
 #include <GLFW/glfw3.h>
 #include <portable-file-dialogs.h>
 
-// TODO: Remove profiler include
-#include "Engine/Debug/Profiler.h"
-
 #ifdef CU_EDITOR
 extern Copper::UVector2I GetViewportCentre();
 #endif
@@ -40,6 +37,8 @@ namespace Copper::Input {
 
 	void Initialize(Window& win) {
 
+		CUP_FUNCTION();
+
 		VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize Input");
 		window = &win;
 
@@ -60,11 +59,15 @@ namespace Copper::Input {
 	}
 	void Update() {
 
+		CUP_FUNCTION();
+
 		mousePosDiference = Vector2::zero;
 
 	}
 
 	bool IsKey(KeyCode key) {
+
+		CUP_FUNCTION();
 
 		if (keys[key].first == 0) return false;
 
@@ -73,6 +76,8 @@ namespace Copper::Input {
 	}
 	bool IsKeyDown(KeyCode key) {
 
+		CUP_FUNCTION();
+
 		if (keys[key].first != 1) return false;
 
 		keys[key].first++;
@@ -80,6 +85,8 @@ namespace Copper::Input {
 
 	}
 	bool IsKeyReleased(KeyCode key) {
+
+		CUP_FUNCTION();
 
 		if (!keys[key].second) return false;
 
@@ -90,11 +97,15 @@ namespace Copper::Input {
 
 	bool IsButton(MouseCode button) {
 
+		CUP_FUNCTION();
+
 		return glfwGetMouseButton(GLFW_WINDOW(window), (int32) button) == GLFW_PRESS ? true : false;
 
 	}
 
 	bool OnKeyPressed(const Event& e) {
+
+		CUP_FUNCTION();
 
 		KeyCode keycode = ((KeyEvent*)&e)->key;
 		keys[keycode].first++;
@@ -105,6 +116,8 @@ namespace Copper::Input {
 	}
 	bool OnKeyReleased(const Event& e) {
 
+		CUP_FUNCTION();
+
 		KeyCode keycode = ((KeyEvent*)&e)->key;
 		keys[keycode].first = 0;
 		keys[keycode].second = true;
@@ -114,6 +127,8 @@ namespace Copper::Input {
 	}
 
 	bool OnMouseMove(const Event& e) {
+
+		CUP_FUNCTION();
 
 		MouseMoveEvent& event = *((MouseMoveEvent*)&e);
 
@@ -159,11 +174,15 @@ namespace Copper::Input {
 
 	void SetCursorVisible(bool visible) {
 
+		CUP_FUNCTION();
+
 		glfwSetInputMode(GLFW_WINDOW(window), GLFW_CURSOR, visible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_HIDDEN);
 		mouseVisible = visible;
 
 	}
 	void SetCursorLocked(bool locked) {
+
+		CUP_FUNCTION();
 
 		mouseLocked = locked;
 		if (locked) firstMouseLockedFrame = true;
@@ -171,17 +190,23 @@ namespace Copper::Input {
 	}
 	void SetCursorPosition(float x, float y) {
 
+		CUP_FUNCTION();
+
 		glfwSetCursorPos(GLFW_WINDOW(window), x, y);
 
 	}
 
 	void SetWindowTitle(const std::string& title) {
 
+		CUP_FUNCTION();
+
 		glfwSetWindowTitle(GLFW_WINDOW(window), title.c_str());
 
 	}
 
 	void GetCursorPosition(double* x, double* y) {
+
+		CUP_FUNCTION();
 
 		glfwGetCursorPos(GLFW_WINDOW(window), x, y);
 

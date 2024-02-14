@@ -7,6 +7,8 @@ namespace Copper::Utilities {
 
 	std::string ReadFile(const fs::path& path) {
 
+		CUP_FUNCTION();
+
 		std::string ret;
 		std::ifstream file;
 
@@ -34,6 +36,8 @@ namespace Copper::Utilities {
 	}
 	char* ReadFileBinary(const fs::path& path, uint32* outSize) {
 		
+		CUP_FUNCTION();
+
 		std::ifstream stream;
 		stream.open(path.string(), std::ios::binary | std::ios::ate);
 
@@ -56,6 +60,8 @@ namespace Copper::Utilities {
 
 	fs::path OpenDialog(const std::string& title, const std::vector<std::string>& filters, const fs::path& initialDir) {
 
+		CUP_FUNCTION();
+
 		std::vector<std::string> ret = pfd::open_file(title, initialDir.string(), filters).result();
 		return ret.size() != 0 ? ret[0] : "";
 
@@ -63,11 +69,15 @@ namespace Copper::Utilities {
 
 	fs::path SaveDialog(const std::string& title, const std::vector<std::string>& filters, const fs::path& initialDir) {
 
+		CUP_FUNCTION();
+
 		return pfd::save_file(title, initialDir.string(), filters).result();
 
 	}
 
 	fs::path FolderOpenDialog(const std::string& title, const fs::path& initialDir) {
+
+		CUP_FUNCTION();
 
 		return pfd::select_folder(title, initialDir.string()).result();
 

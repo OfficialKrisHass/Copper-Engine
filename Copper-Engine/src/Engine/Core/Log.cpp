@@ -7,9 +7,6 @@
 #include <spdlog/sinks/ansicolor_sink.h>
 #include <spdlog/sinks/basic_file_sink.h>
 
-// TODO: Remove profiler include
-#include "Engine/Debug/Profiler.h"
-
 namespace Copper {
 
 	std::shared_ptr<spdlog::logger> Logger::m_logger;

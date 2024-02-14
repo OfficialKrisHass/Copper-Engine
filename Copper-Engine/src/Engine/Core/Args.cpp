@@ -1,8 +1,5 @@
 #include "cupch.h"
 
-// TODO: Remove profiler include
-#include "Engine/Debug/Profiler.h"
-
 namespace Copper::Args {
 
 	std::vector<std::string> arguments;
@@ -35,6 +32,6 @@ namespace Copper::Args {
 	}
 
 	uint32 Count() { return (uint32) arguments.size(); }
-	const std::string& Get(uint32 index) { return arguments[index]; }
+	const std::string& Get(uint32 index) { CUP_FUNCTION(); return arguments[index]; }
 
 }

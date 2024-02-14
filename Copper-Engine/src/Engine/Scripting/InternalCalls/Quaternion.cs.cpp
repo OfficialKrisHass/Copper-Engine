@@ -8,10 +8,14 @@ namespace Copper::Scripting::InternalCalls {
 
 	Vector3 QuaternionToEulerAngles(Quaternion* quaternion) {
 
+		CUP_FUNCTION();
+
 		return quaternion->EulerAngles();
 
 	}
 	Quaternion QuaternionFromEulerAngles(Vector3* euler) {
+
+		CUP_FUNCTION();
 
 		return Quaternion(*euler);
 

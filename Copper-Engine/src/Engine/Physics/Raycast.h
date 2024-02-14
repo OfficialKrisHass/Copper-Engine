@@ -23,13 +23,15 @@ namespace Copper {
 
 		inline Raycast(const Vector3& origin, const Vector3& direction, float maxDistance = 1000.0f, bool fire = true) : m_origin(origin), m_direction(direction), m_dist(maxDistance) {
 
+			CUP_FUNCTION();
+
 			if (!fire) return;
 			Fire();
 
 		}
 
 		static bool Fire(const Vector3& origin, const Vector3& direction, Data* data, float maxDistance = 1000.0f);
-		bool Fire() { return Fire(m_origin, m_direction, &m_hitData, m_dist); }
+		bool Fire() { CUP_FUNCTION(); return Fire(m_origin, m_direction, &m_hitData, m_dist); }
 
 		// Getters
 

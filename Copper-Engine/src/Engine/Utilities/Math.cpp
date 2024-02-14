@@ -10,6 +10,8 @@ namespace Copper::Math {
 	bool DecomposeTransform(const glm::mat4& transform, glm::vec3& position, glm::vec3& outRotation, glm::vec3& scale) {
 		// From glm::decompose in matrix_decompose.inl
 
+		CUP_FUNCTION();
+
 		using namespace glm;
 		using T = float;
 

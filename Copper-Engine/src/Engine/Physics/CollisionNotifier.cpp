@@ -17,6 +17,8 @@ namespace Copper::PhysicsEngine {
     private:
         virtual void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, uint32 nbPairs) {
 
+            CUP_FUNCTION();
+
             for (uint32 i = 0; i < nbPairs; i++) {
 
                 const PxContactPair& pair = pairs[i];
@@ -57,6 +59,8 @@ namespace Copper::PhysicsEngine {
 
         }
         virtual void onTrigger(PxTriggerPair* pairs, uint32 count) {
+
+            CUP_FUNCTION();
 
             for (uint32 i = 0; i < count; i++) {
 

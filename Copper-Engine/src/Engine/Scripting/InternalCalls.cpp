@@ -131,6 +131,8 @@ namespace Copper::Scripting::InternalCalls {
 
 	void SetupInternalCalls() {
 
+		CUP_FUNCTION();
+
 		//======== Editor ========
 
 		mono_add_internal_call("Copper.Editor::Internal_Log", (void*) EditorLog);

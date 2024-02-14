@@ -3,9 +3,6 @@
 
 #include "Engine/Utilities/FileUtils.h"
 
-// TODO: Remove profiler include
-#include "Engine/Debug/Profiler.h"
-
 #include <glad/glad.h>
 
 namespace Copper {

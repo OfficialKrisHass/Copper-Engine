@@ -14,6 +14,8 @@ namespace Copper::Scripting::InternalCalls {
 
 	bool IsKey(int32 keyCode) {
 
+		CUP_FUNCTION();
+
 	#ifdef CU_EDITOR
 		if (!AcceptInputDuringRuntime()) return false;
 	#endif
@@ -22,6 +24,8 @@ namespace Copper::Scripting::InternalCalls {
 	}
 	bool IsKeyDown(int32 keyCode) {
 
+		CUP_FUNCTION();
+
 	#ifdef CU_EDITOR
 		if (!AcceptInputDuringRuntime()) return false;
 	#endif
@@ -29,6 +33,8 @@ namespace Copper::Scripting::InternalCalls {
 
 	}
 	bool IsKeyReleased(int32 keyCode) {
+
+		CUP_FUNCTION();
 
 	#ifdef CU_EDITOR
 		if (!AcceptInputDuringRuntime()) return false;
@@ -39,6 +45,8 @@ namespace Copper::Scripting::InternalCalls {
 
 	float GetAxis(MonoString* axisName) {
 
+		CUP_FUNCTION();
+
 	#ifdef CU_EDITOR
 		if (!AcceptInputDuringRuntime()) return 0.0f;
 	#endif
@@ -48,6 +56,8 @@ namespace Copper::Scripting::InternalCalls {
 
 	void SetCursorVisible(bool visible) {
 
+		CUP_FUNCTION();
+
 	#ifdef CU_EDITOR
 		if (!AcceptInputDuringRuntime()) return;
 	#endif
@@ -55,6 +65,8 @@ namespace Copper::Scripting::InternalCalls {
 
 	}
 	void SetCursorLocked(bool locked) {
+
+		CUP_FUNCTION();
 
 	#ifdef CU_EDITOR
 		if (!AcceptInputDuringRuntime()) return;

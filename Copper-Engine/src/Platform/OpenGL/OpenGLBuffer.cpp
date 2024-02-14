@@ -13,6 +13,8 @@ namespace Copper {
 
 	VertexBuffer::VertexBuffer(float* vertices, uint32 size, const std::initializer_list<ElementType>& layout) {
 
+		CUP_FUNCTION();
+
 		glGenBuffers(1, &m_id);
 
 		glBindBuffer(GL_ARRAY_BUFFER, m_id);
@@ -24,19 +26,23 @@ namespace Copper {
 
 	void VertexBuffer::SetData(float* vertices, uint32 count) {
 
+		CUP_FUNCTION();
+
 		glBindBuffer(GL_ARRAY_BUFFER, m_id);
 		glBufferSubData(GL_ARRAY_BUFFER, 0, count * sizeof(float), vertices);
 
 	}
 
-	void VertexBuffer::Bind() const { glBindBuffer(GL_ARRAY_BUFFER, m_id); }
-	void VertexBuffer::Unbind() const { glBindBuffer(GL_ARRAY_BUFFER, 0); }
+	void VertexBuffer::Bind() const { CUP_FUNCTION(); glBindBuffer(GL_ARRAY_BUFFER, m_id); }
+	void VertexBuffer::Unbind() const { CUP_FUNCTION(); glBindBuffer(GL_ARRAY_BUFFER, 0); }
 
-	//-------------s
+	//-------------
 	// Index Buffer
 	//-------------
 
 	IndexBuffer::IndexBuffer(uint32* indices, uint32 size) {
+
+		CUP_FUNCTION();
 
 		glGenBuffers(1, &m_id);
 
@@ -50,6 +56,8 @@ namespace Copper {
 
 	void IndexBuffer::SetData(uint32* indices, uint32 count) {
 
+		CUP_FUNCTION();
+
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
 		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, count * sizeof(uint32), indices);
 
@@ -57,7 +65,7 @@ namespace Copper {
 
 	}
 
-	void IndexBuffer::Bind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id); }
-	void IndexBuffer::Unbind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); }
+	void IndexBuffer::Bind() const { CUP_FUNCTION(); glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id); }
+	void IndexBuffer::Unbind() const { CUP_FUNCTION(); glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); }
 
 }

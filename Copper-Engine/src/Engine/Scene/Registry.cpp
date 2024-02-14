@@ -28,6 +28,8 @@ namespace Copper {
 
 	void Registry::Initialize() {
 
+		CUP_FUNCTION();
+
 		int32 tcid = GetCID<Transform>(); // 0
 
 		GetCID<MeshRenderer>(); // 1
@@ -49,13 +51,15 @@ namespace Copper {
 
 	template<> Collider* Registry::AddComponent<Collider>(uint32 eID) {
 
+		CUP_FUNCTION();
+
 		LogError("Can't add a base Collider component to entity. Entity: {}", m_entities[eID]);
 		return nullptr;
 
 	}
-	template<> BoxCollider* Registry::AddComponent<BoxCollider>(uint32 eID) { return AddColliderComponent<BoxCollider>(eID, Collider::Type::Box); }
-	template<> SphereCollider* Registry::AddComponent<SphereCollider>(uint32 eID) { return AddColliderComponent<SphereCollider>(eID, Collider::Type::Sphere); }
-	template<> CapsuleCollider* Registry::AddComponent<CapsuleCollider>(uint32 eID) { return AddColliderComponent<CapsuleCollider>(eID, Collider::Type::Capsule); }
+	template<> BoxCollider* Registry::AddComponent<BoxCollider>(uint32 eID) { CUP_FUNCTION(); return AddColliderComponent<BoxCollider>(eID, Collider::Type::Box); }
+	template<> SphereCollider* Registry::AddComponent<SphereCollider>(uint32 eID) { CUP_FUNCTION(); return AddColliderComponent<SphereCollider>(eID, Collider::Type::Sphere); }
+	template<> CapsuleCollider* Registry::AddComponent<CapsuleCollider>(uint32 eID) { CUP_FUNCTION(); return AddColliderComponent<CapsuleCollider>(eID, Collider::Type::Capsule); }
 
 	template<> Collider* Registry::GetComponent<Collider>(uint32 eID) {
 
@@ -70,16 +74,18 @@ namespace Copper {
 		return component;
 
 	}
-	template<> BoxCollider* Registry::GetComponent<BoxCollider>(uint32 eID) { return GetColliderComponent<BoxCollider>(eID, Collider::Type::Box); }
-	template<> SphereCollider* Registry::GetComponent<SphereCollider>(uint32 eID) { return GetColliderComponent<SphereCollider>(eID, Collider::Type::Sphere); }
-	template<> CapsuleCollider* Registry::GetComponent<CapsuleCollider>(uint32 eID) { return GetColliderComponent<CapsuleCollider>(eID, Collider::Type::Capsule); }
+	template<> BoxCollider* Registry::GetComponent<BoxCollider>(uint32 eID) { CUP_FUNCTION(); return GetColliderComponent<BoxCollider>(eID, Collider::Type::Box); }
+	template<> SphereCollider* Registry::GetComponent<SphereCollider>(uint32 eID) { CUP_FUNCTION(); return GetColliderComponent<SphereCollider>(eID, Collider::Type::Sphere); }
+	template<> CapsuleCollider* Registry::GetComponent<CapsuleCollider>(uint32 eID) { CUP_FUNCTION(); return GetColliderComponent<CapsuleCollider>(eID, Collider::Type::Capsule); }
 
-	template<> bool Registry::HasComponent<Collider>(uint32 eID) { return HasColliderComponent(eID, 0); }
-	template<> bool Registry::HasComponent<BoxCollider>(uint32 eID) { return HasColliderComponent(eID, Collider::Type::Box); }
-	template<> bool Registry::HasComponent<SphereCollider>(uint32 eID) { return HasColliderComponent(eID, Collider::Type::Sphere); }
-	template<> bool Registry::HasComponent<CapsuleCollider>(uint32 eID) { return HasColliderComponent(eID, Collider::Type::Capsule); }
+	template<> bool Registry::HasComponent<Collider>(uint32 eID) { CUP_FUNCTION(); return HasColliderComponent(eID, 0); }
+	template<> bool Registry::HasComponent<BoxCollider>(uint32 eID) { CUP_FUNCTION(); return HasColliderComponent(eID, Collider::Type::Box); }
+	template<> bool Registry::HasComponent<SphereCollider>(uint32 eID) { CUP_FUNCTION(); return HasColliderComponent(eID, Collider::Type::Sphere); }
+	template<> bool Registry::HasComponent<CapsuleCollider>(uint32 eID) { CUP_FUNCTION(); return HasColliderComponent(eID, Collider::Type::Capsule); }
 
 	template<> void Registry::RemoveComponent<Collider>(uint32 eID) {
+
+		CUP_FUNCTION();
 
 		if (eID == INVALID_ENTITY_ID) return;
 		if (!m_entities[eID]) return;
@@ -102,11 +108,13 @@ namespace Copper {
 		component->m_valid = false;
 
 	}
-	template<> void Registry::RemoveComponent<BoxCollider>(uint32 eID) { RemoveColliderComponent<BoxCollider>(eID, Collider::Type::Box); }
-	template<> void Registry::RemoveComponent<SphereCollider>(uint32 eID) { RemoveColliderComponent<BoxCollider>(eID, Collider::Type::Sphere); }
-	template<> void Registry::RemoveComponent<CapsuleCollider>(uint32 eID) { RemoveColliderComponent<CapsuleCollider>(eID, Collider::Type::Capsule); }
+	template<> void Registry::RemoveComponent<BoxCollider>(uint32 eID) { CUP_FUNCTION(); RemoveColliderComponent<BoxCollider>(eID, Collider::Type::Box); }
+	template<> void Registry::RemoveComponent<SphereCollider>(uint32 eID) { CUP_FUNCTION(); RemoveColliderComponent<BoxCollider>(eID, Collider::Type::Sphere); }
+	template<> void Registry::RemoveComponent<CapsuleCollider>(uint32 eID) { CUP_FUNCTION(); RemoveColliderComponent<CapsuleCollider>(eID, Collider::Type::Capsule); }
 
 	template<typename T> T* Registry::AddColliderComponent(uint32 eID, uint8 type) {
+
+		CUP_FUNCTION();
 
 		if (eID == INVALID_ENTITY_ID) return nullptr;
 		if (!m_entities[eID]) return nullptr;
@@ -139,6 +147,8 @@ namespace Copper {
 	}
 	template<typename T> T* Registry::GetColliderComponent(uint32 eID, uint8 type) {
 
+		CUP_FUNCTION();
+
 		if (eID == INVALID_ENTITY_ID) return nullptr;
 		if (!m_entities[eID]) return nullptr;
 
@@ -151,6 +161,8 @@ namespace Copper {
 	}
 	bool Registry::HasColliderComponent(uint32 eID, uint8 type) {
 
+		CUP_FUNCTION();
+
 		if (eID == INVALID_ENTITY_ID) return false;
 		if (!m_entities[eID]) return false;
 
@@ -159,6 +171,8 @@ namespace Copper {
 
 	}
 	template<typename T> void Registry::RemoveColliderComponent(uint32 eID, uint8 type) {
+
+		CUP_FUNCTION();
 
 		if (eID == INVALID_ENTITY_ID) return;
 		if (!m_entities[eID]) return;

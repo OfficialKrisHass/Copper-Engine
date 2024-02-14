@@ -7,6 +7,8 @@ namespace Copper::Input {
 
 	PopupResult QuestionPopup(const std::string& title, const std::string& description, bool hasCancel) {
 
+		CUP_FUNCTION();
+
 		pfd::message m = pfd::message(title, description, hasCancel ? pfd::choice::yes_no_cancel : pfd::choice::yes_no, pfd::icon::question);
 
 		switch (m.result()) {
@@ -21,6 +23,8 @@ namespace Copper::Input {
 	}
 	PopupResult InfoPopup(const std::string& title, const std::string& description, bool hasCancel) {
 
+		CUP_FUNCTION();
+
 		pfd::message m = pfd::message(title, description, hasCancel ? pfd::choice::ok_cancel : pfd::choice::ok, pfd::icon::info);
 
 		switch (m.result()) {
@@ -33,6 +37,8 @@ namespace Copper::Input {
 
 	}
 	PopupResult WarningPopup(const std::string& title, const std::string& description, bool hasCancel) {
+
+		CUP_FUNCTION();
 
 		pfd::message m = pfd::message(title, description, hasCancel ? pfd::choice::yes_no_cancel : pfd::choice::yes_no, pfd::icon::warning);
 
@@ -47,6 +53,8 @@ namespace Copper::Input {
 
 	}
 	PopupResult ErrorPopup(const std::string& title, const std::string& description) {
+
+		CUP_FUNCTION();
 
 		pfd::message m = pfd::message(title, description, pfd::choice::ok, pfd::icon::error);
 

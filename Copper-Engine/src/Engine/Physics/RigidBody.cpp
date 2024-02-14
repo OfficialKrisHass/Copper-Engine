@@ -24,6 +24,8 @@ namespace Copper {
 
     void RigidBody::Setup() {
 
+        CUP_FUNCTION();
+
         // In a case we changed some parameters we need to first delete the body
         // NOTE: Maybe rename this to something like Generate or Regenerate ????
 
@@ -72,6 +74,8 @@ namespace Copper {
 
     void RigidBody::CreateDynamic(PxShape* shape) {
 
+        CUP_FUNCTION();
+
         if(this->m_collider)
             m_body = PxCreateDynamic(*physics, PxTransform(CopperToPhysX(GetTransform()->Position() - this->m_collider->center), CopperToPhysX(GetTransform()->Rotation())), *shape, 1.0f);
         else
@@ -97,6 +101,8 @@ namespace Copper {
     }
     void RigidBody::CreateStatic(PxShape* shape) {
 
+        CUP_FUNCTION();
+
         if (this->m_collider)
             m_body = PxCreateStatic(*physics, PxTransform(CopperToPhysX(GetTransform()->Position() - this->m_collider->center), CopperToPhysX(GetTransform()->Rotation())), *shape);
         else
@@ -105,6 +111,8 @@ namespace Copper {
     }
 
     void RigidBody::UpdatePositionAndRotation() {
+
+        CUP_FUNCTION();
 
         if (!m_body || isStatic) return;
 
@@ -121,6 +129,8 @@ namespace Copper {
 
     void RigidBody::SetPosition(const Vector3& position) {
 
+        CUP_FUNCTION();
+
         if (!m_body || isStatic) return;
 
         PxTransform pose = m_body->getGlobalPose();
@@ -129,6 +139,8 @@ namespace Copper {
 
     }
     void RigidBody::SetRotation(const Quaternion& rotation) {
+
+        CUP_FUNCTION();
 
         if (!m_body || isStatic) return;
 
@@ -139,6 +151,8 @@ namespace Copper {
     }
 
     void RigidBody::AddForce(const Vector3& force, const ForceMode mode) {
+
+        CUP_FUNCTION();
 
         if (isStatic) {
 
@@ -151,6 +165,8 @@ namespace Copper {
 
     }
     void RigidBody::AddTorque(const Vector3& torque, const ForceMode mode) {
+
+        CUP_FUNCTION();
 
         if (isStatic) {
 

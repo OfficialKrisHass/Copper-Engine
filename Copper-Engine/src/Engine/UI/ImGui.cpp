@@ -13,9 +13,6 @@
 
 #include <ImGuizmo/ImGuizmo.h>
 
-// TODO: Remove profiler include
-#include "Engine/Debug/Profiler.h"
-
 namespace Copper {
 
 	std::string mainFontPath = "";
@@ -24,6 +21,8 @@ namespace Copper {
 	uint32 uiCount = 0;
 
 	void UIContext::Initialize(const Window& window, bool gizmo, bool docking, bool viewports) {
+
+		CUP_FUNCTION();
 
 		this->gizmo = gizmo;
 		this->docking = docking;
@@ -80,6 +79,8 @@ namespace Copper {
 	}
 	void UIContext::Shutdown() {
 
+		CUP_FUNCTION();
+
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext(context);
@@ -89,6 +90,8 @@ namespace Copper {
 
 	void UIContext::Begin() {
 
+		CUP_FUNCTION();
+
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
@@ -96,6 +99,8 @@ namespace Copper {
 
 	}
 	void UIContext::End() {
+
+		CUP_FUNCTION();
 
 		//io.DisplaySize = ImVec2((float) GetWindow().Width(), (float) GetWindow().Height());
 
@@ -116,6 +121,8 @@ namespace Copper {
 
 	void UIContext::LoadFont(const std::string& path, float fontSize) {
 
+		CUP_FUNCTION();
+
 		ImGuiIO& io = ImGui::GetIO();
 		io.FontDefault = io.Fonts->AddFontFromFileTTF(path.c_str(), fontSize);
 		
@@ -128,6 +135,6 @@ namespace Copper {
 
 	}
 
-	void UIContext::SetAsCurrent() { ImGui::SetCurrentContext(context); }
+	void UIContext::SetAsCurrent() { CUP_FUNCTION(); ImGui::SetCurrentContext(context); }
 
 }

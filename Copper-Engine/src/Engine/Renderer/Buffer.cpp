@@ -5,6 +5,8 @@ namespace Copper {
 
 	void VertexBuffer::CalculateOffsetsAndStride(const std::initializer_list<ElementType>& layout) {
 
+		CUP_FUNCTION();
+
 		m_offsets.resize(layout.size());
 
 		uint32 tmp = 0;

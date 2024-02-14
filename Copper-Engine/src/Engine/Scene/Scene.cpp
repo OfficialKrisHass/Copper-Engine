@@ -29,9 +29,6 @@
 
 #include "Engine/YAMLOverloads/Everything.h"
 
-// TODO: Remove profiler include
-#include "Engine/Debug/Profiler.h"
-
 #include <fstream>
 #include <yaml-cpp/yaml.h>
 
@@ -51,6 +48,8 @@ namespace Copper {
 
 	void Scene::StartRuntime() {
 
+		CUP_FUNCTION();
+
 		m_runtimeRunning = true;
 
 		InitializePhysics();
@@ -64,6 +63,8 @@ namespace Copper {
 
 	}
 	void Scene::StopRuntime() {
+
+		CUP_FUNCTION();
 
 		Renderer::ClearLights();
 
@@ -121,6 +122,8 @@ namespace Copper {
 	}
 	void Scene::RuntimeUpdateEntity(InternalEntity* entity, float deltaTIme) {
 
+		CUP_FUNCTION();
+
 		if (RigidBody* rb = entity->GetComponent<RigidBody>())
 			rb->UpdatePositionAndRotation();
 
@@ -135,9 +138,11 @@ namespace Copper {
 
 	}
 
-	void Scene::Render(Camera* cam, bool gizmos) { Renderer::Render(cam, gizmos); }
+	void Scene::Render(Camera* cam, bool gizmos) { CUP_FUNCTION(); Renderer::Render(cam, gizmos); }
 
 	void Scene::Serialize(const fs::path& path) {
+
+		CUP_FUNCTION();
 
 		this->path = path;
 		this->path.replace_extension("copper");
@@ -168,6 +173,8 @@ namespace Copper {
 
 	}
 	bool Scene::Deserialize(const fs::path& path) {
+
+		CUP_FUNCTION();
 
 		if (m_physicsInitialized) ShutdownPhysics();
 
@@ -220,6 +227,8 @@ namespace Copper {
 	}
 
 	void Scene::SerializeEntity(InternalEntity* entity, YAML::Emitter& out) {
+
+		CUP_FUNCTION();
 
 		out << YAML::Key << entity->name << YAML::Value << YAML::BeginMap; // Entity
 
@@ -396,6 +405,8 @@ namespace Copper {
 	}
 	void Scene::DeserializeEntity(InternalEntity* entity, const YAML::Node& node) {
 
+		CUP_FUNCTION();
+
 		try {
 
 		YAML::Node transform = node["Transform"];
@@ -571,6 +582,8 @@ namespace Copper {
 
 	template<typename T> void Scene::SerializeScriptField(const ScriptField& field, ScriptComponent* instance, YAML::Emitter& out) {
 		
+		CUP_FUNCTION();
+
 		T value;
 		instance->GetFieldValue(field, &value);
 
@@ -584,12 +597,16 @@ namespace Copper {
 	}
 	template<typename T> void Scene::DeserializeScriptField(const ScriptField& field, ScriptComponent* instance, const YAML::Node& fieldNode) {
 
+		CUP_FUNCTION();
+
 		T tmp = fieldNode.as<T>();
 		instance->SetFieldValue(field, &tmp);
 
 	}
 
 	template<> void Scene::SerializeScriptField<Transform*>(const ScriptField& field, ScriptComponent* instance, YAML::Emitter& out) {
+
+		CUP_FUNCTION();
 
 		Transform* value;
 		instance->GetFieldValue(field, &value);
@@ -603,6 +620,8 @@ namespace Copper {
 
 	}
 	template<> void Scene::DeserializeScriptField<Transform*>(const ScriptField& field, ScriptComponent* instance, const YAML::Node& fieldNode) {
+
+		CUP_FUNCTION();
 
 		uint32 eID = fieldNode.as<uint32>();
 		Transform* transform = eID == INVALID_ENTITY_ID ? nullptr : GetEntityFromID(eID)->m_transform;

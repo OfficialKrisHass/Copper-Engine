@@ -36,16 +36,12 @@ namespace Copper {
 
 		class Camera* cam = nullptr;
 
-		InternalEntity* CreateEntity(ENTITY_DEFAULT_PROPERTIES_DECLARATION) { return m_registry.CreateEntity(this, position, rotation, scale, name); }
-		InternalEntity* CreateEntityFromID(uint32 id, ENTITY_DEFAULT_PROPERTIES_DECLARATION, bool returnIfExists = true) {
-
-			InternalEntity* ret = m_registry.CreateEntityFromID(id, this, position, rotation, scale, name, returnIfExists);
-			return ret;
-
-		}
-		InternalEntity* GetEntityFromID(uint32 id) { return m_registry.GetEntityFromID(id); }
-		void RemoveEntity(InternalEntity* entity) { m_registry.RemoveEntity(entity->m_id); }
-		void RemoveEntityFromID(uint32 id) { m_registry.RemoveEntity(id); }
+		InternalEntity* CreateEntity(ENTITY_DEFAULT_PROPERTIES_DECLARATION) { CUP_FUNCTION(); return m_registry.CreateEntity(this, position, rotation, scale, name); }
+		InternalEntity* CreateEntityFromID(uint32 id, ENTITY_DEFAULT_PROPERTIES_DECLARATION, bool returnIfExists = true) { CUP_FUNCTION(); return m_registry.CreateEntityFromID(id, this, position, rotation, scale, name, returnIfExists); }
+		
+		InternalEntity* GetEntityFromID(uint32 id) { CUP_FUNCTION(); return m_registry.GetEntityFromID(id); }
+		void RemoveEntity(InternalEntity* entity) { CUP_FUNCTION(); m_registry.RemoveEntity(entity->m_id); }
+		void RemoveEntityFromID(uint32 id) { CUP_FUNCTION(); m_registry.RemoveEntity(id); }
 
 		void StartRuntime();
 		void StopRuntime();
@@ -56,7 +52,7 @@ namespace Copper {
 		void Serialize(const fs::path& path);
 		bool Deserialize(const fs::path& path);
 
-		Registry::ComponentPool* GetComponentPool(int32 cID) { return m_registry.GetComponentPool(cID); }
+		Registry::ComponentPool* GetComponentPool(int32 cID) { CUP_FUNCTION(); return m_registry.GetComponentPool(cID); }
 		uint32 GetNumOfEntities() { return (uint32) m_registry.m_entities.size(); }
 
 		bool IsRuntimeRunning() { return m_runtimeRunning; }

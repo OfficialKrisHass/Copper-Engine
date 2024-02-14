@@ -19,6 +19,8 @@ namespace Copper::Scripting::InternalCalls {
 
 	void Component_Initialize() {
 
+		CUP_FUNCTION();
+
 		// this hurts, but if I fix it in this commit, the commit will be too big
 		// and I won't get that sweet sweet 6 commit a day graph :)
 
@@ -49,6 +51,8 @@ namespace Copper::Scripting::InternalCalls {
 
 	void AddComponent(uint32_t eID, MonoReflectionType* type, MonoObject* ret) {
 
+		CUP_FUNCTION();
+
 		CheckValidEntity(eID);
 
 		MonoType* managedType = mono_reflection_type_get_type(type);
@@ -77,6 +81,8 @@ namespace Copper::Scripting::InternalCalls {
 	}
 	bool GetComponent(uint32_t eID, MonoReflectionType* type, MonoObject* ret) {
 
+		CUP_FUNCTION();
+
 		CheckValidEntityWithReturn(eID, false);
 
 		InternalEntity* entity = GetEntityFromID(eID);
@@ -96,6 +102,8 @@ namespace Copper::Scripting::InternalCalls {
 
 	}
 	bool HasComponent(uint32_t eID, MonoReflectionType* type) {
+
+		CUP_FUNCTION();
 
 		CheckValidEntityWithReturn(eID, false);
 
@@ -124,6 +132,8 @@ namespace Copper::Scripting::InternalCalls {
 
 	void SetComponentEID(MonoReflectionType* type, MonoObject* component, uint32_t eID) {
 
+		CUP_FUNCTION();
+
 		MonoType* classType = mono_reflection_type_get_type(type);
 		MonoClassField* field = mono_class_get_field_from_name(mono_class_from_mono_type(classType), "eID");
 		mono_field_set_value(component, field, &eID);
@@ -131,6 +141,8 @@ namespace Copper::Scripting::InternalCalls {
 	}
 
 	void SetComponentPointer(MonoReflectionType* type, MonoObject* component, uint32_t eID) {
+
+		CUP_FUNCTION();
 
 		MonoType* classType = mono_reflection_type_get_type(type);
 		MonoClassField* field = mono_class_get_field_from_name(mono_class_from_mono_type(classType), "componentPointer");

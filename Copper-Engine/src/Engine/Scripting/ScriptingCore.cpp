@@ -69,6 +69,8 @@ namespace Copper::Scripting {
 
 	void Initialize() {
 
+		CUP_FUNCTION();
+
 		VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the Scripting Engine");
 
 		// Initialize Mono
@@ -84,12 +86,16 @@ namespace Copper::Scripting {
 	}
 	void Shutdown() {
 
+		CUP_FUNCTION();
+
 		data.app = nullptr;
 		data.root = nullptr;
 
 	}
 
 	void LoadScriptingAPI() {
+
+		CUP_FUNCTION();
 
 		data.app = mono_domain_create_appdomain(domainName, nullptr);
 		mono_domain_set(data.app, true);
@@ -107,6 +113,8 @@ namespace Copper::Scripting {
 
 	}
 	bool Load(const fs::path& path) {
+
+		CUP_FUNCTION();
 
 		data.projectPath = path;
 
@@ -130,6 +138,8 @@ namespace Copper::Scripting {
 	}
 	bool Reload() {
 
+		CUP_FUNCTION();
+
 		ScriptValueMap savedValues;
 		SaveScriptValues(&savedValues);
 
@@ -151,6 +161,8 @@ namespace Copper::Scripting {
 	}
 
 	void InitScriptComponents() {
+
+		CUP_FUNCTION();
 
 		data.scriptComponents.clear();
 		data.scriptFields.clear();
@@ -184,6 +196,8 @@ namespace Copper::Scripting {
 	}
 	void InitScriptFields(const std::string& fullName, MonoClass* scriptClass) {
 
+		CUP_FUNCTION();
+
 		void* iter = nullptr;
 		MonoClassField* field;
 		while (field = mono_class_get_fields(scriptClass, &iter)) {
@@ -205,6 +219,8 @@ namespace Copper::Scripting {
 
 	void SaveScriptValues(ScriptValueMap* out) {
 
+		CUP_FUNCTION();
+
 		for (ScriptComponent* script : ComponentView<ScriptComponent>(GetScene())) {
 
 			FieldValueMap* valueMap = &(*out)[script];
@@ -214,6 +230,8 @@ namespace Copper::Scripting {
 
 	}
 	void SaveFieldValues(ScriptComponent* script, FieldValueMap* out) {
+
+		CUP_FUNCTION();
 
 		typedef ScriptField::Type Type;
 
@@ -235,6 +253,8 @@ namespace Copper::Scripting {
 	}
 
 	void LoadFieldValues(ScriptComponent* script, const FieldValueMap& valueMap) {
+
+		CUP_FUNCTION();
 
 		typedef ScriptField::Type Type;
 
@@ -259,6 +279,8 @@ namespace Copper::Scripting {
 
 	MonoObject* AddScriptComponent(uint32 eID, const std::string& name) {
 
+		CUP_FUNCTION();
+
 		std::string scriptName = name;
 		std::string nameSpace = MonoUtils::RemoveNamespace(scriptName);
 
@@ -280,6 +302,8 @@ namespace Copper::Scripting {
 	}
 
 	MonoObject* GetScriptEntity(uint32 eID) {
+
+		CUP_FUNCTION();
 
 		if (eID == INVALID_ENTITY_ID) return nullptr;
 

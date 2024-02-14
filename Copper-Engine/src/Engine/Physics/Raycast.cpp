@@ -18,6 +18,8 @@ namespace Copper {
 		virtual PxQueryHitType::Enum preFilter(const PxFilterData& filterData, const PxShape* shape, const PxRigidActor* actor, PxHitFlags& queryFlags) override { return PxQueryHitType::eBLOCK; }
 		virtual PxQueryHitType::Enum postFilter(const PxFilterData& filterData, const PxQueryHit& hit) override {
 
+			CUP_FUNCTION();
+
 			const PxRaycastHit& rayHit = (PxRaycastHit&) hit;
 			if (rayHit.hadInitialOverlap())
 				return PxQueryHitType::eNONE;
@@ -30,6 +32,8 @@ namespace Copper {
 	FilterCallback filterCallback;
 
 	bool Raycast::Fire(const Vector3& origin, const Vector3& direction, Data* data, float maxDistance) {
+
+		CUP_FUNCTION();
 
 		Scene* scene = GetScene();
 		if (!scene->m_runtimeRunning) return false;

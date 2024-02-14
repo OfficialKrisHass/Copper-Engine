@@ -9,6 +9,8 @@ namespace Copper {
 
 	void FrameBuffer::Recreate() {
 
+		CUP_FUNCTION();
+
 		if (m_id) {
 
 			glDeleteFramebuffers(1, &m_id);
@@ -50,6 +52,8 @@ namespace Copper {
 
 	void FrameBuffer::Resize(const UVector2I& size) {
 
+		CUP_FUNCTION();
+
 		this->m_size = size;
 		Recreate();
 
@@ -57,12 +61,16 @@ namespace Copper {
 
 	void FrameBuffer::Bind() const {
 
+		CUP_FUNCTION();
+
 		glBindFramebuffer(GL_FRAMEBUFFER, m_id);
 		glViewport(0, 0, m_size.x, m_size.y);
 
 	}
 
 	void FrameBuffer::Unbind() const {
+
+		CUP_FUNCTION();
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

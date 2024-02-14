@@ -9,9 +9,6 @@
 #include "Engine/Components/Camera.h"
 #include "Engine/Components/Light.h"
 
-// TODO: Remove profiler include
-#include "Engine/Debug/Profiler.h"
-
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -113,17 +110,23 @@ namespace Copper::RendererAPI {
 
 	void ClearColor(const Color& color) {
 
+		CUP_FUNCTION();
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(color.r, color.g, color.b, 1.0f);
 
 	}
 	void ResizeViewport(const UVector2I& size) {
 
+		CUP_FUNCTION();
+
 		glViewport(0, 0, size.x, size.y);
 
 	}
 	
 	void Render(VertexArray* vao, uint32 count, Light** lights, uint32 lightCount, Material** materials, uint32 materialCount) {
+
+		CUP_FUNCTION();
 
 		vao->Bind();
 		shader.Bind();
@@ -177,6 +180,8 @@ namespace Copper::RendererAPI {
 	}
 	void RenderLines(VertexArray* vao, uint32 vertexCount) {
 
+		CUP_FUNCTION();
+
 		vao->Bind();
 		lineShader.Bind();
 
@@ -187,6 +192,8 @@ namespace Copper::RendererAPI {
 
 	}
 	void EndFrame() {
+
+		CUP_FUNCTION();
 	
 	// Take what was rendered to the main FBO and render it onto the gameRect
 	#ifndef CU_EDITOR

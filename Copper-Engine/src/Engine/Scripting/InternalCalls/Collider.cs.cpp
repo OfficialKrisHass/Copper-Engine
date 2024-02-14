@@ -19,12 +19,16 @@ namespace Copper::Scripting::InternalCalls {
 
 	bool ColliderGetTrigger(uint64 componentPointer) {
 
+		CUP_FUNCTION();
+
 		CheckComponentPointerWithReturn(componentPointer, false);
 
 		return ((Collider*) componentPointer)->trigger;
 
 	}
 	void ColliderGetCenter(uint64 componentPointer, Vector3* out) {
+
+		CUP_FUNCTION();
 
 		CheckComponentPointer(componentPointer);
 
@@ -34,12 +38,16 @@ namespace Copper::Scripting::InternalCalls {
 
 	void ColliderSetTrigger(uint64 componentPointer, bool value) {
 
+		CUP_FUNCTION();
+
 		CheckComponentPointer(componentPointer);
 
 		((Collider*) componentPointer)->trigger = value;
 
 	}
 	void ColliderSetCenter(uint64 componentPointer, Vector3* value) {
+
+		CUP_FUNCTION();
 
 		CheckComponentPointer(componentPointer);
 
@@ -49,12 +57,16 @@ namespace Copper::Scripting::InternalCalls {
 
 	void BoxColliderGetSize(uint64 componentPointer, Vector3* out) {
 
+		CUP_FUNCTION();
+
 		CheckComponentPointer(componentPointer);
 
 		*out = ((BoxCollider*) componentPointer)->size;
 
 	}
 	void BoxColliderSetSize(uint64 componentPointer, Vector3* value) {
+
+		CUP_FUNCTION();
 
 		CheckComponentPointer(componentPointer);
 
@@ -64,12 +76,16 @@ namespace Copper::Scripting::InternalCalls {
 
 	float SphereColliderGetRadius(uint64 componentPointer) {
 
+		CUP_FUNCTION();
+
 		CheckComponentPointerWithReturn(componentPointer, 0.0f);
 
 		return ((SphereCollider*) componentPointer)->radius;
 
 	}
 	void SphereColliderSetRadius(uint64 componentPointer, float value) {
+
+		CUP_FUNCTION();
 
 		CheckComponentPointer(componentPointer);
 
@@ -79,6 +95,8 @@ namespace Copper::Scripting::InternalCalls {
 
 	float CapsuleColliderGetRadius(uint64 componentPointer) {
 
+		CUP_FUNCTION();
+
 		CheckComponentPointerWithReturn(componentPointer, 0.0f);
 
 		return ((CapsuleCollider*) componentPointer)->radius;
@@ -86,6 +104,8 @@ namespace Copper::Scripting::InternalCalls {
 	}
 	float CapsuleColliderGetHeight(uint64 componentPointer) {
 		
+		CUP_FUNCTION();
+
 		CheckComponentPointerWithReturn(componentPointer, 0.0f);
 
 		return ((CapsuleCollider*) componentPointer)->height;
@@ -94,12 +114,16 @@ namespace Copper::Scripting::InternalCalls {
 
 	void CapsuleColliderSetRadius(uint64 componentPointer, float value) {
 
+		CUP_FUNCTION();
+
 		CheckComponentPointer(componentPointer);
 
 		((CapsuleCollider*) componentPointer)->radius = value;
 
 	}
 	void CapsuleColliderSetHeight(uint64 componentPointer, float value) {
+
+		CUP_FUNCTION();
 
 		CheckComponentPointer(componentPointer);
 

@@ -58,11 +58,11 @@ namespace Copper {
 
 			}
 
-			void* Add(uint32 index) { m_validComponents.set(index); m_count++; return Get(index); }
-			void* Get(uint32 index) { return m_data + index * m_cSize; }
-			void Remove(uint32 index) { m_validComponents.reset(index); m_count--; }
+			void* Add(uint32 index) { CUP_FUNCTION(); m_validComponents.set(index); m_count++; return Get(index); }
+			void* Get(uint32 index) { CUP_FUNCTION(); return m_data + index * m_cSize; }
+			void Remove(uint32 index) { CUP_FUNCTION(); m_validComponents.reset(index); m_count--; }
 
-			bool Valid(uint32 index) { return m_validComponents.test(index); }
+			bool Valid(uint32 index) { CUP_FUNCTION(); return m_validComponents.test(index); }
 			uint32 Count() { return m_count; }
 
 		private:
@@ -78,6 +78,8 @@ namespace Copper {
 		void Initialize();
 
 		InternalEntity* CreateEntity(Scene* scene, Vector3 position, Quaternion rotation, Vector3 scale, const std::string& name) {
+
+			CUP_FUNCTION();
 
 			uint32 id;
 			if (m_gaps.empty()) {
@@ -109,6 +111,8 @@ namespace Copper {
 		}
 		InternalEntity* CreateEntityFromID(uint32 eID, Scene* scene, Vector3 position, Quaternion rotation, Vector3 scale, const std::string& name, bool returnIfExists) {
 
+			CUP_FUNCTION();
+
 			if (eID >= m_entities.size()) m_entities.resize(eID + 1, InternalEntity());
 			if (returnIfExists && m_entities[eID]) return &m_entities[eID];
 
@@ -135,11 +139,15 @@ namespace Copper {
 		}
 		InternalEntity* GetEntityFromID(uint32 eID) {
 
+			CUP_FUNCTION();
+
 			if (eID == INVALID_ENTITY_ID || eID >= m_entities.size() || !m_entities[eID]) return nullptr;
 			return &m_entities[eID];
 
 		}
 		void RemoveEntity(uint32 eID) {
+
+			CUP_FUNCTION();
 
 			entityRemovedEvent.entity = &m_entities[eID];
 			entityRemovedEvent();
@@ -173,6 +181,8 @@ namespace Copper {
 
 		template<typename T> T* AddComponent(uint32 eID) {
 
+			CUP_FUNCTION();
+
 			if (eID == INVALID_ENTITY_ID) return nullptr;
 			if (!m_entities[eID]) return nullptr;
 
@@ -199,6 +209,8 @@ namespace Copper {
 		}
 		template<typename T> T* GetComponent(uint32 eID) {
 
+			CUP_FUNCTION();
+
 			if (eID == INVALID_ENTITY_ID) return nullptr;
 			if (!m_entities[eID]) return nullptr;
 
@@ -211,6 +223,8 @@ namespace Copper {
 		}
 		template<typename T> bool HasComponent(uint32 eID) {
 
+			CUP_FUNCTION();
+
 			if (eID == INVALID_ENTITY_ID) return false;
 			if (!m_entities[eID]) return false;
 
@@ -219,6 +233,8 @@ namespace Copper {
 
 		}
 		template<typename T> void RemoveComponent(uint32 eID) {
+
+			CUP_FUNCTION();
 
 			if (eID == INVALID_ENTITY_ID) return;
 			if (!m_entities[eID]) return;
@@ -259,6 +275,8 @@ namespace Copper {
 
 		void* GetComponent(uint32 componentID, uint32 eID) {
 
+			CUP_FUNCTION();
+
 			if (eID == INVALID_ENTITY_ID) return nullptr;
 			if (!m_entities[eID]) return nullptr;
 			if (!m_entities[eID].m_cMask.test(componentID)) return nullptr;
@@ -269,6 +287,8 @@ namespace Copper {
 		}
 		bool HasComponent(uint32 componentID, uint32 eID) {
 
+			CUP_FUNCTION();
+
 			if (eID == INVALID_ENTITY_ID) return false;
 			if (!m_entities[eID]) return false;
 
@@ -276,6 +296,8 @@ namespace Copper {
 
 		}
 		void RemoveComponent(uint32 componentID, uint32 eID) {
+
+			CUP_FUNCTION();
 
 			if (eID == INVALID_ENTITY_ID) return;
 			if (!m_entities[eID]) return;
@@ -315,6 +337,8 @@ namespace Copper {
 
 		ComponentPool* GetComponentPool(uint32 cID) {
 			
+			CUP_FUNCTION();
+
 			if (m_pools.size() < cID + 1) return nullptr;
 
 			return m_pools[cID];

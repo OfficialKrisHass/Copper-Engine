@@ -30,6 +30,8 @@ namespace Copper {
 
     void Scene::InitializePhysics() {
 
+        CUP_FUNCTION();
+
         m_physicsInitialized = true;
 
         PxSceneDesc sceneDesc(physics->getTolerancesScale());
@@ -48,11 +50,15 @@ namespace Copper {
     }
     void Scene::UpdatePhysics(float deltaTime) {
 
+        CUP_FUNCTION();
+
         m_physicsScene->simulate(deltaTime);
         m_physicsScene->fetchResults(true);
 
     }
     void Scene::ShutdownPhysics() {
+
+        CUP_FUNCTION();
 
         m_physicsInitialized = false;
         m_physicsScene->release();
@@ -61,10 +67,14 @@ namespace Copper {
 
     void Scene::AddPhysicsBody(PxRigidActor* body) {
 
+        CUP_FUNCTION();
+
         m_physicsScene->addActor(*body);
 
     }
     void Scene::RemovePhysicsBody(PxRigidActor* body) {
+
+        CUP_FUNCTION();
 
         m_physicsScene->removeActor(*body);
 

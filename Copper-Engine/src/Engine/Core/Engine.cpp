@@ -22,8 +22,6 @@
 
 #include "Engine/Scripting/ScriptingCore.h"
 
-#include "Engine/Debug/Profiler.h"
-
 #ifdef CU_EDITOR
 extern Copper::Window* GetEditorWindow();
 #endif
@@ -69,6 +67,8 @@ namespace Copper {
 
 		// Helper func to get the Window without macros everywhere
 		Window& Window() {
+
+			CUP_FUNCTION();
 
 		#ifdef CU_EDITOR
 			return *window;
@@ -221,6 +221,8 @@ namespace Copper {
 	}
 	bool OnWindowResize(const Event& e) {
 
+		CUP_FUNCTION();
+
 		// Editor handles resizing on its own
 
 	#ifndef CU_EDITOR
@@ -271,6 +273,8 @@ namespace Copper {
 	void SetMainWindowAsCurrent() { data.Window().SetAsCurrentContext(); }
 	void SetWindowSize(const UVector2I& size) {
 
+		CUP_FUNCTION();
+
 	#ifdef CU_EDITOR
 		if (data.fbo.Size() == size) return;
 
@@ -289,7 +293,7 @@ namespace Copper {
 	// Declaration in ImGui.h
 
 	void SetMainUIAsCurrent() { data.mainUIContext.SetAsCurrent(); }
-	void LoadMainUIContextFont(const std::string& path, float fontSize) { data.mainUIContext.LoadFont(path, fontSize); }
+	void LoadMainUIContextFont(const std::string& path, float fontSize) { CUP_FUNCTION(); data.mainUIContext.LoadFont(path, fontSize); }
 
 	// Declaration in Scene.h
 	
@@ -298,11 +302,11 @@ namespace Copper {
 	uint32 GetNumOfEntities() { return data.scene.GetNumOfEntities(); }
 	bool IsSceneRuntimeRunning() { return data.scene.IsRuntimeRunning(); }
 
-	InternalEntity* CreateEntity(ENTITY_PROPERTIES_DECLARATION) { return data.scene.CreateEntity(position, rotation, scale, name); }
-	InternalEntity* CreateEntityFromID(uint32 id, ENTITY_PROPERTIES_DECLARATION, bool returnIfExists) { return data.scene.CreateEntityFromID(id, position, rotation, scale, name, returnIfExists); }
-	InternalEntity* GetEntityFromID(uint32 id) { return data.scene.GetEntityFromID(id); }
-	void RemoveEntity(InternalEntity* entity) { data.scene.RemoveEntity(entity); }
-	void RemoveEntityFromID(uint32 id) { data.scene.RemoveEntityFromID(id); }
+	InternalEntity* CreateEntity(ENTITY_PROPERTIES_DECLARATION) { CUP_FUNCTION(); return data.scene.CreateEntity(position, rotation, scale, name); }
+	InternalEntity* CreateEntityFromID(uint32 id, ENTITY_PROPERTIES_DECLARATION, bool returnIfExists) { CUP_FUNCTION(); return data.scene.CreateEntityFromID(id, position, rotation, scale, name, returnIfExists); }
+	InternalEntity* GetEntityFromID(uint32 id) { CUP_FUNCTION(); return data.scene.GetEntityFromID(id); }
+	void RemoveEntity(InternalEntity* entity) { CUP_FUNCTION(); data.scene.RemoveEntity(entity); }
+	void RemoveEntityFromID(uint32 id) { CUP_FUNCTION(); data.scene.RemoveEntityFromID(id); }
 
 // Editor misc.
 #ifdef CU_EDITOR

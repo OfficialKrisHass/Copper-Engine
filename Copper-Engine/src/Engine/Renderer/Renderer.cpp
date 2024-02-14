@@ -13,9 +13,6 @@
 
 #include <GLM/ext/matrix_transform.hpp>
 
-// TODO: Remove profiler include
-#include "Engine/Debug/Profiler.h"
-
 namespace Copper::Renderer {
 
 	constexpr uint32 MaxVertices = 20'000;
@@ -286,6 +283,8 @@ namespace Copper::Renderer {
 	}
 	void AddLine(const Vector3& start, const Vector3& end, const Color& color, Transform* transform) {
 
+		CUP_FUNCTION();
+
 		AddLine(transform->TransformMatrix() * Vector4(start, 1.0f), transform->TransformMatrix() * Vector4(end, 1.0f), color);
 
 	}
@@ -357,9 +356,11 @@ namespace Copper::Renderer {
 
 	}
 
-	void SetCamera(Camera* cam) { RendererAPI::SetCamera(cam); }
+	void SetCamera(Camera* cam) { CUP_FUNCTION(); RendererAPI::SetCamera(cam); }
 
 	void SetWireframe(bool value) {
+
+		CUP_FUNCTION();
 
 		data.wireframe = value;
 		RendererAPI::SetWireframe(value);
@@ -367,6 +368,8 @@ namespace Copper::Renderer {
 	}
 	void SetShaderPath(const std::string& vertexPath, const std::string& fragmentPath) {
 		
+		CUP_FUNCTION();
+
 		VERIFY_STATE(EngineCore::EngineState::Initialization, "Set the Shader");
 		RendererAPI::SetShaderPath(vertexPath, fragmentPath);
 		

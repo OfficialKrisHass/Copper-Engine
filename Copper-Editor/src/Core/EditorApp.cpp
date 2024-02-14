@@ -15,9 +15,6 @@
 #include "Core/SceneMeta.h"
 #include "Core/ProjectFileWatcher.h"
 
-// TODO: Remove profiler include
-#include "Engine/Debug/Profiler.h"
-
 #include "Core/Utils/ModelLoader.h"
 
 #include "Projects/Project.h"

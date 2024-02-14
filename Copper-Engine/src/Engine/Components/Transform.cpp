@@ -19,6 +19,8 @@ namespace Copper {
 
 	void Transform::Update() {
 
+		CUP_FUNCTION();
+
 		if (m_changed == 0) return;
 
 		CalculateMatrix();
@@ -48,6 +50,8 @@ namespace Copper {
 	
 	void Transform::SetPosition(const Vector3& position) {
 
+		CUP_FUNCTION();
+
 		m_position = position;
 		m_changed |= POSITION_CHANGED;
 
@@ -58,6 +62,8 @@ namespace Copper {
 
 	void Transform::SetRotation(const Quaternion& rotation) {
 
+		CUP_FUNCTION();
+
 		m_rotation = rotation;
 		m_changed |= ROTATION_CHANGED;
 
@@ -67,6 +73,8 @@ namespace Copper {
 	}
 
 	void Transform::SetScale(const Vector3& scale) {
+
+		CUP_FUNCTION();
 
 		m_scale = scale;
 		m_changed |= SCALE_CHANGED;
@@ -80,6 +88,8 @@ namespace Copper {
 	// Parent
 
 	void Transform::SetParent(Transform* parent) {
+
+		CUP_FUNCTION();
 
 		if (parent == m_parent) return;
 
@@ -133,6 +143,8 @@ namespace Copper {
 
 	void Transform::AddChild(Transform* child) {
 
+		CUP_FUNCTION();
+
 		if (child->m_parent == this || !child) return;
 		if (child->m_parent)
 			child->m_parent->RemoveChild(child);
@@ -154,6 +166,8 @@ namespace Copper {
 	}
 	void Transform::RemoveChild(uint32 index) {
 
+		CUP_FUNCTION();
+
 		if (index < 0 || index > m_children.size()) {
 
 			LogError("Can't remove an invalid index child. Parent: {}, index: {}", *GetEntity(), index);
@@ -174,6 +188,8 @@ namespace Copper {
 	}
 	void Transform::RemoveChild(Transform* transform) {
 
+		CUP_FUNCTION();
+
 		for (uint32 i = 0; i < m_children.size(); i++) {
 
 			if (m_children[i] != transform->GetEntity()->ID()) continue;
@@ -188,6 +204,8 @@ namespace Copper {
 	}
 
 	void Transform::CalculateMatrix() {
+
+		CUP_FUNCTION();
 
 		if (m_calculated) return;
 		m_mat = Matrix4(1.0f);
@@ -208,6 +226,8 @@ namespace Copper {
 	}
 
 	void Transform::SetChanged(ChangeMask value) {
+
+		CUP_FUNCTION();
 
 		m_changed = value;
 		for (uint32 id : m_children)

@@ -10,9 +10,6 @@
 
 #include <mono/metadata/object.h>
 
-// TODO: Remove profiler include
-#include "Engine/Debug/Profiler.h"
-
 #define RETURN_NULLPTR { *out = nullptr; return; }
 
 #define Test Jajaj
@@ -72,6 +69,8 @@ namespace Copper {
 
 	void ScriptComponent::InvokeCreate() {
 
+		CUP_FUNCTION();
+
 		if (!m_create) return;
 
 		MonoObject* exc = nullptr;
@@ -82,6 +81,8 @@ namespace Copper {
 
 	}
 	void ScriptComponent::InvokeUpdate() {
+
+		CUP_FUNCTION();
 
 		if (!m_update) return;
 
@@ -94,6 +95,8 @@ namespace Copper {
 	}
 
     void ScriptComponent::InvokeOnCollisionBegin(InternalEntity *other) {
+
+		CUP_FUNCTION();
 
 		if (!m_onCollisionBegin || !other)
 			return;
@@ -108,6 +111,8 @@ namespace Copper {
     }
     void ScriptComponent::InvokeOnCollisionPersist(InternalEntity *other) {
 
+		CUP_FUNCTION();
+
 		if (!m_onCollisionPersist || !other)
 			return;
 
@@ -119,6 +124,8 @@ namespace Copper {
 
     }
 	void ScriptComponent::InvokeOnCollisionEnd(InternalEntity *other) {
+
+		CUP_FUNCTION();
 
 		if (!m_onCollisionEnd || !other)
 			return;
@@ -134,6 +141,8 @@ namespace Copper {
 
     void ScriptComponent::InvokeOnTriggerEnter(InternalEntity *other) {
 
+		CUP_FUNCTION();
+
 		if (!m_onTriggerEnter || !other)
 			return;
 
@@ -146,6 +155,8 @@ namespace Copper {
 
     }
 	void ScriptComponent::InvokeOnTriggerLeave(InternalEntity *other) {
+
+		CUP_FUNCTION();
 
 		if (!m_onTriggerLeave)
 			return;
@@ -161,10 +172,14 @@ namespace Copper {
 
     void ScriptComponent::GetFieldValue(const ScriptField& field, void* out) {
 
+		CUP_FUNCTION();
+
 		mono_field_get_value(m_instance, field.m_field, out);
 
 	}
 	void ScriptComponent::GetFieldValue(const ScriptField& field, InternalEntity** out) {
+
+		CUP_FUNCTION();
 
 		if (field.type != ScriptField::Type::Entity) RETURN_NULLPTR;
 
@@ -185,6 +200,8 @@ namespace Copper {
 
 	void ScriptComponent::GetFieldValue(const ScriptField& field, Transform** out) {
 
+		CUP_FUNCTION();
+
 		if (field.type != ScriptField::Type::Transform) RETURN_NULLPTR
 
 		MonoObject* transform = nullptr;
@@ -204,10 +221,14 @@ namespace Copper {
 
 	void ScriptComponent::SetFieldValue(const ScriptField& field, void* value) {
 
+		CUP_FUNCTION();
+
 		mono_field_set_value(m_instance, field.m_field, value);
 
 	}
 	void ScriptComponent::SetFieldValue(const ScriptField& field, InternalEntity** value) {
+
+		CUP_FUNCTION();
 
 		if (field.type != ScriptField::Type::Entity) return;
 
@@ -217,6 +238,8 @@ namespace Copper {
 	}
 
 	void ScriptComponent::SetFieldValue(const ScriptField& field, Transform** value) {
+
+		CUP_FUNCTION();
 
 		if (field.type != ScriptField::Type::Transform) return;
 
@@ -250,6 +273,8 @@ namespace Copper {
 	}
 
 	void ScriptComponent::Invalidate() {
+
+		CUP_FUNCTION();
 
 		m_create = nullptr;
 		m_update = nullptr;

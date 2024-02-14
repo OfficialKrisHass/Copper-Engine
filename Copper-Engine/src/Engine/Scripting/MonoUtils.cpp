@@ -13,6 +13,8 @@ namespace Copper::Scripting::MonoUtils {
 
 	MonoAssembly* LoadAssembly(const fs::path& path) {
 
+		CUP_FUNCTION();
+
 		uint32 dataSize;
 		char* data = Utilities::ReadFileBinary(path.string(), &dataSize);
 		if (!data) return nullptr;
@@ -33,6 +35,8 @@ namespace Copper::Scripting::MonoUtils {
 	//Strings
 	std::string MonoToString(MonoString* string) {
 
+		CUP_FUNCTION();
+
 		if (string == nullptr || mono_string_length(string) == 0) { LogError("MonoString Can't be invalid"); return ""; }
 
 		MonoError error;
@@ -46,6 +50,8 @@ namespace Copper::Scripting::MonoUtils {
 	}
 	MonoString* StringToMono(const std::string& string) {
 
+		CUP_FUNCTION();
+
 		if (string.size() == 0) { LogError("String can't be Invalid"); return nullptr; }
 
 		MonoString* ret = mono_string_new(Scripting::GetAppDomain(), string.c_str());
@@ -55,6 +61,8 @@ namespace Copper::Scripting::MonoUtils {
 	}
 
 	std::string RemoveNamespace(std::string& name) {
+
+		CUP_FUNCTION();
 
 		size_t pos = name.find_last_of('.');
 		if (pos == std::string::npos) return ""; //Name doesn't have a Namespace
@@ -69,10 +77,14 @@ namespace Copper::Scripting::MonoUtils {
 	//Fileds
 	FieldAccessibility GetFieldAccessibility(MonoClassField* field) {
 
+		CUP_FUNCTION();
+
 		return (mono_field_get_flags(field) & MONO_FIELD_ATTR_FIELD_ACCESS_MASK) == MONO_FIELD_ATTR_PUBLIC ? FieldAccessibility::Public : FieldAccessibility::Private;
 
 	}
 	ScriptField::Type TypeFromString(const std::string& string) {
+
+		CUP_FUNCTION();
 
 		if (string == "System.Int32")   return ScriptField::Type::Int;
 		else if (string == "System.UInt32")  return ScriptField::Type::UInt;
@@ -90,6 +102,8 @@ namespace Copper::Scripting::MonoUtils {
 
 	bool IsBuiltinComponentField(const std::string& name) {
 
+		CUP_FUNCTION();
+
 			 if (name == "Copper.Component")	return true;
 		else if (name == "Copper.Transform")	return true;
 		else if (name == "Copper.Camera")		return true;
@@ -100,6 +114,8 @@ namespace Copper::Scripting::MonoUtils {
 
 	//Scripts
 	void PrintExceptionDetails(MonoObject* exc) {
+
+		CUP_FUNCTION();
 
 		MonoClass* excClass = mono_object_get_class(exc);
 		if (!excClass) { LogError("Couldn't get Exception Class!"); return; }

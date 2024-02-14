@@ -10,6 +10,8 @@ namespace Copper::Input {
 
 	void InitializeAxisManager() {
 		
+		CUP_FUNCTION();
+
 		VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the Axis Manager");
 
 		AddAxis("Keys_WS", KeyCode::W, KeyCode::S);
@@ -21,6 +23,8 @@ namespace Copper::Input {
 	}
 
 	float GetAxis(const std::string& axisName) {
+
+		CUP_FUNCTION();
 
 		bool isMouseAxis = mouseAxises.find(axisName) != mouseAxises.end();
 		if (!isMouseAxis && axises.find(axisName) == axises.end()) {
@@ -57,10 +61,14 @@ namespace Copper::Input {
 
 	void AddAxis(const std::string& axisName, KeyCode positive, KeyCode negative, float positiveValue, float negativeValue) {
 
+		CUP_FUNCTION();
+
 		axises[axisName] = Axis {positive, negative, positiveValue, negativeValue};
 
 	}
 	void AddMouseAxis(const std::string& axisName, bool isX, float positiveValue, float negativeValue) {
+
+		CUP_FUNCTION();
 
 		mouseAxises[axisName] = MouseAxis {isX, positiveValue, negativeValue};
 

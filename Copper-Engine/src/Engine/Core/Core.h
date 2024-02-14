@@ -7,7 +7,7 @@
 #include "Engine/Core/Log.h"
 
 #include "Engine/Debug/Assert.h"
-//#include "Engine/Debug/Profiler.h"
+#include "Engine/Debug/Profiler.h"
 
 #define CMATH_PARENT_NAMESPACE Copper
 #include <CMath/CMath.h>

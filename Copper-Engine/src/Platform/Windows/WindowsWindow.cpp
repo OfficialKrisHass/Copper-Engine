@@ -7,9 +7,6 @@
 #include "Engine/Input/KeyCodes.h"
 #include "Engine/Input/Input.h"
 
-// TODO: Remove profiler include
-#include "Engine/Debug/Profiler.h"
-
 #include <GLFW/glfw3.h>
 
 #define WINDOW (GLFWwindow*) windowPtr
@@ -72,6 +69,8 @@ namespace Copper {
 	}
 
 	void Window::SetAsCurrentContext() {
+
+		CUP_FUNCTION();
 
 		glfwMakeContextCurrent(WINDOW);
 
@@ -163,10 +162,14 @@ namespace Copper {
 
 	bool Window::IsKeyPressed(KeyCode keycode) const {
 
+		CUP_FUNCTION();
+
 		return glfwGetKey(WINDOW, (int32) keycode) == GLFW_PRESS;
 
 	}
 	bool Window::IsButtonPressed(MouseCode mousecode) const {
+
+		CUP_FUNCTION();
 
 		return glfwGetMouseButton(WINDOW, (int32) mousecode) == GLFW_PRESS;
 
@@ -215,6 +218,8 @@ namespace Copper {
 	}
 
 	void Window::SetSize(const UVector2I& size) {
+
+		CUP_FUNCTION();
 
 		glfwSetWindowSize(WINDOW, size.x, size.y);
 		data.size.x = size.x;

@@ -15,17 +15,23 @@ namespace Copper::Scripting::InternalCalls {
 
 	void GetPosition(uint64 componentPointer, Vector3* out) {
 
+		CUP_FUNCTION();
+
 		CheckComponentPointer(componentPointer);
 		*out = ((Transform*) componentPointer)->Position();
 
 	}
 	void GetRotation(uint64 componentPointer, Quaternion* out) {
 
+		CUP_FUNCTION();
+
 		CheckComponentPointer(componentPointer);
 		*out = ((Transform*) componentPointer)->Rotation();
 
 	}
 	void GetScale(uint64 componentPointer, Vector3* out) {
+
+		CUP_FUNCTION();
 
 		CheckComponentPointer(componentPointer);
 		*out = ((Transform*) componentPointer)->Scale();
@@ -34,17 +40,23 @@ namespace Copper::Scripting::InternalCalls {
 
 	void GetGlobalPosition(uint64 componentPointer, Vector3* out) {
 
+		CUP_FUNCTION();
+
 		CheckComponentPointer(componentPointer);
 		*out = ((Transform*) componentPointer)->GlobalPosition();
 
 	}
 	void GetGlobalRotation(uint64 componentPointer, Quaternion* out) {
 
+		CUP_FUNCTION();
+
 		CheckComponentPointer(componentPointer);
 		*out = ((Transform*) componentPointer)->GlobalRotation();
 
 	}
 	void GetGlobalScale(uint64 componentPointer, Vector3* out) {
+
+		CUP_FUNCTION();
 
 		CheckComponentPointer(componentPointer);
 		*out = ((Transform*) componentPointer)->GlobalScale();
@@ -53,11 +65,15 @@ namespace Copper::Scripting::InternalCalls {
 
 	void GetForward(uint64 componentPointer, Vector3* out) {
 
+		CUP_FUNCTION();
+
 		CheckComponentPointer(componentPointer);
 		*out = ((Transform*) componentPointer)->Forward();
 
 	}
 	void GetRight(uint64 componentPointer, Vector3* out) {
+
+		CUP_FUNCTION();
 
 		CheckComponentPointer(componentPointer);
 		*out = ((Transform*) componentPointer)->Right();
@@ -65,12 +81,16 @@ namespace Copper::Scripting::InternalCalls {
 	}
 	void GetUp(uint64 componentPointer, Vector3* out) {
 
+		CUP_FUNCTION();
+
 		CheckComponentPointer(componentPointer);
 		*out = ((Transform*) componentPointer)->Up();
 
 	}
 
 	void SetPosition(uint64 componentPointer, Vector3* value) {
+
+		CUP_FUNCTION();
 
 		CheckComponentPointer(componentPointer);
 
@@ -86,6 +106,8 @@ namespace Copper::Scripting::InternalCalls {
 	}
 	void SetRotation(uint64 componentPointer, Quaternion* value) {
 
+		CUP_FUNCTION();
+
 		CheckComponentPointer(componentPointer);
 
 		Transform* transform = ((Transform*) componentPointer);
@@ -99,6 +121,8 @@ namespace Copper::Scripting::InternalCalls {
 
 	}
 	void SetScale(uint64 componentPointer, Vector3* value) {
+
+		CUP_FUNCTION();
 
 		CheckComponentPointer(componentPointer);
 		((Transform*) componentPointer)->SetScale(*value);

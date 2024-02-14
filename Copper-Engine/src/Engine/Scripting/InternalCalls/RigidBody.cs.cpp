@@ -15,12 +15,16 @@ namespace Copper::Scripting::InternalCalls {
 
 	bool RigidBodyGetIsStatic(uint64 componentPointer) {
 
+		CUP_FUNCTION();
+
 		CheckComponentPointerWithReturn(componentPointer, false);
 
 		return ((RigidBody*) componentPointer)->isStatic;
 
 	}
 	bool RigidBodyGetGravity(uint64 componentPointer) {
+
+		CUP_FUNCTION();
 
 		CheckComponentPointerWithReturn(componentPointer, true);
 
@@ -29,6 +33,8 @@ namespace Copper::Scripting::InternalCalls {
 	}
 	float RigidBodyGetMass(uint64 componentPointer) {
 
+		CUP_FUNCTION();
+
 		CheckComponentPointerWithReturn(componentPointer, 0.0f);
 
 		return ((RigidBody*) componentPointer)->mass;
@@ -36,6 +42,8 @@ namespace Copper::Scripting::InternalCalls {
 	}
 
 	void RigidBodySetIsStatic(uint64 componentPointer, bool value) {
+
+		CUP_FUNCTION();
 
 		CheckComponentPointer(componentPointer);
 
@@ -46,6 +54,8 @@ namespace Copper::Scripting::InternalCalls {
 	}
 	void RigidBodySetGravity(uint64 componentPointer, bool value) {
 
+		CUP_FUNCTION();
+
 		CheckComponentPointer(componentPointer);
 
 		RigidBody* rb = (RigidBody*) componentPointer;
@@ -54,6 +64,8 @@ namespace Copper::Scripting::InternalCalls {
 
 	}
 	void RigidBodySetMass(uint64 componentPointer, float value) {
+
+		CUP_FUNCTION();
 
 		CheckComponentPointer(componentPointer);
 
@@ -65,12 +77,16 @@ namespace Copper::Scripting::InternalCalls {
 
 	void RigidBodyAddForce(uint64 componentPointer, Vector3* force, uint8_t mode) {
 
+		CUP_FUNCTION();
+
 		CheckComponentPointer(componentPointer);
 
 		((RigidBody*) componentPointer)->AddForce(*force, (ForceMode) mode);
 
 	}
 	void RigidBodyAddTorque(uint64 componentPointer, Vector3* torque, uint8_t mode) {
+
+		CUP_FUNCTION();
 
 		CheckComponentPointer(componentPointer);
 

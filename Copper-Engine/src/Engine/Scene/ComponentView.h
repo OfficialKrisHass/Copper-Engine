@@ -14,6 +14,8 @@ namespace Copper {
 	public:
 		ComponentView(Scene* scene) : m_scene(scene) {
 
+			CUP_FUNCTION();
+
 			while (m_beginIndex != MAX_ENTITY_COMPONENTS && !ValidEntity(m_beginIndex))
 				m_beginIndex++;
 			while (m_endIndex > m_beginIndex && !ValidEntity(m_endIndex - 1))
@@ -32,6 +34,8 @@ namespace Copper {
 
 		bool ValidEntity(uint32 index) {
 
+			CUP_FUNCTION();
+
 			InternalEntity* entity = m_scene->GetEntityFromID(index);
 			return entity && entity->GetComponent<T>();
 
@@ -41,7 +45,7 @@ namespace Copper {
 
 			Iterator(uint32 index, uint32 endIndex, Scene* scene) : m_index(index), m_endIndex(endIndex), m_scene(scene) {}
 
-			T* operator*() { return m_scene->GetEntityFromID(m_index)->GetComponent<T>(); }
+			T* operator*() { CUP_FUNCTION(); return m_scene->GetEntityFromID(m_index)->GetComponent<T>(); }
 
 			bool operator!=(const Iterator& other) {
 
@@ -51,6 +55,8 @@ namespace Copper {
 			}
 
 			Iterator& operator++() {
+
+				CUP_FUNCTION();
 
 				do m_index++;
 				while (m_index != m_endIndex && !ValidEntity(m_index));
@@ -67,6 +73,8 @@ namespace Copper {
 
 			bool ValidEntity(uint32 index) {
 
+				CUP_FUNCTION();
+
 				InternalEntity* entity = m_scene->GetEntityFromID(index);
 				return entity && entity->GetComponent<T>();
 
@@ -82,6 +90,8 @@ namespace Copper {
 
 	public:
 		ComponentViewOR(Scene* scene) : m_scene(scene) {
+
+			CUP_FUNCTION();
 
 			// Instead of checking all of existing entities we can narrow the range down
 			// Getting the index of the very first entity that has at least one of the
@@ -114,6 +124,8 @@ namespace Copper {
 
 		bool ValidEntity(uint32 index) {
 
+			CUP_FUNCTION();
+
 			InternalEntity* entity = m_scene->GetEntityFromID(index);
 			if (!entity)
 				return false;
@@ -133,11 +145,13 @@ namespace Copper {
 		public:
 			Iterator(uint32 index, uint32 endIndex, Scene* scene, const uint32* ids) : m_index(index), m_endIndex(endIndex), m_scene(scene), m_ids(ids) {}
 
-			InternalEntity* operator*() { return m_scene->GetEntityFromID(m_index); }
+			InternalEntity* operator*() { CUP_FUNCTION(); return m_scene->GetEntityFromID(m_index); }
 
 			bool operator!=(const Iterator& other) { return m_index < other.m_index; }
 
 			Iterator& operator++() {
+
+				CUP_FUNCTION();
 				
 				do {
 

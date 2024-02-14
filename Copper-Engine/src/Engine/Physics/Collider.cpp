@@ -28,6 +28,8 @@ namespace Copper {
 
     void Collider::Setup() {
 
+        CUP_FUNCTION();
+
         m_rb = GetEntity()->GetComponent<RigidBody>();
         if (m_rb) {
 
@@ -57,15 +59,21 @@ namespace Copper {
 
     PxShape* BoxCollider::CreateShape() const {
 
+        CUP_FUNCTION();
+
         return physics->createShape(PxBoxGeometry(CopperToPhysX(GetTransform()->Scale() * size / 2.0f)), *material);
 
     }
     PxShape* SphereCollider::CreateShape() const {
 
+        CUP_FUNCTION();
+
         return physics->createShape(PxSphereGeometry(radius * GetTransform()->Scale().x), *material);
 
     }
     PxShape* CapsuleCollider::CreateShape() const {
+
+        CUP_FUNCTION();
 
         Transform* transform = GetTransform();
         return physics->createShape(PxCapsuleGeometry(transform->Scale().x * radius, transform->Scale().y * height), *material);

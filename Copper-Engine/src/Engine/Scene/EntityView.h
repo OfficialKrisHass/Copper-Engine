@@ -12,6 +12,8 @@ namespace Copper {
 	public:
 		EntityView(Scene* scene) : m_scene(scene) {
 
+			CUP_FUNCTION();
+
 			if (scene->GetNumOfEntities() == 0) {
 
 				m_beginIndex = 1;
@@ -40,11 +42,13 @@ namespace Copper {
 		public:
 			Iterator(uint32_t index, Scene* scene, uint32_t endIndex = 0) : m_index(index), m_scene(scene), m_endIndex(endIndex) {}
 
-			InternalEntity* operator*() { return m_scene->GetEntityFromID(m_index); }
+			InternalEntity* operator*() { CUP_FUNCTION(); return m_scene->GetEntityFromID(m_index); }
 
 			bool operator!=(const Iterator& other) { return m_index != other.m_index + 1; }
 
 			Iterator& operator++() {
+
+				CUP_FUNCTION();
 
 				if (m_index == m_endIndex) {
 

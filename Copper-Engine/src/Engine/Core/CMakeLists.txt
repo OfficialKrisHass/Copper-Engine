@@ -1,4 +1,4 @@
-list(APPEND coreSources Core.h Debug.h Engine.h Entry.h Log.h Window.h Args.h
+list(APPEND coreSources Core.h Engine.h Entry.h Log.h Window.h Args.h
                         Args.cpp Engine.cpp Log.cpp)
 list(TRANSFORM coreSources PREPEND src/Engine/Core/)
 

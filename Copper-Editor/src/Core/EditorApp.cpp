@@ -138,6 +138,8 @@ namespace Editor {
 
 	void Initialize() {
 
+		CUP_FUNCTION_START();
+
 		GetWindow().AddWindowFocusedEventFunc(Editor::OnWindowFocused);
 		GetWindow().AddKeyPressedEventFunc(Editor::OnKeyPressed);
 
@@ -173,6 +175,8 @@ namespace Editor {
 	#ifdef CU_LINUX
 		RunPremake();
 	#endif
+
+		CUP_SCOPE_END();
 
 	}
 	void Shutdown() {
@@ -976,6 +980,8 @@ namespace Editor {
 
 void AppEntryPoint() {
 
+	CUP_FUNCTION_START();
+
 	// In the editor case, we have our own window that is bigger then the engine region
 	// so we have to create and store it ourselves
 	Editor::data.window = Window("Copper Editor", 1280, 720);
@@ -984,6 +990,8 @@ void AppEntryPoint() {
 	AddUIUpdateEventFunc(Editor::UIUpdate);
 	AddPreShutdownEventFunc(Editor::OnWindowClose);
 	AddPostShutdownEventFunc(Editor::Shutdown);
+
+	CUP_SCOPE_END();
 
 }
 #pragma endregion 

@@ -6,6 +6,8 @@ namespace Copper::Args {
 
 	void Setup(uint32 argc, char* argv[]) {
 
+		CUP_FUNCTION_START();
+
 		arguments.resize(argc);
 		for (uint32 i = 0; i < argc; i++) {
 
@@ -26,6 +28,8 @@ namespace Copper::Args {
 			arguments[i] = argv[i];
 
 		}
+
+		CUP_SCOPE_END();
 
 	}
 

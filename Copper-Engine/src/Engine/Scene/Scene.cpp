@@ -67,6 +67,8 @@ namespace Copper {
 	}
 	void Scene::Update(float deltaTime) {
 
+		CUP_FUNCTION_START();
+
 		Renderer::StartFrame();
 
 		if (m_runtimeRunning) UpdatePhysics(deltaTime);
@@ -112,6 +114,8 @@ namespace Copper {
 		if (m_runtimeRunning && !m_runtimeStarted) m_runtimeStarted = true;
 
 		Renderer::RenderBatch();
+
+		CUP_SCOPE_END();
 
 	}
 	void Scene::RuntimeUpdateEntity(InternalEntity* entity, float deltaTIme) {

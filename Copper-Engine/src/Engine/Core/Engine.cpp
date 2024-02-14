@@ -22,6 +22,8 @@
 
 #include "Engine/Scripting/ScriptingCore.h"
 
+#include "Engine/Debug/Profiler.h"
+
 #ifdef CU_EDITOR
 extern Copper::Window* GetEditorWindow();
 #endif
@@ -88,6 +90,8 @@ namespace Copper {
 #pragma region EngineCore
 	void EngineCore::Initialize() {
 
+		CUP_FUNCTION_START();
+
 		VERIFY_STATE_INTERNAL(EngineState::Entry, "Initialize the Engine");
 		data.engineState = EngineState::Initialization;
 
@@ -130,8 +134,12 @@ namespace Copper {
 		// Call it from here so that it doesn't have to be an exposed function
 		Run();
 
+		CUP_SCOPE_END();
+
 	}
 	void Run() {
+
+		CUP_FUNCTION_START();
 
 		data.engineState = EngineState::Running;
 
@@ -172,13 +180,19 @@ namespace Copper {
 
 		Shutdown();
 
+		CUP_SCOPE_END();
+
 	}
 	void Shutdown() {
+
+		CUP_FUNCTION_START();
 
 		data.mainUIContext.Shutdown();
 		data.Window().Shutdown();
 
 		data.postShutdownEvent();
+
+		CUP_SCOPE_END();
 
 	}
 
@@ -203,8 +217,17 @@ namespace Copper {
 
 	bool OnWindowClose(const Event& e) {
 
-		if (!data.preShutdownEvent()) return false;
+		CUP_FUNCTION_START();
+
+		if (!data.preShutdownEvent()) {
+
+			CUP_SCOPE_END();
+			return false;
+
+		}
 		data.engineState = EngineState::Shutdown;
+
+		CUP_SCOPE_END();
 
 		return true;
 

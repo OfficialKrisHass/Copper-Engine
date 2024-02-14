@@ -18,6 +18,8 @@ namespace Copper {
 
 	Window::Window(const std::string& title, uint32 width, uint32 height, bool maximize) {
 
+		CUP_FUNCTION_START();
+
 		data.title = title;
 
 #ifdef CU_EDITOR // we cant verify the state in the editor because the editor creates the window before Engine Initialization
@@ -46,19 +48,29 @@ namespace Copper {
 
 		SetupEvents();
 
+		CUP_SCOPE_END();
+
 	}
 	void Window::Update() {
+
+		CUP_FUNCTION_START();
 
 		glfwPollEvents();
 		glfwSwapBuffers(WINDOW);
 
+		CUP_SCOPE_END();
+
 	}
 	void Window::Shutdown() {
+
+		CUP_FUNCTION_START();
 
 		glfwDestroyWindow(WINDOW);
 
 		if (windowCount == 1) glfwTerminate();
 		windowCount--;
+
+		CUP_SCOPE_END();
 
 	}
 
@@ -69,6 +81,8 @@ namespace Copper {
 	}
 
 	void Window::SetupEvents() {
+
+		CUP_FUNCTION_START();
 
 		glfwSetWindowCloseCallback(WINDOW, [](GLFWwindow* window) {
 
@@ -147,6 +161,8 @@ namespace Copper {
 			data.mouseMoveEvent();
 
 			});
+
+		CUP_SCOPE_END();
 
 	}
 

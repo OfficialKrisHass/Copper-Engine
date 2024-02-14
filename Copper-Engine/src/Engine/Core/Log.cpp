@@ -18,6 +18,8 @@ namespace Copper {
 
 	void Logger::Initialize() {
 
+		CUP_FUNCTION_START();
+
 		// Can't use the macro since it uses the logger which is not initialized yet, duh
 
 		if (EngineCore::GetEngineState() != EngineCore::EngineState::Entry) return;
@@ -34,6 +36,8 @@ namespace Copper {
 
 		m_logger = std::make_shared<spdlog::logger>("Logger", sinks.begin(), sinks.end());
 		m_logger->set_level(spdlog::level::trace);
+
+		CUP_SCOPE_END();
 
 	}
 

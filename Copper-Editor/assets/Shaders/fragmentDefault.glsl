@@ -20,6 +20,7 @@ struct Material {
 
 	sampler2D texture;
 	vec4 albedo;
+	float tiling;
 
 };
 
@@ -72,7 +73,7 @@ void main() {
 	}
 	lightResult += AmbientLightColor(ambientDirection, ambientColor, normal);
 
-	vec4 textureColor = texture(materials[a_matIndex].texture, a_uv) * materials[a_matIndex].albedo;
+	vec4 textureColor = texture(materials[a_matIndex].texture, a_uv * materials[a_matIndex].tiling) * materials[a_matIndex].albedo;
 
 	FragColor = textureColor * vec4(lightResult * a_color, 1.0f);
 

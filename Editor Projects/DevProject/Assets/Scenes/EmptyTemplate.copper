@@ -172,6 +172,7 @@ Entities:
           - 20
         Texture: ""
         Albedo: [1, 1, 1, 1]
+        Tiling: 1
     Rigid Body:
       Static: false
       Gravity: true
@@ -342,6 +343,7 @@ Entities:
           - 20
         Texture: C:\Programming\Copper-Engine\Editor Projects\DevProject\Assets\Textures\gridbox.png
         Albedo: [1, 1, 1, 1]
+        Tiling: 50
     Rigid Body:
       Static: true
       Gravity: false
@@ -497,6 +499,7 @@ Entities:
           - 20
         Texture: C:\Programming\Copper-Engine\Editor Projects\DevProject\Assets\Textures\gridbox.png
         Albedo: [1, 0, 0, 1]
+        Tiling: 1
     Rigid Body:
       Static: false
       Gravity: true
@@ -652,6 +655,7 @@ Entities:
           - 20
         Texture: ""
         Albedo: [1, 1, 1, 1]
+        Tiling: 1
     Rigid Body:
       Static: false
       Gravity: true
@@ -844,6 +848,7 @@ Entities:
           - 20
         Texture: C:\Programming\Copper-Engine\Editor Projects\DevProject\Assets\Textures\wall.jpg
         Albedo: [1, 1, 1, 1]
+        Tiling: 1
     Rigid Body:
       Static: false
       Gravity: true

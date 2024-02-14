@@ -13,6 +13,7 @@ namespace Copper {
 
 		Texture texture;
 		Color albedo = Color::white;
+		float tiling = 1.0f;
 
 		inline operator bool() const { return texture; }
 

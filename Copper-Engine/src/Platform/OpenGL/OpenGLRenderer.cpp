@@ -138,6 +138,7 @@ namespace Copper::RendererAPI {
 
 			shader.LoadInt(materialName + "texture", i); // texture
 			shader.LoadColor(materialName + "albedo", materials[i]->albedo); // albedo
+			shader.LoadFloat(materialName + "tiling", materials[i]->tiling); // tiling
 
 		}
 

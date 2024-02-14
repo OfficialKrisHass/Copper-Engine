@@ -174,8 +174,10 @@ namespace Editor {
 		if (!DrawComponent<MeshRenderer>("Mesh Renderer", renderer)) return;
 
 		Mesh& mesh = renderer->meshes[0];
+
 		UI::EditTexture("Texture", &mesh.material.texture);
 		UI::EditColor("Albedo", &mesh.material.albedo);
+		UI::EditFloat("Tiling", &mesh.material.tiling);
 
 		ImGui::PopID();
 

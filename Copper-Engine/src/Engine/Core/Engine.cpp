@@ -143,6 +143,8 @@ namespace Copper {
 
 		while (data.engineState == EngineState::Running) {
 
+			CUP_START_FRAME(nullptr);
+
 			// Calculate delta time
 
 			float time = data.Window().Time();
@@ -151,8 +153,14 @@ namespace Copper {
 
 			// Update
 
+			CUP_START_FRAME("Window");
+
 			data.Window().Update();
 			data.updateEvent();
+
+			CUP_END_FRAME();
+
+			CUP_START_FRAME("Scene");
 
 			data.fbo.Bind();
 			data.scene.Update(data.deltaTime);
@@ -160,17 +168,28 @@ namespace Copper {
 
 			RendererAPI::ResizeViewport(data.Window().Size());
 
+			CUP_END_FRAME();
+
 			// UI Time window
+
+			CUP_START_FRAME("UI");
 
 			data.mainUIContext.Begin();
 			data.uiUpdateEvent();
 			data.mainUIContext.End();
 
+			CUP_END_FRAME();
+
 			// Finalize
 
-			Renderer::EndFrame();
+			CUP_START_FRAME("Finalize");
 
 			Input::Update();
+			Renderer::EndFrame();
+
+			CUP_END_FRAME();
+
+			CUP_END_FRAME();
 
 		}
 

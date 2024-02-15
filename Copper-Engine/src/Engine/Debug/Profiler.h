@@ -1,10 +1,17 @@
 #pragma once
 
+#ifdef CU_DEBUG
+#include <chrono>
+
+using chrono = std::chrono::system_clock;
+#endif
+
 namespace Copper::Profiler {
 
-	class Scope {
+	// Code Scopes
 
-	public:
+	struct Scope {
+
 		Scope(const char* name, const char* file);
 		~Scope();
 
@@ -15,6 +22,23 @@ namespace Copper::Profiler {
 
 	void PrintScopeStack();
 
+	// Frame profiling
+
+	struct Frame {
+
+		const char* name = nullptr;
+		Frame* parentFrame = nullptr;
+
+		chrono::time_point start;
+		double duration = 0.0f;
+
+		std::vector<Frame> subframes;
+
+	};
+
+	void StartFrame(const char* name);
+	void EndFrame();
+
 }
 
 #ifdef CU_DEBUG
@@ -24,7 +48,13 @@ namespace Copper::Profiler {
 
 #define CUP_SCOPE(name, line) __CUP_SCOPE(name, line)
 #define CUP_FUNCTION() CUP_SCOPE(__FUNCTION__, __LINE__)
+
+#define CUP_START_FRAME(name) ::Copper::Profiler::StartFrame(name)
+#define CUP_END_FRAME() ::Copper::Profiler::EndFrame()
 #elif
 #define CUP_SCOPE(name, line)
 #define CUP_FUNCTION()
+
+#define CUP_START_FRAME()
+#define CUP_END_FRAME()
 #endif

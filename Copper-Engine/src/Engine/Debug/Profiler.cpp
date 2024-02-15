@@ -1,7 +1,7 @@
 #include "cupch.h"
 #include "Profiler.h"
 
-#include <chrono>
+#include <iostream>
 
 #ifdef CU_DEBUG
 namespace Copper::Profiler {
@@ -61,6 +61,58 @@ namespace Copper::Profiler {
 			Log("{}: {}", scope->name, scope->file);
 
 		}
+
+	}
+
+	// Frame Profiling
+
+	Frame mainFrame;
+	Frame* latestFrame = nullptr;
+
+	void StartFrame(const char* name) {
+
+		// Main Frame
+
+		if (!name) {
+
+			mainFrame.name = "Main";
+			mainFrame.parentFrame = nullptr;
+
+			mainFrame.start = chrono::now();
+			mainFrame.duration = 0.0f;
+
+			latestFrame = &mainFrame;
+
+			return;
+
+		}
+
+		// Subframes
+
+		latestFrame->subframes.push_back(Frame());
+		Frame* frame = &latestFrame->subframes.back();
+
+		frame->name = name;
+		frame->parentFrame = latestFrame;
+
+		frame->start = chrono::now();
+
+		latestFrame = frame;
+
+	}
+	void EndFrame() {
+
+		typedef std::chrono::microseconds microSec;
+
+		chrono::duration tmp = chrono::now() - latestFrame->start;
+		latestFrame->duration = (double) std::chrono::duration_cast<microSec>(tmp).count() / 1000.0;
+
+		latestFrame = latestFrame->parentFrame;
+
+		// End of Main frame
+
+		if (latestFrame) return;
+		mainFrame.subframes.clear();
 
 	}
 

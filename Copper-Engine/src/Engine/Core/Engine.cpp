@@ -189,7 +189,7 @@ namespace Copper {
 
 			CUP_END_FRAME();
 
-			CUP_END_FRAME();
+			CUP_END_FRAME(); // Main
 
 		}
 

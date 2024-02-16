@@ -81,6 +81,8 @@ namespace Copper::Profiler {
 			mainFrame.start = chrono::now();
 			mainFrame.duration = 0.0f;
 
+			mainFrame.subframes.clear();
+
 			latestFrame = &mainFrame;
 
 			return;
@@ -108,11 +110,6 @@ namespace Copper::Profiler {
 		latestFrame->duration = (double) std::chrono::duration_cast<microSec>(tmp).count() / 1000.0;
 
 		latestFrame = latestFrame->parentFrame;
-
-		// End of Main frame
-
-		if (latestFrame) return;
-		mainFrame.subframes.clear();
 
 	}
 

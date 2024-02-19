@@ -51,9 +51,12 @@ namespace Copper {
     void Scene::UpdatePhysics(float deltaTime) {
 
         CUP_FUNCTION();
+        CUP_START_FRAME("Physics");
 
         m_physicsScene->simulate(deltaTime);
         m_physicsScene->fetchResults(true);
+
+        CUP_END_FRAME();
 
     }
     void Scene::ShutdownPhysics() {

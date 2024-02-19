@@ -177,12 +177,16 @@ namespace Copper::Renderer {
 
 		if (data.verticesCount == 0 || data.indicesCount == 0) return;
 
+		CUP_START_FRAME("Render Batch");
+
 		data.vbo.SetData((float*) data.vertices, data.verticesCount * 12);
 		data.ibo.SetData(data.indices, data.indicesCount);
 
 		RendererAPI::Render(&data.vao, data.indicesCount, data.lights, data.lightCount, data.materials, data.materialCount);
 
 		data.drawCalls++;
+
+		CUP_END_FRAME();
 
 	}
 	void NewBatch() {

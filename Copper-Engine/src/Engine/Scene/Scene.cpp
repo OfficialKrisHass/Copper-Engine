@@ -75,7 +75,11 @@ namespace Copper {
 
 		Renderer::StartFrame();
 
+		// Physics
+
 		if (m_runtimeRunning) UpdatePhysics(deltaTime);
+
+		CUP_START_FRAME("ECS Update");
 
 		for (InternalEntity* entity : EntityView(this)) {
 
@@ -116,6 +120,8 @@ namespace Copper {
 
 		}
 		if (m_runtimeRunning && !m_runtimeStarted) m_runtimeStarted = true;
+
+		CUP_END_FRAME();
 
 		Renderer::RenderBatch();
 

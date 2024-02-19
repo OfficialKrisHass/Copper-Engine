@@ -38,8 +38,11 @@ namespace Editor {
 	void Properties::UI() {
 
 		if (!*m_selectedEntity) return;
+		CUP_START_FRAME("Properties");
 
 		RenderEntity();
+
+		CUP_END_FRAME();
 
 	}
 

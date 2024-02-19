@@ -33,6 +33,8 @@ namespace Editor {
     }
 
     void FileBrowser::UI() {
+
+        CUP_START_FRAME("File browser");
         
         ImGui::GetFont()->FontSize -= 2.0f;
         
@@ -175,6 +177,8 @@ namespace Editor {
         }
 
         ImGui::Columns(1);
+
+        CUP_END_FRAME();
         
     }
 

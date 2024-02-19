@@ -232,6 +232,8 @@ namespace Editor {
 
 	void UIUpdate() {
 		
+		CUP_START_FRAME("Editor UI");
+		
 		RenderDockspace();
 		RenderToolbar();
 		RenderMenu();
@@ -247,6 +249,8 @@ namespace Editor {
 		ProjectSettings::UIRender();
 
 		ImGui::End(); //Dockspace
+
+		CUP_END_FRAME();
 
 	}
 
@@ -301,6 +305,8 @@ namespace Editor {
 	}
 	void RenderGamePanel() {
 
+		CUP_START_FRAME("Game Panel");
+
 		//Imgui::Begin returns a bool based on if the Window is visible/open
 		//So, we store that and then Render the scene and window Only if it's visible
 		//to save some performance
@@ -344,8 +350,12 @@ namespace Editor {
 		ImGui::End();
 		ImGui::PopStyleVar();
 
+		CUP_END_FRAME();
+
 	}
 	void RenderViewport() {
+
+		CUP_START_FRAME("Viewport");
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
 		bool open = ImGui::Begin("Viewport");
@@ -443,6 +453,8 @@ namespace Editor {
 		
 		ImGui::End();
 		ImGui::PopStyleVar();
+
+		CUP_END_FRAME();
 
 	}
 	void RenderToolbar() {

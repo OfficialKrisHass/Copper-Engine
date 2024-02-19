@@ -22,6 +22,8 @@ namespace Editor {
 
 	void SceneHierarchy::UI() {
 
+		CUP_START_FRAME("Scene Hierarchy");
+
 		if (ImGui::BeginPopupContextWindow("##Scene Hierarchy")) {
 
 			PopupWindow();
@@ -39,6 +41,8 @@ namespace Editor {
 		}
 
 		RemoveParentTarget();
+
+		CUP_END_FRAME();
 
 	}
 

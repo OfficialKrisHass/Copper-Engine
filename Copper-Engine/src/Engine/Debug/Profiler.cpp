@@ -66,8 +66,13 @@ namespace Copper::Profiler {
 
 	// Frame Profiling
 
-	Frame mainFrame;
+	Frame mainFrameBuffer[2];
+	bool mainFramIndex = 0;
+
 	Frame* latestFrame = nullptr;
+
+	Frame& MainFrame() { return mainFrameBuffer[mainFramIndex]; }
+	const Frame& PreviousMainFrame() { return mainFrameBuffer[!mainFramIndex]; }
 
 	void StartFrame(const char* name) {
 
@@ -75,15 +80,15 @@ namespace Copper::Profiler {
 
 		if (!name) {
 
-			mainFrame.name = "Main";
-			mainFrame.parentFrame = nullptr;
+			MainFrame().name = "Main";
+			MainFrame().parentFrame = nullptr;
 
-			mainFrame.start = chrono::now();
-			mainFrame.duration = 0.0f;
+			MainFrame().start = chrono::now();
+			MainFrame().duration = 0.0f;
 
-			mainFrame.subframes.clear();
+			MainFrame().subframes.clear();
 
-			latestFrame = &mainFrame;
+			latestFrame = &MainFrame();
 
 			return;
 
@@ -104,12 +109,15 @@ namespace Copper::Profiler {
 	}
 	void EndFrame() {
 
-		typedef std::chrono::microseconds microSec;
+		typedef std::chrono::milliseconds microSecs;
 
 		chrono::duration tmp = chrono::now() - latestFrame->start;
-		latestFrame->duration = (double) std::chrono::duration_cast<microSec>(tmp).count() / 1000.0;
+		latestFrame->duration = (double) std::chrono::duration_cast<microSecs>(tmp).count();
 
 		latestFrame = latestFrame->parentFrame;
+
+		if (latestFrame) return;
+		mainFramIndex = !mainFramIndex;
 
 	}
 

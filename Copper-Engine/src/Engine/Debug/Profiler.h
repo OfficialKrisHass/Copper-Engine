@@ -39,6 +39,8 @@ namespace Copper::Profiler {
 	void StartFrame(const char* name);
 	void EndFrame();
 
+	const Frame& PreviousMainFrame();
+
 }
 
 #ifdef CU_DEBUG

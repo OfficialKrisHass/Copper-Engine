@@ -26,6 +26,7 @@
 #include "Panels/FileBrowser.h"
 #include "Panels/Console.h"
 #include "Panels/ProjectSettings.h"
+#include "Panels/Profiler.h"
 #include "Panels/ThemeEditor.h"
 
 #include "Viewport/SceneCamera.h"
@@ -247,6 +248,7 @@ namespace Editor {
 		RenderViewport();
 
 		ProjectSettings::UIRender();
+		Profiler::UIRender();
 
 		ImGui::End(); //Dockspace
 
@@ -318,6 +320,8 @@ namespace Editor {
 			ImGui::End();
 			ImGui::PopStyleVar();
 
+			CUP_END_FRAME();
+
 			return;
 
 		}
@@ -327,6 +331,8 @@ namespace Editor {
 
 			ImGui::End();
 			ImGui::PopStyleVar();
+
+			CUP_END_FRAME();
 
 			return;
 
@@ -363,6 +369,8 @@ namespace Editor {
 
 			ImGui::End();
 			ImGui::PopStyleVar();
+
+			CUP_END_FRAME();
 
 			return;
 
@@ -571,6 +579,15 @@ namespace Editor {
 
 				ImGui::EndMenu();
 				
+			}
+
+			if (ImGui::BeginMenu("Debug")) {
+
+				if (ImGui::MenuItem("Profiler"))
+					Profiler::Open();
+
+				ImGui::EndMenu();
+
 			}
 
 			ImGui::EndMenuBar();

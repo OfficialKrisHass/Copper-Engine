@@ -3,6 +3,7 @@
 
 #include "Engine/Core/Window.h"
 #include "Engine/Core/Args.h"
+#include "Engine/Core/SignalHandler.h"
 
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Renderer/Buffer.h"
@@ -31,6 +32,7 @@ extern Copper::Window* GetEditorWindow();
 namespace Copper {
 
 	using namespace EngineCore;
+
 	namespace Renderer { void EndFrame(); }
 
 	struct EngineData {
@@ -94,6 +96,10 @@ namespace Copper {
 
 		VERIFY_STATE_INTERNAL(EngineState::Entry, "Initialize the Engine");
 		data.engineState = EngineState::Initialization;
+
+	#ifdef CU_DEBUG
+		SignalHandler::RegisterHandler(SignalHandler::Signal::Abort, Profiler::CrashHandler);
+	#endif
 
 		// Window & Renderer Initialization
 

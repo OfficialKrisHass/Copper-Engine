@@ -1,10 +1,8 @@
 #pragma once
 
-#ifdef CU_DEBUG
 #include <chrono>
 
 using chrono = std::chrono::system_clock;
-#endif
 
 namespace Copper::Profiler {
 
@@ -54,10 +52,10 @@ namespace Copper::Profiler {
 
 #define CUP_START_FRAME(name) ::Copper::Profiler::StartFrame(name)
 #define CUP_END_FRAME() ::Copper::Profiler::EndFrame()
-#elif
+#else
 #define CUP_SCOPE(name, line)
 #define CUP_FUNCTION()
 
-#define CUP_START_FRAME()
+#define CUP_START_FRAME(name)
 #define CUP_END_FRAME()
 #endif

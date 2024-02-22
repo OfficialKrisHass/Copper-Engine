@@ -10,7 +10,7 @@ namespace Copper::SignalHandler {
 		switch (signal) {
 
 		case Signal::Abort: return SIGABRT;
-		case Signal::Termination: return SIGINT;
+		case Signal::Termination: return SIGTERM;
 		case Signal::Interrupt: return SIGINT;
 
 		case Signal::Segfault: return SIGSEGV;

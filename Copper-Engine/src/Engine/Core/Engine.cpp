@@ -150,6 +150,10 @@ namespace Copper {
 
 		t2->Create("C:\\Programming\\Copper-Engine\\Copper-Editor\\assets\\Textures\\wall.png");
 
+		Texture* t4 = AssetStorage::GetAsset<Texture>(1); // t2
+
+		AssetStorage::DeleteAsset<Texture>(2);
+
 		// Call it from here so that it doesn't have to be an exposed function
 		Run();
 

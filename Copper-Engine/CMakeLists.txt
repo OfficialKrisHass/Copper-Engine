@@ -9,6 +9,7 @@ list(APPEND sources src/Copper.h src/cupch.h src/cupch.cpp
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Core/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Events/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Renderer/CMakeLists.txt)
+include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/AssetStorage/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/UI/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Input/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Scene/CMakeLists.txt)

@@ -12,6 +12,9 @@
 #include "Engine/Renderer/Shader.h"
 #include "Engine/Renderer/Texture.h"
 
+#include "Engine/AssetStorage/AssetList.h"
+#include "Engine/AssetStorage/AssetStorage.h"
+
 #include "Engine/UI/ImGui.h"
 
 #include "Engine/Input/AxisManager.h"
@@ -27,7 +30,7 @@
 extern Copper::Window* GetEditorWindow();
 #endif
 
-#define VERIFY_STATE_INTERNAL(state, task) CHECK(data.engineState == state, "Cannot {} because of invalid Engine State.\nExpected State: {}\nCurrent State: {}", task, EngineStateToString(state), EngineStateToString(data.engineState))
+#define VERIFY_STATE_INTERNAL(state, task) CHECK(data.engineState == state, "Cannot {} because of invalid Engine State.\\nExpected State: {}\\nCurrent State: {}", task, EngineStateToString(state), EngineStateToString(data.engineState))
 
 namespace Copper {
 
@@ -136,6 +139,16 @@ namespace Copper {
 
 		data.engineState = EngineState::PostInitialization;
 		data.postInitEvent();
+
+		// TODO: Testing, remove later
+
+		AssetStorage::AssetList<Texture>& assetList = AssetStorage::GetAssetList<Texture>();
+
+		Texture* t1 = AssetStorage::CreateAsset<Texture>();
+		Texture* t2 = AssetStorage::CreateAsset<Texture>(128, data.fbo.Size().y);
+		Texture* t3 = AssetStorage::CreateAsset<Texture>("C:\\Programming\\Copper-Engine\\Copper-Editor\\assets\\Textures\\gridbox.png");
+
+		t2->Create("C:\\Programming\\Copper-Engine\\Copper-Editor\\assets\\Textures\\wall.png");
 
 		// Call it from here so that it doesn't have to be an exposed function
 		Run();

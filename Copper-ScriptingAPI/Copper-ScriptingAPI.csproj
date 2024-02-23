@@ -21,8 +21,7 @@
     <OutputPath>..\Copper-Editor\assets\ScriptAPI\</OutputPath>
     <BaseIntermediateOutputPath>..\Copper-Editor\assets\ScriptAPI\Int\Debug\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants>
-    </DefineConstants>
+    <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -34,8 +33,7 @@
     <OutputPath>..\Copper-Editor\assets\ScriptAPI\</OutputPath>
     <BaseIntermediateOutputPath>..\Copper-Editor\assets\ScriptAPI\Int\Release\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants>
-    </DefineConstants>
+    <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>

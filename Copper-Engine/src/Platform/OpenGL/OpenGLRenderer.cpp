@@ -134,7 +134,7 @@ namespace Copper::RendererAPI {
 		for (uint32 i = 0; i < materialCount; i++) {
 
 			const std::string materialName = "materials[" + std::to_string(i) + "].";
-			materials[i]->texture.Bind(i);
+			materials[i]->texture->Bind(i);
 
 			shader.LoadInt(materialName + "texture", i); // texture
 			shader.LoadColor(materialName + "albedo", materials[i]->albedo); // albedo

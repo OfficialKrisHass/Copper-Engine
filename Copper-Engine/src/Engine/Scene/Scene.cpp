@@ -23,6 +23,9 @@
 #include "Engine/Renderer/Mesh.h"
 #include "Engine/Renderer/Primitives.h"
 
+#include "Engine/AssetStorage/AssetList.h"
+#include "Engine/AssetStorage/AssetStorage.h"
+
 #include "Engine/Physics/Raycast.h"
 
 #include "Engine/Scripting/ScriptingCore.h"
@@ -158,13 +161,17 @@ namespace Copper {
 		YAML::Emitter out;
 		out << YAML::BeginMap; // Main
 
-		//Version
-		out << YAML::Key << "Version" << YAML::Value << SCENE_VERSION;
+		// Scene Info
 
-		//Name
+		out << YAML::Key << "Version" << YAML::Value << SCENE_VERSION;
 		out << YAML::Key << "Name" << YAML::Value << name;
 
-		//Entities
+		// Asset Storage
+
+		SerializeAssetStorage(out);
+
+		// Entities
+
 		out << YAML::Key << "Entities" << YAML::Value << YAML::BeginMap; // Entities
 		for (InternalEntity* entity : EntityView(this)) {
 
@@ -217,6 +224,12 @@ namespace Copper {
 
 		this->name = data["Name"].as<std::string>();
 
+		// Asset Storage
+
+		DeserializeAssetStorage(data["Asset Storage"]);
+
+		// Entities
+
 		YAML::Node entities = data["Entities"];
 		for (YAML::const_iterator it = entities.begin(); it != entities.end(); ++it) {
 
@@ -230,6 +243,66 @@ namespace Copper {
 
 		return true;
 		
+	}
+
+	void Scene::SerializeAssetStorage(YAML::Emitter& out) {
+
+		using namespace AssetStorage;
+
+		CUP_FUNCTION();
+
+		out << YAML::Key << "Asset Storage" << YAML::Value << YAML::BeginMap; // Main
+
+		out << YAML::Key << "Textures" << YAML::Value << YAML::BeginSeq; // Textures
+		AssetList<Texture>& textures = GetAssetList<Texture>();
+
+		AssetList<Texture>::Node* node = textures.GetNode(1);
+		CU_ASSERT(node, "Missing White Texture in the Asset Storage!"); // 0th node is ALWAYS the white texture!
+		while (node) {
+
+			Texture* texture = &node->data;
+
+			out << YAML::BeginMap; // Texture
+
+			out << YAML::Key << "Size" << YAML::Value << texture->Size();
+			out << YAML::Key << "Path" << YAML::Value << texture->Path();
+
+			out << YAML::EndMap;
+
+			node = node->next;
+
+		}
+
+		out << YAML::EndSeq; // Textures
+
+		out << YAML::EndMap; // Main
+
+	}
+	void Scene::DeserializeAssetStorage(const YAML::Node& node) {
+
+		CUP_FUNCTION();
+
+		// Textures
+
+		uint32 white = 0xffffffff;
+		AssetStorage::CreateAsset<Texture>(1, 1, Texture::Format::RGBA, (uint8*) &white);
+
+		YAML::Node textures = node["Textures"];
+		uint32 len = textures.size();
+		for (uint32 i = 0; i < textures.size(); i++) {
+
+			YAML::Node texture = textures[i];
+
+			UVector2I size = texture["Size"].as<UVector2I>();
+			std::string path = texture["Path"].as<std::string>();
+
+			if (size != UVector2I::zero)
+				AssetStorage::CreateAsset<Texture>(size);
+			else
+				AssetStorage::CreateAsset<Texture>(path);
+
+		}
+
 	}
 
 	void Scene::SerializeEntity(InternalEntity* entity, YAML::Emitter& out) {
@@ -288,7 +361,7 @@ namespace Copper {
 				out << YAML::EndSeq; // Indices
 
 				// TODO: Textures should be saved in asset storage instead
-				out << YAML::Key << "Texture" << YAML::Value << mesh.material.texture.Path();
+				out << YAML::Key << "Texture Index" << YAML::Value << AssetStorage::GetAssetIndex(mesh.material.texture);
 				out << YAML::Key << "Albedo" << YAML::Value << mesh.material.albedo;
 				out << YAML::Key << "Tiling" << YAML::Value << mesh.material.tiling;
 
@@ -479,8 +552,8 @@ namespace Copper {
 
 			}
 
-			// TODO: Once again, textures should be stored in the asset storage
-			mesh.material.texture.Create(meshNode["Texture"].as<std::string>());
+			mesh.material.texture = AssetStorage::GetAsset<Texture>(meshNode["Texture Index"].as<uint32>());
+
 			mesh.material.albedo = meshNode["Albedo"].as<Color>();
 			mesh.material.tiling = meshNode["Tiling"].as<float>();
 

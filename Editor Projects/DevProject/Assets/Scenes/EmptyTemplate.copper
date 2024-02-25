@@ -1,5 +1,9 @@
 Version: 0
 Name: EmptyTemplate.copper
+Asset Storage:
+  Textures:
+    - Size: [1, 1]
+      Path: ""
 Entities:
   Sun:
     ID: 0
@@ -170,7 +174,7 @@ Entities:
           - 22
           - 23
           - 20
-        Texture: ""
+        Texture Index: 0
         Albedo: [1, 1, 1, 1]
         Tiling: 1
     Rigid Body:
@@ -341,7 +345,7 @@ Entities:
           - 22
           - 23
           - 20
-        Texture: C:\Programming\Copper-Engine\Editor Projects\DevProject\Assets\Textures\gridbox.png
+        Texture Index: 0
         Albedo: [1, 1, 1, 1]
         Tiling: 50
     Rigid Body:
@@ -497,7 +501,7 @@ Entities:
           - 22
           - 23
           - 20
-        Texture: C:\Programming\Copper-Engine\Editor Projects\DevProject\Assets\Textures\gridbox.png
+        Texture Index: 0
         Albedo: [1, 0, 0, 1]
         Tiling: 1
     Rigid Body:
@@ -653,7 +657,7 @@ Entities:
           - 22
           - 23
           - 20
-        Texture: ""
+        Texture Index: 0
         Albedo: [1, 1, 1, 1]
         Tiling: 1
     Rigid Body:
@@ -846,7 +850,7 @@ Entities:
           - 22
           - 23
           - 20
-        Texture: C:\Programming\Copper-Engine\Editor Projects\DevProject\Assets\Textures\wall.jpg
+        Texture Index: 0
         Albedo: [1, 1, 1, 1]
         Tiling: 1
     Rigid Body:

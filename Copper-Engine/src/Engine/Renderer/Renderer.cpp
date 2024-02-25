@@ -118,7 +118,7 @@ namespace Copper::Renderer {
 		// Textures
 
 		uint32 white = 0xffffffff;
-		data.whiteMaterial.texture.Create(1, 1, Texture::Format::RGBA, (uint8*) &white);
+		data.whiteMaterial.texture = new Texture(1, 1, Texture::Format::RGBA, (uint8*) &white);
 		data.materials[0] = &data.whiteMaterial;
 		data.materialCount = 1;
 

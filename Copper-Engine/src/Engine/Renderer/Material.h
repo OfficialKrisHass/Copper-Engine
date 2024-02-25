@@ -11,7 +11,7 @@ namespace Copper {
 	public:
 		Material() = default;
 
-		Texture texture;
+		Texture* texture;
 		Color albedo = Color::white;
 		float tiling = 1.0f;
 

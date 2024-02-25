@@ -12,4 +12,6 @@ namespace Copper::AssetStorage {
 	template<typename T> T* GetAsset(uint32 index) { return GetAssetList<T>().Get(index); }
 	template<typename T> void DeleteAsset(uint32 index) { GetAssetList<T>().Remove(index); }
 
+	template<typename T> uint32 GetAssetIndex(T* asset) { return GetAssetList<T>().GetIndex(asset); }
+
 }

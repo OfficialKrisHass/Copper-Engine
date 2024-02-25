@@ -80,6 +80,21 @@ namespace Copper::AssetStorage {
 			return node;
 
 		}
+		uint32 GetIndex(T* data) {
+
+			Node* node = m_head;
+			for (uint32 i = 0; i < m_len; i++, node = node->next) {
+
+				CU_ASSERT(node, "Invalid List structure! AssetList::GetIndex");
+					
+				if (&node->data != data) continue;
+				return i;
+
+			}
+
+			return (uint32) -1;
+
+		}
 
 	private:
 		Node* m_head = nullptr;

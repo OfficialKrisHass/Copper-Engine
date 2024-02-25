@@ -140,20 +140,6 @@ namespace Copper {
 		data.engineState = EngineState::PostInitialization;
 		data.postInitEvent();
 
-		// TODO: Testing, remove later
-
-		AssetStorage::AssetList<Texture>& assetList = AssetStorage::GetAssetList<Texture>();
-
-		Texture* t1 = AssetStorage::CreateAsset<Texture>();
-		Texture* t2 = AssetStorage::CreateAsset<Texture>(128, data.fbo.Size().y);
-		Texture* t3 = AssetStorage::CreateAsset<Texture>("C:\\Programming\\Copper-Engine\\Copper-Editor\\assets\\Textures\\gridbox.png");
-
-		t2->Create("C:\\Programming\\Copper-Engine\\Copper-Editor\\assets\\Textures\\wall.png");
-
-		Texture* t4 = AssetStorage::GetAsset<Texture>(1); // t2
-
-		AssetStorage::DeleteAsset<Texture>(2);
-
 		// Call it from here so that it doesn't have to be an exposed function
 		Run();
 

@@ -37,6 +37,8 @@ namespace Copper {
 
 		inline const std::string& Path() const { return m_path; }
 
+		static const Texture* WhiteTexture();
+
 		inline operator bool() const { return Valid(); }
 
 	private:

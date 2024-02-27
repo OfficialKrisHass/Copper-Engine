@@ -389,5 +389,17 @@ namespace Copper::Renderer {
 
 	Color& SkyboxColor() { return data.skyboxColor; }
 
+}
+
+namespace Copper {
+
+	using namespace Renderer;
+
+	const Texture* Texture::WhiteTexture() {
+
+		CU_ASSERT(data.whiteMaterial.texture, "White material texture missing");
+		return data.whiteMaterial.texture;
+
+	}
 
 }

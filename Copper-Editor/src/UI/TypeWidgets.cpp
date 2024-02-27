@@ -378,7 +378,7 @@ namespace Editor::UI {
 		bool ret = false;
 		std::string nodeText;
 
-		if (*texture == AssetStorage::GetAsset<Texture>(0)) {
+		if (*texture != Texture::WhiteTexture()) {
 
 			fs::path tmp = (*texture)->Path();
 			nodeText = tmp.filename().string();

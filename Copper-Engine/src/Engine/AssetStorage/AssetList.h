@@ -18,6 +18,8 @@ namespace Copper::AssetStorage {
 
 		template<typename... Args> T* Create(Args&&... args) {
 
+			CUP_FUNCTION();
+
 			// List empty
 
 			if (!m_head) {
@@ -47,8 +49,10 @@ namespace Copper::AssetStorage {
 		}
 		T* Get(uint32 index) {
 
+			CUP_FUNCTION();
+
 			Node* node = GetNode(index);
-			CU_ASSERT(node, "Invalid List nodes! AssetList::Get, index: ({})", index);
+			CU_ASSERT(node, "Invalid List nodes!");
 			if (!node) return nullptr;
 
 			return &node->data;
@@ -70,22 +74,26 @@ namespace Copper::AssetStorage {
 
 		Node* GetNode(uint32 index) {
 
+			CUP_FUNCTION();
+
 			if (index >= m_len || index < 0) return nullptr;
 
 			Node* node = m_head;
 			for (uint32 i = 0; i < index; i++)
 				node = node->next;
-			CU_ASSERT(node, "Invalid List nodes! AssetList::GetNode, index: ({})", index);
+			CU_ASSERT(node, "Invalid List nodes!");
 
 			return node;
 
 		}
 		uint32 GetIndex(T* data) {
 
+			CUP_FUNCTION();
+
 			Node* node = m_head;
 			for (uint32 i = 0; i < m_len; i++, node = node->next) {
 
-				CU_ASSERT(node, "Invalid List structure! AssetList::GetIndex");
+				CU_ASSERT(node, "Invalid List structure!");
 					
 				if (&node->data != data) continue;
 				return i;
@@ -97,6 +105,8 @@ namespace Copper::AssetStorage {
 		}
 
 		T* GetFromPath(const std::string& path) {
+
+			CUP_FUNCTION();
 
 			if (path == "") return nullptr;
 

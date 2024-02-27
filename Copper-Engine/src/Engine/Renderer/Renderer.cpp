@@ -8,6 +8,9 @@
 #include "Engine/Renderer/Mesh.h"
 #include "Engine/Renderer/Material.h"
 
+#include "Engine/AssetStorage/AssetList.h"
+#include "Engine/AssetStorage/AssetStorage.h"
+
 #include "Engine/Components/Transform.h"
 #include "Engine/Components/Light.h"
 
@@ -118,7 +121,7 @@ namespace Copper::Renderer {
 		// Textures
 
 		uint32 white = 0xffffffff;
-		data.whiteMaterial.texture = new Texture(1, 1, Texture::Format::RGBA, (uint8*) &white);
+		data.whiteMaterial.texture = AssetStorage::CreateAsset<Texture>(1, 1, Texture::Format::RGBA, (uint8*) &white);
 		data.materials[0] = &data.whiteMaterial;
 		data.materialCount = 1;
 

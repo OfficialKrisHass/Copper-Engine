@@ -5,6 +5,9 @@
 #include "Panels/Properties.h"
 #include "Panels/SceneHierarchy.h"
 
+#include "Engine/AssetStorage/AssetList.h"
+#include "Engine/AssetStorage/AssetStorage.h"
+
 #include <ImGui/imgui.h>
 
 using namespace Copper;
@@ -17,8 +20,9 @@ using std::filesystem::create_directories;
 
 namespace Editor {
 
-    fs::path editingPath = "";
     fs::path FileBrowser::m_projectRelativeDir = "";
+
+    fs::path editingPath = "";
 
     Texture directoryIcon;
     Texture fileIcon;
@@ -119,10 +123,11 @@ namespace Editor {
             }
             if ((path.extension() == ".png" || path.extension() == ".jpg") && ImGui::BeginDragDropSource()) {
 
-                std::string tmp = (GetProject().assetsPath / path).string();
-                const char* texturePath = tmp.c_str();
-
-                ImGui::SetDragDropPayload("FB_TEXTURE_PATH", texturePath, (tmp.size() + 1), ImGuiCond_Once);
+                Texture* texture = AssetStorage::GetAssetList<Texture>().GetFromPath(fullPath.string());
+                if (!texture)
+                    texture = AssetStorage::CreateAsset<Texture>(fullPath.string());
+                    
+                ImGui::SetDragDropPayload("FB_TEXTURE", &texture, sizeof(Texture*), ImGuiCond_Once);
                 ImGui::EndDragDropSource();
 
             }

@@ -280,12 +280,11 @@ namespace Copper {
 	}
 	void Scene::DeserializeAssetStorage(const YAML::Node& node) {
 
+		using namespace AssetStorage;
+
 		CUP_FUNCTION();
 
 		// Textures
-
-		uint32 white = 0xffffffff;
-		AssetStorage::CreateAsset<Texture>(1, 1, Texture::Format::RGBA, (uint8*) &white);
 
 		YAML::Node textures = node["Textures"];
 		uint32 len = textures.size();
@@ -296,10 +295,10 @@ namespace Copper {
 			UVector2I size = texture["Size"].as<UVector2I>();
 			std::string path = texture["Path"].as<std::string>();
 
-			if (size != UVector2I::zero)
-				AssetStorage::CreateAsset<Texture>(size);
+			if (path != "")
+				CreateAsset<Texture>(path);
 			else
-				AssetStorage::CreateAsset<Texture>(path);
+				CreateAsset<Texture>(size);
 
 		}
 

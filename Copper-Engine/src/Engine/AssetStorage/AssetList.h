@@ -96,6 +96,19 @@ namespace Copper::AssetStorage {
 
 		}
 
+		T* GetFromPath(const std::string& path) {
+
+			if (path == "") return nullptr;
+
+			Node* node = m_head;
+			for (uint32 i = 0; i < m_len && node->data.Path() != path; i++)
+				node = node->next;
+
+			if (!node) return nullptr;
+			return &node->data;
+
+		}
+
 	private:
 		Node* m_head = nullptr;
 		Node* m_tail = nullptr;

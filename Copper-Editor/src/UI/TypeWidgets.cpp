@@ -1,5 +1,8 @@
 #include "TypeWidgets.h"
 
+#include "Engine/AssetStorage/AssetList.h"
+#include "Engine/AssetStorage/AssetStorage.h"
+
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_internal.h>
 #include <ImGui/misc/cpp/imgui_stdlib.h>
@@ -367,7 +370,7 @@ namespace Editor::UI {
 
 	}
 
-	bool EditTexture(const std::string& name, Copper::Texture* texture) {
+	bool EditTexture(const std::string& name, Copper::Texture** texture) {
 
 		ImGuiID id = ImGuiID((uint32) (uint64) name.c_str());
 		ImGui::PushID(id);
@@ -375,9 +378,9 @@ namespace Editor::UI {
 		bool ret = false;
 		std::string nodeText;
 
-		if (*texture) {
+		if (*texture == AssetStorage::GetAsset<Texture>(0)) {
 
-			fs::path tmp = texture->Path();
+			fs::path tmp = (*texture)->Path();
 			nodeText = tmp.filename().string();
 
 		} else
@@ -417,10 +420,10 @@ namespace Editor::UI {
 
 		if (ImGui::BeginDragDropTargetCustom({ cursorPos, cursorPos + frameSize }, ImGuiID((uint32) (uint64) name.c_str()))) {
 
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FB_TEXTURE_PATH")) {
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FB_TEXTURE")) {
 
 				ret = true;
-				texture->Create((const char*) payload->Data);
+				*texture = *(Texture**) payload->Data;
 
 			}
 

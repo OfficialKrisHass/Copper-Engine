@@ -253,14 +253,16 @@ namespace Copper {
 
 		out << YAML::Key << "Asset Storage" << YAML::Value << YAML::BeginMap; // Main
 
+		// Textures
+
 		out << YAML::Key << "Textures" << YAML::Value << YAML::BeginSeq; // Textures
 		AssetList<Texture>& textures = GetAssetList<Texture>();
+		CU_ASSERT(textures.Get(0) == Texture::WhiteTexture(), "White texture is not the first Texture");
 
-		AssetList<Texture>::Node* node = textures.GetNode(1);
-		CU_ASSERT(node, "Missing White Texture in the Asset Storage!"); // 0th node is ALWAYS the white texture!
-		while (node) {
+		AssetList<Texture>::Node* textureNode = textures.GetNode(1);
+		while (textureNode) {
 
-			Texture* texture = &node->data;
+			Texture* texture = &textureNode->data;
 
 			out << YAML::BeginMap; // Texture
 
@@ -268,12 +270,33 @@ namespace Copper {
 			out << YAML::Key << "Path" << YAML::Value << texture->Path();
 
 			out << YAML::EndMap;
-
-			node = node->next;
+			textureNode = textureNode->next;
 
 		}
-
 		out << YAML::EndSeq; // Textures
+
+		// Materials
+
+		out << YAML::Key << "Materials" << YAML::Value << YAML::BeginSeq; // Materials
+		AssetList<Material>& materials = GetAssetList<Material>();
+		CU_ASSERT(materials.Get(0) == Material::WhiteMaterial(), "White material is not the first Material");
+
+		AssetList<Material>::Node* materialNode = materials.GetNode(1);
+		while (materialNode) {
+
+			Material* material = &materialNode->data;
+
+			out << YAML::BeginMap; // Material
+
+			out << YAML::Key << "Texture Index" << YAML::Value << textures.GetIndex(material->texture);
+			out << YAML::Key << "Albedo" << YAML::Value << material->albedo;
+			out << YAML::Key << "Tiling" << YAML::Value << material->tiling;
+
+			out << YAML::EndMap;
+			materialNode = materialNode->next;
+
+		}
+		out << YAML::EndSeq; // Materials
 
 		out << YAML::EndMap; // Main
 
@@ -287,8 +310,8 @@ namespace Copper {
 		// Textures
 
 		YAML::Node textures = node["Textures"];
-		uint32 len = textures.size();
-		for (uint32 i = 0; i < textures.size(); i++) {
+		uint32 len = (uint32) textures.size();
+		for (uint32 i = 0; i < len; i++) {
 
 			YAML::Node texture = textures[i];
 
@@ -299,6 +322,21 @@ namespace Copper {
 				CreateAsset<Texture>(path);
 			else
 				CreateAsset<Texture>(size);
+
+		}
+
+		// Materials
+
+		YAML::Node materials = node["Materials"];
+		len = (uint32) materials.size();
+		for (uint32 i = 0; i < len; i++) {
+
+			YAML::Node material = materials[i];
+			Material* mat = CreateAsset<Material>();
+			
+			mat->texture = GetAsset<Texture>(material["Texture Index"].as<uint32>());
+			mat->albedo = material["Albedo"].as<Color>();
+			mat->tiling = material["Tiling"].as<float>();
 
 		}
 
@@ -359,10 +397,7 @@ namespace Copper {
 					out << index;
 				out << YAML::EndSeq; // Indices
 
-				// TODO: Textures should be saved in asset storage instead
-				out << YAML::Key << "Texture Index" << YAML::Value << AssetStorage::GetAssetIndex(mesh.material.texture);
-				out << YAML::Key << "Albedo" << YAML::Value << mesh.material.albedo;
-				out << YAML::Key << "Tiling" << YAML::Value << mesh.material.tiling;
+				out << YAML::Key << "Material Index" << YAML::Value << AssetStorage::GetAssetIndex<Material>(mesh.material);
 
 				out << YAML::EndMap; // Mesh
 
@@ -551,10 +586,7 @@ namespace Copper {
 
 			}
 
-			mesh.material.texture = AssetStorage::GetAsset<Texture>(meshNode["Texture Index"].as<uint32>());
-
-			mesh.material.albedo = meshNode["Albedo"].as<Color>();
-			mesh.material.tiling = meshNode["Tiling"].as<float>();
+			mesh.material = AssetStorage::GetAsset<Material>(meshNode["Material Index"].as<uint32>());
 
 			renderer->meshes.push_back(mesh);
 

@@ -62,7 +62,7 @@ namespace Copper::Renderer {
 		Material** materials = new Material*[MaxMaterials];
 		uint32 materialCount = 0;
 
-		Material whiteMaterial;
+		Material* whiteMaterial;
 
 		// Lights
 
@@ -118,11 +118,14 @@ namespace Copper::Renderer {
 		data.vbo.Unbind();
 		data.vao.Unbind();
 
-		// Textures
+		// White Material
+
+		data.whiteMaterial = AssetStorage::CreateAsset<Material>();
 
 		uint32 white = 0xffffffff;
-		data.whiteMaterial.texture = AssetStorage::CreateAsset<Texture>(1, 1, Texture::Format::RGBA, (uint8*) &white);
-		data.materials[0] = &data.whiteMaterial;
+		data.whiteMaterial->texture = AssetStorage::CreateAsset<Texture>(1, 1, Texture::Format::RGBA, (uint8*) &white);
+
+		data.materials[0] = data.whiteMaterial;
 		data.materialCount = 1;
 
 		// Lines
@@ -223,28 +226,34 @@ namespace Copper::Renderer {
 		const uint32 indicesCount = (uint32) mesh->indices.size();
 		const uint32 verticesCount = (uint32) mesh->vertices.size();
 
+		// Check if batch is full
+
 		if (data.indicesCount + indicesCount > MaxIndices ||
 			data.verticesCount + verticesCount > MaxVertices ||
 			data.materialCount >= MaxMaterials)
 			NewBatch();
 
+		// Get the material index
+
 		uint32 matIndex = 0;
 		for (uint32 i = 1; i < data.materialCount; i++) {
 
-			if (data.materials[i] != &mesh->material) continue;
+			if (data.materials[i] != mesh->material) continue;
 
 			matIndex = i;
 			break;
 
 		}
-		if (matIndex == 0 && mesh->material) {
+		if (matIndex == 0 && mesh->material != Material::WhiteMaterial()) {
 
 			matIndex = data.materialCount;
 
-			data.materials[data.materialCount] = &mesh->material;
+			data.materials[data.materialCount] = mesh->material;
 			data.materialCount++;
 
 		}
+
+		// Load Mesh Data
 
 		for (uint32 i = 0; i < verticesCount; i++) {
 
@@ -255,7 +264,7 @@ namespace Copper::Renderer {
 			vertex.color = mesh->colors[i];
 
 			vertex.uv = mesh->uvs[i];
-			vertex.materialIndex = matIndex;
+			vertex.materialIndex = (float) matIndex; // TODO: Figure the fuck out why it has to be a float on shader side
 
 		}
 		for (uint32 i = 0; i < indicesCount; i++)
@@ -395,10 +404,19 @@ namespace Copper {
 
 	using namespace Renderer;
 
+	const Material* Material::WhiteMaterial() {
+
+		CU_ASSERT(data.whiteMaterial, "White material is nullptr");
+
+		return data.whiteMaterial;
+
+	}
 	const Texture* Texture::WhiteTexture() {
 
-		CU_ASSERT(data.whiteMaterial.texture, "White material texture missing");
-		return data.whiteMaterial.texture;
+		CU_ASSERT(data.whiteMaterial, "White material is nullptr");
+		CU_ASSERT(data.whiteMaterial->texture, "White material texture is nullptr");
+
+		return data.whiteMaterial->texture;
 
 	}
 

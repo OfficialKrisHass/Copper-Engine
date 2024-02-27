@@ -19,7 +19,7 @@ namespace Copper {
 
 		std::vector<uint32> indices;
 
-		Material material;
+		Material* material = nullptr;
 
 	};
 

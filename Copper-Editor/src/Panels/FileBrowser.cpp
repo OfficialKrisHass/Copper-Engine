@@ -1,6 +1,7 @@
 ﻿#include "FileBrowser.h"
 
 #include "Core/EditorApp.h"
+#include "Core/AssetFileDatabase.h"
 
 #include "Panels/Properties.h"
 #include "Panels/SceneHierarchy.h"
@@ -123,9 +124,7 @@ namespace Editor {
             }
             if ((path.extension() == ".png" || path.extension() == ".jpg") && ImGui::BeginDragDropSource()) {
 
-                Texture* texture = AssetStorage::GetAssetList<Texture>().GetFromPath(fullPath.string());
-                if (!texture)
-                    texture = AssetStorage::CreateAsset<Texture>(fullPath.string());
+                Texture* texture = AssetFileDatabase::GetAssetFromPath<Texture>(fullPath);
                     
                 ImGui::SetDragDropPayload("FB_TEXTURE", &texture, sizeof(Texture*), ImGuiCond_Once);
                 ImGui::EndDragDropSource();

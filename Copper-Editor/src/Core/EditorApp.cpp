@@ -14,6 +14,7 @@
 
 #include "Core/SceneMeta.h"
 #include "Core/ProjectFileWatcher.h"
+#include "Core/AssetFileDatabase.h"
 
 #include "Core/Utils/ModelLoader.h"
 
@@ -170,6 +171,8 @@ namespace Editor {
 		ProjectFileWatcher::AddFileChangeCallback(FileChangedCallback);
 
 		LoadEditorData();
+
+		AssetFileDatabase::Initialize();
 
 		data.themeEditor.LoadTheme("assets/Themes/Default.cutheme");
 
@@ -513,8 +516,18 @@ namespace Editor {
 
 			if (ImGui::BeginMenu("Project")) {
 
-				if (ImGui::MenuItem("New Project")) NewProject();
-				if (ImGui::MenuItem("Open Project")) OpenProject();
+				if (ImGui::MenuItem("New Project")) {
+					
+					NewProject();
+					AssetFileDatabase::Refresh();
+				
+				}
+				if (ImGui::MenuItem("Open Project")) {
+
+					OpenProject();
+					AssetFileDatabase::Refresh();
+
+				}
 				if (ImGui::MenuItem("Save Project", "Ctrl+Shift+S", false, data.project)) { data.project.Save(); SaveEditorData(); SaveScene(); }
 
 				ImGui::Separator();

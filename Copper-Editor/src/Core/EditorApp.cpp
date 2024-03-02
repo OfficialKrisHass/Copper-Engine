@@ -14,9 +14,10 @@
 
 #include "Core/SceneMeta.h"
 #include "Core/ProjectFileWatcher.h"
-#include "Core/AssetFileDatabase.h"
 
 #include "Core/Utils/ModelLoader.h"
+
+#include "AssetFiles/AssetFileDatabase.h"
 
 #include "Projects/Project.h"
 #include "Projects/ProjectTemplate.h"

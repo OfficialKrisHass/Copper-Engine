@@ -307,6 +307,13 @@ namespace Copper {
 
 		CUP_FUNCTION();
 
+		if (!node) {
+
+			LogError("Asset Storage node is invalid for scene:\n\t{}", path.string());
+			return;
+
+		}
+
 		// Textures
 
 		YAML::Node textures = node["Textures"];

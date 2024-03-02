@@ -35,10 +35,9 @@ namespace Editor::AssetFileDatabase {
 
 		for (const fs::directory_entry& entry : fs::recursive_directory_iterator(dir)) {
 
+			// Filter all entries that aren't an Asset file
+
 			if (entry.is_directory()) continue;
-
-			Log(entry.path().string());
-
 			fs::path path = entry.path();
 
 			std::string extension = path.extension().string();

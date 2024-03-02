@@ -19,6 +19,17 @@ namespace Editor {
         static Copper::fs::path m_projectRelativeDir;
         
         virtual void UI() override;
+
+        void RelativeDirHeader();
+        void WindowPopup();
+        void EntryPopup(const Copper::fs::path& path);
+
+        void EntryIcon(bool directory);
+
+        void DirectoryEntry(const Copper::fs::path& path, const std::string& filename);
+        void FileEntry(const Copper::fs::path& path, const std::string& filename, const std::string& extension);
+
+        void EditName(const Copper::fs::path& path, const std::string& filename);
     
     };
 }

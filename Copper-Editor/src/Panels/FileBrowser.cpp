@@ -10,6 +10,8 @@
 #include "Engine/AssetStorage/AssetList.h"
 #include "Engine/AssetStorage/AssetStorage.h"
 
+#include "Engine/Utilities/FileTemplate.h"
+
 #include <ImGui/imgui.h>
 
 #include <fstream>
@@ -149,8 +151,12 @@ namespace Editor {
                 editingPath = path;
 
             }
-            if (ImGui::MenuItem("Script"))
-                NewScript(GetProject().assetsPath / m_projectRelativeDir);
+            if (ImGui::MenuItem("Script")) {
+
+                Utils::FileFromTemplate("Script.cs", (GetProject().assetsPath / m_projectRelativeDir / "Script.cs").string(), {{"ScriptName", "Script"}});
+                editingPath = GetProject().assetsPath / m_projectRelativeDir / "Script.cs";
+
+            }
 
             ImGui::EndMenu();
 
@@ -231,7 +237,9 @@ namespace Editor {
 
             const std::string newFullPath = (GetProject().assetsPath / editingPath).string();
             CU_ASSERT(!rename(fullPath.c_str(), newFullPath.c_str()), "An error occured trying to rename a file!\n\tFile: {}\n\tNew name: {}", path.string(), buffer);
-            if (path.extension() == ".copper")
+            
+            const char* extension = path.extension().string().c_str();
+            if (extension == ".copper")
                 CU_ASSERT(!rename((fullPath + ".cum").c_str(), (newFullPath + ".cum").c_str()), "An error occured trying to rename a file!\n\tFile: {}\n\tNew name: {}", path.string(), buffer);
 
             editingPath = "";

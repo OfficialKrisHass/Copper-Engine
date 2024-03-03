@@ -30,6 +30,8 @@ namespace Editor {
         void FileEntry(const Copper::fs::path& path, const std::string& filename, const std::string& extension);
 
         void EditName(const Copper::fs::path& path, const std::string& filename);
+
+        void NewScript(const Copper::fs::path& path);
     
     };
 }

@@ -1,0 +1,17 @@
+using System;
+using Copper;
+
+public class Script : Component {
+
+    private void Create() {
+
+        //
+
+    }
+    private void Update() {
+
+        //
+
+    }
+
+}

@@ -12,6 +12,8 @@
 
 #include <ImGui/imgui.h>
 
+#include <fstream>
+
 #define PADDING 16.0f
 #define THUMBNAIL_SIZE 128.0f
 
@@ -135,15 +137,23 @@ namespace Editor {
 
         if (!ImGui::BeginPopupContextWindow("##File Browser")) return;
 
-        if (ImGui::MenuItem("Folder", 0, false, GetProject().name != "")) {
-        
-            fs::path path = GetProject().assetsPath / m_projectRelativeDir;
-            path /= "New Folder";
-        
-            fs::create_directories(path.string());
-        
-            editingPath = path;
-        
+        if (ImGui::BeginMenu("New")) {
+
+            if (ImGui::MenuItem("Folder", 0, false, GetProject().name != "")) {
+
+                fs::path path = GetProject().assetsPath / m_projectRelativeDir;
+                path /= "New Folder";
+
+                fs::create_directories(path.string());
+
+                editingPath = path;
+
+            }
+            if (ImGui::MenuItem("Script"))
+                NewScript(GetProject().assetsPath / m_projectRelativeDir);
+
+            ImGui::EndMenu();
+
         }
         
         ImGui::EndPopup();
@@ -167,7 +177,7 @@ namespace Editor {
         uint32_t iconID = directory ? directoryIcon.ID() : fileIcon.ID();
 
         ImGui::PushStyleColor(ImGuiCol_Button, { 0.0f, 0.0f, 0.0f, 0.0f });
-        ImGui::ImageButton(reinterpret_cast<ImTextureID>(iconID), { THUMBNAIL_SIZE, THUMBNAIL_SIZE }, { 0, 1 }, { 1, 0 });
+        ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64) iconID), { THUMBNAIL_SIZE, THUMBNAIL_SIZE }, { 0, 1 }, { 1, 0 });
         ImGui::PopStyleColor();
 
     }
@@ -227,6 +237,15 @@ namespace Editor {
             editingPath = "";
 
         }
+
+    }
+
+    void FileBrowser::NewScript(const Copper::fs::path& path) {
+
+        std::ifstream templ("assets/Templates/Script.cs.cut");
+        std::ofstream out(path / "Script.cs");
+
+        out << templ.rdbuf();
 
     }
 

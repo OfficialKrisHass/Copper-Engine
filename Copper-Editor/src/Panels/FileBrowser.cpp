@@ -2,7 +2,7 @@
 
 #include "Core/EditorApp.h"
 
-#include "AssetFiles/AssetFileDatabase.h"
+#include "AssetFile/AssetFileDatabase.h"
 
 #include "Panels/Properties.h"
 #include "Panels/SceneHierarchy.h"

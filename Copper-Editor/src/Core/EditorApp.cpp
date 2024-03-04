@@ -17,7 +17,7 @@
 
 #include "Core/Utils/ModelLoader.h"
 
-#include "AssetFiles/AssetFileDatabase.h"
+#include "AssetFile/AssetFileDatabase.h"
 
 #include "Projects/Project.h"
 #include "Projects/ProjectTemplate.h"
@@ -172,8 +172,6 @@ namespace Editor {
 		ProjectFileWatcher::AddFileChangeCallback(FileChangedCallback);
 
 		LoadEditorData();
-
-		AssetFileDatabase::Initialize();
 
 		data.themeEditor.LoadTheme("assets/Themes/Default.cutheme");
 
@@ -686,6 +684,8 @@ namespace Editor {
 
 		data.scene = GetScene();
 		FileBrowser::SetRelativeDir("");
+
+		AssetFileDatabase::Initialize();
 
 		if (uint16_t issueFlags = ProjectChecker::CheckProject(data.project)) {
 

@@ -83,9 +83,6 @@ namespace Copper {
 
 		// Serialization
 
-		void SerializeAssetStorage(YAML::Emitter& out);
-		void DeserializeAssetStorage(const YAML::Node& node);
-
 		void SerializeEntity(InternalEntity* entity, YAML::Emitter& out);
 		void DeserializeEntity(InternalEntity* entity, const YAML::Node& node);
 

@@ -3,7 +3,7 @@ message(STATUS "BUILDING Copper-Editor")
 
 # Source Files
 include(${PROJECT_SOURCE_DIR}/Copper-Editor/src/Core/CMakeLists.txt)
-include(${PROJECT_SOURCE_DIR}/Copper-Editor/src/AssetFiles/CMakeLists.txt)
+include(${PROJECT_SOURCE_DIR}/Copper-Editor/src/AssetFile/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Editor/src/Panels/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Editor/src/Projects/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Editor/src/UI/CMakeLists.txt)

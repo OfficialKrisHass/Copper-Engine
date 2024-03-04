@@ -166,10 +166,6 @@ namespace Copper {
 		out << YAML::Key << "Version" << YAML::Value << SCENE_VERSION;
 		out << YAML::Key << "Name" << YAML::Value << name;
 
-		// Asset Storage
-
-		SerializeAssetStorage(out);
-
 		// Entities
 
 		out << YAML::Key << "Entities" << YAML::Value << YAML::BeginMap; // Entities
@@ -224,10 +220,6 @@ namespace Copper {
 
 		this->name = data["Name"].as<std::string>();
 
-		// Asset Storage
-
-		DeserializeAssetStorage(data["Asset Storage"]);
-
 		// Entities
 
 		YAML::Node entities = data["Entities"];
@@ -243,110 +235,6 @@ namespace Copper {
 
 		return true;
 		
-	}
-
-	void Scene::SerializeAssetStorage(YAML::Emitter& out) {
-
-		using namespace AssetStorage;
-
-		CUP_FUNCTION();
-
-		out << YAML::Key << "Asset Storage" << YAML::Value << YAML::BeginMap; // Main
-
-		// Textures
-
-		out << YAML::Key << "Textures" << YAML::Value << YAML::BeginSeq; // Textures
-		AssetList<Texture>& textures = GetAssetList<Texture>();
-		CU_ASSERT(textures.Get(0) == Texture::WhiteTexture(), "White texture is not the first Texture");
-
-		AssetList<Texture>::Node* textureNode = textures.GetNode(1);
-		while (textureNode) {
-
-			Texture* texture = &textureNode->data;
-
-			out << YAML::BeginMap; // Texture
-
-			out << YAML::Key << "Size" << YAML::Value << texture->Size();
-			out << YAML::Key << "Path" << YAML::Value << texture->Path();
-
-			out << YAML::EndMap;
-			textureNode = textureNode->next;
-
-		}
-		out << YAML::EndSeq; // Textures
-
-		// Materials
-
-		out << YAML::Key << "Materials" << YAML::Value << YAML::BeginSeq; // Materials
-		AssetList<Material>& materials = GetAssetList<Material>();
-		CU_ASSERT(materials.Get(0) == Material::WhiteMaterial(), "White material is not the first Material");
-
-		AssetList<Material>::Node* materialNode = materials.GetNode(1);
-		while (materialNode) {
-
-			Material* material = &materialNode->data;
-
-			out << YAML::BeginMap; // Material
-
-			out << YAML::Key << "Texture Index" << YAML::Value << textures.GetIndex(material->texture);
-			out << YAML::Key << "Albedo" << YAML::Value << material->albedo;
-			out << YAML::Key << "Tiling" << YAML::Value << material->tiling;
-
-			out << YAML::EndMap;
-			materialNode = materialNode->next;
-
-		}
-		out << YAML::EndSeq; // Materials
-
-		out << YAML::EndMap; // Main
-
-	}
-	void Scene::DeserializeAssetStorage(const YAML::Node& node) {
-
-		using namespace AssetStorage;
-
-		CUP_FUNCTION();
-
-		if (!node) {
-
-			LogError("Asset Storage node is invalid for scene:\n\t{}", path.string());
-			return;
-
-		}
-
-		// Textures
-
-		YAML::Node textures = node["Textures"];
-		uint32 len = (uint32) textures.size();
-		for (uint32 i = 0; i < len; i++) {
-
-			YAML::Node texture = textures[i];
-
-			UVector2I size = texture["Size"].as<UVector2I>();
-			std::string path = texture["Path"].as<std::string>();
-
-			if (path != "")
-				CreateAsset<Texture>(path);
-			else
-				CreateAsset<Texture>(size);
-
-		}
-
-		// Materials
-
-		YAML::Node materials = node["Materials"];
-		len = (uint32) materials.size();
-		for (uint32 i = 0; i < len; i++) {
-
-			YAML::Node material = materials[i];
-			Material* mat = CreateAsset<Material>();
-			
-			mat->texture = GetAsset<Texture>(material["Texture Index"].as<uint32>());
-			mat->albedo = material["Albedo"].as<Color>();
-			mat->tiling = material["Tiling"].as<float>();
-
-		}
-
 	}
 
 	void Scene::SerializeEntity(InternalEntity* entity, YAML::Emitter& out) {

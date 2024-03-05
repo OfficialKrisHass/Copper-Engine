@@ -1,6 +1,6 @@
 #include "Deserializer.h"
 
-#include <Engine/AssetStorage/AssetList.h>
+#include <Engine/AssetStorage/AssetMap.h>
 #include <Engine/AssetStorage/AssetStorage.h>
 
 #include <yaml-cpp/yaml.h>
@@ -21,7 +21,7 @@ namespace Editor::AssetFile {
 
 		}
 
-		ret->texture = AssetStorage::GetAsset<Texture>(node["Texture Index"].as<uint32>());
+		ret->texture = (Texture*) Texture::WhiteTexture();
 		ret->albedo = node["Albedo"].as<Color>();
 		ret->tiling = node["Tiling"].as<float>();
 

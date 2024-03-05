@@ -339,7 +339,7 @@ Entities:
           - 22
           - 23
           - 20
-        Material Index: 2
+        Material Index: 0
     Rigid Body:
       Static: true
       Gravity: false
@@ -493,7 +493,7 @@ Entities:
           - 22
           - 23
           - 20
-        Material Index: 3
+        Material Index: 0
     Rigid Body:
       Static: false
       Gravity: true
@@ -647,7 +647,7 @@ Entities:
           - 22
           - 23
           - 20
-        Material Index: 1
+        Material Index: 0
     Rigid Body:
       Static: false
       Gravity: true
@@ -838,7 +838,7 @@ Entities:
           - 22
           - 23
           - 20
-        Material Index: 4
+        Material Index: 0
     Rigid Body:
       Static: false
       Gravity: true

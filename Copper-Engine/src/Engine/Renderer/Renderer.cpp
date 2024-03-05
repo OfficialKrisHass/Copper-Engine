@@ -8,7 +8,7 @@
 #include "Engine/Renderer/Mesh.h"
 #include "Engine/Renderer/Material.h"
 
-#include "Engine/AssetStorage/AssetList.h"
+#include "Engine/AssetStorage/AssetMap.h"
 #include "Engine/AssetStorage/AssetStorage.h"
 
 #include "Engine/Components/Transform.h"

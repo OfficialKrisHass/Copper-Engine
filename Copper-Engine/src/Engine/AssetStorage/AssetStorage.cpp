@@ -6,10 +6,10 @@
 
 namespace Copper::AssetStorage {
 
-	AssetList<Texture> textureAssets;
-	AssetList<Material> materialAssets;
+	AssetMap<Texture> textureMap;
+	AssetMap<Material> materialMap;
 	
-	template<> AssetList<Texture>& GetAssetList<Texture>() { return textureAssets; }
-	template<> AssetList<Material>& GetAssetList<Material>() { return materialAssets; }
+	template<> AssetMap<Texture>& GetAssetMap<Texture>() { return textureMap; }
+	template<> AssetMap<Material>& GetAssetMap<Material>() { return materialMap; }
 
 }

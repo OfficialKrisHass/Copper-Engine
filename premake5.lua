@@ -65,7 +65,8 @@ project "Copper-Engine"
         "%{prj.name}/lib/ImGuizmo",
         "%{prj.name}/lib/stb",
         "%{prj.name}/lib/Copper-Math",
-        "%{prj.name}/lib/pfd"
+        "%{prj.name}/lib/pfd",
+        "%{prj.name}/lib/uuid",
 
     }
 
@@ -97,7 +98,7 @@ project "Copper-Engine"
         "VERSION_MAJOR=0",
         "VERSION_MINOR=3",
         "VERSION_PATCH=0",
-        "VERSION_TWEAK=73",
+        "VERSION_TWEAK=74",
         
         "SCENE_VERSION=0",
 
@@ -144,6 +145,7 @@ project "Copper-Editor"
         "Copper-Engine/lib/ImGui",
         "Copper-Engine/lib/ImGuizmo",
         "Copper-Engine/lib/Copper-Math",
+        "Copper-Engine/lib/uuid",
         
         "Copper-Engine/lib/GLM/include",
         "Copper-Engine/lib/yaml-cpp/include",

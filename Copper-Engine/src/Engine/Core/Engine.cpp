@@ -12,7 +12,7 @@
 #include "Engine/Renderer/Shader.h"
 #include "Engine/Renderer/Texture.h"
 
-#include "Engine/AssetStorage/AssetList.h"
+#include "Engine/AssetStorage/AssetMap.h"
 #include "Engine/AssetStorage/AssetStorage.h"
 
 #include "Engine/UI/ImGui.h"

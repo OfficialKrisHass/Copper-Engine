@@ -23,7 +23,7 @@
 #include "Engine/Renderer/Mesh.h"
 #include "Engine/Renderer/Primitives.h"
 
-#include "Engine/AssetStorage/AssetList.h"
+#include "Engine/AssetStorage/AssetMap.h"
 #include "Engine/AssetStorage/AssetStorage.h"
 
 #include "Engine/Physics/Raycast.h"
@@ -292,7 +292,8 @@ namespace Copper {
 					out << index;
 				out << YAML::EndSeq; // Indices
 
-				out << YAML::Key << "Material Index" << YAML::Value << AssetStorage::GetAssetIndex<Material>(mesh.material);
+				// TODO: Replace with AssetPtr serialzation
+				out << YAML::Key << "Material Index" << YAML::Value << 0;
 
 				out << YAML::EndMap; // Mesh
 
@@ -481,7 +482,8 @@ namespace Copper {
 
 			}
 
-			mesh.material = AssetStorage::GetAsset<Material>(meshNode["Material Index"].as<uint32>());
+			// TODO: Replace with AssetPtr Deserialization
+			mesh.material = (Material*) Material::WhiteMaterial();
 
 			renderer->meshes.push_back(mesh);
 

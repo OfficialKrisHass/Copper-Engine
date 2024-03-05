@@ -1,6 +1,6 @@
 #include "TypeWidgets.h"
 
-#include "Engine/AssetStorage/AssetList.h"
+#include "Engine/AssetStorage/AssetMap.h"
 #include "Engine/AssetStorage/AssetStorage.h"
 
 #include <ImGui/imgui.h>

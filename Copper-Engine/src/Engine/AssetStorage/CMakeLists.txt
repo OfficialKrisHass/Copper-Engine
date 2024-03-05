@@ -1,4 +1,4 @@
-list(APPEND assetStorageSources AssetStorage.h AssetList.h
+list(APPEND assetStorageSources AssetStorage.h AssetMap.h
 								AssetStorage.cpp)
 list(TRANSFORM assetStorageSources PREPEND src/Engine/AssetStorage/)
 

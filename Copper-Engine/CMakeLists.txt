@@ -26,7 +26,7 @@ list(APPEND sources ${CMathSources})
 
 # Include dirs
 list(APPEND includeDirs lib/GLFW/include lib/GLAD/include lib/GLM/include lib/yaml-cpp/include lib/assimp/include lib/mono/include lib/PhysX/include
-                        lib/spdlog lib/ImGui lib/ImGuizmo lib/stb lib/Copper-Math lib/pfd)
+                        lib/spdlog lib/ImGui lib/ImGuizmo lib/stb lib/Copper-Math lib/pfd lib/uuid)
 
 # Defines
 list(APPEND defines CU_ENGINE CU_EDITOR CU_CMAKE _CRT_SECURE_NO_WARNINGS INCLUDE_GLM)

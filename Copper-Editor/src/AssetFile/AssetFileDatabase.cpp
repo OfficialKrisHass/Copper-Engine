@@ -14,7 +14,7 @@ namespace Editor::AssetFileDatabase {
 
 	using namespace Copper;
 
-	std::unordered_map<fs::path, void*> assetFiles;
+	std::unordered_map<fs::path, UUID> assetFiles;
 
 	void LoadAsset(const fs::path& path, const std::string& extension);
 
@@ -57,7 +57,7 @@ namespace Editor::AssetFileDatabase {
 
 	}
 
-	void* GetAssetFromPath(const fs::path& path) {
+	const UUID& GetAssetFromPath(const fs::path& path) {
 		
 		CUP_FUNCTION();
 		if (assetFiles.find(path) == assetFiles.end()) {
@@ -75,15 +75,15 @@ namespace Editor::AssetFileDatabase {
 
 		CUP_FUNCTION();
 
-		void* asset = nullptr;
+		UUID assetUUID;
 		if (extension == ".png" || extension == ".jpg")
-			asset = AssetStorage::CreateAsset<Texture>(path.string());
+			assetUUID = AssetStorage::CreateAsset<TextureData>(path.string()).AssetUUID();
 		else if (extension == ".mat")
-			asset = AssetFile::DeserializeMaterial(path);
+			assetUUID = AssetFile::DeserializeMaterial(path).AssetUUID();
 
 		CU_ASSERT(asset, "Didn't load the Asset at path '{}'", path.string());
 
-		assetFiles[path] = asset;
+		assetFiles[path] = assetUUID;
 
 	}
 

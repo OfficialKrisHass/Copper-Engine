@@ -35,15 +35,15 @@ namespace Editor {
 
     fs::path editingPath = "";
 
-    Texture directoryIcon;
-    Texture fileIcon;
+    TextureData directoryIcon;
+    TextureData fileIcon;
 
     FileBrowser::FileBrowser(const fs::path& initialDir) : Panel("File Browser") {
         
         m_projectRelativeDir = initialDir;
 
-        directoryIcon.Create("assets/Icons/DirectoryIcon.png", Texture::Format::RGBA);
-        fileIcon.Create("assets/Icons/FileIcon.png", Texture::Format::RGBA);
+        directoryIcon.Create("assets/Icons/DirectoryIcon.png", TextureData::Format::RGBA);
+        fileIcon.Create("assets/Icons/FileIcon.png", TextureData::Format::RGBA);
 
     }
 
@@ -213,9 +213,9 @@ namespace Editor {
         }
         if ((extension == ".png" || extension == ".jpg") && ImGui::BeginDragDropSource()) {
 
-            Texture* texture = AssetFileDatabase::GetAssetFromPath<Texture>(GetProject().assetsPath / path);
+            Texture& texture = AssetFileDatabase::GetAssetFromPath<Texture>(GetProject().assetsPath / path);
 
-            ImGui::SetDragDropPayload("FB_TEXTURE", &texture, sizeof(Texture*), ImGuiCond_Once);
+            ImGui::SetDragDropPayload("FB_TEXTURE", &texture, sizeof(Texture), ImGuiCond_Once);
             ImGui::EndDragDropSource();
 
         }

@@ -2,20 +2,20 @@
 
 #include "Engine/Core/Core.h"
 
-#include "Engine/Renderer/Texture.h"
+#include "Engine/AssetStorage/AssetPtr.h"
 
 namespace Copper {
 
-	class Material {
+	class MaterialData {
 
 	public:
-		Material() = default;
+		MaterialData() = default;
 
-		Texture* texture = nullptr;
+		Texture texture;
 		Color albedo = Color::white;
 		float tiling = 1.0f;
-
-		static const Material* WhiteMaterial();
+		
+		static const Material WhiteMaterial();
 
 		inline operator bool() const { return texture; }
 

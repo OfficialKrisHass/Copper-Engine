@@ -292,8 +292,7 @@ namespace Copper {
 					out << index;
 				out << YAML::EndSeq; // Indices
 
-				// TODO: Replace with AssetPtr serialzation
-				out << YAML::Key << "Material Index" << YAML::Value << 0;
+				out << YAML::Key << "Material" << YAML::Value << mesh.material;
 
 				out << YAML::EndMap; // Mesh
 
@@ -482,8 +481,7 @@ namespace Copper {
 
 			}
 
-			// TODO: Replace with AssetPtr Deserialization
-			mesh.material = (Material*) Material::WhiteMaterial();
+			mesh.material = meshNode["Material"].as<Material>();
 
 			renderer->meshes.push_back(mesh);
 

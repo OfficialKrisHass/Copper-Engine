@@ -370,7 +370,7 @@ namespace Editor::UI {
 
 	}
 
-	bool EditTexture(const std::string& name, Copper::Texture** texture) {
+	bool EditTexture(const std::string& name, Copper::Texture* texture) {
 
 		ImGuiID id = ImGuiID((uint32) (uint64) name.c_str());
 		ImGui::PushID(id);
@@ -378,7 +378,7 @@ namespace Editor::UI {
 		bool ret = false;
 		std::string nodeText;
 
-		if (*texture != Texture::WhiteTexture()) {
+		if (*texture != TextureData::WhiteTexture()) {
 
 			fs::path tmp = (*texture)->Path();
 			nodeText = tmp.filename().string();
@@ -423,7 +423,7 @@ namespace Editor::UI {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FB_TEXTURE")) {
 
 				ret = true;
-				*texture = *(Texture**) payload->Data;
+				*texture = *(Texture*) payload->Data;
 
 			}
 

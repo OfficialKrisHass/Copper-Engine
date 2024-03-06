@@ -59,10 +59,10 @@ namespace Copper::Renderer {
 
 		// Materials
 
-		Material** materials = new Material*[MaxMaterials];
+		Material* materials = new Material[MaxMaterials];
 		uint32 materialCount = 0;
 
-		Material* whiteMaterial;
+		Material whiteMaterial;
 
 		// Lights
 
@@ -120,10 +120,10 @@ namespace Copper::Renderer {
 
 		// White Material
 
-		data.whiteMaterial = AssetStorage::CreateAsset<Material>();
+		data.whiteMaterial = AssetStorage::CreateAsset<MaterialData>();
 
 		uint32 white = 0xffffffff;
-		data.whiteMaterial->texture = AssetStorage::CreateAsset<Texture>(1, 1, Texture::Format::RGBA, (uint8*) &white);
+		data.whiteMaterial->texture = AssetStorage::CreateAsset<TextureData>(1, 1, TextureData::Format::RGBA, (uint8*) &white);
 
 		data.materials[0] = data.whiteMaterial;
 		data.materialCount = 1;
@@ -244,7 +244,7 @@ namespace Copper::Renderer {
 			break;
 
 		}
-		if (matIndex == 0 && mesh->material != Material::WhiteMaterial()) {
+		if (matIndex == 0 && mesh->material != MaterialData::WhiteMaterial()) {
 
 			matIndex = data.materialCount;
 
@@ -404,14 +404,14 @@ namespace Copper {
 
 	using namespace Renderer;
 
-	const Material* Material::WhiteMaterial() {
+	const Material MaterialData::WhiteMaterial() {
 
 		CU_ASSERT(data.whiteMaterial, "White material is nullptr");
 
 		return data.whiteMaterial;
 
 	}
-	const Texture* Texture::WhiteTexture() {
+	const Texture TextureData::WhiteTexture() {
 
 		CU_ASSERT(data.whiteMaterial, "White material is nullptr");
 		CU_ASSERT(data.whiteMaterial->texture, "White material texture is nullptr");

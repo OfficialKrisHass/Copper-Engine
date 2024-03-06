@@ -82,8 +82,8 @@ namespace Editor {
 
 		// Icons
 
-		Texture playIcon;
-		Texture stopIcon;
+		TextureData playIcon;
+		TextureData stopIcon;
 		
 		// Panels
 
@@ -156,8 +156,8 @@ namespace Editor {
 		data.gamePanelSize = UVector2I(1280, 720);
 		data.viewportFBO = FrameBuffer(data.viewportSize);
 		
-		data.playIcon.Create("assets/Icons/PlayButton.png", Texture::Format::RGBA);
-		data.stopIcon.Create("assets/Icons/StopButton.png", Texture::Format::RGBA);
+		data.playIcon.Create("assets/Icons/PlayButton.png", TextureData::Format::RGBA);
+		data.stopIcon.Create("assets/Icons/StopButton.png", TextureData::Format::RGBA);
 		
 		data.sceneHierarchy = SceneHierarchy();
 		data.properties = Properties();

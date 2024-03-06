@@ -7,21 +7,41 @@
 
 namespace Copper {
 
+	template<typename AssetType> class AssetPtr;
+
 	// A hash map of UUID-AssetType key-value type
 	template<typename AssetType> class AssetMap {
 
 	public:
-		template<typename... Args> AssetType* Create(Args&&... args) {
+		template<typename... Args> AssetPtr<AssetType> Create(Args&&... args) {
 
 			CUP_FUNCTION();
 
 			UUID uuid = GetUUID();
 			
 			m_map[uuid] = AssetType(args...);
+			return AssetPtr<AssetType>(uuid);
+
+		}
+		template<typename... Args> AssetType* CreateRaw(Args&&... args) {
+
+			CUP_FUNCTION();
+
+			UUID uuid = GetUUID();
+
+			m_map[uuid] = AssetType(args...);
 			return &m_map[uuid];
 
 		}
-		AssetType* Get(const UUID& uuid) {
+		AssetPtr<AssetType> Get(const UUID& uuid) {
+
+			CUP_FUNCTION();
+
+			if (m_map.find(uuid) == m_map.end()) return AssetPtr<AssetType>();
+			return AssetPtr<AssetType>(uuid);
+
+		}
+		AssetType* GetRaw(const UUID& uuid) {
 
 			CUP_FUNCTION();
 

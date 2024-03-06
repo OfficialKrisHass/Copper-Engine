@@ -81,7 +81,7 @@ namespace Editor::AssetFileDatabase {
 		else if (extension == ".mat")
 			assetUUID = AssetFile::DeserializeMaterial(path).AssetUUID();
 
-		CU_ASSERT(asset, "Didn't load the Asset at path '{}'", path.string());
+		CU_ASSERT(assetUUID != UUID(""), "Didn't load the Asset at path '{}'", path.string());
 
 		assetFiles[path] = assetUUID;
 

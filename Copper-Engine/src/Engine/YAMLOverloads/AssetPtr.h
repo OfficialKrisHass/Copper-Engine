@@ -35,7 +35,7 @@ namespace YAML {
 		}
 		static bool decode(const Node& node, AssetPtr<AssetType>& asset) {
 
-			if (!node.IsScalar() || node.size() != 16) return false;
+			if (!node.IsScalar()) return false;
 
 			asset = node.as<UUID>();
 

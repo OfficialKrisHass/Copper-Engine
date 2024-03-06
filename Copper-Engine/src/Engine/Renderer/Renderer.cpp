@@ -120,10 +120,10 @@ namespace Copper::Renderer {
 
 		// White Material
 
-		data.whiteMaterial = AssetStorage::CreateAsset<MaterialData>();
+		data.whiteMaterial = AssetStorage::InsertAsset<MaterialData>(UUID(""));
 
 		uint32 white = 0xffffffff;
-		data.whiteMaterial->texture = AssetStorage::CreateAsset<TextureData>(1, 1, TextureData::Format::RGBA, (uint8*) &white);
+		data.whiteMaterial->texture = AssetStorage::InsertAsset<TextureData>(UUID(""), 1, 1, TextureData::Format::RGBA, (uint8*) &white);
 
 		data.materials[0] = data.whiteMaterial;
 		data.materialCount = 1;

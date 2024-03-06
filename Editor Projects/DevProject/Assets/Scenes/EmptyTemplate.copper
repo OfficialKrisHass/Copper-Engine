@@ -170,7 +170,7 @@ Entities:
           - 22
           - 23
           - 20
-        Material: a5f91b20-74d9-4c48-bfa6-d9cc592db008
+        Material: ""
     Rigid Body:
       Static: false
       Gravity: true
@@ -339,7 +339,7 @@ Entities:
           - 22
           - 23
           - 20
-        Material: a5f91b20-74d9-4c48-bfa6-d9cc592db008
+        Material: ""
     Rigid Body:
       Static: true
       Gravity: false
@@ -493,7 +493,7 @@ Entities:
           - 22
           - 23
           - 20
-        Material: a5f91b20-74d9-4c48-bfa6-d9cc592db008
+        Material: ""
     Rigid Body:
       Static: false
       Gravity: true
@@ -647,7 +647,7 @@ Entities:
           - 22
           - 23
           - 20
-        Material: a5f91b20-74d9-4c48-bfa6-d9cc592db008
+        Material: ""
     Rigid Body:
       Static: false
       Gravity: true
@@ -838,7 +838,7 @@ Entities:
           - 22
           - 23
           - 20
-        Material: a5f91b20-74d9-4c48-bfa6-d9cc592db008
+        Material: ""
     Rigid Body:
       Static: false
       Gravity: true

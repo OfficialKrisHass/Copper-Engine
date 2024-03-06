@@ -32,9 +32,13 @@ namespace YAML {
 		}
 		static bool decode(const Node& node, UUID& uuid) {
 
-			if (!node.IsSequence() || node.size() != 16) return false;
+			if (!node.IsScalar()) return false;
 
-			uuid.fromStrFactory(node.as<std::string>());
+			std::string data = node.as<std::string>();
+			if (data == "")
+				uuid = UUID("");
+			else
+				uuid.fromStrFactory(data);
 
 			return true;
 

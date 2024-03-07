@@ -63,7 +63,7 @@ namespace Editor {
 		// Scene
 
 		Scene* scene;
-		MetaFile::SceneMeta sceneMeta;
+		SceneMeta sceneMeta;
 		bool changes;
 		
 		// Viewport
@@ -984,7 +984,7 @@ namespace Editor {
 	const Project& GetProject() { return data.project; }
 	SceneCamera& GetSceneCam() { return data.sceneCam; }
 
-	MetaFile::SceneMeta* GetSceneMeta() { return &data.sceneMeta; }
+	SceneMeta* GetSceneMeta() { return &data.sceneMeta; }
 
 	UVector2I GetViewportSize() { return data.viewportSize; }
 

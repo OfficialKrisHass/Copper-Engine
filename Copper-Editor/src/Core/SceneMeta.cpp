@@ -11,7 +11,7 @@
 using namespace Copper;
 using std::filesystem::exists;
 
-namespace Editor::MetaFile {
+namespace Editor {
 
 	void SceneMeta::Serialize() {
 

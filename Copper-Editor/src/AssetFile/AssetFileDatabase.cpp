@@ -4,6 +4,7 @@
 #include "Core/EditorApp.h"
 
 #include "AssetFile/Deserializer.h"
+#include "AssetFile/MetaFile.h"
 
 #include "Engine/AssetStorage/AssetMap.h"
 #include "Engine/AssetStorage/AssetStorage.h"
@@ -75,11 +76,14 @@ namespace Editor::AssetFileDatabase {
 
 		CUP_FUNCTION();
 
-		UUID assetUUID;
+		MetaFile meta;
+		meta.Deserialize(path.string() + ".cum");
+		UUID assetUUID = meta.AssetUUID();
+
 		if (extension == ".png" || extension == ".jpg")
-			assetUUID = AssetStorage::CreateAsset<TextureData>(path.string()).AssetUUID();
+			AssetStorage::InsertAsset<TextureData>(assetUUID, path.string());
 		else if (extension == ".mat")
-			assetUUID = AssetFile::DeserializeMaterial(path).AssetUUID();
+			AssetFile::DeserializeMaterial(path, assetUUID);
 
 		CU_ASSERT(assetUUID != UUID(""), "Didn't load the Asset at path '{}'", path.string());
 
@@ -93,8 +97,8 @@ namespace Editor::AssetFileDatabase {
 
 		if (type == ProjectFileWatcher::FileChangeType::RenamedNewName || type == ProjectFileWatcher::FileChangeType::RenamedOldName) return;
 
-		std::string extension = path.extension().string();
-		if (extension != ".png" && extension != ".jpg") return;
+		const std::string extension = path.extension().string();
+		if (!CheckExtension(extension)) return;
 
 		if (type == ProjectFileWatcher::FileChangeType::Created || type == ProjectFileWatcher::FileChangeType::Changed)
 			LoadAsset(path, extension);

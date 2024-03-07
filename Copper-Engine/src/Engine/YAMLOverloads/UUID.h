@@ -38,7 +38,7 @@ namespace YAML {
 			if (data == "")
 				uuid = UUID("");
 			else
-				uuid.fromStrFactory(data);
+				uuid = UUID::fromStrFactory(data);
 
 			return true;
 

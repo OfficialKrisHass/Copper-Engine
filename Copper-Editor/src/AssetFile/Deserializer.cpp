@@ -4,12 +4,15 @@
 #include <Engine/AssetStorage/AssetStorage.h>
 
 #include <yaml-cpp/yaml.h>
+#include <fstream>
 
 namespace Editor::AssetFile {
 
 	using namespace Copper;
 
-	Material DeserializeMaterial(const Copper::fs::path& path) {
+	Material DeserializeMaterial(const fs::path& path, const UUID& uuid) {
+
+		CUP_FUNCTION();
 
 		YAML::Node node;
 		try { node = YAML::LoadFile(path.string()); } catch (YAML::Exception e) {
@@ -19,13 +22,38 @@ namespace Editor::AssetFile {
 
 		}
 
-		Material ret = AssetStorage::CreateAsset<MaterialData>();
+		Material ret = AssetStorage::InsertAsset<MaterialData>(uuid);
 
-		ret->texture = (Texture) TextureData::WhiteTexture();
+		ret->texture = node["Texture"].as<Texture>();
 		ret->albedo = node["Albedo"].as<Color>();
 		ret->tiling = node["Tiling"].as<float>();
 
 		return ret;
+
+	}
+
+	void SerializeMaterial(const fs::path& path, const Material& material) {
+
+		CUP_FUNCTION();
+
+		// Prepare
+
+		YAML::Emitter out;
+		out << YAML::BeginMap; // Main
+
+		// Asset
+
+		out << YAML::Key << "Texture" << YAML::Value << material->texture;
+		out << YAML::Key << "Albedo" << YAML::Value << material->albedo;
+		out << YAML::Key << "Tiling" << YAML::Value << material->tiling;
+
+		out << YAML::EndMap; // Main
+
+		// Finish
+
+		std::ofstream file(path);
+		file << out.c_str();
+		file.close();
 
 	}
 

@@ -22,7 +22,7 @@ namespace Editor {
 
 	const Project& GetProject();
 	SceneCamera& GetSceneCam();
-	MetaFile::SceneMeta* GetSceneMeta();
+	SceneMeta* GetSceneMeta();
 	Copper::UVector2I GetViewportSize();
 
 	void SetChanges(bool value);

@@ -2,7 +2,7 @@
 
 #include <Copper.h>
 
-namespace Editor::MetaFile {
+namespace Editor {
 
 	struct SceneMeta {
 

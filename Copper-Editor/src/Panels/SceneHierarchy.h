@@ -13,21 +13,22 @@ namespace Editor {
 	public:
 		SceneHierarchy();
 		
-		//Getters
-		inline Copper::Entity* GetSelectedEntity() { return &m_selectedEntity; }
+		// Getters
+		inline static Copper::Entity GetSelectedEntity() { return m_selectedEntity; }
 
-		//Setters
-		inline void SetSelectedEntity(Copper::InternalEntity* entity) { m_selectedEntity = entity; }
-		inline void SetScene(Copper::Scene* scene) {
+		// Setters
+
+		inline static void SetScene(Copper::Scene* scene) {
 			
-			this->m_scene = scene;
-			this->m_selectedEntity = nullptr;
+			m_scene = scene;
+			m_selectedEntity = nullptr;
 		
 		}
+		inline static void SetSelectedEntity(Copper::InternalEntity* entity) { m_selectedEntity = entity; }
 
 	private:
-		Copper::Entity m_selectedEntity = nullptr;
-		Copper::Scene* m_scene = nullptr;
+		static Copper::Entity m_selectedEntity;
+		static Copper::Scene* m_scene;
 
 		virtual void UI() override;
 

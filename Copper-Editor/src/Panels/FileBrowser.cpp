@@ -34,6 +34,7 @@ namespace Editor {
     fs::path FileBrowser::m_projectRelativeDir = "";
 
     fs::path editingPath = "";
+    fs::path clickedFile = "";
 
     TextureData directoryIcon;
     TextureData fileIcon;
@@ -195,6 +196,11 @@ namespace Editor {
 
     }
     void FileBrowser::FileEntry(const fs::path& path, const std::string& filename, const std::string& extension) {
+
+        if (ImGui::IsItemClicked())
+            clickedFile = path;
+        if (clickedFile == path && ImGui::IsItemHovered() && ImGui::IsMouseReleased(0))
+            Properties::SetSelectedFile(path);
 
         if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
 

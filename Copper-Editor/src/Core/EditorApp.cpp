@@ -166,8 +166,6 @@ namespace Editor {
 		data.themeEditor = ThemeEditor();
 
 		data.sceneCam = SceneCamera(data.viewportSize);
-
-		data.properties.SetSelectedObject(data.sceneHierarchy.GetSelectedEntity());
 		
 		ProjectFileWatcher::AddFileChangeCallback(FileChangedCallback);
 
@@ -413,7 +411,7 @@ namespace Editor {
 		//Gizmos that I stol... I mean, taken inspiration from The Chernos Game Engine series
 		//Yeah, I definitely didn't copy this entire chunk of code that I don't understand but
 		//magically works, naaah.
-		InternalEntity* selectedObj = *(data.sceneHierarchy.GetSelectedEntity());
+		InternalEntity* selectedObj = SceneHierarchy::GetSelectedEntity();
 		if (selectedObj) {
 
 			ImGuizmo::SetOrthographic(false);
@@ -625,13 +623,13 @@ namespace Editor {
 
 		data.state = Edit;
 		fs::path savedPath = data.scene->path;
-		Entity savedSelectedEntity = *data.sceneHierarchy.GetSelectedEntity();
+		Entity savedSelectedEntity = SceneHierarchy::GetSelectedEntity();
 
 		data.scene->StopRuntime();
 		data.scene->Deserialize(savedPath);
 		data.sceneMeta.Deserialize(data.scene);
 
-		data.sceneHierarchy.SetSelectedEntity(savedSelectedEntity);
+		SceneHierarchy::SetSelectedEntity(savedSelectedEntity);
 
 		Input::SetCursorLocked(false);
 		Input::SetCursorVisible(true);
@@ -750,7 +748,7 @@ namespace Editor {
 
 		*data.scene = Scene();
 
-		data.sceneHierarchy.SetScene(data.scene);
+		SceneHierarchy::SetScene(data.scene);
 		
 	}
 	void OpenScene(const fs::path& path) {
@@ -770,7 +768,7 @@ namespace Editor {
 		data.scene->Deserialize(path);
 		data.sceneMeta.Deserialize(data.scene);
 
-		data.sceneHierarchy.SetScene(data.scene);
+		SceneHierarchy::SetScene(data.scene);
 
 		data.changes = false;
 		data.title = "Copper Editor - " + data.project.name + ": ";

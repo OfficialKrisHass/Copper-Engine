@@ -18,6 +18,9 @@ namespace Editor {
 
 	uint32 clickedEntityID = INVALID_ENTITY_ID;
 
+	Scene* SceneHierarchy::m_scene = nullptr;
+	Entity SceneHierarchy::m_selectedEntity = nullptr;
+
 	SceneHierarchy::SceneHierarchy() : Panel("Scene Hierarchy") { }
 
 	void SceneHierarchy::UI() {
@@ -53,7 +56,12 @@ namespace Editor {
 		ImGuiTreeNodeFlags flags = ((m_selectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 		bool opened = ImGui::TreeNodeEx(entity, flags, entity->name.c_str());
 
-		if (ImGui::IsItemClicked()) clickedEntityID = entity->ID();
+		if (ImGui::IsItemClicked()) {
+
+			clickedEntityID = entity->ID();
+			Properties::SetSelectedEntity(entity);
+
+		}
 		if (ImGui::IsMouseReleased(0) && entity->ID() == clickedEntityID)
 			m_selectedEntity = entity;
 

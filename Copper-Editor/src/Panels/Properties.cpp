@@ -5,9 +5,10 @@
 #include "Core/EditorApp.h"
 #include "Core/SceneMeta.h"
 
-#include "UI/TypeWidgets.h"
+#include "AssetFile/AssetFileDatabase.h"
+#include "AssetFile/Serializer.h"
 
-#include "Panels/SceneHierarchy.h"
+#include "UI/TypeWidgets.h"
 
 #include "Viewport/SceneCamera.h"
 
@@ -28,19 +29,23 @@ namespace Editor {
 
 	static const char* s_lightTypes[] = { "Point", "Directional" };
 
+	Entity Properties::m_selectedEntity = nullptr;
+	fs::path Properties::m_selectedFile = "";
+
 	template<typename T> static bool DrawComponent(const std::string& name, T* component);
 	static bool DrawComponent(const std::string& name, Transform* component);
 
-	Properties::Properties() : Panel("Properties") {
-
-	}
+	Properties::Properties() : Panel("Properties") { }
 
 	void Properties::UI() {
 
-		if (!*m_selectedEntity) return;
+		CUP_FUNCTION();
 		CUP_START_FRAME("Properties");
 
-		RenderEntity();
+		if (m_selectedEntity && m_selectedFile.empty())
+			RenderEntity();
+		else if (!m_selectedFile.empty() && !m_selectedEntity)
+			RenderFile();
 
 		CUP_END_FRAME();
 
@@ -48,7 +53,7 @@ namespace Editor {
 
 	void Properties::RenderEntity() {
 
-		InternalEntity* entity = *m_selectedEntity;
+		InternalEntity* entity = m_selectedEntity;
 
 		char buffer[128] = {};
 		std::strncpy(buffer, entity->name.c_str(), sizeof(buffer));
@@ -171,6 +176,21 @@ namespace Editor {
 		}
 		
 	}
+	void Properties::RenderFile() {
+
+		ImGui::Text(m_selectedFile.string().c_str());
+		ImGui::Separator();
+
+		std::string extension = m_selectedFile.extension().string();
+
+		if (extension == ".mat")
+			RenderMaterial(AssetFileDatabase::GetAssetFromPath(GetProject().assetsPath / m_selectedFile));
+		else
+			ImGui::Text("This extension is not supported, make sure you called a function for this specific extension!");
+
+	}
+
+	// Components
 
 	void Properties::RenderMeshRenderer(Copper::MeshRenderer* renderer) {
 
@@ -378,4 +398,23 @@ namespace Editor {
 
 	}
 	
+	// Assets
+
+	void Properties::RenderMaterial(const Material& material) {
+
+		const std::string name = m_selectedFile.filename().string();
+		ImGui::Text(name.c_str());
+		ImGui::NewLine();
+
+		bool changed = false;
+
+		if (UI::EditTexture("Texture", &material->texture)) changed = true;
+		if (UI::EditColor("Albedo", &material->albedo)) changed = true;
+		if (UI::EditFloat("Tiling", &material->tiling)) changed = true;
+
+		if (changed)
+			AssetFile::SerializeMaterial(GetProject().assetsPath / m_selectedFile, material);
+
+	}
+
 }

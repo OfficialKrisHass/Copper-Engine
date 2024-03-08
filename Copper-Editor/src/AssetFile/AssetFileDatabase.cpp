@@ -3,7 +3,7 @@
 #include "Core/ProjectFileWatcher.h"
 #include "Core/EditorApp.h"
 
-#include "AssetFile/Deserializer.h"
+#include "AssetFile/Serializer.h"
 #include "AssetFile/MetaFile.h"
 
 #include "Engine/AssetStorage/AssetMap.h"

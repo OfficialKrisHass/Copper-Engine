@@ -3,6 +3,8 @@
 #include "Core/EditorApp.h"
 
 #include "AssetFile/AssetFileDatabase.h"
+#include "AssetFile/Serializer.h"
+#include "AssetFile/MetaFile.h"
 
 #include "Panels/Properties.h"
 #include "Panels/SceneHierarchy.h"
@@ -152,10 +154,24 @@ namespace Editor {
                 editingPath = path;
 
             }
+            ImGui::Separator();
             if (ImGui::MenuItem("Script")) {
 
                 Utils::FileFromTemplate("Script.cs", (GetProject().assetsPath / m_projectRelativeDir / "Script.cs").string(), {{"ScriptName", "Script"}});
                 editingPath = GetProject().assetsPath / m_projectRelativeDir / "Script.cs";
+
+            }
+            if (ImGui::MenuItem("Material")) {
+
+                fs::path path = m_projectRelativeDir / "Material.mat";
+
+                Material mat = AssetStorage::CreateAsset<MaterialData>();
+                editingPath = path;
+
+                AssetFile::SerializeMaterial(GetProject().assetsPath / path, mat);
+                MetaFile::Serialize((GetProject().assetsPath / path).string() + ".cum", mat.AssetUUID());
+
+                AssetFileDatabase::Refresh();
 
             }
 
@@ -170,8 +186,15 @@ namespace Editor {
 
         if (!ImGui::BeginPopupContextItem()) return;
 
-        if (ImGui::MenuItem("Remove"))
+        if (ImGui::MenuItem("Remove")) {
+
             fs::remove_all(GetProject().assetsPath / path);
+            if (fs::exists((GetProject().assetsPath / path).string() + ".cum"))
+                fs::remove((GetProject().assetsPath / path).string() + ".cum");
+
+            AssetFileDatabase::Refresh();
+
+        }
         if (ImGui::MenuItem("Edit"))
             editingPath = path;
 
@@ -244,9 +267,16 @@ namespace Editor {
             const std::string newFullPath = (GetProject().assetsPath / editingPath).string();
             CU_ASSERT(!rename(fullPath.c_str(), newFullPath.c_str()), "An error occured trying to rename a file!\n\tFile: {}\n\tNew name: {}", path.string(), buffer);
             
-            const char* extension = path.extension().string().c_str();
-            if (extension == ".copper")
+            std::string extension = path.extension().string();
+            if (extension == ".copper" ||
+                extension == ".png" || extension == ".jpg" ||
+                extension == ".mat")
                 CU_ASSERT(!rename((fullPath + ".cum").c_str(), (newFullPath + ".cum").c_str()), "An error occured trying to rename a file!\n\tFile: {}\n\tNew name: {}", path.string(), buffer);
+
+            if (Properties::GetSelectedFile() == path)
+                Properties::SetSelectedFile(editingPath);
+
+            AssetFileDatabase::Refresh();
 
             editingPath = "";
 

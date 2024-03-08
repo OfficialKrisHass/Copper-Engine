@@ -23,6 +23,8 @@ namespace Editor {
 			m_selectedEntity = nullptr;
 		
 		}
+
+		static inline const Copper::fs::path& GetSelectedFile() { return m_selectedFile; }
 	
 	private:
 		static Copper::Entity m_selectedEntity;

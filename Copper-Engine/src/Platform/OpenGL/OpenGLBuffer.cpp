@@ -50,6 +50,9 @@ namespace Copper {
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, indices, GL_DYNAMIC_DRAW);
 
 		m_count = size / sizeof(uint32);
+
+		// Noone knows when, why or who put this Log message here, But the only thing I know is that it was out of nowhere
+		// crashing the engine, until I commented it out and then immediatelly uncommented
 		Log(sizeof(uint32));
 
 	}

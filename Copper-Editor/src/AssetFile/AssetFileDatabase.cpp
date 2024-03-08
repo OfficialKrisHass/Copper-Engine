@@ -19,15 +19,12 @@ namespace Editor::AssetFileDatabase {
 
 	void LoadAsset(const fs::path& path, const std::string& extension);
 
-	void FileWatchCallback(const fs::path& path, const ProjectFileWatcher::FileChangeType type);
-
 	bool CheckExtension(const std::string& extension);
 
 	void Initialize() {
 
 		CUP_FUNCTION();
 
-		ProjectFileWatcher::AddFileChangeCallback(FileWatchCallback);
 		Refresh();
 
 	}
@@ -88,22 +85,6 @@ namespace Editor::AssetFileDatabase {
 		CU_ASSERT(assetUUID != UUID(""), "Didn't load the Asset at path '{}'", path.string());
 
 		assetFiles[path] = assetUUID;
-
-	}
-
-	void FileWatchCallback(const fs::path& path, const ProjectFileWatcher::FileChangeType type) {
-
-		CUP_FUNCTION();
-
-		if (type == ProjectFileWatcher::FileChangeType::RenamedNewName || type == ProjectFileWatcher::FileChangeType::RenamedOldName) return;
-
-		const std::string extension = path.extension().string();
-		if (!CheckExtension(extension)) return;
-
-		if (type == ProjectFileWatcher::FileChangeType::Created || type == ProjectFileWatcher::FileChangeType::Changed)
-			LoadAsset(path, extension);
-		else
-			assetFiles.erase(path);
 
 	}
 

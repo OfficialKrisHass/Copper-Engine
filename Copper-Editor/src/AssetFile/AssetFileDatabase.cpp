@@ -16,6 +16,7 @@ namespace Editor::AssetFileDatabase {
 	using namespace Copper;
 
 	std::unordered_map<fs::path, UUID> assetFiles;
+	std::unordered_map<UUID, std::string> assetNames;
 
 	void LoadAsset(const fs::path& path, const std::string& extension);
 
@@ -58,6 +59,7 @@ namespace Editor::AssetFileDatabase {
 	const UUID& GetAssetFromPath(const fs::path& path) {
 		
 		CUP_FUNCTION();
+
 		if (assetFiles.find(path) == assetFiles.end()) {
 
 			LogError("No asset at path '{}' exists, or is not loaded", path);
@@ -67,6 +69,14 @@ namespace Editor::AssetFileDatabase {
 
 		return assetFiles.at(path);
 	
+	}
+	const std::string& GetAssetName(const Copper::UUID& uuid) {
+
+		CUP_FUNCTION();
+		
+		if (assetNames.find(uuid) == assetNames.end()) return "";
+		return assetNames.at(uuid);
+
 	}
 
 	void LoadAsset(const fs::path& path, const std::string& extension) {
@@ -85,6 +95,7 @@ namespace Editor::AssetFileDatabase {
 		CU_ASSERT(assetUUID != UUID(""), "Didn't load the Asset at path '{}'", path.string());
 
 		assetFiles[path] = assetUUID;
+		assetNames[assetUUID] = path.filename().string();
 
 	}
 

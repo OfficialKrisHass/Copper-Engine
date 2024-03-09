@@ -170,7 +170,7 @@ Entities:
           - 22
           - 23
           - 20
-        Material: 00000000-0000-0000-0000-000000000000
+        Material: fcb01a65-babe-4b4a-884e-8fb40f7c3764
     Rigid Body:
       Static: false
       Gravity: true

@@ -248,6 +248,14 @@ namespace Editor {
             ImGui::EndDragDropSource();
 
         }
+        if (extension == ".mat" && ImGui::BeginDragDropSource()) {
+
+            const UUID& uuid = AssetFileDatabase::GetAssetFromPath(GetProject().assetsPath / path);
+
+            ImGui::SetDragDropPayload("FB_MATERIAL", &uuid, sizeof(UUID), ImGuiCond_Once);
+            ImGui::EndDragDropSource();
+
+        }
 
     }
 

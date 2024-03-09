@@ -13,7 +13,7 @@ namespace Copper {
 	template<typename AssetType> class AssetMap {
 
 	public:
-		template<typename... Args> AssetPtr<AssetType> Create(Args&&... args) {
+		template<typename... Args> inline AssetPtr<AssetType> Create(Args&&... args) {
 
 			CUP_FUNCTION();
 
@@ -23,7 +23,7 @@ namespace Copper {
 			return AssetPtr<AssetType>(uuid);
 
 		}
-		template<typename... Args> AssetPtr<AssetType> Insert(const UUID& uuid, Args&&... args) {
+		template<typename... Args> inline AssetPtr<AssetType> Insert(const UUID& uuid, Args&&... args) {
 
 			CUP_FUNCTION();
 
@@ -32,7 +32,7 @@ namespace Copper {
 
 		}
 
-		AssetPtr<AssetType> Get(const UUID& uuid) {
+		AssetPtr<AssetType> inline Get(const UUID& uuid) {
 
 			CUP_FUNCTION();
 
@@ -41,7 +41,7 @@ namespace Copper {
 
 		}
 
-		void Delete(const UUID& uuid) {
+		inline void Delete(const UUID& uuid) {
 
 			CUP_FUNCTION();
 
@@ -56,7 +56,7 @@ namespace Copper {
 
 		}
 
-		template<typename... Args> AssetType* CreateRaw(Args&&... args) {
+		template<typename... Args> inline AssetType* CreateRaw(Args&&... args) {
 
 			CUP_FUNCTION();
 
@@ -66,7 +66,7 @@ namespace Copper {
 			return &m_map[uuid];
 
 		}
-		template<typename... Args> AssetType* InsertRaw(const UUID& uuid, Args&&... args) {
+		template<typename... Args> inline AssetType* InsertRaw(const UUID& uuid, Args&&... args) {
 
 			CUP_FUNCTION();
 
@@ -75,7 +75,7 @@ namespace Copper {
 
 		}
 
-		AssetType* GetRaw(const UUID& uuid) {
+		inline AssetType* GetRaw(const UUID& uuid) {
 
 			CUP_FUNCTION();
 

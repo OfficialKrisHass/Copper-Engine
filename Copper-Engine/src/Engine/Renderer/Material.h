@@ -4,18 +4,20 @@
 
 #include "Engine/AssetStorage/AssetPtr.h"
 
+#include "Engine/Renderer/Texture.h"
+
 namespace Copper {
 
-	class MaterialData {
+	class Material {
 
 	public:
-		MaterialData() = default;
+		Material() = default;
 
-		Texture texture;
+		TextureAsset texture;
 		Color albedo = Color::white;
 		float tiling = 1.0f;
 		
-		static const Material WhiteMaterial();
+		static const MaterialAsset& WhiteMaterial();
 
 		inline operator bool() const { return texture; }
 

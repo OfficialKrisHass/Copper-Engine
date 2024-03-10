@@ -397,7 +397,7 @@ namespace Editor {
 	
 	// Assets
 
-	void Properties::RenderMaterial(const Material& material) {
+	void Properties::RenderMaterial(const MaterialAsset& material) {
 
 		const std::string name = m_selectedFile.filename().string();
 		ImGui::Text(name.c_str());

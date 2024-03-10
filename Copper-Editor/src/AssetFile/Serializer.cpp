@@ -12,7 +12,7 @@ namespace Editor::AssetFile {
 
 	using namespace Copper;
 
-	void SerializeMaterial(const fs::path& path, const Material& material) {
+	void SerializeMaterial(const fs::path& path, const MaterialAsset& material) {
 
 		CUP_FUNCTION();
 
@@ -36,7 +36,7 @@ namespace Editor::AssetFile {
 		file.close();
 
 	}
-	Material DeserializeMaterial(const fs::path& path, const UUID& uuid) {
+	MaterialAsset DeserializeMaterial(const fs::path& path, const UUID& uuid) {
 
 		CUP_FUNCTION();
 
@@ -44,13 +44,13 @@ namespace Editor::AssetFile {
 		try { node = YAML::LoadFile(path.string()); } catch (YAML::Exception e) {
 
 			LogError("An exception occured when trying to read Material asset file. Exception message:\n\t{}\n\n\tpath: {}", e.msg, path.string());
-			return Material();
+			return MaterialAsset();
 
 		}
 
-		Material ret = AssetStorage::InsertAsset<MaterialData>(uuid);
+		MaterialAsset ret = AssetStorage::InsertAsset<Material>(uuid);
 
-		ret->texture = node["Texture"].as<Texture>();
+		ret->texture = node["Texture"].as<TextureAsset>();
 		ret->albedo = node["Albedo"].as<Color>();
 		ret->tiling = node["Tiling"].as<float>();
 

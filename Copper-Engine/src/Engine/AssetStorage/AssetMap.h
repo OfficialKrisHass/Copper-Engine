@@ -9,7 +9,7 @@ namespace Copper {
 
 	template<typename AssetType> class AssetPtr;
 
-	// A hash map of UUID-AssetType key-value type
+	// An UUID-AssetType Hash map
 	template<typename AssetType> class AssetMap {
 
 	public:
@@ -18,7 +18,7 @@ namespace Copper {
 			CUP_FUNCTION();
 
 			UUID uuid = GetUUID();
-			
+
 			m_map[uuid] = AssetType(args...);
 			return AssetPtr<AssetType>(uuid);
 
@@ -36,7 +36,7 @@ namespace Copper {
 
 			CUP_FUNCTION();
 
-			if (m_map.find(uuid) == m_map.end()) return AssetPtr<AssetType>();
+			if (!m_map.contains(uuid)) return AssetPtr<AssetType>();
 			return AssetPtr<AssetType>(uuid);
 
 		}
@@ -45,7 +45,7 @@ namespace Copper {
 
 			CUP_FUNCTION();
 
-			if (m_map.find(uuid) == m_map.end()) {
+			if (!m_map.contains(uuid)) {
 
 				LogError("Can't remove an Asset that doesn't exist in the map:\n\tUUID: {}", uuid.bytes());
 				return;
@@ -55,6 +55,8 @@ namespace Copper {
 			m_map.erase(uuid);
 
 		}
+
+		// Raw versions
 
 		template<typename... Args> inline AssetType* CreateRaw(Args&&... args) {
 
@@ -79,7 +81,7 @@ namespace Copper {
 
 			CUP_FUNCTION();
 
-			if (m_map.find(uuid) == m_map.end()) return nullptr;
+			if (!m_map.contains(uuid)) return nullptr;
 			return &m_map.at(uuid);
 
 		}

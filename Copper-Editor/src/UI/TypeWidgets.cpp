@@ -372,7 +372,7 @@ namespace Editor::UI {
 
 	}
 
-	bool EditTexture(const std::string& name, Copper::Texture* texture) {
+	bool EditTexture(const std::string& name, Copper::TextureAsset* texture) {
 
 		ImGuiID id = ImGuiID((uint32) (uint64) name.c_str());
 		ImGui::PushID(id);
@@ -380,12 +380,9 @@ namespace Editor::UI {
 		bool ret = false;
 		std::string nodeText;
 
-		if (*texture != TextureData::WhiteTexture()) {
-
-			fs::path tmp = (*texture)->Path();
-			nodeText = tmp.filename().string();
-
-		} else
+		if (*texture != Texture::WhiteTexture())
+			nodeText = AssetFileDatabase::GetAssetName(*texture);
+		else
 			nodeText = "None";
 		nodeText += " (Texture)";
 
@@ -425,7 +422,7 @@ namespace Editor::UI {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FB_TEXTURE")) {
 
 				ret = true;
-				*texture = *(Texture*) payload->Data;
+				*texture = *(TextureAsset*) payload->Data;
 
 			}
 
@@ -438,7 +435,7 @@ namespace Editor::UI {
 		return ret;
 
 	}
-	bool EditMaterial(const std::string& name, Material* material) {
+	bool EditMaterial(const std::string& name, MaterialAsset* material) {
 
 		ImGuiID id = ImGuiID((uint32) (uint64) name.c_str());
 		ImGui::PushID(id);
@@ -446,7 +443,7 @@ namespace Editor::UI {
 		bool ret = false;
 		std::string nodeText;
 
-		if (*material != MaterialData::WhiteMaterial())
+		if (*material != Material::WhiteMaterial())
 			nodeText = AssetFileDatabase::GetAssetName(*material);
 		else
 			nodeText = "None";

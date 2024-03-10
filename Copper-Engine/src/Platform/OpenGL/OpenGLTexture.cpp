@@ -6,7 +6,7 @@
 
 namespace Copper {
 
-    void TextureData::Create(uint32 width, uint32 height, Format format, uint8* pixels) {
+    void Texture::Create(uint32 width, uint32 height, Format format, uint8* pixels) {
 
         if (m_id != 0)
             Delete();
@@ -33,7 +33,7 @@ namespace Copper {
         glGenerateMipmap(GL_TEXTURE_2D);
 
     }
-    void TextureData::Create(const std::string& filePath, Format format) {
+    void Texture::Create(const std::string& filePath, Format format) {
 
         stbi_set_flip_vertically_on_load(1);
 
@@ -46,27 +46,25 @@ namespace Copper {
 
         }
 
-        m_path = filePath;
-
         Create(width, height, format, pixels);
 
         stbi_image_free(pixels);
 
     }
 
-    void TextureData::Delete() {
+    void Texture::Delete() {
 
         glDeleteTextures(1, &m_id);
         m_size = UVector2I::zero;
 
     }
 
-    void TextureData::Bind(uint32 unit) const {
+    void Texture::Bind(uint32 unit) const {
         
         glActiveTexture(GL_TEXTURE0 + unit);
         glBindTexture(GL_TEXTURE_2D, m_id);
     
     }
-    void TextureData::Unbind() const { glBindTexture(GL_TEXTURE_2D, 0); }
+    void Texture::Unbind() const { glBindTexture(GL_TEXTURE_2D, 0); }
     
 }

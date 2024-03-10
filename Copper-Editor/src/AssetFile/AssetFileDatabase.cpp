@@ -88,7 +88,7 @@ namespace Editor::AssetFileDatabase {
 		UUID assetUUID = meta.AssetUUID();
 
 		if (extension == ".png" || extension == ".jpg")
-			AssetStorage::InsertAsset<TextureData>(assetUUID, path.string());
+			AssetStorage::InsertAsset<Texture>(assetUUID, path.string());
 		else if (extension == ".mat")
 			AssetFile::DeserializeMaterial(path, assetUUID);
 

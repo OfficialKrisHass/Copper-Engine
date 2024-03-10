@@ -53,7 +53,7 @@ namespace Editor {
 
 		// Assets
 
-		void RenderMaterial(const Copper::Material& material);
+		void RenderMaterial(const Copper::MaterialAsset& material);
 
 	};
 

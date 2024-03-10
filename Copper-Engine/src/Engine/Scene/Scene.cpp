@@ -481,7 +481,7 @@ namespace Copper {
 
 			}
 
-			mesh.material = meshNode["Material"].as<Material>();
+			mesh.material = meshNode["Material"].as<MaterialAsset>();
 
 			renderer->meshes.push_back(mesh);
 

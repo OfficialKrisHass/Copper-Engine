@@ -4,6 +4,8 @@
 #include "Engine/Core/Engine.h"
 
 #include "Engine/Renderer/VertexArray.h"
+#include "Engine/Renderer/Shader.h"
+#include "Engine/Renderer/Texture.h"
 
 #include "Engine/Components/Transform.h"
 #include "Engine/Components/Camera.h"
@@ -124,7 +126,7 @@ namespace Copper::RendererAPI {
 
 	}
 	
-	void Render(VertexArray* vao, uint32 count, Light** lights, uint32 lightCount, Material* materials, uint32 materialCount) {
+	void Render(VertexArray* vao, uint32 count, Light** lights, uint32 lightCount, MaterialAsset* materials, uint32 materialCount) {
 
 		CUP_FUNCTION();
 

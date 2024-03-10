@@ -2,7 +2,6 @@
 
 #include "Engine/Core/Core.h"
 
-#include "Engine/Renderer/Texture.h"
 #include "Engine/Renderer/Material.h"
 
 namespace Copper {
@@ -19,7 +18,7 @@ namespace Copper {
 
 		std::vector<uint32> indices;
 
-		Material material;
+		MaterialAsset material;
 
 	};
 

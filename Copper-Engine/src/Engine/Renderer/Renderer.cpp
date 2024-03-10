@@ -5,9 +5,11 @@
 
 #include "Engine/Renderer/VertexArray.h"
 #include "Engine/Renderer/Buffer.h"
-#include "Engine/Renderer/Mesh.h"
+#include "Engine/Renderer/Texture.h"
 #include "Engine/Renderer/Material.h"
+#include "Engine/Renderer/Mesh.h"
 
+#include "Engine/AssetStorage/AssetPtr.h"
 #include "Engine/AssetStorage/AssetMap.h"
 #include "Engine/AssetStorage/AssetStorage.h"
 
@@ -59,10 +61,10 @@ namespace Copper::Renderer {
 
 		// Materials
 
-		Material* materials = new Material[MaxMaterials];
+		MaterialAsset* materials = new MaterialAsset[MaxMaterials];
 		uint32 materialCount = 0;
 
-		Material whiteMaterial;
+		MaterialAsset whiteMaterial;
 
 		// Lights
 
@@ -120,10 +122,10 @@ namespace Copper::Renderer {
 
 		// White Material
 
-		data.whiteMaterial = AssetStorage::InsertAsset<MaterialData>(UUID(""));
+		data.whiteMaterial = AssetStorage::InsertAsset<Material>(UUID(""));
 
 		uint32 white = 0xffffffff;
-		data.whiteMaterial->texture = AssetStorage::InsertAsset<TextureData>(UUID(""), 1, 1, TextureData::Format::RGBA, (uint8*) &white);
+		data.whiteMaterial->texture = AssetStorage::InsertAsset<Texture>(UUID(""), 1, 1, Texture::Format::RGBA, (uint8*) &white);
 
 		data.materials[0] = data.whiteMaterial;
 		data.materialCount = 1;
@@ -244,7 +246,7 @@ namespace Copper::Renderer {
 			break;
 
 		}
-		if (matIndex == 0 && mesh->material != MaterialData::WhiteMaterial()) {
+		if (matIndex == 0 && mesh->material != Material::WhiteMaterial()) {
 
 			matIndex = data.materialCount;
 
@@ -404,17 +406,17 @@ namespace Copper {
 
 	using namespace Renderer;
 
-	const Material MaterialData::WhiteMaterial() {
+	const MaterialAsset& Material::WhiteMaterial() {
 
-		CU_ASSERT(data.whiteMaterial, "White material is nullptr");
+		CU_ASSERT(data.whiteMaterial, "White material is invalid");
 
 		return data.whiteMaterial;
 
 	}
-	const Texture TextureData::WhiteTexture() {
+	const TextureAsset& Texture::WhiteTexture() {
 
-		CU_ASSERT(data.whiteMaterial, "White material is nullptr");
-		CU_ASSERT(data.whiteMaterial->texture, "White material texture is nullptr");
+		CU_ASSERT(data.whiteMaterial, "White material is invalid");
+		CU_ASSERT(data.whiteMaterial->texture, "White texture is invalid");
 
 		return data.whiteMaterial->texture;
 

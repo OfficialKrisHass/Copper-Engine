@@ -43,6 +43,8 @@
 
 #include <CMath/CMath.h>
 
+#include <fstream>
+
 using namespace Copper;
 
 namespace Editor {
@@ -82,8 +84,8 @@ namespace Editor {
 
 		// Icons
 
-		TextureData playIcon;
-		TextureData stopIcon;
+		Texture playIcon;
+		Texture stopIcon;
 		
 		// Panels
 
@@ -156,8 +158,8 @@ namespace Editor {
 		data.gamePanelSize = UVector2I(1280, 720);
 		data.viewportFBO = FrameBuffer(data.viewportSize);
 		
-		data.playIcon.Create("assets/Icons/PlayButton.png", TextureData::Format::RGBA);
-		data.stopIcon.Create("assets/Icons/StopButton.png", TextureData::Format::RGBA);
+		data.playIcon.Create("assets/Icons/PlayButton.png", Texture::Format::RGBA);
+		data.stopIcon.Create("assets/Icons/StopButton.png", Texture::Format::RGBA);
 		
 		data.sceneHierarchy = SceneHierarchy();
 		data.properties = Properties();

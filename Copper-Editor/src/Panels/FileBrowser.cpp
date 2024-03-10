@@ -38,15 +38,15 @@ namespace Editor {
     fs::path editingPath = "";
     fs::path clickedFile = "";
 
-    TextureData directoryIcon;
-    TextureData fileIcon;
+    Texture directoryIcon;
+    Texture fileIcon;
 
     FileBrowser::FileBrowser(const fs::path& initialDir) : Panel("File Browser") {
         
         m_projectRelativeDir = initialDir;
 
-        directoryIcon.Create("assets/Icons/DirectoryIcon.png", TextureData::Format::RGBA);
-        fileIcon.Create("assets/Icons/FileIcon.png", TextureData::Format::RGBA);
+        directoryIcon.Create("assets/Icons/DirectoryIcon.png", Texture::Format::RGBA);
+        fileIcon.Create("assets/Icons/FileIcon.png", Texture::Format::RGBA);
 
     }
 
@@ -165,7 +165,7 @@ namespace Editor {
 
                 fs::path path = m_projectRelativeDir / "Material.mat";
 
-                Material mat = AssetStorage::CreateAsset<MaterialData>();
+                MaterialAsset mat = AssetStorage::CreateAsset<Material>();
                 editingPath = path;
 
                 AssetFile::SerializeMaterial(GetProject().assetsPath / path, mat);
@@ -242,9 +242,9 @@ namespace Editor {
         }
         if ((extension == ".png" || extension == ".jpg") && ImGui::BeginDragDropSource()) {
 
-            Texture& texture = AssetFileDatabase::GetAssetFromPath<Texture>(GetProject().assetsPath / path);
+            TextureAsset& texture = AssetFileDatabase::GetAssetFromPath<TextureAsset>(GetProject().assetsPath / path);
 
-            ImGui::SetDragDropPayload("FB_TEXTURE", &texture, sizeof(Texture), ImGuiCond_Once);
+            ImGui::SetDragDropPayload("FB_TEXTURE", &texture, sizeof(TextureAsset), ImGuiCond_Once);
             ImGui::EndDragDropSource();
 
         }
@@ -273,13 +273,14 @@ namespace Editor {
             editingPath += path.extension();
 
             const std::string newFullPath = (GetProject().assetsPath / editingPath).string();
-            CU_ASSERT(!rename(fullPath.c_str(), newFullPath.c_str()), "An error occured trying to rename a file!\n\tFile: {}\n\tNew name: {}", path.string(), buffer);
+
+            fs::rename(fullPath, newFullPath);
             
             std::string extension = path.extension().string();
             if (extension == ".copper" ||
                 extension == ".png" || extension == ".jpg" ||
                 extension == ".mat")
-                CU_ASSERT(!rename((fullPath + ".cum").c_str(), (newFullPath + ".cum").c_str()), "An error occured trying to rename a file!\n\tFile: {}\n\tNew name: {}", path.string(), buffer);
+                fs::rename(fullPath + ".cum", newFullPath + ".cum");
 
             if (Properties::GetSelectedFile() == path)
                 Properties::SetSelectedFile(editingPath);

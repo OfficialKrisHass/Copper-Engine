@@ -18,10 +18,10 @@ namespace Copper {
 		
 		AssetType* operator->() const { return AssetStorage::GetAssetMap<AssetType>().GetRaw(m_key); }
 
-		bool operator==(const AssetPtr& other) const { return m_key == other.m_key; }
 		bool operator==(const UUID& other) const { return m_key == other; }
-		bool operator!=(const AssetPtr& other) const { return !(*this == other); }
+		bool operator==(const AssetPtr& other) const { return m_key == other.m_key; }
 		bool operator!=(const UUID& other) const { return !(*this == other); }
+		bool operator!=(const AssetPtr& other) const { return !(*this == other); }
 
 		AssetPtr& operator=(const AssetPtr& other) {
 
@@ -38,15 +38,15 @@ namespace Copper {
 
 		operator UUID() const { return m_key; }
 
-		operator AssetType* () const { return AssetStorage::GetAssetMap<AssetType>().GetRaw(m_key); }
+		operator AssetType*() const { return AssetStorage::GetAssetMap<AssetType>().GetRaw(m_key); }
 		operator bool() const { return AssetStorage::GetAssetMap<AssetType>().GetRaw(m_key); }
 
 	private:
-		UUID m_key;
+		UUID m_key = UUID("");
 
 	};
 
-	typedef AssetPtr<class TextureData> Texture;
-	typedef AssetPtr<class MaterialData> Material;
+	typedef AssetPtr<class Material> MaterialAsset;
+	typedef AssetPtr<class Texture> TextureAsset;
 
 }

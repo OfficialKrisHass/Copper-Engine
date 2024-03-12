@@ -73,7 +73,11 @@ void main() {
 	}
 	lightResult += AmbientLightColor(ambientDirection, ambientColor, normal);
 
-	vec4 textureColor = texture(materials[a_matIndex].texture, a_uv * materials[a_matIndex].tiling) * materials[a_matIndex].albedo;
+	vec4 textureColor;
+	if (a_matIndex != MAX_MATERIALS)
+		textureColor = texture(materials[a_matIndex].texture, a_uv * materials[a_matIndex].tiling) * materials[a_matIndex].albedo;
+	else
+		textureColor = vec4(1.0f, 0.0f, 1.0f, 1.0f);
 
 	FragColor = textureColor * vec4(lightResult * a_color, 1.0f);
 

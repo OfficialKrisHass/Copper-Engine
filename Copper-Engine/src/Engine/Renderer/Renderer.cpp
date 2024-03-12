@@ -91,6 +91,8 @@ namespace Copper::Renderer {
 
 	RendererData data;
 
+	uint32 GetMaterialIndex(const MaterialAsset& material);
+
 	void Initialize() {
 
 		CUP_FUNCTION();
@@ -228,32 +230,14 @@ namespace Copper::Renderer {
 		const uint32 indicesCount = (uint32) mesh->indices.size();
 		const uint32 verticesCount = (uint32) mesh->vertices.size();
 
+		const uint32 matIndex = GetMaterialIndex(mesh->material);
+
 		// Check if batch is full
 
 		if (data.indicesCount + indicesCount > MaxIndices ||
 			data.verticesCount + verticesCount > MaxVertices ||
 			data.materialCount >= MaxMaterials)
 			NewBatch();
-
-		// Get the material index
-
-		uint32 matIndex = 0;
-		for (uint32 i = 1; i < data.materialCount; i++) {
-
-			if (data.materials[i] != mesh->material) continue;
-
-			matIndex = i;
-			break;
-
-		}
-		if (matIndex == 0 && mesh->material != Material::WhiteMaterial()) {
-
-			matIndex = data.materialCount;
-
-			data.materials[data.materialCount] = mesh->material;
-			data.materialCount++;
-
-		}
 
 		// Load Mesh Data
 
@@ -399,6 +383,24 @@ namespace Copper::Renderer {
 	Vector3& AmbientDirection() { return RendererAPI::AmbientDirection(); }
 
 	Color& SkyboxColor() { return data.skyboxColor; }
+
+	uint32 GetMaterialIndex(const MaterialAsset& material) {
+
+		if (!material) return MaxMaterials;
+
+		for (uint32 i = 1; i < data.materialCount; i++) {
+
+			if (data.materials[i] != material) continue;
+			return i;
+
+		}
+
+		data.materials[data.materialCount] = material;
+		data.materialCount++;
+
+		return data.materialCount - 1;
+
+	}
 
 }
 

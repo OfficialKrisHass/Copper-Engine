@@ -266,7 +266,8 @@ namespace Editor {
         char buffer[128] = {};
         std::strncpy(buffer, filename.c_str(), filename.length() * sizeof(char));
 
-        if (ImGui::InputText("##Edit Name", buffer, sizeof(buffer)) && (Input::IsKey(KeyCode::Enter) || Input::IsButton(MouseCode::Button1))) {
+        ImGui::InputText("##Edit Name", buffer, sizeof(buffer));
+        if (Input::IsKey(KeyCode::Enter) || (Input::IsButton(MouseCode::Button1) && !ImGui::IsItemHovered())) {
 
             editingPath = editingPath.parent_path();
             editingPath /= buffer;

@@ -182,9 +182,19 @@ namespace Editor {
 		ImGui::Separator();
 
 		std::string extension = m_selectedFile.extension().string();
+		const UUID& asset = AssetFileDatabase::GetAssetFromPath(GetProject().assetsPath / m_selectedFile);
+
+		if (asset == UUID("")) {
+
+			LogWarn("Selected File is not found in the AssetFileDatabase, try refreshing.\n\tPath: {}", GetProject().assetsPath / m_selectedFile);
+
+			m_selectedFile = "";
+			return;
+
+		}
 
 		if (extension == ".mat")
-			RenderMaterial(AssetFileDatabase::GetAssetFromPath(GetProject().assetsPath / m_selectedFile));
+			RenderMaterial(asset);
 		else
 			ImGui::Text("This extension is not supported, make sure you called a function for this specific extension!");
 

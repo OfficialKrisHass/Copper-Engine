@@ -63,7 +63,7 @@ namespace Editor::AssetFileDatabase {
 		if (assetFiles.find(path) == assetFiles.end()) {
 
 			LogError("No asset at path '{}' exists, or is not loaded", path);
-			return nullptr;
+			return UUID("");
 
 		}
 

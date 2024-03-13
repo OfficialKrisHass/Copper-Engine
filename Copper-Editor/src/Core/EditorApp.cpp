@@ -13,7 +13,7 @@
 #include "Engine/UI/ImGui.h"
 
 #include "Core/SceneMeta.h"
-#include "Core/ProjectFileWatcher.h"
+#include "Core/FileWatcher.h"
 
 #include "Core/Utils/ModelLoader.h"
 
@@ -124,7 +124,7 @@ namespace Editor {
 	void OpenProject(const fs::path& path);
 	void OpenProject();
 
-	void FileChangedCallback(const fs::path& path, const ProjectFileWatcher::FileChangeType changeType);
+	void FileChangedCallback(const fs::path& path, const FileWatcher::FileChangeType changeType);
 	void CopyScriptingAPI();
 
 	void StartEditorRuntime();
@@ -167,7 +167,7 @@ namespace Editor {
 
 		data.sceneCam = SceneCamera(data.viewportSize);
 		
-		ProjectFileWatcher::AddCallback(FileChangedCallback);
+		FileWatcher::AddCallback(FileChangedCallback);
 
 		LoadEditorData();
 
@@ -235,7 +235,7 @@ namespace Editor {
 
 		CUP_START_FRAME("Editor");
 
-		ProjectFileWatcher::PollCallbacks();
+		FileWatcher::PollCallbacks();
 
 		CUP_END_FRAME();
 
@@ -646,12 +646,12 @@ namespace Editor {
 
 	}
 
-	void FileChangedCallback(const fs::path& path, const ProjectFileWatcher::FileChangeType changeType) {
+	void FileChangedCallback(const fs::path& path, const FileWatcher::FileChangeType changeType) {
 
 		if (path.extension().string() != ".cs") return;
 
 	#ifdef CU_LINUX
-		if (changeType != ProjectFileWatcher::FileChangeType::Changed)
+		if (changeType != FileWatcher::FileChangeType::Changed)
 			RunPremake();
 	#endif
 		data.project.BuildSolution();
@@ -702,9 +702,9 @@ namespace Editor {
 
 		}
 
-		ProjectFileWatcher::Stop();
-		ProjectFileWatcher::SetDirectory(data.project.assetsPath);
-		ProjectFileWatcher::Start();
+		FileWatcher::Stop();
+		FileWatcher::SetDirectory(data.project.assetsPath);
+		FileWatcher::Start();
 
 		data.changes = false;
 		data.title = "Copper Editor - " + data.project.name + ": ";

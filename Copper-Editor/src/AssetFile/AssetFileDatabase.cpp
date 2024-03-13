@@ -1,6 +1,6 @@
 #include "AssetFileDatabase.h"
 
-#include "Core/ProjectFileWatcher.h"
+#include "Core/FileWatcher.h"
 #include "Core/EditorApp.h"
 
 #include "AssetFile/Serializer.h"
@@ -14,12 +14,11 @@
 namespace Editor::AssetFileDatabase {
 
 	using namespace Copper;
-	using namespace ProjectFileWatcher;
 
 	std::unordered_map<fs::path, UUID> assetFiles;
 	std::unordered_map<UUID, std::string> assetNames;
 
-	static void FileChangeCallback(const fs::path& path, const FileChangeType changeType);
+	static void FileChangeCallback(const fs::path& path, const FileWatcher::FileChangeType changeType);
 
 	void LoadAsset(const fs::path& path, const std::string& extension);
 	void RemoveAsset(const fs::path& path, const std::string& extension);
@@ -31,7 +30,7 @@ namespace Editor::AssetFileDatabase {
 		CUP_FUNCTION();
 
 		Refresh();
-		ProjectFileWatcher::AddCallback(FileChangeCallback);
+		FileWatcher::AddCallback(FileChangeCallback);
 
 	}
 	void Refresh() {
@@ -84,16 +83,16 @@ namespace Editor::AssetFileDatabase {
 
 	}
 
-	void FileChangeCallback(const fs::path& path, const FileChangeType changeType) {
+	void FileChangeCallback(const fs::path& path, const FileWatcher::FileChangeType changeType) {
 
 		CUP_FUNCTION();
 
 		const std::string extension = path.extension().string();
 		if (!CheckExtension(extension)) return;
 
-		if (changeType == FileChangeType::Created || changeType == FileChangeType::RenamedNewName)
+		if (changeType == FileWatcher::FileChangeType::Created || changeType == FileWatcher::FileChangeType::RenamedNewName)
 			LoadAsset(path, extension);
-		else if (changeType == FileChangeType::Deleted || changeType == FileChangeType::RenamedOldName)
+		else if (changeType == FileWatcher::FileChangeType::Deleted || changeType == FileWatcher::FileChangeType::RenamedOldName)
 			RemoveAsset(path, extension);
 
 

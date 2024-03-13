@@ -1,12 +1,10 @@
-#include "ProjectFileWatcher.h"
+#include "FileWatcher.h"
 
 #include <FileWatch/FileWatch.hpp>
 
 using namespace Copper;
 
-// TODO : THIS SHIT IS NOT WORKING FOR SOME REASON, WTF
-
-namespace Editor::ProjectFileWatcher {
+namespace Editor::FileWatcher {
 
 	constexpr FileChangeType FWToCopper(const filewatch::Event value) {
 
@@ -27,7 +25,7 @@ namespace Editor::ProjectFileWatcher {
 
 	typedef std::pair<fs::path, FileChangeType> FileChange;
 
-	struct ProjectFileWatcherData {
+	struct FileWatcherData {
 
 		fs::path directory;
 		std::unique_ptr<filewatch::FileWatch<std::string>> fw;
@@ -38,15 +36,17 @@ namespace Editor::ProjectFileWatcher {
 		std::vector<FileChange> fileChanges;
 
 	};
-	ProjectFileWatcherData data;
+	FileWatcherData data;
 
 	static void FileChangeCallback(const std::string& path, const filewatch::Event changeType);
 
-	void Start() {
+	void Start() { Start(data.directory); }
+	void Start(const fs::path& directory) {
 
-		if (data.directory.empty()) { LogError("Can't FileWatch an empty Directory!"); return; }
+		if (directory.empty()) { LogError("Can't FileWatch an empty Directory!"); return; }
 
-		data.fw = std::make_unique<filewatch::FileWatch<std::string>>(data.directory.string(), FileChangeCallback);
+		data.directory = directory;
+		data.fw = std::make_unique<filewatch::FileWatch<std::string>>(directory.string(), FileChangeCallback);
 
 	}
 	void PollCallbacks() {

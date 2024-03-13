@@ -35,14 +35,14 @@ namespace Copper::AssetStorage {
 		
 		CUP_FUNCTION();
 
-		GetAssetMap<AssetType>().Remove(uuid);
+		GetAssetMap<AssetType>().Delete(uuid);
 	
 	}
 	template<typename AssetType> inline  void DeleteAsset(const AssetPtr<AssetType>& asset) {
 
 		CUP_FUNCTION();
 
-		GetAssetMap<AssetType>().Remove(asset);
+		GetAssetMap<AssetType>().Delete(asset);
 
 	}
 

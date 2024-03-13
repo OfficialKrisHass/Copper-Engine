@@ -124,7 +124,7 @@ namespace Editor {
 	void OpenProject(const fs::path& path);
 	void OpenProject();
 
-	void FileChangedCallback(const fs::path& path, const ProjectFileWatcher::FileChangeType& changeType);
+	void FileChangedCallback(const fs::path& path, const ProjectFileWatcher::FileChangeType changeType);
 	void CopyScriptingAPI();
 
 	void StartEditorRuntime();
@@ -132,7 +132,6 @@ namespace Editor {
 
 	bool OnKeyPressed(const Event& e);
 	bool OnWindowClose(const Event& e);
-	bool OnWindowFocused(const Event& e);
 
 	bool OnEntityCreated(const Event& e);
 	bool OnEntityRemoved(const Event& e);
@@ -145,7 +144,6 @@ namespace Editor {
 
 		CUP_FUNCTION();
 
-		GetWindow().AddWindowFocusedEventFunc(Editor::OnWindowFocused);
 		GetWindow().AddKeyPressedEventFunc(Editor::OnKeyPressed);
 
 		AddEntityCreatedEventFunc(OnEntityCreated);
@@ -169,7 +167,7 @@ namespace Editor {
 
 		data.sceneCam = SceneCamera(data.viewportSize);
 		
-		ProjectFileWatcher::AddFileChangeCallback(FileChangedCallback);
+		ProjectFileWatcher::AddCallback(FileChangedCallback);
 
 		LoadEditorData();
 
@@ -233,6 +231,15 @@ namespace Editor {
 
 	}
 
+	void Update() {
+
+		CUP_START_FRAME("Editor");
+
+		ProjectFileWatcher::PollCallbacks();
+
+		CUP_END_FRAME();
+
+	}
 	void UIUpdate() {
 		
 		CUP_START_FRAME("Editor UI");
@@ -639,14 +646,15 @@ namespace Editor {
 
 	}
 
-	void FileChangedCallback(const fs::path& path, const ProjectFileWatcher::FileChangeType& changeType) {
+	void FileChangedCallback(const fs::path& path, const ProjectFileWatcher::FileChangeType changeType) {
 
-		data.scriptChanges = true;
+		if (path.extension().string() != ".cs") return;
 
 	#ifdef CU_LINUX
-		if (changeType == ProjectFileWatcher::FileChangeType::Created || changeType == ProjectFileWatcher::FileChangeType::Deleted)
+		if (changeType != ProjectFileWatcher::FileChangeType::Changed)
 			RunPremake();
 	#endif
+		data.project.BuildSolution();
 
 	}
 
@@ -914,18 +922,6 @@ namespace Editor {
 		return true;
 
 	}
-	bool OnWindowFocused(const Event& e) {
-
-		WindowFocusedEvent* event = (WindowFocusedEvent*) & e;
-
-		if (!event->focused || !data.scriptChanges) return true;
-		data.project.BuildSolution();
-
-		data.scriptChanges = false;
-
-		return true;
-
-	}
 	bool OnWindowClose(const Event& e) {
 
 		if (!data.changes) return true;
@@ -1028,6 +1024,7 @@ void AppEntryPoint() {
 	Editor::data.window = Window("Copper Editor", 1280, 720);
 
 	AddPostInitEventFunc(Editor::Initialize);
+	AddUpdateEventFunc(Editor::Update);
 	AddUIUpdateEventFunc(Editor::UIUpdate);
 	AddPreShutdownEventFunc(Editor::OnWindowClose);
 	AddPostShutdownEventFunc(Editor::Shutdown);

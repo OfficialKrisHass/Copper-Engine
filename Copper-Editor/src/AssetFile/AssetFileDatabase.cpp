@@ -14,11 +14,15 @@
 namespace Editor::AssetFileDatabase {
 
 	using namespace Copper;
+	using namespace ProjectFileWatcher;
 
 	std::unordered_map<fs::path, UUID> assetFiles;
 	std::unordered_map<UUID, std::string> assetNames;
 
+	static void FileChangeCallback(const fs::path& path, const FileChangeType changeType);
+
 	void LoadAsset(const fs::path& path, const std::string& extension);
+	void RemoveAsset(const fs::path& path, const std::string& extension);
 
 	bool CheckExtension(const std::string& extension);
 
@@ -27,6 +31,7 @@ namespace Editor::AssetFileDatabase {
 		CUP_FUNCTION();
 
 		Refresh();
+		ProjectFileWatcher::AddCallback(FileChangeCallback);
 
 	}
 	void Refresh() {
@@ -79,6 +84,21 @@ namespace Editor::AssetFileDatabase {
 
 	}
 
+	void FileChangeCallback(const fs::path& path, const FileChangeType changeType) {
+
+		CUP_FUNCTION();
+
+		const std::string extension = path.extension().string();
+		if (!CheckExtension(extension)) return;
+
+		if (changeType == FileChangeType::Created || changeType == FileChangeType::RenamedNewName)
+			LoadAsset(path, extension);
+		else if (changeType == FileChangeType::Deleted || changeType == FileChangeType::RenamedOldName)
+			RemoveAsset(path, extension);
+
+
+	}
+
 	void LoadAsset(const fs::path& path, const std::string& extension) {
 
 		CUP_FUNCTION();
@@ -96,6 +116,30 @@ namespace Editor::AssetFileDatabase {
 
 		assetFiles[path] = assetUUID;
 		assetNames[assetUUID] = path.filename().string();
+
+	}
+	void RemoveAsset(const fs::path& path, const std::string& extension) {
+
+		CUP_FUNCTION();
+
+		if (!assetFiles.contains(path)) {
+
+			LogError("Can't remove an asset that is not loaded!\n\tPath: {}", path.string());
+			return;
+
+		}
+
+		const UUID& uuid = assetFiles.at(path);
+
+		// Delete actual asset
+
+		if (extension == ".png" || extension == ".jpg")
+			AssetStorage::DeleteAsset<Texture>(uuid);
+		else if (extension == ".mat")
+			AssetStorage::DeleteAsset<Material>(uuid);
+
+		assetNames.erase(uuid);
+		assetFiles.erase(path);
 
 	}
 

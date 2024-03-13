@@ -171,8 +171,6 @@ namespace Editor {
                 AssetFile::SerializeMaterial(GetProject().assetsPath / path, mat);
                 MetaFile::Serialize((GetProject().assetsPath / path).string() + ".cum", mat.AssetUUID());
 
-                AssetFileDatabase::Refresh();
-
             }
 
             ImGui::EndMenu();
@@ -191,8 +189,6 @@ namespace Editor {
             fs::remove_all(GetProject().assetsPath / path);
             if (fs::exists((GetProject().assetsPath / path).string() + ".cum"))
                 fs::remove((GetProject().assetsPath / path).string() + ".cum");
-
-            AssetFileDatabase::Refresh();
 
         }
         if (ImGui::MenuItem("Edit"))
@@ -285,8 +281,6 @@ namespace Editor {
 
             if (Properties::GetSelectedFile() == path)
                 Properties::SetSelectedFile(editingPath);
-
-            AssetFileDatabase::Refresh();
 
             editingPath = "";
 

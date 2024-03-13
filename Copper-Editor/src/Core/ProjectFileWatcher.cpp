@@ -8,14 +8,34 @@ using namespace Copper;
 
 namespace Editor::ProjectFileWatcher {
 
+	constexpr FileChangeType FWToCopper(const filewatch::Event value) {
+
+		switch (value) {
+
+		case filewatch::Event::added: return FileChangeType::Created;
+		case filewatch::Event::removed: return FileChangeType::Deleted;
+		case filewatch::Event::modified: return FileChangeType::Changed;
+		case filewatch::Event::renamed_old: return FileChangeType::RenamedOldName;
+		case filewatch::Event::renamed_new: return FileChangeType::RenamedNewName;
+
+		}
+
+		LogError("Invalid fileWatch::Event value!");
+		return (FileChangeType) -1;
+
+	}
+
+	typedef std::pair<fs::path, FileChangeType> FileChange;
+
 	struct ProjectFileWatcherData {
 
 		fs::path directory;
-		bool running;
-
 		std::unique_ptr<filewatch::FileWatch<std::string>> fw;
 
-		std::vector<std::function<void(const fs::path&, const FileChangeType& changeType)>> callbacks;
+		std::vector<Callback> callbacks;
+
+		bool polling = false;
+		std::vector<FileChange> fileChanges;
 
 	};
 	ProjectFileWatcherData data;
@@ -26,40 +46,39 @@ namespace Editor::ProjectFileWatcher {
 
 		if (data.directory.empty()) { LogError("Can't FileWatch an empty Directory!"); return; }
 
-		data.running = true;
 		data.fw = std::make_unique<filewatch::FileWatch<std::string>>(data.directory.string(), FileChangeCallback);
+
+	}
+	void PollCallbacks() {
+
+		data.polling = true;
+
+		for (const FileChange& event : data.fileChanges) {
+
+			for (Callback& callback : data.callbacks)
+				callback(event.first, event.second);
+
+		}
+		data.fileChanges.clear();
+
+		data.polling = false;
 
 	}
 	void Stop() {
 
-		data.running = false;
 		data.fw.reset();
-
-	}
-
-	static void FileChangeCallback(const std::string& path, const filewatch::Event changeType) {
-
-		if (!data.running) return;
-
-		fs::path fsPath(path);
-
-		FileChangeType type;
-		switch (changeType) {
-
-			case filewatch::Event::added: type = FileChangeType::Created; break;
-			case filewatch::Event::removed: type = FileChangeType::Deleted; break;
-			case filewatch::Event::modified: type = FileChangeType::Changed; break;
-			case filewatch::Event::renamed_old: type = FileChangeType::RenamedOldName; break;
-			case filewatch::Event::renamed_new: type = FileChangeType::RenamedNewName; break;
-
-		}
-
-		for (size_t i = 0; i < data.callbacks.size(); i++) { data.callbacks[i](data.directory / fsPath, type); }
 
 	}
 
 	void SetDirectory(const fs::path& directory) { data.directory = directory; }
 
-	void AddFileChangeCallback(std::function<void(const fs::path&, const FileChangeType& changeType)> func) { data.callbacks.push_back(func); }
+	void AddCallback(Callback callback) { data.callbacks.push_back(callback); }
+
+	static void FileChangeCallback(const std::string& path, const filewatch::Event changeType) {
+
+		while (data.polling) {}
+		data.fileChanges.push_back({ data.directory / path, FWToCopper(changeType) });
+
+	}
 
 }

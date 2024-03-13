@@ -17,7 +17,7 @@
 
 #include "Core/Utils/ModelLoader.h"
 
-#include "AssetFile/AssetFileDatabase.h"
+#include "Assets/ProjectAssetDatabase.h"
 
 #include "Projects/Project.h"
 #include "Projects/ProjectTemplate.h"
@@ -525,13 +525,13 @@ namespace Editor {
 				if (ImGui::MenuItem("New Project")) {
 					
 					NewProject();
-					AssetFileDatabase::Refresh();
+					ProjectAssetDatabase::Refresh();
 				
 				}
 				if (ImGui::MenuItem("Open Project")) {
 
 					OpenProject();
-					AssetFileDatabase::Refresh();
+					ProjectAssetDatabase::Refresh();
 
 				}
 				if (ImGui::MenuItem("Save Project", "Ctrl+Shift+S", false, data.project)) { data.project.Save(); SaveEditorData(); SaveScene(); }
@@ -693,7 +693,7 @@ namespace Editor {
 		data.scene = GetScene();
 		FileBrowser::SetRelativeDir("");
 
-		AssetFileDatabase::Initialize();
+		ProjectAssetDatabase::Initialize();
 
 		if (uint16_t issueFlags = ProjectChecker::CheckProject(data.project)) {
 

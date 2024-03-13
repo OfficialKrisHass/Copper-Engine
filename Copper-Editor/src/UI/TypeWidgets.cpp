@@ -1,6 +1,6 @@
 #include "TypeWidgets.h"
 
-#include "AssetFile/AssetFileDatabase.h"
+#include "Assets/ProjectAssetDatabase.h"
 
 #include "Engine/AssetStorage/AssetMap.h"
 #include "Engine/AssetStorage/AssetStorage.h"
@@ -381,7 +381,7 @@ namespace Editor::UI {
 		std::string nodeText;
 
 		if (*texture != Texture::WhiteTexture())
-			nodeText = AssetFileDatabase::GetAssetName(*texture);
+			nodeText = ProjectAssetDatabase::GetAssetName(*texture);
 		else
 			nodeText = "None";
 		nodeText += " (Texture)";
@@ -444,7 +444,7 @@ namespace Editor::UI {
 		std::string nodeText;
 
 		if (*material != Material::WhiteMaterial())
-			nodeText = AssetFileDatabase::GetAssetName(*material);
+			nodeText = ProjectAssetDatabase::GetAssetName(*material);
 		else
 			nodeText = "None";
 		nodeText += " (Material)";

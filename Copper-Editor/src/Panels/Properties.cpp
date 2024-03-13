@@ -5,8 +5,8 @@
 #include "Core/EditorApp.h"
 #include "Core/SceneMeta.h"
 
-#include "AssetFile/AssetFileDatabase.h"
-#include "AssetFile/Serializer.h"
+#include "Assets/ProjectAssetDatabase.h"
+#include "Assets/Serializer.h"
 
 #include "UI/TypeWidgets.h"
 
@@ -182,7 +182,7 @@ namespace Editor {
 		ImGui::Separator();
 
 		std::string extension = m_selectedFile.extension().string();
-		const UUID& asset = AssetFileDatabase::GetAssetFromPath(GetProject().assetsPath / m_selectedFile);
+		const UUID& asset = ProjectAssetDatabase::GetAssetFromPath(GetProject().assetsPath / m_selectedFile);
 
 		if (asset == UUID("")) {
 

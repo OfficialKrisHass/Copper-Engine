@@ -1,17 +1,17 @@
-#include "AssetFileDatabase.h"
+#include "ProjectAssetDatabase.h"
 
 #include "Core/FileWatcher.h"
 #include "Core/EditorApp.h"
 
-#include "AssetFile/Serializer.h"
-#include "AssetFile/MetaFile.h"
+#include "Assets/Serializer.h"
+#include "Assets/AssetMeta.h"
 
 #include "Engine/AssetStorage/AssetMap.h"
 #include "Engine/AssetStorage/AssetStorage.h"
 
 #include <yaml-cpp/yaml.h>
 
-namespace Editor::AssetFileDatabase {
+namespace Editor::ProjectAssetDatabase {
 
 	using namespace Copper;
 
@@ -102,7 +102,7 @@ namespace Editor::AssetFileDatabase {
 
 		CUP_FUNCTION();
 
-		MetaFile meta;
+		AssetMeta meta;
 		meta.Deserialize(path.string() + ".cum");
 		UUID assetUUID = meta.AssetUUID();
 

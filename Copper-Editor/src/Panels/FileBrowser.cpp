@@ -2,9 +2,9 @@
 
 #include "Core/EditorApp.h"
 
-#include "AssetFile/AssetFileDatabase.h"
-#include "AssetFile/Serializer.h"
-#include "AssetFile/MetaFile.h"
+#include "Assets/ProjectAssetDatabase.h"
+#include "Assets/Serializer.h"
+#include "Assets/AssetMeta.h"
 
 #include "Panels/Properties.h"
 #include "Panels/SceneHierarchy.h"
@@ -169,7 +169,7 @@ namespace Editor {
                 editingPath = path;
 
                 AssetFile::SerializeMaterial(GetProject().assetsPath / path, mat);
-                MetaFile::Serialize((GetProject().assetsPath / path).string() + ".cum", mat.AssetUUID());
+                AssetMeta::Serialize((GetProject().assetsPath / path).string() + ".cum", mat.AssetUUID());
 
             }
 
@@ -238,7 +238,7 @@ namespace Editor {
         }
         if ((extension == ".png" || extension == ".jpg") && ImGui::BeginDragDropSource()) {
 
-            TextureAsset& texture = AssetFileDatabase::GetAssetFromPath<TextureAsset>(GetProject().assetsPath / path);
+            TextureAsset& texture = ProjectAssetDatabase::GetAssetFromPath<TextureAsset>(GetProject().assetsPath / path);
 
             ImGui::SetDragDropPayload("FB_TEXTURE", &texture, sizeof(TextureAsset), ImGuiCond_Once);
             ImGui::EndDragDropSource();
@@ -246,7 +246,7 @@ namespace Editor {
         }
         if (extension == ".mat" && ImGui::BeginDragDropSource()) {
 
-            const UUID& uuid = AssetFileDatabase::GetAssetFromPath(GetProject().assetsPath / path);
+            const UUID& uuid = ProjectAssetDatabase::GetAssetFromPath(GetProject().assetsPath / path);
 
             ImGui::SetDragDropPayload("FB_MATERIAL", &uuid, sizeof(UUID), ImGuiCond_Once);
             ImGui::EndDragDropSource();

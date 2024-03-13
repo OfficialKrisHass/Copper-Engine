@@ -2,7 +2,7 @@
 
 #include <Copper.h>
 
-namespace Editor::AssetFileDatabase {
+namespace Editor::ProjectAssetDatabase {
 
 	void Initialize();
 	void Refresh();

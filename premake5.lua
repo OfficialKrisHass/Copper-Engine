@@ -98,7 +98,7 @@ project "Copper-Engine"
         "VERSION_MAJOR=0",
         "VERSION_MINOR=3",
         "VERSION_PATCH=0",
-        "VERSION_TWEAK=87",
+        "VERSION_TWEAK=89",
         
         "SCENE_VERSION=0",
 
@@ -302,8 +302,8 @@ project "Copper-Launcher"
     cppdialect "C++20"
     staticruntime "on"
 
-    targetdir("Build/" .. outputDir .. "/Copper-Editor")
-    objdir("BuildInt/" .. outputDir .. "/Copper-Editor")
+    targetdir("Build/" .. outputDir .. "/Copper-Launcher")
+    objdir("BuildInt/" .. outputDir .. "/Copper-Launcher")
 
     files {
 

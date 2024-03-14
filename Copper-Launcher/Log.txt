@@ -1,3 +1,0 @@
-[14:39:56] Logger: Test
-[23:10:33] Logger: Test
-[23:10:34] Logger: Argument no. 0: C:\Programming\Copper-Engine\Editor Projects\DevProject

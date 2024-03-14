@@ -329,31 +329,13 @@ project "Copper-Launcher"
         "yaml-cpp",
 
     }
-
-    defines { "Launcher=Copper::Launcher" }
     
     filter "configurations:Debug"
         defines "CU_DEBUG"
         runtime "Debug"
         symbols "on"
 
-        linkoptions {
-
-            '/NODEFAULTLIB:"libcmt.lib"',
-            '/NODEFAULTLIB:"msvcrt.lib"',
-            '/NODEFAULTLIB:"msvcrtd.lib"'
-
-        }
-
     filter "configurations:Release"
         defines "CU_RELEASE"
         runtime "Release"
         optimize "on"
-
-        linkoptions {
-
-            '/NODEFAULTLIB:"msvcrt.lib"',
-            '/NODEFAULTLIB:"libcmtd.lib"',
-            '/NODEFAULTLIB:"msvcrtd.lib"'
-
-        }

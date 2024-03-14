@@ -1,7 +1,5 @@
 #include "Serializer.h"
 
-#include "AssetFile/MetaFile.h"
-
 #include <Engine/AssetStorage/AssetMap.h>
 #include <Engine/AssetStorage/AssetStorage.h>
 

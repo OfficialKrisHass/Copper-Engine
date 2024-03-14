@@ -111,7 +111,7 @@ namespace Copper {
 
 						}
 
-						renderer->meshes.push_back(m);
+						//renderer->mesh = m;
 
 					}
 

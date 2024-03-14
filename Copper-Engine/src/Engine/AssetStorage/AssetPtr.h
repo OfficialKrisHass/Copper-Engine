@@ -48,5 +48,6 @@ namespace Copper {
 
 	typedef AssetPtr<class Material> MaterialAsset;
 	typedef AssetPtr<class Texture> TextureAsset;
+	typedef AssetPtr<class Mesh> MeshAsset;
 
 }

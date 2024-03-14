@@ -23,7 +23,7 @@ namespace Copper {
 
 		void RenderLines();
 
-		void AddMesh(Mesh* mesh, Transform* transform);
+		void AddMesh(const MeshAsset& mesh, Transform* transform, const MaterialAsset& material);
 
 		void AddLine(const Vector3& start, const Vector3& end, const Color& color);
 		void AddLine(const Vector3& start, const Vector3& end, const Color& color, Transform* transform);

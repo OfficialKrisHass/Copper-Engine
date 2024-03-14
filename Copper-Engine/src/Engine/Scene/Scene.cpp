@@ -111,12 +111,8 @@ namespace Copper {
 				}
 
 			}
-			if (MeshRenderer* renderer = entity->GetComponent<MeshRenderer>()) {
-
-				for (Mesh& mesh : renderer->meshes)
-					Renderer::AddMesh(&mesh, entity->m_transform);
-
-			}
+			if (MeshRenderer* renderer = entity->GetComponent<MeshRenderer>())
+				Renderer::AddMesh(renderer->mesh, entity->m_transform, renderer->material);
 
 			if (Collider* collider = entity->GetComponent<Collider>())
 				Renderer::AddCube(Vector3::zero, Vector3::one, Color::red, entity->m_transform);
@@ -268,35 +264,8 @@ namespace Copper {
 
 			out << YAML::Key << "Mesh Renderer" << YAML::Value << YAML::BeginMap; // Mesh Renderer
 
-			for (Mesh& mesh : renderer->meshes) {
-
-				out << YAML::Key << "Mesh" << YAML::Value << YAML::BeginMap; // Mesh
-
-				out << YAML::Key << "Data" << YAML::Value << YAML::BeginSeq; // Data
-				for (int i = 0; i < mesh.vertices.size(); i++) {
-
-					out << YAML::BeginMap; // Vertex;
-
-					out << YAML::Key << "Position" << YAML::Value << mesh.vertices[i];
-					out << YAML::Key << "Normal" << YAML::Value << mesh.normals[i];
-					out << YAML::Key << "Color" << YAML::Value << mesh.colors[i];
-					out << YAML::Key << "UV" << YAML::Value << mesh.uvs[i];
-
-					out << YAML::EndMap; // Vertex
-
-				}
-				out << YAML::EndSeq; // Data
-
-				out << YAML::Key << "Indices" << YAML::Value << YAML::BeginSeq; // Indices
-				for (uint32_t index : mesh.indices)
-					out << index;
-				out << YAML::EndSeq; // Indices
-
-				out << YAML::Key << "Material" << YAML::Value << mesh.material;
-
-				out << YAML::EndMap; // Mesh
-
-			}
+			out << YAML::Key << "Mesh" << YAML::Value << renderer->mesh;
+			out << YAML::Key << "Material" << YAML::Value << renderer->material;
 
 			out << YAML::EndMap; // Mesh Renderer
 
@@ -459,31 +428,8 @@ namespace Copper {
 
 			MeshRenderer* renderer = entity->AddComponent<MeshRenderer>();
 
-			YAML::Node meshNode = rendererNode["Mesh"];
-			Mesh mesh;
-
-			YAML::Node dataNode = meshNode["Data"];
-			for (uint32 i = 0; i < dataNode.size(); i++) {
-
-				YAML::Node vertex = dataNode[i];
-
-				mesh.vertices.push_back(vertex["Position"].as<Vector3>());
-				mesh.normals.push_back(vertex["Normal"].as<Vector3>());
-				mesh.colors.push_back(vertex["Color"].as<Color>());
-				mesh.uvs.push_back(vertex["UV"].as<Vector2>());
-
-			}
-
-			YAML::Node indicesNode = meshNode["Indices"];
-			for (uint32 i = 0; i < indicesNode.size(); i++) {
-
-				mesh.indices.push_back(indicesNode[i].as<uint32>());
-
-			}
-
-			mesh.material = meshNode["Material"].as<MaterialAsset>();
-
-			renderer->meshes.push_back(mesh);
+			renderer->mesh = rendererNode["Mesh"].as<MeshAsset>();
+			renderer->material = rendererNode["Material"].as<MaterialAsset>();
 
 		}
 		if (YAML::Node lightNode = node["Light"]) {

@@ -18,6 +18,8 @@
 
 #include <GLM/ext/matrix_transform.hpp>
 
+namespace Copper { extern void InitializePrimitives(); }
+
 namespace Copper::Renderer {
 
 	constexpr uint32 MaxVertices = 20'000;
@@ -122,16 +124,6 @@ namespace Copper::Renderer {
 		data.vbo.Unbind();
 		data.vao.Unbind();
 
-		// White Material
-
-		data.whiteMaterial = AssetStorage::InsertAsset<Material>(UUID(""));
-
-		uint32 white = 0xffffffff;
-		data.whiteMaterial->texture = AssetStorage::InsertAsset<Texture>(UUID(""), 1, 1, Texture::Format::RGBA, (uint8*) &white);
-
-		data.materials[0] = data.whiteMaterial;
-		data.materialCount = 1;
-
 		// Lines
 
 		data.lineVao = VertexArray(nullptr);
@@ -146,6 +138,18 @@ namespace Copper::Renderer {
 
 		data.lineVbo.Unbind();
 		data.lineVao.Unbind();
+
+		// Built in Assets
+
+		data.whiteMaterial = AssetStorage::InsertAsset<Material>(UUID(""));
+
+		uint32 white = 0xffffffff;
+		data.whiteMaterial->texture = AssetStorage::InsertAsset<Texture>(UUID(""), 1, 1, Texture::Format::RGBA, (uint8*) &white);
+
+		data.materials[0] = data.whiteMaterial;
+		data.materialCount = 1;
+
+		InitializePrimitives();
 
 	}
 
@@ -221,7 +225,7 @@ namespace Copper::Renderer {
 
 	}
 
-	void AddMesh(Mesh* mesh, Transform* transform) {
+	void AddMesh(const MeshAsset& mesh, Transform* transform, const MaterialAsset& material) {
 
 		CUP_FUNCTION();
 
@@ -230,7 +234,7 @@ namespace Copper::Renderer {
 		const uint32 indicesCount = (uint32) mesh->indices.size();
 		const uint32 verticesCount = (uint32) mesh->vertices.size();
 
-		const uint32 matIndex = GetMaterialIndex(mesh->material);
+		const uint32 matIndex = GetMaterialIndex(material);
 
 		// Check if batch is full
 

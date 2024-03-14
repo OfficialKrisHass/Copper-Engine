@@ -18,6 +18,9 @@ namespace Editor::ProjectAssetDatabase {
 	std::unordered_map<fs::path, UUID> assetFiles;
 	std::unordered_map<UUID, std::string> assetNames;
 
+	UUID invalidUUID = UUID("");
+	std::string emptyString = "";
+
 	static void FileChangeCallback(const fs::path& path, const FileWatcher::FileChangeType changeType);
 
 	void LoadAsset(const fs::path& path, const std::string& extension);
@@ -67,7 +70,7 @@ namespace Editor::ProjectAssetDatabase {
 		if (assetFiles.find(path) == assetFiles.end()) {
 
 			LogError("No asset at path '{}' exists, or is not loaded", path);
-			return UUID("");
+			return invalidUUID;
 
 		}
 
@@ -78,7 +81,12 @@ namespace Editor::ProjectAssetDatabase {
 
 		CUP_FUNCTION();
 		
-		if (assetNames.find(uuid) == assetNames.end()) return "";
+		if (assetNames.find(uuid) == assetNames.end()) {
+
+			LogError("No asset with uuid '{}' exists, or is not loaded", uuid.str());
+			return emptyString;
+
+		}
 		return assetNames.at(uuid);
 
 	}

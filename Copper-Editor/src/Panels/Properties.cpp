@@ -206,8 +206,7 @@ namespace Editor {
 
 		if (!DrawComponent<MeshRenderer>("Mesh Renderer", renderer)) return;
 
-		Mesh& mesh = renderer->meshes[0];
-		UI::EditMaterial("Material", &mesh.material);
+		UI::EditMaterial("Material", &renderer->material);
 
 		ImGui::PopID();
 

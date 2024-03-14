@@ -3,6 +3,9 @@
 #include "Engine/Core/Core.h"
 
 #include "Engine/Renderer/Mesh.h"
+#include "Engine/Renderer/Material.h"
+
+#include "Engine/AssetStorage/AssetPtr.h"
 
 #include "Engine/Components/Component.h"
 
@@ -13,7 +16,8 @@ namespace Copper {
 	public:
 		MeshRenderer() = default;
 
-		std::vector<Mesh> meshes;
+		MeshAsset mesh;
+		MaterialAsset material;
 
 	};
 

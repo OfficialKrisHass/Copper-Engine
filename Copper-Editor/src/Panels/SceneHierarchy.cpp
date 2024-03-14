@@ -129,30 +129,22 @@ namespace Editor {
 			if (ImGui::MenuItem("Plane", 0, false, m_scene)) {
 
 				m_selectedEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Plane");
+
 				MeshRenderer* renderer = m_selectedEntity->AddComponent<MeshRenderer>();
-				Mesh mesh;
+				renderer->mesh = PlaneMesh();
+				renderer->material = Material::WhiteMaterial();
 
-				mesh.vertices = planeVertices;
-				mesh.normals = planeNormals;
-				mesh.colors = planeColors;
-				mesh.indices = planeIndices;
-
-				renderer->meshes.push_back(mesh);
 				SetChanges(true);
 
 			}
 			if (ImGui::MenuItem("Cube", 0, false, m_scene)) {
 
 				m_selectedEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Cube");
+
 				MeshRenderer* renderer = m_selectedEntity->AddComponent<MeshRenderer>();
-				Mesh mesh;
+				renderer->mesh = CubeMesh();
+				renderer->material = Material::WhiteMaterial();
 
-				mesh.vertices = cubeVertices;
-				mesh.normals = cubeNormals;
-				mesh.colors = cubeColors;
-				mesh.indices = cubeIndices;
-
-				renderer->meshes.push_back(mesh);
 				SetChanges(true);
 
 			}

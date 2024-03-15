@@ -98,7 +98,7 @@ project "Copper-Engine"
         "VERSION_MAJOR=0",
         "VERSION_MINOR=3",
         "VERSION_PATCH=0",
-        "VERSION_TWEAK=90",
+        "VERSION_TWEAK=91",
         
         "SCENE_VERSION=0",
 
@@ -318,6 +318,12 @@ project "Copper-Launcher"
         "Copper-Engine/lib/GLAD/include",
         "Copper-Engine/lib/yaml-cpp/include",
         "Copper-Engine/lib/ImGui",
+
+    }
+
+    defines {
+
+        "YAML_CPP_STATIC_DEFINE",
 
     }
 

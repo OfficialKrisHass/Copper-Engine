@@ -31,13 +31,20 @@ namespace Launcher {
 	}
 	void Run() {
 
+		bool boo = false;
+
 		while (data.running) {
 
 			Window::Update();
 
 			UI::BeginFrame();
 
-			ImGui::Text("Test Text!");
+			ImGui::Text("The quick brown fox jumped over the big brown lazy dog");
+			if (ImGui::Button("Jump scare"))
+				boo = true;
+
+			if (boo)
+				ImGui::Text("Boo");
 
 			UI::EndFrame();
 

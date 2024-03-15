@@ -10,7 +10,13 @@
 #include <imgui_impl_opengl3.h>
 #include <imgui_impl_glfw.h>
 
+#include <yaml-cpp/yaml.h>
+
+#include <iostream>
+
 namespace Launcher::UI {
+
+	void LoadTheme();
 
 	void Initialize() {
 
@@ -19,9 +25,13 @@ namespace Launcher::UI {
 
 		ImGuiIO& io = ImGui::GetIO();
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NoMouseCursorChange;
+		io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/open-sans.regular.ttf", 25.0f);
+
+		LoadTheme();
 
 		ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*) Window::NativePointer(), true);
 		ImGui_ImplOpenGL3_Init("#version 460");
+
 
 	}
 
@@ -80,6 +90,36 @@ namespace Launcher::UI {
 		ImGui_ImplGlfw_Shutdown();
 
 		ImGui::DestroyContext();
+
+	}
+
+	void LoadTheme() {
+
+		YAML::Node main;
+		try { main = YAML::LoadFile("assets/Default.cutheme"); } catch (YAML::ParserException e) {
+
+			std::cout << "Failed to Read Default.cutheme file!\n\t" << e.what() << "\n";
+			return;
+
+		}
+
+		ImGuiStyle& style = ImGui::GetStyle();
+		style.FrameRounding = main["Rounding"].as<float>();
+
+		YAML::Node colors = main["Colors"];
+		for (YAML::const_iterator it = colors.begin(); it != colors.end(); ++it) {
+
+			uint32 col = it->first.as<uint32>();
+
+			ImVec4 value;
+			value.x = it->second[0].as<float>();
+			value.y = it->second[1].as<float>();
+			value.z = it->second[2].as<float>();
+			value.w = it->second[3].as<float>();
+
+			style.Colors[col] = value;
+
+		}
 
 	}
 }

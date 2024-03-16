@@ -7,6 +7,7 @@ namespace Launcher::UI {
 	void Initialize();
 
 	void BeginFrame();
+	void Dockspace();
 	void EndFrame();
 
 	void Shutdown();

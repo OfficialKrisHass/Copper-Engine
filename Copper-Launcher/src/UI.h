@@ -2,6 +2,8 @@
 
 #include "Base.h"
 
+struct ImFont;
+
 namespace Launcher::UI {
 
 	void Initialize();
@@ -11,5 +13,7 @@ namespace Launcher::UI {
 	void EndFrame();
 
 	void Shutdown();
+
+	ImFont* AddFont(const char* path, float size);
 
 }

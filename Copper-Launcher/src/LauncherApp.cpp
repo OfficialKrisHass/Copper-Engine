@@ -1,12 +1,16 @@
 #include "Window.h"
 #include "UI.h"
 
+#include "ProjectEntry.h"
+
 #include "ThemeEditor.h"
 
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_internal.h>
 
 #include <iostream>
+#include <vector>
 
 namespace Launcher {
 
@@ -14,19 +18,28 @@ namespace Launcher {
 
 		bool running = true;
 
+		std::vector<ProjectEntry> projectEntries = {	ProjectEntry("", "dir-less"),
+														ProjectEntry("Dev Project", "C:/Programming/Copper-Engine/DevProject"),
+														ProjectEntry("Lalalalala", "C:/Lalalala"),
+														ProjectEntry("Half Life 3", "C:"),
+														ProjectEntry("Portal 3", "C:/Gaben/valvesoftware"),
+														ProjectEntry("Hellraze", "C:/Programming/Hellraze"), };
+
+		ImFont* titleFont = nullptr;
+
 	};
 	static Data data;
 
-	constexpr float WindowPadding = 10.0f;
-	constexpr float ProjectTabHeight = 85.0f;
+	constexpr ImVec2 ButtonSize = { 175, 50 };
 
 	static void Run();
 	static void Shutdown();
 
-	static void ProjectTab(const char* name, const char* dir);
+	static void TitleText();
+	static void AddProjectButton(float cursorY);
+	static void CreateProjectButton(float cursorY);
 
-	ImFont* projectTabTitleFont = nullptr;
-	ImFont* projectTabDetailsFont = nullptr;
+	static void ProjectEntries();
 
 	int Entry() {
 
@@ -35,20 +48,15 @@ namespace Launcher {
 		Window::Create(960, 540, "Copper Launcher");
 		UI::Initialize();
 
+		ProjectEntry::InitializeFonts();
+		data.titleFont = UI::AddFont(MainFontPath, 40.0f);
+
 		Run();
 
 		return 0;
 
 	}
 	void Run() {
-
-		constexpr ImVec2 ButtonSize = { 175, 50 };
-		ImGuiIO& io = ImGui::GetIO();
-
-		ImFont* fontB = io.Fonts->AddFontFromFileTTF("assets/open-sans.regular.ttf", 40.0f);
-
-		projectTabTitleFont = io.Fonts->AddFontFromFileTTF("assets/open-sans.regular.ttf", 40.0f);
-		projectTabDetailsFont = io.Fonts->AddFontFromFileTTF("assets/open-sans.regular.ttf", 18.0f);
 
 		while (data.running) {
 
@@ -61,44 +69,14 @@ namespace Launcher {
 			ImGui::PopStyleVar();
 
 			float cursorY = ImGui::GetCursorPosY() + WindowPadding;
+
+			TitleText();
+			AddProjectButton(cursorY);
+			CreateProjectButton(cursorY);
 			
-			ImGui::PushFont(fontB);
-
-			ImGui::SetCursorPosX(WindowPadding);
-			ImGui::SetCursorPosY(ImGui::GetWindowContentRegionMin().y + WindowPadding + ButtonSize.y / 2.0f - ImGui::GetTextLineHeight() / 2.0f);
-			ImGui::Text("Projects");
-
-			ImGui::PopFont();
-			
-			ImGui::SameLine();
-			ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x - ImGui::GetStyle().ItemInnerSpacing.x - WindowPadding - ButtonSize.x * 2.0f);
-			ImGui::SetCursorPosY(cursorY);
-			ImGui::Button("Add Project", ButtonSize);
-
-			ImGui::SameLine();
-			ImGui::SetCursorPosY(cursorY);
-			ImGui::Button("Create Project", ButtonSize);
-
-			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + WindowPadding);
 			ImGui::Separator();
 
-			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { WindowPadding, 0 });
-			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImGui::GetStyleColorVec4(ImGuiCol_WindowBg));
-			ImGui::BeginChildFrame(ImGuiID(51515415555255), { ImGui::GetContentRegionAvail().x, ImGui::GetWindowHeight() - ImGui::GetCursorPosY() });
-			ImGui::PopStyleVar(2);
-			ImGui::PopStyleColor();
-
-			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + WindowPadding);
-
-			ProjectTab(" ", "dir-less");
-			ProjectTab("Dev Project", "C:/Programming/Copper-Engine/DevProject");
-			ProjectTab("Lalalalala", "C:/Lalalala");
-			ProjectTab("Half Life 3", "C:");
-			ProjectTab("Portal 3", "C:/Gaben/valvesoftware");
-			ProjectTab("Hellraze", "C:/Programming/Hellraze");
-
-			ImGui::EndChildFrame();
+			ProjectEntries();
 
 			//ThemeEditor();
 			UI::EndFrame();
@@ -118,21 +96,50 @@ namespace Launcher {
 
 	}
 
-	void ProjectTab(const char* name, const char* dir) {
+	void TitleText() {
 
+		ImGui::PushFont(data.titleFont);
+
+		ImGui::SetCursorPosX(WindowPadding);
+		ImGui::SetCursorPosY(ImGui::GetWindowContentRegionMin().y + WindowPadding + ButtonSize.y / 2.0f - ImGui::GetTextLineHeight() / 2.0f);
+		ImGui::Text("Copper Launcher");
+
+		ImGui::PopFont();
+
+	}
+	void AddProjectButton(float cursorY) {
+
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x - ImGui::GetStyle().ItemInnerSpacing.x - WindowPadding - ButtonSize.x * 2.0f);
+		ImGui::SetCursorPosY(cursorY);
+		ImGui::Button("Add Project", ButtonSize);
+
+	}
+	void CreateProjectButton(float cursorY) {
+
+		ImGui::SameLine();
+		ImGui::SetCursorPosY(cursorY);
+		ImGui::Button("Create Project", ButtonSize);
+
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + WindowPadding);
+
+	}
+
+	void ProjectEntries() {
+
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { WindowPadding, 0 });
-		ImGui::BeginChildFrame(ImGui::GetID(name), { ImGui::GetContentRegionAvail().x, ProjectTabHeight }, ImGuiWindowFlags_NoScrollbar);
-		ImGui::PopStyleVar();
+		ImGui::PushStyleColor(ImGuiCol_FrameBg, ImGui::GetStyleColorVec4(ImGuiCol_WindowBg));
 
-		ImGui::PushFont(projectTabTitleFont);
-		ImGui::Text(name);
-		ImGui::PopFont();
+		ImGui::BeginChildFrame(ImGuiID(51515415555255), { ImGui::GetContentRegionAvail().x, ImGui::GetWindowHeight() - ImGui::GetCursorPosY() });
 
-		ImGui::SetCursorPosY(ImGui::GetContentRegionMax().y - ImGui::GetTextLineHeight());
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor();
 
-		ImGui::PushFont(projectTabDetailsFont);
-		ImGui::Text(dir);
-		ImGui::PopFont();
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + WindowPadding);
+
+		for (const ProjectEntry& entry : data.projectEntries)
+			entry.Render();
 
 		ImGui::EndChildFrame();
 

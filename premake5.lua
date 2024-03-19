@@ -318,6 +318,7 @@ project "Copper-Launcher"
         "Copper-Engine/lib/GLAD/include",
         "Copper-Engine/lib/yaml-cpp/include",
         "Copper-Engine/lib/ImGui",
+        "Copper-Engine/lib/pfd",
 
     }
 

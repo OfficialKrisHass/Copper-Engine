@@ -56,8 +56,6 @@
 #include <thread>   // std::mutex, std::this_thread
 #include <chrono>   // std::chrono
 
-#include "Engine/Core/Log.h"
-
 // Versions of mingw64 g++ up to 9.3.0 do not have a complete IFileDialog
 #ifndef PFD_HAS_IFILEDIALOG
 #   define PFD_HAS_IFILEDIALOG 1
@@ -1803,9 +1801,6 @@ inline button message::result()
     auto ret = m_async->result(&exit_code);
     // osascript will say "button returned:Cancel\n"
     // and others will just say "Cancel\n"
-    Log("exit Code {}", exit_code);
-    Log("ret: {}", ret);
-    Log("m_mappings[exit_code]: {}", (int32_t) m_mappings[exit_code]);
     if (internal::ends_with(ret, "Cancel\n"))
         return button::cancel;
     if (internal::ends_with(ret, "OK\n"))

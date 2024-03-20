@@ -122,4 +122,6 @@ namespace Launcher::UI {
 		}
 
 	}
+
+	ImFont* AddFont(const char* path, float size) { return ImGui::GetIO().Fonts->AddFontFromFileTTF(path, size); }
 }

@@ -1,6 +1,8 @@
 #include "Window.h"
 #include "UI.h"
 
+#include "PersistentData.h"
+
 #include "ProjectEntry.h"
 
 #include "ThemeEditor.h"
@@ -45,6 +47,8 @@ namespace Launcher {
 
 		std::cout << "Hello, World!\n";
 
+		PersistentData::Load();
+
 		Window::Create(960, 540, "Copper Launcher");
 		UI::Initialize();
 
@@ -61,7 +65,6 @@ namespace Launcher {
 		while (data.running) {
 
 			Window::Update();
-
 			UI::BeginFrame();
 
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
@@ -78,9 +81,7 @@ namespace Launcher {
 
 			ProjectEntries();
 
-			//ThemeEditor();
 			UI::EndFrame();
-
 
 		}
 

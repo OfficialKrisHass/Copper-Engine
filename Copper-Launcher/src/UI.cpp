@@ -25,7 +25,7 @@ namespace Launcher::UI {
 
 		ImGuiIO& io = ImGui::GetIO();
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NoMouseCursorChange;
-		io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/open-sans.regular.ttf", 25.0f);
+		io.FontDefault = io.Fonts->AddFontFromFileTTF(MainFontPath, 25.0f);
 
 		LoadTheme();
 

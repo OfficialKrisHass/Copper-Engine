@@ -38,4 +38,10 @@ namespace Launcher::Dialogs {
 
 	}
 
+	std::string OpenFolder(const std::string& title, const std::string initialDir) {
+
+		return pfd::select_folder(title, initialDir).result();
+
+	}
+
 }

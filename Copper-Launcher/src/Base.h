@@ -5,7 +5,7 @@
 namespace Launcher {
 
 	inline constexpr float WindowPadding = 10.0f;
-	inline constexpr const char* MainFontPath = "assets/open-sans.regular.ttf";
+	inline constexpr const char* MainFontPath = "Copper-Launcher/assets/open-sans.regular.ttf";
 
 	typedef char                int8;
 	typedef unsigned char       uint8;

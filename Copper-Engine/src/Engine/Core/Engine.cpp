@@ -71,7 +71,7 @@ namespace Copper {
 		SimpleEvent postShutdownEvent;
 
 		// Helper func to get the Window without macros everywhere
-		Window& Window() {
+		Window& GetWindow() {
 
 			CUP_FUNCTION();
 
@@ -112,19 +112,18 @@ namespace Copper {
 	#else
 		data.window = Window("Copper Engine", 1280, 720);
 	#endif
-
-		data.Window().AddWindowCloseEventFunc(OnWindowClose);
-		data.Window().AddWindowResizeEventFunc(OnWindowResize);
+		data.GetWindow().AddWindowCloseEventFunc(OnWindowClose);
+		data.GetWindow().AddWindowResizeEventFunc(OnWindowResize);
 
 		Renderer::Initialize();
 		Renderer::SetShaderPath("assets/Shaders/vertexDefault.glsl", "assets/Shaders/fragmentDefault.glsl");
 		data.fbo = FrameBuffer(UVector2I(1280, 720)); // TODO: Find a solution to this (maybe store the resolution somewhere ?)
 
-		data.mainUIContext.Initialize(data.Window(), true);
+		data.mainUIContext.Initialize(data.GetWindow(), true);
 
 		// Input
 
-		Input::Initialize(data.Window());
+		Input::Initialize(data.GetWindow());
 		Input::InitializeAxisManager();
 
 		// Physics
@@ -156,7 +155,7 @@ namespace Copper {
 
 			// Calculate delta time
 
-			float time = data.Window().Time();
+			float time = data.GetWindow().Time();
 			data.deltaTime = time - data.lastFrameTime;
 			data.lastFrameTime = time;
 
@@ -164,7 +163,7 @@ namespace Copper {
 
 			CUP_START_FRAME("Window");
 
-			data.Window().Update();
+			data.GetWindow().Update();
 			data.updateEvent();
 
 			CUP_END_FRAME();
@@ -175,7 +174,7 @@ namespace Copper {
 			data.scene.Update(data.deltaTime);
 			data.fbo.Unbind();
 
-			RendererAPI::ResizeViewport(data.Window().Size());
+			RendererAPI::ResizeViewport(data.GetWindow().Size());
 
 			CUP_END_FRAME();
 
@@ -212,7 +211,7 @@ namespace Copper {
 		CUP_FUNCTION();
 
 		data.mainUIContext.Shutdown();
-		data.Window().Shutdown();
+		data.GetWindow().Shutdown();
 
 		data.postShutdownEvent();
 
@@ -254,8 +253,8 @@ namespace Copper {
 		// Editor handles resizing on its own
 
 	#ifndef CU_EDITOR
-		data.fbo.Resize(data.Window().Size());
-		data.scene.cam->Resize(data.Window().Size());
+		data.fbo.Resize(data.GetWindow().Size());
+		data.scene.cam->Resize(data.GetWindow().Size());
 	#endif
 
 		return true;
@@ -278,7 +277,7 @@ namespace Copper {
 
 	// Declaration in Window.h
 
-	Window& GetWindow() { return data.Window(); }
+	Window& GetWindow() { return data.GetWindow(); }
 	UVector2I GetWindowSize() {
 		
 	#ifdef CU_EDITOR
@@ -298,7 +297,7 @@ namespace Copper {
 
 	}
 
-	void SetMainWindowAsCurrent() { data.Window().SetAsCurrentContext(); }
+	void SetMainWindowAsCurrent() { data.GetWindow().SetAsCurrentContext(); }
 	void SetWindowSize(const UVector2I& size) {
 
 		CUP_FUNCTION();

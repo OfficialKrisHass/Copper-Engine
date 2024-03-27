@@ -13,6 +13,7 @@
 namespace Copper {
 
 	class Transform;
+	class Scene;
 
 	std::ostream& operator<<(std::ostream& os, const class InternalEntity& entity);
 

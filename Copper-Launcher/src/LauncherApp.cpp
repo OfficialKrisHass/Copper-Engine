@@ -15,7 +15,7 @@
 #include <vector>
 
 namespace Launcher {
-
+  
 	struct Data {
 
 		bool running = true;
@@ -76,7 +76,7 @@ namespace Launcher {
 			TitleText();
 			AddProjectButton(cursorY);
 			CreateProjectButton(cursorY);
-			
+
 			ImGui::Separator();
 
 			ProjectEntries();

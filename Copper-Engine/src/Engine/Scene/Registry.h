@@ -30,6 +30,7 @@ namespace Copper {
 	class BoxCollider;
 	class SphereCollider;
 	class CapsuleCollider;
+	
 	extern uint32 cCounter;
 
 	extern EntityEvent entityCreatedEvent;
@@ -253,26 +254,6 @@ namespace Copper {
 
 		}
 
-		template<> Collider* AddComponent<Collider>(uint32 eID);
-		template<> BoxCollider* AddComponent<BoxCollider>(uint32 eID);
-		template<> SphereCollider* AddComponent<SphereCollider>(uint32 eID);
-		template<> CapsuleCollider* AddComponent<CapsuleCollider>(uint32 eID);
-
-		template<> Collider* GetComponent<Collider>(uint32 eID);
-		template<> BoxCollider* GetComponent<BoxCollider>(uint32 eID);
-		template<> SphereCollider* GetComponent<SphereCollider>(uint32 eID);
-		template<> CapsuleCollider* GetComponent<CapsuleCollider>(uint32 eID);
-
-		template<> bool HasComponent<Collider>(uint32 eID);
-		template<> bool HasComponent<BoxCollider>(uint32 eID);
-		template<> bool HasComponent<SphereCollider>(uint32 eID);
-		template<> bool HasComponent<CapsuleCollider>(uint32 eID);
-
-		template<> void RemoveComponent<Collider>(uint32 eID);
-		template<> void RemoveComponent<BoxCollider>(uint32 eID);
-		template<> void RemoveComponent<SphereCollider>(uint32 eID);
-		template<> void RemoveComponent<CapsuleCollider>(uint32 eID);
-
 		void* GetComponent(uint32 componentID, uint32 eID) {
 
 			CUP_FUNCTION();
@@ -356,5 +337,25 @@ namespace Copper {
 		template<typename T> void RemoveColliderComponent(uint32 eID, uint8 type);
 
 	};
+
+	template<> Collider* Registry::AddComponent<Collider>(uint32 eID);
+	template<> BoxCollider* Registry::AddComponent<BoxCollider>(uint32 eID);
+	template<> SphereCollider* Registry::AddComponent<SphereCollider>(uint32 eID);
+	template<> CapsuleCollider* Registry::AddComponent<CapsuleCollider>(uint32 eID);
+
+	template<> Collider* Registry::GetComponent<Collider>(uint32 eID);
+	template<> BoxCollider* Registry::GetComponent<BoxCollider>(uint32 eID);
+	template<> SphereCollider* Registry::GetComponent<SphereCollider>(uint32 eID);
+	template<> CapsuleCollider* Registry::GetComponent<CapsuleCollider>(uint32 eID);
+
+	template<> bool Registry::HasComponent<Collider>(uint32 eID);
+	template<> bool Registry::HasComponent<BoxCollider>(uint32 eID);
+	template<> bool Registry::HasComponent<SphereCollider>(uint32 eID);
+	template<> bool Registry::HasComponent<CapsuleCollider>(uint32 eID);
+
+	template<> void Registry::RemoveComponent<Collider>(uint32 eID);
+	template<> void Registry::RemoveComponent<BoxCollider>(uint32 eID);
+	template<> void Registry::RemoveComponent<SphereCollider>(uint32 eID);
+	template<> void Registry::RemoveComponent<CapsuleCollider>(uint32 eID);
 
 }

@@ -4,13 +4,18 @@
 
 #include <yaml-cpp/yaml.h>
 
-#include <iostream>
-
 #include <string>
 #include <fstream>
 #include <filesystem>
 
 namespace Launcher::PersistentData {
+  
+  static const std::string filename = "LauncherData.cup";
+#ifdef CU_WINDOWS
+  static const std::string persistenFolder = std::string(getenv("appdata")) + "\\Copper-Editor\\";
+#elif CU_LINUX
+  static const std::string persistenFolder = std::string("/home/") + cuserid(nullptr)+ "/.config/Copper-Editor/";
+#endif
 
 	static std::string editorPath = "";
 
@@ -19,7 +24,7 @@ namespace Launcher::PersistentData {
 	void Load() {
 
 		YAML::Node node;
-		try { node = YAML::LoadFile(std::string(getenv("appdata")) + "\\Copper-Editor\\LauncherData.cup"); }
+		try { node = YAML::LoadFile(persistenFolder + filename); }
 		catch (YAML::Exception e) {
 
 			Dialogs::Error("Couldn't Read LauncherData.cup", "Encountered an exception trying to Load the LauncherData.cup file.\nProvide the path to the Editor and we will create a new one");
@@ -27,7 +32,7 @@ namespace Launcher::PersistentData {
 
 			Save();
 
-			try { node = YAML::LoadFile(std::string(getenv("appdata")) + "\\Copper-Editor\\LauncherData.cup"); }
+			try { node = YAML::LoadFile(persistenFolder + filename); }
 			catch (YAML::Exception e) {
 
 				Dialogs::Error("Couldn't Read LauncherData.cup", e.msg);
@@ -50,13 +55,10 @@ namespace Launcher::PersistentData {
 
 		out << YAML::EndMap;
 
-		std::string path = std::string(getenv("appdata")) + "\\Copper-Editor";
-		if (!std::filesystem::exists(path))
-			std::filesystem::create_directories(path);
+		if (!std::filesystem::exists(persistenFolder))
+			std::filesystem::create_directories(persistenFolder);
 
-		path += "\\LauncherData.cup";
-
-		std::ofstream file(path.c_str());
+		std::ofstream file(persistenFolder + filename);
 		file << out.c_str();
 		file.close();
 
@@ -65,7 +67,9 @@ namespace Launcher::PersistentData {
 	const std::string& EditorPath() { return editorPath; }
 
 	void LocateEditor() {
-
+    
+    editorPath = "TestPath";
+    return;
 		editorPath = Dialogs::OpenFile("Locate Copper-Editor.exe", { "Executable files", "*.exe" }, "C:\\");
 		if (editorPath == "") {
 

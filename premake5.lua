@@ -325,6 +325,7 @@ project "Copper-Launcher"
     defines {
 
         "YAML_CPP_STATIC_DEFINE",
+        "CU_WINDOWS",
 
     }
 

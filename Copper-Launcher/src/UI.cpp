@@ -1,5 +1,6 @@
 #include "UI.h"
 
+#include "Base.h"
 #include "Window.h"
 
 #define IMGUI_IMPL_OPENGL_LOADER_GLAD
@@ -22,7 +23,7 @@ namespace Launcher::UI {
 
 		IMGUI_CHECKVERSION();
 		ImGui::SetCurrentContext(ImGui::CreateContext());
-
+    
 		ImGuiIO& io = ImGui::GetIO();
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NoMouseCursorChange;
 		io.FontDefault = io.Fonts->AddFontFromFileTTF(MainFontPath, 25.0f);
@@ -96,7 +97,7 @@ namespace Launcher::UI {
 	void LoadTheme() {
 
 		YAML::Node main;
-		try { main = YAML::LoadFile("assets/Launcher.cutheme"); } catch (YAML::ParserException e) {
+		try { main = YAML::LoadFile("Copper-Launcher/assets/Launcher.cutheme"); } catch (YAML::ParserException e) {
 
 			std::cout << "Failed to Read Default.cutheme file!\n\t" << e.what() << "\n";
 			return;

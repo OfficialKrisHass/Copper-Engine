@@ -21,5 +21,6 @@ namespace Launcher::Dialogs {
 	Result Error(const std::string& title, const std::string& description);
 
 	std::string OpenFile(const std::string& title, const std::vector<std::string>& filters, const std::string initialDir);
+	std::string OpenFolder(const std::string& title, const std::string initialDir);
 
 }

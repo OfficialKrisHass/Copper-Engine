@@ -1,6 +1,7 @@
 #include "Window.h"
 #include "UI.h"
 
+#include "Dialogs.h"
 #include "PersistentData.h"
 
 #include "ProjectEntry.h"
@@ -13,6 +14,8 @@
 
 #include <iostream>
 #include <vector>
+
+#include <filesystem>
 
 namespace Launcher {
   
@@ -113,7 +116,18 @@ namespace Launcher {
 		ImGui::SameLine();
 		ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x - ImGui::GetStyle().ItemInnerSpacing.x - WindowPadding - ButtonSize.x * 2.0f);
 		ImGui::SetCursorPosY(cursorY);
-		ImGui::Button("Add Project", ButtonSize);
+		if (!ImGui::Button("Add Project", ButtonSize)) return;
+
+		std::string path = Dialogs::OpenFolder("Select Project Folder", "C:\\");
+		if (path == "") return;
+		if (!std::filesystem::exists(path + "\\Project.cu")) {
+
+			Dialogs::Error("Invalid Project", "The folder you have selected does not contain a Project.cu file! Check if you have selected the correct folder");
+			return;
+
+		}
+
+		data.projectEntries.push_back(ProjectEntry(std::filesystem::path(path).filename().string(), path));
 
 	}
 	void CreateProjectButton(float cursorY) {

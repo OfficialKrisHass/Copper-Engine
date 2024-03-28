@@ -6,7 +6,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.1 -mavx -mavx2")
 
 set(SCENE_VERSION 0)
 
-project(Copper-Engine VERSION 0.3.0.95 LANGUAGES CXX C)
+project(Copper-Engine VERSION 0.3.0.96 LANGUAGES CXX C)
 message(STATUS "Building with configuration - ${CMAKE_BUILD_TYPE}")
 
 set(OUTPUT_DIR linux-x86_64-${CMAKE_BUILD_TYPE})

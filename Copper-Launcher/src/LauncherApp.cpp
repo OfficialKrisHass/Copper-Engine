@@ -1,3 +1,4 @@
+#include "Base.h"
 #include "Window.h"
 #include "UI.h"
 
@@ -118,9 +119,9 @@ namespace Launcher {
 		ImGui::SetCursorPosY(cursorY);
 		if (!ImGui::Button("Add Project", ButtonSize)) return;
 
-		std::string path = Dialogs::OpenFolder("Select Project Folder", "C:\\");
+		std::string path = Dialogs::OpenFolder("Select Project Folder", BaseProjectDir);
 		if (path == "") return;
-		if (!std::filesystem::exists(path + "\\Project.cu")) {
+		if (!std::filesystem::exists(path + "/Project.cu")) {
 
 			Dialogs::Error("Invalid Project", "The folder you have selected does not contain a Project.cu file! Check if you have selected the correct folder");
 			return;

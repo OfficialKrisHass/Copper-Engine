@@ -53,7 +53,7 @@ add_library(Copper-Engine STATIC ${sources})
 
 # Compiler setup
 set_target_properties(Copper-Engine PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/Build/${OUTPUT_DIR}/Copper-Engine")
-target_precompile_headers(Copper-Engine PRIVATE src/cupch.h)
+#target_precompile_headers(Copper-Engine PRIVATE ${PROJECT_SOURCE_DIR}/Copper-Engine/src/cupch.h)
 target_compile_definitions(Copper-Engine PRIVATE ${defines})
 target_compile_options(Copper-Engine PRIVATE -I/usr/lib/pkgconfig/../../include/mono-2.0 -D_REENTRANT)
 target_link_options(Copper-Engine PRIVATE -L/usr/lib/pkgconfig/../../lib -lmono-2.0 -lm -lpthread)

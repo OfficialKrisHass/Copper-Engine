@@ -3,10 +3,12 @@
 #include "Engine/Core/Core.h"
 
 namespace Copper {
+  
+  class Scene;
 
 	class Entity {
 
-		friend class Scene;
+		friend Scene;
 
 	public:
 		Entity() = default;

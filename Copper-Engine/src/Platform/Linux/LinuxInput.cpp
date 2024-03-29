@@ -10,58 +10,74 @@
 #include <portable-file-dialogs.h>
 
 #ifdef CU_EDITOR
-    extern Copper::UVector2I GetViewportCentre();
+extern Copper::UVector2I GetViewportCentre();
 #endif
 
+#define GLFW_WINDOW(win) (GLFWwindow*) win->GetWindowPtr()
+
+// TODO: Rework this to make it less complicated
+
 namespace Copper::Input {
-	
-	std::unordered_map<KeyCode, std::pair<uint32_t, bool>> keys;
+
+	Window* window;
+
+	std::unordered_map<KeyCode, std::pair<uint32, bool>> keys;
 
 	bool mouseVisible = true;
 	bool mouseLocked = false;
 	bool firstMouseLockedFrame = true;
 
 	UVector2I prevMousePos;
-	UVector2I mousePosDiference;
+	Vector2 mousePosDiference;
 
 	bool OnKeyPressed(const Event& e);
 	bool OnKeyReleased(const Event& e);
 
 	bool OnMouseMove(const Event& e);
 
-	void Initialize(const Window& window) {
+	void Initialize(Window& win) {
+
+		CUP_FUNCTION();
 
 		VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize Input");
+		window = &win;
 
-		GetWindow().AddKeyPressedEventFunc(OnKeyPressed);
-		GetWindow().AddKeyReleasedEventFunc(OnKeyReleased);
+		window->AddKeyPressedEventFunc(OnKeyPressed);
+		window->AddKeyReleasedEventFunc(OnKeyReleased);
 
-		GetWindow().AddMouseMoveEventFunc(OnMouseMove);
+		window->AddMouseMoveEventFunc(OnMouseMove);
 
-		if (!pfd::settings::available()) {
-
-			LogError("Portable File Dialogs are not avilable on this platform! You might be missing these packages:\nKDE: KDialog\nGnome: Zenity/Matedialog/Qarma");
-
-		}
+		if (!pfd::settings::available())
+		#ifdef CU_LINUX
+			LogError("Portable File Dialogs are not available! You might be missing these packages:\n\tKDE: KDialog\n\tGnome: Zenity/Matedialog/Qarma");
+		#elif CU_WINDOWS
+			LogError("Portable File Dialogs are not available!");
+		#endif
 
 		pfd::settings::verbose(true);
 
 	}
 	void Update() {
 
-		mousePosDiference = UVector2I::zero;
+		CUP_FUNCTION();
+
+		mousePosDiference = Vector2::zero;
 
 	}
 
 	bool IsKey(KeyCode key) {
-		
+
+		CUP_FUNCTION();
+
 		if (keys[key].first == 0) return false;
 
 		return true;
 
 	}
 	bool IsKeyDown(KeyCode key) {
-		
+
+		CUP_FUNCTION();
+
 		if (keys[key].first != 1) return false;
 
 		keys[key].first++;
@@ -69,23 +85,29 @@ namespace Copper::Input {
 
 	}
 	bool IsKeyReleased(KeyCode key) {
-		
+
+		CUP_FUNCTION();
+
 		if (!keys[key].second) return false;
 
 		keys[key].second = false;
 		return true;
 
 	}
-	
+
 	bool IsButton(MouseCode button) {
-		
-		return glfwGetMouseButton(GetGLFWwindow, (int) button) == GLFW_PRESS ? true : false;
+
+		CUP_FUNCTION();
+
+		return glfwGetMouseButton(GLFW_WINDOW(window), (int32) button) == GLFW_PRESS ? true : false;
 
 	}
 
 	bool OnKeyPressed(const Event& e) {
 
-		KeyCode keycode = ((KeyEvent*) &e)->key;
+		CUP_FUNCTION();
+
+		KeyCode keycode = ((KeyEvent*)&e)->key;
 		keys[keycode].first++;
 		keys[keycode].second = false;
 
@@ -94,7 +116,9 @@ namespace Copper::Input {
 	}
 	bool OnKeyReleased(const Event& e) {
 
-		KeyCode keycode = ((KeyEvent*) &e)->key;
+		CUP_FUNCTION();
+
+		KeyCode keycode = ((KeyEvent*)&e)->key;
 		keys[keycode].first = 0;
 		keys[keycode].second = true;
 
@@ -104,7 +128,9 @@ namespace Copper::Input {
 
 	bool OnMouseMove(const Event& e) {
 
-		MouseMoveEvent& event = *((MouseMoveEvent*) &e);
+		CUP_FUNCTION();
+
+		MouseMoveEvent& event = *((MouseMoveEvent*)&e);
 
 		if (!mouseLocked) {
 
@@ -119,19 +145,20 @@ namespace Copper::Input {
 		}
 
 		UVector2I centre;
-	#ifdef CU_EDITOR
+#ifdef CU_EDITOR
 		centre = GetViewportCentre();
-	#else
+#else
 		centre = GetWindowSize() / 2;
-	#endif
+#endif
 
 		if (event.mouseCoords == centre) return true;
 		if (!firstMouseLockedFrame) {
 
 			mousePosDiference.x = ((float) event.mouseCoords.x - centre.x) / GetWindowSize().x;
-			mousePosDiference.y = ((float) event.mouseCoords.y - centre.y + 63) / GetWindowSize().y;
+			mousePosDiference.y = ((float) event.mouseCoords.y - centre.y) / GetWindowSize().y;
 
-		} else {
+		}
+		else {
 
 			firstMouseLockedFrame = false;
 
@@ -139,19 +166,23 @@ namespace Copper::Input {
 
 		prevMousePos = event.mouseCoords;
 
-		SetCursorPosition(centre.x, centre.y);
+		SetCursorPosition((float) centre.x, (float) centre.y);
 
 		return true;
 
 	}
-	
+
 	void SetCursorVisible(bool visible) {
-		
-		glfwSetInputMode(GetGLFWwindow, GLFW_CURSOR, visible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_HIDDEN);
+
+		CUP_FUNCTION();
+
+		glfwSetInputMode(GLFW_WINDOW(window), GLFW_CURSOR, visible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_HIDDEN);
 		mouseVisible = visible;
 
 	}
 	void SetCursorLocked(bool locked) {
+
+		CUP_FUNCTION();
 
 		mouseLocked = locked;
 		if (locked) firstMouseLockedFrame = true;
@@ -159,20 +190,26 @@ namespace Copper::Input {
 	}
 	void SetCursorPosition(float x, float y) {
 
-		glfwSetCursorPos(GetGLFWwindow, x, y);
-		
+		CUP_FUNCTION();
+
+		glfwSetCursorPos(GLFW_WINDOW(window), x, y);
+
 	}
 
 	void SetWindowTitle(const std::string& title) {
 
-		glfwSetWindowTitle(GetGLFWwindow, title.c_str());
-		
+		CUP_FUNCTION();
+
+		glfwSetWindowTitle(GLFW_WINDOW(window), title.c_str());
+
 	}
-	
+
 	void GetCursorPosition(double* x, double* y) {
-		
-		glfwGetCursorPos(GetGLFWwindow, x, y);
-		
+
+		CUP_FUNCTION();
+
+		glfwGetCursorPos(GLFW_WINDOW(window), x, y);
+
 	}
 
 	float GetCursorPosDifferenceX() { return mousePosDiference.x; }
@@ -189,5 +226,5 @@ namespace Copper::Input {
 		return mouseVisible;
 
 	}
-	
+
 }

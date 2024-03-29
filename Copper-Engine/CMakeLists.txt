@@ -7,6 +7,7 @@ list(APPEND sources src/Copper.h src/cupch.h src/cupch.cpp
                     lib/ImGuizmo/ImGuizmo/ImGuizmo.h lib/ImGuizmo/ImGuizmo/ImGuizmo.cpp)
 
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Core/CMakeLists.txt)
+include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Debug/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Events/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Renderer/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/AssetStorage/CMakeLists.txt)

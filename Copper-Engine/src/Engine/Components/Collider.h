@@ -10,16 +10,16 @@ namespace physx { class PxShape; }
 
 namespace Copper {
 
+  class RigidBody;
+
 	class Collider : public Component {
 
 		friend class Registry;
 		friend class Scene;
 
-		friend class RigidBody;
+		friend RigidBody;
 
 	public:
-		enum Type;
-
 		bool trigger = false;
 		Vector3 center = Vector3::zero;
 

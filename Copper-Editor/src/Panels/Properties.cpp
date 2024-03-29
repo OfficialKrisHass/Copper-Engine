@@ -358,7 +358,7 @@ namespace Editor {
 
 			if (ImGui::MenuItem("Remove Component")) {
 				
-				component->GetEntity()->RemoveComponent<T>();
+				component->GetEntity()->template RemoveComponent<T>();
 
 				SetChanges(true);
 				ImGui::EndPopup();

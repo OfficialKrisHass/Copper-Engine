@@ -2,11 +2,7 @@
 
 #include <fstream>
 
-#ifdef CU_LINUX
-using std::experimental::filesystem::create_directories;
-#else
 using std::filesystem::create_directories;
-#endif
 
 namespace Editor {
 

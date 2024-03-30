@@ -3,6 +3,8 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+compile_commands.json
+
 *.make
 *.mingw
 .vscode
@@ -19,6 +21,7 @@
 
 # Visual Studio Specific Files
 *.sln
+*.csproj
 *.vcxproj
 *.filters
 

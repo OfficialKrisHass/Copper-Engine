@@ -1,3 +1,4 @@
+#include "Engine/Core/Core.h"
 #include "cupch.h"
 #include "ScriptingCore.h"
 
@@ -17,7 +18,7 @@
 char domainName[] = "CUScriptRuntime";
 
 namespace Copper::Scripting {
-
+  
 	typedef std::unordered_map<std::string, void*> FieldValueMap;
 	typedef std::unordered_map<ScriptComponent*, FieldValueMap> ScriptValueMap;
 
@@ -55,6 +56,12 @@ namespace Copper::Scripting {
 
 	};
 
+#ifdef CU_LINUX
+  static const std::string AssembliesPath = ExecutableFolder() + "/lib/mono/lib/linux";
+#elif CU_WINDOWS
+  static constexpr const char* AssembliesPath = "lib/mono/lib/windows";
+#endif
+
 	ScriptingCoreData data;
 
 	void LoadScriptingAPI();
@@ -74,8 +81,14 @@ namespace Copper::Scripting {
 		VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the Scripting Engine");
 
 		// Initialize Mono
-
-		mono_set_assemblies_path("lib/mono/lib");
+    
+  #ifdef CU_LINUX
+    const std::string AssembliesPath = ExecutableFolder() + "/lib/mono/lib/linux";
+  #elif CU_WINDOWS
+    const std::string AssembliesPath = ExecutableFolder() + "/lib/mono/lib/windows";
+  #endif
+    
+		mono_set_assemblies_path(AssembliesPath.c_str());
 		data.root = mono_jit_init("CUJITRuntime");
 
 		// Setup ScriptingAPI
@@ -100,7 +113,7 @@ namespace Copper::Scripting {
 		data.app = mono_domain_create_appdomain(domainName, nullptr);
 		mono_domain_set(data.app, true);
 
-		data.apiAssembly = MonoUtils::LoadAssembly("assets/ScriptAPI/Copper-ScriptingAPI.dll");
+		data.apiAssembly = MonoUtils::LoadAssembly(ExecutableFolder() + "/assets/ScriptAPI/Copper-ScriptingAPI.dll");
 		data.apiAssemblyImage = mono_assembly_get_image(data.apiAssembly);
 
 		data.vector2Class = mono_class_from_name(data.apiAssemblyImage, "Copper", "Vector2");

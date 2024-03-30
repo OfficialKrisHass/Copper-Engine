@@ -149,15 +149,15 @@ namespace Editor {
 		AddEntityCreatedEventFunc(OnEntityCreated);
 		AddEntityRemovedEventFunc(OnEntityRemoved);
 
-		LoadMainUIContextFont("assets/Fonts/open-sans.regular.ttf");
+		LoadMainUIContextFont(ExecutableFolder() + "/assets/Fonts/open-sans.regular.ttf");
 
 		data.state = Edit;
 		data.viewportSize = UVector2I(1280, 720);
 		data.gamePanelSize = UVector2I(1280, 720);
 		data.viewportFBO = FrameBuffer(data.viewportSize);
 		
-		data.playIcon.Create("assets/Icons/PlayButton.png", Texture::Format::RGBA);
-		data.stopIcon.Create("assets/Icons/StopButton.png", Texture::Format::RGBA);
+		data.playIcon.Create(ExecutableFolder() + "/assets/Icons/PlayButton.png", Texture::Format::RGBA);
+		data.stopIcon.Create(ExecutableFolder() + "/assets/Icons/StopButton.png", Texture::Format::RGBA);
 		
 		data.sceneHierarchy = SceneHierarchy();
 		data.properties = Properties();
@@ -171,7 +171,7 @@ namespace Editor {
 
 		LoadEditorData();
 
-		data.themeEditor.LoadTheme("assets/Themes/Default.cutheme");
+		data.themeEditor.LoadTheme(ExecutableFolder() + "/assets/Themes/Default.cutheme");
 
 	#ifdef CU_LINUX
 		RunPremake();
@@ -194,7 +194,7 @@ namespace Editor {
 
 		out << YAML::EndMap; //End
 
-		std::ofstream file("assets/EditorData.cu");
+		std::ofstream file(ExecutableFolder() + "/assets/EditorData.cu");
 		file << out.c_str();
 
 		if (saveProject && data.project) data.project.Save();
@@ -202,7 +202,7 @@ namespace Editor {
 	}
 	void LoadEditorData() {
 
-		if (!fs::exists("assets/EditorData.cu")) {
+		if (!fs::exists(ExecutableFolder() + "/assets/EditorData.cu")) {
 
 			LogWarn("EditorData.cu is missing, generating a default one");
 
@@ -212,7 +212,7 @@ namespace Editor {
 		}
 
 		YAML::Node main;
-		try { main = YAML::LoadFile("assets/EditorData.cu"); } catch (YAML::Exception e) {
+		try { main = YAML::LoadFile(ExecutableFolder() + "assets/EditorData.cu"); } catch (YAML::Exception e) {
 
 			LogError("Failed to Read The Editor Data save file\n    {1}", e.what());
 			return;

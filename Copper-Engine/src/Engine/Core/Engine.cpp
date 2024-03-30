@@ -116,7 +116,7 @@ namespace Copper {
 		data.GetWindow().AddWindowResizeEventFunc(OnWindowResize);
 
 		Renderer::Initialize();
-		Renderer::SetShaderPath("assets/Shaders/vertexDefault.glsl", "assets/Shaders/fragmentDefault.glsl");
+		Renderer::SetShaderPath(ExecutableFolder() + "/assets/Shaders/vertexDefault.glsl", ExecutableFolder() + "/assets/Shaders/fragmentDefault.glsl");
 		data.fbo = FrameBuffer(UVector2I(1280, 720)); // TODO: Find a solution to this (maybe store the resolution somewhere ?)
 
 		data.mainUIContext.Initialize(data.GetWindow(), true);

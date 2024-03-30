@@ -1,5 +1,7 @@
 #pragma once
 
+#include <filesystem>
+#include <string>
 #ifdef CU_CMAKE
     #include <Config.h>
 #endif
@@ -53,4 +55,6 @@ namespace Copper {
     typedef long long           int64;
     typedef unsigned long long  uint64;
     
+    const std::string& ExecutableFolder();
+
 }

@@ -10,8 +10,19 @@ cmake: CMakeLists.txt Copper-Engine/CMakeLists.txt Copper-Editor/CMakeLists.txt 
 engine: cmake
 	@${MAKE} --no-print-directory -C CMake/$(CONFIGURATION)/Copper-Engine -f Makefile
 
-editor: cmake engine
+editor: cmake
 	@${MAKE} --no-print-directory -C CMake/$(CONFIGURATION)/Copper-Editor -f Makefile
+	@mkdir -p $(BUILD_DIR)/Copper-Editor/lib/mono
+	@cp -r Copper-Editor/assets $(BUILD_DIR)/Copper-Editor
+	@cp -r Copper-Editor/util $(BUILD_DIR)/Copper-Editor
+	@cp -r Copper-Editor/lib/mono/lib $(BUILD_DIR)/Copper-Editor/lib/mono
+	@cp -r Copper-Editor/lib/PhysX/$(OS)/$(CONFIGURATION)/. $(BUILD_DIR)/Copper-Editor
+	@cp Copper-Editor/lib/mono/bin/$(OS)/$(CONFIGURATION)/libmonosgen-2.0.a $(BUILD_DIR)/Copper-Editor
+	@cp Copper-Editor/imgui.ini $(BUILD_DIR)/Copper-Editor
+
+scriptapi:
+	@./Copper-Editor/util/premake/premake5 --file=Copper-ScriptingAPI/premake5.lua gmake2
+	@${MAKE} --no-print-directory -C Copper-ScriptingAPI -f Makefile
 
 launcher: cmake
 	@${MAKE} --no-print-directory -C CMake/$(CONFIGURATION)/Copper-Launcher -f Makefile
@@ -19,5 +30,5 @@ launcher: cmake
 run:
 	@./Build/linux-x86_64-$(CONFIGURATION)/Copper-Launcher/Copper-Launcher
 
-run-editor:
-	@./Build/linux-x86_64-$(CONFIGURATION)/Copper-Editor/Copper-Editor
+run-editor: editor
+	@./$(BUILD_DIR)/Copper-Editor/Copper-Editor

@@ -6,6 +6,7 @@
 #include "Assets/Serializer.h"
 #include "Assets/AssetMeta.h"
 
+#include "Engine/Core/Core.h"
 #include "Panels/Properties.h"
 #include "Panels/SceneHierarchy.h"
 
@@ -45,8 +46,8 @@ namespace Editor {
         
         m_projectRelativeDir = initialDir;
 
-        directoryIcon.Create("assets/Icons/DirectoryIcon.png", Texture::Format::RGBA);
-        fileIcon.Create("assets/Icons/FileIcon.png", Texture::Format::RGBA);
+        directoryIcon.Create(ExecutableFolder() + "/assets/Icons/DirectoryIcon.png", Texture::Format::RGBA);
+        fileIcon.Create(ExecutableFolder() + "/assets/Icons/FileIcon.png", Texture::Format::RGBA);
 
     }
 

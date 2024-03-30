@@ -212,7 +212,7 @@ namespace Editor {
 		}
 
 		YAML::Node main;
-		try { main = YAML::LoadFile(ExecutableFolder() + "assets/EditorData.cu"); } catch (YAML::Exception e) {
+		try { main = YAML::LoadFile(ExecutableFolder() + "/assets/EditorData.cu"); } catch (YAML::Exception e) {
 
 			LogError("Failed to Read The Editor Data save file\n    {1}", e.what());
 			return;

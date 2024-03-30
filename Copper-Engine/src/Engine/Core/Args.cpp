@@ -15,27 +15,23 @@ namespace Copper::Args {
 
     if (argc == 0) {
       
-      LogError("Command line arguments count is 0 (no exec path)");
-      return;
+        LogError("Command line arguments count is 0 (no exec path)");
+        return;
       
     }
 
 		arguments.resize(argc);
     
-    // Log(fs::canonical("/proc/self/exe")); // Platform dependant way
-  #ifdef CU_LINUX
-    std::string tmp = &argv[0][1];
-  #elif Cu_WINDOWS
-    std::string tmp = argv[0];
-  #endif
-    
-    execFolder = fs::canonical(fs::current_path().string() + tmp);
-    
-  #ifdef CU_LINUX
-    execFolder.erase(execFolder.find_last_of('/'));
-  #elif CU_WINDOWS
-    execFolder.erase(execFolder.find_last_of('\\'));
-  #endif
+    #ifdef CU_LINUX
+        std::string tmp = &argv[0][1];
+        execFolder = fs::canonical(fs::current_path().string() + tmp).string();
+
+        execFolder.erase(execFolder.find_last_of('/'));
+    #elif CU_WINDOWS
+        execFolder = argv[0];
+
+        execFolder.erase(execFolder.find_last_of('\\'));
+    #endif
 
 		for (uint32 i = 1; i < argc; i++) {
 
@@ -52,6 +48,6 @@ namespace Copper::Args {
 
 namespace Copper {
 
-  const std::string& ExecutableFolder() { return Args::execFolder; }
+    const std::string& ExecutableFolder() { return Args::execFolder; }
 
 }

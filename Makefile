@@ -30,5 +30,5 @@ launcher: cmake
 run:
 	@./Build/linux-x86_64-$(CONFIGURATION)/Copper-Launcher/Copper-Launcher
 
-run-editor: editor
+run-editor:
 	@./$(BUILD_DIR)/Copper-Editor/Copper-Editor

@@ -3,6 +3,7 @@
 #include "Engine/Core/Args.h"
 #include "Engine/Core/Core.h"
 
+#include "Engine/Core/Log.h"
 #include "Engine/Utilities/Math.h"
 
 #include "Engine/Scripting/ScriptingCore.h"
@@ -136,10 +137,6 @@ namespace Editor {
 	bool OnEntityCreated(const Event& e);
 	bool OnEntityRemoved(const Event& e);
 
-#ifdef CU_LINUX
-	void RunPremake();
-#endif
-
 	void Initialize() {
 
 		CUP_FUNCTION();
@@ -174,7 +171,7 @@ namespace Editor {
 		data.themeEditor.LoadTheme(ExecutableFolder() + "/assets/Themes/Default.cutheme");
 
 	#ifdef CU_LINUX
-		RunPremake();
+		data.project.RunPremake();
 	#endif
 
 	}
@@ -221,8 +218,10 @@ namespace Editor {
 		
 		std::string path = main["Last Project"].as<std::string>();
 		if (!std::filesystem::exists(path)) {
-
+      
+      LogWarn("There is no saved Last open project, Open a project manually");
 			OpenProject();
+      
 			return;
 
 		}
@@ -652,7 +651,7 @@ namespace Editor {
 
 	#ifdef CU_LINUX
 		if (changeType != FileWatcher::FileChangeType::Changed)
-			RunPremake();
+      data.project.RunPremake();
 	#endif
 		data.project.BuildSolution();
 
@@ -673,7 +672,7 @@ namespace Editor {
 		CreateProjectFromTemplate("assets/Templates/LinuxTesting", data.project);
 
 	#ifdef CU_LINUX
-		RunPremake();
+    data.project.RunPremake();
 	#endif
 		
 		data.project.BuildSolution(true);
@@ -995,20 +994,6 @@ namespace Editor {
 		Input::SetWindowTitle(data.title);
 		
 	}
-
-#ifdef CU_LINUX
-	void RunPremake() {
-
-		const std::string path = data.project.path.string();
-
-		// It hurts my eyes, but there is no other solution that I know of
-		//system(("cd \"" + data.project.path.String() + "\" ; ./premake/premake5 gmake2").c_str());
-
-		// Turns out there is :)
-		system(("./util/premake/premake5 --file=\"" + path + "premake5.lua\" gmake2").c_str());
-
-	}
-#endif
 
 }
 

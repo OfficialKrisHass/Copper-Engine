@@ -2,6 +2,7 @@
 
 #include "Projects/Project.h"
 
+#include <filesystem>
 #include <fstream>
 
 #define CHECK_FOLDER(folderName, folderPath, x) if (!std::filesystem::exists(path + folderPath)) { LogError("Project '{}' is missing the {} folder", project.name, folderName); ret |= BIT(x); }
@@ -63,18 +64,18 @@ namespace Editor::ProjectChecker {
 		if (FLAG(issueFlags, MissingPremake)) project.RegenerateIDEFiles();
 		if (FLAG(issueFlags, MissingMakefile)) project.RunPremake();
 	#endif
-
-		if (FLAG(issueFlags, MissingProjectDLL)) project.BuildSolution();
 		if (FLAG(issueFlags, MissingScriptingDLL)) {
 
-			std::ifstream dllSrc("assets/ScriptAPI/Copper-ScriptingAPI.dll", std::ios::binary);
-			std::fstream dllDst;
+			std::ifstream dllSrc(ExecutableFolder() + "/assets/ScriptAPI/Copper-ScriptingAPI.dll", std::ios::binary);
+			std::ofstream dllDst;
 
 			dllDst.open(project.path / "Binaries/Copper-ScriptingAPI.dll", std::ios::out | std::ios::binary);
 			dllDst << dllSrc.rdbuf();
+      dllDst.flush();
 			dllDst.close();
 
 		}
+		if (FLAG(issueFlags, MissingProjectDLL)) project.BuildSolution();
 
 	}
 

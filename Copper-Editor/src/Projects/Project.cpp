@@ -2,10 +2,13 @@
 
 #include "Core/EditorApp.h"
 
+#include "Engine/Core/Core.h"
+#include "Engine/Core/Log.h"
 #include "Engine/Scripting/ScriptingCore.h"
 
 #include "Engine/YAMLOverloads/Everything.h"
 
+#include <cstdlib>
 #include <yaml-cpp/yaml.h>
 
 #include <fstream>
@@ -122,10 +125,10 @@ namespace Editor {
 	void Project::RegenerateIDEFiles() const {
 
 	#ifdef CU_WINDOWS
-		CreateFileAndReplace("assets/Templates/Template.sln.cut", path / (name + ".sln"), ":{ProjectName}", name);
-		CreateFileAndReplace("assets/Templates/Template.csproj.cut", path / (name + ".csproj"), ":{ProjectName}", name);
+		CreateFileAndReplace(ExecutableFolder() + "/assets/Templates/Template.sln.cut", path / (name + ".sln"), ":{ProjectName}", name);
+		CreateFileAndReplace(ExecutableFolder() + "/assets/Templates/Template.csproj.cut", path / (name + ".csproj"), ":{ProjectName}", name);
 	#elif CU_LINUX
-		CreateFileAndReplace("assets/Templates/premake5.lua.cut", path / "premake5.lua", ":{ProjectName}", name);
+		CreateFileAndReplace(ExecutableFolder() + "/assets/Templates/premake5.lua.cut", path / "premake5.lua", ":{ProjectName}", name);
 	#endif
 
 	}
@@ -133,13 +136,18 @@ namespace Editor {
 #ifdef CU_LINUX
 	void Project::RunPremake() const {
 
-		const std::string p = path.string();
+    if (path.empty()) {
+
+      LogError("Project has an empty path, can't run premake");
+      return;
+
+    }
 
 		// It hurts my eyes, but there is no other solution that I know of
 		//system(("cd \"" + data.project.path.string() + "\" ; ./premake/premake5 gmake2").c_str());
 
 		// Turns out there is :)
-		system(("./util/premake/premake5 --file=\"" + p + "premake5.lua\" gmake2").c_str());
+    system((ExecutableFolder() + "/util/premake/premake5 --file=\"" + path.string() + "/premake5.lua\" gmake2").c_str());
 
 	}
 #endif

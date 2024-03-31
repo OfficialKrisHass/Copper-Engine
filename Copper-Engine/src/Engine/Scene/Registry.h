@@ -59,18 +59,40 @@ namespace Copper {
 
 			}
 
-			void* Add(uint32 index) { CUP_FUNCTION(); m_validComponents.set(index); m_count++; return Get(index); }
-			void* Get(uint32 index) { CUP_FUNCTION(); return m_data + index * m_cSize; }
-			void Remove(uint32 index) { CUP_FUNCTION(); m_validComponents.reset(index); m_count--; }
+			void* Add(uint32 index) {
+
+        CUP_FUNCTION();
+
+        m_validComponents.set(index);
+        m_count++;
+
+        return Get(index);
+
+      }
+			void* Get(uint32 index) {
+
+        CUP_FUNCTION();
+
+        return m_data + index * m_cSize;
+
+      }
+			void Remove(uint32 index) {
+
+        CUP_FUNCTION();
+
+        m_validComponents.reset(index);
+        m_count--;
+
+      }
 
 			bool Valid(uint32 index) { CUP_FUNCTION(); return m_validComponents.test(index); }
 			uint32 Count() { return m_count; }
 
 		private:
+      uint32 m_cSize = 0;
 			char* m_data = nullptr;
-			std::bitset<MAX_ENTITY_COMPONENTS> m_validComponents;
 
-			uint32 m_cSize;
+			std::bitset<MAX_ENTITY_COMPONENTS> m_validComponents;
 			uint32 m_count = 0;
 
 		};
@@ -194,7 +216,7 @@ namespace Copper {
 		#endif
 			if (!m_pools[cID]) m_pools[cID] = new ComponentPool(sizeof(T));
 
-			T* component = new (m_pools[cID]->Add(eID)) T();
+			T* component = new (m_pools[cID]->Add(eID)) T;
 
 			component->m_entity = &m_entities[eID];
 			component->m_transform = m_entities[eID].m_transform;

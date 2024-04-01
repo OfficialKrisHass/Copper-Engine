@@ -25,6 +25,11 @@ compile_commands.json
 *.vcxproj
 *.filters
 
+# Project files
+Editor Projects/DevProject/Binaries
+Editor Projects/DevProject/Makefile
+Editor Projects/DevProject/premake5.lua
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 

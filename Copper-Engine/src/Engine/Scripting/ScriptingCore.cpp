@@ -56,12 +56,6 @@ namespace Copper::Scripting {
 
 	};
 
-#ifdef CU_LINUX
-  static const std::string AssembliesPath = ExecutableFolder() + "/lib/mono/lib/linux";
-#elif CU_WINDOWS
-  static constexpr const char* AssembliesPath = "lib/mono/lib/windows";
-#endif
-
 	ScriptingCoreData data;
 
 	void LoadScriptingAPI();
@@ -82,13 +76,7 @@ namespace Copper::Scripting {
 
 		// Initialize Mono
     
-  #ifdef CU_LINUX
-    const std::string AssembliesPath = ExecutableFolder() + "/lib/mono/lib/linux";
-  #elif CU_WINDOWS
-    const std::string AssembliesPath = ExecutableFolder() + "/lib/mono/lib/windows";
-  #endif
-    
-		mono_set_assemblies_path(AssembliesPath.c_str());
+		mono_set_assemblies_path((ExecutableFolder() + "/lib").c_str());
 		data.root = mono_jit_init("CUJITRuntime");
 
 		// Setup ScriptingAPI

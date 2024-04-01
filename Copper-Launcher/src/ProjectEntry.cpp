@@ -1,12 +1,14 @@
 #include "ProjectEntry.h"
 
 #include "UI.h"
+#include "PersistentData.h"
+#include <iostream>
+#include <sys/types.h>
+#include <unistd.h>
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_internal.h>
-
-#include <iostream>
 
 namespace Launcher {
 
@@ -16,6 +18,8 @@ namespace Launcher {
 	static ImFont* detailsFont = nullptr;
 
 	static ImGuiID heldID = ImGuiID(0);
+
+  extern void OnWindowClose();
 
 	void ProjectEntry::InitializeFonts() {
 
@@ -56,8 +60,21 @@ namespace Launcher {
 		ImGui::PopFont();
 
 		bool held = false;
-		if (ImGui::ButtonBehavior(tabRect, id, nullptr, &held, ImGuiButtonFlags_PressedOnClickRelease | ImGuiButtonFlags_PressedOnRelease))
-			std::cout << "Project tab clicked\n";
+		if (ImGui::ButtonBehavior(tabRect, id, nullptr, &held, ImGuiButtonFlags_PressedOnClickRelease | ImGuiButtonFlags_PressedOnRelease)) {
+
+#ifdef CU_LINUX
+      pid_t pid = fork();
+
+      if (pid == 0) { // Child procces
+
+        char* args[] = { (char*) PersistentData::EditorPath().data(), (char*) m_directory.data(), nullptr };
+        execv(PersistentData::EditorPath().c_str(), args);
+
+      } else
+        OnWindowClose();
+#endif // CU_LINUX
+
+    }
 
 		if (held)
 			heldID = id;

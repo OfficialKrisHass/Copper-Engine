@@ -28,3 +28,8 @@ run:
 
 run-editor:
 	@./$(BUILD_DIR)/Copper-Editor/Copper-Editor
+
+copy-files:
+ifeq ($(OS), linux)
+	@bash scripts/linux/CopyEditorFiles.sh $(CONFIGURATION)
+endif

@@ -215,6 +215,13 @@ namespace Editor {
 			return;
 
 		}
+    
+    if (Args::Count() > 0) {
+
+      OpenProject(Args::Get(0));
+      return;
+
+    }
 		
 		std::string path = main["Last Project"].as<std::string>();
 		if (!std::filesystem::exists(path)) {

@@ -23,9 +23,6 @@ namespace Copper::Args {
 		arguments.resize(argc);
     
     #ifdef CU_LINUX
-        //std::string tmp = &argv[0][1];
-        //execFolder = fs::canonical(fs::current_path().string() + tmp).string();
-
         execFolder = argv[0];
         execFolder.erase(execFolder.find_last_of('/'));
     #elif CU_WINDOWS
@@ -36,7 +33,7 @@ namespace Copper::Args {
 
 		for (uint32 i = 1; i < argc; i++) {
 
-			arguments[i] = argv[i];
+			arguments[i - 1] = argv[i];
 
 		}
 

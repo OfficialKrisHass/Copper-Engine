@@ -68,9 +68,11 @@ namespace Launcher::PersistentData {
 
 	void LocateEditor() {
     
-    editorPath = "TestPath";
-    return;
-		editorPath = Dialogs::OpenFile("Locate Copper-Editor.exe", { "Executable files", "*.exe" }, "C:\\");
+#ifdef CU_LINUX
+    editorPath = Dialogs::OpenFile("Locate Copper-Editor Executable", { "Executable files", "*" }, "~");
+#elif CU_WINDOWS
+    editorPath = Dialogs::OpenFile("Locate Copper-Editor.exe", { "Executable files", "*.exe" }, "C:\\");
+#endif
 		if (editorPath == "") {
 
 			Dialogs::Error("Invalid File", "Invalid File");

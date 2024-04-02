@@ -6,7 +6,8 @@
 namespace Launcher {
 
 	inline constexpr float WindowPadding = 10.0f;
-	inline constexpr const char* MainFontPath = "Copper-Launcher/assets/open-sans.regular.ttf";
+	inline constexpr const char* MainFontPath = "/assets/open-sans.regular.ttf";
+
 #ifdef CU_LINUX
   inline const std::string BaseProjectDir = std::string("/home/") + cuserid(nullptr);
 #elif CU_WINDOWS
@@ -24,5 +25,7 @@ namespace Launcher {
 
 	typedef long long           int64;
 	typedef unsigned long long  uint64;
+
+	const std::string& ExecutableFolder();
 
 }

@@ -4,7 +4,7 @@ message(STATUS "BUILDING Copper-Launcher")
 # Sources
 
 list(APPEND sources Base.h Dialogs.cpp Dialogs.h Entry.cpp LauncherApp.cpp PersistentData.cpp PersistentData.h ProjectEntry.cpp ProjectEntry.h ThemeEditor.cpp
-                    ThemeEditor.h UI.cpp UI.h Window.cpp Window.h)
+                    ThemeEditor.h UI.cpp UI.h Window.cpp Window.h Utils.cpp Utils.h)
 list(TRANSFORM sources PREPEND ${PROJECT_SOURCE_DIR}/Copper-Launcher/src/)
 
 # Include dirs
@@ -14,7 +14,7 @@ list(TRANSFORM includes PREPEND ${PROJECT_SOURCE_DIR}/Copper-Engine/lib/)
 
 # Defines
 
-list(APPEND defines YAML_CPP_STATIC_DEFINE)
+list(APPEND defines YAML_CPP_STATIC_DEFINE _CRT_SECURE_NO_WARNINGS)
 list(APPEND defines CU_LINUX)
 
 if(${CMAKE_BUILD_TYPE} STREQUAL Debug)

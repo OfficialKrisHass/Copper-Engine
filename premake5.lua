@@ -98,7 +98,7 @@ project "Copper-Engine"
         "VERSION_MAJOR=0",
         "VERSION_MINOR=3",
         "VERSION_PATCH=0",
-        "VERSION_TWEAK=106",
+        "VERSION_TWEAK=107",
         
         "SCENE_VERSION=0",
 
@@ -325,6 +325,8 @@ project "Copper-Launcher"
     defines {
 
         "YAML_CPP_STATIC_DEFINE",
+        "_CRT_SECURE_NO_WARNINGS",
+        
         "CU_WINDOWS",
 
     }

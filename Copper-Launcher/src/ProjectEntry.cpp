@@ -2,13 +2,20 @@
 
 #include "UI.h"
 #include "PersistentData.h"
-#include <iostream>
-#include <sys/types.h>
-#include <unistd.h>
+
+#include "Utils.h"
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_internal.h>
+
+#ifdef CU_LINUX
+#include <sys/types.h>
+#include <unistd.h>
+#elif CU_WINDOWS
+#include <Windows.h>
+#include <processthreadsapi.h>
+#endif
 
 namespace Launcher {
 
@@ -23,8 +30,8 @@ namespace Launcher {
 
 	void ProjectEntry::InitializeFonts() {
 
-		titleFont = UI::AddFont(MainFontPath, 35.0f);
-		detailsFont = UI::AddFont(MainFontPath, 18.0f);
+		titleFont = UI::AddFont(ExecutableFolder() + MainFontPath, 35.0f);
+		detailsFont = UI::AddFont(ExecutableFolder() + MainFontPath, 18.0f);
 
 	}
 
@@ -72,7 +79,24 @@ namespace Launcher {
 
       } else
         OnWindowClose();
-#endif // CU_LINUX
+#elif CU_WINDOWS
+			std::string editorPath = Utils::ReplaceSpaces(PersistentData::EditorPath());
+			std::string projectPath = Utils::ReplaceSpaces(m_directory);
+			std::string args = editorPath + " " + projectPath;
+
+			STARTUPINFOA si;
+			PROCESS_INFORMATION pi;
+			
+			ZeroMemory(&si, sizeof(si));
+			ZeroMemory(&pi, sizeof(pi));
+			si.cb = sizeof(si);
+
+			CreateProcessA(editorPath.c_str(), args.data(), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
+			CloseHandle(pi.hProcess);
+			CloseHandle(pi.hThread);
+
+			OnWindowClose();
+#endif
 
     }
 

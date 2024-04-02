@@ -26,7 +26,7 @@ namespace Launcher::UI {
     
 		ImGuiIO& io = ImGui::GetIO();
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NoMouseCursorChange;
-		io.FontDefault = io.Fonts->AddFontFromFileTTF(MainFontPath, 25.0f);
+		io.FontDefault = AddFont(ExecutableFolder() + MainFontPath, 25.0f);
 
 		LoadTheme();
 
@@ -97,7 +97,7 @@ namespace Launcher::UI {
 	void LoadTheme() {
 
 		YAML::Node main;
-		try { main = YAML::LoadFile("Copper-Launcher/assets/Launcher.cutheme"); } catch (YAML::ParserException e) {
+		try { main = YAML::LoadFile(ExecutableFolder() + "/assets/Launcher.cutheme"); } catch (YAML::ParserException e) {
 
 			std::cout << "Failed to Read Default.cutheme file!\n\t" << e.what() << "\n";
 			return;
@@ -124,5 +124,5 @@ namespace Launcher::UI {
 
 	}
 
-	ImFont* AddFont(const char* path, float size) { return ImGui::GetIO().Fonts->AddFontFromFileTTF(path, size); }
+	ImFont* AddFont(const std::string& path, float size) { return ImGui::GetIO().Fonts->AddFontFromFileTTF(path.c_str(), size); }
 }

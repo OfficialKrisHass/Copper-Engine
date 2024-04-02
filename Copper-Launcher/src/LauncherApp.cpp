@@ -25,7 +25,7 @@ namespace Launcher {
 		bool running = true;
 
 		std::vector<ProjectEntry> projectEntries = {	ProjectEntry("", "dir-less"),
-														ProjectEntry("Dev Project", "C:/Programming/Copper-Engine/DevProject"),
+														ProjectEntry("Dev Project", "C:/Programming/Copper Engine/DevProject"),
 														ProjectEntry("Lalalalala", "C:/Lalalala"),
 														ProjectEntry("Half Life 3", "C:"),
 														ProjectEntry("Portal 3", "C:/Gaben/valvesoftware"),
@@ -57,7 +57,7 @@ namespace Launcher {
 		UI::Initialize();
 
 		ProjectEntry::InitializeFonts();
-		data.titleFont = UI::AddFont(MainFontPath, 40.0f);
+		data.titleFont = UI::AddFont(ExecutableFolder() + MainFontPath, 40.0f);
 
 		Run();
 

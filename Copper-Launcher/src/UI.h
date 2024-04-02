@@ -14,6 +14,6 @@ namespace Launcher::UI {
 
 	void Shutdown();
 
-	ImFont* AddFont(const char* path, float size);
+	ImFont* AddFont(const std::string& path, float size);
 
 }

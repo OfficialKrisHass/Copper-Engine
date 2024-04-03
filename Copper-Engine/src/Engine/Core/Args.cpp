@@ -20,7 +20,7 @@ namespace Copper::Args {
       
     }
 
-		arguments.resize(argc);
+		arguments.resize(argc - 1);
     
     #ifdef CU_LINUX
         execFolder = argv[0];

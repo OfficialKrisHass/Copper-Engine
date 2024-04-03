@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string>
 
 #ifdef CU_LINUX
@@ -29,6 +30,7 @@ int main(int argc, char* argv[]) {
 	size_t pos = execFolder.find_last_of('\\');
 #endif
 	execFolder.erase(pos, std::string::npos);
+  std::cout << execFolder << "\n";
 
 	return Launcher::Entry();
 

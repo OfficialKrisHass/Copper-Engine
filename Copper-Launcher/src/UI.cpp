@@ -19,6 +19,8 @@ namespace Launcher::UI {
 
 	void LoadTheme();
 
+  std::string iniPath = "";
+
 	void Initialize() {
 
 		IMGUI_CHECKVERSION();
@@ -27,6 +29,9 @@ namespace Launcher::UI {
 		ImGuiIO& io = ImGui::GetIO();
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NoMouseCursorChange;
 		io.FontDefault = AddFont(ExecutableFolder() + MainFontPath, 25.0f);
+
+    iniPath = ExecutableFolder() + "/imgui.ini";
+    io.IniFilename = iniPath.c_str();
 
 		LoadTheme();
 

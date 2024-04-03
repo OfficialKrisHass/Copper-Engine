@@ -22,6 +22,9 @@ scriptapi:
 
 launcher: cmake
 	@${MAKE} --no-print-directory -C CMake/$(CONFIGURATION)/Copper-Launcher -f Makefile
+ifeq ($(OS), linux)
+	@bash scripts/linux/CopyLauncherFiles.sh $(CONFIGURATION)
+endif
 
 run:
 	@./Build/linux-x86_64-$(CONFIGURATION)/Copper-Launcher/Copper-Launcher
@@ -32,4 +35,5 @@ run-editor:
 copy-files:
 ifeq ($(OS), linux)
 	@bash scripts/linux/CopyEditorFiles.sh $(CONFIGURATION)
+	@bash scripts/linux/CopyLauncherFiles.sh $(CONFIGURATION)
 endif

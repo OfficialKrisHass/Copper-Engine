@@ -15,6 +15,8 @@
 
 namespace Copper {
 
+  static std::string iniPath = "";
+
 	std::string mainFontPath = "";
 	float mainFontSize = 0.0f;
 
@@ -43,6 +45,9 @@ namespace Copper {
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NoMouseCursorChange;
 		if (docking) io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		if (viewports) io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
+    iniPath = ExecutableFolder() + "/imgui.ini";
+    io.IniFilename = iniPath.c_str();
 
 		if (!mainFontPath.empty())
 			io.FontDefault = io.Fonts->AddFontFromFileTTF(mainFontPath.c_str(), mainFontSize);

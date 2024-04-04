@@ -98,7 +98,7 @@ project "Copper-Engine"
         "VERSION_MAJOR=0",
         "VERSION_MINOR=3",
         "VERSION_PATCH=0",
-        "VERSION_TWEAK=108",
+        "VERSION_TWEAK=109",
         
         "SCENE_VERSION=0",
 
@@ -186,26 +186,19 @@ project "Copper-Editor"
 
     }
 
-    postbuildcommands {
-
-        "{COPYDIR} assets ../Build/" .. outputDir .. "/Copper-Editor/assets",
-
-        "{COPYDIR} lib/mono/lib ../Build/" .. outputDir .. "/Copper-Editor/lib/mono/lib",
-
-        "{COPYDIR} lib/PhysX/windows/%{cfg.buildcfg} ../Build/" .. outputDir .. "/Copper-Editor",
-        "{COPYFILE} lib/mono/bin/windows/%{cfg.buildcfg}/mono-2.0-sgen.dll ../Build/" .. outputDir .. "/Copper-Editor",
-
-    }
-
     filter "configurations:Debug"
         defines "CU_DEBUG"
         runtime "Debug"
         symbols "on"
 
+        postbuildcommands "%{os.getcwd()}/scripts/windows/CopyEditorFiles.bat Debug"
+
     filter "configurations:Release"
         defines "CU_RELEASE"
         runtime "Release"
         optimize "on"
+
+        postbuildcommands "%{os.getcwd()}/scripts/windows/CopyEditorFiles.bat Release"
 
 project "Copper-ScriptingAPI"
     location "Copper-ScriptingAPI"
@@ -345,7 +338,11 @@ project "Copper-Launcher"
         runtime "Debug"
         symbols "on"
 
+        postbuildcommands "%{os.getcwd()}/scripts/windows/CopyLauncherFiles.bat Debug"
+
     filter "configurations:Release"
         defines "CU_RELEASE"
         runtime "Release"
         optimize "on"
+
+        postbuildcommands "%{os.getcwd()}/scripts/windows/CopyLauncherFiles.bat Release"

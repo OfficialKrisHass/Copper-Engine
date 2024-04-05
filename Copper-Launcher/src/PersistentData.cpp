@@ -1,6 +1,7 @@
 #include "PersistentData.h"
 
 #include "Dialogs.h"
+#include "ProjectEntry.h"
 
 #include <yaml-cpp/yaml.h>
 
@@ -21,7 +22,7 @@ namespace Launcher::PersistentData {
 
 	static void LocateEditor();
 
-	void Load() {
+	void Load(std::vector<ProjectEntry>& projectEntries) {
 
 		YAML::Node node;
 		try { node = YAML::LoadFile(persistenFolder + filename); }
@@ -30,7 +31,7 @@ namespace Launcher::PersistentData {
 			Dialogs::Error("Couldn't Read LauncherData.cup", "Encountered an exception trying to Load the LauncherData.cup file.\nProvide the path to the Editor and we will create a new one");
 			LocateEditor();
 
-			Save();
+			Save(projectEntries);
 
 			try { node = YAML::LoadFile(persistenFolder + filename); }
 			catch (YAML::Exception e) {
@@ -44,14 +45,40 @@ namespace Launcher::PersistentData {
 
 		editorPath = node["Editor Path"].as<std::string>();
 
+    YAML::Node entries = node["Project Entries"];
+    for (uint32 i = 0; i < entries.size(); i++) {
+
+      YAML::Node entry = entries[i];
+      std::string name = entry["Name"].as<std::string>();
+      std::string directory = entry["Directory"].as<std::string>();
+
+      projectEntries.push_back(ProjectEntry(name, directory));
+
+    }
+
 	}
-	void Save() {
+	void Save(const std::vector<ProjectEntry>& projectEntries) {
 
 		YAML::Emitter out;
 
 		out << YAML::BeginMap; // Main
 
 		out << YAML::Key << "Editor Path" << YAML::Value << editorPath;
+
+    out << YAML::Key << "Project Entries" << YAML::Value << YAML::BeginSeq; // Project Entries
+    
+    for (const ProjectEntry& entry : projectEntries) {
+
+      out << YAML::BeginMap; // Entry     
+      
+      out << YAML::Key << "Name" << YAML::Value << entry.Name();
+      out << YAML::Key << "Directory" << YAML::Value << entry.Directory();
+
+      out << YAML::EndMap; // Entry
+
+    }
+
+    out << YAML::EndSeq;
 
 		out << YAML::EndMap;
 

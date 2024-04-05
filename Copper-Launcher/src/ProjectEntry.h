@@ -13,6 +13,9 @@ namespace Launcher {
 
 		void Render() const;
 
+    inline const std::string& Name() const { return m_name; }
+    inline const std::string& Directory() const { return m_directory; }
+
 	private:
 		std::string m_name = "";
 		std::string m_directory = "";

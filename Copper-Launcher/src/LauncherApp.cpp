@@ -24,12 +24,7 @@ namespace Launcher {
 
 		bool running = true;
 
-		std::vector<ProjectEntry> projectEntries = {	ProjectEntry("", "dir-less"),
-														ProjectEntry("Dev Project", "C:/Programming/Copper Engine/DevProject"),
-														ProjectEntry("Lalalalala", "C:/Lalalala"),
-														ProjectEntry("Half Life 3", "C:"),
-														ProjectEntry("Portal 3", "C:/Gaben/valvesoftware"),
-														ProjectEntry("Hellraze", "C:/Programming/Hellraze"), };
+		std::vector<ProjectEntry> projectEntries = {};
 
 		ImFont* titleFont = nullptr;
 
@@ -51,7 +46,7 @@ namespace Launcher {
 
 		std::cout << "Hello, World!\n";
 
-		PersistentData::Load();
+		PersistentData::Load(data.projectEntries);
 
 		Window::Create(960, 540, "Copper Launcher");
 		UI::Initialize();
@@ -90,6 +85,7 @@ namespace Launcher {
 		}
 
 		SaveTheme();
+    PersistentData::Save(data.projectEntries);
 
 		Shutdown();
 

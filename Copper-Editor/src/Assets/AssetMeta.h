@@ -20,7 +20,7 @@ namespace Editor {
 	private:
 		Copper::fs::path m_path = "";
 
-		Copper::UUID m_uuid = Copper::UUID("");
+		Copper::UUID m_uuid = Copper::EmptyUUID();
 
 	};
 

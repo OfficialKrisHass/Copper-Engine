@@ -53,11 +53,7 @@ namespace Copper {
 
 			ComponentPool() = default;
 			ComponentPool(uint32 size) : m_cSize(size), m_data(new char[size * MAX_ENTITY_COMPONENTS]) {}
-			~ComponentPool() {
-
-				delete[] m_data;
-
-			}
+			~ComponentPool() { delete[] m_data; }
 
 			void* Add(uint32 index) {
 
@@ -319,11 +315,8 @@ namespace Copper {
 
 		void Cleanup() {
 
-			for (ComponentPool* pool : m_pools) {
-
+			for (ComponentPool* pool : m_pools)
 				delete pool;
-
-			}
 
 			m_entities.clear();
 			m_gaps.clear();

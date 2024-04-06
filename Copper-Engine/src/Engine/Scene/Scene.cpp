@@ -4,7 +4,6 @@
 #include "Engine/Core/Engine.h"
 
 #include "Engine/Scene/CopperECS.h"
-#include "Engine/Scene/OldSceneDeserialization.h"
 
 #include "Engine/Components/MeshRenderer.h"
 #include "Engine/Components/Camera.h"
@@ -29,6 +28,8 @@
 #include "Engine/Physics/Raycast.h"
 
 #include "Engine/Scripting/ScriptingCore.h"
+
+#include "Engine/Input/Popup.h"
 
 #include "Engine/YAMLOverloads/Everything.h"
 
@@ -147,6 +148,10 @@ namespace Copper {
 
 	void Scene::Serialize(const fs::path& path) {
 
+		// TODO: Change the format of serializing the Scene
+		// Why am I even writing these TODOs, there are 22 other TODOs that I have never even
+		// looked at after writing them, this one will  probably stay here for eternity
+
 		CUP_FUNCTION();
 
 		this->path = path;
@@ -194,25 +199,9 @@ namespace Copper {
 
 		cam = nullptr;
 
-		YAML::Node data;
-		try { data = YAML::LoadFile(path.string()); } catch(YAML::ParserException e) {
-			
-			LogError("Failed to Read .scene file. {}", path.string());
-			LogError("    {}", e.what());
-			return false;
-			
-		}
+		try {
 
-		YAML::Node versionNode = data["Version"];
-		if (versionNode.IsSequence()) {
-
-			return OldSceneDeserialization::DeserializeVersion_Beta1_0_0(data, this);
-
-		}
-
-		uint32 sceneVersion = versionNode.as<uint32>();
-		if (oldDeserializeFunctions.find(sceneVersion) != oldDeserializeFunctions.end()) return oldDeserializeFunctions[sceneVersion](data, this);
-		CU_ASSERT(sceneVersion == SCENE_VERSION, "The Scene you tried to open has an invalid version of {}\n    Path: {}", sceneVersion, path.string());
+		YAML::Node data = YAML::LoadFile(path.string());
 
 		this->name = data["Name"].as<std::string>();
 
@@ -230,6 +219,12 @@ namespace Copper {
 		}
 
 		return true;
+
+		} catch (YAML::Exception e) {
+
+			Input::ErrorPopup("Failed to open Scene", "Could not open the scene file.\n\nPath:\n" + path.string() + "\n\nError Message:\n" + e.what());
+			return false;
+		}
 		
 	}
 
@@ -385,8 +380,6 @@ namespace Copper {
 
 		CUP_FUNCTION();
 
-		try {
-
 		YAML::Node transform = node["Transform"];
 		entity->m_transform->SetPosition(transform["Position"].as<Vector3>());
 		entity->m_transform->SetRotation(transform["Rotation"].as<Quaternion>());
@@ -522,12 +515,6 @@ namespace Copper {
 				}
 
 			}
-
-		}
-
-		} catch (YAML::Exception e) {
-
-			LogError("Encountered an exception when trying to deserialize entity {}: {}", *entity, e.msg);
 
 		}
 

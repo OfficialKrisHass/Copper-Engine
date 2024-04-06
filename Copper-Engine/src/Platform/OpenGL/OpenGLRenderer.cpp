@@ -49,11 +49,8 @@ namespace Copper::RendererAPI {
 		CUP_FUNCTION();
 		VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the OpenGL Renderer API");
 
-		if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
-
+		if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
 			LogError("Failed to load GLAD!");
-
-		}
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -74,7 +71,7 @@ namespace Copper::RendererAPI {
 		//
 		//Setup the Game Rect
 		//
-		gameRectShader = Shader("assets/Shaders/gameRectVertex.glsl", "assets/Shaders/gameRectFragment.glsl");
+		gameRectShader = Shader(ExecutableFolder() + "/assets/Shaders/gameRectVertex.glsl", ExecutableFolder() + "/assets/Shaders/gameRectFragment.glsl");
 
 		glGenVertexArrays(1, &gameRectVAO);
 		glBindVertexArray(gameRectVAO);
@@ -84,14 +81,14 @@ namespace Copper::RendererAPI {
 		glGenBuffers(1, &vbo);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 20, gameRectVertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(gameRectVertices), gameRectVertices, GL_STATIC_DRAW);
 
 		//IBO
 		uint32 ibo;
 		glGenBuffers(1, &ibo);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32) * 6, gameRectIndices, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(gameRectIndices), gameRectIndices, GL_STATIC_DRAW);
 
 		//Load the data into the VAO
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);

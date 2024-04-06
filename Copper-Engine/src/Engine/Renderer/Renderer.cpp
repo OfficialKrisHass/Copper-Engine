@@ -141,10 +141,10 @@ namespace Copper::Renderer {
 
 		// Built in Assets
 
-		data.whiteMaterial = AssetStorage::InsertAsset<Material>(UUID(""));
+		data.whiteMaterial = AssetStorage::InsertAsset<Material>(EmptyUUID());
 
 		uint32 white = 0xffffffff;
-		data.whiteMaterial->texture = AssetStorage::InsertAsset<Texture>(UUID(""), 1, 1, Texture::Format::RGBA, (uint8*) &white);
+		data.whiteMaterial->texture = AssetStorage::InsertAsset<Texture>(EmptyUUID(), 1, 1, Texture::Format::RGBA, (uint8*)&white);
 
 		data.materials[0] = data.whiteMaterial;
 		data.materialCount = 1;
@@ -376,7 +376,6 @@ namespace Copper::Renderer {
 		
 		CUP_FUNCTION();
 
-		VERIFY_STATE(EngineCore::EngineState::Initialization, "Set the Shader");
 		RendererAPI::SetShaderPath(vertexPath, fragmentPath);
 		
 	}

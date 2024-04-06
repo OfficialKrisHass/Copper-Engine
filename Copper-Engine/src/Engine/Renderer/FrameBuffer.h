@@ -27,7 +27,7 @@ namespace Copper {
 		uint32 m_color = 0;
 		uint32 m_depth = 0;
 
-		UVector2I m_size;
+		UVector2I m_size = UVector2I::zero;
 
 		void Recreate();
 

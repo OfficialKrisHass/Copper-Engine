@@ -26,18 +26,20 @@ namespace Editor {
 	bool AssetMeta::Deserialize(const fs::path& path) {
 
 		CUP_FUNCTION();
-		m_path = path;
 
 		YAML::Node node;
 		try { node = YAML::LoadFile(path.string()); } catch (YAML::Exception e) {
 
-			LogError("Couldn't Load Meta file!\n\tPath: {}", path.string());
-			m_uuid = UUID("");
+			LogError("Failed to load Asset Meta file.\n\tPath: {}\n\tError Message: {}", path.string(), e.what());
+
+			m_path = "";
+			m_uuid = EmptyUUID();
 
 			return false;
 
 		}
 
+		m_path = path;
 		m_uuid = node["UUID"].as<UUID>();
 
 		return true;

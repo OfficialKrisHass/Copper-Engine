@@ -30,6 +30,8 @@ namespace Copper::Profiler {
 
 	const char* RemovePath(const char* file) {
 
+		// I wrote this at 2AM, good luck future me trying to figure this shit out, love you xxxx
+
 		uint32 i = 0;
 		uint32 j = 0;
 		while (file[i]) {

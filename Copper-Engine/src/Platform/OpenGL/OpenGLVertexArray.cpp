@@ -9,6 +9,8 @@ namespace Copper {
 
 	VertexArray::VertexArray(IndexBuffer* ibo) {
 
+		CUP_FUNCTION();
+
 		this->ibo = ibo;
 
 		glGenVertexArrays(1, &m_id);
@@ -17,6 +19,8 @@ namespace Copper {
 	}
 
 	void VertexArray::SetVertexBuffer(VertexBuffer* vbo) {
+
+		CUP_FUNCTION();
 
 		uint32 count = vbo->ElementCount();
 		for (uint32 i = 0; i < count; i++) {
@@ -31,7 +35,17 @@ namespace Copper {
 	}
 	void VertexArray::SetIndexBuffer(IndexBuffer* ibo) { this->ibo = ibo; }
 
-	void VertexArray::Bind() const { glBindVertexArray(m_id); }
-	void VertexArray::Unbind() const { glBindVertexArray(0); }
+	void VertexArray::Bind() const {
+		
+		CUP_FUNCTION();
+		glBindVertexArray(m_id);
+	
+	}
+	void VertexArray::Unbind() const {
+		
+		CUP_FUNCTION();
+		glBindVertexArray(0);
+	
+	}
 
 }

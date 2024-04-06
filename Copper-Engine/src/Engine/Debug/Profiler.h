@@ -18,7 +18,7 @@ namespace Copper::Profiler {
 
 	};
 
-	void CrashHandler(int sig);
+	void CrashHandler(int32 sig);
 	void PrintScopeStack();
 
 	// Frame profiling
@@ -43,8 +43,8 @@ namespace Copper::Profiler {
 }
 
 #ifdef CU_DEBUG
-// THank the c++ compiler for being wonky that we have to pass the line macro through 2 macro functions in order
-// to ## it :)))))))
+// Thanks to the C++ compiler, we need to send it through 2 macros....
+// I love this language :)))))
 #define __CUP_SCOPE(name, line) ::Copper::Profiler::Scope CU_SCOPE_##line = ::Copper::Profiler::Scope(name, __FILE__)
 
 #define CUP_SCOPE(name, line) __CUP_SCOPE(name, line)

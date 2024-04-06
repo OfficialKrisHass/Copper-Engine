@@ -1,41 +1,51 @@
 #include "cupch.h"
 #include "Args.h"
 
-#include <filesystem>
+#ifdef CU_WINDOWS
+#include <Windows.h>
+#include <libloaderapi.h>
+#endif
 
 namespace Copper::Args {
 
-	std::vector<std::string> arguments;
-  
+    static bool didRun = false;
+
+	static std::vector<std::string> arguments;
   static std::string execFolder;
 
 	void Setup(uint32 argc, char* argv[]) {
 
-		CUP_FUNCTION();
+        if (didRun) {
 
+            LogError("Args::Setup has already been run");
+            return;
+
+        }
     if (argc == 0) {
       
         LogError("Command line arguments count is 0 (no exec path)");
         return;
       
     }
+		CUP_FUNCTION();
+        didRun = true;
 
-		arguments.resize(argc - 1);
+		arguments.resize(argc);
     
     #ifdef CU_LINUX
-        execFolder = argv[0];
-        execFolder.erase(execFolder.find_last_of('/'));
+        execFolder = fs::canonical("/proc/self/exe");
+        size_t pos = execFolder.find_last_of('/');
     #elif CU_WINDOWS
-        execFolder = argv[0];
+        CHAR path[MAX_PATH];
+        GetModuleFileNameA(NULL, path, MAX_PATH);
 
-        execFolder.erase(execFolder.find_last_of('\\'));
+        execFolder = path;
+        size_t pos = execFolder.find_last_of('\\');
     #endif
+        execFolder.erase(pos, std::string::npos);
 
-		for (uint32 i = 1; i < argc; i++) {
-
+		for (uint32 i = 1; i < argc; i++)
 			arguments[i - 1] = argv[i];
-
-		}
 
 	}
 

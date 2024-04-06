@@ -12,6 +12,7 @@
 
 #define RETURN_NULLPTR { *out = nullptr; return; }
 
+// What the fuck ?
 #define Test Jajaj
 
 namespace Copper {

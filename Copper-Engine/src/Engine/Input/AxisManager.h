@@ -15,6 +15,10 @@ namespace Copper::Input {
 		float positiveValue =  1.0f;
 		float negativeValue = -1.0f;
 
+		Axis() = default;
+		Axis(KeyCode positive, KeyCode negative, float positiveValue = 1.0f, float negativeValue = -1.0f)
+			: positive(positive), negative(negative), positiveValue(positiveValue), negativeValue(negativeValue) {}
+
 	};
 
 	struct MouseAxis {
@@ -23,6 +27,10 @@ namespace Copper::Input {
 
 		float positiveValue =  1.0f;
 		float negativeValue = -1.0f;
+
+		MouseAxis() = default;
+		MouseAxis(bool isX, float positiveValue = 1.0f, float negativeValue = -1.0f)
+			: isX(isX), positiveValue(positiveValue), negativeValue(negativeValue) {}
 
 	};
 

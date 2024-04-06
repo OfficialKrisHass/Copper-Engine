@@ -195,6 +195,8 @@ namespace Copper {
 	}
 	UVector2I Window::Size() const {
 
+		//TODO: I don't know what zaza I was smoking when I wrote this
+		//		But I am never coding while on that shit again (*tiktok false buzzer*)
 		int32 x, y;
 		glfwGetWindowSize(WINDOW, &x, &y);
 

@@ -6,6 +6,8 @@
 
 namespace Editor {
 
+	// TODO: Actually implement this you fukctard ??
+
 	class Console : public Panel {
 
 	public:

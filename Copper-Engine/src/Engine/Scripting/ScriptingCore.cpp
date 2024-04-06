@@ -10,6 +10,8 @@
 
 #include "Engine/Scripting/MonoUtils.h"
 
+#include "Engine/Input/Popup.h"
+
 #include "Engine/Utilities/FileUtils.h"
 
 #include <mono/jit/jit.h>
@@ -31,15 +33,27 @@ namespace Copper::Scripting {
 
 	struct ScriptingCoreData {
 
+		// Base and Scripting API
+
 		MonoDomain* root;
 		MonoDomain* app;
 
 		MonoAssembly* apiAssembly;
 		MonoImage* apiAssemblyImage;
 
+		// Project assembly data
+		// TODO: This should be renamed to game probably
+
 		fs::path projectPath;
 		MonoAssembly* projectAssembly;
 		MonoImage* projectAssemblyImage;
+
+		std::vector<std::string> scriptComponents;
+		std::unordered_map<std::string, std::vector<ScriptField>> scriptFields;
+
+		// References for easy of use
+
+		std::vector<MonoObject*> entities;
 
 		MonoClass* entityClass;
 
@@ -48,11 +62,6 @@ namespace Copper::Scripting {
 
 		MonoClass* vector2Class;
 		MonoClass* vector3Class;
-
-		std::vector<std::string> scriptComponents;
-		std::unordered_map<std::string, std::vector<ScriptField>> scriptFields;
-
-		std::vector<MonoObject*> entities;
 
 	};
 
@@ -71,7 +80,6 @@ namespace Copper::Scripting {
 	void Initialize() {
 
 		CUP_FUNCTION();
-
 		VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the Scripting Engine");
 
 		// Initialize Mono
@@ -102,6 +110,15 @@ namespace Copper::Scripting {
 		mono_domain_set(data.app, true);
 
 		data.apiAssembly = MonoUtils::LoadAssembly(ExecutableFolder() + "/assets/ScriptAPI/Copper-ScriptingAPI.dll");
+		if (!data.apiAssembly) {
+
+			Input::ErrorPopup("Failed to load ScriptingAPI assembly", "The ScriptingAPI assembly could not be loaded into the engine.\n\nFor further information, check the Log output");
+			exit(1);
+
+		}
+
+		// Get all the references
+
 		data.apiAssemblyImage = mono_assembly_get_image(data.apiAssembly);
 
 		data.vector2Class = mono_class_from_name(data.apiAssemblyImage, "Copper", "Vector2");
@@ -118,10 +135,6 @@ namespace Copper::Scripting {
 		CUP_FUNCTION();
 
 		data.projectPath = path;
-
-		// Load the assemblies
-		
-		LoadScriptingAPI();
 
 		data.projectAssembly = MonoUtils::LoadAssembly(path);
 		if (!data.projectAssembly)
@@ -147,6 +160,7 @@ namespace Copper::Scripting {
 		mono_domain_set(mono_get_root_domain(), false);
 		mono_domain_unload(data.app);
 
+		LoadScriptingAPI();
 		Load(data.projectPath);
 		
 		for (ScriptComponent* script : ComponentView<ScriptComponent>(GetScene())) {

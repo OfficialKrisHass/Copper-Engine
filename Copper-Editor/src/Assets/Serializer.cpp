@@ -41,7 +41,7 @@ namespace Editor::AssetFile {
 		YAML::Node node;
 		try { node = YAML::LoadFile(path.string()); } catch (YAML::Exception e) {
 
-			LogError("An exception occured when trying to read Material asset file. Exception message:\n\t{}\n\n\tpath: {}", e.msg, path.string());
+			LogError("Couldn't read Material asset file.\n\tPath: {}\n\tError Message: {}", path.string(), e.msg);
 			return MaterialAsset();
 
 		}

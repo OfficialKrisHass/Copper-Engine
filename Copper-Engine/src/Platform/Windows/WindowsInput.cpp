@@ -38,8 +38,8 @@ namespace Copper::Input {
 	void Initialize(Window& win) {
 
 		CUP_FUNCTION();
-
 		VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize Input");
+
 		window = &win;
 
 		window->AddKeyPressedEventFunc(OnKeyPressed);
@@ -49,9 +49,9 @@ namespace Copper::Input {
 
 		if (!pfd::settings::available())
 		#ifdef CU_LINUX
-			LogError("Portable File Dialogs are not available! You might be missing these packages:\n\tKDE: KDialog\n\tGnome: Zenity/Matedialog/Qarma");
+			LogError("Portable File Dialogs is not available! You might be missing these packages:\n\tKDE: KDialog\n\tGnome: Zenity/Matedialog/Qarma");
 		#elif CU_WINDOWS
-			LogError("Portable File Dialogs are not available!");
+			LogError("Portable File Dialogs is not available!");
 		#endif
 
 		pfd::settings::verbose(true);

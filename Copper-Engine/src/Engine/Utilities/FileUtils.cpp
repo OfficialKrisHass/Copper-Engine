@@ -36,18 +36,21 @@ namespace Copper::Utilities {
 	}
 	char* ReadFileBinary(const fs::path& path, uint32* outSize) {
 		
+		// I stole this from the Cherno's implementation of mono
+		// Don't ask me how it works, And if it doesn't, well cry about it
+
 		CUP_FUNCTION();
 
 		std::ifstream stream;
 		stream.open(path.string(), std::ios::binary | std::ios::ate);
 
-		if (!stream) { LogError("Failed to Read Assembly File.\nPath: {0}", path.string()); return nullptr; }
+		if (!stream) return nullptr;
 
 		std::streampos end = stream.tellg();
 		stream.seekg(0, std::ios::beg);
 		uint32 size = (uint32) (end - stream.tellg());
 
-		if (size == 0) { LogError("Assembly is empty.\nPath: {0}", path.string()); return nullptr; }
+		if (size == 0) return nullptr;
 
 		char* buffer = new char[size];
 		stream.read((char*) buffer, size);

@@ -18,7 +18,6 @@ namespace Editor::ProjectAssetDatabase {
 	std::unordered_map<fs::path, UUID> assetFiles;
 	std::unordered_map<UUID, std::string> assetNames;
 
-	UUID invalidUUID = UUID("");
 	std::string emptyString = "";
 
 	static void FileChangeCallback(const fs::path& path, const FileWatcher::FileChangeType changeType);
@@ -39,10 +38,9 @@ namespace Editor::ProjectAssetDatabase {
 	void Refresh() {
 
 		CUP_FUNCTION();
+		CU_ASSERT(GetProject(), "Current project is invalid, make sure you called AssetFileDatabase::Refresh when there is a valid project");
 
 		assetFiles.clear();
-
-		CU_ASSERT(GetProject(), "Current project is invalid, make sure you called AssetFileDatabase::Refresh when there is a valid project");
 
 		const fs::path& dir = GetProject().assetsPath;
 		CU_ASSERT(dir != "", "Project has no Assets path");
@@ -69,8 +67,8 @@ namespace Editor::ProjectAssetDatabase {
 
 		if (assetFiles.find(path) == assetFiles.end()) {
 
-			LogError("No asset at path '{}' exists, or is not loaded", path);
-			return invalidUUID;
+			LogError("Can't get an asset that isn't loaded.\n\tPath: {}", path);
+			return EmptyUUID();
 
 		}
 
@@ -111,15 +109,14 @@ namespace Editor::ProjectAssetDatabase {
 		CUP_FUNCTION();
 
 		AssetMeta meta;
-		meta.Deserialize(path.string() + ".cum");
+		if (!meta.Deserialize(path.string() + ".cum")) return;
+
 		UUID assetUUID = meta.AssetUUID();
+		CU_ASSERT(assetUUID != UUID(""), "Empty UUID loaded from meta file.\n\tPath: {}", path.string());
 
 		if (extension == ".png" || extension == ".jpg")
 			AssetStorage::InsertAsset<Texture>(assetUUID, path.string());
-		else if (extension == ".mat")
-			AssetFile::DeserializeMaterial(path, assetUUID);
-
-		CU_ASSERT(assetUUID != UUID(""), "Didn't load the Asset at path '{}'", path.string());
+		else if (extension == ".mat" && !AssetFile::DeserializeMaterial(path, assetUUID)) return;
 
 		assetFiles[path] = assetUUID;
 		assetNames[assetUUID] = path.filename().string();

@@ -5,8 +5,12 @@
 #include <filesystem>
 #include <fstream>
 
-#define CHECK_FOLDER(folderName, folderPath, x) if (!std::filesystem::exists(path + folderPath)) { LogError("Project '{}' is missing the {} folder", project.name, folderName); ret |= BIT(x); }
-#define CHECK_FILE(fileName, filePath, x) if (!std::filesystem::exists(path + filePath)) { LogError("Project '{}' is missing the {} file", project.name, fileName); ret |= BIT(x); }
+#define CHECK_FOLDER(folderName, x) if (!std::filesystem::exists(path + folderName)) {\
+										LogError("Project '{}' is missing the {} folder", project.name, folderName);\
+										ret |= BIT(x); }
+#define CHECK_FILE(fileName, filePath, x) if (!std::filesystem::exists(path + filePath)) {\
+											LogError("Project '{}' is missing the {} ({}) file", project.name, fileName, filePath);\
+											ret |= BIT(x); }
 
 #define FLAG(x, flag) x & (uint16) flag
 
@@ -19,27 +23,27 @@ namespace Editor::ProjectChecker {
 
 		// Base folders
 
-		CHECK_FOLDER("Assets", "Assets", 0);
-		CHECK_FOLDER("Binaries", "Binaries", 1);
+		CHECK_FOLDER("Assets", 0);
+		CHECK_FOLDER("Binaries", 1);
 
 		// Binaries
 
-		CHECK_FILE("Project assembly (" + project.name + ".dll)", "Binaries/" + project.name + ".dll", 2);
-		CHECK_FILE("Scripting API assembly (Copper-ScriptingAPI.dll)", "Binaries/Copper-ScriptingAPI.dll", 3);
+		CHECK_FILE("Project assembly", "Binaries/" + project.name + ".dll", 2);
+		CHECK_FILE("Scripting API assembly", "Binaries/Copper-ScriptingAPI.dll", 3);
 
 		// Project files
 
-		CHECK_FILE("Project file (Project.cu)", "Project.cu", 4);
+		CHECK_FILE("Project file", "Project.cu", 4);
 
 	#ifdef CU_WINDOWS
 
-		CHECK_FILE("Visual Studio project (" + project.name + ".csproj)", project.name + ".csproj", 5);
-		CHECK_FILE("Visual Studio solution (" + project.name + ".sln)", project.name + ".sln", 6);
+		CHECK_FILE("Visual Studio project", project.name + ".csproj", 5);
+		CHECK_FILE("Visual Studio solution", project.name + ".sln", 6);
 
 	#elif CU_LINUX
 
 		CHECK_FILE("Makefile", "Makefile", 5);
-		CHECK_FILE("Premake (premake5.lua)", "premake5.lua", 6);
+		CHECK_FILE("Premake", "premake5.lua", 6);
 
 	#endif
 

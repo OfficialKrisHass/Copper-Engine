@@ -1,6 +1,8 @@
 #include "cupch.h"
 #include "PhysicsEngine.h"
 
+#include "Engine/Core/Engine.h"
+
 #include <PxPhysicsAPI.h>
 
 namespace Copper::PhysicsEngine {
@@ -17,6 +19,7 @@ namespace Copper::PhysicsEngine {
     void Initialize() {
 
         CUP_FUNCTION();
+        VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the Physics Engine");
 
         foundation = PxCreateFoundation(PX_PHYSICS_VERSION, allocator, errCallback);
         physics = PxCreatePhysics(PX_PHYSICS_VERSION, *foundation, PxTolerancesScale());

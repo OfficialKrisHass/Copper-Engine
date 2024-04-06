@@ -23,6 +23,8 @@ namespace Copper::Scripting::InternalCalls {
 
 		// this hurts, but if I fix it in this commit, the commit will be too big
 		// and I won't get that sweet sweet 6 commit a day graph :)
+		// Update: My "6 commits a day" era ended after about 2 days, I should fix this
+		// Update #2: No I won't <3 xoxo
 
 		hasComponentFuncs["Transform"] = [](InternalEntity* entity) { return true; };
 		hasComponentFuncs["Camera"] = [](InternalEntity* entity) { return entity->HasComponent<Camera>(); };

@@ -51,8 +51,9 @@ namespace Copper {
 
 		m_count = size / sizeof(uint32);
 
-		// Noone knows when, why or who put this Log message here, But the only thing I know is that it was out of nowhere
-		// crashing the engine, until I commented it out and then immediatelly uncommented
+		// I do not remember ever putting this log here, I have never bothered
+		// to try and find it, until it started crashing the engine when I removed it
+		// I am afraid of this line of code, and I submit to it's reign, all hail the Log!
 		Log(sizeof(uint32));
 
 	}

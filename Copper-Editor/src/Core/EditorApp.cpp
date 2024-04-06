@@ -48,6 +48,8 @@
 
 using namespace Copper;
 
+// This file contains like 99% of the entire editor...... WHYYYYYYYYYYY ??????????
+// TODO: Fix this you stupid dumbass (me)
 namespace Editor {
 
 	struct EditorData {
@@ -97,6 +99,7 @@ namespace Editor {
 		ThemeEditor themeEditor;
 
 		// Theme Editor
+
 		bool themeEditorOpen = false;
 
 		// Scripting
@@ -134,19 +137,13 @@ namespace Editor {
 	bool OnKeyPressed(const Event& e);
 	bool OnWindowClose(const Event& e);
 
-	bool OnEntityCreated(const Event& e);
-	bool OnEntityRemoved(const Event& e);
-
 	void Initialize() {
 
 		CUP_FUNCTION();
 
 		GetWindow().AddKeyPressedEventFunc(Editor::OnKeyPressed);
 
-		AddEntityCreatedEventFunc(OnEntityCreated);
-		AddEntityRemovedEventFunc(OnEntityRemoved);
-
-		LoadMainUIContextFont(ExecutableFolder() + "/assets/Fonts/open-sans.regular.ttf");
+		MainUIContext().LoadFont(ExecutableFolder() + "/assets/Fonts/open-sans.regular.ttf");
 
 		data.state = Edit;
 		data.viewportSize = UVector2I(1280, 720);
@@ -211,8 +208,8 @@ namespace Editor {
 		YAML::Node main;
 		try { main = YAML::LoadFile(ExecutableFolder() + "/assets/EditorData.cu"); } catch (YAML::Exception e) {
 
-			LogError("Failed to Read The Editor Data save file\n    {1}", e.what());
-			return;
+			Input::ErrorPopup("EditorData read failed", "Could not read the EditorData.cu file.\n\nIt shuld be located here:\n" + ExecutableFolder() + "/assets/EditorData.cu" + "\n\nError message:\n" + e.what());
+			exit(1);
 
 		}
     
@@ -226,10 +223,12 @@ namespace Editor {
 		std::string path = main["Last Project"].as<std::string>();
 		if (!std::filesystem::exists(path)) {
       
-      LogWarn("There is no saved Last open project, Open a project manually");
-			OpenProject();
-      
-			return;
+			switch (Input::WarningPopup("Last opened project doesn't exist", "The last opened project no longer exists, do you wish to open a project manually, or exit the Editor ?\n\nLast opened project path:\n" + path)) {
+
+			case Input::PopupResult::Yes: OpenProject(); return;
+			case Input::PopupResult::No: exit(1);
+
+			}
 
 		}
 
@@ -694,7 +693,12 @@ namespace Editor {
 	void OpenProject(const fs::path& path) {
 		
 		try { data.project.Load(path); }
-		catch (YAML::Exception e) { LogError("Something went wrong trying to open the Project file.\n    {}", e.what()); }
+		catch (YAML::Exception e) {
+			
+			Input::ErrorPopup("Failed to load Project", "Something went wrong during loading the project.\n\nProject Path:\n" + path.string() + "\n\nError Message:\n" + e.what());
+			exit(1);
+		
+		}
 
 		data.scene = GetScene();
 		FileBrowser::SetRelativeDir("");
@@ -703,8 +707,12 @@ namespace Editor {
 
 		if (uint16_t issueFlags = ProjectChecker::CheckProject(data.project)) {
 
-			if (Input::WarningPopup("Corrupted Project", "This project is missing some of the core folders and/or files that are required by the Editor to function properly, would you like to attempt to fix the Project ?") == Input::PopupResult::Yes)
-				ProjectChecker::FixProject(data.project, issueFlags);
+			switch (Input::WarningPopup("Corrupted Project", "This project is missing some of the core folders and/or files that are required by the Editor to function properly. If you want to see the list, check the console.\n\nDo you want the editor to try and fix the project ?")) {
+
+			case Input::PopupResult::Yes: ProjectChecker::FixProject(data.project, issueFlags); break;
+			case Input::PopupResult::No: exit(1);
+
+			}
 
 		}
 
@@ -722,18 +730,21 @@ namespace Editor {
 
 		bool reloadSuccess = Scripting::Load(data.project.path / "Binaries" / (data.project.name + ".dll"));
 		uint32 i = 0;
-		while (!reloadSuccess && i < 10) {
+		while (!reloadSuccess && i < 3) {
 
-			LogError("Failed to Load the Project Assembly, attempt #{}", i);
+			LogError("Failed to Load the Project Assembly, attempting to rebuild.    Attempt #{}", i);
 
-			reloadSuccess = data.project.BuildSolution();
+			if (data.project.BuildSolution())
+				LogError("Failed to build project");
+
+			reloadSuccess = Scripting::Load(data.project.path / "Binaries" / (data.project.name + ".dll"));
 			i++;
 
 		}
 		if (!reloadSuccess) {
 
-			Input::ErrorPopup("Build failed", "Failed to build the project multiple times, Look into the log to see more information. Exiting application now");
-			exit(-1);
+			Input::ErrorPopup("Project assembly load failed", "Failed to build and load the project multiple times, Look into the log for more information");
+			exit(1);
 
 		}
 
@@ -743,7 +754,12 @@ namespace Editor {
 	void OpenProject() {
 
 		fs::path path = Utilities::FolderOpenDialog("Open Project", data.project ? data.project.path.parent_path() : ROOT_DIR);
-		if (path.empty()) { LogWarn("path is Invalid or empty"); return; }
+		if (path.empty()) {
+			
+			LogWarn("path is Invalid or empty");
+			return;
+		
+		}
 
 		OpenProject(path);
 
@@ -967,21 +983,6 @@ namespace Editor {
 		}
 
 	}
-
-	bool OnEntityCreated(const Event& e) {
-
-		EntityEvent* event = (EntityEvent*) &e;
-
-		return true;
-
-	}
-	bool OnEntityRemoved(const Event& e) {
-
-		EntityEvent* event = (EntityEvent*) &e;
-
-		return true;
-
-	}
 	
 	const Project& GetProject() { return data.project; }
 	SceneCamera& GetSceneCam() { return data.sceneCam; }
@@ -990,6 +991,9 @@ namespace Editor {
 
 	UVector2I GetViewportSize() { return data.viewportSize; }
 
+	// TODO: This feature is not working, has not been working for the past year, isn't
+	// even used in 90% of the places it should be, and also is done in the stupidest way imaginable.
+	// Am I going to fix it in 0.3 ? ..... No
 	void SetChanges(bool value) {
 
 		if (data.state == Play) return;

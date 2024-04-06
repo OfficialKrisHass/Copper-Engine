@@ -93,7 +93,7 @@ namespace Copper {
 	void Shutdown();
 
 #pragma region EngineCore
-	void EngineCore::Initialize() {
+	void Initialize() {
 
 		CUP_FUNCTION();
 
@@ -126,12 +126,9 @@ namespace Copper {
 		Input::Initialize(data.GetWindow());
 		Input::InitializeAxisManager();
 
-		// Physics
+		// Other systems initialization
 
 		PhysicsEngine::Initialize();
-
-		// Scripting
-
 		Scripting::Initialize();
 
 		// Finalization
@@ -319,8 +316,7 @@ namespace Copper {
 
 	// Declaration in ImGui.h
 
-	void SetMainUIAsCurrent() { data.mainUIContext.SetAsCurrent(); }
-	void LoadMainUIContextFont(const std::string& path, float fontSize) { CUP_FUNCTION(); data.mainUIContext.LoadFont(path, fontSize); }
+	const UIContext& MainUIContext() { return data.mainUIContext; }
 
 	// Declaration in Scene.h
 	

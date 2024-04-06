@@ -48,31 +48,12 @@ namespace Editor {
 
 		}
 
-		YAML::Node main;
-		try { main = YAML::LoadFile((path / "Project.cu").string()); } catch (YAML::ParserException e) {
-
-			LogError("Failed to Read The Editor Data save file\n    {1}", e.what());
-			return;
-
-		}
-
-		try {
+		YAML::Node main = YAML::LoadFile((path / "Project.cu").string());
 
 		name = main["Name"].as<std::string>();
 		lastOpenedScene = assetsPath / main["Last Scene"].as<std::string>();
 
-		// Viewport
-
 		gizmoType = main["Gizmo"].as<uint32>();
-
-		} catch(YAML::Exception e) {
-
-			LogError("Encountered an exception when loading a project with path {}: {}", path, e.msg);
-			return;
-
-			// TODO: Make a Project browser panel to open a project when an invalid project was found
-
-		}
 
 	}
 

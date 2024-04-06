@@ -18,9 +18,9 @@ namespace Copper {
 		void Begin();
 		void End();
 
-		void LoadFont(const std::string& path, float fontSize = 18.0f);
+		void LoadFont(const std::string& path, float fontSize = 18.0f) const;
 
-		void SetAsCurrent();
+		void SetAsCurrent() const;
 	
 	private:
 		bool gizmo = false;
@@ -31,7 +31,6 @@ namespace Copper {
 
 	};
 
-	void SetMainUIAsCurrent();
-	void LoadMainUIContextFont(const std::string& path, float fontSize = 18.0f);
+	const UIContext& MainUIContext();
 
 }

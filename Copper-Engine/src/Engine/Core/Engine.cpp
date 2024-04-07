@@ -1,3 +1,4 @@
+#include "Engine/Debug/Profiler.h"
 #include "cupch.h"
 #include "Engine.h"
 
@@ -93,7 +94,7 @@ namespace Copper {
 	void Shutdown();
 
 #pragma region EngineCore
-	void Initialize() {
+	void EngineCore::Initialize() {
 
 		CUP_FUNCTION();
 
@@ -102,6 +103,7 @@ namespace Copper {
 
 	#ifdef CU_DEBUG
 		SignalHandler::RegisterHandler(SignalHandler::Signal::Abort, Profiler::CrashHandler);
+    SignalHandler::RegisterHandler(SignalHandler::Signal::Segfault, Profiler::CrashHandler);
 	#endif
 
 		// Window & Renderer Initialization

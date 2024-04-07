@@ -18,7 +18,7 @@ namespace Copper::Profiler {
 
 	};
 
-	void CrashHandler(int32 sig);
+	void CrashHandler(int sig);
 	void PrintScopeStack();
 
 	// Frame profiling

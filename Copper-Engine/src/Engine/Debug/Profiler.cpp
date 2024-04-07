@@ -56,7 +56,7 @@ namespace Copper::Profiler {
 
 	}
 
-	void CrashHandler(int32 sig) {
+	void CrashHandler(int sig) {
 
 		LogError("A crash ({}) has occured in the Copper-Engine!\nCall stack:\n", sig);
 		PrintScopeStack();

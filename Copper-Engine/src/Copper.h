@@ -40,8 +40,6 @@
 #include "Engine/Components/Camera.h"
 #include "Engine/Components/Light.h"
 
-#include "Engine/Components/ScriptComponent.h"
-
 #include "Engine/Components/RigidBody.h"
 
 #include "Engine/Components/Collider.h"

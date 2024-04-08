@@ -6,8 +6,6 @@
 #include "Engine/Core/Log.h"
 #include "Engine/Utilities/Math.h"
 
-#include "Engine/Scripting/ScriptingCore.h"
-
 #include "Engine/Renderer/FrameBuffer.h"
 #include "Engine/Renderer/Renderer.h"
 
@@ -723,30 +721,6 @@ namespace Editor {
 		data.changes = false;
 		data.title = "Copper Editor - " + data.project.name + ": ";
 		Input::SetWindowTitle(data.title);
-
-		// In a completely new project, or a cleaned project, this should fail as the Assembly does not exist
-		// so it will build the project and attempt to load it again, if that fails, it tries again 9 more times
-		// and then exit the application
-
-		bool reloadSuccess = Scripting::Load(data.project.path / "Binaries" / (data.project.name + ".dll"));
-		uint32 i = 0;
-		while (!reloadSuccess && i < 3) {
-
-			LogError("Failed to Load the Project Assembly, attempting to rebuild.    Attempt #{}", i);
-
-			if (data.project.BuildSolution())
-				LogError("Failed to build project");
-
-			reloadSuccess = Scripting::Load(data.project.path / "Binaries" / (data.project.name + ".dll"));
-			i++;
-
-		}
-		if (!reloadSuccess) {
-
-			Input::ErrorPopup("Project assembly load failed", "Failed to build and load the project multiple times, Look into the log for more information");
-			exit(1);
-
-		}
 
 		OpenScene(data.project.lastOpenedScene);
 

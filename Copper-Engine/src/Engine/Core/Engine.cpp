@@ -25,8 +25,6 @@
 
 #include "Engine/Physics/PhysicsEngine.h"
 
-#include "Engine/Scripting/ScriptingCore.h"
-
 #ifdef CU_EDITOR
 extern Copper::Window* GetEditorWindow();
 #endif
@@ -131,7 +129,6 @@ namespace Copper {
 		// Other systems initialization
 
 		PhysicsEngine::Initialize();
-		Scripting::Initialize();
 
 		// Finalization
 

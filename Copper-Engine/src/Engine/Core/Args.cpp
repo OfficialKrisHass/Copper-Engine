@@ -30,7 +30,7 @@ namespace Copper::Args {
 		CUP_FUNCTION();
         didRun = true;
 
-		arguments.resize(argc);
+		arguments.resize(argc - 1);
     
     #ifdef CU_LINUX
         execFolder = fs::canonical("/proc/self/exe");

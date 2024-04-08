@@ -47,10 +47,6 @@ namespace Editor {
 		void RenderSphereCollider(Copper::SphereCollider* collider);
 		void RenderCapsuleCollider(Copper::CapsuleCollider* collider);
 
-		void RenderScriptComponent(Copper::ScriptComponent* script);
-
-		template<typename T, typename F> void RenderScriptField(Copper::ScriptComponent* script, const Copper::ScriptField& field, F showFunc);
-
 		// Assets
 
 		void RenderMaterial(const Copper::MaterialAsset& material);

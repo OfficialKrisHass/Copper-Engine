@@ -1,16 +1,11 @@
 #include "Properties.h"
 
-#include "Engine/Scripting/ScriptingCore.h"
-
 #include "Core/EditorApp.h"
-#include "Core/SceneMeta.h"
 
 #include "Assets/ProjectAssetDatabase.h"
 #include "Assets/Serializer.h"
 
 #include "UI/TypeWidgets.h"
-
-#include "Viewport/SceneCamera.h"
 
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_internal.h>
@@ -98,8 +93,6 @@ namespace Editor {
 		if (SphereCollider* collider = entity->GetComponent<SphereCollider>()) RenderSphereCollider(collider);
 		if (CapsuleCollider* collider = entity->GetComponent<CapsuleCollider>()) RenderCapsuleCollider(collider);
 
-		if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) RenderScriptComponent(script);
-
 		ImGui::Spacing();
 		//ImGui::Spacing();
 		ImGui::Separator();
@@ -157,19 +150,6 @@ namespace Editor {
 			}
 
 			ImGui::Separator();
-
-			for (std::string scriptName : Scripting::GetScriptComponents()) {
-
-				if (ImGui::MenuItem(scriptName.c_str())) {
-					
-					ScriptComponent* script = entity->AddComponent<ScriptComponent>();
-
-					script->Init(scriptName);
-					Editor::SetChanges(true);
-						
-				}
-
-			}
 
 			ImGui::EndPopup();
 				
@@ -305,40 +285,6 @@ namespace Editor {
 
 	}
 
-	void Properties::RenderScriptComponent(ScriptComponent* script) {
-
-		if (!DrawComponent<ScriptComponent>(script->name, script)) return;
-		if (!*script) {
-
-			ImGui::Text("This Script is invalid or doesn't exist anymore");
-			ImGui::PopID();
-
-			return;
-
-		}
-
-		for (ScriptField& field : Scripting::GetScriptFields(script->name)) {
-
-			switch (field.type) {
-
-				case ScriptField::Type::Int:			RenderScriptField<int32>(script, field, UI::EditInt); break;
-				case ScriptField::Type::UInt:			RenderScriptField<uint32>(script, field, UI::EditUInt); break;
-				case ScriptField::Type::Float:			RenderScriptField<float>(script, field, UI::EditFloat); break;
-
-				case ScriptField::Type::Vector2:		RenderScriptField<Vector2>(script, field, UI::EditVector2); break;
-				case ScriptField::Type::Vector3:		RenderScriptField<Vector3>(script, field, UI::EditVector3); break;
-
-				case ScriptField::Type::Entity:			RenderScriptField<InternalEntity*>(script, field, UI::EditEntity); break;
-				case ScriptField::Type::Transform:		RenderScriptField<Transform*>(script, field, UI::EditTransform); break;
-
-			}
-
-		}
-
-		ImGui::PopID();
-
-	}
-
 	template<typename T> static bool DrawComponent(const std::string& name, T* component) {
 
 		ImGui::PushID((uint32) (uint64) component);
@@ -394,16 +340,6 @@ namespace Editor {
 
 	}
 
-	template<typename T, typename F> void Properties::RenderScriptField(ScriptComponent* script, const ScriptField& field, F showFunc) {
-
-		T tmp;
-		script->GetFieldValue(field, &tmp);
-
-		bool changed = showFunc(field.name, &tmp);
-		if (changed) script->SetFieldValue(field, &tmp);
-
-	}
-	
 	// Assets
 
 	void Properties::RenderMaterial(const MaterialAsset& material) {

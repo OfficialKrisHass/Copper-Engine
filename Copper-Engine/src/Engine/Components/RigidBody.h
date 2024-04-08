@@ -14,14 +14,6 @@ namespace Copper {
 
     class Collider;
 
-    namespace Scripting::InternalCalls {    
-
-        void RigidBodySetGravity(uint64 componentPointer, bool value);
-        void RigidBodySetIsStatic(uint64 componentPointer, bool value);
-        void RigidBodySetMass(uint64 componentPointer, float value);
-
-    }
-
     enum class ForceMode : uint8 {
 
         Force = 0,
@@ -35,10 +27,6 @@ namespace Copper {
 
         friend class Scene;
         friend class Collider;
-
-        friend void Scripting::InternalCalls::RigidBodySetGravity(uint64 componentPointer, bool value);
-        friend void Scripting::InternalCalls::RigidBodySetIsStatic(uint64 componentPointer, bool value);
-        friend void Scripting::InternalCalls::RigidBodySetMass(uint64 componentPointer, float value);
 
     #ifdef CU_EDITOR
         friend Editor::Properties;

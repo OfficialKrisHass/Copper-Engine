@@ -36,7 +36,7 @@ Entities:
       Children: [1]
     Mesh Renderer:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
-      Material: 1be25f1a-d9c0-472a-abcc-65129937048d
+      Material: 341bba04-c463-48de-88bb-6e5c37cb0213
     Rigid Body:
       Static: false
       Gravity: true
@@ -46,21 +46,6 @@ Entities:
       Trigger: false
       Center: [0, 0, 0]
       Size: [1, 1, 1]
-    Script Component:
-      Name: Player
-      Fields:
-        speed:
-          Type: 3
-          Value: 1.5
-        sensitivity:
-          Type: 3
-          Value: 5
-        jumpHeight:
-          Type: 3
-          Value: 2
-        camera:
-          Type: 7
-          Value: 1
   Ground:
     ID: 3
     Transform:

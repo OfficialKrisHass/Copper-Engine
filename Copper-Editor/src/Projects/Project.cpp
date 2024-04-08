@@ -1,10 +1,7 @@
 #include "Project.h"
 
-#include "Core/EditorApp.h"
-
 #include "Engine/Core/Core.h"
 #include "Engine/Core/Log.h"
-#include "Engine/Scripting/ScriptingCore.h"
 
 #include "Engine/YAMLOverloads/Everything.h"
 
@@ -91,10 +88,7 @@ namespace Editor {
 		system(cmd.c_str());
 	#endif
 
-		if (firstBuild)
-			return Scripting::Load(path / "Binaries" / (name + ".dll"));
-		else
-			return Scripting::Reload();
+        return true;
 
 	}
 

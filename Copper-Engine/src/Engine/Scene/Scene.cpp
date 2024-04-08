@@ -1,15 +1,11 @@
 #include "cupch.h"
 #include "Scene.h"
 
-#include "Engine/Core/Engine.h"
-
 #include "Engine/Scene/CopperECS.h"
 
 #include "Engine/Components/MeshRenderer.h"
 #include "Engine/Components/Camera.h"
 #include "Engine/Components/Light.h"
-
-#include "Engine/Components/ScriptComponent.h"
 
 #include "Engine/Components/RigidBody.h"
 
@@ -19,15 +15,8 @@
 #include "Engine/Components/CapsuleCollider.h"
 
 #include "Engine/Renderer/Renderer.h"
-#include "Engine/Renderer/Mesh.h"
-#include "Engine/Renderer/Primitives.h"
-
-#include "Engine/AssetStorage/AssetMap.h"
-#include "Engine/AssetStorage/AssetStorage.h"
 
 #include "Engine/Physics/Raycast.h"
-
-#include "Engine/Scripting/ScriptingCore.h"
 
 #include "Engine/Input/Popup.h"
 
@@ -132,15 +121,6 @@ namespace Copper {
 
 		if (RigidBody* rb = entity->GetComponent<RigidBody>())
 			rb->UpdatePositionAndRotation();
-
-		if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) {
-
-			if (!m_runtimeStarted)
-				script->InvokeCreate();
-			script->InvokeUpdate();
-
-		}
-		
 
 	}
 
@@ -344,35 +324,6 @@ namespace Copper {
 
 		}
 
-		if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) {
-
-			out << YAML::Key << "Script Component" << YAML::Value << YAML::BeginMap; // Script Component
-
-			out << YAML::Key << "Name" << YAML::Value << script->name;
-			out << YAML::Key << "Fields" << YAML::Value << YAML::BeginMap; // Fields
-			for (const ScriptField& field : Scripting::GetScriptFields(script->name)) {
-
-				switch (field.type) {
-
-					case ScriptField::Type::Int: SerializeScriptField<int32>(field, script, out); break;
-					case ScriptField::Type::UInt: SerializeScriptField<uint32>(field, script, out); break;
-					case ScriptField::Type::Float: SerializeScriptField<float>(field, script, out); break;
-
-					case ScriptField::Type::Vector2: SerializeScriptField<Vector2>(field, script, out); break;
-					case ScriptField::Type::Vector3: SerializeScriptField<Vector3>(field, script, out); break;
-
-					case ScriptField::Type::Entity: SerializeScriptField<InternalEntity*>(field, script, out); break;
-					case ScriptField::Type::Transform: SerializeScriptField<Transform*>(field, script, out); break;
-
-				}
-
-			}
-			out << YAML::EndMap; // Fields
-
-			out << YAML::EndMap; // Script Component
-
-		}
-
 		out << YAML::EndMap; // Enity
 
 	}
@@ -494,78 +445,9 @@ namespace Copper {
 
 		if (YAML::Node scriptNode = node["Script Component"]) {
 
-			ScriptComponent* script = entity->AddComponent<ScriptComponent>();
-			script->Init(scriptNode["Name"].as<std::string>());
-
-			YAML::Node fields = scriptNode["Fields"];
-			for (const ScriptField& field : Scripting::GetScriptFields(script->name)) {
-
-				switch (field.type) {
-
-					case ScriptField::Type::Int: DeserializeScriptField<int32>(field, script, fields[field.name]["Value"]); break;
-					case ScriptField::Type::UInt: DeserializeScriptField<uint32>(field, script, fields[field.name]["Value"]); break;
-					case ScriptField::Type::Float: DeserializeScriptField<float>(field, script, fields[field.name]["Value"]); break;
-
-					case ScriptField::Type::Vector2: DeserializeScriptField<Vector2>(field, script, fields[field.name]["Value"]); break;
-					case ScriptField::Type::Vector3: DeserializeScriptField<Vector3>(field, script, fields[field.name]["Value"]); break;
-
-					case ScriptField::Type::Entity: DeserializeScriptField<InternalEntity*>(field, script, fields[field.name]["Value"]); break;
-					case ScriptField::Type::Transform: DeserializeScriptField<Transform*>(field, script, fields[field.name]["Value"]); break;
-
-				}
-
-			}
+			//
 
 		}
-
-	}
-
-	template<typename T> void Scene::SerializeScriptField(const ScriptField& field, ScriptComponent* instance, YAML::Emitter& out) {
-		
-		CUP_FUNCTION();
-
-		T value;
-		instance->GetFieldValue(field, &value);
-
-		out << YAML::Key << field.name << YAML::Value << YAML::BeginMap; // Field
-
-		out << YAML::Key << "Type" << YAML::Value << (int32) field.type;
-		out << YAML::Key << "Value" << YAML::Value << value;
-
-		out << YAML::EndMap; // Field
-
-	}
-	template<typename T> void Scene::DeserializeScriptField(const ScriptField& field, ScriptComponent* instance, const YAML::Node& fieldNode) {
-
-		CUP_FUNCTION();
-
-		T tmp = fieldNode.as<T>();
-		instance->SetFieldValue(field, &tmp);
-
-	}
-
-	template<> void Scene::SerializeScriptField<Transform*>(const ScriptField& field, ScriptComponent* instance, YAML::Emitter& out) {
-
-		CUP_FUNCTION();
-
-		Transform* value;
-		instance->GetFieldValue(field, &value);
-
-		out << YAML::Key << field.name << YAML::Value << YAML::BeginMap; // Field
-
-		out << YAML::Key << "Type" << YAML::Value << (int32) field.type;
-		out << YAML::Key << "Value" << YAML::Value << (value ? value->m_entity.m_id : INVALID_ENTITY_ID);
-
-		out << YAML::EndMap; // Field
-
-	}
-	template<> void Scene::DeserializeScriptField<Transform*>(const ScriptField& field, ScriptComponent* instance, const YAML::Node& fieldNode) {
-
-		CUP_FUNCTION();
-
-		uint32 eID = fieldNode.as<uint32>();
-		Transform* transform = eID == INVALID_ENTITY_ID ? nullptr : GetEntityFromID(eID)->m_transform;
-		instance->SetFieldValue(field, &transform);
 
 	}
 

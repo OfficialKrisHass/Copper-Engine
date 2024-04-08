@@ -1,5 +1,4 @@
-list(APPEND scriptingSources Field.h MonoUtils.h ScriptingCore.h InternalCalls.h
-                             MonoUtils.cpp ScriptingCore.cpp InternalCalls.cpp)
+list(APPEND scriptingSources )
 list(TRANSFORM scriptingSources PREPEND src/Engine/Scripting/)
 
 list(APPEND sources ${scriptingSources})

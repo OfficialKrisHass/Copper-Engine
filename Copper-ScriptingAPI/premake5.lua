@@ -8,8 +8,8 @@ project "Copper-ScriptingAPI"
     kind "SharedLib"
     dotnetframework "4.8"
 
-    targetdir("../Copper-Editor/assets/ScriptAPI")
-    objdir("../Copper-Editor/assets/ScriptAPI/Int")
+    targetdir("../Copper-Editor/assets/ScriptingAPI")
+    objdir("../Copper-Editor/assets/ScriptingAPI/Int")
 
     files {
 

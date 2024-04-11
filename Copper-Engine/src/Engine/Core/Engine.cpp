@@ -1,29 +1,23 @@
-#include "Engine/Debug/Profiler.h"
 #include "cupch.h"
 #include "Engine.h"
 
 #include "Engine/Core/Window.h"
-#include "Engine/Core/Args.h"
 #include "Engine/Core/SignalHandler.h"
 
 #include "Engine/Renderer/Renderer.h"
-#include "Engine/Renderer/Buffer.h"
-#include "Engine/Renderer/VertexArray.h"
 #include "Engine/Renderer/FrameBuffer.h"
-#include "Engine/Renderer/Shader.h"
-#include "Engine/Renderer/Texture.h"
-
-#include "Engine/AssetStorage/AssetMap.h"
-#include "Engine/AssetStorage/AssetStorage.h"
 
 #include "Engine/UI/ImGui.h"
 
 #include "Engine/Input/AxisManager.h"
 
-#include "Engine/Scene/CopperECS.h"
+#include "Engine/Scene/Scene.h"
+
 #include "Engine/Components/Camera.h"
 
 #include "Engine/Physics/PhysicsEngine.h"
+
+#include "Engine/Scripting/ScriptingEngine.h"
 
 #ifdef CU_EDITOR
 extern Copper::Window* GetEditorWindow();
@@ -129,6 +123,7 @@ namespace Copper {
 		// Other systems initialization
 
 		PhysicsEngine::Initialize();
+        Scripting::Initialize();
 
 		// Finalization
 
@@ -208,6 +203,9 @@ namespace Copper {
 
 		data.mainUIContext.Shutdown();
 		data.GetWindow().Shutdown();
+        
+        Scripting::Shutdown();
+        PhysicsEngine::Shutdown();
 
 		data.postShutdownEvent();
 

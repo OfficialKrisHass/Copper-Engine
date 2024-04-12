@@ -11,6 +11,8 @@ namespace Copper::Scripting {
 
         CUP_FUNCTION();
 
+        m_path = path;
+
         OpenImage(path);
         LoadAssembly(path);
 

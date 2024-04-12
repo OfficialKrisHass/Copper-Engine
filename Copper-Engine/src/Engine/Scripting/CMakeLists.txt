@@ -1,4 +1,4 @@
-list(APPEND scriptingSources ScriptingEngine.cpp Assembly.cpp)
+list(APPEND scriptingSources ScriptingEngine.cpp Assembly.cpp Script.cpp)
 list(TRANSFORM scriptingSources PREPEND src/Engine/Scripting/)
 
 list(APPEND sources ${scriptingSources})

@@ -3,6 +3,8 @@
 
 #include "Engine/Core/Engine.h"
 
+#include "Engine/Scripting/Script.h"
+
 #include "Engine/Input/Popup.h"
 
 #include <mono/jit/jit.h>
@@ -16,9 +18,17 @@ namespace Copper::Scripting {
         MonoDomain* appDomain = nullptr;
 
         Assembly scriptingAPI;
+        Assembly game;
+
+        Script baseComponent;
+
+        std::vector<Script> scriptComponents;
 
     };
     ScriptingData data;
+
+    void InitializeScriptingAPI();
+    void InitializeGame();
 
     void Initialize() {
 
@@ -37,15 +47,97 @@ namespace Copper::Scripting {
         data.appDomain = mono_domain_create_appdomain("CUSAppDomain", nullptr);
         mono_domain_set(data.appDomain, true);
 
-        data.scriptingAPI = Assembly(ExecutableFolder() + "/assets/ScriptingAPI/Copper-ScriptingAPI.dll");
-
+        InitializeScriptingAPI();
+        
     }
     void Shutdown() {
+
+        CUP_FUNCTION();
+        VERIFY_STATE(EngineCore::EngineState::Shutdown, "Shutdown the Scripting Engine");
 
         mono_jit_cleanup(data.rootDomain);
 
     }
 
+    bool Load(const std::string& path) {
+
+        CUP_FUNCTION();
+
+        data.game = Assembly(path);
+        if (!data.game) return false;
+
+        InitializeGame();
+
+        return true;
+
+    }
+    void Unload() {
+
+        CUP_FUNCTION();
+
+        mono_domain_set(data.rootDomain, false);
+        mono_domain_unload(data.appDomain);
+
+        data.game = Assembly();
+
+        data.scriptComponents.clear();
+
+    }
+    bool Reload() {
+
+        CUP_FUNCTION();
+
+        std::string tmp = data.game.Path();
+
+        Unload();
+
+        InitializeScriptingAPI();
+        return Load(tmp);
+
+    }
+
+    void InitializeScriptingAPI() {
+
+        CUP_FUNCTION();
+
+        data.scriptingAPI = Assembly(ExecutableFolder() + "/assets/ScriptingAPI/Copper-ScriptingAPI.dll");
+        data.baseComponent = Script("Copper", "Component", data.scriptingAPI);
+
+    }
+    void InitializeGame() {
+
+        CUP_FUNCTION();
+
+        // Get the type definitions table
+
+        const MonoTableInfo* typeTable = mono_image_get_table_info(data.game.GetImage(), MONO_TABLE_TYPEDEF);
+        uint32 num = mono_table_info_get_rows(typeTable);
+
+        for (uint32 i = 0; i < num; i++) {
+
+            // Get type info
+
+            uint32 cols[MONO_TYPEDEF_SIZE];
+            mono_metadata_decode_row(typeTable, i, cols, MONO_TYPEDEF_SIZE);
+            
+            const char* nameSpace = mono_metadata_string_heap(data.game.GetImage(), cols[MONO_TYPEDEF_NAMESPACE]);
+            const char* name = mono_metadata_string_heap(data.game.GetImage(), cols[MONO_TYPEDEF_NAME]);
+
+            if (std::string(name) == "<Module>") continue;
+
+            // Filter out non component Scripts
+
+            data.scriptComponents.push_back(Script(nameSpace, name, data.game));
+            Script& script = data.scriptComponents.back();
+
+            if (script.IsSubclassOf(data.baseComponent)) continue;
+            data.scriptComponents.pop_back();
+
+        }
+
+    }
+
     const Assembly& ScriptingAPIAssembly() { return data.scriptingAPI; }
+    const Assembly& GameAssembly() { return data.game; }
 
 }

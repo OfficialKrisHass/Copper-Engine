@@ -11,6 +11,8 @@
 
 #include "Engine/UI/ImGui.h"
 
+#include "Engine/Scripting/ScriptingEngine.h"
+
 #include "Core/SceneMeta.h"
 #include "Core/FileWatcher.h"
 
@@ -663,23 +665,27 @@ namespace Editor {
 
 	void NewProject() {
 
-		//Open the Folder Dialog
-		//TODO : Either make our own Folder Open Dialog or Start using the Windows new System
-		//TODO #2 : Fixed... well for linux
 		fs::path path = Utilities::FolderOpenDialog("New Project", data.project ? data.project.path.parent_path() : ROOT_DIR);
-		if (path.empty()) { LogWarn("Path is Invalid or Empty"); return; }
+		if (path.empty()) {
 
-		//Create the Project
+            LogWarn("Path is Invalid or Empty");
+            return;
+
+        }
+
+		// Create the Project
+
 		data.project = Project(path.filename().string(), path);
 		FileBrowser::SetRelativeDir("");
 
 		CreateProjectFromTemplate("assets/Templates/LinuxTesting", data.project);
 
-	#ifdef CU_LINUX
-    data.project.RunPremake();
-	#endif
+#ifdef CU_LINUX
+        data.project.RunPremake();
+#endif
 		
 		data.project.BuildSolution(true);
+        Scripting::Load(path.string() + "/Binaries/" + data.project.name + ".dll");
 
 		OpenScene(data.project.assetsPath / data.project.lastOpenedScene);
 
@@ -698,11 +704,6 @@ namespace Editor {
 		
 		}
 
-		data.scene = GetScene();
-		FileBrowser::SetRelativeDir("");
-
-		ProjectAssetDatabase::Initialize();
-
 		if (uint16_t issueFlags = ProjectChecker::CheckProject(data.project)) {
 
 			switch (Input::WarningPopup("Corrupted Project", "This project is missing some of the core folders and/or files that are required by the Editor to function properly. If you want to see the list, check the console.\n\nDo you want the editor to try and fix the project ?")) {
@@ -713,6 +714,16 @@ namespace Editor {
 			}
 
 		}
+
+		data.scene = GetScene();
+
+		FileBrowser::SetRelativeDir("");
+		ProjectAssetDatabase::Initialize();
+
+        if (Scripting::GameAssembly())
+            Scripting::Reload();
+        else
+            Scripting::Load(path.string() + "/Binaries/" + data.project.name + ".dll");
 
 		FileWatcher::Stop();
 		FileWatcher::SetDirectory(data.project.assetsPath);

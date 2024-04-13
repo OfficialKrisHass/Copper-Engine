@@ -1,22 +1,20 @@
-﻿using System;
+using System;
 using System.Runtime.CompilerServices;
 
 namespace Copper {
-
+    
     public static class Editor {
-
-        public static void Log(string msg) { Internal_Log(msg); }
-        public static void LogWarn(string msg) { Internal_LogWarn(msg); }
-        public static void LogError(string msg) { Internal_LogError(msg); }
-
-        // Internal Functions
+        
+        public static void Log(string msg) { Internal_EditorLog(msg); }
+        public static void LogWarn(string msg) { Internal_EditorLogWarn(msg); }
+        public static void LogError(string msg) { Internal_EditorLogError(msg); }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        internal extern static void Internal_Log(string msg);
+        internal extern static void Internal_EditorLog(string msg);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        internal extern static void Internal_LogWarn(string msg);
+        internal extern static void Internal_EditorLogWarn(string msg);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        internal extern static void Internal_LogError(string msg);
+        internal extern static void Internal_EditorLogError(string msg);
 
     }
 

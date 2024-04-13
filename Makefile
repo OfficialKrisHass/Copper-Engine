@@ -17,7 +17,7 @@ ifeq ($(OS), linux)
 endif
 	
 scriptapi:
-	@./Copper-Editor/util/premake/premake5 --file=Copper-ScriptingAPI/premake5.lua gmake2
+	@./Copper-Editor/util/premake/premake5 --file=Copper-ScriptingAPI/workspace.lua gmake2
 	@${MAKE} --no-print-directory -C Copper-ScriptingAPI -f Makefile
 
 launcher: cmake

@@ -1,15 +1,11 @@
-workspace "Copper-ScriptingAPI"
-    architecture "x64"
-    configurations { "Debug", "Release", }
-
 project "Copper-ScriptingAPI"
     location "."
     language "C#"
     kind "SharedLib"
     dotnetframework "4.8"
 
-    targetdir("../Copper-Editor/assets/ScriptingAPI")
-    objdir("../Copper-Editor/assets/ScriptingAPI/Int")
+    targetdir("../Copper-Editor/assets/ScriptAPI")
+    objdir("../Copper-Editor/assets/ScriptAPI/Int")
 
     files {
 
@@ -24,3 +20,5 @@ project "Copper-ScriptingAPI"
     filter "configurations:Release"
         optimize "On"
         symbols "Default"
+
+

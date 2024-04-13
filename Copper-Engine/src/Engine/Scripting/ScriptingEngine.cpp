@@ -30,6 +30,8 @@ namespace Copper::Scripting {
     void InitializeScriptingAPI();
     void InitializeGame();
 
+    extern void SetupInternalCalls();
+
     void Initialize() {
 
         CUP_FUNCTION();
@@ -102,6 +104,8 @@ namespace Copper::Scripting {
 
         data.scriptingAPI = Assembly(ExecutableFolder() + "/assets/ScriptingAPI/Copper-ScriptingAPI.dll");
         data.baseComponent = Script("Copper", "Component", data.scriptingAPI);
+
+        SetupInternalCalls();
 
     }
     void InitializeGame() {

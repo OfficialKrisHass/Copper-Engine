@@ -15,6 +15,8 @@ group "Libraries"
     include "Copper-Engine/lib/Copper-Math/CMath"
 group ""
 
+include "Copper-ScriptingAPI"
+
 project "Copper-Engine"
     location "Copper-Engine"
     kind "StaticLib"
@@ -199,29 +201,6 @@ project "Copper-Editor"
         optimize "on"
 
         postbuildcommands "%{os.getcwd()}/scripts/windows/CopyEditorFiles.bat Release"
-
-project "Copper-ScriptingAPI"
-    location "Copper-ScriptingAPI"
-    language "C#"
-    kind "SharedLib"
-    dotnetframework "4.8"
-
-    targetdir("Copper-Editor/assets/ScriptAPI")
-    objdir("Copper-Editor/assets/ScriptAPI/Int")
-
-    files {
-
-        "%{prj.name}/Source/**.cs"
-
-    }
-
-    filter "configurations:Debug"
-        optimize "Off"
-        symbols "Default"
-
-    filter "configurations:Release"
-        optimize "On"
-        symbols "Default"
 
 project "Copper-CppTesting"
     location "Copper-CppTesting"

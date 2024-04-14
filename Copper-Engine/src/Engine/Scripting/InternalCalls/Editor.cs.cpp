@@ -7,6 +7,7 @@ namespace Copper::Scripting {
     void EditorLog(MonoString* msg) {
 
         CUP_FUNCTION();
+        Log("Tried to log!");
 
     }
     void EditorLogWarn(MonoString* msg) {

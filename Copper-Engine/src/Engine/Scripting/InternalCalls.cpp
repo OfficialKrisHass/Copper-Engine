@@ -14,6 +14,9 @@ namespace Copper::Scripting {
 
         CUP_FUNCTION();
 
+        mono_add_internal_call("Copper.Editor::Internal_EditorLog", (void*) EditorLog);
+        return;
+
         INTERNAL_CALL(Editor, EditorLog);
         INTERNAL_CALL(Editor, EditorLogWarn);
         INTERNAL_CALL(Editor, EditorLogError);

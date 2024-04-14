@@ -1,5 +1,7 @@
 #include "Properties.h"
 
+#include "Engine/Scripting/ScriptingEngine.h"
+
 #include "Core/EditorApp.h"
 
 #include "Assets/ProjectAssetDatabase.h"
@@ -150,6 +152,19 @@ namespace Editor {
 			}
 
 			ImGui::Separator();
+
+            const std::vector<Scripting::Script>& scriptComponents = Scripting::ScriptComponents();
+            for (const Scripting::Script& script : scriptComponents) {
+
+                if (!ImGui::MenuItem(script.Name().c_str())) continue;
+
+                ScriptComponent* component = entity->AddComponent<ScriptComponent>();
+                component->Setup(&script);
+                Editor::SetChanges(true);
+
+                break;
+
+            }
 
 			ImGui::EndPopup();
 				

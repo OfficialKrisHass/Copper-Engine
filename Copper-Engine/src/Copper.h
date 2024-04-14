@@ -47,6 +47,8 @@
 #include "Engine/Components/SphereCollider.h"
 #include "Engine/Components/CapsuleCollider.h"
 
+#include "Engine/Components/ScriptComponent.h"
+
 //-------------------------
 //------Miscellaneous------
 //-------------------------

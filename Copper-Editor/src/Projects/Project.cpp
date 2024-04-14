@@ -84,6 +84,8 @@ namespace Editor {
 
 		system(cmd.c_str());
 	#else
+        RunPremake();
+
 		const std::string cmd = "make --no-print-directory -C \"" + path.string() + "\" -f Makefile";
 		system(cmd.c_str());
 	#endif

@@ -70,7 +70,7 @@ namespace Copper::Scripting {
 
         InitializeGame();
 
-        return true;
+         return true;
 
     }
     void Unload() {
@@ -134,6 +134,33 @@ namespace Copper::Scripting {
             data.scriptComponents.push_back(Script(nameSpace, name, data.game));
             Script& script = data.scriptComponents.back();
 
+            MonoObject* instance = mono_object_new(data.appDomain, script.GetClass());
+            CU_ASSERT(instance, "Could not instantiate scriptt class");
+
+            mono_runtime_object_init(instance);
+
+            MonoMethod* method = mono_class_get_method_from_name(script.GetClass(), "Print", 0);
+            CU_ASSERT(method, "Could not Get method");
+
+            MonoObject* exception = nullptr;
+            mono_runtime_invoke(method, instance, nullptr, &exception);
+
+            if (exception) {
+
+                MonoClass* excClass = mono_object_get_class(exception);
+
+                MonoString* str = nullptr;
+                MonoProperty* prop = mono_class_get_property_from_name(excClass, "Message");
+                str = (MonoString*) mono_runtime_invoke(mono_property_get_get_method(prop), exception, nullptr, nullptr);
+
+                MonoError error;
+                char* utf8 = mono_string_to_utf8(str);
+
+                LogError(std::string(utf8));
+                mono_free(utf8);
+
+            }
+
             if (script.IsSubclassOf(data.baseComponent)) continue;
             data.scriptComponents.pop_back();
 
@@ -141,7 +168,13 @@ namespace Copper::Scripting {
 
     }
 
+    MonoDomain* AppDomain() { return data.appDomain; }
+
     const Assembly& ScriptingAPIAssembly() { return data.scriptingAPI; }
     const Assembly& GameAssembly() { return data.game; }
+
+    const Script& BaseComponent() { return data.baseComponent; }
+
+    const std::vector<Script>& ScriptComponents() { return data.scriptComponents; }
 
 }

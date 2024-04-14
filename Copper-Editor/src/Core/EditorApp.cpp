@@ -752,7 +752,7 @@ namespace Editor {
 
 	void CopyScriptingAPI() {
 
-		std::ifstream dllSrc(ExecutableFolder() + "/assets/ScriptAPI/Copper-ScriptingAPI.dll", std::ios::binary);
+		std::ifstream dllSrc(ExecutableFolder() + "/assets/ScriptingAPI/Copper-ScriptingAPI.dll", std::ios::binary);
 		std::fstream dllDst;
 
 		dllDst.open(data.project.path / "Binaries/Copper-ScriptingAPI.dll", std::ios::out | std::ios::binary);

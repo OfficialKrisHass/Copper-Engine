@@ -6,12 +6,7 @@ namespace Copper {
 
         public Component() {
 
-            Console.WriteLine("Test");
-
-        }
-        public void PrintFloatVar() {
-
-            Console.WriteLine("This should be printed");
+            Editor.Log("Printed from C#!");
 
         }
 

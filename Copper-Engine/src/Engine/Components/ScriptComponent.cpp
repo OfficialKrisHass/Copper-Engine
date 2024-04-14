@@ -39,17 +39,11 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        MonoMethod* constructor = mono_class_get_method_from_name(BaseComponent().GetClass(), "Test()", -1);
+        MonoMethod* constructor = mono_class_get_method_from_name(BaseComponent().GetClass(), ".ctor", 0);
         CU_ASSERT(constructor, "Could not get the Component Constructor from the Component class");
 
-        uint32 id = GetEntity()->ID();
-        void* param = &id;
-        MonoObject* exception = nullptr;
-
-        mono_runtime_invoke(constructor, m_instance, &param, &exception);
-        if (!exception) return;
-
-        LogError("Exception was thrown invoking component constructor!");
+        // TODO: Handle Exceptions!
+        mono_runtime_invoke(constructor, m_instance, nullptr, nullptr);
 
     }
 

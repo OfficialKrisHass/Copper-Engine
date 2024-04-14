@@ -10,7 +10,7 @@ extern "C" {
 
 namespace Copper::Scripting {
 
-    class Assembly;
+    struct Assembly;
     
     class Script {
 

@@ -12,6 +12,8 @@
 
 namespace Copper::Scripting {
 
+    static char AppDomainName[] = "CUSAppDomain";
+
     struct ScriptingData {
 
         MonoDomain* rootDomain = nullptr;
@@ -46,7 +48,7 @@ namespace Copper::Scripting {
 
         }
 
-        data.appDomain = mono_domain_create_appdomain("CUSAppDomain", nullptr);
+        data.appDomain = mono_domain_create_appdomain(AppDomainName, nullptr);
         mono_domain_set(data.appDomain, true);
 
         InitializeScriptingAPI();
@@ -102,6 +104,8 @@ namespace Copper::Scripting {
 
         CUP_FUNCTION();
 
+        // I forgot I changed the dir name from ScriptAPI to Script - ing - API only here and didnt change the
+        // Scripting api build directory and spent 2 days trying to figure out why the fuck nothing was working
         data.scriptingAPI = Assembly(ExecutableFolder() + "/assets/ScriptingAPI/Copper-ScriptingAPI.dll");
         data.baseComponent = Script("Copper", "Component", data.scriptingAPI);
 
@@ -133,33 +137,6 @@ namespace Copper::Scripting {
 
             data.scriptComponents.push_back(Script(nameSpace, name, data.game));
             Script& script = data.scriptComponents.back();
-
-            MonoObject* instance = mono_object_new(data.appDomain, script.GetClass());
-            CU_ASSERT(instance, "Could not instantiate scriptt class");
-
-            mono_runtime_object_init(instance);
-
-            MonoMethod* method = mono_class_get_method_from_name(script.GetClass(), "Print", 0);
-            CU_ASSERT(method, "Could not Get method");
-
-            MonoObject* exception = nullptr;
-            mono_runtime_invoke(method, instance, nullptr, &exception);
-
-            if (exception) {
-
-                MonoClass* excClass = mono_object_get_class(exception);
-
-                MonoString* str = nullptr;
-                MonoProperty* prop = mono_class_get_property_from_name(excClass, "Message");
-                str = (MonoString*) mono_runtime_invoke(mono_property_get_get_method(prop), exception, nullptr, nullptr);
-
-                MonoError error;
-                char* utf8 = mono_string_to_utf8(str);
-
-                LogError(std::string(utf8));
-                mono_free(utf8);
-
-            }
 
             if (script.IsSubclassOf(data.baseComponent)) continue;
             data.scriptComponents.pop_back();

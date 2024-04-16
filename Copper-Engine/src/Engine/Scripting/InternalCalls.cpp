@@ -10,16 +10,24 @@ namespace Copper::Scripting {
     void EditorLogWarn(MonoString* msg);
     void EditorLogError(MonoString* msg);
 
+    float TestXPos() {
+
+        CUP_FUNCTION();
+
+        Log("Tried to get x position!");
+        return 0.5f;
+
+    }
+
     void SetupInternalCalls() {
 
         CUP_FUNCTION();
 
-        mono_add_internal_call("Copper.Editor::Internal_EditorLog", (void*) EditorLog);
-        return;
-
         INTERNAL_CALL(Editor, EditorLog);
         INTERNAL_CALL(Editor, EditorLogWarn);
         INTERNAL_CALL(Editor, EditorLogError);
+
+        mono_add_internal_call("Copper.Component::get_xPos", (void*) TestXPos);
 
     }
 

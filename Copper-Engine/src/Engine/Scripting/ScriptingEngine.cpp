@@ -9,6 +9,7 @@
 
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
+#include <mono/metadata/mono-config.h>
 
 namespace Copper::Scripting {
 
@@ -39,6 +40,7 @@ namespace Copper::Scripting {
         CUP_FUNCTION();
         VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the Scripting Engine");
 
+        mono_config_parse((ExecutableFolder() + "lib/mono/config").c_str());
         mono_set_assemblies_path((ExecutableFolder() + "/lib").c_str());
         data.rootDomain = mono_jit_init("CUSRootDomain");
         if (!data.rootDomain) {

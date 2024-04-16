@@ -1,5 +1,7 @@
 #include "cupch.h"
 
+#include "Engine/Scripting/MonoUtils.h"
+
 #include <mono/jit/jit.h>
 
 namespace Copper::Scripting {
@@ -7,17 +9,31 @@ namespace Copper::Scripting {
     void EditorLog(MonoString* msg) {
 
         CUP_FUNCTION();
-        Log("Tried to log!");
+
+        std::string str;
+        MonoUtils::MonoStringToString(msg, str);
+
+        Log(str);
 
     }
     void EditorLogWarn(MonoString* msg) {
 
         CUP_FUNCTION();
 
+        std::string str;
+        MonoUtils::MonoStringToString(msg, str);
+
+        LogWarn(str);
+
     }
     void EditorLogError(MonoString* msg) {
 
         CUP_FUNCTION();
+
+        std::string str;
+        MonoUtils::MonoStringToString(msg, str);
+
+        LogError(str);
 
     }
 

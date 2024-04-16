@@ -54,7 +54,7 @@ namespace Copper::Input {
 			LogError("Portable File Dialogs are not available!");
 		#endif
 
-		pfd::settings::verbose(true);
+		pfd::settings::verbose(false);
 
 	}
 	void Update() {

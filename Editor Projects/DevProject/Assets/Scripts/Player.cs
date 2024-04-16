@@ -5,10 +5,11 @@ public class Player : Component {
 
      int num = 69;
 
-     public void Print() {
+     public Player() {
 
-        Console.WriteLine("Testing");
+        Editor.Log(xPos.ToString());
+        Editor.Log("From inside Player constructor!");
 
-    }
+     }
 
 }

@@ -27,9 +27,11 @@ ifeq ($(OS), linux)
 endif
 
 run:
+	@export LD_PRELOAD=libmonosgen-2.0.so # Hack since mono is retarded
 	@./Build/linux-x86_64-$(CONFIGURATION)/Copper-Launcher/Copper-Launcher
 
 run-editor:
+	@export LD_PRELOAD=libmonosgen-2.0.so
 	@./$(BUILD_DIR)/Copper-Editor/Copper-Editor
 
 copy-files:

@@ -5,6 +5,7 @@
 #include "Engine/Scripting/ScriptingEngine.h"
 
 #include <mono/metadata/object.h>
+#include <mono/metadata/class.h>
 
 namespace Copper {
 
@@ -14,7 +15,7 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        if (!script->IsSubclassOf(BaseComponent())) {
+        if (!script->IsSubclassOf(ComponentClass())) {
 
             LogError("Can not create Script Component with a non Component script.\n\tScript name: {}", script->FullName());
             return;
@@ -39,10 +40,12 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        MonoMethod* constructor = mono_class_get_method_from_name(BaseComponent().GetClass(), ".ctor", 0);
+        MonoMethod* constructor = mono_class_get_method_from_name(ComponentClass().GetClass(), ".ctor", 0);
         CU_ASSERT(constructor, "Could not get the Component Constructor from the Component class");
 
-        // TODO: Handle Exceptions!
+        ScriptComponent* value = this;
+        mono_field_set_value(m_instance, UnmanagedPtrField(), (void*) &value);
+
         mono_runtime_invoke(constructor, m_instance, nullptr, nullptr);
 
     }

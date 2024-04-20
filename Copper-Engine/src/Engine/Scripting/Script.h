@@ -42,6 +42,8 @@ namespace Copper::Scripting {
 
         inline MonoClass* GetClass() const { return m_class; }
 
+        inline operator bool() const { return m_class != nullptr; }
+
     private:
         std::string m_namespace = "";
         std::string m_name = "";

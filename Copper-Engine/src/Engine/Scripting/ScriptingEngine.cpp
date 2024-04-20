@@ -23,7 +23,10 @@ namespace Copper::Scripting {
         Assembly scriptingAPI;
         Assembly game;
 
-        Script baseComponent;
+        Script baseClass;
+        Script componentClass;
+
+        MonoClassField* unmanagedPtrField = nullptr;
 
         std::vector<Script> scriptComponents;
 
@@ -109,7 +112,11 @@ namespace Copper::Scripting {
         // I forgot I changed the dir name from ScriptAPI to Script - ing - API only here and didnt change the
         // Scripting api build directory and spent 2 days trying to figure out why the fuck nothing was working
         data.scriptingAPI = Assembly(ExecutableFolder() + "/assets/ScriptingAPI/Copper-ScriptingAPI.dll");
-        data.baseComponent = Script("Copper", "Component", data.scriptingAPI);
+
+        data.baseClass = Script("Copper", "Base", data.scriptingAPI);
+        data.componentClass = Script("Copper", "Component", data.scriptingAPI);
+
+        data.unmanagedPtrField = mono_class_get_field_from_name(data.baseClass.GetClass(), "m_unmanagedPtr");
 
         SetupInternalCalls();
 
@@ -140,7 +147,7 @@ namespace Copper::Scripting {
             data.scriptComponents.push_back(Script(nameSpace, name, data.game));
             Script& script = data.scriptComponents.back();
 
-            if (script.IsSubclassOf(data.baseComponent)) continue;
+            if (script.IsSubclassOf(data.componentClass)) continue;
             data.scriptComponents.pop_back();
 
         }
@@ -152,7 +159,10 @@ namespace Copper::Scripting {
     const Assembly& ScriptingAPIAssembly() { return data.scriptingAPI; }
     const Assembly& GameAssembly() { return data.game; }
 
-    const Script& BaseComponent() { return data.baseComponent; }
+    const Script& BaseClass() { return data.baseClass; }
+    const Script& ComponentClass() { return data.componentClass; }
+
+    MonoClassField* UnmanagedPtrField() { return data.unmanagedPtrField; }
 
     const std::vector<Script>& ScriptComponents() { return data.scriptComponents; }
 

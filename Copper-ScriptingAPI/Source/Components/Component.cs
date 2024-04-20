@@ -1,9 +1,20 @@
 using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Copper {
 
-    public class Component {
+    [StructLayout(LayoutKind.Sequential)]
+    public class Component : Base {
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern void EntityName(Component component);
+
+        public Component() {
+
+            EntityName(this);
+
+        }
 
     }
 

@@ -8,6 +8,7 @@
 extern "C" {
 
     typedef struct _MonoDomain MonoDomain;
+    typedef struct _MonoClassField MonoClassField;
 
 }
 
@@ -25,7 +26,10 @@ namespace Copper::Scripting {
     const Assembly& ScriptingAPIAssembly();
     const Assembly& GameAssembly();
 
-    const Script& BaseComponent();
+    const Script& BaseClass();
+    const Script& ComponentClass();
+
+    MonoClassField* UnmanagedPtrField(); 
 
     const std::vector<Script>& ScriptComponents();
 

@@ -7,14 +7,7 @@ namespace Copper {
     [StructLayout(LayoutKind.Sequential)]
     public class Component : Base {
 
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal extern void EntityName(Component component);
-
-        public Component() {
-
-            EntityName(this);
-
-        }
+        //
 
     }
 

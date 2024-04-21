@@ -14,6 +14,8 @@
 #include "Engine/Components/SphereCollider.h"
 #include "Engine/Components/CapsuleCollider.h"
 
+#include "Engine/Components/ScriptComponent.h"
+
 #include "Engine/Renderer/Renderer.h"
 
 #include "Engine/Physics/Raycast.h"
@@ -121,6 +123,15 @@ namespace Copper {
 
 		if (RigidBody* rb = entity->GetComponent<RigidBody>())
 			rb->UpdatePositionAndRotation();
+
+        if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) {
+
+            if (!m_runtimeStarted)
+                script->OnBegin();
+
+            script->OnUpdate();
+
+        }
 
 	}
 

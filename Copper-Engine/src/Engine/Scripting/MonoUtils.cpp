@@ -27,5 +27,30 @@ namespace Copper::Scripting::MonoUtils {
         return mono_string_new(AppDomain(), string.c_str());
 
     }
+    
+    void PrintExceptionDetails(MonoObject* exception) {
+
+        CUP_FUNCTION();
+
+        MonoClass* klass = mono_object_get_class(exception);
+        if (!klass) {
+
+            LogError("Could not get mono exception class");
+            return;
+
+        }
+
+        MonoProperty* msgProperty = mono_class_get_property_from_name(klass, "Message");
+        MonoProperty* stcProperty = mono_class_get_property_from_name(klass, "StackTrace");
+        
+        std::string msg;
+        std::string stackTrace;
+
+        MonoStringToString((MonoString*) mono_runtime_invoke(mono_property_get_get_method(msgProperty), exception, nullptr, nullptr), msg);
+        MonoStringToString((MonoString*) mono_runtime_invoke(mono_property_get_get_method(stcProperty), exception, nullptr, nullptr), stackTrace);
+
+        LogError("Unhandle exception has been caught: {}\n\nStack trace:\n{}", msg, stackTrace);
+
+    }
 
 }

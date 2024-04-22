@@ -1,16 +1,18 @@
 using System;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 
 namespace Copper {
 
     [StructLayout(LayoutKind.Sequential)]
-    public class Component : Base {
+    public class Entity : Base {
 
-        public Entity entity {
-
+        public string name {
+            
             [MethodImpl(MethodImplOptions.InternalCall)]
             get;
+            [MethodImpl(MethodImplOptions.InternalCall)]
+            set;
 
         }
 

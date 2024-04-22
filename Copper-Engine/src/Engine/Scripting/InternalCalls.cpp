@@ -4,6 +4,7 @@
 
 #include "Engine/Scene/CopperECS.h"
 
+#include "Engine/Scripting/MonoUtils.h"
 #include "Engine/Scripting/ScriptingEngine.h"
 
 #include <mono/jit/jit.h>
@@ -17,16 +18,10 @@ namespace Copper::Scripting {
     void EditorLogWarn(MonoString* msg);
     void EditorLogError(MonoString* msg);
 
-    void EntityName(MonoObject* component) {
+    MonoString* get_name(MonoObject* entity);
+    void set_name(MonoObject* entity, MonoString* value);
 
-        CUP_FUNCTION();
-
-        Component* comp = nullptr;
-        mono_field_get_value(component, UnmanagedPtrField(), &comp);
-
-        Log(comp->GetEntity()->name);
-
-    }
+    MonoObject* get_entity(MonoObject* component);
 
     void SetupInternalCalls() {
 
@@ -36,7 +31,10 @@ namespace Copper::Scripting {
         INTERNAL_CALL(Editor, EditorLogWarn);
         INTERNAL_CALL(Editor, EditorLogError);
 
-        mono_add_internal_call("Copper.Component::EntityName", (void*) EntityName);
+        mono_add_internal_call("Copper.Entity::get_name", (void*) get_name);
+        mono_add_internal_call("Copper.Entity::set_name", (void*) set_name);
+
+        mono_add_internal_call("Copper.Component::get_entity", (void*) get_entity);
 
     }
 

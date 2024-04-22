@@ -7,8 +7,10 @@
 
 #include <mono/metadata/object.h>
 
-namespace Copper::Scripting {
+namespace Copper::Scripting::Component {
 
+    typedef ::Copper::Component Component;
+    
     MonoObject* get_entity(MonoObject* component) {
 
         CUP_FUNCTION();

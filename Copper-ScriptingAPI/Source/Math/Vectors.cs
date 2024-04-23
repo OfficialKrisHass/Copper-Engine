@@ -38,6 +38,8 @@ namespace Copper {
         public static Vector2 operator*(float a, Vector2 b) { return new Vector2(b.x * a, b.y * a); }
         public static Vector2 operator/(Vector2 a, float b) { return new Vector2(a.x / b, a.y / b); }
 
+        public static Vector2 operator-(Vector2 v) { return new Vector2(-v.x, -v.y); }
+
         public static bool operator==(Vector2 a, Vector2 b) { return a.x == b.x && a.y == b.y; }
         public static bool operator!=(Vector2 a, Vector2 b) { return !(a == b); }
 
@@ -104,6 +106,8 @@ namespace Copper {
         public static Vector3 operator*(Vector3 a, float b) { return new Vector3(a.x * b, a.y * b, a.z * b); }
         public static Vector3 operator*(float a, Vector3 b) { return new Vector3(b.x * a, b.y * a, b.z * a); }
         public static Vector3 operator/(Vector3 a, float b) { return new Vector3(a.x / b, a.y / b, a.z / b); }
+
+        public static Vector3 operator-(Vector3 v) { return new Vector3(-v.x, -v.y, -v.z); }
 
         public static bool operator==(Vector3 a, Vector3 b) { return a.x == b.x && a.y == b.y && a.z == b.z; }
         public static bool operator!=(Vector3 a, Vector3 b) { return !(a == b); }

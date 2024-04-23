@@ -27,18 +27,48 @@ namespace Copper::Scripting {
     INTERNAL_CALL_GROUP(Component,
             MonoObject* get_entity(MonoObject* component););
 
+    INTERNAL_CALL_GROUP(Transform, 
+            Vector3* get_position(MonoObject* transform);
+            void set_position(MonoObject* transform, Vector3* value);
+
+            Vector3* get_scale(MonoObject* transform);
+            void set_scale(MonoObject* transform, Vector3* value);
+
+            Vector3* get_forward(MonoObject* transform);
+            Vector3* get_right(MonoObject* transform);
+            Vector3* get_up(MonoObject* transform);)
+
     void SetupInternalCalls() {
 
         CUP_FUNCTION();
+
+        // Editor
 
         ADD_INTERNAL_CALL(Editor, EditorLog);
         ADD_INTERNAL_CALL(Editor, EditorLogWarn);
         ADD_INTERNAL_CALL(Editor, EditorLogError);
 
+        // Entity
+
         ADD_INTERNAL_CALL(Entity, get_name);
         ADD_INTERNAL_CALL(Entity, set_name);
 
+        // Component
+
         ADD_INTERNAL_CALL(Component, get_entity);
+
+        // Transform
+
+        ADD_INTERNAL_CALL(Transform, get_position);
+        ADD_INTERNAL_CALL(Transform, set_position);
+
+        ADD_INTERNAL_CALL(Transform, get_scale);
+        ADD_INTERNAL_CALL(Transform, set_scale);
+
+        ADD_INTERNAL_CALL(Transform, get_forward);
+        ADD_INTERNAL_CALL(Transform, get_right);
+        ADD_INTERNAL_CALL(Transform, get_up);
+
 
     }
 

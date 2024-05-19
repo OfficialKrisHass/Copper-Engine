@@ -2,6 +2,8 @@ using System;
 using Copper;
 
 public class Player : Component {
+
+    float y = 0.0f;
     
     void OnBegin() {
 
@@ -10,7 +12,13 @@ public class Player : Component {
 
         entity.name += " UwU";
 
-        Editor.Log(entity.name);
+        transform.position = new Vector3(1.0f, 0.0f, 0.0f);
+
+    }
+    void OnUpdate() {
+
+        transform.position = new Vector3(transform.position.x, y, 0.0f);
+        y += transform.position.x * 0.01f;
 
     }
 

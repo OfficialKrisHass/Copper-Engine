@@ -10,76 +10,76 @@ namespace Copper::Scripting::Transform {
 
     typedef ::Copper::Transform Transform;
 
-    Vector3* get_position(MonoObject* transform) {
+    Vector3 get_position(MonoObject* transform) {
 
         CUP_FUNCTION();
 
         Transform* ptr = nullptr;
         mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
 
-        return (Vector3*) &ptr->Position();
+        return ptr->Position();
 
     }
-    void set_position(MonoObject* transform, Vector3* value) {
+    void set_position(MonoObject* transform, Vector3 value) {
 
         CUP_FUNCTION();
 
         Transform* ptr = nullptr;
         mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
 
-        ptr->SetPosition(*value);
+        ptr->SetPosition(value);
 
     }
 
-    Vector3* get_scale(MonoObject* transform) {
+    Vector3 get_scale(MonoObject* transform) {
 
         CUP_FUNCTION();
 
         Transform* ptr = nullptr;
         mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
 
-        return (Vector3*) &ptr->Scale();
+        return ptr->Scale();
 
     }
-    void set_scale(MonoObject* transform, Vector3* value) {
+    void set_scale(MonoObject* transform, Vector3 value) {
 
         CUP_FUNCTION();
 
         Transform* ptr = nullptr;
         mono_field_get_value(transform, UnmanagedPtrField(), (void*) &value);
 
-        ptr->SetScale(*value);
+        ptr->SetScale(value);
 
     }
 
-    Vector3* get_forward(MonoObject* transform) {
+    Vector3 get_forward(MonoObject* transform) {
 
         CUP_FUNCTION();
 
         Transform* ptr = nullptr;
         mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
 
-        return (Vector3*) &ptr->Forward();
+        return ptr->Forward();
 
     }
-    Vector3* get_right(MonoObject* transform) {
+    Vector3 get_right(MonoObject* transform) {
 
         CUP_FUNCTION();
 
         Transform* ptr = nullptr;
         mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
 
-        return (Vector3*) &ptr->Right();
+        return ptr->Right();
 
     }
-    Vector3* get_up(MonoObject* transform) {
+    Vector3 get_up(MonoObject* transform) {
 
         CUP_FUNCTION();
 
         Transform* ptr = nullptr;
         mono_field_get_value(transform, UnmanagedPtrField(), (void*) ptr);
 
-        return (Vector3*) &ptr->Up();
+        return ptr->Up();
 
     }
 

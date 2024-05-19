@@ -20,9 +20,23 @@ namespace Copper::Scripting::Component {
         mono_field_get_value(component, UnmanagedPtrField(), (void*) &ptr);
 
         InternalEntity* entity = ptr->GetEntity();
-        MonoObject* ret = ManagedReference((void*) entity);
+        MonoObject* ret = ManagedReference(entity);
 
         CU_ASSERT(ret, "Could not get Managed Entity Reference from Component");
+        return ret;
+
+    }
+    MonoObject* get_transform(MonoObject* component) {
+
+        CUP_FUNCTION();
+
+        Component* ptr = nullptr;
+        mono_field_get_value(component, UnmanagedPtrField(), (void*) &ptr);
+
+        Transform* transform = ptr->GetTransform();
+        MonoObject* ret = ManagedReference(transform);
+        
+        CU_ASSERT(ret, "Could not get Managed Transform reference from Component");
         return ret;
 
     }

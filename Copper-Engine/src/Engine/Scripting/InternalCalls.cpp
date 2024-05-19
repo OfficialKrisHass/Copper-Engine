@@ -24,21 +24,24 @@ namespace Copper::Scripting {
 
     INTERNAL_CALL_GROUP(Entity, 
             MonoString* get_name(MonoObject* entity);
-            void set_name(MonoObject* entity, MonoString* value););
+            void set_name(MonoObject* entity, MonoString* value);
+
+            MonoObject* get_transform(MonoObject* entity); );
 
     INTERNAL_CALL_GROUP(Component,
-            MonoObject* get_entity(MonoObject* component););
+            MonoObject* get_entity(MonoObject* component);
+            MonoObject* get_transform(MonoObject* component););
 
     INTERNAL_CALL_GROUP(Transform, 
-            Vector3* get_position(MonoObject* transform);
-            void set_position(MonoObject* transform, Vector3* value);
+            Vector3 get_position(MonoObject* transform);
+            void set_position(MonoObject* transform, Vector3 value);
 
-            Vector3* get_scale(MonoObject* transform);
-            void set_scale(MonoObject* transform, Vector3* value);
+            Vector3 get_scale(MonoObject* transform);
+            void set_scale(MonoObject* transform, Vector3 value);
 
-            Vector3* get_forward(MonoObject* transform);
-            Vector3* get_right(MonoObject* transform);
-            Vector3* get_up(MonoObject* transform);)
+            Vector3 get_forward(MonoObject* transform);
+            Vector3 get_right(MonoObject* transform);
+            Vector3 get_up(MonoObject* transform);)
 
     void SetupInternalCalls() {
 
@@ -54,10 +57,13 @@ namespace Copper::Scripting {
 
         ADD_INTERNAL_CALL_RAW(Entity, get_name);
         ADD_INTERNAL_CALL_RAW(Entity, set_name);
+        
+        ADD_INTERNAL_CALL_RAW(Entity, get_transform);
 
         // Component
 
         ADD_INTERNAL_CALL_RAW(Component, get_entity);
+        ADD_INTERNAL_CALL_RAW(Component, get_transform);
 
         // Transform
 

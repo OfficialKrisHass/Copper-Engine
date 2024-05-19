@@ -37,15 +37,6 @@ Entities:
     Mesh Renderer:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: 341bba04-c463-48de-88bb-6e5c37cb0213
-    Rigid Body:
-      Static: false
-      Gravity: true
-      Mass: 5
-      Lock Mask: 56
-    Box Collider:
-      Trigger: false
-      Center: [0, 0, 0]
-      Size: [1, 1, 1]
   Ground:
     ID: 3
     Transform:

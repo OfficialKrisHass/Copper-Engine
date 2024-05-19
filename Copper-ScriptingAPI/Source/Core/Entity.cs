@@ -15,6 +15,13 @@ namespace Copper {
             set;
 
         }
+        
+        public Transform transform {
+
+            [MethodImpl(MethodImplOptions.InternalCall)]
+            get;
+
+        }
 
     }
 

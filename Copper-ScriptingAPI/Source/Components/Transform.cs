@@ -7,7 +7,7 @@ namespace Copper {
     [StructLayout(LayoutKind.Sequential)]
     public class Transform : Component {
 
-        public Vector3 position {
+        public extern Vector3 position {
 
             [MethodImpl(MethodImplOptions.InternalCall)]
             get;
@@ -15,7 +15,7 @@ namespace Copper {
             set;
 
         }
-        public Vector3 scale {
+        public extern Vector3 scale {
 
             [MethodImpl(MethodImplOptions.InternalCall)]
             get;

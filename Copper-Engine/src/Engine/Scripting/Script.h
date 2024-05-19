@@ -34,6 +34,7 @@ namespace Copper::Scripting {
         }
 
         bool IsSubclassOf(const Script& script) const;
+        bool IsSubclassOf(MonoClass* klass) const;
 
         inline const std::string& Namespace() const { return m_namespace; }
         inline const std::string& Name() const { return m_name; }

@@ -28,10 +28,10 @@ namespace Copper::Scripting {
 
     }
 
-    bool Script::IsSubclassOf(const Script& script) const {
+    bool Script::IsSubclassOf(MonoClass* klass) const {
 
         CUP_FUNCTION();
-        return mono_class_is_subclass_of(m_class, script.m_class, false);
+        return mono_class_is_subclass_of(m_class, klass, false);
 
     }
 

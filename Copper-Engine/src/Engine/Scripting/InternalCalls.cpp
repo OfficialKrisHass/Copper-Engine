@@ -11,7 +11,9 @@
 #include <mono/metadata/class.h>
 
 #define INTERNAL_CALL_GROUP(name, calls) namespace name { calls }
+
 #define ADD_INTERNAL_CALL(class, name) mono_add_internal_call("Copper."#class"::Internal_"#name, (void*) class::name)
+#define ADD_INTERNAL_CALL_RAW(class, name) mono_add_internal_call("Copper."#class"::"#name, (void*) class::name)
 
 namespace Copper::Scripting {
 
@@ -50,24 +52,24 @@ namespace Copper::Scripting {
 
         // Entity
 
-        ADD_INTERNAL_CALL(Entity, get_name);
-        ADD_INTERNAL_CALL(Entity, set_name);
+        ADD_INTERNAL_CALL_RAW(Entity, get_name);
+        ADD_INTERNAL_CALL_RAW(Entity, set_name);
 
         // Component
 
-        ADD_INTERNAL_CALL(Component, get_entity);
+        ADD_INTERNAL_CALL_RAW(Component, get_entity);
 
         // Transform
 
-        ADD_INTERNAL_CALL(Transform, get_position);
-        ADD_INTERNAL_CALL(Transform, set_position);
+        ADD_INTERNAL_CALL_RAW(Transform, get_position);
+        ADD_INTERNAL_CALL_RAW(Transform, set_position);
 
-        ADD_INTERNAL_CALL(Transform, get_scale);
-        ADD_INTERNAL_CALL(Transform, set_scale);
+        ADD_INTERNAL_CALL_RAW(Transform, get_scale);
+        ADD_INTERNAL_CALL_RAW(Transform, set_scale);
 
-        ADD_INTERNAL_CALL(Transform, get_forward);
-        ADD_INTERNAL_CALL(Transform, get_right);
-        ADD_INTERNAL_CALL(Transform, get_up);
+        ADD_INTERNAL_CALL_RAW(Transform, get_forward);
+        ADD_INTERNAL_CALL_RAW(Transform, get_right);
+        ADD_INTERNAL_CALL_RAW(Transform, get_up);
 
 
     }

@@ -8,7 +8,9 @@ public class Player : Component {
         Editor.Log("Begin has been called");
         Editor.Log(entity.name);
 
-        entity.name = "Player UwU";
+        entity.name += " UwU";
+
+        Editor.Log(entity.name);
 
     }
 

@@ -4,6 +4,7 @@
 #include "Engine/Scripting/MonoUtils.h"
 #include "Engine/Scripting/Script.h"
 #include "Engine/Scripting/ScriptingEngine.h"
+#include "Engine/Scripting/Classes.h"
 
 #include <mono/metadata/object.h>
 #include <mono/metadata/class.h>
@@ -47,7 +48,7 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        MonoMethod* constructor = mono_class_get_method_from_name(ComponentClass().m_class, ".ctor", 0);
+        MonoMethod* constructor = mono_class_get_method_from_name(ComponentClass(), ".ctor", 0);
         CU_ASSERT(constructor, "Could not get the Component Constructor from the Component class");
 
         ScriptComponent* value = this;

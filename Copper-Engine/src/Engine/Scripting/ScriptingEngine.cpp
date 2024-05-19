@@ -4,6 +4,7 @@
 #include "Engine/Core/Engine.h"
 
 #include "Engine/Scripting/Script.h"
+#include "Engine/Scripting/Classes.h"
 
 #include "Engine/Input/Popup.h"
 
@@ -23,9 +24,6 @@ namespace Copper::Scripting {
         Assembly scriptingAPI;
         Assembly game;
 
-        Script baseClass;
-        Script componentClass;
-
         MonoClassField* unmanagedPtrField = nullptr;
 
         std::vector<Script> scriptComponents;
@@ -37,6 +35,7 @@ namespace Copper::Scripting {
     void InitializeGame();
 
     extern void SetupInternalCalls();
+    extern void InitializeClasses();
 
     void Initialize() {
 
@@ -52,9 +51,6 @@ namespace Copper::Scripting {
             exit(1);
 
         }
-
-        data.appDomain = mono_domain_create_appdomain(AppDomainName, nullptr);
-        mono_domain_set(data.appDomain, true);
 
         InitializeScriptingAPI();
         
@@ -77,7 +73,7 @@ namespace Copper::Scripting {
 
         InitializeGame();
 
-         return true;
+        return true;
 
     }
     void Unload() {
@@ -109,16 +105,17 @@ namespace Copper::Scripting {
 
         CUP_FUNCTION();
 
+        data.appDomain = mono_domain_create_appdomain(AppDomainName, nullptr);
+        mono_domain_set(data.appDomain, true);
+
         // I forgot I changed the dir name from ScriptAPI to Script - ing - API only here and didnt change the
         // Scripting api build directory and spent 2 days trying to figure out why the fuck nothing was working
         data.scriptingAPI = Assembly(ExecutableFolder() + "/assets/ScriptingAPI/Copper-ScriptingAPI.dll");
 
-        data.baseClass = Script("Copper", "Base", data.scriptingAPI);
-        data.componentClass = Script("Copper", "Component", data.scriptingAPI);
-
-        data.unmanagedPtrField = mono_class_get_field_from_name(data.baseClass.GetClass(), "m_unmanagedPtr");
-
         SetupInternalCalls();
+        InitializeClasses();
+
+        data.unmanagedPtrField = mono_class_get_field_from_name(BaseClass(), "m_unmanagedPtr");
 
     }
     void InitializeGame() {
@@ -147,7 +144,7 @@ namespace Copper::Scripting {
             data.scriptComponents.push_back(Script(nameSpace, name, data.game));
             Script& script = data.scriptComponents.back();
 
-            if (script.IsSubclassOf(data.componentClass)) continue;
+            if (script.IsSubclassOf(ComponentClass())) continue;
             data.scriptComponents.pop_back();
 
         }
@@ -158,9 +155,6 @@ namespace Copper::Scripting {
 
     const Assembly& ScriptingAPIAssembly() { return data.scriptingAPI; }
     const Assembly& GameAssembly() { return data.game; }
-
-    const Script& BaseClass() { return data.baseClass; }
-    const Script& ComponentClass() { return data.componentClass; }
 
     MonoClassField* UnmanagedPtrField() { return data.unmanagedPtrField; }
 

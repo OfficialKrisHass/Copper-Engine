@@ -4,6 +4,7 @@
 
 #include "Engine/Scripting/MonoUtils.h"
 #include "Engine/Scripting/ScriptingEngine.h"
+#include "Engine/Scripting/ManagedReferences.h"
 
 #include <mono/metadata/object.h>
 
@@ -14,18 +15,15 @@ namespace Copper::Scripting::Component {
     MonoObject* get_entity(MonoObject* component) {
 
         CUP_FUNCTION();
-
+        
         Component* ptr = nullptr;
         mono_field_get_value(component, UnmanagedPtrField(), (void*) &ptr);
 
-        // TODO: Temporary, Replace with storing references to C# data
-        MonoClass* klass = mono_class_from_name(ScriptingAPIAssembly().GetImage(), "Copper", "Entity");
-        MonoObject* entity = mono_object_new(AppDomain(), klass);
+        InternalEntity* entity = ptr->GetEntity();
+        MonoObject* ret = ManagedReference((void*) entity);
 
-        InternalEntity* value = ptr->GetEntity();
-        mono_field_set_value(entity, UnmanagedPtrField(), (void*) &value);
-        
-        return entity;
+        CU_ASSERT(ret, "Could not get Managed Entity Reference from Component");
+        return ret;
 
     }
 

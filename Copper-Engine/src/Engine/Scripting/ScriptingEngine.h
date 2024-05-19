@@ -26,9 +26,6 @@ namespace Copper::Scripting {
     const Assembly& ScriptingAPIAssembly();
     const Assembly& GameAssembly();
 
-    const Script& BaseClass();
-    const Script& ComponentClass();
-
     MonoClassField* UnmanagedPtrField(); 
 
     const std::vector<Script>& ScriptComponents();

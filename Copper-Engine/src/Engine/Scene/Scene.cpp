@@ -18,6 +18,9 @@
 
 #include "Engine/Renderer/Renderer.h"
 
+#include "Engine/Scripting/ManagedReferences.h"
+#include "Engine/Scripting/Classes.h"
+
 #include "Engine/Physics/Raycast.h"
 
 #include "Engine/Input/Popup.h"
@@ -49,12 +52,23 @@ namespace Copper {
 
 		InitializePhysics();
 
-		for (InternalEntity* entity : ComponentViewOR<RigidBody, BoxCollider>(this)) {
+        for (InternalEntity* entity : EntityView(this)) {
 
-			if (RigidBody* rb = entity->GetComponent<RigidBody>()) rb->Setup();
-			else if (BoxCollider* collider = entity->GetComponent<BoxCollider>()) collider->Setup();
+            // Create frequent managed classes in advance
 
-		}
+            using namespace Scripting;
+
+            CreateManagedReference((void*) entity, EntityClass());
+            CreateManagedReference(entity->m_transform, TransformClass());
+            
+            // Initialize physics
+
+            if (RigidBody* rb = entity->GetComponent<RigidBody>())
+                rb->Setup();
+            else if (Collider* collider = entity->GetComponent<Collider>())
+                collider->Setup();
+
+        }
 
 	}
 	void Scene::StopRuntime() {

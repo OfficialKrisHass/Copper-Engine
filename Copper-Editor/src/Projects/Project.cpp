@@ -3,6 +3,8 @@
 #include "Engine/Core/Core.h"
 #include "Engine/Core/Log.h"
 
+#include "Engine/Scripting/ScriptingEngine.h"
+
 #include "Engine/YAMLOverloads/Everything.h"
 
 #include <cstdlib>
@@ -89,6 +91,9 @@ namespace Editor {
 		const std::string cmd = "make --no-print-directory -C \"" + path.string() + "\" -f Makefile";
 		system(cmd.c_str());
 	#endif
+        
+        if (!firstBuild)
+            return Scripting::Reload();
 
         return true;
 

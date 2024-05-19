@@ -13,10 +13,10 @@ namespace Copper::Scripting::Entity {
     MonoString* get_name(MonoObject* entity) {
 
         CUP_FUNCTION();
-
+        
         InternalEntity* ptr = nullptr;
         mono_field_get_value(entity, UnmanagedPtrField(), (void*) &ptr);
-        
+
         CU_ASSERT(ptr, "Could not get Entity Unmanaged Pointer");
         return MonoUtils::StringToMonoString(ptr->name);
 

@@ -30,7 +30,7 @@ Entities:
     ID: 2
     Transform:
       Position: [0, 0, 0]
-      Rotation: [1, 0, 0, 0]
+      Rotation: [0.707106769, 0, 0.707106769, 0]
       Scale: [1, 2, 1]
       Parent ID: 4294967295
       Children: [1]

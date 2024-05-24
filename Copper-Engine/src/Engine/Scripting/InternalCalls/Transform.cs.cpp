@@ -31,6 +31,33 @@ namespace Copper::Scripting::Transform {
 
     }
 
+    void GetRotation(MonoObject* transform, Quaternion* ret) {
+
+        CUP_FUNCTION();
+
+        CU_ASSERT(transform, "transform is nullptr");
+        CU_ASSERT(ret, "out is nullptr");
+
+        Transform* ptr = nullptr;
+        mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
+
+        *ret = ptr->Rotation();
+
+    }
+    void SetRotation(MonoObject* transform, Quaternion* value) {
+
+        CUP_FUNCTION();
+
+        CU_ASSERT(transform, "transform is nullptr");
+        CU_ASSERT(value, "value is nullptr");
+
+        Transform* ptr = nullptr;
+        mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
+        
+        ptr->SetRotation(*value);
+
+    }
+
     Vector3 get_scale(MonoObject* transform) {
 
         CUP_FUNCTION();

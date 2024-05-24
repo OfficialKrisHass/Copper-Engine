@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Globalization;
 
 namespace Copper {
 
@@ -46,6 +47,14 @@ namespace Copper {
         public static implicit operator Vector2(Vector3 v) { return new Vector2(v.x, v.y); }
         public static implicit operator Vector3(Vector2 v) { return new Vector3(v.x, v.y, 0.0f); }
 
+        public float Dot(Vector2 other) { return x * other.x + y * other.y; }
+
+        public float lengthSq { get { return x * x + y * y; } }
+        public float length { get { return (float) Math.Sqrt(x * x + y * y); } }
+
+        public Vector2 normalized { get { return this / length; } }
+        public void Normalize() { this = this / length; } 
+
         public override int GetHashCode() {
 
             return x.GetHashCode() ^ (y.GetHashCode() << 2);
@@ -60,6 +69,12 @@ namespace Copper {
         public bool Equals(Vector2 other) {
 
             return x == other.x && y == other.y;
+
+        }
+
+        public override string ToString() {
+
+            return String.Format(CultureInfo.InvariantCulture.NumberFormat, "X: {0}, Y: {1}", x.ToString(), y.ToString());
 
         }
 
@@ -112,6 +127,15 @@ namespace Copper {
         public static bool operator==(Vector3 a, Vector3 b) { return a.x == b.x && a.y == b.y && a.z == b.z; }
         public static bool operator!=(Vector3 a, Vector3 b) { return !(a == b); }
 
+        float Dot(Vector3 other) { return x * other.x + y * other.y + z * other.z; }
+        public Vector3 Cross(Vector3 other) { return new Vector3(y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x); }
+
+        public float lengthSq { get { return x * x + y * y + z * z; } }
+        public float length { get { return (float) Math.Sqrt(x * x + y * y + z * z); } }
+        
+        public Vector3 normalized { get { return this / length; } }
+        public void Normalize() { this = this / length; }
+
         public override int GetHashCode() {
 
             return x.GetHashCode() ^ (y.GetHashCode() << 2) ^ (z.GetHashCode() >> 2);
@@ -126,6 +150,12 @@ namespace Copper {
         public bool Equals(Vector3 other) {
 
             return x == other.x && y == other.y && z == other.z;
+
+        }
+
+        public override string ToString() {
+
+            return String.Format(CultureInfo.InvariantCulture.NumberFormat, "X: {0}, Y: {1}, Z: {2}", x.ToString(), y.ToString(), z.ToString());
 
         }
 

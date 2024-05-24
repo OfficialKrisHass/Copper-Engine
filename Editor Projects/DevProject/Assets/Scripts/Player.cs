@@ -3,8 +3,8 @@ using Copper;
 
 public class Player : Component {
 
-    float y = 0.0f;
-    
+    float rot = 0.0f;
+
     void OnBegin() {
 
         Editor.Log("Begin has been called");
@@ -12,13 +12,14 @@ public class Player : Component {
 
         entity.name += " UwU";
 
-        transform.position = new Vector3(1.0f, 0.0f, 0.0f);
+        Editor.Log(transform.rotation.ToString());
+        Editor.Log(transform.eulerAngles.ToString());
 
     }
     void OnUpdate() {
 
-        transform.position = new Vector3(transform.position.x, y, 0.0f);
-        y += transform.position.x * 0.01f;
+        rot += 0.1f;
+        transform.eulerAngles = new Vector3(0.0f, rot, 0.0f);
 
     }
 

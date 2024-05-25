@@ -1,4 +1,4 @@
-list(APPEND scriptingInternalCallsSources Editor.cs.cpp Entity.cs.cpp Component.cs.cpp Transform.cs.cpp Quaternion.cs.cpp)
-list(TRANSFORM scriptingInternalCallsSources PREPEND src/Engine/Scripting/InternalCalls/)
-
-list(APPEND sources ${scriptingInternalCallsSources})
+include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Scripting/InternalCalls/Core/CMakeLists.txt)
+include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Scripting/InternalCalls/Math/CMakeLists.txt)
+include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Scripting/InternalCalls/ECS/CMakeLists.txt)
+include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Scripting/InternalCalls/Components/CMakeLists.txt)

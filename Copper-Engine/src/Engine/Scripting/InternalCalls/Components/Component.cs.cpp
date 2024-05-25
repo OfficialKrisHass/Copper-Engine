@@ -8,7 +8,7 @@
 
 #include <mono/metadata/object.h>
 
-namespace Copper::Scripting::Component {
+namespace Copper::Scripting::InternalCalls::Components::Component {
 
     typedef ::Copper::Component Component;
     

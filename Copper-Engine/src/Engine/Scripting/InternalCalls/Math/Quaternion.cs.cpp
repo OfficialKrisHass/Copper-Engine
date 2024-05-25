@@ -1,6 +1,6 @@
 #include "cupch.h"
 
-namespace Copper::Scripting::Quaternion {
+namespace Copper::Scripting::InternalCalls::Math::Quaternion {
 
     typedef ::Copper::CMath::Quaternion Quaternion;
 

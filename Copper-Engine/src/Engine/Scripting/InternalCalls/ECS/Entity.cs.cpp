@@ -9,7 +9,7 @@
 #include <mono/jit/jit.h>
 #include <mono/metadata/object.h>
 
-namespace Copper::Scripting::Entity {
+namespace Copper::Scripting::InternalCalls::ECS::Entity {
 
     MonoString* get_name(MonoObject* entity) {
 

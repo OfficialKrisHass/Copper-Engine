@@ -499,7 +499,7 @@ namespace Editor::UI {
 
 	}
 
-	bool EditDropDown(const std::string& name, const char* items[], uint32 count, uint32* selected) {
+	bool EditDropDown(const std::string& name, const char* items[], uint32 count, uint8* selected) {
 
 		bool ret = false;
 

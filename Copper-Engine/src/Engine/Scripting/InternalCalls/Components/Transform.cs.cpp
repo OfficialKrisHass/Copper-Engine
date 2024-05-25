@@ -6,7 +6,7 @@
 
 #include <mono/metadata/object.h>
 
-namespace Copper::Scripting::Transform {
+namespace Copper::Scripting::InternalCalls::Components::Transform {
 
     typedef ::Copper::Transform Transform;
 

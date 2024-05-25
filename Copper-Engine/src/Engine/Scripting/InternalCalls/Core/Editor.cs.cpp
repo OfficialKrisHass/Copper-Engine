@@ -4,7 +4,7 @@
 
 #include <mono/jit/jit.h>
 
-namespace Copper::Scripting::Editor {
+namespace Copper::Scripting::InternalCalls::Core::Editor {
 
     void EditorLog(MonoString* msg) {
 

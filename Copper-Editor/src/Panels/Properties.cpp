@@ -210,7 +210,7 @@ namespace Editor {
 
 		if (!DrawComponent<Light>("Light", light)) return;
 
-		UI::EditDropDown("Type", s_lightTypes, LIGHT_TYPES, (uint32*) &light->type);
+		UI::EditDropDown("Type", s_lightTypes, LIGHT_TYPES, (uint8*) &light->type);
 
 		UI::EditColor("Color", &light->color);
 		UI::EditFloat("Intensity", &light->intensity);

@@ -26,7 +26,7 @@ namespace Editor::UI {
 	bool EditTexture(const std::string& name, Copper::TextureAsset* texture);
 	bool EditMaterial(const std::string& name, Copper::MaterialAsset* material);
 
-	bool EditDropDown(const std::string& name, const char* items[], Copper::uint32 count, Copper::uint32* selected);
+	bool EditDropDown(const std::string& name, const char* items[], Copper::uint32 count, Copper::uint8* selected);
 	bool EditMask(const std::string& name, Copper::uint32& mask, Copper::uint32 num, Copper::uint32 maskOffset = 0, char startLabel = 'X');
 
 }

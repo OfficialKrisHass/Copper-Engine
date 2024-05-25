@@ -29,8 +29,8 @@ Entities:
   Player:
     ID: 2
     Transform:
-      Position: [0, 0, 0]
-      Rotation: [0.707106769, 0, 0.707106769, 0]
+      Position: [0, 0, 3.05898261]
+      Rotation: [0.953716934, 0, -0.300705791, 0]
       Scale: [1, 2, 1]
       Parent ID: 4294967295
       Children: [1]

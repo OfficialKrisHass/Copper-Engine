@@ -56,6 +56,15 @@ namespace Copper::Scripting {
             Vector3 get_scale(MonoObject* transform);
             void set_scale(MonoObject* transform, Vector3 value);
 
+            Vector3 get_globalPosition(MonoObject* transform);
+            void set_globalPosition(MonoObject* transform, Vector3 value);
+
+            void GetGlobalRotation(MonoObject* transform, Quat* ret);
+            void SetGlobalRotation(MonoObject* transform, Quat* value);
+
+            Vector3 get_globalScale(MonoObject* transform);
+            void set_globalScale(MonoObject* transform, Vector3 value);
+
             Vector3 get_forward(MonoObject* transform);
             Vector3 get_right(MonoObject* transform);
             Vector3 get_up(MonoObject* transform);)
@@ -97,6 +106,15 @@ namespace Copper::Scripting {
 
         ADD_INTERNAL_CALL_RAW(Transform, get_scale);
         ADD_INTERNAL_CALL_RAW(Transform, set_scale);
+
+        ADD_INTERNAL_CALL_RAW(Transform, get_globalPosition);
+        ADD_INTERNAL_CALL_RAW(Transform, set_globalPosition);
+
+        ADD_INTERNAL_CALL(Transform, GetGlobalRotation);
+        ADD_INTERNAL_CALL(Transform, SetGlobalRotation);
+        
+        ADD_INTERNAL_CALL_RAW(Transform, get_globalScale);
+        ADD_INTERNAL_CALL_RAW(Transform, set_globalScale);
 
         ADD_INTERNAL_CALL_RAW(Transform, get_forward);
         ADD_INTERNAL_CALL_RAW(Transform, get_right);

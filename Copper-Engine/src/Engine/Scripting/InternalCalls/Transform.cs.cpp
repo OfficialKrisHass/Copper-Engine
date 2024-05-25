@@ -35,9 +35,6 @@ namespace Copper::Scripting::Transform {
 
         CUP_FUNCTION();
 
-        CU_ASSERT(transform, "transform is nullptr");
-        CU_ASSERT(ret, "out is nullptr");
-
         Transform* ptr = nullptr;
         mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
 
@@ -47,9 +44,6 @@ namespace Copper::Scripting::Transform {
     void SetRotation(MonoObject* transform, Quaternion* value) {
 
         CUP_FUNCTION();
-
-        CU_ASSERT(transform, "transform is nullptr");
-        CU_ASSERT(value, "value is nullptr");
 
         Transform* ptr = nullptr;
         mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
@@ -73,9 +67,72 @@ namespace Copper::Scripting::Transform {
         CUP_FUNCTION();
 
         Transform* ptr = nullptr;
-        mono_field_get_value(transform, UnmanagedPtrField(), (void*) &value);
+        mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
 
         ptr->SetScale(value);
+
+    }
+
+    Vector3 get_globalPosition(MonoObject* transform) {
+
+        CUP_FUNCTION();
+
+        Transform* ptr = nullptr;
+        mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
+
+        return ptr->GlobalPosition();
+
+    }
+    void set_globalPosition(MonoObject* transform, Vector3 value) {
+
+        CUP_FUNCTION();
+
+        Transform* ptr = nullptr;
+        mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
+
+        CU_ASSERT(false, "Not implemented yet!");
+
+    }
+
+    void GetGlobalRotation(MonoObject* transform, Quaternion* ret) {
+
+        CUP_FUNCTION();
+
+        Transform* ptr = nullptr;
+        mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
+
+        *ret = ptr->GlobalRotation();
+
+    }
+    void SetGlobalRotation(MonoObject* transform, Quaternion* value) {
+
+        CUP_FUNCTION();
+        
+        Transform* ptr = nullptr;
+        mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
+
+        CU_ASSERT(false, "Not implemented yet!");
+
+    }
+
+    Vector3 get_globalScale(MonoObject* transform) {
+
+        CUP_FUNCTION();
+
+        Transform* ptr = nullptr;
+        mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
+
+        return ptr->GlobalScale();
+
+    }
+    void set_globalScale(MonoObject* transform, Vector3 value) {
+
+        CUP_FUNCTION();
+        
+        Transform* ptr = nullptr;
+        mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
+
+        CU_ASSERT(false, "Not implemented yet!");
 
     }
 

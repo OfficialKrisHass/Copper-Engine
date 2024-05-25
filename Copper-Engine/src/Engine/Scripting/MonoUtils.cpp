@@ -4,6 +4,7 @@
 #include "Engine/Scripting/ScriptingEngine.h"
 
 #include <mono/jit/jit.h>
+#include <mono/metadata/class.h>
 
 namespace Copper::Scripting::MonoUtils {
 
@@ -40,16 +41,18 @@ namespace Copper::Scripting::MonoUtils {
 
         }
 
+
         MonoProperty* msgProperty = mono_class_get_property_from_name(klass, "Message");
         MonoProperty* stcProperty = mono_class_get_property_from_name(klass, "StackTrace");
         
+        std::string name = mono_class_get_name(klass);
         std::string msg;
         std::string stackTrace;
 
         MonoStringToString((MonoString*) mono_runtime_invoke(mono_property_get_get_method(msgProperty), exception, nullptr, nullptr), msg);
         MonoStringToString((MonoString*) mono_runtime_invoke(mono_property_get_get_method(stcProperty), exception, nullptr, nullptr), stackTrace);
 
-        LogError("Unhandle exception has been caught: {}\n\nStack trace:\n{}", msg, stackTrace);
+        LogError("Unhandle exception has been caught: {} {}\n\nStack trace:\n{}", name, msg, stackTrace);
 
     }
 

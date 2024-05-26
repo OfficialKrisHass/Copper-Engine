@@ -22,6 +22,9 @@ namespace Copper::Scripting {
         MonoClass* componentClass = nullptr;
         MonoClass* transformClass = nullptr;
 
+        MonoClass* showInEditorAttrClass = nullptr;
+        MonoClass* hideInEditorAttrClass = nullptr;
+
     };
     Classes classes;
 
@@ -34,6 +37,9 @@ namespace Copper::Scripting {
         SET_CLASS(componentClass, "Component");
         SET_CLASS(transformClass, "Transform");
 
+        SET_CLASS(showInEditorAttrClass, "ShowInEditorAttribute");
+        SET_CLASS(hideInEditorAttrClass, "HideInEditorAttribute");
+
     }
 
     GET_CLASS_FUNC(Base, baseClass);
@@ -42,5 +48,8 @@ namespace Copper::Scripting {
 
     GET_CLASS_FUNC(Component, componentClass);
     GET_CLASS_FUNC(Transform, transformClass);
+
+    GET_CLASS_FUNC(ShowInEditorAttribute, showInEditorAttrClass);
+    GET_CLASS_FUNC(HideInEditorAttribute, hideInEditorAttrClass);
 
 }

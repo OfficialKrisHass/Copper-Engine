@@ -4,6 +4,7 @@
 #include "Engine/Core/Engine.h"
 
 #include "Engine/Scripting/Script.h"
+#include "Engine/Scripting/Field.h"
 #include "Engine/Scripting/Classes.h"
 
 #include "Engine/Input/Popup.h"
@@ -145,6 +146,7 @@ namespace Copper::Scripting {
             Script& script = data.scriptComponents.back();
 
             if (script.IsSubclassOf(ComponentClass())) continue;
+            
             data.scriptComponents.pop_back();
 
         }

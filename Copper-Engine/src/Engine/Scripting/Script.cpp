@@ -2,8 +2,11 @@
 #include "Script.h"
 
 #include "Engine/Scripting/ScriptingEngine.h"
+#include "Engine/Scripting/Classes.h"
 
 #include <mono/metadata/class.h>
+#include <mono/metadata/attrdefs.h>
+#include <mono/metadata/reflection.h>
 
 namespace Copper::Scripting {
 
@@ -15,6 +18,13 @@ namespace Copper::Scripting {
         m_name = name;
 
         GetClass(assembly);
+        GetFields();
+
+        for (const Field& field : m_fields) {
+
+            Log("{} Script field: {}, Type: {}, Accessibility: {}", FullName(), field.GetName(), (uint8) field.GetType(), (uint8) field.GetAccessibility());
+
+        }
 
     }
     Script::Script(const std::string& fullName, const Assembly& assembly) {
@@ -45,6 +55,35 @@ namespace Copper::Scripting {
         LogError("Failed to get Script mono class.\n\tScript name: {}.{}", m_namespace, m_name);
 
         
+    }
+    void Script::GetFields() {
+
+        CUP_FUNCTION();
+
+        void* iter = nullptr;
+        MonoClassField* field = nullptr;
+        while (field = mono_class_get_fields(m_class, &iter)) {
+
+            Field f = Field(field);
+            MonoCustomAttrInfo* attrInfo = mono_custom_attrs_from_field(m_class, field);
+
+            // Add if Public and no HideInEditor attribute
+            if (f.GetAccessibility() == Field::Accessibility::Public) {
+
+                if (attrInfo != nullptr && mono_custom_attrs_has_attr(attrInfo, HideInEditorAttributeClass())) continue;
+                m_fields.push_back(f);
+
+                continue;
+
+            }
+
+            // Add if ShowInEditor attribute
+
+            if (attrInfo == nullptr || !mono_custom_attrs_has_attr(attrInfo, ShowInEditorAttributeClass())) continue;
+            m_fields.push_back(f);
+
+        }
+
     }
 
 }

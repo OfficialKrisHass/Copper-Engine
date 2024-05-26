@@ -4,6 +4,11 @@ using Copper;
 public class Player : Component {
 
     float rot = 0.0f;
+    [HideInEditor] public uint test = 8;
+    [ShowInEditor] private int priv = 69;
+    protected double myPrecious = 4.2;
+    [ShowInEditor] public Entity myEntity;
+    public Transform theTransform;
 
     void OnBegin() {
 

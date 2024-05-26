@@ -1,0 +1,69 @@
+#include "cupch.h"
+#include "Field.h"
+
+#include "Engine/Scripting/ScriptingEngine.h"
+
+#include <mono/jit/jit.h>
+#include <mono/metadata/attrdefs.h>
+
+namespace Copper::Scripting {
+
+    Field::Accessibility FieldAccessibility(MonoClassField* field);
+    Field::Type FieldType(MonoType* type);
+
+    Field::Field(MonoClassField* field) {
+
+        CUP_FUNCTION();
+
+        if (field == nullptr) return;
+
+        m_field = field;
+
+        m_accessibility = FieldAccessibility(m_field);
+        m_type = FieldType(mono_field_get_type(m_field));
+        m_name = mono_field_get_name(m_field);
+
+    }
+
+    Field::Accessibility FieldAccessibility(MonoClassField* field) {
+        
+        CUP_FUNCTION();
+
+        uint32_t accessibility = mono_field_get_flags(field) & MONO_FIELD_ATTR_FIELD_ACCESS_MASK;
+        switch (accessibility) {
+        
+            case MONO_FIELD_ATTR_PRIVATE: return Field::Accessibility::Private;
+            case MONO_FIELD_ATTR_FAMILY: return Field::Accessibility::Protected;
+            case MONO_FIELD_ATTR_ASSEMBLY: return Field::Accessibility::Internal;
+            case MONO_FIELD_ATTR_PUBLIC: return Field::Accessibility::Public;
+
+            default: return Field::Accessibility::Private;
+
+        }
+
+        return Field::Accessibility::None;
+
+    }
+    Field::Type FieldType(MonoType* type) {
+
+        CUP_FUNCTION();
+
+        std::string name = mono_type_get_name(type);
+        if (name == "System.Int32") return Field::Type::Int;
+        else if (name == "System.UInt32") return Field::Type::UInt;
+        else if (name == "System.Single") return Field::Type::Float;
+        else if (name == "System.Double") return Field::Type::Double;
+
+        else if (name == "Copper.Vector2") return Field::Type::Vector2;
+        else if (name == "Copper.Vector3") return Field::Type::Vector3;
+        else if (name == "Copper.Quaternion") return Field::Type::Quaternion;
+
+        else if (name == "Copper.Entity") return Field::Type::Entity;
+        else if (name == "Copper.Transform") return Field::Type::Transform;
+
+        LogError("Could not get Field type from MonoField ({})", name);
+        return Field::Type::None;
+
+    }
+
+}

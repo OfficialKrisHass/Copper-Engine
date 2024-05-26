@@ -2,6 +2,8 @@
 
 #include "Engine/Core/Core.h"
 
+#include "Engine/Scripting/Field.h"
+
 extern "C" {
 
     typedef struct _MonoClass MonoClass;
@@ -47,6 +49,8 @@ namespace Copper::Scripting {
 
         inline MonoClass* GetClass() const { return m_class; }
 
+        inline const std::vector<Field>& GetFields() const { return m_fields; }
+
         inline operator bool() const { return m_class != nullptr; }
 
     private:
@@ -54,8 +58,11 @@ namespace Copper::Scripting {
         std::string m_name = "";
 
         MonoClass* m_class = nullptr;
+        
+        std::vector<Field> m_fields;
 
         void GetClass(const Assembly& assembly);
+        void GetFields();
 
     };
 

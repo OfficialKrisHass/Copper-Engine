@@ -17,4 +17,7 @@ namespace Copper::Scripting {
     MonoClass* ComponentClass();
     MonoClass* TransformClass();
 
+    MonoClass* ShowInEditorAttributeClass();
+    MonoClass* HideInEditorAttributeClass();
+
 }

@@ -14,9 +14,11 @@ extern "C" {
 
 namespace Copper {
 
-    namespace Scripting { class Script; }
+    namespace Scripting { class Script; class Field; }
 
     class ScriptComponent : public Component {
+
+        friend Scripting::Field;
 
     public:
         ScriptComponent() = default;

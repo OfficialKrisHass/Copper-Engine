@@ -1,6 +1,8 @@
 #include "cupch.h"
 #include "Scene.h"
 
+#include "Engine/Events/RegistryEvent.h"
+
 #include "Engine/Scene/CopperECS.h"
 
 #include "Engine/Components/MeshRenderer.h"
@@ -54,13 +56,9 @@ namespace Copper {
 
         for (InternalEntity* entity : EntityView(this)) {
 
-            // Create frequent managed classes in advance
+            Scripting::CreateManagedReference(entity, Scripting::EntityClass());
+            Scripting::CreateManagedReference(entity->m_transform, Scripting::TransformClass());
 
-            using namespace Scripting;
-
-            CreateManagedReference((void*) entity, EntityClass());
-            CreateManagedReference(entity->m_transform, TransformClass());
-            
             // Initialize physics
 
             if (RigidBody* rb = entity->GetComponent<RigidBody>())
@@ -149,7 +147,12 @@ namespace Copper {
 
 	}
 
-	void Scene::Render(Camera* cam, bool gizmos) { CUP_FUNCTION(); Renderer::Render(cam, gizmos); }
+	void Scene::Render(Camera* cam, bool gizmos) {
+
+        CUP_FUNCTION();
+        Renderer::Render(cam, gizmos);
+
+    }
 
 	void Scene::Serialize(const fs::path& path) {
 

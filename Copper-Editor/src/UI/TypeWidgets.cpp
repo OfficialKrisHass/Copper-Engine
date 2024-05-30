@@ -294,7 +294,7 @@ namespace Editor::UI {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE")) {
 
 				ret = true;
-				*entity = (InternalEntity*) payload->Data;
+				*entity = GetEntityFromID(*((uint32*) payload->Data));
 
 			}
 

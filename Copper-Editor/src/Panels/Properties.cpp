@@ -15,7 +15,8 @@
 
 #include <cstring>
 
-#define BindShowFunc(func) [this](auto&&... args) -> decltype(auto) { return this->func(std::forward<decltype(args)>(args)...); }
+#define EditField(type, func) type value; field.GetValue(scriptComponent, &value);\
+                              if (func(field.GetName(), &value)) field.SetValue(scriptComponent, &value)
 
 #define FRAME_WIDTH 241
 #define FRAME_HEIGHT 24
@@ -94,6 +95,8 @@ namespace Editor {
 		if (BoxCollider* collider = entity->GetComponent<BoxCollider>()) RenderBoxCollider(collider);
 		if (SphereCollider* collider = entity->GetComponent<SphereCollider>()) RenderSphereCollider(collider);
 		if (CapsuleCollider* collider = entity->GetComponent<CapsuleCollider>()) RenderCapsuleCollider(collider);
+
+        if (ScriptComponent* scriptComponent = entity->GetComponent<ScriptComponent>()) RenderScriptComponent(scriptComponent);
 
 		ImGui::Spacing();
 		//ImGui::Spacing();
@@ -299,6 +302,30 @@ namespace Editor {
 		ImGui::PopID();
 
 	}
+    void Properties::RenderScriptComponent(ScriptComponent* scriptComponent) {
+
+        const Scripting::Script* script = scriptComponent->GetScript();
+        if (!DrawComponent<ScriptComponent>(script->Name(), scriptComponent)) return;
+
+        const std::vector<Scripting::Field>& fields = script->GetFields();
+        for (const Scripting::Field& field : fields) {
+
+            switch (field.GetType()) {
+                
+                case Scripting::Field::Type::Int: { EditField(int32, UI::EditInt); break; }
+                case Scripting::Field::Type::UInt: { EditField(uint32, UI::EditUInt); break; }
+                case Scripting::Field::Type::Float: { EditField(float, UI::EditFloat); break; }
+
+                case Scripting::Field::Type::Vector2: { EditField(Vector2, UI::EditVector2); break; }
+                case Scripting::Field::Type::Vector3: { EditField(Vector3, UI::EditVector3); break; }
+
+            }
+
+        }
+        
+        ImGui::PopID();
+
+    }
 
 	template<typename T> static bool DrawComponent(const std::string& name, T* component) {
 

@@ -20,12 +20,6 @@ namespace Copper::Scripting {
         GetClass(assembly);
         GetFields();
 
-        for (const Field& field : m_fields) {
-
-            Log("{} Script field: {}, Type: {}, Accessibility: {}", FullName(), field.GetName(), (uint8) field.GetType(), (uint8) field.GetAccessibility());
-
-        }
-
     }
     Script::Script(const std::string& fullName, const Assembly& assembly) {
 

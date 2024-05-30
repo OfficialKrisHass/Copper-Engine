@@ -36,12 +36,37 @@ namespace Copper {
 
 		class Camera* cam = nullptr;
 
-		InternalEntity* CreateEntity(ENTITY_DEFAULT_PROPERTIES_DECLARATION) { CUP_FUNCTION(); return m_registry.CreateEntity(this, position, rotation, scale, name); }
-		InternalEntity* CreateEntityFromID(uint32 id, ENTITY_DEFAULT_PROPERTIES_DECLARATION, bool returnIfExists = true) { CUP_FUNCTION(); return m_registry.CreateEntityFromID(id, this, position, rotation, scale, name, returnIfExists); }
+		InternalEntity* CreateEntity(ENTITY_DEFAULT_PROPERTIES_DECLARATION) {
+
+            CUP_FUNCTION();
+            return m_registry.CreateEntity(this, position, rotation, scale, name);
+
+        }
+		InternalEntity* CreateEntityFromID(uint32 id, ENTITY_DEFAULT_PROPERTIES_DECLARATION, bool returnIfExists = true) {
+
+            CUP_FUNCTION();
+            return m_registry.CreateEntityFromID(id, this, position, rotation, scale, name, returnIfExists);
+
+        }
 		
-		InternalEntity* GetEntityFromID(uint32 id) { CUP_FUNCTION(); return m_registry.GetEntityFromID(id); }
-		void RemoveEntity(InternalEntity* entity) { CUP_FUNCTION(); m_registry.RemoveEntity(entity->m_id); }
-		void RemoveEntityFromID(uint32 id) { CUP_FUNCTION(); m_registry.RemoveEntity(id); }
+		InternalEntity* GetEntityFromID(uint32 id) {
+
+            CUP_FUNCTION();
+            return m_registry.GetEntityFromID(id);
+
+        }
+		void RemoveEntity(InternalEntity* entity) {
+
+            CUP_FUNCTION();
+            m_registry.RemoveEntity(entity->m_id);
+
+        }
+		void RemoveEntityFromID(uint32 id) {
+
+            CUP_FUNCTION();
+            m_registry.RemoveEntity(id);
+
+        }
 
 		void StartRuntime();
 		void StopRuntime();

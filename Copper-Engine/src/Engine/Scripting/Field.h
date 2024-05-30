@@ -7,6 +7,7 @@ extern "C" {
     typedef struct _MonoClassField MonoClassField;
 
 }
+namespace Copper { class ScriptComponent; }
 
 namespace Copper::Scripting {
 
@@ -44,6 +45,9 @@ namespace Copper::Scripting {
         Field() = default;
         Field(MonoClassField* field);
 
+        void GetValue(ScriptComponent* instance, void* out) const;
+        void SetValue(ScriptComponent* instance, void* value) const;
+        
         inline Accessibility GetAccessibility() const { return m_accessibility; }
         inline Type GetType() const { return m_type; }
         inline const std::string& GetName() const { return m_name; }

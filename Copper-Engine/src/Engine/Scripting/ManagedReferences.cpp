@@ -35,7 +35,6 @@ namespace Copper::Scripting {
 
         CUP_FUNCTION();
 
-        if (unmanagedPtr == nullptr) return nullptr;
         if (klass == nullptr) return nullptr;
 
         MonoObject* ret = mono_object_new(AppDomain(), klass);

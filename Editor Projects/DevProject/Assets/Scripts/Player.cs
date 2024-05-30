@@ -2,13 +2,12 @@ using System;
 using Copper;
 
 public class Player : Component {
+    
+    [ShowInEditor] private float rotSpeed = 0.4f;
+    [ShowInEditor] private Vector3 pos;
+    [ShowInEditor] private Entity target;
 
     float rot = 0.0f;
-    [HideInEditor] public uint test = 8;
-    [ShowInEditor] private int priv = 69;
-    protected double myPrecious = 4.2;
-    [ShowInEditor] public Entity myEntity;
-    public Transform theTransform;
 
     void OnBegin() {
 
@@ -17,23 +16,22 @@ public class Player : Component {
 
         entity.name += " UwU";
 
-        Editor.Log(transform.position.ToString());
-        Editor.Log(transform.globalPosition.ToString());
+        if (target == null) {
 
-        Editor.Log(transform.rotation.ToString());
-        Editor.Log(transform.globalRotation.ToString());
+            Editor.LogError("Target has not been set!");
+            return;
 
-        Editor.Log(transform.eulerAngles.ToString());
-        Editor.Log(transform.globalEulerAngles.ToString());
+        }
 
-        Editor.Log(transform.scale.ToString());
-        Editor.Log(transform.globalScale.ToString());
+        target.transform.position = pos;
 
     }
     void OnUpdate() {
 
-        rot += 0.1f;
-        transform.eulerAngles = new Vector3(0.0f, rot, 0.0f);
+        if (target == null) return;
+
+        rot += rotSpeed;
+        target.transform.eulerAngles = new Vector3(0.0f, rot, 0.0f);
 
     }
 

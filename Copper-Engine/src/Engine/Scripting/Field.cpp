@@ -2,6 +2,9 @@
 #include "Field.h"
 
 #include "Engine/Scripting/ScriptingEngine.h"
+#include "Engine/Scripting/ManagedReferences.h"
+
+#include "Engine/Components/ScriptComponent.h"
 
 #include <mono/jit/jit.h>
 #include <mono/metadata/attrdefs.h>
@@ -22,6 +25,26 @@ namespace Copper::Scripting {
         m_accessibility = FieldAccessibility(m_field);
         m_type = FieldType(mono_field_get_type(m_field));
         m_name = mono_field_get_name(m_field);
+
+    }
+
+    void Field::GetValue(ScriptComponent* instance, void* out) const {
+
+        CUP_FUNCTION();
+
+        CU_ASSERT(out, "Can't get field value with nullptr out parameter");
+        CU_ASSERT(instance, "Can't get field value on nullptr instance");
+
+        mono_field_get_value(instance->m_instance, m_field, out);
+
+    }
+    void Field::SetValue(ScriptComponent* instance, void* value) const {
+
+        CUP_FUNCTION();
+
+        CU_ASSERT(instance, "Can't set field value on nullptr instance");
+
+        mono_field_set_value(instance->m_instance, m_field, value);
 
     }
 

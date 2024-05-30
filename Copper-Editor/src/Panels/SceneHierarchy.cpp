@@ -56,18 +56,21 @@ namespace Editor {
 		ImGuiTreeNodeFlags flags = ((m_selectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 		bool opened = ImGui::TreeNodeEx(entity, flags, entity->name.c_str());
 
-		if (ImGui::IsItemClicked()) {
-
+		if (ImGui::IsItemClicked())
 			clickedEntityID = entity->ID();
+
+		if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered() && entity->ID() == clickedEntityID) {
+
+			m_selectedEntity = entity;
 			Properties::SetSelectedEntity(entity);
 
-		}
-		if (ImGui::IsMouseReleased(0) && entity->ID() == clickedEntityID)
-			m_selectedEntity = entity;
+        }
 
 		if (ImGui::BeginDragDropSource()) {
 
-			ImGui::SetDragDropPayload("SCH_ENTITY_NODE", entity, sizeof(uint32), ImGuiCond_Once);
+            uint32 data = entity->ID();
+
+			ImGui::SetDragDropPayload("SCH_ENTITY_NODE", &data, sizeof(uint32), ImGuiCond_Once);
 			ImGui::EndDragDropSource();
 
 		}

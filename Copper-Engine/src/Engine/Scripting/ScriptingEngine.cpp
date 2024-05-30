@@ -25,7 +25,7 @@ namespace Copper::Scripting {
         Assembly scriptingAPI;
         Assembly game;
 
-        MonoClassField* unmanagedPtrField = nullptr;
+        MonoClassField* unmanagedPtrField;
 
         std::vector<Script> scriptComponents;
 

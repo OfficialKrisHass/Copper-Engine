@@ -47,6 +47,9 @@ namespace Copper::Scripting {
 
         void GetValue(ScriptComponent* instance, void* out) const;
         void SetValue(ScriptComponent* instance, void* value) const;
+
+        void GetRefValue(ScriptComponent* instance, void** out, void* none = nullptr) const;
+        void SetRefValue(ScriptComponent* instance, void* value) const;
         
         inline Accessibility GetAccessibility() const { return m_accessibility; }
         inline Type GetType() const { return m_type; }

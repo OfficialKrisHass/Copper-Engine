@@ -48,6 +48,34 @@ namespace Copper::Scripting {
 
     }
 
+    void Field::GetRefValue(ScriptComponent* instance, void** out, void* none) const {
+
+        CUP_FUNCTION();
+
+        MonoObject* tmp = nullptr;
+        GetValue(instance, &tmp);
+        
+        if (tmp == nullptr) {
+
+            *out = none;
+            return;
+
+        }
+
+        mono_field_get_value(tmp, UnmanagedPtrField(), out);
+
+    }
+    void Field::SetRefValue(ScriptComponent* instance, void* value) const {
+
+        CUP_FUNCTION();
+
+        MonoObject* tmp = ManagedReference(value);
+        CU_ASSERT(tmp, "Could not get Managed reference in order to set ref field");
+
+        SetValue(instance, tmp);
+
+    }
+
     Field::Accessibility FieldAccessibility(MonoClassField* field) {
         
         CUP_FUNCTION();

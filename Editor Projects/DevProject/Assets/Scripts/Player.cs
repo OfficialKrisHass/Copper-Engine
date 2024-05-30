@@ -5,7 +5,7 @@ public class Player : Component {
     
     [ShowInEditor] private float rotSpeed = 0.4f;
     [ShowInEditor] private Vector3 pos;
-    [ShowInEditor] private Entity target;
+    [ShowInEditor] private Transform target;
 
     float rot = 0.0f;
 
@@ -15,15 +15,9 @@ public class Player : Component {
         Editor.Log(entity.name);
 
         entity.name += " UwU";
-
-        if (target == null) {
-
-            Editor.LogError("Target has not been set!");
-            return;
-
-        }
-
-        target.transform.position = pos;
+        
+        Editor.Log(target.entity.name);
+        target.position = pos;
 
     }
     void OnUpdate() {
@@ -31,7 +25,7 @@ public class Player : Component {
         if (target == null) return;
 
         rot += rotSpeed;
-        target.transform.eulerAngles = new Vector3(0.0f, rot, 0.0f);
+        target.eulerAngles = new Vector3(0.0f, rot, 0.0f);
 
     }
 

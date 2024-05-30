@@ -358,7 +358,7 @@ namespace Editor::UI {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE")) {
 
 				ret = true;
-				*transform = ((InternalEntity*) payload->Data)->GetTransform();
+                *transform = GetEntityFromID(*((uint32*) payload->Data))->GetTransform();
 
 			}
 

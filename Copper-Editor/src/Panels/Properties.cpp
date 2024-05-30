@@ -17,6 +17,8 @@
 
 #define EditField(type, func) type value; field.GetValue(scriptComponent, &value);\
                               if (func(field.GetName(), &value)) field.SetValue(scriptComponent, &value)
+#define EditRefField(type, func) type value; field.GetRefValue(scriptComponent, (void**) &value);\
+                                 if (func(field.GetName(), &value)) field.SetRefValue(scriptComponent, value)
 
 #define FRAME_WIDTH 241
 #define FRAME_HEIGHT 24
@@ -312,12 +314,30 @@ namespace Editor {
 
             switch (field.GetType()) {
                 
-                case Scripting::Field::Type::Int: { EditField(int32, UI::EditInt); break; }
-                case Scripting::Field::Type::UInt: { EditField(uint32, UI::EditUInt); break; }
-                case Scripting::Field::Type::Float: { EditField(float, UI::EditFloat); break; }
+            case Scripting::Field::Type::Int: { EditField(int32, UI::EditInt); break; }
+            case Scripting::Field::Type::UInt: { EditField(uint32, UI::EditUInt); break; }
+            case Scripting::Field::Type::Float: { EditField(float, UI::EditFloat); break; }
 
-                case Scripting::Field::Type::Vector2: { EditField(Vector2, UI::EditVector2); break; }
-                case Scripting::Field::Type::Vector3: { EditField(Vector3, UI::EditVector3); break; }
+            case Scripting::Field::Type::Vector2: { EditField(Vector2, UI::EditVector2); break; }
+            case Scripting::Field::Type::Vector3: { EditField(Vector3, UI::EditVector3); break; }
+
+            case Scripting::Field::Type::Entity: {
+                
+                uint64 id;
+                field.GetRefValue(scriptComponent, (void**) &id, (void*) INVALID_ENTITY_ID);
+                InternalEntity* entity = GetEntityFromID(id);
+
+                if (UI::EditEntity(field.GetName(), &entity)) {
+
+                    id = entity->ID();
+                    field.SetRefValue(scriptComponent, (void*) id);
+
+                }
+
+                break;
+
+            }
+            case Scripting::Field::Type::Transform: { EditRefField(Transform*, UI::EditTransform); break; }
 
             }
 

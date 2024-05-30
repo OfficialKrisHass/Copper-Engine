@@ -56,9 +56,6 @@ namespace Copper {
 
         for (InternalEntity* entity : EntityView(this)) {
 
-            Scripting::CreateManagedReference(entity, Scripting::EntityClass());
-            Scripting::CreateManagedReference(entity->m_transform, Scripting::TransformClass());
-
             // Initialize physics
 
             if (RigidBody* rb = entity->GetComponent<RigidBody>())
@@ -151,6 +148,26 @@ namespace Copper {
 
         CUP_FUNCTION();
         Renderer::Render(cam, gizmos);
+
+    }
+
+    bool Scene::EntityCreated(const Event& e) {
+
+        CUP_FUNCTION();
+
+        EntityEvent* event = (EntityEvent*) &e;
+
+        Scripting::CreateManagedReference((void*) (uint64) event->entity->m_id, Scripting::EntityClass());
+        Scripting::CreateManagedReference(event->entity->m_transform, Scripting::TransformClass());
+
+        return true;
+
+    }
+    bool Scene::EntityRemoved(const Event& e) {
+
+        CUP_FUNCTION();
+
+        return true;
 
     }
 

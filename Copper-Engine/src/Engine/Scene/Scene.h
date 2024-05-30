@@ -29,6 +29,9 @@ namespace Copper {
 
 			m_registry.Initialize();
 
+            AddEntityCreatedEventFunc(BindEventFunc(Scene::EntityCreated));
+            AddEntityRemovedEventFunc(BindEventFunc(Scene::EntityRemoved));
+
 		}
 
 		std::string name = "";
@@ -90,6 +93,9 @@ namespace Copper {
 		bool m_runtimeRunning = false;
 		bool m_runtimeStarted = false;
 		bool m_physicsInitialized = false;
+
+        bool EntityCreated(const Event& e);
+        bool EntityRemoved(const Event& e);
 
 		// Runtime
 

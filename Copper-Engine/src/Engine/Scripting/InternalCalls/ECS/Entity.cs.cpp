@@ -15,8 +15,9 @@ namespace Copper::Scripting::InternalCalls::ECS::Entity {
 
         CUP_FUNCTION();
         
-        InternalEntity* ptr = nullptr;
-        mono_field_get_value(entity, UnmanagedPtrField(), (void*) &ptr);
+        uint64 id;
+        mono_field_get_value(entity, UnmanagedPtrField(), (void*) &id);
+        InternalEntity* ptr = GetEntityFromID(id);
 
         CU_ASSERT(ptr, "Could not get Entity Unmanaged Pointer");
         return MonoUtils::StringToMonoString(ptr->name);
@@ -29,8 +30,9 @@ namespace Copper::Scripting::InternalCalls::ECS::Entity {
         std::string name;
         MonoUtils::MonoStringToString(value, name);
 
-        InternalEntity* ptr = nullptr;
-        mono_field_get_value(entity, UnmanagedPtrField(), (void*) &ptr);
+        uint64 id;
+        mono_field_get_value(entity, UnmanagedPtrField(), (void*) &id);
+        InternalEntity* ptr = GetEntityFromID(id); 
 
         CU_ASSERT(ptr, "Could not get Entity Unmanaged Pointer");
         ptr->name = name;
@@ -41,8 +43,9 @@ namespace Copper::Scripting::InternalCalls::ECS::Entity {
 
         CUP_FUNCTION();
 
-        InternalEntity* ptr = nullptr;
-        mono_field_get_value(entity, UnmanagedPtrField(), (void*) &ptr);
+        uint64 id;
+        mono_field_get_value(entity, UnmanagedPtrField(), (void*) &id);
+        InternalEntity* ptr = GetEntityFromID(id); 
 
         Transform* transform = ptr->GetTransform();
         MonoObject* ret = ManagedReference(transform);

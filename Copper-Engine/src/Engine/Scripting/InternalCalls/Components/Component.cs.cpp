@@ -19,8 +19,7 @@ namespace Copper::Scripting::InternalCalls::Components::Component {
         Component* ptr = nullptr;
         mono_field_get_value(component, UnmanagedPtrField(), (void*) &ptr);
 
-        InternalEntity* entity = ptr->GetEntity();
-        MonoObject* ret = ManagedReference(entity);
+        MonoObject* ret = ManagedReference((void*) (uint64) ptr->GetEntity()->ID());
 
         CU_ASSERT(ret, "Could not get Managed Entity Reference from Component");
         return ret;

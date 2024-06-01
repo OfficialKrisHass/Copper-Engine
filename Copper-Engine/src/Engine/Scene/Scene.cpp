@@ -18,8 +18,13 @@
 
 #include "Engine/Components/ScriptComponent.h"
 
+#include "Engine/Components/ScriptComponent.h"
+
 #include "Engine/Renderer/Renderer.h"
 
+#include "Engine/Scripting/ScriptingEngine.h"
+#include "Engine/Scripting/Script.h"
+#include "Engine/Scripting/Field.h"
 #include "Engine/Scripting/ManagedReferences.h"
 #include "Engine/Scripting/Classes.h"
 
@@ -369,6 +374,41 @@ namespace Copper {
 
 		}
 
+        if (ScriptComponent* scriptComponent = entity->GetComponent<ScriptComponent>()) {
+
+            using namespace Scripting;
+
+            out << YAML::Key << "Script Component" << YAML::Value << YAML::BeginMap; // Script Component
+            
+            const Script* script = scriptComponent->GetScript();
+            out << YAML::Key << "Name" << YAML::Value << script->FullName();
+            
+            out << YAML::Key << "Fields" << YAML::Value << YAML::BeginMap; // Fields
+
+            const std::vector<Field>& fields = script->GetFields();
+            for (const Field& field : fields) {
+
+                switch (field.GetType()) {
+
+                case Scripting::Field::Type::Int: SerializeField<int32>(out, scriptComponent, field); break;
+                case Scripting::Field::Type::UInt: SerializeField<uint32>(out, scriptComponent, field); break;
+                case Scripting::Field::Type::Float: SerializeField<float>(out, scriptComponent, field); break;
+                case Scripting::Field::Type::Double: SerializeField<double>(out, scriptComponent, field); break;
+                                                     
+                case Scripting::Field::Type::Vector2: SerializeField<Vector2>(out, scriptComponent, field); break;
+                case Scripting::Field::Type::Vector3: SerializeField<Vector3>(out, scriptComponent, field); break;
+                case Scripting::Field::Type::Quaternion: SerializeField<Quaternion>(out, scriptComponent, field); break;
+
+                }
+
+            }
+
+            out << YAML::EndMap; // Fields
+
+            out << YAML::EndMap; // Script Component
+
+        }
+
 		out << YAML::EndMap; // Enity
 
 	}
@@ -490,10 +530,80 @@ namespace Copper {
 
 		if (YAML::Node scriptNode = node["Script Component"]) {
 
-			//
+			ScriptComponent* scriptComponent = entity->AddComponent<ScriptComponent>();
+
+            std::string name = scriptNode["Name"].as<std::string>();
+            const Scripting::ScriptMap& scriptMap = Scripting::ComponentScripts();
+
+            if (scriptMap.find(name) == scriptMap.end()) {
+
+                LogError("Could not deserialize Script Component '{}' on Entity '{}'. Does not exist in loaded Script Map", name, *entity);
+                return;
+
+            }
+
+            const Scripting::Script& script = scriptMap.at(name);
+            scriptComponent->Setup(&script);
+
+            // Fields
+
+            YAML::Node fieldsNode = scriptNode["Fields"];
+            const std::vector<Scripting::Field>& fields = script.GetFields();
+
+            for (const Scripting::Field& field : fields) {
+
+                YAML::Node fieldNode = fieldsNode[field.GetName()];
+
+                if (!fieldNode) {
+
+                    LogError("Field '{}' has not been serialized", field.GetName());
+                    continue;
+
+                }
+                if (fieldNode["Type"].as<uint32>() != (uint32) field.GetType()) continue;
+                
+                switch (field.GetType()) {
+
+                case Scripting::Field::Type::Int: DeserializeField<int32>(fieldNode, scriptComponent, field); break;
+                case Scripting::Field::Type::UInt: DeserializeField<uint32>(fieldNode, scriptComponent, field); break;
+                case Scripting::Field::Type::Float: DeserializeField<float>(fieldNode, scriptComponent, field); break;
+                case Scripting::Field::Type::Double: DeserializeField<double>(fieldNode, scriptComponent, field); break;
+
+                case Scripting::Field::Type::Vector2: DeserializeField<Vector2>(fieldNode, scriptComponent, field); break;
+                case Scripting::Field::Type::Vector3: DeserializeField<Vector3>(fieldNode, scriptComponent, field); break;
+                case Scripting::Field::Type::Quaternion: DeserializeField<Quaternion>(fieldNode, scriptComponent, field); break;
+
+                }
+
+
+            }
 
 		}
 
 	}
+
+    template<typename T> void Scene::SerializeField(YAML::Emitter& out, ScriptComponent* instance, const Scripting::Field& field) {
+
+        CUP_FUNCTION();
+
+        T value;
+        field.GetValue(instance, &value);
+
+        out << YAML::Key << field.GetName() << YAML::Value << YAML::BeginMap; // Field
+
+        out << YAML::Key << "Type" << YAML::Value << (uint32) field.GetType();
+        out << YAML::Key << "Value" << value;
+
+        out << YAML::EndMap; // Field
+
+    }
+    template<typename T> void Scene::DeserializeField(const YAML::Node& fieldNode, ScriptComponent* instance, const Scripting::Field& field) {
+
+        CUP_FUNCTION();
+
+        T tmp = fieldNode["Value"].as<T>();
+        field.SetValue(instance, &tmp);
+
+    }
 
 }

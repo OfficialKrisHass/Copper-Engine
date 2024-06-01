@@ -158,10 +158,11 @@ namespace Editor {
 
 			ImGui::Separator();
 
-            const std::vector<Scripting::Script>& scriptComponents = Scripting::ScriptComponents();
-            for (const Scripting::Script& script : scriptComponents) {
+            const Scripting::ScriptMap& componentScripts = Scripting::ComponentScripts();
+            for (Scripting::ScriptMap::const_iterator it = componentScripts.begin(); it != componentScripts.end(); ++it) {
 
-                if (!ImGui::MenuItem(script.Name().c_str())) continue;
+                const Scripting::Script& script = it->second;
+                if (!ImGui::MenuItem(it->first.c_str())) continue;
 
                 ScriptComponent* component = entity->AddComponent<ScriptComponent>();
                 component->Setup(&script);

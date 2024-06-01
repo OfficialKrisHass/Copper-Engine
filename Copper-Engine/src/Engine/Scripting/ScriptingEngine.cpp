@@ -10,6 +10,7 @@
 #include "Engine/Input/Popup.h"
 
 #include <mono/jit/jit.h>
+#include <mono/metadata/class.h>
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/mono-config.h>
 
@@ -27,7 +28,7 @@ namespace Copper::Scripting {
 
         MonoClassField* unmanagedPtrField;
 
-        std::vector<Script> scriptComponents;
+        ScriptMap componentScripts;
 
     };
     ScriptingData data;
@@ -86,7 +87,7 @@ namespace Copper::Scripting {
 
         data.game = Assembly();
 
-        data.scriptComponents.clear();
+        data.componentScripts.clear();
 
     }
     bool Reload() {
@@ -142,12 +143,11 @@ namespace Copper::Scripting {
 
             // Filter out non component Scripts
 
-            data.scriptComponents.push_back(Script(nameSpace, name, data.game));
-            Script& script = data.scriptComponents.back();
+            MonoClass* klass = mono_class_from_name_case(data.game.GetImage(), nameSpace, name);
+            if (!mono_class_is_subclass_of(klass, ComponentClass(), false)) continue;
 
-            if (script.IsSubclassOf(ComponentClass())) continue;
-            
-            data.scriptComponents.pop_back();
+            std::string fullName = mono_class_get_name(klass);
+            Script& script = data.componentScripts[fullName] = Script(klass);
 
         }
 
@@ -160,6 +160,6 @@ namespace Copper::Scripting {
 
     MonoClassField* UnmanagedPtrField() { return data.unmanagedPtrField; }
 
-    const std::vector<Script>& ScriptComponents() { return data.scriptComponents; }
+    const ScriptMap& ComponentScripts() { return data.componentScripts; }
 
 }

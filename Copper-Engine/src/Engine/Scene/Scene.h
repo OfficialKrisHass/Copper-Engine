@@ -11,6 +11,9 @@ namespace physx { class PxScene; class PxRigidActor; }
 namespace Copper {
 
 	namespace Filesystem { class Path; }
+    namespace Scripting { struct Field; }
+
+    class ScriptComponent;
 
 	class Scene {
 
@@ -116,6 +119,9 @@ namespace Copper {
 
 		void SerializeEntity(InternalEntity* entity, YAML::Emitter& out);
 		void DeserializeEntity(InternalEntity* entity, const YAML::Node& node);
+
+        template<typename T> void SerializeField(YAML::Emitter& out, ScriptComponent* instance, const Scripting::Field& field);
+        template<typename T> void DeserializeField(const YAML::Node& fieldNode, ScriptComponent* instance, const Scripting::Field& field);
 
 	};
 

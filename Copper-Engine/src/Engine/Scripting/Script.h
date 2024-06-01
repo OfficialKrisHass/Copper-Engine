@@ -25,6 +25,8 @@ namespace Copper::Scripting {
         Script(const std::string& nameSpace, const std::string& name, const Assembly& assembly);
         Script(const std::string& fullName, const Assembly& assembly);
 
+        Script(MonoClass* klass);
+
         static std::string RemoveNamespace(std::string& name) {
 
             size_t dot = name.find_last_of('.');
@@ -40,12 +42,7 @@ namespace Copper::Scripting {
 
         inline const std::string& Namespace() const { return m_namespace; }
         inline const std::string& Name() const { return m_name; }
-        inline std::string FullName() const {
-
-            if (m_namespace.empty()) return m_name;
-            return fmt::format("{}.{}", m_namespace, m_name);
-
-        }
+        std::string FullName() const;
 
         inline MonoClass* GetClass() const { return m_class; }
 

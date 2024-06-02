@@ -399,6 +399,38 @@ namespace Copper {
                 case Scripting::Field::Type::Vector3: SerializeField<Vector3>(out, scriptComponent, field); break;
                 case Scripting::Field::Type::Quaternion: SerializeField<Quaternion>(out, scriptComponent, field); break;
 
+                case Scripting::Field::Type::Entity: {
+
+                    uint64 id;
+                    field.GetRefValue(scriptComponent, (void**) &id, (void*) INVALID_ENTITY_ID);
+
+                    out << YAML::Key << field.GetName() << YAML::Value << YAML::BeginMap; // Field
+
+                    out << YAML::Key << "Type" << YAML::Value << (uint32) field.GetType();
+                    out << YAML::Key << "Value" << YAML::Value << (uint32) id;
+
+                    out << YAML::EndMap; // Field
+                    
+                    break;
+
+
+                }
+                case Scripting::Field::Type::Transform: {
+                    
+                    Transform* transform = nullptr;
+                    field.GetRefValue(scriptComponent, (void**) &transform);
+
+                    out << YAML::Key << field.GetName() << YAML::Value << YAML::BeginMap; // Field
+
+                    out << YAML::Key << "Type" << YAML::Value << (uint32) field.GetType();
+                    out << YAML::Key << "Value" << YAML::Value << (transform ? transform->m_entity->m_id : INVALID_ENTITY_ID);
+
+                    out << YAML::EndMap; // Field
+
+                    break;
+
+                }
+
                 }
 
             }
@@ -572,6 +604,32 @@ namespace Copper {
                 case Scripting::Field::Type::Vector2: DeserializeField<Vector2>(fieldNode, scriptComponent, field); break;
                 case Scripting::Field::Type::Vector3: DeserializeField<Vector3>(fieldNode, scriptComponent, field); break;
                 case Scripting::Field::Type::Quaternion: DeserializeField<Quaternion>(fieldNode, scriptComponent, field); break;
+
+                case Scripting::Field::Type::Entity: {
+
+                    uint64 id = fieldNode["Value"].as<uint32>();
+                    if (id == INVALID_ENTITY_ID) break;
+
+                    if (id > entity->m_id)
+                        CreateEntityFromID(id);
+
+                    field.SetRefValue(scriptComponent, (void*) id);
+                    break;
+
+                }
+                case Scripting::Field::Type::Transform: {
+
+                    uint32 id = fieldNode["Value"].as<uint32>();
+                    if (id == INVALID_ENTITY_ID) break;
+
+                    if (id > entity->m_id)
+                        CreateEntityFromID(id);
+
+                    Transform* transform = GetEntityFromID(id)->m_transform;
+                    field.SetRefValue(scriptComponent, transform);
+                    break;
+
+                }
 
                 }
 

@@ -3,9 +3,14 @@
 
 #include "Engine/Core/Engine.h"
 
+#include "Engine/Scene/Scene.h"
+#include "Engine/Scene/ComponentView.h"
+
 #include "Engine/Scripting/Script.h"
 #include "Engine/Scripting/Field.h"
 #include "Engine/Scripting/Classes.h"
+
+#include "Engine/Components/ScriptComponent.h"
 
 #include "Engine/Input/Popup.h"
 
@@ -96,10 +101,30 @@ namespace Copper::Scripting {
 
         std::string tmp = data.game.Path();
 
+        std::unordered_map<ScriptComponent*, std::string> scriptComponentNames;
+        for (ScriptComponent* scriptComponent : ComponentView<ScriptComponent>(GetScene()))
+            scriptComponentNames[scriptComponent] = scriptComponent->GetScript()->FullName();
+
         Unload();
 
         InitializeScriptingAPI();
-        return Load(tmp);
+        if (!Load(tmp)) {
+
+            LogError("Failed to load game assembly at path '{}'", tmp);
+            return false;
+
+        }
+
+        for (auto it = scriptComponentNames.begin(); it != scriptComponentNames.end(); ++it) {
+
+            if (data.componentScripts.find(it->second) != data.componentScripts.end())
+                it->first->Setup(&data.componentScripts[it->second]);
+
+            LogError("Script '{}' is missing for Script Component on Entity '{}'", it->second, *it->first->GetEntity());
+
+        }
+
+        return true;
 
     }
 

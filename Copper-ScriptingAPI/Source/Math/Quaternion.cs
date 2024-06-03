@@ -101,7 +101,7 @@ namespace Copper {
 
         public override int GetHashCode() {
 
-            return w.GetHashCode() ^ (x.GetHashCode() << 2) ^ (y.GetHashCode() >> 2) ^ (w.GetHashCode() >> 1);
+            return w.GetHashCode() ^ (x.GetHashCode() << 2) ^ (y.GetHashCode() >> 2) ^ (z.GetHashCode() >> 1);
 
         }
         public override bool Equals(object other) {

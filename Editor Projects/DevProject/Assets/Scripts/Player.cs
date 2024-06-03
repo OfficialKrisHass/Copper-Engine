@@ -6,6 +6,8 @@ public class Player : Component {
     [ShowInEditor] private float rotSpeed = 0.4f;
     [ShowInEditor] private Vector3 pos;
     [ShowInEditor] private Transform target;
+    [ShowInEditor] private Entity cam;
+    [ShowInEditor] private Entity light;
 
     float rot = 0.0f;
 

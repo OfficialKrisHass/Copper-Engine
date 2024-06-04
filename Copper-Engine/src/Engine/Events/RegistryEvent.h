@@ -16,7 +16,8 @@ namespace Copper {
 	class ComponentEvent : public Event {
 
 	public:
-		class Component* component;
+		class Component* component = nullptr;
+        int32 componentID = 0;
 
 	};
 

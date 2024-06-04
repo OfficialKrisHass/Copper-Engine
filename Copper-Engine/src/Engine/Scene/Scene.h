@@ -35,6 +35,9 @@ namespace Copper {
             AddEntityCreatedEventFunc(BindEventFunc(Scene::EntityCreated));
             AddEntityRemovedEventFunc(BindEventFunc(Scene::EntityRemoved));
 
+            AddComponentAddedEventFunc(BindEventFunc(Scene::ComponentAdded));
+            AddComponentRemovedEventFunc(BindEventFunc(Scene::ComponentRemoved));
+
 		}
 
 		std::string name = "";
@@ -99,6 +102,9 @@ namespace Copper {
 
         bool EntityCreated(const Event& e);
         bool EntityRemoved(const Event& e);
+
+        bool ComponentAdded(const Event& e);
+        bool ComponentRemoved(const Event& e);
 
 		// Runtime
 

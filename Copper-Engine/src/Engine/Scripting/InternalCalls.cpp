@@ -49,6 +49,7 @@ namespace Copper::Scripting {
 
             MonoObject* get_transform(MonoObject*);
 
+            MonoObject* GetComponent(MonoObject*, MonoReflectionType*);
             bool HasComponent(MonoObject*, MonoReflectionType*); );
 
     INTERNAL_CALL_GROUP_END();
@@ -132,6 +133,7 @@ namespace Copper::Scripting {
         ADD_INTERNAL_CALL_RAW(Entity, get_transform);
 
         ADD_INTERNAL_CALL(Entity, HasComponent);
+        ADD_INTERNAL_CALL(Entity, GetComponent);
 
         // Component
 

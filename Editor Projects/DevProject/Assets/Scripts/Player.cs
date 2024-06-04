@@ -22,8 +22,12 @@ public class Player : Component {
 
         if (cam.HasComponent<Transform>())
             Editor.Log("Camera has Transform");
-        if (cam.HasComponent<Camera>())
+        if (cam.HasComponent<Camera>()) {
+            
             Editor.Log("Camera has Camera");
+            Editor.Log(cam.GetComponent<Camera>().fov.ToString());
+
+        }
         if (cam.HasComponent<Light>())
             Editor.Log("Camera has Light");
 

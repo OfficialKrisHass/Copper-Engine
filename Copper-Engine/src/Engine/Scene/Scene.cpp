@@ -172,6 +172,36 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+        EntityEvent* event = (EntityEvent*) &e;
+
+        Scripting::RemoveManagedReference((void*) (uint64) event->entity->m_id);
+        Scripting::RemoveManagedReference(event->entity->m_transform);
+
+        return true;
+
+    }
+
+    bool Scene::ComponentAdded(const Event& e) {
+
+        CUP_FUNCTION();
+
+        ComponentEvent* event = (ComponentEvent*) &e;
+
+        if (event->componentID == CAMERA_CID)
+            Scripting::CreateManagedReference(event->component, Scripting::CameraClass());
+        else if (event->componentID == LIGHT_CID)
+            Scripting::CreateManagedReference(event->component, Scripting::LightClass());
+
+        return true;
+
+    }
+    bool Scene::ComponentRemoved(const Event& e) {
+
+        CUP_FUNCTION();
+
+        ComponentEvent* event = (ComponentEvent*) &e;
+        Scripting::RemoveManagedReference(event->component);
+
         return true;
 
     }

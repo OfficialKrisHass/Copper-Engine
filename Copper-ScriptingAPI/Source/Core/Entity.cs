@@ -23,6 +23,11 @@ namespace Copper {
 
         }
 
+        public T GetComponent<T>() where T : Component, new() {
+
+            return (T) Internal_GetComponent(this, typeof(T));
+
+        }
         public bool HasComponent<T>() where T : Component, new() {
 
             return Internal_HasComponent(this, typeof(T));
@@ -31,6 +36,8 @@ namespace Copper {
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static bool Internal_HasComponent(Entity entity, Type type);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static object Internal_GetComponent(Entity entity, Type type);
 
     }
 

@@ -47,6 +47,32 @@ namespace Copper::Scripting::InternalCalls::ECS::Entity {
 
     }
 
+    MonoObject* GetComponent(MonoObject* entity, MonoReflectionType* type) {
+
+        CUP_FUNCTION();
+
+        // Get Component ID
+
+        MonoClass* klass = mono_type_get_class(mono_reflection_type_get_type(type));
+        MonoMethod* method = mono_class_get_method_from_name(klass, "ComponentID", 0);
+        CU_ASSERT(method, "Could not get ComponentID method from component class '{}'", mono_class_get_name(klass));
+
+        int32 cID = *(int32*) mono_object_unbox(mono_runtime_invoke(method, nullptr, nullptr, nullptr));
+
+        // Get Component
+
+        GET_ENTITY(ptr, entity);
+        void* component = ptr->GetComponent(cID);
+
+        if (!component)
+            return nullptr;
+
+        MonoObject* ret = ManagedReference(component);
+        CU_ASSERT(ret, "Could not get Component (cID '{}') Managed reference", cID);
+
+        return ret;
+
+    }
     bool HasComponent(MonoObject* entity, MonoReflectionType* type) {
 
         CUP_FUNCTION();

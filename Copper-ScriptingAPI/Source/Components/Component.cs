@@ -20,6 +20,7 @@ namespace Copper {
 
         }
 
+        public T GetComponent<T>() where T : Component, new() { return entity.GetComponent<T>(); }
         public bool HasComponent<T>() where T : Component, new() { return entity.HasComponent<T>(); }
 
     }

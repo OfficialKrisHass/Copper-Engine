@@ -15,5 +15,6 @@ namespace Copper::Scripting {
 
     MonoObject* ManagedReference(void* unmanagedPtr, MonoClass* classToCreate = nullptr);
     MonoObject* CreateManagedReference(void* unmanagedPtr, MonoClass* klass);
+    void RemoveManagedReference(void* unmanagedPtr);
 
 }

@@ -44,5 +44,13 @@ namespace Copper::Scripting {
         return ret;
 
     }
+    void RemoveManagedReference(void* unmanagedPtr) {
+
+        CUP_FUNCTION();
+
+        if (references.find(unmanagedPtr) == references.end()) return;
+        references.erase(unmanagedPtr);
+
+    }
 
 }

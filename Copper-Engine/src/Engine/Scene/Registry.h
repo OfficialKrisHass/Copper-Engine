@@ -221,6 +221,7 @@ namespace Copper {
 			m_entities[eID].m_cMask.set(cID);
 
 			componentAddedEvent.component = (Component*) component;
+            componentAddedEvent.componentID = cID;
 			componentAddedEvent();
 
 			return component;
@@ -266,6 +267,7 @@ namespace Copper {
 
 			T* component = static_cast<T*>(m_pools[cID]->Get(eID));
 			componentRemovedEvent.component = (Component*) component;
+            componentRemovedEvent.componentID = cID;
 			componentRemovedEvent();
 
 			component->m_valid = false;
@@ -307,6 +309,7 @@ namespace Copper {
 
 			Component* component = static_cast<Component*>(m_pools[componentID]->Get(eID));
 			componentRemovedEvent.component = component;
+            componentRemovedEvent.componentID = componentID;
 			componentRemovedEvent();
 
 			component->m_valid = false;

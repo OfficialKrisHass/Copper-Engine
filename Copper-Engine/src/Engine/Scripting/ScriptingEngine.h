@@ -9,6 +9,7 @@ extern "C" {
 
     typedef struct _MonoDomain MonoDomain;
     typedef struct _MonoClassField MonoClassField;
+    typedef struct _MonoProperty MonoProperty;
 
 }
 
@@ -26,9 +27,10 @@ namespace Copper::Scripting {
     const Assembly& ScriptingAPIAssembly();
     const Assembly& GameAssembly();
 
-    MonoClassField* UnmanagedPtrField(); 
-
     typedef std::unordered_map<std::string, Script> ScriptMap;
     const ScriptMap& ComponentScripts();
 
+    MonoClassField* UnmanagedPtrField(); 
+    MonoProperty* ComponentIDProperty();
+    
 }

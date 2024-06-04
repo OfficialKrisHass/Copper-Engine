@@ -7,6 +7,8 @@ namespace Copper {
     [StructLayout(LayoutKind.Sequential)]
     public class Light : Component {
 
+        public static int ComponentID() { return 3; } 
+
         public enum Type {
 
             Point = 0,

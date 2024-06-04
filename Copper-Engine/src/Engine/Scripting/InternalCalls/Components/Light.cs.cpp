@@ -14,7 +14,7 @@ namespace Copper::Scripting::InternalCalls::Components::Light {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Light, light);
+        GET_UNMANAGED_PTR(Light*, ptr, light);
         return ptr->color;
 
     }
@@ -24,7 +24,7 @@ namespace Copper::Scripting::InternalCalls::Components::Light {
 
         Log("Setting light color to {}", (Vector4) value);
 
-        GET_UNMANAGED_PTR(Light, light);
+        GET_UNMANAGED_PTR(Light*, ptr, light);
         ptr->color = value;
 
     }
@@ -32,7 +32,7 @@ namespace Copper::Scripting::InternalCalls::Components::Light {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Light, light);
+        GET_UNMANAGED_PTR(Light*, ptr, light);
         return (uint32) ptr->type;
 
     }
@@ -40,7 +40,7 @@ namespace Copper::Scripting::InternalCalls::Components::Light {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Light, light);
+        GET_UNMANAGED_PTR(Light*, ptr, light);
         ptr->type = (Light::Type) value;
 
     }
@@ -49,7 +49,7 @@ namespace Copper::Scripting::InternalCalls::Components::Light {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Light, light);
+        GET_UNMANAGED_PTR(Light*, ptr, light);
         return ptr->intensity;
 
     }
@@ -57,7 +57,7 @@ namespace Copper::Scripting::InternalCalls::Components::Light {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Light, light);
+        GET_UNMANAGED_PTR(Light*, ptr, light);
         ptr->intensity = value;
 
     }

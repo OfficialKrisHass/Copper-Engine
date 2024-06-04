@@ -30,6 +30,7 @@ namespace Copper::Scripting {
         static std::string RemoveNamespace(std::string& name) {
 
             size_t dot = name.find_last_of('.');
+            if (dot == std::string::npos) return "";
 
             std::string ret = name.substr(0, dot);
             name.erase(0, dot);

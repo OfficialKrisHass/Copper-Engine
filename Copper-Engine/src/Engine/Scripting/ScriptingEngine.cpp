@@ -32,6 +32,7 @@ namespace Copper::Scripting {
         Assembly game;
 
         MonoClassField* unmanagedPtrField;
+        MonoProperty* componentIDProperty;
 
         ScriptMap componentScripts;
 
@@ -117,10 +118,14 @@ namespace Copper::Scripting {
 
         for (auto it = scriptComponentNames.begin(); it != scriptComponentNames.end(); ++it) {
 
-            if (data.componentScripts.find(it->second) != data.componentScripts.end())
-                it->first->Setup(&data.componentScripts[it->second]);
+            if (data.componentScripts.find(it->second) == data.componentScripts.end()) {
 
-            LogError("Script '{}' is missing for Script Component on Entity '{}'", it->second, *it->first->GetEntity());
+                LogError("Script '{}' is missing for Script Component on Entity '{}'", it->second, *it->first->GetEntity());
+                continue;
+
+            }
+
+            it->first->Setup(&data.componentScripts[it->second]);
 
         }
 
@@ -143,6 +148,7 @@ namespace Copper::Scripting {
         InitializeClasses();
 
         data.unmanagedPtrField = mono_class_get_field_from_name(BaseClass(), "m_unmanagedPtr");
+        data.componentIDProperty = mono_class_get_property_from_name(ComponentClass(), "componentID");
 
     }
     void InitializeGame() {
@@ -183,8 +189,9 @@ namespace Copper::Scripting {
     const Assembly& ScriptingAPIAssembly() { return data.scriptingAPI; }
     const Assembly& GameAssembly() { return data.game; }
 
-    MonoClassField* UnmanagedPtrField() { return data.unmanagedPtrField; }
-
     const ScriptMap& ComponentScripts() { return data.componentScripts; }
+
+    MonoClassField* UnmanagedPtrField() { return data.unmanagedPtrField; }
+    MonoProperty* ComponentIDProperty() { return data.componentIDProperty; }
 
 }

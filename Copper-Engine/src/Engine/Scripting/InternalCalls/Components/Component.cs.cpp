@@ -5,6 +5,7 @@
 #include "Engine/Scripting/MonoUtils.h"
 #include "Engine/Scripting/ScriptingEngine.h"
 #include "Engine/Scripting/ManagedReferences.h"
+#include "Engine/Scripting/InternalCalls/Utils.h"
 
 #include <mono/metadata/object.h>
 
@@ -15,10 +16,8 @@ namespace Copper::Scripting::InternalCalls::Components::Component {
     MonoObject* get_entity(MonoObject* component) {
 
         CUP_FUNCTION();
-        
-        Component* ptr = nullptr;
-        mono_field_get_value(component, UnmanagedPtrField(), (void*) &ptr);
 
+        GET_UNMANAGED_PTR(Component*, ptr, component);
         MonoObject* ret = ManagedReference((void*) (uint64) ptr->GetEntity()->ID());
 
         CU_ASSERT(ret, "Could not get Managed Entity Reference from Component");
@@ -29,11 +28,8 @@ namespace Copper::Scripting::InternalCalls::Components::Component {
 
         CUP_FUNCTION();
 
-        Component* ptr = nullptr;
-        mono_field_get_value(component, UnmanagedPtrField(), (void*) &ptr);
-
-        Transform* transform = ptr->GetTransform();
-        MonoObject* ret = ManagedReference(transform);
+        GET_UNMANAGED_PTR(Component*, ptr, component);
+        MonoObject* ret = ManagedReference(ptr->GetTransform());
         
         CU_ASSERT(ret, "Could not get Managed Transform reference from Component");
         return ret;

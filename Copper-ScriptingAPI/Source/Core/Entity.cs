@@ -23,6 +23,15 @@ namespace Copper {
 
         }
 
+        public bool HasComponent<T>() where T : Component, new() {
+
+            return Internal_HasComponent(this, typeof(T));
+
+        }
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool Internal_HasComponent(Entity entity, Type type);
+
     }
 
 }

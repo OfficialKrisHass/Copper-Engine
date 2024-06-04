@@ -48,44 +48,44 @@ namespace Copper {
 		friend class Scene;
 		friend class Entity;
 
-	public:
-		struct ComponentPool {
+    public:
+        struct ComponentPool {
 
-			ComponentPool() = default;
+            ComponentPool() = default;
 			ComponentPool(uint32 size) : m_cSize(size), m_data(new char[size * MAX_ENTITY_COMPONENTS]) {}
 			~ComponentPool() { delete[] m_data; }
 
 			void* Add(uint32 index) {
 
-        CUP_FUNCTION();
+                CUP_FUNCTION();
 
-        m_validComponents.set(index);
-        m_count++;
+                m_validComponents.set(index);
+                m_count++;
 
-        return Get(index);
+                return Get(index);
 
-      }
-			void* Get(uint32 index) {
+            }
+            void* Get(uint32 index) {
 
-        CUP_FUNCTION();
+                CUP_FUNCTION();
 
-        return m_data + index * m_cSize;
+                return m_data + index * m_cSize;
 
-      }
+            }
 			void Remove(uint32 index) {
 
-        CUP_FUNCTION();
+                CUP_FUNCTION();
 
-        m_validComponents.reset(index);
-        m_count--;
+                m_validComponents.reset(index);
+                m_count--;
 
-      }
+            }
 
 			bool Valid(uint32 index) { CUP_FUNCTION(); return m_validComponents.test(index); }
 			uint32 Count() { return m_count; }
 
-		private:
-      uint32 m_cSize = 0;
+        private:
+            uint32 m_cSize = 0;
 			char* m_data = nullptr;
 
 			std::bitset<MAX_ENTITY_COMPONENTS> m_validComponents;

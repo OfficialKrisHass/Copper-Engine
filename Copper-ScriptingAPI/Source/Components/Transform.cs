@@ -7,6 +7,8 @@ namespace Copper {
     [StructLayout(LayoutKind.Sequential)]
     public partial class Transform : Component {
 
+        public static int ComponentID() { return 0; }
+
         public extern Vector3 position {
 
             [MethodImpl(MethodImplOptions.InternalCall)]

@@ -15,7 +15,7 @@ namespace Copper::Scripting::InternalCalls::Components::Camera {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Camera, camera);
+        GET_UNMANAGED_PTR(Camera*, ptr, camera);
         return ptr->fov;
 
     }
@@ -23,7 +23,7 @@ namespace Copper::Scripting::InternalCalls::Components::Camera {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Camera, camera);
+        GET_UNMANAGED_PTR(Camera*, ptr, camera);
         ptr->fov = value;
 
     }
@@ -32,7 +32,7 @@ namespace Copper::Scripting::InternalCalls::Components::Camera {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Camera, camera);
+        GET_UNMANAGED_PTR(Camera*, ptr, camera);
         return ptr->nearPlane;
 
     }
@@ -40,7 +40,7 @@ namespace Copper::Scripting::InternalCalls::Components::Camera {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Camera, camera);
+        GET_UNMANAGED_PTR(Camera*, ptr, camera);
         ptr->nearPlane = value;
 
     }
@@ -48,7 +48,7 @@ namespace Copper::Scripting::InternalCalls::Components::Camera {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Camera, camera);
+        GET_UNMANAGED_PTR(Camera*, ptr, camera);
         return ptr->farPlane;
 
     }
@@ -56,7 +56,7 @@ namespace Copper::Scripting::InternalCalls::Components::Camera {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Camera, camera);
+        GET_UNMANAGED_PTR(Camera*, ptr, camera);
         ptr->farPlane = value;
 
     }

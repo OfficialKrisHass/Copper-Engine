@@ -7,6 +7,8 @@ namespace Copper {
     [StructLayout(LayoutKind.Sequential)]
     public class Camera : Component {
 
+        public static int ComponentID() { return 2; } 
+
         public extern float fov {
 
             [MethodImpl(MethodImplOptions.InternalCall)]

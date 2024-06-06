@@ -30,6 +30,12 @@ public class Player : Component {
         }
         if (cam.HasComponent<Light>())
             Editor.Log("Camera has Light");
+        else {
+
+            Light l = cam.AddComponent<Light>();
+            Editor.Log(l.intensity.ToString());
+
+        }
 
     }
     void OnUpdate() {

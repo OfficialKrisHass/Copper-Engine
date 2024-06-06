@@ -20,8 +20,10 @@ namespace Copper {
 
         }
 
+        public T AddComponent<T>() where T : Component, new() { return entity.AddComponent<T>(); }
         public T GetComponent<T>() where T : Component, new() { return entity.GetComponent<T>(); }
         public bool HasComponent<T>() where T : Component, new() { return entity.HasComponent<T>(); }
+        public void RemoveComponent<T>() where T : Component, new() { entity.RemoveComponent<T>(); }
 
     }
 

@@ -42,10 +42,10 @@ Entities:
       Fields:
         rotSpeed:
           Type: 3
-          Value: 0.5
+          Value: 1
         pos:
           Type: 6
-          Value: [0, 2, 0]
+          Value: [0, 1, 0]
         target:
           Type: 9
           Value: 9

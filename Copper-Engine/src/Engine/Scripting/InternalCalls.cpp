@@ -44,13 +44,17 @@ namespace Copper::Scripting {
     INTERNAL_CALL_GROUP(ECS);
 
     INTERNAL_CALL_CLASS(Entity, 
+            void Initialize();
+
             MonoString* get_name(MonoObject*);
             void set_name(MonoObject*, MonoString*);
 
             MonoObject* get_transform(MonoObject*);
 
+            MonoObject* AddComponent(MonoObject*, MonoReflectionType*);
             MonoObject* GetComponent(MonoObject*, MonoReflectionType*);
-            bool HasComponent(MonoObject*, MonoReflectionType*); );
+            bool HasComponent(MonoObject*, MonoReflectionType*);
+            void RemoveComponent(MonoObject*, MonoReflectionType*); );
 
     INTERNAL_CALL_GROUP_END();
 
@@ -109,6 +113,8 @@ namespace Copper::Scripting {
 
         CUP_FUNCTION();
 
+        InternalCalls::ECS::Entity::Initialize();
+
         ADD_INTERNAL_CALL_GROUP(Core);
         ADD_INTERNAL_CALL_GROUP(Math);
         ADD_INTERNAL_CALL_GROUP(ECS);
@@ -132,8 +138,10 @@ namespace Copper::Scripting {
         
         ADD_INTERNAL_CALL_RAW(Entity, get_transform);
 
-        ADD_INTERNAL_CALL(Entity, HasComponent);
+        ADD_INTERNAL_CALL(Entity, AddComponent);
         ADD_INTERNAL_CALL(Entity, GetComponent);
+        ADD_INTERNAL_CALL(Entity, HasComponent);
+        ADD_INTERNAL_CALL(Entity, RemoveComponent);
 
         // Component
 

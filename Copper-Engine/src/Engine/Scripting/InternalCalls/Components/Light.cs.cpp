@@ -22,8 +22,6 @@ namespace Copper::Scripting::InternalCalls::Components::Light {
 
         CUP_FUNCTION();
 
-        Log("Setting light color to {}", (Vector4) value);
-
         GET_UNMANAGED_PTR(Light*, ptr, light);
         ptr->color = value;
 

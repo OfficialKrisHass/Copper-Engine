@@ -2,6 +2,10 @@
 
 #include "Engine/Scene/CopperECS.h"
 
+#include "Engine/Components/Camera.h"
+#include "Engine/Components/Light.h"
+#include "Engine/Components/ScriptComponent.h"
+
 #include "Engine/Scripting/MonoUtils.h"
 #include "Engine/Scripting/ScriptingEngine.h"
 #include "Engine/Scripting/ManagedReferences.h"
@@ -13,6 +17,18 @@
 #define GET_ENTITY(name, instance) GET_UNMANAGED_PTR(uint64, id, instance); InternalEntity* name = GetEntityFromID(id); CU_ASSERT(name, "Could not get Unmanaged entity from ID '{}' got from C# instance", id)
 
 namespace Copper::Scripting::InternalCalls::ECS::Entity {
+
+    std::unordered_map<std::string, std::function<void*(InternalEntity*)>> addComponentFuncs;
+
+    void Initialize() {
+
+        CUP_FUNCTION();
+
+        addComponentFuncs["Copper.Transform"] = [](InternalEntity* entity) { return entity->GetTransform(); };
+        addComponentFuncs["Copper.Camera"] = [](InternalEntity* entity) { return entity->AddComponent<Camera>(); };
+        addComponentFuncs["Copper.Light"] = [](InternalEntity* entity) { return entity->AddComponent<Light>(); };
+
+    }
 
     MonoString* get_name(MonoObject* entity) {
 
@@ -47,6 +63,45 @@ namespace Copper::Scripting::InternalCalls::ECS::Entity {
 
     }
 
+    MonoObject* AddComponent(MonoObject* entity, MonoReflectionType* type) {
+
+        CUP_FUNCTION();
+
+        GET_ENTITY(ptr, entity);
+
+        MonoType* managedType = mono_reflection_type_get_type(type);
+        std::string typeName = mono_type_get_name(managedType);
+
+        if (addComponentFuncs.find(typeName) != addComponentFuncs.end()) {
+
+            void* comp = addComponentFuncs.at(typeName)(ptr);
+            MonoObject* ret = ManagedReference(comp);
+            CU_ASSERT(ret, "Could not get Managed Reference after Adding component '{}' to entity '{}'", typeName, *ptr);
+
+            return ret;
+
+        }
+
+        if (ptr->HasComponent<ScriptComponent>()) return nullptr;
+
+        const ScriptMap& scriptMap = ComponentScripts();
+        if (scriptMap.find(typeName) == scriptMap.end()) {
+
+            LogError("Could not add Component '{}' to Entity '{}'", typeName, *ptr);
+            return nullptr;
+
+        }
+
+        const Script* script = &scriptMap.at(typeName);
+        ScriptComponent* scriptComponent = ptr->AddComponent<ScriptComponent>();
+        scriptComponent->Setup(script);
+
+        MonoObject* ret = CreateManagedReference(scriptComponent, mono_type_get_class(managedType));
+        CU_ASSERT(ret, "Could not Create Managed reference for a Script Component '{}'", typeName);
+
+        return ret;
+
+    }
     MonoObject* GetComponent(MonoObject* entity, MonoReflectionType* type) {
 
         CUP_FUNCTION();
@@ -85,10 +140,32 @@ namespace Copper::Scripting::InternalCalls::ECS::Entity {
 
         int32 cID = *(int32*) mono_object_unbox(mono_runtime_invoke(method, nullptr, nullptr, nullptr));
 
+        if (cID == TRANSFORM_CID) return true;
+
         // Return
 
         GET_ENTITY(ptr, entity);
         return ptr->HasComponent(cID);
+
+    }
+    void RemoveComponent(MonoObject* entity, MonoReflectionType* type) {
+
+        CUP_FUNCTION();
+
+        // Get Component ID
+
+        MonoClass* klass = mono_type_get_class(mono_reflection_type_get_type(type));
+        MonoMethod* method = mono_class_get_method_from_name(klass, "ComponentID", 0);
+        CU_ASSERT(method, "Could not get ComponentID method from component class '{}'", mono_class_get_name(klass));
+
+        int32 cID = *(int32*) mono_object_unbox(mono_runtime_invoke(method, nullptr, nullptr, nullptr));
+
+        if (cID == TRANSFORM_CID) return;
+        
+        // Return
+
+        GET_ENTITY(ptr, entity);
+        ptr->RemoveComponent(cID);
 
     }
 

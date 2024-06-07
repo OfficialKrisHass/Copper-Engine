@@ -14,7 +14,7 @@
 #include <mono/jit/jit.h>
 #include <mono/metadata/object.h>
 
-#define GET_ENTITY(name, instance) GET_UNMANAGED_PTR(uint64, id, instance); InternalEntity* name = GetEntityFromID(id); CU_ASSERT(name, "Could not get Unmanaged entity from ID '{}' got from C# instance", id)
+#define GET_ENTITY(name, instance) GET_UNMANAGED_PTR(uint64, id, instance); InternalEntity* name = GetEntityFromID((uint32) id); CU_ASSERT(name, "Could not get Unmanaged entity from ID '{}' got from C# instance", id)
 
 namespace Copper::Scripting::InternalCalls::ECS::Entity {
 

@@ -253,6 +253,12 @@ namespace Copper {
 		m_registry.Cleanup();
 		m_registry.Initialize();
 
+		AddEntityCreatedEventFunc(BindEventFunc(Scene::EntityCreated));
+		AddEntityRemovedEventFunc(BindEventFunc(Scene::EntityRemoved));
+
+		AddComponentAddedEventFunc(BindEventFunc(Scene::ComponentAdded));
+		AddComponentRemovedEventFunc(BindEventFunc(Scene::ComponentRemoved));
+
 		m_runtimeRunning = false;
 		m_runtimeStarted = false;
 		m_physicsInitialized = false;

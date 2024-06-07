@@ -32,12 +32,6 @@ namespace Copper {
 
 			m_registry.Initialize();
 
-            AddEntityCreatedEventFunc(BindEventFunc(Scene::EntityCreated));
-            AddEntityRemovedEventFunc(BindEventFunc(Scene::EntityRemoved));
-
-            AddComponentAddedEventFunc(BindEventFunc(Scene::ComponentAdded));
-            AddComponentRemovedEventFunc(BindEventFunc(Scene::ComponentRemoved));
-
 		}
 
 		std::string name = "";

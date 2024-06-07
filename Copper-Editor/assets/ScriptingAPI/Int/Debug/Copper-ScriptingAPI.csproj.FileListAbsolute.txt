@@ -1,0 +1,6 @@
+C:\Programming\Copper-Engine\Copper-Editor\assets\ScriptingAPI\Int\Debug\Copper-ScriptingAPI.csproj.AssemblyReference.cache
+C:\Programming\Copper-Engine\Copper-Editor\assets\ScriptingAPI\Int\Debug\Copper-ScriptingAPI.csproj.CoreCompileInputs.cache
+C:\Programming\Copper-Engine\Copper-Editor\assets\ScriptingAPI\Int\Debug\Copper-ScriptingAPI.dll
+C:\Programming\Copper-Engine\Copper-Editor\assets\ScriptingAPI\Int\Debug\Copper-ScriptingAPI.pdb
+C:\Programming\Copper-Engine\Copper-Editor\assets\ScriptingAPI\Copper-ScriptingAPI.dll
+C:\Programming\Copper-Engine\Copper-Editor\assets\ScriptingAPI\Copper-ScriptingAPI.pdb

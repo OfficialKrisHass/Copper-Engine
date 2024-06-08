@@ -646,8 +646,13 @@ namespace Copper {
                     uint64 id = fieldNode["Value"].as<uint32>();
                     if (id == INVALID_ENTITY_ID) break;
 
-                    if (id > entity->m_id)
-                        CreateEntityFromID(id);
+					if (id > entity->m_id) {
+
+						uint32 tmp = entity->m_id;
+						CreateEntityFromID(id);
+						entity = m_registry.GetEntityFromID(tmp);
+
+					}
 
                     field.SetRefValue(scriptComponent, (void*) id);
                     break;
@@ -658,8 +663,13 @@ namespace Copper {
                     uint32 id = fieldNode["Value"].as<uint32>();
                     if (id == INVALID_ENTITY_ID) break;
 
-                    if (id > entity->m_id)
-                        CreateEntityFromID(id);
+                    if (id > entity->m_id) {
+
+						uint32 tmp = entity->m_id;
+						CreateEntityFromID(id);
+						entity = m_registry.GetEntityFromID(tmp);
+
+					}
 
                     Transform* transform = GetEntityFromID(id)->m_transform;
                     field.SetRefValue(scriptComponent, transform);

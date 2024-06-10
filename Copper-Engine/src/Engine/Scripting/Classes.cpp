@@ -21,8 +21,11 @@ namespace Copper::Scripting {
 
         MonoClass* componentClass = nullptr;
         MonoClass* transformClass = nullptr;
+
         MonoClass* cameraClass = nullptr;
         MonoClass* lightClass = nullptr;
+
+        MonoClass* rigidBodyClass = nullptr;
 
         MonoClass* showInEditorAttrClass = nullptr;
         MonoClass* hideInEditorAttrClass = nullptr;
@@ -38,8 +41,11 @@ namespace Copper::Scripting {
 
         SET_CLASS(componentClass, "Component");
         SET_CLASS(transformClass, "Transform");
+
         SET_CLASS(cameraClass, "Camera");
         SET_CLASS(lightClass, "Light");
+
+        SET_CLASS(rigidBodyClass, "RigidBody");
 
         SET_CLASS(showInEditorAttrClass, "ShowInEditorAttribute");
         SET_CLASS(hideInEditorAttrClass, "HideInEditorAttribute");
@@ -52,8 +58,11 @@ namespace Copper::Scripting {
 
     GET_CLASS_FUNC(Component, componentClass);
     GET_CLASS_FUNC(Transform, transformClass);
+
     GET_CLASS_FUNC(Camera, cameraClass);
     GET_CLASS_FUNC(Light, lightClass);
+
+    GET_CLASS_FUNC(RigidBody, rigidBodyClass);
 
     GET_CLASS_FUNC(ShowInEditorAttribute, showInEditorAttrClass);
     GET_CLASS_FUNC(HideInEditorAttribute, hideInEditorAttrClass);

@@ -57,7 +57,7 @@ namespace Copper {
 
         }
 
-        if (isStatic)
+        if (m_isStatic)
             CreateStatic(shape);
         else
             CreateDynamic(shape);
@@ -81,8 +81,8 @@ namespace Copper {
         else
             m_body = PxCreateDynamic(*physics, PxTransform(CopperToPhysX(GetTransform()->Position()), CopperToPhysX(GetTransform()->Rotation())), *shape, 1.0f);
 
-        ((PxRigidDynamic*) m_body)->setMass(mass);
-        if (!gravity)
+        ((PxRigidDynamic*) m_body)->setMass(m_mass);
+        if (!m_gravity)
             m_body->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true);
 
         // This hurts my eyes but I am like 99% sure there is no other way
@@ -114,12 +114,12 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        if (!m_body || isStatic) return;
+        if (!m_body || m_isStatic) return;
 
         Transform* transform = GetTransform();
 
         if (this->m_collider)
-            transform->SetPosition( PhysXToCopper(m_body->getGlobalPose().p) + m_collider->center);
+            transform->SetPosition(PhysXToCopper(m_body->getGlobalPose().p) + m_collider->center);
         else
             transform->SetPosition(PhysXToCopper(m_body->getGlobalPose().p));
 
@@ -127,34 +127,11 @@ namespace Copper {
 
     }
 
-    void RigidBody::SetPosition(const Vector3& position) {
-
-        CUP_FUNCTION();
-
-        if (!m_body || isStatic) return;
-
-        PxTransform pose = m_body->getGlobalPose();
-        pose.p = CopperToPhysX(position);
-        m_body->setGlobalPose(pose);
-
-    }
-    void RigidBody::SetRotation(const Quaternion& rotation) {
-
-        CUP_FUNCTION();
-
-        if (!m_body || isStatic) return;
-
-        PxTransform pose = m_body->getGlobalPose();
-        pose.q = CopperToPhysX(rotation);
-        m_body->setGlobalPose(pose);
-
-    }
-
     void RigidBody::AddForce(const Vector3& force, const ForceMode mode) {
 
         CUP_FUNCTION();
 
-        if (isStatic) {
+        if (m_isStatic) {
 
             LogError("Cant add force to a static rigidBody on entity {}", *GetEntity(), GetEntity()->ID());
             return;
@@ -168,7 +145,7 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        if (isStatic) {
+        if (m_isStatic) {
 
             LogError("Cant add torque to a static rigidBody on entity {}", *GetEntity());
             return;
@@ -176,6 +153,75 @@ namespace Copper {
         }
 
         ((PxRigidDynamic*) m_body)->addTorque(CopperToPhysX(torque), (PxForceMode::Enum) mode);
+
+    }
+
+    void RigidBody::SetIsStatic(bool value) {
+
+        CUP_FUNCTION();
+
+        if (m_isStatic == value) return;
+        m_isStatic = value;
+
+        GetScene()->RemovePhysicsBody(m_body);
+        
+        PxShape* shape = noColliderShape;
+        if (this->m_collider) {
+
+            shape = this->m_collider->CreateShape();
+            if (this->m_collider->trigger) {
+
+                shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
+                shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
+
+            }
+
+        }
+
+        if (m_isStatic)
+            CreateStatic(shape);
+        else
+            CreateDynamic(shape);
+
+        if (this->m_collider)
+            shape->release();
+
+        GetScene()->AddPhysicsBody(m_body);
+
+        m_body->setName(GetEntity()->name.c_str());
+        m_body->userData = (void*)GetEntity();
+
+    }
+
+    void RigidBody::SetGravity(bool value) {
+
+        CUP_FUNCTION();
+
+        m_gravity = value;
+        if (!m_gravity)
+            m_body->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true);
+
+    }
+
+    void RigidBody::SetMass(float value) {
+
+        CUP_FUNCTION();
+
+        if (m_isStatic) return;
+
+        m_mass = value;
+        ((PxRigidDynamic*) m_body)->setMass(m_mass);
+
+    }
+
+    void RigidBody::SetLockMask(uint8 value) {
+
+        CUP_FUNCTION();
+
+        if (m_isStatic) return;
+
+        m_lockMask = value;
+        ((PxRigidDynamic*) m_body)->setRigidDynamicLockFlags((PxRigidDynamicLockFlag::Enum) m_lockMask);
 
     }
 

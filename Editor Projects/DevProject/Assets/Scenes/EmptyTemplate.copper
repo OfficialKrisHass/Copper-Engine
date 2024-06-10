@@ -41,7 +41,7 @@ Entities:
       Static: false
       Gravity: true
       Mass: 1
-      Lock Mask: 0
+      Lock Mask: 33
     Box Collider:
       Trigger: false
       Center: [0, 0, 0]

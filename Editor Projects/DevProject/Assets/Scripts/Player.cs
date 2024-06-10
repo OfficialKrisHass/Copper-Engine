@@ -22,6 +22,7 @@ public class Tester : Component {
         TestEntityReference();
         TestTransformReference();
         TestAddGetComponent();
+        TestRigidBody();
 
     }
     void OnUpdate() {
@@ -117,7 +118,7 @@ public class Tester : Component {
 
         }
 
-        Editor.Log("newLight: " + newLight.name);
+        Editor.Log("newLight entity: " + newLight.name);
         newLight.name += " Shiny!";
 
         Light l;
@@ -137,6 +138,38 @@ public class Tester : Component {
 
         Editor.Log("Light intensity: " + l.intensity.ToString());
         l.intensity = lightIntensity;
+
+        Editor.Log("");
+
+    }
+    private void TestRigidBody() {
+
+        Editor.Log("TEST RIGIDBODY");
+
+        RigidBody rb = GetComponent<RigidBody>();
+
+        if (rb == null) {
+
+            Editor.Log(entity.name + " does not have a Rigid Body component");
+            return;
+
+        }
+
+        Editor.Log("rb entity: " + rb.entity.name);
+
+        Editor.Log("rb isStatic: " + rb.isStatic.ToString());
+        Editor.Log("rb gravity: " + rb.gravity.ToString());
+        rb.gravity = false;
+
+        Editor.Log("rb mass: " + rb.mass.ToString());
+        rb.mass = 2.0f;
+
+        rb.AddForce(transform.forward);
+
+        Editor.Log("rb lockMask: " + rb.lockMask.ToString());
+        rb.lockMask = 0;
+
+        Editor.Log("");
 
     }
 

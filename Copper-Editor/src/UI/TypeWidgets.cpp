@@ -530,11 +530,11 @@ namespace Editor::UI {
 		bool ret = false;
 		std::string label = "";
 
-		for (uint32 i = 0, bit = maskOffset; i < num; i++, maskOffset++) {
+		for (uint32 i = 0, bit = maskOffset; i < num; i++, bit++) {
 
 			ImGui::SameLine();
 
-			tmp = mask & 1 << maskOffset;
+			tmp = mask & 1 << bit;
 			label = (char) (startLabel + i);
 			label += "##" + name;
 
@@ -544,9 +544,9 @@ namespace Editor::UI {
 			ret = true;
 
 			if (tmp)
-				mask |= 1 << maskOffset;
+				mask |= 1 << bit;
 			else
-				mask &= ~(1 << maskOffset);
+				mask &= ~(1 << bit);
 
 		}
 

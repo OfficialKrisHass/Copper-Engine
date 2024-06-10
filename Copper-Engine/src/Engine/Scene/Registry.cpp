@@ -5,18 +5,14 @@
 #include "Engine/Components/Camera.h"
 #include "Engine/Components/Light.h"
 
+#include "Engine/Components/ScriptComponent.h"
+
 #include "Engine/Components/RigidBody.h"
 
 #include "Engine/Components/Collider.h"
 #include "Engine/Components/BoxCollider.h"
 #include "Engine/Components/SphereCollider.h"
 #include "Engine/Components/CapsuleCollider.h"
-
-struct REMOVE_LATER {
-
-    int x = 0;
-
-};
 
 namespace Copper {
 
@@ -40,7 +36,7 @@ namespace Copper {
 		GetCID<Camera>(); // 2
 		GetCID<Light>(); // 3
 
-        GetCID<REMOVE_LATER>(); // 4 REMOVE LATER AND REPLACE WITH SCRIPT COMPONENT
+        GetCID<ScriptComponent>(); // 4
 
 		GetCID<RigidBody>(); // 5
 

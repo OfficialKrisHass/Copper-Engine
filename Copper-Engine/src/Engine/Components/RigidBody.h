@@ -27,10 +27,6 @@ namespace Copper {
 
         friend class Scene;
         friend class Collider;
-
-    #ifdef CU_EDITOR
-        friend Editor::Properties;
-    #endif
         
     public:
         enum LockFlags : uint8 {
@@ -40,22 +36,35 @@ namespace Copper {
 
         };
 
-        bool isStatic = false;
-        bool gravity = true;
-
-        float mass = 1.0f;
-
-        void UpdatePositionAndRotation();
-
-        void SetPosition(const Vector3& position);
-        void SetRotation(const Quaternion& rotation);
-
         void AddForce(const Vector3& force, const ForceMode mode = ForceMode::Force);
         void AddTorque(const Vector3& torque, const ForceMode mode = ForceMode::Force);
+
+        // Getters
+
+        inline bool IsStatic() const { return m_isStatic; }
+        inline bool Gravity() const { return m_gravity; }
+
+        inline float Mass() const { return m_mass; }
+
+        inline uint8 LockMask() const { return m_lockMask; }
+
+        // Setters
+
+        void SetIsStatic(bool value);
+        void SetGravity(bool value);
+
+        void SetMass(float value);
+
+        void SetLockMask(uint8 value);
 
     private:
         physx::PxRigidActor* m_body = nullptr;
         Collider* m_collider = nullptr;
+
+        bool m_isStatic = false;
+        bool m_gravity = true;
+
+        float m_mass = 1.0f;
 
         uint8 m_lockMask = 0;
 
@@ -63,6 +72,8 @@ namespace Copper {
 
         void CreateDynamic(physx::PxShape* shape);
         void CreateStatic(physx::PxShape* shape);
+
+        void UpdatePositionAndRotation();
 
     };
     

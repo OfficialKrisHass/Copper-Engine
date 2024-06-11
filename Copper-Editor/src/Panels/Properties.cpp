@@ -240,25 +240,26 @@ namespace Editor {
 
 		if (!DrawComponent<RigidBody>("Rigid Body", rb)) return;
 
-		bool changed = false;
+		bool tmp = rb->IsStatic();
+		if (UI::EditBool("Static", &tmp)) rb->SetIsStatic(tmp);
 
-		if (UI::EditBool("Static", &rb->isStatic) && !changed) changed = true;
-		if (UI::EditBool("Gravity", &rb->gravity) && !changed) changed = true;
+		tmp = rb->Gravity();
+		if (UI::EditBool("Gravity", &tmp)) rb->SetGravity(tmp);
 
-		if (UI::EditFloat("Mass", &rb->mass) && !changed) changed = true;
+		float mass = rb->Mass();
+		if (UI::EditFloat("Mass", &mass)) rb->SetMass(mass);
 
 		if (ImGui::TreeNode("Locks")) {
 
 			// Position Lock
 
-			if (UI::EditMask("Position", (uint32&) rb->m_lockMask, 3) && !changed) changed = true;
-			if (UI::EditMask("Rotation", (uint32&) rb->m_lockMask, 3, 3) && !changed) changed = true;
+			uint8 lockMask = rb->LockMask();
+			if (UI::EditMask("Position", (uint32&) lockMask, 3)) rb->SetLockMask(lockMask);
+			if (UI::EditMask("Rotation", (uint32&) lockMask, 3, 3)) rb->SetLockMask(lockMask);
 
 			ImGui::TreePop();
 				
 		}
-
-		if (changed && IsSceneRuntimeRunning()) rb->Setup();
 
 		ImGui::PopID();
 

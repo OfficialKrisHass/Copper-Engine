@@ -187,10 +187,12 @@ namespace Copper {
 
         ComponentEvent* event = (ComponentEvent*) &e;
 
-        if (event->componentID == CAMERA_CID)
-            Scripting::CreateManagedReference(event->component, Scripting::CameraClass());
-        else if (event->componentID == LIGHT_CID)
-            Scripting::CreateManagedReference(event->component, Scripting::LightClass());
+		if (event->componentID == CAMERA_CID)
+			Scripting::CreateManagedReference(event->component, Scripting::CameraClass());
+		else if (event->componentID == LIGHT_CID)
+			Scripting::CreateManagedReference(event->component, Scripting::LightClass());
+		else if (event->componentID == RIGIDBODY_CID)
+			Scripting::CreateManagedReference(event->component, Scripting::RigidBodyClass());
 
         return true;
 
@@ -252,6 +254,12 @@ namespace Copper {
 
 		m_registry.Cleanup();
 		m_registry.Initialize();
+
+		AddEntityCreatedEventFunc(BindEventFunc(Scene::EntityCreated));
+		AddEntityRemovedEventFunc(BindEventFunc(Scene::EntityRemoved));
+
+		AddComponentAddedEventFunc(BindEventFunc(Scene::ComponentAdded));
+		AddComponentRemovedEventFunc(BindEventFunc(Scene::ComponentRemoved));
 
 		m_runtimeRunning = false;
 		m_runtimeStarted = false;
@@ -355,12 +363,12 @@ namespace Copper {
 
 			out << YAML::Key << "Rigid Body" << YAML::Value << YAML::BeginMap; // Rigid Body
 
-			out << YAML::Key << "Static" << YAML::Value << rb->isStatic;
-			out << YAML::Key << "Gravity" << YAML::Value << rb->gravity;
+			out << YAML::Key << "Static" << YAML::Value << rb->IsStatic();
+			out << YAML::Key << "Gravity" << YAML::Value << rb->Gravity();
 
-			out << YAML::Key << "Mass" << YAML::Value << rb->mass;
+			out << YAML::Key << "Mass" << YAML::Value << rb->Mass();
 
-			out << YAML::Key << "Lock Mask" << YAML::Value << (uint32) rb->m_lockMask;
+			out << YAML::Key << "Lock Mask" << YAML::Value << (uint32) rb->LockMask();
 
 			out << YAML::EndMap; // Rigid Body
 
@@ -549,10 +557,10 @@ namespace Copper {
 
 			RigidBody* rb = entity->AddComponent<RigidBody>();
 
-			rb->isStatic = rbNode["Static"].as<bool>();
-			rb->gravity = rbNode["Gravity"].as<bool>();
+			rb->m_isStatic = rbNode["Static"].as<bool>();
+			rb->m_gravity = rbNode["Gravity"].as<bool>();
 
-			rb->mass = rbNode["Mass"].as<float>();
+			rb->m_mass = rbNode["Mass"].as<float>();
 
 			rb->m_lockMask = rbNode["Lock Mask"].as<uint8>();
 
@@ -640,8 +648,13 @@ namespace Copper {
                     uint64 id = fieldNode["Value"].as<uint32>();
                     if (id == INVALID_ENTITY_ID) break;
 
-                    if (id > entity->m_id)
-                        CreateEntityFromID(id);
+					if (id > entity->m_id) {
+
+						uint32 tmp = entity->m_id;
+						CreateEntityFromID(id);
+						entity = m_registry.GetEntityFromID(tmp);
+
+					}
 
                     field.SetRefValue(scriptComponent, (void*) id);
                     break;
@@ -652,8 +665,13 @@ namespace Copper {
                     uint32 id = fieldNode["Value"].as<uint32>();
                     if (id == INVALID_ENTITY_ID) break;
 
-                    if (id > entity->m_id)
-                        CreateEntityFromID(id);
+                    if (id > entity->m_id) {
+
+						uint32 tmp = entity->m_id;
+						CreateEntityFromID(id);
+						entity = m_registry.GetEntityFromID(tmp);
+
+					}
 
                     Transform* transform = GetEntityFromID(id)->m_transform;
                     field.SetRefValue(scriptComponent, transform);

@@ -107,6 +107,21 @@ namespace Copper::Scripting {
             float get_intensity(MonoObject*);
             void set_intensity(MonoObject*, float); );
 
+    INTERNAL_CALL_CLASS(RigidBody,
+            bool get_isStatic(MonoObject*);
+            void set_isStatic(MonoObject*, bool);
+            bool get_gravity(MonoObject*);
+            void set_gravity(MonoObject*, bool);
+
+            float get_mass(MonoObject*);
+            void set_mass(MonoObject*, float);
+
+            uint8 get_lockMask(MonoObject*);
+            void set_lockMask(MonoObject*, uint8);
+            
+            void AddForce(MonoObject*, const Vector3*, uint8);
+            void AddTorque(MonoObject*, const Vector3*, uint8); );
+
     INTERNAL_CALL_GROUP_END();
 
     void SetupInternalCalls() {
@@ -191,6 +206,22 @@ namespace Copper::Scripting {
 
         ADD_INTERNAL_CALL_RAW(Light, get_intensity);
         ADD_INTERNAL_CALL_RAW(Light, set_intensity);
+
+        // RigidBody
+
+        ADD_INTERNAL_CALL_RAW(RigidBody, get_isStatic);
+        ADD_INTERNAL_CALL_RAW(RigidBody, set_isStatic);
+        ADD_INTERNAL_CALL_RAW(RigidBody, get_gravity);
+        ADD_INTERNAL_CALL_RAW(RigidBody, set_gravity);
+
+        ADD_INTERNAL_CALL_RAW(RigidBody, get_mass);
+        ADD_INTERNAL_CALL_RAW(RigidBody, set_mass);
+
+        ADD_INTERNAL_CALL_RAW(RigidBody, get_lockMask);
+        ADD_INTERNAL_CALL_RAW(RigidBody, set_lockMask);
+
+        ADD_INTERNAL_CALL(RigidBody, AddForce);
+        ADD_INTERNAL_CALL(RigidBody, AddTorque);
 
     }
 

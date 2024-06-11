@@ -25,7 +25,7 @@ Entities:
       Fov: 90
       Near Plane: 0.100000001
       Far Plane: 1000
-      Size: [1920, 960]
+      Size: [1920, 969]
   Player:
     ID: 2
     Transform:
@@ -37,21 +37,39 @@ Entities:
     Mesh Renderer:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: 341bba04-c463-48de-88bb-6e5c37cb0213
+    Rigid Body:
+      Static: false
+      Gravity: true
+      Mass: 1
+      Lock Mask: 33
+    Box Collider:
+      Trigger: false
+      Center: [0, 0, 0]
+      Size: [1, 1, 1]
     Script Component:
-      Name: Player
+      Name: Tester
       Fields:
-        rotSpeed:
-          Type: 3
-          Value: 1
-        pos:
-          Type: 6
-          Value: [0, 1, 0]
-        target:
-          Type: 9
-          Value: 9
-        cam:
+        camera:
           Type: 8
           Value: 1
+        cameraFov:
+          Type: 3
+          Value: 85
+        target:
+          Type: 9
+          Value: 10
+        targetPosition:
+          Type: 6
+          Value: [0, 1, 0]
+        rotationSpeed:
+          Type: 3
+          Value: 1
+        newLight:
+          Type: 8
+          Value: 11
+        lightIntensity:
+          Type: 3
+          Value: 0.850000024
   Ground:
     ID: 3
     Transform:
@@ -160,3 +178,31 @@ Entities:
     Mesh Renderer:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: b72603e5-b719-4829-aaf1-861c4c40b362
+    Rigid Body:
+      Static: false
+      Gravity: true
+      Mass: 1
+      Lock Mask: 0
+    Box Collider:
+      Trigger: false
+      Center: [0, 0, 0]
+      Size: [1, 1, 1]
+  Target:
+    ID: 10
+    Transform:
+      Position: [0, 0, 0]
+      Rotation: [0.988873541, 0, -0.148758739, 0]
+      Scale: [1, 1, 1]
+      Parent ID: 4294967295
+      Children: []
+    Mesh Renderer:
+      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
+      Material: 00000000-0000-0000-0000-000000000000
+  New Light:
+    ID: 11
+    Transform:
+      Position: [0, 2.19634628, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent ID: 4294967295
+      Children: []

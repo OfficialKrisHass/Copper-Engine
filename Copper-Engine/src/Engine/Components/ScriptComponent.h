@@ -14,7 +14,7 @@ extern "C" {
 
 namespace Copper {
 
-    namespace Scripting { class Script; class Field; }
+    namespace Scripting { class Script; struct Field; }
 
     class ScriptComponent : public Component {
 

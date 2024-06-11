@@ -7,7 +7,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 
 set(SCENE_VERSION 0)
 
-project(Copper-Engine VERSION 0.3.0.141 LANGUAGES CXX C)
+project(Copper-Engine VERSION 0.3.0.142 LANGUAGES CXX C)
 message(STATUS "Building with configuration - ${CMAKE_BUILD_TYPE}")
 
 set(OUTPUT_DIR linux-x86_64-${CMAKE_BUILD_TYPE})
@@ -15,3 +15,4 @@ set(OUTPUT_DIR linux-x86_64-${CMAKE_BUILD_TYPE})
 add_subdirectory(Copper-Engine)
 add_subdirectory(Copper-Editor)
 add_subdirectory(Copper-Launcher)
+add_subdirectory(Copper-APIBinder)

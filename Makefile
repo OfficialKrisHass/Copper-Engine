@@ -19,12 +19,16 @@ endif
 scriptapi:
 	@./Copper-Editor/util/premake/premake5 --file=Copper-ScriptingAPI/workspace.lua gmake2
 	@${MAKE} --no-print-directory -C Copper-ScriptingAPI -f Makefile
+	@./Build/linux-x86_64-$(CONFIGURATION)/Copper-APIBinder/Copper-APIBinder
 
 launcher: cmake
 	@${MAKE} --no-print-directory -C CMake/$(CONFIGURATION)/Copper-Launcher -f Makefile
 ifeq ($(OS), linux)
 	@bash scripts/linux/CopyLauncherFiles.sh $(CONFIGURATION)
 endif
+
+apibinder:
+	@${MAKE} --no-print-directory -C CMake/$(CONFIGURATION)/Copper-APIBinder -f Makefile
 
 run:
 	@export LD_PRELOAD=libmonosgen-2.0.so # Hack since mono is retarded

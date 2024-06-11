@@ -100,7 +100,7 @@ project "Copper-Engine"
         "VERSION_MAJOR=0",
         "VERSION_MINOR=3",
         "VERSION_PATCH=0",
-        "VERSION_TWEAK=141",
+        "VERSION_TWEAK=142",
         
         "SCENE_VERSION=0",
 
@@ -201,6 +201,48 @@ project "Copper-Editor"
         optimize "on"
 
         postbuildcommands "%{os.getcwd()}/scripts/windows/CopyEditorFiles.bat Release"
+
+project "Copper-APIBinder"
+    location "Copper-APIBinder"
+    kind "ConsoleApp"
+    language "C++"
+
+    cppdialect "C++20"
+    staticruntime "on"
+
+    targetdir("Build/" .. outputDir .. "/%{prj.name}")
+    objdir("BuildInt/" .. outputDir .. "/%{prj.name}")
+
+    files {
+
+        "%{prj.name}/src/**.h",
+        "%{prj.name}/src/**.cpp",
+
+    }
+
+    includedirs {
+
+        "%{prj.name}/src",
+
+        "Copper-Engine/lib/mono/include",
+
+    }
+
+    links {
+
+        "Copper-Engine/lib/mono/lib/%{cfg.buildcfg}/mono-2.0-sgen.lib",
+
+    }
+
+    filter "configurations:Debug"
+        defines "CU_DEBUG"
+        runtime "Debug"
+        symbols "on"
+
+    filter "configurations:Release"
+        defines "CU_RELEASE"
+        runtime "Release"
+        optimize "on"
 
 project "Copper-CppTesting"
     location "Copper-CppTesting"

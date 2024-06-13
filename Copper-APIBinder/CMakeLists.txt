@@ -28,4 +28,4 @@ target_include_directories(Copper-APIBinder PRIVATE ${includeDirs})
 target_compile_definitions(Copper-APIBinder PRIVATE ${defines})
 
 target_link_directories(Copper-APIBinder PRIVATE ../Copper-Editor/lib/mono/bin/linux/${CMAKE_BUILD_TYPE})
-target_link_libraries(Copper-APIBinder PRIVATE monosgen-2.0)
+target_link_libraries(Copper-APIBinder PRIVATE monosgen-2.0 /usr/lib/libz.so)

@@ -3,6 +3,10 @@
 
 #include <mono/jit/jit.h>
 
+#include <mono/metadata/object.h>
+#include <mono/metadata/reflection.h>
+#include <mono/metadata/attrdefs.h>
+
 #include <iostream>
 
 namespace APIBinder {
@@ -12,17 +16,37 @@ namespace APIBinder {
     MonoImage* image = nullptr;
     MonoAssembly* assembly = nullptr;
 
+    MonoClass* nativeClassAttr = nullptr;
+    MonoClass* nativeFunctionAttr = nullptr;
+
+    void BindClasses();
     void BindClass(MonoClass* klass);
+    void BindMethod(MonoClass* klass, MonoMethod* method);
 
     int Entry() {
 
         std::cout << "\nRunning Copper Scripting API Binder\n\n";
 
+        // Setup
+
         domain = InitMono();
         assembly = LoadAssembly(&image);
 
+        nativeClassAttr = mono_class_from_name_case(image, "Copper", "NativeClassAttribute");
+        nativeFunctionAttr = mono_class_from_name_case(image, "Copper", "NativeFunctionAttribute");
+
         std::cout << "\n";
-        
+
+        // Run
+
+        BindClasses();
+
+        return 0;
+
+    }
+
+    void BindClasses() {
+
         const MonoTableInfo* typeTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
         uint32 num = mono_table_info_get_rows(typeTable);
         
@@ -41,13 +65,32 @@ namespace APIBinder {
 
         }
 
-        return 0;
-
     }
-
     void BindClass(MonoClass* klass) {
 
-        std::cout << mono_class_get_name(klass) << "\n";
+        MonoCustomAttrInfo* attrInfo = mono_custom_attrs_from_class(klass);
+        if (attrInfo == nullptr) return;
+        if (!mono_custom_attrs_has_attr(attrInfo, nativeClassAttr)) return;
+
+        std::cout << "Binding Class: " << mono_class_get_name(klass) << "\n";
+
+        void* iter = nullptr;
+        while (MonoMethod* method = mono_class_get_methods(klass, &iter)) {
+
+            attrInfo = mono_custom_attrs_from_method(method);
+            if (attrInfo == nullptr) continue;
+            if (!mono_custom_attrs_has_attr(attrInfo, nativeFunctionAttr)) continue;
+
+            BindMethod(klass, method);
+
+        }
+
+        std::cout << "\n";
+
+    }
+    void BindMethod(MonoClass* klass, MonoMethod* method) {
+
+        std::cout << "Binding Method: " << mono_method_get_name(method) << "\n";
 
     }
 

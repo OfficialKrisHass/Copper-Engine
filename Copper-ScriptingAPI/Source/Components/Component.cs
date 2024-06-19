@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 namespace Copper {
 
     [StructLayout(LayoutKind.Sequential)]
+    [NativeClass]
     public class Component : Base {
 
         public Entity entity {

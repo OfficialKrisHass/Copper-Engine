@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 namespace Copper {
 
     [StructLayout(LayoutKind.Sequential)]
+    [NativeClass]
     public class Camera : Component {
 
         public static int ComponentID() { return 2; } 
@@ -12,8 +13,10 @@ namespace Copper {
         public extern float fov {
 
             [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("GetFov")]
             get;
             [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("SetFov")]
             set;
 
         }

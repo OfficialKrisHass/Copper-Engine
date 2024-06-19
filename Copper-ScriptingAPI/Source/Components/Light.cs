@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 namespace Copper {
 
     [StructLayout(LayoutKind.Sequential)]
+    [NativeClass]
     public class Light : Component {
 
         public static int ComponentID() { return 3; } 

@@ -5,13 +5,16 @@ using System.Runtime.CompilerServices;
 namespace Copper {
 
     [StructLayout(LayoutKind.Sequential)]
+    [NativeClass]
     public class Entity : Base {
 
         public string name {
             
             [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("GetName")]
             get;
             [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("SetName")]
             set;
 
         }

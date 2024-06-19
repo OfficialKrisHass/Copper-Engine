@@ -5,7 +5,8 @@ using System.Runtime.CompilerServices;
 namespace Copper {
 
     [StructLayout(LayoutKind.Sequential)]
-    public partial class Transform : Component {
+    [NativeClass]
+    public class Transform : Component {
 
         public static int ComponentID() { return 0; }
 

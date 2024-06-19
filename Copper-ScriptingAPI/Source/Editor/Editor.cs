@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Copper {
     
+    [NativeClass]
     public static class Editor {
         
         public static void Log(string msg) { Internal_EditorLog(msg); }

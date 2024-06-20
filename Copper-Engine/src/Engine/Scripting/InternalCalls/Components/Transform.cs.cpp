@@ -1,4 +1,5 @@
 #include "cupch.h"
+#include "Transform.cs.h"
 
 #include "Engine/Components/Transform.h"
 
@@ -6,11 +7,11 @@
 
 #include <mono/metadata/object.h>
 
-namespace Copper::Scripting::InternalCalls::Components::Transform {
+namespace Copper::Scripting::Transform {
 
     typedef ::Copper::Transform Transform;
 
-    Vector3 get_position(MonoObject* transform) {
+    Vector3 GetPosition(MonoObject* transform) {
 
         CUP_FUNCTION();
 
@@ -20,7 +21,7 @@ namespace Copper::Scripting::InternalCalls::Components::Transform {
         return ptr->Position();
 
     }
-    void set_position(MonoObject* transform, Vector3 value) {
+    void SetPosition(MonoObject* transform, Vector3 value) {
 
         CUP_FUNCTION();
 
@@ -30,7 +31,6 @@ namespace Copper::Scripting::InternalCalls::Components::Transform {
         ptr->SetPosition(value);
 
     }
-
     void GetRotation(MonoObject* transform, Quaternion* ret) {
 
         CUP_FUNCTION();
@@ -41,7 +41,7 @@ namespace Copper::Scripting::InternalCalls::Components::Transform {
         *ret = ptr->Rotation();
 
     }
-    void SetRotation(MonoObject* transform, Quaternion* value) {
+    void SetRotation(MonoObject* transform, const Quaternion* value) {
 
         CUP_FUNCTION();
 
@@ -51,8 +51,7 @@ namespace Copper::Scripting::InternalCalls::Components::Transform {
         ptr->SetRotation(*value);
 
     }
-
-    Vector3 get_scale(MonoObject* transform) {
+    Vector3 GetScale(MonoObject* transform) {
 
         CUP_FUNCTION();
 
@@ -62,7 +61,7 @@ namespace Copper::Scripting::InternalCalls::Components::Transform {
         return ptr->Scale();
 
     }
-    void set_scale(MonoObject* transform, Vector3 value) {
+    void SetScale(MonoObject* transform, Vector3 value) {
 
         CUP_FUNCTION();
 
@@ -73,7 +72,7 @@ namespace Copper::Scripting::InternalCalls::Components::Transform {
 
     }
 
-    Vector3 get_globalPosition(MonoObject* transform) {
+    Vector3 GetGlobalPosition(MonoObject* transform) {
 
         CUP_FUNCTION();
 
@@ -83,17 +82,6 @@ namespace Copper::Scripting::InternalCalls::Components::Transform {
         return ptr->GlobalPosition();
 
     }
-    void set_globalPosition(MonoObject* transform, Vector3 value) {
-
-        CUP_FUNCTION();
-
-        Transform* ptr = nullptr;
-        mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
-
-        CU_ASSERT(false, "Not implemented yet!");
-
-    }
-
     void GetGlobalRotation(MonoObject* transform, Quaternion* ret) {
 
         CUP_FUNCTION();
@@ -104,18 +92,7 @@ namespace Copper::Scripting::InternalCalls::Components::Transform {
         *ret = ptr->GlobalRotation();
 
     }
-    void SetGlobalRotation(MonoObject* transform, Quaternion* value) {
-
-        CUP_FUNCTION();
-        
-        Transform* ptr = nullptr;
-        mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
-
-        CU_ASSERT(false, "Not implemented yet!");
-
-    }
-
-    Vector3 get_globalScale(MonoObject* transform) {
+    Vector3 GetGlobalScale(MonoObject* transform) {
 
         CUP_FUNCTION();
 
@@ -125,18 +102,8 @@ namespace Copper::Scripting::InternalCalls::Components::Transform {
         return ptr->GlobalScale();
 
     }
-    void set_globalScale(MonoObject* transform, Vector3 value) {
 
-        CUP_FUNCTION();
-        
-        Transform* ptr = nullptr;
-        mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
-
-        CU_ASSERT(false, "Not implemented yet!");
-
-    }
-
-    Vector3 get_forward(MonoObject* transform) {
+    Vector3 GetForward(MonoObject* transform) {
 
         CUP_FUNCTION();
 
@@ -146,7 +113,7 @@ namespace Copper::Scripting::InternalCalls::Components::Transform {
         return ptr->Forward();
 
     }
-    Vector3 get_right(MonoObject* transform) {
+    Vector3 GetRight(MonoObject* transform) {
 
         CUP_FUNCTION();
 
@@ -156,7 +123,7 @@ namespace Copper::Scripting::InternalCalls::Components::Transform {
         return ptr->Right();
 
     }
-    Vector3 get_up(MonoObject* transform) {
+    Vector3 GetUp(MonoObject* transform) {
 
         CUP_FUNCTION();
 

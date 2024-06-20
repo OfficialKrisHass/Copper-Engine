@@ -11,12 +11,14 @@ namespace Copper {
         public Entity entity {
 
             [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("GetEntity")]
             get;
 
         }
         public Transform transform {
 
             [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("GetTransform")]
             get;
 
         }

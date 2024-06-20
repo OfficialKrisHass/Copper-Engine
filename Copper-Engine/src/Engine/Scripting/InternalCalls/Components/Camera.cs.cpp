@@ -29,7 +29,7 @@ namespace Copper::Scripting::Camera {
 
     }
 
-    float get_nearPlane(MonoObject* camera) {
+    float GetNearPlane(MonoObject* camera) {
 
         CUP_FUNCTION();
 
@@ -37,7 +37,7 @@ namespace Copper::Scripting::Camera {
         return ptr->nearPlane;
 
     }
-    void set_nearPlane(MonoObject* camera, float value) {
+    void SetNearPlane(MonoObject* camera, float value) {
 
         CUP_FUNCTION();
 
@@ -45,7 +45,7 @@ namespace Copper::Scripting::Camera {
         ptr->nearPlane = value;
 
     }
-    float get_farPlane(MonoObject* camera) {
+    float GetFarPlane(MonoObject* camera) {
 
         CUP_FUNCTION();
 
@@ -53,7 +53,7 @@ namespace Copper::Scripting::Camera {
         return ptr->farPlane;
 
     }
-    void set_farPlane(MonoObject* camera, float value) {
+    void SetFarPlane(MonoObject* camera, float value) {
 
         CUP_FUNCTION();
 

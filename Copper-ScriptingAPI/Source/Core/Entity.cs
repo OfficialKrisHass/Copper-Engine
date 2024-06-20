@@ -22,6 +22,7 @@ namespace Copper {
         public Transform transform {
 
             [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("GetTransform")]
             get;
 
         }
@@ -32,12 +33,16 @@ namespace Copper {
         public void RemoveComponent<T>() where T : Component, new() { Internal_RemoveComponent(this, typeof(T)); }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        [NativeFunction("AddComponent")]
         internal extern static object Internal_AddComponent(Entity entity, Type type);
         [MethodImpl(MethodImplOptions.InternalCall)]
+        [NativeFunction("GetComponent")]
         internal extern static object Internal_GetComponent(Entity entity, Type type);
         [MethodImpl(MethodImplOptions.InternalCall)]
+        [NativeFunction("HasComponent")]
         internal extern static bool Internal_HasComponent(Entity entity, Type type);
         [MethodImpl(MethodImplOptions.InternalCall)]
+        [NativeFunction("RemoveComponent")]
         internal extern static void Internal_RemoveComponent(Entity entity, Type type);
 
     }

@@ -39,6 +39,7 @@ namespace APIBinder {
 
         stream << Tab(1) << "void SetupInternalCalls() {\n\n";
         stream << Tab(2) << "CUP_FUNCTION();\n\n";
+        stream << Tab(2) << "Entity::Initialize();\n\n";
 
     }
     void FinishOutFile(std::ofstream& stream) {

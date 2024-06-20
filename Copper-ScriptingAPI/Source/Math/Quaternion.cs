@@ -6,6 +6,7 @@ using System.Globalization;
 namespace Copper {
 
     [StructLayout(LayoutKind.Sequential)]
+    [NativeClass("Engine/Scripting/InternalCalls/Math/Quaternion.cs.h")]
     public struct Quaternion {
         
         public Quaternion(float w, float x, float y, float z) {
@@ -25,8 +26,8 @@ namespace Copper {
 
         }
 
-        public Quaternion(Vector3 eulerAngles) { Internal_FromEuler(eulerAngles, out this); }
-        public Quaternion(float eulerX, float eulerY, float eulerZ) { Internal_FromEuler(new Vector3(eulerX, eulerY, eulerZ), out this); }
+        public Quaternion(Vector3 eulerAngles) { Internal_FromEuler(ref eulerAngles, out this); }
+        public Quaternion(float eulerX, float eulerY, float eulerZ) : this(new Vector3(eulerX, eulerY, eulerZ)) {} 
 
         public float w;
         public float x;
@@ -36,7 +37,7 @@ namespace Copper {
         public Vector3 eulerAngles {
 
             get { return Internal_ToEuler(ref this); }
-            set { Internal_FromEuler(value, out this); }
+            set { Internal_FromEuler(ref value, out this); }
 
         }
 
@@ -123,9 +124,11 @@ namespace Copper {
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        [NativeFunction("ToEuler")]
         internal extern static Vector3 Internal_ToEuler(ref Quaternion quat);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        internal extern static void Internal_FromEuler(Vector3 eulerAngles, out Quaternion quat);
+        [NativeFunction("FromEuler")]
+        internal extern static void Internal_FromEuler(ref Vector3 eulerAngles, out Quaternion quat);
         
     }
 

@@ -24,16 +24,20 @@ namespace Copper {
         public float nearPlane {
 
             [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("GetNearPlane")]
             get;
             [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("SetNearPlane")]
             set;
 
         }
         public float farPlane {
 
             [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("GetFarPlane")]
             get;
             [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("SetFarPlane")]
             set;
 
         }

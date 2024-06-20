@@ -52,7 +52,7 @@ namespace Copper::Scripting::Entity {
 
     }
 
-    MonoObject* get_transform(MonoObject* entity) {
+    MonoObject* GetTransform(MonoObject* entity) {
 
         CUP_FUNCTION();
 

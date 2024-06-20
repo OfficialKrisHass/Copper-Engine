@@ -1,4 +1,5 @@
 #include "cupch.h"
+#include "RigidBody.cs.h"
 #include "Engine/Components/RigidBody.h"
 
 #include "Engine/Scripting/ScriptingEngine.h"
@@ -7,11 +8,11 @@
 
 #include <mono/jit/jit.h>
 
-namespace Copper::Scripting::InternalCalls::Components::RigidBody {
+namespace Copper::Scripting::RigidBody {
 
 	typedef ::Copper::RigidBody RigidBody;
 
-	bool get_isStatic(MonoObject* rigidBody) {
+	bool GetIsStatic(MonoObject* rigidBody) {
 
 		CUP_FUNCTION();
 
@@ -19,7 +20,7 @@ namespace Copper::Scripting::InternalCalls::Components::RigidBody {
 		return ptr->IsStatic();
 
 	}
-	void set_isStatic(MonoObject* rigidBody, bool value) {
+	void SetIsStatic(MonoObject* rigidBody, bool value) {
 
 		CUP_FUNCTION();
 
@@ -27,7 +28,7 @@ namespace Copper::Scripting::InternalCalls::Components::RigidBody {
 		ptr->SetIsStatic(value);
 
 	}
-	bool get_gravity(MonoObject* rigidBody) {
+	bool GetGravity(MonoObject* rigidBody) {
 
 		CUP_FUNCTION();
 
@@ -35,7 +36,7 @@ namespace Copper::Scripting::InternalCalls::Components::RigidBody {
 		return ptr->Gravity();
 
 	}
-	void set_gravity(MonoObject* rigidBody, bool value) {
+	void SetGravity(MonoObject* rigidBody, bool value) {
 
 		CUP_FUNCTION();
 
@@ -44,7 +45,7 @@ namespace Copper::Scripting::InternalCalls::Components::RigidBody {
 
 	}
 
-	float get_mass(MonoObject* rigidBody) {
+	float GetMass(MonoObject* rigidBody) {
 
 		CUP_FUNCTION();
 
@@ -52,7 +53,7 @@ namespace Copper::Scripting::InternalCalls::Components::RigidBody {
 		return ptr->Mass();
 
 	}
-	void set_mass(MonoObject* rigidBody, float value) {
+	void SetMass(MonoObject* rigidBody, float value) {
 
 		CUP_FUNCTION();
 
@@ -61,7 +62,7 @@ namespace Copper::Scripting::InternalCalls::Components::RigidBody {
 
 	}
 
-	uint8 get_lockMask(MonoObject* rigidBody) {
+	uint8 GetLockMask(MonoObject* rigidBody) {
 
 		CUP_FUNCTION();
 
@@ -69,7 +70,7 @@ namespace Copper::Scripting::InternalCalls::Components::RigidBody {
 		return ptr->LockMask();
 
 	}
-	void set_lockMask(MonoObject* rigidBody, uint8 value) {
+	void SetLockMask(MonoObject* rigidBody, uint8 value) {
 
 		CUP_FUNCTION();
 
@@ -78,20 +79,20 @@ namespace Copper::Scripting::InternalCalls::Components::RigidBody {
 
 	}
 
-	void AddForce(MonoObject* rigidBody, const Vector3* force, uint8 forceMode) {
+	void AddForce(MonoObject* rigidBody, const Vector3& force, uint8 forceMode) {
 
 		CUP_FUNCTION();
 
 		GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
-		ptr->AddForce(*force, (ForceMode) forceMode);
+		ptr->AddForce(force, (ForceMode) forceMode);
 
 	}
-	void AddTorque(MonoObject* rigidBody, const Vector3* torque, uint8 forceMode) {
+	void AddTorque(MonoObject* rigidBody, const Vector3& torque, uint8 forceMode) {
 
 		CUP_FUNCTION();
 
 		GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
-		ptr->AddTorque(*torque, (ForceMode) forceMode);
+		ptr->AddTorque(torque, (ForceMode) forceMode);
 
 	}
 

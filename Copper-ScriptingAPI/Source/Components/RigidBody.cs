@@ -29,16 +29,20 @@ namespace Copper {
         public extern bool isStatic {
 
             [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("GetIsStatic")]
             get;
             [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("SetIsStatic")]
             set;
 
         }
         public extern bool gravity {
 
             [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("GetGravity")]
             get;
             [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("SetGravity")]
             set;
 
         }
@@ -46,8 +50,10 @@ namespace Copper {
         public extern float mass {
 
             [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("GetMass")]
             get;
             [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("SetMass")]
             set;
 
         }
@@ -55,8 +61,10 @@ namespace Copper {
         public extern byte lockMask {
 
             [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("GetLockMask")]
             get;
             [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("SetLockMask")]
             set;
 
         }
@@ -65,8 +73,10 @@ namespace Copper {
         public void AddTorque(Vector3 torque, ForceMode mode = ForceMode.Force) { Internal_AddTorque(this, ref torque, mode); }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        [NativeFunction("AddForce")]
         internal extern static void Internal_AddForce(RigidBody rb, ref Vector3 force, ForceMode mode);
         [MethodImpl(MethodImplOptions.InternalCall)]
+        [NativeFunction("AddTorque")]
         internal extern static void Internal_AddTorque(RigidBody rb, ref Vector3 torque, ForceMode mode);
 
     }

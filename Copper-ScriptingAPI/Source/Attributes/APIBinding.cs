@@ -2,7 +2,7 @@ using System;
 
 namespace Copper {
 
-    [AttributeUsage(AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
     public sealed class NativeClassAttribute : Attribute {
 
         public NativeClassAttribute(string headerPath) {

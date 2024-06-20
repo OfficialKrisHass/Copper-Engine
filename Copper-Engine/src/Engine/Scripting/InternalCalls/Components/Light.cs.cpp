@@ -1,4 +1,5 @@
 #include "cupch.h"
+#include "Light.cs.h"
 #include "Engine/Components/Light.h"
 
 #include "Engine/Scripting/ScriptingEngine.h"
@@ -6,11 +7,11 @@
 
 #include <mono/metadata/object.h>
 
-namespace Copper::Scripting::InternalCalls::Components::Light {
+namespace Copper::Scripting::Light {
 
     typedef ::Copper::Light Light;
 
-    Color get_color(MonoObject* light) {
+    Color GetColor(MonoObject* light) {
 
         CUP_FUNCTION();
 
@@ -18,7 +19,7 @@ namespace Copper::Scripting::InternalCalls::Components::Light {
         return ptr->color;
 
     }
-    void set_color(MonoObject* light, Color value) {
+    void SetColor(MonoObject* light, Color value) {
 
         CUP_FUNCTION();
 
@@ -26,7 +27,7 @@ namespace Copper::Scripting::InternalCalls::Components::Light {
         ptr->color = value;
 
     }
-    uint32 get_type(MonoObject* light) {
+    uint32 GetType(MonoObject* light) {
 
         CUP_FUNCTION();
 
@@ -34,7 +35,7 @@ namespace Copper::Scripting::InternalCalls::Components::Light {
         return (uint32) ptr->type;
 
     }
-    void set_type(MonoObject* light, uint32 value) {
+    void SetType(MonoObject* light, uint32 value) {
 
         CUP_FUNCTION();
 
@@ -43,7 +44,7 @@ namespace Copper::Scripting::InternalCalls::Components::Light {
 
     }
 
-    float get_intensity(MonoObject* light) {
+    float GetIntensity(MonoObject* light) {
 
         CUP_FUNCTION();
 
@@ -51,7 +52,7 @@ namespace Copper::Scripting::InternalCalls::Components::Light {
         return ptr->intensity;
 
     }
-    void set_intensity(MonoObject* light, float value) {
+    void SetIntensity(MonoObject* light, float value) {
 
         CUP_FUNCTION();
 

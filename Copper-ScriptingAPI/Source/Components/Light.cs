@@ -20,16 +20,20 @@ namespace Copper {
         public extern Color color {
 
             [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("GetColor")]
             get;
             [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("SetColor")]
             set;
 
         }
         public extern Type type {
 
             [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("GetType")]
             get;
             [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("SetType")]
             set;
 
         }
@@ -37,8 +41,10 @@ namespace Copper {
         public extern float intensity {
 
             [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("GetIntensity")]
             get;
             [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("SetIntensity")]
             set;
 
         }

@@ -11,10 +11,13 @@ namespace Copper {
         public static void LogError(string msg) { Internal_EditorLogError(msg); }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        [NativeFunction("EditorLog")]
         internal extern static void Internal_EditorLog(string msg);
         [MethodImpl(MethodImplOptions.InternalCall)]
+        [NativeFunction("EditorLogWarn")]
         internal extern static void Internal_EditorLogWarn(string msg);
         [MethodImpl(MethodImplOptions.InternalCall)]
+        [NativeFunction("EditorLogError")]
         internal extern static void Internal_EditorLogError(string msg);
 
     }

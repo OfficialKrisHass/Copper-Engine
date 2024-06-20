@@ -1,4 +1,5 @@
 #include "cupch.h"
+#include "Component.cs.h"
 
 #include "Engine/Scene/CopperECS.h"
 
@@ -9,11 +10,11 @@
 
 #include <mono/metadata/object.h>
 
-namespace Copper::Scripting::InternalCalls::Components::Component {
+namespace Copper::Scripting::Component {
 
     typedef ::Copper::Component Component;
     
-    MonoObject* get_entity(MonoObject* component) {
+    MonoObject* GetEntity(MonoObject* component) {
 
         CUP_FUNCTION();
 
@@ -24,7 +25,7 @@ namespace Copper::Scripting::InternalCalls::Components::Component {
         return ret;
 
     }
-    MonoObject* get_transform(MonoObject* component) {
+    MonoObject* GetTransform(MonoObject* component) {
 
         CUP_FUNCTION();
 

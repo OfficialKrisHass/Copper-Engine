@@ -1,10 +1,9 @@
 #include "cupch.h"
+#include "Quaternion.cs.h"
 
-namespace Copper::Scripting::InternalCalls::Math::Quaternion {
+namespace Copper::Scripting::Quaternion {
 
-    typedef ::Copper::CMath::Quaternion Quaternion;
-
-    Vector3 ToEuler(Quaternion* quat) { return quat->EulerAngles(); }
-    void FromEuler(Vector3 eulerAngles, Quaternion* quat) { *quat = Quaternion(eulerAngles); }
+    Vector3 ToEuler(const Quaternion* quat) { return quat->EulerAngles(); }
+    void FromEuler(const Vector3& eulerAngles, Quaternion* quat) { *quat = Quaternion(eulerAngles); }
     
 }

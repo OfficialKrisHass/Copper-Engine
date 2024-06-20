@@ -7,6 +7,7 @@
 #include "Engine/Scripting/InternalCalls/Components/Transform.cs.h"
 #include "Engine/Scripting/InternalCalls/Core/Entity.cs.h"
 #include "Engine/Scripting/InternalCalls/Editor/Editor.cs.h"
+#include "Engine/Scripting/InternalCalls/Math/Quaternion.cs.h"
 
 #include <mono/jit/jit.h>
 
@@ -16,10 +17,56 @@ namespace Copper::Scripting {
 
         CUP_FUNCTION();
 
+        Entity::Initialize();
+
         mono_add_internal_call("Copper.Camera::get_fov", (void*) Camera::GetFov);
         mono_add_internal_call("Copper.Camera::set_fov", (void*) Camera::SetFov);
+        mono_add_internal_call("Copper.Camera::get_nearPlane", (void*) Camera::GetNearPlane);
+        mono_add_internal_call("Copper.Camera::set_nearPlane", (void*) Camera::SetNearPlane);
+        mono_add_internal_call("Copper.Camera::get_farPlane", (void*) Camera::GetFarPlane);
+        mono_add_internal_call("Copper.Camera::set_farPlane", (void*) Camera::SetFarPlane);
+        mono_add_internal_call("Copper.Component::get_entity", (void*) Component::GetEntity);
+        mono_add_internal_call("Copper.Component::get_transform", (void*) Component::GetTransform);
+        mono_add_internal_call("Copper.Light::get_color", (void*) Light::GetColor);
+        mono_add_internal_call("Copper.Light::set_color", (void*) Light::SetColor);
+        mono_add_internal_call("Copper.Light::get_type", (void*) Light::GetType);
+        mono_add_internal_call("Copper.Light::set_type", (void*) Light::SetType);
+        mono_add_internal_call("Copper.Light::get_intensity", (void*) Light::GetIntensity);
+        mono_add_internal_call("Copper.Light::set_intensity", (void*) Light::SetIntensity);
+        mono_add_internal_call("Copper.RigidBody::get_isStatic", (void*) RigidBody::GetIsStatic);
+        mono_add_internal_call("Copper.RigidBody::set_isStatic", (void*) RigidBody::SetIsStatic);
+        mono_add_internal_call("Copper.RigidBody::get_gravity", (void*) RigidBody::GetGravity);
+        mono_add_internal_call("Copper.RigidBody::set_gravity", (void*) RigidBody::SetGravity);
+        mono_add_internal_call("Copper.RigidBody::get_mass", (void*) RigidBody::GetMass);
+        mono_add_internal_call("Copper.RigidBody::set_mass", (void*) RigidBody::SetMass);
+        mono_add_internal_call("Copper.RigidBody::get_lockMask", (void*) RigidBody::GetLockMask);
+        mono_add_internal_call("Copper.RigidBody::set_lockMask", (void*) RigidBody::SetLockMask);
+        mono_add_internal_call("Copper.RigidBody::Internal_AddForce", (void*) RigidBody::AddForce);
+        mono_add_internal_call("Copper.RigidBody::Internal_AddTorque", (void*) RigidBody::AddTorque);
+        mono_add_internal_call("Copper.Transform::get_position", (void*) Transform::GetPosition);
+        mono_add_internal_call("Copper.Transform::set_position", (void*) Transform::SetPosition);
+        mono_add_internal_call("Copper.Transform::get_scale", (void*) Transform::GetScale);
+        mono_add_internal_call("Copper.Transform::set_scale", (void*) Transform::SetScale);
+        mono_add_internal_call("Copper.Transform::get_globalPosition", (void*) Transform::GetGlobalPosition);
+        mono_add_internal_call("Copper.Transform::get_globalScale", (void*) Transform::GetGlobalScale);
+        mono_add_internal_call("Copper.Transform::get_forward", (void*) Transform::GetForward);
+        mono_add_internal_call("Copper.Transform::get_right", (void*) Transform::GetRight);
+        mono_add_internal_call("Copper.Transform::get_up", (void*) Transform::GetUp);
+        mono_add_internal_call("Copper.Transform::Internal_GetRotation", (void*) Transform::GetRotation);
+        mono_add_internal_call("Copper.Transform::Internal_SetRotation", (void*) Transform::SetRotation);
+        mono_add_internal_call("Copper.Transform::Internal_GetGlobalRotation", (void*) Transform::GetGlobalRotation);
         mono_add_internal_call("Copper.Entity::get_name", (void*) Entity::GetName);
         mono_add_internal_call("Copper.Entity::set_name", (void*) Entity::SetName);
+        mono_add_internal_call("Copper.Entity::get_transform", (void*) Entity::GetTransform);
+        mono_add_internal_call("Copper.Entity::Internal_AddComponent", (void*) Entity::AddComponent);
+        mono_add_internal_call("Copper.Entity::Internal_GetComponent", (void*) Entity::GetComponent);
+        mono_add_internal_call("Copper.Entity::Internal_HasComponent", (void*) Entity::HasComponent);
+        mono_add_internal_call("Copper.Entity::Internal_RemoveComponent", (void*) Entity::RemoveComponent);
+        mono_add_internal_call("Copper.Editor::Internal_EditorLog", (void*) Editor::EditorLog);
+        mono_add_internal_call("Copper.Editor::Internal_EditorLogWarn", (void*) Editor::EditorLogWarn);
+        mono_add_internal_call("Copper.Editor::Internal_EditorLogError", (void*) Editor::EditorLogError);
+        mono_add_internal_call("Copper.Quaternion::Internal_ToEuler", (void*) Quaternion::ToEuler);
+        mono_add_internal_call("Copper.Quaternion::Internal_FromEuler", (void*) Quaternion::FromEuler);
 
     }
 

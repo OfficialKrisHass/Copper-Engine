@@ -5,7 +5,13 @@ namespace Copper {
     [AttributeUsage(AttributeTargets.Class)]
     public sealed class NativeClassAttribute : Attribute {
 
-        //
+        public NativeClassAttribute(string headerPath) {
+
+            this.headerPath = headerPath;
+
+        }
+
+        string headerPath;
 
     }
 

@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 namespace Copper {
 
     [StructLayout(LayoutKind.Sequential)]
-    [NativeClass]
+    [NativeClass("Engine/Scripting/InternalCalls/Components/RigidBody.cs.h")]
     public class RigidBody : Component {
 
         public static int ComponentID() { return 5; }

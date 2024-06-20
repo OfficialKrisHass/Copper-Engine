@@ -1,4 +1,5 @@
 #include "cupch.h"
+#include "Camera.cs.h"
 #include "Engine/Components/Camera.h"
 
 #include "Engine/Scripting/ScriptingEngine.h"
@@ -7,11 +8,11 @@
 #include <mono/jit/jit.h>
 #include <mono/metadata/object.h>
 
-namespace Copper::Scripting::InternalCalls::Components::Camera {
+namespace Copper::Scripting::Camera {
 
     typedef ::Copper::Camera Camera;
 
-    float get_fov(MonoObject* camera) {
+    float GetFov(MonoObject* camera) {
 
         CUP_FUNCTION();
 
@@ -19,7 +20,7 @@ namespace Copper::Scripting::InternalCalls::Components::Camera {
         return ptr->fov;
 
     }
-    void set_fov(MonoObject* camera, float value) {
+    void SetFov(MonoObject* camera, float value) {
 
         CUP_FUNCTION();
 

@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 namespace Copper {
 
     [StructLayout(LayoutKind.Sequential)]
-    [NativeClass]
+    [NativeClass("Engine/Scripting/InternalCalls/Components/Component.cs.h")]
     public class Component : Base {
 
         public Entity entity {

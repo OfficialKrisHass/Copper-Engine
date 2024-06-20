@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 namespace Copper {
 
     [StructLayout(LayoutKind.Sequential)]
-    [NativeClass]
+    [NativeClass("Engine/Scripting/InternalCalls/Components/Transform.cs.h")]
     public class Transform : Component {
 
         public static int ComponentID() { return 0; }

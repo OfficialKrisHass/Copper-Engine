@@ -1,5 +1,5 @@
 #include "cupch.h"
-
+#include "Entity.cs.h"
 #include "Engine/Scene/CopperECS.h"
 
 #include "Engine/Components/Camera.h"
@@ -18,7 +18,7 @@
                                    uint64 id = INVALID_ENTITY_ID; mono_field_get_value(instance, UnmanagedPtrField(), (void*) &id); CU_ASSERT(id != INVALID_ENTITY_ID, "Could not get Unmanaged Entity ID from C# instance");\
                                    InternalEntity* name = GetEntityFromID((uint32) id); CU_ASSERT(name, "Could not get Unamanged entity from ID '{}' got from C# instance", id);
 
-namespace Copper::Scripting::InternalCalls::ECS::Entity {
+namespace Copper::Scripting::Entity {
 
     std::unordered_map<std::string, std::function<void*(InternalEntity*)>> addComponentFuncs;
 
@@ -32,7 +32,7 @@ namespace Copper::Scripting::InternalCalls::ECS::Entity {
 
     }
 
-    MonoString* get_name(MonoObject* entity) {
+    MonoString* GetName(MonoObject* entity) {
 
         CUP_FUNCTION();
 
@@ -40,7 +40,7 @@ namespace Copper::Scripting::InternalCalls::ECS::Entity {
         return MonoUtils::StringToMonoString(ptr->name);
 
     }
-    void set_name(MonoObject* entity, MonoString* value) {
+    void SetName(MonoObject* entity, MonoString* value) {
 
         CUP_FUNCTION();
 

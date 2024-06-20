@@ -1,10 +1,11 @@
 #include "cupch.h"
+#include "Editor.cs.h"
 
 #include "Engine/Scripting/MonoUtils.h"
 
 #include <mono/jit/jit.h>
 
-namespace Copper::Scripting::InternalCalls::Core::Editor {
+namespace Copper::Scripting::Editor {
 
     void EditorLog(MonoString* msg) {
 

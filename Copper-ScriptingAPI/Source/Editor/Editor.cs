@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Copper {
     
-    [NativeClass]
+    [NativeClass("Engine/Scripting/InternalCalls/Editor/Editor.cs.h")]
     public static class Editor {
         
         public static void Log(string msg) { Internal_EditorLog(msg); }

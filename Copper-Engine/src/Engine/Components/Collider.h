@@ -33,13 +33,16 @@ namespace Copper {
 
 		};
 
+		void Setup();
+
+        inline Type GetType() const { return m_type; }
+        inline RigidBody* GetRigidBody() const { return m_rb; }
+
 	protected:
 		Type m_type = Type::None;
 		RigidBody* m_rb = nullptr;
 
 	private:
-		void Setup();
-
 		virtual physx::PxShape* CreateShape() const = 0;
 
 	};

@@ -1,6 +1,7 @@
 #include "cupch.h"
 
 #include "Engine/Scripting/InternalCalls/Components/Camera.cs.h"
+#include "Engine/Scripting/InternalCalls/Components/Collider.cs.h"
 #include "Engine/Scripting/InternalCalls/Components/Component.cs.h"
 #include "Engine/Scripting/InternalCalls/Components/Light.cs.h"
 #include "Engine/Scripting/InternalCalls/Components/RigidBody.cs.h"
@@ -25,6 +26,12 @@ namespace Copper::Scripting {
         mono_add_internal_call("Copper.Camera::set_nearPlane", (void*) Camera::SetNearPlane);
         mono_add_internal_call("Copper.Camera::get_farPlane", (void*) Camera::GetFarPlane);
         mono_add_internal_call("Copper.Camera::set_farPlane", (void*) Camera::SetFarPlane);
+        mono_add_internal_call("Copper.Collider::get_type", (void*) Collider::GetType);
+        mono_add_internal_call("Copper.Collider::get_rigidBody", (void*) Collider::GetRigidBody);
+        mono_add_internal_call("Copper.Collider::get_trigger", (void*) Collider::GetTrigger);
+        mono_add_internal_call("Copper.Collider::set_trigger", (void*) Collider::SetTrigger);
+        mono_add_internal_call("Copper.Collider::get_center", (void*) Collider::GetCenter);
+        mono_add_internal_call("Copper.Collider::set_center", (void*) Collider::SetCenter);
         mono_add_internal_call("Copper.Component::get_entity", (void*) Component::GetEntity);
         mono_add_internal_call("Copper.Component::get_transform", (void*) Component::GetTransform);
         mono_add_internal_call("Copper.Light::get_color", (void*) Light::GetColor);

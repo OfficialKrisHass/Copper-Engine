@@ -8,7 +8,7 @@ namespace Copper {
     [NativeClass("Engine/Scripting/InternalCalls/Components/RigidBody.cs.h")]
     public class RigidBody : Component {
 
-        public static int ComponentID() { return 5; }
+        private static uint cID = 5;
 
         public enum ForceMode : byte {
 

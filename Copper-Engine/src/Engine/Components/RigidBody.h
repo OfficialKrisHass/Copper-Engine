@@ -6,9 +6,6 @@
 #include "Engine/Components/Component.h"
 
 namespace physx { class PxRigidActor; class PxShape; }
-#ifdef CU_EDITOR
-    namespace Editor { class Properties; }
-#endif
 
 namespace Copper {
 

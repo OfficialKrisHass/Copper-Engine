@@ -8,7 +8,7 @@ namespace Copper {
     [NativeClass("Engine/Scripting/InternalCalls/Components/Camera.cs.h")]
     public class Camera : Component {
 
-        public static int ComponentID() { return 2; } 
+        private static uint cID = 2; 
 
         public extern float fov {
 

@@ -8,7 +8,7 @@ namespace Copper {
     [NativeClass("Engine/Scripting/InternalCalls/Components/Transform.cs.h")]
     public class Transform : Component {
 
-        public static int ComponentID() { return 0; }
+        private static uint cID = 0;
 
         public extern Vector3 position {
 

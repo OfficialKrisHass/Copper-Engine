@@ -37,7 +37,7 @@ namespace Copper::Scripting::Collider {
         CUP_FUNCTION();
 
         GET_UNMANAGED_PTR(Collider*, ptr, collider);
-        return ptr->trigger;
+        return ptr->GetTrigger();
 
     }
     void SetTrigger(MonoObject* collider, bool value) {
@@ -45,8 +45,7 @@ namespace Copper::Scripting::Collider {
         CUP_FUNCTION();
 
         GET_UNMANAGED_PTR(Collider*, ptr, collider);
-        ptr->trigger = value;
-        ptr->Setup();
+        ptr->SetTrigger(value);
 
     }
     Vector3 GetCenter(MonoObject* collider) {
@@ -54,7 +53,7 @@ namespace Copper::Scripting::Collider {
         CUP_FUNCTION();
 
         GET_UNMANAGED_PTR(Collider*, ptr, collider);
-        return ptr->center;
+        return ptr->GetCenter();
 
     }
     void SetCenter(MonoObject *collider, Vector3 value) {
@@ -62,8 +61,7 @@ namespace Copper::Scripting::Collider {
         CUP_FUNCTION();
 
         GET_UNMANAGED_PTR(Collider*, ptr, collider);
-        ptr->center = value;
-        ptr->Setup();
+        ptr->SetCenter(value);
 
     }
 

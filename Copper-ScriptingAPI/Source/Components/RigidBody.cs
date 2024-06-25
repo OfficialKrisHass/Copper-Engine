@@ -8,7 +8,7 @@ namespace Copper {
     [NativeClass("Engine/Scripting/InternalCalls/Components/RigidBody.cs.h")]
     public class RigidBody : Component {
 
-        private static uint cID = 5;
+        private static uint ComponentID() { return 5; } 
 
         public enum ForceMode : byte {
 
@@ -25,6 +25,17 @@ namespace Copper {
             RotX = 8, RotY = 16, RotZ = 32,
 
         };
+
+        public extern float mass {
+
+            [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("GetMass")]
+            get;
+            [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("SetMass")]
+            set;
+
+        }
 
         public extern bool isStatic {
 
@@ -46,18 +57,6 @@ namespace Copper {
             set;
 
         }
-
-        public extern float mass {
-
-            [MethodImpl(MethodImplOptions.InternalCall)]
-            [NativeFunction("GetMass")]
-            get;
-            [MethodImpl(MethodImplOptions.InternalCall)]
-            [NativeFunction("SetMass")]
-            set;
-
-        }
-
         public extern byte lockMask {
 
             [MethodImpl(MethodImplOptions.InternalCall)]

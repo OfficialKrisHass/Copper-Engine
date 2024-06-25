@@ -38,9 +38,9 @@ Entities:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: 341bba04-c463-48de-88bb-6e5c37cb0213
     Rigid Body:
+      Mass: 1
       Static: false
       Gravity: true
-      Mass: 1
       Lock Mask: 33
     Box Collider:
       Trigger: false
@@ -82,9 +82,9 @@ Entities:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: 8a28e286-e5bf-4153-a926-408c84dcb606
     Rigid Body:
+      Mass: 1
       Static: true
       Gravity: false
-      Mass: 1
       Lock Mask: 0
     Box Collider:
       Trigger: false
@@ -102,9 +102,9 @@ Entities:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: a2b68d90-7263-4263-8afd-23c3fe4f1768
     Rigid Body:
+      Mass: 1
       Static: false
       Gravity: true
-      Mass: 1
       Lock Mask: 0
     Sphere Collider:
       Trigger: false
@@ -122,9 +122,9 @@ Entities:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: 752720d1-fb00-453d-bd6c-ad1f2d0416da
     Rigid Body:
+      Mass: 1
       Static: false
       Gravity: true
-      Mass: 1
       Lock Mask: 0
     Capsule Collider:
       Trigger: false
@@ -179,9 +179,9 @@ Entities:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: b72603e5-b719-4829-aaf1-861c4c40b362
     Rigid Body:
+      Mass: 1
       Static: false
       Gravity: true
-      Mass: 1
       Lock Mask: 0
     Box Collider:
       Trigger: false

@@ -240,22 +240,17 @@ namespace Editor {
 
 		if (!DrawComponent<RigidBody>("Rigid Body", rb)) return;
 
-		bool tmp = rb->IsStatic();
-		if (UI::EditBool("Static", &tmp)) rb->SetIsStatic(tmp);
+		if (UI::EditFloat("Mass", &rb->m_mass)) rb->SetMass(rb->m_mass);
 
-		tmp = rb->Gravity();
-		if (UI::EditBool("Gravity", &tmp)) rb->SetGravity(tmp);
-
-		float mass = rb->Mass();
-		if (UI::EditFloat("Mass", &mass)) rb->SetMass(mass);
+		if (UI::EditBool("Static", &rb->m_static)) rb->SetStatic(rb->m_static);
+		if (UI::EditBool("Gravity", &rb->m_gravity)) rb->SetGravity(rb->m_gravity);
 
 		if (ImGui::TreeNode("Locks")) {
 
 			// Position Lock
 
-			uint8 lockMask = rb->LockMask();
-			if (UI::EditMask("Position", (uint32&) lockMask, 3)) rb->SetLockMask(lockMask);
-			if (UI::EditMask("Rotation", (uint32&) lockMask, 3, 3)) rb->SetLockMask(lockMask);
+			if (UI::EditMask("Position", (uint32&) rb->m_lockMask, 3)) rb->SetLockMask(rb->m_lockMask);
+			if (UI::EditMask("Rotation", (uint32&) rb->m_lockMask, 3, 3)) rb->SetLockMask(rb->m_lockMask);
 
 			ImGui::TreePop();
 				
@@ -269,10 +264,10 @@ namespace Editor {
 
 		if (!DrawComponent<BoxCollider>("Box Collider", collider)) return;
 
-		UI::EditBool("Trigger", &collider->trigger);
-		UI::EditVector3("Center", &collider->center);
+		if (UI::EditBool("Trigger", &collider->m_trigger)) collider->SetTrigger(collider->m_trigger);
+		if (UI::EditVector3("Center", &collider->m_center)) collider->SetCenter(collider->m_center);
 
-		UI::EditVector3("Size", &collider->size);
+		if (UI::EditVector3("Size", &collider->m_size)) collider->SetSize(collider->m_size);
 
 		ImGui::PopID();
 
@@ -281,12 +276,12 @@ namespace Editor {
 
 		if (!DrawComponent<SphereCollider>("Sphere Collider", collider)) return;
 
-		UI::EditBool("Trigger", &collider->trigger);
-		UI::EditVector3("Center", &collider->center);
+        if (UI::EditBool("Trigger", &collider->m_trigger)) collider->SetTrigger(collider->m_trigger);
+		if (UI::EditVector3("Center", &collider->m_center)) collider->SetCenter(collider->m_center);	
 
 		ImGui::Separator();
 
-		UI::EditFloat("Radius", &collider->radius);
+		if (UI::EditFloat("Radius", &collider->m_radius)) collider->SetRadius(collider->m_radius);
 
 		ImGui::PopID();
 
@@ -295,13 +290,13 @@ namespace Editor {
 
 		if (!DrawComponent<CapsuleCollider>("Capsule Collider", collider)) return;
 
-		UI::EditBool("Trigger", &collider->trigger);
-		UI::EditVector3("Center", &collider->center);
+        if (UI::EditBool("Trigger", &collider->m_trigger)) collider->SetTrigger(collider->m_trigger);
+		if (UI::EditVector3("Center", &collider->m_center)) collider->SetCenter(collider->m_center);	
 
 		ImGui::Separator();
 
-		UI::EditFloat("Radius", &collider->radius);
-		UI::EditFloat("Height", &collider->height);
+        if (UI::EditFloat("Radius", &collider->m_radius)) collider->SetRadius(collider->m_radius);	
+		if (UI::EditFloat("Height", &collider->m_height)) collider->SetHeight(collider->m_height);
 
 		ImGui::PopID();
 

@@ -32,7 +32,6 @@ namespace Copper::Scripting {
         Assembly game;
 
         MonoClassField* unmanagedPtrField;
-        MonoProperty* componentIDProperty;
 
         ScriptMap componentScripts;
 
@@ -44,6 +43,7 @@ namespace Copper::Scripting {
 
     extern void SetupInternalCalls();
     extern void InitializeClasses();
+    extern void InitializeFields();
 
     void Initialize() {
 
@@ -148,7 +148,6 @@ namespace Copper::Scripting {
         InitializeClasses();
 
         data.unmanagedPtrField = mono_class_get_field_from_name(BaseClass(), "m_unmanagedPtr");
-        data.componentIDProperty = mono_class_get_property_from_name(ComponentClass(), "componentID");
 
     }
     void InitializeGame() {
@@ -192,6 +191,5 @@ namespace Copper::Scripting {
     const ScriptMap& ComponentScripts() { return data.componentScripts; }
 
     MonoClassField* UnmanagedPtrField() { return data.unmanagedPtrField; }
-    MonoProperty* ComponentIDProperty() { return data.componentIDProperty; }
 
 }

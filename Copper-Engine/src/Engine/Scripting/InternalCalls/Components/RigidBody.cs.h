@@ -10,14 +10,13 @@ extern "C" {
 
 namespace Copper::Scripting::RigidBody {
 
+    float GetMass(MonoObject* rigidBody);
+    void SetMass(MonoObject* rigidBody, float value);
+
     bool GetIsStatic(MonoObject* rigidBody);
     void SetIsStatic(MonoObject* rigidBody, bool value);
     bool GetGravity(MonoObject* rigidBody);
     void SetGravity(MonoObject* rigidBody, bool value);
-
-    float GetMass(MonoObject* rigidBody);
-    void SetMass(MonoObject* rigidBody, float value);
-
     uint8 GetLockMask(MonoObject* rigidBody);
     void SetLockMask(MonoObject* rigidBody, uint8 value);
 

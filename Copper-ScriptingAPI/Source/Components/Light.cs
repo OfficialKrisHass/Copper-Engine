@@ -8,7 +8,7 @@ namespace Copper {
     [NativeClass("Engine/Scripting/InternalCalls/Components/Light.cs.h")]
     public class Light : Component {
 
-        private static uint cID = 3;
+       private static uint ComponentID() { return 3; } 
 
         public enum Type {
 

@@ -12,45 +12,12 @@ namespace Copper::Scripting::RigidBody {
 
 	typedef ::Copper::RigidBody RigidBody;
 
-	bool GetIsStatic(MonoObject* rigidBody) {
-
-		CUP_FUNCTION();
-
-		GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
-		return ptr->IsStatic();
-
-	}
-	void SetIsStatic(MonoObject* rigidBody, bool value) {
-
-		CUP_FUNCTION();
-
-		GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
-		ptr->SetIsStatic(value);
-
-	}
-	bool GetGravity(MonoObject* rigidBody) {
-
-		CUP_FUNCTION();
-
-		GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
-		return ptr->Gravity();
-
-	}
-	void SetGravity(MonoObject* rigidBody, bool value) {
-
-		CUP_FUNCTION();
-
-		GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
-		ptr->SetGravity(value);
-
-	}
-
 	float GetMass(MonoObject* rigidBody) {
 
 		CUP_FUNCTION();
 
 		GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
-		return ptr->Mass();
+		return ptr->GetMass();
 
 	}
 	void SetMass(MonoObject* rigidBody, float value) {
@@ -62,12 +29,44 @@ namespace Copper::Scripting::RigidBody {
 
 	}
 
+	bool GetIsStatic(MonoObject* rigidBody) {
+
+		CUP_FUNCTION();
+
+		GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
+		return ptr->GetStatic();
+
+	}
+	void SetIsStatic(MonoObject* rigidBody, bool value) {
+
+		CUP_FUNCTION();
+
+		GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
+		ptr->SetStatic(value);
+
+	}
+	bool GetGravity(MonoObject* rigidBody) {
+
+		CUP_FUNCTION();
+
+		GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
+		return ptr->GetGravity();
+
+	}
+	void SetGravity(MonoObject* rigidBody, bool value) {
+
+		CUP_FUNCTION();
+
+		GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
+		ptr->SetGravity(value);
+
+	}
 	uint8 GetLockMask(MonoObject* rigidBody) {
 
 		CUP_FUNCTION();
 
 		GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
-		return ptr->LockMask();
+		return ptr->GetLockMask();
 
 	}
 	void SetLockMask(MonoObject* rigidBody, uint8 value) {
@@ -84,7 +83,7 @@ namespace Copper::Scripting::RigidBody {
 		CUP_FUNCTION();
 
 		GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
-		ptr->AddForce(force, (ForceMode) forceMode);
+		ptr->AddForce(force, (RigidBody::ForceMode) forceMode);
 
 	}
 	void AddTorque(MonoObject* rigidBody, const Vector3& torque, uint8 forceMode) {
@@ -92,7 +91,7 @@ namespace Copper::Scripting::RigidBody {
 		CUP_FUNCTION();
 
 		GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
-		ptr->AddTorque(torque, (ForceMode) forceMode);
+		ptr->AddTorque(torque, (RigidBody::ForceMode) forceMode);
 
 	}
 

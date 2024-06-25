@@ -113,8 +113,10 @@ namespace Copper::Scripting::Entity {
         // Get Component ID
 
         MonoClass* klass = mono_type_get_class(mono_reflection_type_get_type(type));
-        uint32 cID = 0;
-        mono_field_get_value(nullptr, mono_class_get_field_from_name(klass, "cID"), &cID);
+        MonoMethod* method = mono_class_get_method_from_name(klass, "ComponentID", 0);
+        CU_ASSERT(method, "Could not get ComponentID method from component class '{}'", mono_class_get_name(klass));
+
+        int32 cID = *(int32*) mono_object_unbox(mono_runtime_invoke(method, nullptr, nullptr, nullptr));
 
         // Get Component
 
@@ -141,6 +143,7 @@ namespace Copper::Scripting::Entity {
         CU_ASSERT(method, "Could not get ComponentID method from component class '{}'", mono_class_get_name(klass));
 
         int32 cID = *(int32*) mono_object_unbox(mono_runtime_invoke(method, nullptr, nullptr, nullptr));
+
         if (cID == TRANSFORM_CID) return true;
 
         // Return
@@ -160,6 +163,7 @@ namespace Copper::Scripting::Entity {
         CU_ASSERT(method, "Could not get ComponentID method from component class '{}'", mono_class_get_name(klass));
 
         int32 cID = *(int32*) mono_object_unbox(mono_runtime_invoke(method, nullptr, nullptr, nullptr));
+
         if (cID == TRANSFORM_CID) return;
         
         // Return

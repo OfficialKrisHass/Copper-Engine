@@ -8,7 +8,7 @@ namespace Copper {
     [NativeClass("Engine/Scripting/InternalCalls/Components/Collider.cs.h")]
     public class Collider : Component {
 
-        private static uint cID = 6;
+        private static uint ComponentID() { return 6; } 
 
         public enum Type : byte {
 

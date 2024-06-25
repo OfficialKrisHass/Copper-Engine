@@ -59,16 +59,8 @@ namespace Copper {
 
 		InitializePhysics();
 
-        for (InternalEntity* entity : EntityView(this)) {
-
-            // Initialize physics
-
-            if (RigidBody* rb = entity->GetComponent<RigidBody>())
-                rb->Setup();
-            else if (Collider* collider = entity->GetComponent<Collider>())
-                collider->Setup();
-
-        }
+        for (RigidBody* rb : ComponentView<RigidBody>(this))
+            rb->Initialize();
 
 	}
 	void Scene::StopRuntime() {
@@ -363,12 +355,11 @@ namespace Copper {
 
 			out << YAML::Key << "Rigid Body" << YAML::Value << YAML::BeginMap; // Rigid Body
 
-			out << YAML::Key << "Static" << YAML::Value << rb->IsStatic();
-			out << YAML::Key << "Gravity" << YAML::Value << rb->Gravity();
+			out << YAML::Key << "Mass" << YAML::Value << rb->GetMass();
 
-			out << YAML::Key << "Mass" << YAML::Value << rb->Mass();
-
-			out << YAML::Key << "Lock Mask" << YAML::Value << (uint32) rb->LockMask();
+			out << YAML::Key << "Static" << YAML::Value << rb->GetStatic();
+			out << YAML::Key << "Gravity" << YAML::Value << rb->GetGravity();
+			out << YAML::Key << "Lock Mask" << YAML::Value << (uint32) rb->GetLockMask();
 
 			out << YAML::EndMap; // Rigid Body
 
@@ -378,10 +369,10 @@ namespace Copper {
 
 			out << YAML::Key << "Box Collider" << YAML::Value << YAML::BeginMap; // Box Collider
 
-			out << YAML::Key << "Trigger" << YAML::Value << collider->trigger;
-			out << YAML::Key << "Center" << YAML::Value << collider->center;
+			out << YAML::Key << "Trigger" << YAML::Value << collider->m_trigger;
+			out << YAML::Key << "Center" << YAML::Value << collider->m_center;
 
-			out << YAML::Key << "Size" << YAML::Value << collider->size;
+			out << YAML::Key << "Size" << YAML::Value << collider->m_size;
 
 			out << YAML::EndMap; // Box Collider
 
@@ -390,10 +381,10 @@ namespace Copper {
 
 			out << YAML::Key << "Sphere Collider" << YAML::Value << YAML::BeginMap; // Sphere Collider
 
-			out << YAML::Key << "Trigger" << YAML::Value << collider->trigger;
-			out << YAML::Key << "Center" << YAML::Value << collider->center;
+			out << YAML::Key << "Trigger" << YAML::Value << collider->m_trigger;
+			out << YAML::Key << "Center" << YAML::Value << collider->m_center;
 
-			out << YAML::Key << "Radius" << YAML::Value << collider->radius;
+			out << YAML::Key << "Radius" << YAML::Value << collider->m_radius;
 
 			out << YAML::EndMap; // Sphere Collider
 
@@ -402,11 +393,11 @@ namespace Copper {
 
 			out << YAML::Key << "Capsule Collider" << YAML::Value << YAML::BeginMap; // Sphere Collider
 
-			out << YAML::Key << "Trigger" << YAML::Value << collider->trigger;
-			out << YAML::Key << "Center" << YAML::Value << collider->center;
+			out << YAML::Key << "Trigger" << YAML::Value << collider->m_trigger;
+			out << YAML::Key << "Center" << YAML::Value << collider->m_center;
 
-			out << YAML::Key << "Radius" << YAML::Value << collider->radius;
-			out << YAML::Key << "Height" << YAML::Value << collider->height;
+			out << YAML::Key << "Radius" << YAML::Value << collider->m_radius;
+			out << YAML::Key << "Height" << YAML::Value << collider->m_height;
 
 			out << YAML::EndMap; // Sphere Collider
 
@@ -557,11 +548,10 @@ namespace Copper {
 
 			RigidBody* rb = entity->AddComponent<RigidBody>();
 
-			rb->m_isStatic = rbNode["Static"].as<bool>();
-			rb->m_gravity = rbNode["Gravity"].as<bool>();
-
 			rb->m_mass = rbNode["Mass"].as<float>();
 
+			rb->m_static = rbNode["Static"].as<bool>();
+			rb->m_gravity = rbNode["Gravity"].as<bool>();
 			rb->m_lockMask = rbNode["Lock Mask"].as<uint8>();
 
 		}
@@ -570,31 +560,31 @@ namespace Copper {
 
 			BoxCollider* collider = entity->AddComponent<BoxCollider>();
 
-			collider->trigger = colliderNode["Trigger"].as<bool>();
-			collider->center = colliderNode["Center"].as<Vector3>();
+			collider->m_trigger = colliderNode["Trigger"].as<bool>();
+			collider->m_center = colliderNode["Center"].as<Vector3>();
 
-			collider->size = colliderNode["Size"].as<Vector3>();
+			collider->m_size = colliderNode["Size"].as<Vector3>();
 
 		}
 		if (YAML::Node colliderNode = node["Sphere Collider"]) {
 
 			SphereCollider* collider = entity->AddComponent<SphereCollider>();
 
-			collider->trigger = colliderNode["Trigger"].as<bool>();
-			collider->center = colliderNode["Center"].as<Vector3>();
+			collider->m_trigger = colliderNode["Trigger"].as<bool>();
+			collider->m_center = colliderNode["Center"].as<Vector3>();
 
-			collider->radius = colliderNode["Radius"].as<float>();
+			collider->m_radius = colliderNode["Radius"].as<float>();
 
 		}
 		if (YAML::Node colliderNode = node["Capsule Collider"]) {
 
 			CapsuleCollider* collider = entity->AddComponent<CapsuleCollider>();
 
-			collider->trigger = colliderNode["Trigger"].as<bool>();
-			collider->center = colliderNode["Center"].as<Vector3>();
+			collider->m_trigger = colliderNode["Trigger"].as<bool>();
+			collider->m_center = colliderNode["Center"].as<Vector3>();
 
-			collider->radius = colliderNode["Radius"].as<float>();
-			collider->height = colliderNode["Height"].as<float>();
+			collider->m_radius = colliderNode["Radius"].as<float>();
+			collider->m_height = colliderNode["Height"].as<float>();
 
 		}
 

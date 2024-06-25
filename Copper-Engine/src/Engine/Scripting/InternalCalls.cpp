@@ -40,12 +40,12 @@ namespace Copper::Scripting {
         mono_add_internal_call("Copper.Light::set_type", (void*) Light::SetType);
         mono_add_internal_call("Copper.Light::get_intensity", (void*) Light::GetIntensity);
         mono_add_internal_call("Copper.Light::set_intensity", (void*) Light::SetIntensity);
+        mono_add_internal_call("Copper.RigidBody::get_mass", (void*) RigidBody::GetMass);
+        mono_add_internal_call("Copper.RigidBody::set_mass", (void*) RigidBody::SetMass);
         mono_add_internal_call("Copper.RigidBody::get_isStatic", (void*) RigidBody::GetIsStatic);
         mono_add_internal_call("Copper.RigidBody::set_isStatic", (void*) RigidBody::SetIsStatic);
         mono_add_internal_call("Copper.RigidBody::get_gravity", (void*) RigidBody::GetGravity);
         mono_add_internal_call("Copper.RigidBody::set_gravity", (void*) RigidBody::SetGravity);
-        mono_add_internal_call("Copper.RigidBody::get_mass", (void*) RigidBody::GetMass);
-        mono_add_internal_call("Copper.RigidBody::set_mass", (void*) RigidBody::SetMass);
         mono_add_internal_call("Copper.RigidBody::get_lockMask", (void*) RigidBody::GetLockMask);
         mono_add_internal_call("Copper.RigidBody::set_lockMask", (void*) RigidBody::SetLockMask);
         mono_add_internal_call("Copper.RigidBody::Internal_AddForce", (void*) RigidBody::AddForce);

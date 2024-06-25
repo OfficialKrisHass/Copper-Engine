@@ -5,31 +5,43 @@
 
 #include "Engine/Components/Component.h"
 
-namespace physx { class PxRigidActor; class PxShape; }
+namespace physx {
+
+    class PxRigidActor;
+    class PxShape;
+
+}
+
+#ifdef CU_EDITOR
+namespace Editor { class Properties; }
+#endif
 
 namespace Copper {
 
     class Collider;
 
-    enum class ForceMode : uint8 {
-
-        Force = 0,
-        Impulse = 1,
-        VelocityChange = 2,
-        Acceleration = 3
-
-    };
-
     class RigidBody : public Component {
 
         friend class Scene;
-        friend class Collider;
-        
-    public:
-        enum LockFlags : uint8 {
+        friend Collider;
 
-            POS_X = 1 << 0, POS_Y = 1 << 1, POS_Z = 1 << 2,
-            ROT_X = 1 << 3, ROT_Y = 1 << 4, ROT_Z = 1 << 5,
+#ifdef CU_EDITOR
+        friend Editor::Properties;
+#endif
+
+    public:
+        enum class LockFlags : uint8 {
+
+            POS_X = FLAG(0), POS_Y = FLAG(1), POS_Z = FLAG(2),
+            ROT_X = FLAG(3), ROT_Y = FLAG(4), ROT_Z = FLAG(5),
+
+        };
+        enum class ForceMode : uint8 {
+
+            Force = 0,
+            Impulse = 1,
+            VelocityChange = 2,
+            Acceleration = 3,
 
         };
 
@@ -38,37 +50,37 @@ namespace Copper {
 
         // Getters
 
-        inline bool IsStatic() const { return m_isStatic; }
-        inline bool Gravity() const { return m_gravity; }
+        inline float GetMass() const { return m_mass; }
 
-        inline float Mass() const { return m_mass; }
+        inline bool GetStatic() const { return m_static; }
+        inline bool GetGravity() const { return m_gravity; }
+        inline uint8 GetLockMask() const { return m_lockMask; }
 
-        inline uint8 LockMask() const { return m_lockMask; }
+        inline Collider* GetCollider() const { return m_collider; }
 
         // Setters
-
-        void SetIsStatic(bool value);
-        void SetGravity(bool value);
-
+        
         void SetMass(float value);
 
+        void SetStatic(bool value);
+        void SetGravity(bool value);
         void SetLockMask(uint8 value);
 
     private:
-        physx::PxRigidActor* m_body = nullptr;
+        physx::PxRigidActor* m_actor = nullptr;
         Collider* m_collider = nullptr;
-
-        bool m_isStatic = false;
-        bool m_gravity = true;
 
         float m_mass = 1.0f;
 
+        bool m_static = false;
+        bool m_gravity = true;
         uint8 m_lockMask = 0;
 
-        void Setup();
+        void Initialize();
+        void Remove();
 
-        void CreateDynamic(physx::PxShape* shape);
-        void CreateStatic(physx::PxShape* shape);
+        void InitializeStatic(physx::PxShape* shape);
+        void InitializeDynamic(physx::PxShape* shape);
 
         void UpdatePositionAndRotation();
 

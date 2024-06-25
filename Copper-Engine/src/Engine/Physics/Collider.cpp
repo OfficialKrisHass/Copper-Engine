@@ -26,34 +26,32 @@ namespace Copper {
 
     using namespace PhysicsEngine;
 
-    void Collider::Setup() {
+    void Collider::RecreateShape() {
 
         CUP_FUNCTION();
 
-        m_rb = GetEntity()->GetComponent<RigidBody>();
-        if (m_rb) {
+        // Remove current shape
 
-            m_rb->m_collider = this;
-            return;
+        PxShape* shape = nullptr;
+        m_rb->m_actor->getShapes(&shape, 1);
+        CU_ASSERT(shape, "Could not get shape from RigidBody");
 
-        }
+        m_rb->m_actor->detachShape(*shape);
 
-        // Case 1: Collider with no Rigid Body
+        // Attach new one
 
-        PxShape* shape = CreateShape();
-        if (trigger) {
+        shape = CreateShape();
+        CU_ASSERT(shape, "Could not create physx shape on entity '{}'", *GetEntity());
+
+        if (m_trigger) {
 
             shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
             shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
 
         }
 
-        PxRigidStatic* body = PxCreateStatic(*physics, PxTransform(CopperToPhysX(GetTransform()->Position()), CopperToPhysX(GetTransform()->Rotation())), *shape);
-
-        body->setName(GetEntity()->name.c_str());
-        body->userData = (void*) GetEntity();
-
-        GetScene()->AddPhysicsBody(body);
+        m_rb->m_actor->attachShape(*shape);
+        shape->release();
 
     }
 
@@ -61,14 +59,14 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        return physics->createShape(PxBoxGeometry(CopperToPhysX(GetTransform()->Scale() * size / 2.0f)), *material);
+        return physics->createShape(PxBoxGeometry(CopperToPhysX(GetTransform()->Scale() * m_size / 2.0f)), *material);
 
     }
     PxShape* SphereCollider::CreateShape() const {
 
         CUP_FUNCTION();
 
-        return physics->createShape(PxSphereGeometry(radius * GetTransform()->Scale().x), *material);
+        return physics->createShape(PxSphereGeometry(m_radius * GetTransform()->Scale().x), *material);
 
     }
     PxShape* CapsuleCollider::CreateShape() const {
@@ -76,7 +74,7 @@ namespace Copper {
         CUP_FUNCTION();
 
         Transform* transform = GetTransform();
-        return physics->createShape(PxCapsuleGeometry(transform->Scale().x * radius, transform->Scale().y * height), *material);
+        return physics->createShape(PxCapsuleGeometry(transform->Scale().x * m_radius, transform->Scale().y * m_height), *material);
 
     }
 

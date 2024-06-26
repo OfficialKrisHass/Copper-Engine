@@ -169,6 +169,13 @@ public class Tester : Component {
         Editor.Log("rb lockMask: " + rb.lockMask.ToString());
         rb.lockMask = 0;
 
+        Collider collider = rb.collider;
+        Editor.Log("Collider type: " + collider.type.ToString());
+
+        BoxCollider coll = (BoxCollider) collider;
+        Editor.Log("Collider size: " + coll.size.ToString());
+        coll.size += new Vector3(0.0f, 0.5f, 0.0f);
+
         Editor.Log("");
 
     }

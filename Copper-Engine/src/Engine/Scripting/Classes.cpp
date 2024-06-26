@@ -26,6 +26,9 @@ namespace Copper::Scripting {
         MonoClass* lightClass = nullptr;
 
         MonoClass* rigidBodyClass = nullptr;
+        MonoClass* boxColliderClass = nullptr;
+        MonoClass* sphereColliderClass = nullptr;
+        MonoClass* capsuleColliderClass = nullptr;
 
         MonoClass* showInEditorAttrClass = nullptr;
         MonoClass* hideInEditorAttrClass = nullptr;
@@ -46,6 +49,9 @@ namespace Copper::Scripting {
         SET_CLASS(lightClass, "Light");
 
         SET_CLASS(rigidBodyClass, "RigidBody");
+        SET_CLASS(boxColliderClass, "BoxCollider");
+        SET_CLASS(sphereColliderClass, "SphereCollider");
+        SET_CLASS(capsuleColliderClass, "CapsuleCollider");
 
         SET_CLASS(showInEditorAttrClass, "ShowInEditorAttribute");
         SET_CLASS(hideInEditorAttrClass, "HideInEditorAttribute");
@@ -63,6 +69,9 @@ namespace Copper::Scripting {
     GET_CLASS_FUNC(Light, lightClass);
 
     GET_CLASS_FUNC(RigidBody, rigidBodyClass);
+    GET_CLASS_FUNC(BoxCollider, boxColliderClass);
+    GET_CLASS_FUNC(SphereCollider, sphereColliderClass);
+    GET_CLASS_FUNC(CapsuleCollider, capsuleColliderClass);
 
     GET_CLASS_FUNC(ShowInEditorAttribute, showInEditorAttrClass);
     GET_CLASS_FUNC(HideInEditorAttribute, hideInEditorAttrClass);

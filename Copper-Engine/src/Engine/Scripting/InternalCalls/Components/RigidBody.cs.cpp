@@ -78,6 +78,22 @@ namespace Copper::Scripting::RigidBody {
 
 	}
 
+    MonoObject* GetCollider(MonoObject* rigidBody) {
+
+        CUP_FUNCTION();
+
+        GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
+
+        Collider* collider = ptr->GetCollider();
+        CU_ASSERT(collider, "Could not get Collider from RigidBody '{}'", *ptr->GetEntity());
+
+        MonoObject* ret = ManagedReference(collider);
+        CU_ASSERT(ret, "Could not get Managed Reference to Collider on '{}'", *ptr->GetEntity());
+
+        return ret;
+
+    }
+
 	void AddForce(MonoObject* rigidBody, const Vector3& force, uint8 forceMode) {
 
 		CUP_FUNCTION();

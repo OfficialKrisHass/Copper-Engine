@@ -21,6 +21,9 @@ namespace Copper::Scripting {
     MonoClass* LightClass();
 
     MonoClass* RigidBodyClass();
+    MonoClass* BoxColliderClass();
+    MonoClass* SphereColliderClass();
+    MonoClass* CapsuleColliderClass();
 
     MonoClass* ShowInEditorAttributeClass();
     MonoClass* HideInEditorAttributeClass();

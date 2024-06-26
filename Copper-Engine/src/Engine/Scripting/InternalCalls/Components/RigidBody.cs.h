@@ -20,6 +20,8 @@ namespace Copper::Scripting::RigidBody {
     uint8 GetLockMask(MonoObject* rigidBody);
     void SetLockMask(MonoObject* rigidBody, uint8 value);
 
+    MonoObject* GetCollider(MonoObject* rigidBody);
+
     void AddForce(MonoObject* rigidBody, const Vector3& force, uint8 forceMode);
     void AddTorque(MonoObject* rigidBody, const Vector3& torque, uint8 forceMode);
 

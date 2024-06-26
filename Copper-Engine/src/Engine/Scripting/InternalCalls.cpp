@@ -1,10 +1,13 @@
 #include "cupch.h"
 
+#include "Engine/Scripting/InternalCalls/Components/BoxCollider.cs.h"
 #include "Engine/Scripting/InternalCalls/Components/Camera.cs.h"
+#include "Engine/Scripting/InternalCalls/Components/CapsuleCollider.cs.h"
 #include "Engine/Scripting/InternalCalls/Components/Collider.cs.h"
 #include "Engine/Scripting/InternalCalls/Components/Component.cs.h"
 #include "Engine/Scripting/InternalCalls/Components/Light.cs.h"
 #include "Engine/Scripting/InternalCalls/Components/RigidBody.cs.h"
+#include "Engine/Scripting/InternalCalls/Components/SphereCollider.cs.h"
 #include "Engine/Scripting/InternalCalls/Components/Transform.cs.h"
 #include "Engine/Scripting/InternalCalls/Core/Entity.cs.h"
 #include "Engine/Scripting/InternalCalls/Editor/Editor.cs.h"
@@ -20,12 +23,18 @@ namespace Copper::Scripting {
 
         Entity::Initialize();
 
+        mono_add_internal_call("Copper.BoxCollider::get_size", (void*) BoxCollider::GetSize);
+        mono_add_internal_call("Copper.BoxCollider::set_size", (void*) BoxCollider::SetSize);
         mono_add_internal_call("Copper.Camera::get_fov", (void*) Camera::GetFov);
         mono_add_internal_call("Copper.Camera::set_fov", (void*) Camera::SetFov);
         mono_add_internal_call("Copper.Camera::get_nearPlane", (void*) Camera::GetNearPlane);
         mono_add_internal_call("Copper.Camera::set_nearPlane", (void*) Camera::SetNearPlane);
         mono_add_internal_call("Copper.Camera::get_farPlane", (void*) Camera::GetFarPlane);
         mono_add_internal_call("Copper.Camera::set_farPlane", (void*) Camera::SetFarPlane);
+        mono_add_internal_call("Copper.CapsuleCollider::get_radius", (void*) CapsuleCollider::GetRadius);
+        mono_add_internal_call("Copper.CapsuleCollider::set_radius", (void*) CapsuleCollider::SetRadius);
+        mono_add_internal_call("Copper.CapsuleCollider::get_height", (void*) CapsuleCollider::GetHeight);
+        mono_add_internal_call("Copper.CapsuleCollider::set_height", (void*) CapsuleCollider::SetHeight);
         mono_add_internal_call("Copper.Collider::get_type", (void*) Collider::GetType);
         mono_add_internal_call("Copper.Collider::get_rigidBody", (void*) Collider::GetRigidBody);
         mono_add_internal_call("Copper.Collider::get_trigger", (void*) Collider::GetTrigger);
@@ -48,8 +57,11 @@ namespace Copper::Scripting {
         mono_add_internal_call("Copper.RigidBody::set_gravity", (void*) RigidBody::SetGravity);
         mono_add_internal_call("Copper.RigidBody::get_lockMask", (void*) RigidBody::GetLockMask);
         mono_add_internal_call("Copper.RigidBody::set_lockMask", (void*) RigidBody::SetLockMask);
+        mono_add_internal_call("Copper.RigidBody::get_collider", (void*) RigidBody::GetCollider);
         mono_add_internal_call("Copper.RigidBody::Internal_AddForce", (void*) RigidBody::AddForce);
         mono_add_internal_call("Copper.RigidBody::Internal_AddTorque", (void*) RigidBody::AddTorque);
+        mono_add_internal_call("Copper.SphereCollider::get_radius", (void*) SphereCollider::GetRadius);
+        mono_add_internal_call("Copper.SphereCollider::set_radius", (void*) SphereCollider::SetRadius);
         mono_add_internal_call("Copper.Transform::get_position", (void*) Transform::GetPosition);
         mono_add_internal_call("Copper.Transform::set_position", (void*) Transform::SetPosition);
         mono_add_internal_call("Copper.Transform::get_scale", (void*) Transform::GetScale);

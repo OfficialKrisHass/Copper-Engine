@@ -37,6 +37,8 @@
 #include <fstream>
 #include <yaml-cpp/yaml.h>
 
+#define MANAGED_REFERENCE_ADD(CID, klass) case CID: Scripting::CreateManagedReference(event->component, klass); break;
+
 namespace Copper {
 
 	namespace Renderer {
@@ -179,12 +181,16 @@ namespace Copper {
 
         ComponentEvent* event = (ComponentEvent*) &e;
 
-		if (event->componentID == CAMERA_CID)
-			Scripting::CreateManagedReference(event->component, Scripting::CameraClass());
-		else if (event->componentID == LIGHT_CID)
-			Scripting::CreateManagedReference(event->component, Scripting::LightClass());
-		else if (event->componentID == RIGIDBODY_CID)
-			Scripting::CreateManagedReference(event->component, Scripting::RigidBodyClass());
+        switch (event->componentID) {
+
+            MANAGED_REFERENCE_ADD(CAMERA_CID, Scripting::CameraClass());
+            MANAGED_REFERENCE_ADD(LIGHT_CID, Scripting::LightClass());
+            MANAGED_REFERENCE_ADD(RIGIDBODY_CID, Scripting::RigidBodyClass());
+            MANAGED_REFERENCE_ADD(BOX_COLLIDER_CID, Scripting::BoxColliderClass());
+            MANAGED_REFERENCE_ADD(SPHERE_COLLIDER_CID, Scripting::SphereColliderClass());
+            MANAGED_REFERENCE_ADD(CAPSULE_COLLIDER_CID, Scripting::CapsuleColliderClass());
+
+        }
 
         return true;
 

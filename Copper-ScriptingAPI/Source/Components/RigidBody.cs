@@ -68,6 +68,14 @@ namespace Copper {
 
         }
 
+        public extern Collider collider {
+
+            [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("GetCollider")]
+            get;
+
+        }
+
         public void AddForce(Vector3 force, ForceMode mode = ForceMode.Force) { Internal_AddForce(this, ref force, mode); }
         public void AddTorque(Vector3 torque, ForceMode mode = ForceMode.Force) { Internal_AddTorque(this, ref torque, mode); }
 

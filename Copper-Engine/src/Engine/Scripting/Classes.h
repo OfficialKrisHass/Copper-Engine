@@ -12,18 +12,7 @@ namespace Copper::Scripting {
     
     MonoClass* BaseClass();
 
-    MonoClass* EntityClass();
-
-    MonoClass* ComponentClass();
-    MonoClass* TransformClass();
-
-    MonoClass* CameraClass();
-    MonoClass* LightClass();
-
-    MonoClass* RigidBodyClass();
-    MonoClass* BoxColliderClass();
-    MonoClass* SphereColliderClass();
-    MonoClass* CapsuleColliderClass();
+    template<typename T> MonoClass* GetMonoClass();
 
     MonoClass* ShowInEditorAttributeClass();
     MonoClass* HideInEditorAttributeClass();

@@ -174,7 +174,7 @@ namespace Copper::Scripting {
             // Filter out non component Scripts
 
             MonoClass* klass = mono_class_from_name_case(data.game.GetImage(), nameSpace, name);
-            if (!mono_class_is_subclass_of(klass, ComponentClass(), false)) continue;
+            if (!mono_class_is_subclass_of(klass, GetMonoClass<Component>(), false)) continue;
 
             std::string fullName = mono_class_get_name(klass);
             Script& script = data.componentScripts[fullName] = Script(klass);

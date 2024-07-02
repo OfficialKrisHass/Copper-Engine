@@ -37,7 +37,7 @@
 #include <fstream>
 #include <yaml-cpp/yaml.h>
 
-#define MANAGED_REFERENCE_ADD(CID, klass) case CID: Scripting::CreateManagedReference(event->component, klass); break;
+#define MANAGED_REFERENCE_ADD(cID, klass) case cID: Scripting::CreateManagedReference((klass*) event->component, Scripting::GetMonoClass<klass>()); break;
 
 namespace Copper {
 
@@ -156,8 +156,8 @@ namespace Copper {
 
         EntityEvent* event = (EntityEvent*) &e;
 
-        Scripting::CreateManagedReference((void*) (uint64) event->entity->m_id, Scripting::EntityClass());
-        Scripting::CreateManagedReference(event->entity->m_transform, Scripting::TransformClass());
+        Scripting::CreateManagedReference((void*) (uint64) event->entity->m_id, Scripting::GetMonoClass<InternalEntity>());
+        Scripting::CreateManagedReference(event->entity->m_transform, Scripting::GetMonoClass<Transform>());
 
         return true;
 
@@ -183,27 +183,13 @@ namespace Copper {
 
         switch (event->componentID) {
 
-            MANAGED_REFERENCE_ADD(CAMERA_CID, Scripting::CameraClass());
-            MANAGED_REFERENCE_ADD(LIGHT_CID, Scripting::LightClass());
-            MANAGED_REFERENCE_ADD(RIGIDBODY_CID, Scripting::RigidBodyClass());
-            case BOX_COLLIDER_CID: {
+            MANAGED_REFERENCE_ADD(CAMERA_CID, Camera);
+            MANAGED_REFERENCE_ADD(LIGHT_CID, Light);
 
-                Scripting::CreateManagedReference((BoxCollider*) event->component, Scripting::BoxColliderClass());
-                break;
-
-            }
-            case SPHERE_COLLIDER_CID: {
-
-                Scripting::CreateManagedReference((SphereCollider*) event->component, Scripting::CapsuleColliderClass());
-                break;
-
-            }
-            case CAPSULE_COLLIDER_CID: {
-
-                Scripting::CreateManagedReference((CapsuleCollider*) event->component, Scripting::CapsuleColliderClass());
-                break;
-
-            }
+            MANAGED_REFERENCE_ADD(RIGIDBODY_CID, RigidBody);
+            MANAGED_REFERENCE_ADD(BOX_COLLIDER_CID, BoxCollider);
+            MANAGED_REFERENCE_ADD(SPHERE_COLLIDER_CID, SphereCollider);
+            MANAGED_REFERENCE_ADD(CAPSULE_COLLIDER_CID, CapsuleCollider);
 
         }
 

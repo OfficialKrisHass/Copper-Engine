@@ -17,7 +17,7 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        if (!script->IsSubclassOf(ComponentClass())) {
+        if (!script->IsSubclassOf(GetMonoClass<Component>())) {
 
             LogError("Can not create Script Component with a non Component script.\n\tScript name: {}", script->FullName());
             return;
@@ -48,7 +48,7 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        MonoMethod* constructor = mono_class_get_method_from_name(ComponentClass(), ".ctor", 0);
+        MonoMethod* constructor = mono_class_get_method_from_name(GetMonoClass<Component>(), ".ctor", 0);
         CU_ASSERT(constructor, "Could not get the Component Constructor from the Component class");
 
         ScriptComponent* value = this;

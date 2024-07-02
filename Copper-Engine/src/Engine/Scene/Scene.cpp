@@ -186,9 +186,24 @@ namespace Copper {
             MANAGED_REFERENCE_ADD(CAMERA_CID, Scripting::CameraClass());
             MANAGED_REFERENCE_ADD(LIGHT_CID, Scripting::LightClass());
             MANAGED_REFERENCE_ADD(RIGIDBODY_CID, Scripting::RigidBodyClass());
-            MANAGED_REFERENCE_ADD(BOX_COLLIDER_CID, Scripting::BoxColliderClass());
-            MANAGED_REFERENCE_ADD(SPHERE_COLLIDER_CID, Scripting::SphereColliderClass());
-            MANAGED_REFERENCE_ADD(CAPSULE_COLLIDER_CID, Scripting::CapsuleColliderClass());
+            case BOX_COLLIDER_CID: {
+
+                Scripting::CreateManagedReference((BoxCollider*) event->component, Scripting::BoxColliderClass());
+                break;
+
+            }
+            case SPHERE_COLLIDER_CID: {
+
+                Scripting::CreateManagedReference((SphereCollider*) event->component, Scripting::CapsuleColliderClass());
+                break;
+
+            }
+            case CAPSULE_COLLIDER_CID: {
+
+                Scripting::CreateManagedReference((CapsuleCollider*) event->component, Scripting::CapsuleColliderClass());
+                break;
+
+            }
 
         }
 

@@ -103,6 +103,7 @@ namespace Copper {
 
 		Collider* component = static_cast<Collider*>(m_pools[cID + type]->Get(eID));
 		componentRemovedEvent.component = (Component*) component;
+        componentRemovedEvent.componentID = cID + type;
 		componentRemovedEvent();
 
 		component->m_valid = false;
@@ -140,6 +141,7 @@ namespace Copper {
 		m_entities[eID].m_cMask.set(cID + type);
 
 		componentAddedEvent.component = (Component*) component;
+        componentAddedEvent.componentID = cID + type;
 		componentAddedEvent();
 
 		return component;
@@ -188,6 +190,7 @@ namespace Copper {
 
 		T* component = static_cast<T*>(m_pools[cID + type]->Get(eID));
 		componentRemovedEvent.component = (Component*) component;
+        componentRemovedEvent.componentID = cID + type;
 		componentRemovedEvent();
 
 		component->m_valid = false;

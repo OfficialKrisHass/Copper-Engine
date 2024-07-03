@@ -68,7 +68,7 @@ namespace Editor::ProjectAssetDatabase {
 		if (assetFiles.find(path) == assetFiles.end()) {
 
 			LogError("Can't get an asset that isn't loaded.\n\tPath: {}", path);
-			return EmptyUUID();
+			return UUID::GetInvalid();
 
 		}
 
@@ -81,7 +81,7 @@ namespace Editor::ProjectAssetDatabase {
 		
 		if (assetNames.find(uuid) == assetNames.end()) {
 
-			LogError("No asset with uuid '{}' exists, or is not loaded", uuid.str());
+			LogError("No asset with uuid '{}' exists, or is not loaded", uuid.ToString());
 			return emptyString;
 
 		}
@@ -112,7 +112,7 @@ namespace Editor::ProjectAssetDatabase {
 		if (!meta.Deserialize(path.string() + ".cum")) return;
 
 		UUID assetUUID = meta.AssetUUID();
-		CU_ASSERT(assetUUID != UUID(""), "Empty UUID loaded from meta file.\n\tPath: {}", path.string());
+		CU_ASSERT(assetUUID != UUID::GetInvalid(), "Invalid UUID loaded from meta file.\n\tPath: {}", path.string());
 
 		if (extension == ".png" || extension == ".jpg")
 			AssetStorage::InsertAsset<Texture>(assetUUID, path.string());

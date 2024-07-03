@@ -185,7 +185,7 @@ namespace Editor {
 		std::string extension = m_selectedFile.extension().string();
 		const UUID& asset = ProjectAssetDatabase::GetAssetFromPath(GetProject().assetsPath / m_selectedFile);
 
-		if (asset == UUID("")) {
+		if (asset == UUID::GetInvalid()) {
 
 			LogWarn("Selected File is not found in the AssetFileDatabase, try refreshing.\n\tPath: {}", GetProject().assetsPath / m_selectedFile);
 

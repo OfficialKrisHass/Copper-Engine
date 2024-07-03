@@ -33,7 +33,7 @@ namespace Editor {
 			LogError("Failed to load Asset Meta file.\n\tPath: {}\n\tError Message: {}", path.string(), e.what());
 
 			m_path = "";
-			m_uuid = EmptyUUID();
+			m_uuid = UUID::GetInvalid();
 
 			return false;
 

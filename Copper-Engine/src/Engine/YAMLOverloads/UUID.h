@@ -9,7 +9,7 @@ namespace Copper {
 
 	inline YAML::Emitter& operator<<(YAML::Emitter& out, const UUID& uuid) {
 
-		out << uuid.str();
+		out << uuid.ToString();
 		return out;
 
 	}
@@ -25,7 +25,7 @@ namespace YAML {
 		static Node encode(const UUID& uuid) {
 
 			Node node;
-			node.push_back(uuid.str());
+			node.push_back(uuid.ToString());
 
 			return node;
 
@@ -36,9 +36,9 @@ namespace YAML {
 
 			std::string data = node.as<std::string>();
 			if (data == "")
-				uuid = UUID("");
+				uuid = UUID::GetInvalid();
 			else
-				uuid = UUID::fromStrFactory(data);
+				uuid = UUID::CreateFromString(data);
 
 			return true;
 

@@ -39,10 +39,10 @@ namespace Copper {
 		operator UUID() const { return m_key; }
 
 		operator AssetType*() const { return AssetStorage::GetAssetMap<AssetType>().GetRaw(m_key); }
-		operator bool() const { return AssetStorage::GetAssetMap<AssetType>().GetRaw(m_key); }
+		operator bool() const { return AssetStorage::GetAssetMap<AssetType>().GetRaw(m_key) != nullptr; }
 
 	private:
-		UUID m_key = EmptyUUID();
+		UUID m_key = UUID();
 
 	};
 

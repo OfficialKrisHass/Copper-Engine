@@ -17,7 +17,7 @@ namespace Copper {
 
 			CUP_FUNCTION();
 
-			UUID uuid = GetUUID();
+			UUID uuid;
 
 			m_map[uuid] = AssetType(args...);
 			return AssetPtr<AssetType>(uuid);
@@ -47,7 +47,7 @@ namespace Copper {
 
 			if (!m_map.contains(uuid)) {
 
-				LogError("Can't remove an Asset that doesn't exist in the map:\n\tUUID: {}", uuid.bytes());
+				LogError("Can't remove an Asset that doesn't exist in the map:\n\tUUID: {}", uuid.ToString());
 				return;
 
 			}
@@ -62,7 +62,7 @@ namespace Copper {
 
 			CUP_FUNCTION();
 
-			UUID uuid = GetUUID();
+			UUID uuid;
 
 			m_map[uuid] = AssetType(args...);
 			return &m_map[uuid];

@@ -16,7 +16,10 @@ namespace Copper {
 
 		};
 
+        // Creation
+
 		Texture() = default;
+
 		inline Texture(const UVector2I& size, Format format = Format::RGB, uint8* pixels = nullptr) { Create(size.x, size.y, format, pixels); }
 		inline Texture(uint32 width, uint32 height, Format format = Format::RGB, uint8* pixels = nullptr) { Create(width, height, format, pixels); }
 		inline Texture(const std::string& filePath, Format format = Format::RGB) { Create(filePath, format); }
@@ -25,21 +28,31 @@ namespace Copper {
 		void Create(uint32 width, uint32 height, Format format = Format::RGB, uint8* pixels = nullptr);
 		void Create(const std::string& filePath, Format format = Format::RGB);
 
+        // Modificication
+
 		inline void SetPixels(uint8* pixels, Format format = Format::RGB) { Create(m_size.x, m_size.y, format, pixels); }
 
+        // Deletions
+
 		void Delete();
+
+        // Using
 
 		void Bind(uint32 unit = 0) const;
 		void Unbind() const;
 
-		inline bool Valid() const { return m_id != 0; }
+        // Getters
 
-		inline uint32 ID() const { return m_id; }
-		inline const UVector2I& Size() const { return m_size; }
+		inline bool IsValid() const { return m_id != 0; }
+
+		inline uint32 GetID() const { return m_id; }
+		inline const UVector2I& GetSize() const { return m_size; }
 
 		static const TextureAsset& WhiteTexture();
 
-		inline operator bool() const { return Valid(); }
+        // Operators
+
+		inline operator bool() const { return IsValid(); }
 
 	private:
 		uint32 m_id = 0;

@@ -3,6 +3,8 @@
 #include "Core/FileWatcher.h"
 #include "Core/EditorApp.h"
 
+#include "Projects/Project.h"
+
 #include "Assets/Serializer.h"
 #include "Assets/AssetMeta.h"
 
@@ -42,7 +44,7 @@ namespace Editor::ProjectAssetDatabase {
 
 		assetFiles.clear();
 
-		const fs::path& dir = GetProject().assetsPath;
+		const fs::path& dir = GetProject().GetAssetsPath();
 		CU_ASSERT(dir != "", "Project has no Assets path");
 
 		for (const fs::directory_entry& entry : fs::recursive_directory_iterator(dir)) {

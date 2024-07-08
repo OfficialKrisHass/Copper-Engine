@@ -95,7 +95,7 @@ namespace Copper {
 
 	#ifdef CU_DEBUG
 		SignalHandler::RegisterHandler(SignalHandler::Signal::Abort, Profiler::CrashHandler);
-    SignalHandler::RegisterHandler(SignalHandler::Signal::Segfault, Profiler::CrashHandler);
+        SignalHandler::RegisterHandler(SignalHandler::Signal::Segfault, Profiler::CrashHandler);
 	#endif
 
 		// Window & Renderer Initialization
@@ -137,7 +137,6 @@ namespace Copper {
 	void Run() {
 
 		CUP_FUNCTION();
-
 		data.engineState = EngineState::Running;
 
 		while (data.engineState == EngineState::Running) {
@@ -146,7 +145,7 @@ namespace Copper {
 
 			// Calculate delta time
 
-			float time = data.GetWindow().Time();
+			float time = data.GetWindow().GetTime();
 			data.deltaTime = time - data.lastFrameTime;
 			data.lastFrameTime = time;
 
@@ -165,7 +164,7 @@ namespace Copper {
 			data.scene.Update(data.deltaTime);
 			data.fbo.Unbind();
 
-			RendererAPI::ResizeViewport(data.GetWindow().Size());
+			RendererAPI::ResizeViewport(data.GetWindow().GetSize());
 
 			CUP_END_FRAME();
 
@@ -275,18 +274,18 @@ namespace Copper {
 	UVector2I GetWindowSize() {
 		
 	#ifdef CU_EDITOR
-		return data.fbo.Size();
+		return data.fbo.GetSize();
 	#else
-		return data.window.Size();
+		return data.window.GetSize();
 	#endif
 
 	}
 	float GetWindowAspectRatio() {
 
 	#ifdef CU_EDITOR
-		return static_cast<float>(data.fbo.Width()) / data.fbo.Height();
+		return static_cast<float>(data.fbo.GetWidth()) / data.fbo.GetHeight();
 	#else
-		return data.window.AspectRatio();
+		return data.window.GetAspectRatio();
 	#endif
 
 	}
@@ -297,7 +296,7 @@ namespace Copper {
 		CUP_FUNCTION();
 
 	#ifdef CU_EDITOR
-		if (data.fbo.Size() == size) return;
+		if (data.fbo.GetSize() == size) return;
 
 		data.fbo.Resize(size);
 		data.scene.cam->Resize(size);
@@ -309,7 +308,7 @@ namespace Copper {
 
 	// Declaration in FrameBuffer.h
 
-	uint32 GetMainFBOTexture() { return data.fbo.ColorTextureID(); }
+    const FrameBuffer& GetMainFBO() { return data.fbo; }
 
 	// Declaration in ImGui.h
 
@@ -318,15 +317,6 @@ namespace Copper {
 	// Declaration in Scene.h
 	
 	Scene* GetScene() { return &data.scene; }
-
-	uint32 GetNumOfEntities() { return data.scene.GetNumOfEntities(); }
-	bool IsSceneRuntimeRunning() { return data.scene.IsRuntimeRunning(); }
-
-	InternalEntity* CreateEntity(ENTITY_PROPERTIES_DECLARATION) { CUP_FUNCTION(); return data.scene.CreateEntity(position, rotation, scale, name); }
-	InternalEntity* CreateEntityFromID(uint32 id, ENTITY_PROPERTIES_DECLARATION, bool returnIfExists) { CUP_FUNCTION(); return data.scene.CreateEntityFromID(id, position, rotation, scale, name, returnIfExists); }
-	InternalEntity* GetEntityFromID(uint32 id) { CUP_FUNCTION(); return data.scene.GetEntityFromID(id); }
-	void RemoveEntity(InternalEntity* entity) { CUP_FUNCTION(); data.scene.RemoveEntity(entity); }
-	void RemoveEntityFromID(uint32 id) { CUP_FUNCTION(); data.scene.RemoveEntityFromID(id); }
 
 // Editor misc.
 #ifdef CU_EDITOR

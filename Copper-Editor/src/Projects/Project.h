@@ -2,39 +2,66 @@
 
 #include <Copper.h>
 
-#include "Viewport/SceneCamera.h"
-
 namespace Editor {
 
-	using namespace Copper;
+    class Project {
 
-	struct Project {
+    public:
+        Project() = default;
+        Project(const Copper::fs::path& path);
+        
+        void Open(const Copper::fs::path& path);
+        void Open();
+        void Save() const;
+        void SaveAs();
 
-	public:
-		std::string name;
+        bool BuildScripts() const;
 
-		fs::path path;
-		fs::path assetsPath;
-		fs::path lastOpenedScene;
+        void RegenerateProjectFiles() const;
+        void RegenerateBuildFiles() const;
 
-		Copper::uint32 gizmoType = 0;
+#ifdef CU_LINUX
+        void RunPremake() const;
+#endif
 
-		Project() : name(""), path(""), assetsPath("") {}
-		Project(const std::string& name, const fs::path& path);
+        // Getters
 
-		void Save() const;
-		void Load(const fs::path& path = "");
+        inline const std::string& GetName() const { return m_name; }
 
-		bool BuildSolution(bool firstBuild = false) const;
+        inline const Copper::fs::path& GetPath() const { return m_path; }
+        inline const Copper::fs::path GetAssetsPath() const { return m_path / "Assets"; }
+        inline const Copper::fs::path& GetLastOpenedScenePath() const { return m_lastOpenedScenePath; }
 
-		void RegenerateProjectFile() const;
-		void RegenerateIDEFiles() const;
-	#ifdef CU_LINUX
-		void RunPremake() const;
-	#endif
+        inline bool GetChanges() const { return m_changes; }
 
-		operator bool() const { return name != ""; }
+        inline Copper::uint32 GetGizmoType() const { return m_gizmoType; }
 
-	};
+        // Setters
+        
+        inline void SetName(const std::string& value) { m_name = value; }
+
+        inline void SetLastOpenedScenePath(const Copper::fs::path& value) { m_lastOpenedScenePath = value; }
+
+        inline void SetChanges(bool value) { m_changes = value; }
+
+        inline void SetGizmoType(Copper::uint32 value) { m_gizmoType = value; }
+
+        // Operators
+
+        inline operator bool() const { return !m_name.empty(); }
+    
+    private:
+        std::string m_name;
+
+        Copper::fs::path m_path;
+        Copper::fs::path m_lastOpenedScenePath;
+
+        bool m_changes = false;
+
+        Copper::uint32 m_gizmoType = 0;
+
+        bool LoadFile(const Copper::fs::path& path);
+
+    };
 
 }

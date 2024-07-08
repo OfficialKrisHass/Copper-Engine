@@ -11,7 +11,7 @@ namespace Editor {
 	class SceneHierarchy : public Panel {
 
 	public:
-		SceneHierarchy();
+		SceneHierarchy() : Panel("Scene Hierarchy") {}
 		
 		// Getters
 		inline static Copper::Entity GetSelectedEntity() { return m_selectedEntity; }

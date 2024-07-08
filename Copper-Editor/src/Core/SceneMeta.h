@@ -11,7 +11,7 @@ namespace Editor {
 		void Deserialize(Copper::Scene* scene);
 
 	private:
-		Copper::Scene* m_scene;
+		Copper::Scene* m_scene = nullptr;
 
 	};
 

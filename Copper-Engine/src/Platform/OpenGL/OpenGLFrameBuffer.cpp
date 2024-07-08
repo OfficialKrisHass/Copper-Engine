@@ -11,13 +11,8 @@ namespace Copper {
 
 		CUP_FUNCTION();
 
-		if (m_id) {
-
-			glDeleteFramebuffers(1, &m_id);
-			glDeleteTextures(1, &m_color);
-			glDeleteTextures(1, &m_depth);
-
-		}
+		if (m_id)
+            Delete();
 
 		glGenFramebuffers(1, &m_id);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_id);
@@ -44,11 +39,21 @@ namespace Copper {
 
 		// Finalize
 
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) { LogError("FrameBuffer is incomplete"); }
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            LogError("FrameBuffer is incomplete");
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	}
+    void FrameBuffer::Delete() {
+
+        CUP_FUNCTION();
+
+        glDeleteFramebuffers(1, &m_id);
+        glDeleteTextures(1, &m_color);
+        glDeleteTextures(1, &m_depth);
+
+    }
 
 	void FrameBuffer::Resize(const UVector2I& size) {
 

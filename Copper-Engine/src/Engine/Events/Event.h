@@ -12,27 +12,23 @@ namespace Copper {
 		Event() = default;
 
 		inline void Call() { (*this)(); }
-		inline void Clear() { m_success = true; }
 
 		inline Event& operator+=(std::function<bool(const Event&)> func) { m_callbacks.push_back(func); return *this; }
 		inline bool operator()() {
 
-			for (int i = 0; i < m_callbacks.size() && m_success; i++) {
+            for (int i = 0; i < m_callbacks.size(); i++) {
 
-				m_success = m_callbacks[i](*this);
+                if (m_callbacks[i](*this)) continue;
+                return false;
 
-			}
+            }
 
-			bool tmp = m_success;
-			m_success = true;
-
-			return tmp;
+            return true;
 
 		}
 
 	private:
 		std::vector<std::function<bool(const Event&)>> m_callbacks;
-		bool m_success = true;
 
 	};
 

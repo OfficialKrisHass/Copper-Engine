@@ -52,6 +52,7 @@ namespace Copper::Scripting {
 
         mono_config_parse((ExecutableFolder() + "/lib/mono/config").c_str());
         mono_set_assemblies_path((ExecutableFolder() + "/lib").c_str());
+
         data.rootDomain = mono_jit_init("CUSRootDomain");
         if (!data.rootDomain) {
 
@@ -96,11 +97,15 @@ namespace Copper::Scripting {
         data.componentScripts.clear();
 
     }
-    bool Reload() {
+    bool Reload(const fs::path& path) {
 
         CUP_FUNCTION();
 
-        std::string tmp = data.game.Path();
+        std::string tmp;
+        if (path.empty())
+            tmp = data.game.Path();
+        else
+            tmp = path.string();
 
         std::unordered_map<ScriptComponent*, std::string> scriptComponentNames;
         for (ScriptComponent* scriptComponent : ComponentView<ScriptComponent>(GetScene()))

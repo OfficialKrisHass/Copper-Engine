@@ -22,7 +22,6 @@
 
 #include "Projects/Project.h"
 #include "Projects/ProjectTemplate.h"
-#include "Projects/ProjectChecker.h"
 
 #include "Panels/SceneHierarchy.h"
 #include "Panels/Properties.h"
@@ -56,34 +55,34 @@ namespace Editor {
 
 		// Core Data
 
-		EditorState state;
+		EditorState state = Edit;
 		Window window;
 		std::string title;
 
 		// Project
 
 		Project project;
-		bool scriptChanges;
+		bool scriptChanges = false;
 
 		// Scene
 
 		Scene* scene;
 		SceneMeta sceneMeta;
-		bool changes;
+		bool changes = false;
 		
 		// Viewport
 
-		UVector2I viewportSize;
+		UVector2I viewportSize = UVector2I(1280, 720);
 		UVector2I viewportCentre;
 		FrameBuffer viewportFBO;
-		bool canLookViewport;
+		bool canLookViewport = true;
 
-		SceneCamera sceneCam;
+		SceneCamera sceneCam = SceneCamera(viewportSize);
 
 		// Game Panel
 
-		UVector2I gamePanelSize;
-		bool gamePanelFocused;
+		UVector2I gamePanelSize = UVector2I(1280, 720);
+		bool gamePanelFocused = false;
 
 		// Icons
 
@@ -102,7 +101,7 @@ namespace Editor {
 
 		bool themeEditorOpen = false;
 
-		// Scripting
+        // Misc.
 
 		bool wasCursorLocked = false;
 		bool wasCursorVisible = true;
@@ -111,12 +110,8 @@ namespace Editor {
 
 	EditorData data;
 
-	void Initialize();
-	void UIUpdate();
-	void Shutdown();
-
 	void LoadEditorData();
-	void SaveEditorData(bool saveProject = true);
+	void SaveEditorData();
 
 	void RenderDockspace();
 	void RenderGamePanel();
@@ -125,8 +120,6 @@ namespace Editor {
 	void RenderMenu();
 
 	void NewProject();
-	void OpenProject(const fs::path& path);
-	void OpenProject();
 
 	void FileChangedCallback(const fs::path& path, const FileWatcher::FileChangeType changeType);
 	void CopyScriptingAPI();
@@ -145,21 +138,14 @@ namespace Editor {
 
 		MainUIContext().LoadFont(ExecutableFolder() + "/assets/Fonts/open-sans.regular.ttf");
 
-		data.state = Edit;
-		data.viewportSize = UVector2I(1280, 720);
-		data.gamePanelSize = UVector2I(1280, 720);
+        data.scene = GetScene();
+
 		data.viewportFBO = FrameBuffer(data.viewportSize);
 		
 		data.playIcon.Create(ExecutableFolder() + "/assets/Icons/PlayButton.png", Texture::Format::RGBA);
 		data.stopIcon.Create(ExecutableFolder() + "/assets/Icons/StopButton.png", Texture::Format::RGBA);
-		
-		data.sceneHierarchy = SceneHierarchy();
-		data.properties = Properties();
-		data.fileBrowser = FileBrowser("");
-		data.console = Console();
-		data.themeEditor = ThemeEditor();
 
-		data.sceneCam = SceneCamera(data.viewportSize);
+        data.fileBrowser.Initialize();
 		
 		FileWatcher::AddCallback(FileChangedCallback);
 
@@ -174,34 +160,36 @@ namespace Editor {
 	}
 	void Shutdown() {
 
+        CUP_FUNCTION();
+
 		SaveEditorData();
 
 	}
 
-	void SaveEditorData(bool saveProject) {
+	void SaveEditorData() {
+
+        CUP_FUNCTION();
 
 		YAML::Emitter out;
 
 		out << YAML::BeginMap; //Start
 
-		out << YAML::Key << "Last Project" << YAML::Value << data.project.path;
+		out << YAML::Key << "Last Project" << YAML::Value << data.project.GetPath();
 
 		out << YAML::EndMap; //End
 
 		std::ofstream file(ExecutableFolder() + "/assets/EditorData.cu");
 		file << out.c_str();
 
-		if (saveProject && data.project) data.project.Save();
-
 	}
 	void LoadEditorData() {
+
+        CUP_FUNCTION();
 
 		if (!fs::exists(ExecutableFolder() + "/assets/EditorData.cu")) {
 
 			LogWarn("EditorData.cu is missing, generating a default one");
-
-			data.project.path = "";
-			SaveEditorData(false);
+			SaveEditorData();
 
 		}
 
@@ -213,34 +201,36 @@ namespace Editor {
 
 		}
     
-    if (Args::Count() > 0) {
+        if (Args::Count() > 0) {
 
-      OpenProject(Args::Get(0));
-      return;
+            data.project.Open(Args::Get(0));
+            return;
 
-    }
+        }
 		
 		std::string path = main["Last Project"].as<std::string>();
 		if (!std::filesystem::exists(path)) {
       
 			switch (Input::WarningPopup("Last opened project doesn't exist", "The last opened project no longer exists, do you wish to open a project manually, or exit the Editor ?\n\nLast opened project path:\n" + path)) {
 
-			case Input::PopupResult::Yes: OpenProject(); return;
+			case Input::PopupResult::Yes: data.project.Open(); return;
 			case Input::PopupResult::No: exit(1);
+            default: exit(1);
 
 			}
 
 		}
 
-		OpenProject(path);
+		data.project.Open(path);
 
 	}
 
 	void Update() {
 
+        CUP_FUNCTION();
 		CUP_START_FRAME("Editor");
 
-		FileWatcher::PollCallbacks();
+		FileWatcher::PollChanges();
 
 		CUP_END_FRAME();
 
@@ -271,6 +261,8 @@ namespace Editor {
 	}
 
 	void RenderDockspace() {
+
+        CUP_FUNCTION();
 
 		static bool dockspaceOpen = true;
 		static bool opt_fullscreen_persistant = true;
@@ -321,6 +313,7 @@ namespace Editor {
 	}
 	void RenderGamePanel() {
 
+        CUP_FUNCTION();
 		CUP_START_FRAME("Game Panel");
 
 		//Imgui::Begin returns a bool based on if the Window is visible/open
@@ -357,7 +350,7 @@ namespace Editor {
 
 		SetWindowSize(data.gamePanelSize);
 
-		ImGui::Image(reinterpret_cast<void*>((uint64) GetMainFBOTexture()), windowSize, ImVec2 {0, 1}, ImVec2 {1, 0});
+		ImGui::Image(reinterpret_cast<void*>((uint64) GetMainFBO().GetColorTextureID()), windowSize, ImVec2 {0, 1}, ImVec2 {1, 0});
 
 		if (ImGui::IsItemClicked() && !AcceptInputDuringRuntime() && IsSceneRuntimeRunning()) {
 			
@@ -375,6 +368,7 @@ namespace Editor {
 	}
 	void RenderViewport() {
 
+        CUP_FUNCTION();
 		CUP_START_FRAME("Viewport");
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
@@ -401,7 +395,7 @@ namespace Editor {
 		data.viewportCentre.x += (uint32) windowPos.x;
 		data.viewportCentre.y += (uint32) windowPos.y;
 
-		if (data.viewportFBO.Width() != data.viewportSize.x || data.viewportFBO.Height() != data.viewportSize.y) {
+		if (data.viewportFBO.GetWidth() != data.viewportSize.x || data.viewportFBO.GetHeight() != data.viewportSize.y) {
 
 			//We don't need to Call SetWindowSize because if the Viewport size is changed
 			//it only affects the Viewport, not the Actualy Game Engine and the Main Game Panel
@@ -420,7 +414,7 @@ namespace Editor {
 		//After we are done rendering we are safe to unbind the FBO unless we want to modify it any way
 		data.viewportFBO.Unbind();
 
-		ImGui::Image(reinterpret_cast<void*>((uint64) data.viewportFBO.ColorTextureID()), windowSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+		ImGui::Image(reinterpret_cast<void*>((uint64) data.viewportFBO.GetColorTextureID()), windowSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
 		//Gizmos that I stol... I mean, taken inspiration from The Chernos Game Engine series
 		//Yeah, I definitely didn't copy this entire chunk of code that I don't understand but
@@ -442,12 +436,12 @@ namespace Editor {
 			// Snapping
 			bool snap = Input::IsKey(KeyCode::LeftControl);
 			float snapValue = 0.5f;
-			if (data.project.gizmoType == ImGuizmo::OPERATION::ROTATE) snapValue = 45.0f;
+			if (data.project.GetGizmoType() == ImGuizmo::OPERATION::ROTATE) snapValue = 45.0f;
 
 			float snapValues[3] = {snapValue, snapValue, snapValue};
 
 			ImGuizmo::Manipulate(&(camView.cols[0].x), &(camProjection.cols[0].x),
-								 (ImGuizmo::OPERATION) data.project.gizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
+								 (ImGuizmo::OPERATION) data.project.GetGizmoType(), ImGuizmo::LOCAL, glm::value_ptr(transform),
 								 nullptr, snap ? snapValues : nullptr);
 
 			if (ImGuizmo::IsUsing()) {
@@ -481,6 +475,8 @@ namespace Editor {
 	}
 	void RenderToolbar() {
 
+        CUP_FUNCTION();
+
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
 
@@ -500,11 +496,11 @@ namespace Editor {
 
 		if (data.state == Edit) {
 
-			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64) data.playIcon.ID()), buttonSize, {0, 1}, {1, 0}) && data.project) StartEditorRuntime();
+			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64) data.playIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project) StartEditorRuntime();
 
 		} else if (data.state == Play) {
 
-			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64) data.stopIcon.ID()), buttonSize, {0, 1}, {1, 0}) && data.project) StopEditorRuntime();
+			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64) data.stopIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project) StopEditorRuntime();
 
 		}
 
@@ -523,39 +519,44 @@ namespace Editor {
 	}
 	void RenderMenu() {
 
+        CUP_FUNCTION();
+
 		if(ImGui::BeginMenuBar()) {
 
 			if (ImGui::BeginMenu("Project")) {
 
-				if (ImGui::MenuItem("New Project")) {
-					
+				if (ImGui::MenuItem("New Project"))
 					NewProject();
-					ProjectAssetDatabase::Refresh();
+				if (ImGui::MenuItem("Open Project"))
+					data.project.Open();
+				if (ImGui::MenuItem("Save Project", "Ctrl+Shift+S", false, data.project)) {
+
+                    SaveScene();
+
+                    data.project.Save();
+                    SaveEditorData();
+
+                }
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("Create Template", 0, false, data.project))
+                    CreateTemplateFromProject(data.project);
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("Build Scripts", "Ctrl+B", false, data.project))
+                    data.project.BuildScripts();
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("Project Settings"))
+                    ProjectSettings::Open();
 				
-				}
-				if (ImGui::MenuItem("Open Project")) {
-
-					OpenProject();
-					ProjectAssetDatabase::Refresh();
-
-				}
-				if (ImGui::MenuItem("Save Project", "Ctrl+Shift+S", false, data.project)) { data.project.Save(); SaveEditorData(); SaveScene(); }
-
 				ImGui::Separator();
 
-				if (ImGui::MenuItem("Create Template", 0, false, data.project)) CreateTemplateFromProject(data.project);
-
-				ImGui::Separator();
-
-				if (ImGui::MenuItem("Build Solution", "Ctrl+B", false, data.project)) data.project.BuildSolution();
-
-				ImGui::Separator();
-
-				if (ImGui::MenuItem("Project Settings")) ProjectSettings::Open();
-				
-				ImGui::Separator();
-
-				if (ImGui::MenuItem("Copy Copper Scripting API", 0, false, data.project)) CopyScriptingAPI();
+				if (ImGui::MenuItem("Copy Copper Scripting API", 0, false, data.project))
+                    CopyScriptingAPI();
 
 				ImGui::EndMenu();
 
@@ -563,10 +564,14 @@ namespace Editor {
 
 			if(ImGui::BeginMenu("File")) {
 
-				if(ImGui::MenuItem("New Scene", 0, false, data.project))				NewScene();
-				if(ImGui::MenuItem("Open Scene", 0, false, data.project))				OpenScene();
-				if(ImGui::MenuItem("Save Scene", "Ctr+S", false, data.project))		SaveScene();
-				if(ImGui::MenuItem("Save Ass", "Ctrl+Alt+S", false, data.project))	SaveSceneAs();
+				if(ImGui::MenuItem("New Scene", 0, false, data.project))
+                    NewScene();
+				if(ImGui::MenuItem("Open Scene", 0, false, data.project))
+                    OpenScene();
+				if(ImGui::MenuItem("Save Scene", "Ctr+S", false, data.project))
+                    SaveScene();
+				if(ImGui::MenuItem("Save Ass", "Ctrl+Alt+S", false, data.project))
+                    SaveSceneAs();
 
 				ImGui::EndMenu();
 				
@@ -598,8 +603,10 @@ namespace Editor {
 
 			if(ImGui::BeginMenu("Camera")) {
 
-				if (ImGui::DragFloat("Speed", &data.sceneCam.speed, 0.01f, 0.001f, 50.0f, "%.4f")) SetChanges(true);
-				if (ImGui::DragFloat("Sensitivity", &data.sceneCam.sensitivity, 0.1f, 1.0f, 1000.0f)) SetChanges(true);
+				if (ImGui::DragFloat("Speed", &data.sceneCam.speed, 0.01f, 0.001f, 50.0f, "%.4f"))
+                    SetChanges(true);
+				if (ImGui::DragFloat("Sensitivity", &data.sceneCam.sensitivity, 0.1f, 1.0f, 1000.0f))
+                    SetChanges(true);
 
 				ImGui::EndMenu();
 				
@@ -622,6 +629,8 @@ namespace Editor {
 
 	void StartEditorRuntime() {
 
+        CUP_FUNCTION();
+
 		data.state = Play;
 
 		SaveScene();
@@ -631,6 +640,8 @@ namespace Editor {
 
 	}
 	void StopEditorRuntime() {
+
+        CUP_FUNCTION();
 
 		if (data.wasCursorLocked)
 			Input::SetCursorLocked(false);
@@ -653,109 +664,51 @@ namespace Editor {
 
 	void FileChangedCallback(const fs::path& path, const FileWatcher::FileChangeType changeType) {
 
+        CUP_FUNCTION();
+
 		if (path.extension().string() != ".cs") return;
 
 	#ifdef CU_LINUX
 		if (changeType != FileWatcher::FileChangeType::Changed)
       data.project.RunPremake();
 	#endif
-		data.project.BuildSolution();
+		data.project.BuildScripts();
 
 	}
 
 	void NewProject() {
 
-		fs::path path = Utilities::FolderOpenDialog("New Project", data.project ? data.project.path.parent_path() : ROOT_DIR);
-		if (path.empty()) {
+        CUP_FUNCTION();
 
-            LogWarn("Path is Invalid or Empty");
-            return;
-
-        }
+		fs::path path = Utilities::FolderOpenDialog("New Project", data.project ? data.project.GetPath().parent_path() : ROOT_DIR);
+		if (path.empty()) return;
 
 		// Create the Project
 
-		data.project = Project(path.filename().string(), path);
+		data.project = Project(path);
 		FileBrowser::SetRelativeDir("");
-
-		CreateProjectFromTemplate("assets/Templates/LinuxTesting", data.project);
 
 #ifdef CU_LINUX
         data.project.RunPremake();
 #endif
-		
-		data.project.BuildSolution(true);
-        Scripting::Load(path.string() + "/Binaries/" + data.project.name + ".dll");
+		data.project.BuildScripts();
 
-		OpenScene(data.project.assetsPath / data.project.lastOpenedScene);
+        NewScene();
 
 		data.changes = false;
-		data.title = "Copper Editor - " + data.project.name + ": EmptyTemplate";
+		data.title = "Copper Editor - " + data.project.GetName() + ":";
 		Input::SetWindowTitle(data.title);
-
-	}
-	void OpenProject(const fs::path& path) {
-		
-		try { data.project.Load(path); }
-		catch (YAML::Exception e) {
-			
-			Input::ErrorPopup("Failed to load Project", "Something went wrong during loading the project.\n\nProject Path:\n" + path.string() + "\n\nError Message:\n" + e.what());
-			exit(1);
-		
-		}
-
-		if (uint16_t issueFlags = ProjectChecker::CheckProject(data.project)) {
-
-			switch (Input::WarningPopup("Corrupted Project", "This project is missing some of the core folders and/or files that are required by the Editor to function properly. If you want to see the list, check the console.\n\nDo you want the editor to try and fix the project ?")) {
-
-			case Input::PopupResult::Yes: ProjectChecker::FixProject(data.project, issueFlags); break;
-			case Input::PopupResult::No: exit(1);
-
-			}
-
-		}
-
-		data.scene = GetScene();
-
-		FileBrowser::SetRelativeDir("");
-		ProjectAssetDatabase::Initialize();
-
-        if (Scripting::GameAssembly())
-            Scripting::Reload();
-        else
-            Scripting::Load(path.string() + "/Binaries/" + data.project.name + ".dll");
-
-		FileWatcher::Stop();
-		FileWatcher::SetDirectory(data.project.assetsPath);
-		FileWatcher::Start();
-
-		data.changes = false;
-		data.title = "Copper Editor - " + data.project.name + ": ";
-		Input::SetWindowTitle(data.title);
-
-		OpenScene(data.project.lastOpenedScene);
-
-	}
-	void OpenProject() {
-
-		fs::path path = Utilities::FolderOpenDialog("Open Project", data.project ? data.project.path.parent_path() : ROOT_DIR);
-		if (path.empty()) {
-			
-			LogWarn("path is Invalid or empty");
-			return;
-		
-		}
-
-		OpenProject(path);
 
 	}
 
 	void CopyScriptingAPI() {
 
+        CUP_FUNCTION();
+
 		std::ifstream dllSrc(ExecutableFolder() + "/assets/ScriptingAPI/Copper-ScriptingAPI.dll", std::ios::binary);
 		std::fstream dllDst;
 
-		dllDst.open(data.project.path / "Binaries/Copper-ScriptingAPI.dll", std::ios::out | std::ios::binary);
+		dllDst.open(data.project.GetPath() / "Binaries/Copper-ScriptingAPI.dll", std::ios::out | std::ios::binary);
 		dllDst << dllSrc.rdbuf();
 		dllDst.close();
 
@@ -763,12 +716,15 @@ namespace Editor {
 
 	void NewScene() {
 
-		*data.scene = Scene();
+        CUP_FUNCTION();
 
+		*data.scene = Scene();
 		SceneHierarchy::SetScene(data.scene);
 		
 	}
 	void OpenScene(const fs::path& path) {
+
+        CUP_FUNCTION();
 
 		if(data.changes) {
 
@@ -777,6 +733,7 @@ namespace Editor {
 			case Input::PopupResult::Yes: SaveScene(); break;
 			case Input::PopupResult::No: break;
 			case Input::PopupResult::Cancel: return;
+            default: return;
 				
 			}
 			
@@ -788,20 +745,26 @@ namespace Editor {
 		SceneHierarchy::SetScene(data.scene);
 
 		data.changes = false;
-		data.title = "Copper Editor - " + data.project.name + ": ";
-		data.title += data.scene->name;
+		data.title = "Copper Editor - " + data.project.GetName() + ": " + data.scene->name;
 		Input::SetWindowTitle(data.title);
 
-		data.project.lastOpenedScene = fs::relative(path, data.project.assetsPath);
+        data.project.SetLastOpenedScenePath(fs::relative(path, data.project.GetAssetsPath()));
 		
 	}
 	void OpenScene() {
 
-		fs::path result = Utilities::OpenDialog("Open Scene", { "Copper Scene Files (.copper)", "*.copper" }, data.project.assetsPath);
+        CUP_FUNCTION();
 
-		if(result.empty()) { LogWarn("The Path Specified is empty or is not a Copper Scene File\n {}", result); return; }
+		fs::path result = Utilities::OpenDialog("Open Scene", { "Copper Scene Files (.copper)", "*.copper" }, data.project.GetAssetsPath());
 
-		fs::path relativeToProjectAssets = fs::relative(result, data.project.assetsPath);
+		if (result.empty()) {
+
+            LogWarn("The Path Specified is empty or is not a Copper Scene File\n {}", result);
+            return;
+
+        }
+
+		fs::path relativeToProjectAssets = fs::relative(result, data.project.GetAssetsPath());
 		if (relativeToProjectAssets.empty()) {
 
 			Input::ErrorPopup("Invalid Scene Path", "The scene you have tried to Open is outside of the Assets folder of this Project.");
@@ -813,31 +776,33 @@ namespace Editor {
 		
 	}
 	void SaveScene() {
+
+        CUP_FUNCTION();
 		
-		if(!data.scene->path.empty()) {
+        if (data.scene->path.empty()) {
+            
+            SaveSceneAs();
+            return;
 
-			data.scene->Serialize(data.scene->path);
-			data.sceneMeta.Serialize();
+        }
 
-			data.changes = false;
-			data.title = "Copper Editor - TestProject: ";
-			data.title += data.scene->name;
-			Input::SetWindowTitle(data.title);
+        data.scene->Serialize(data.scene->path);
+        data.sceneMeta.Serialize();
+
+        data.changes = false;
+        data.title = "Copper Editor - TestProject: ";
+        data.title += data.scene->name;
+        Input::SetWindowTitle(data.title);
 			
-			return;
-			
-		}
-
-		SaveSceneAs();
-		
 	}
 	void SaveSceneAs() {
 
-		fs::path path = Utilities::SaveDialog("Save Scene As", { "Copper Scene Files (.copper)", "*.copper" }, data.project.assetsPath);
+        CUP_FUNCTION();
 
+		fs::path path = Utilities::SaveDialog("Save Scene As", { "Copper Scene Files (.copper)", "*.copper" }, data.project.GetAssetsPath());
 		if (path.empty()) return;
 
-		fs::path relativeToProjectAssets = fs::relative(path, data.project.assetsPath);
+		fs::path relativeToProjectAssets = fs::relative(path, data.project.GetAssetsPath());
 		if (relativeToProjectAssets.empty()) {
 
 			Input::ErrorPopup("Invalid Scene", "The Place you want to save this scene is outside of this Project or starts with '..'");
@@ -857,7 +822,7 @@ namespace Editor {
 
 	bool OnKeyPressed(const Event& e) {
 
-		/*if (data.state == Play) return true;*/
+        CUP_FUNCTION();
 
 		bool control = Input::IsKey(KeyCode::LeftControl) || Input::IsKey(KeyCode::RightControl);
 		bool shift = Input::IsKey(KeyCode::LeftShift) || Input::IsKey(KeyCode::RightShift);
@@ -872,10 +837,17 @@ namespace Editor {
 			case KeyCode::S: {
 
 				if (data.state == Play) break;
+				if (control && shift) {
 
-				if (control && shift) { data.project.Save(); SaveEditorData(); SaveScene(); }
-				if (control && alt) SaveSceneAs();
-				if (control) SaveScene();
+                    data.project.Save();
+                    SaveEditorData();
+                    SaveScene();
+
+                }
+				if (control && alt)
+                    SaveSceneAs();
+				if (control)
+                    SaveScene();
 
 				break;
 
@@ -883,8 +855,8 @@ namespace Editor {
 			case KeyCode::B: {
 
 				if (data.state == Play) break;
-
-				if (control) data.project.BuildSolution();
+				if (control)
+                    data.project.BuildScripts();
 
 				break;
 
@@ -892,7 +864,8 @@ namespace Editor {
 			case KeyCode::Q: {
 
 				if (data.state == Play) break;
-				if (!rightClick) data.project.gizmoType = ImGuizmo::TRANSLATE;
+				if (!rightClick)
+                    data.project.SetGizmoType(ImGuizmo::TRANSLATE);
 
 				break;
 
@@ -900,7 +873,8 @@ namespace Editor {
 			case KeyCode::W: {
 
 				if (data.state == Play) break;
-				if (!rightClick) data.project.gizmoType = ImGuizmo::ROTATE;
+				if (!rightClick)
+                    data.project.SetGizmoType(ImGuizmo::ROTATE);
 
 				break;
 
@@ -908,7 +882,8 @@ namespace Editor {
 			case KeyCode::E: {
 
 				if (data.state == Play) break;
-				if (!rightClick) data.project.gizmoType = ImGuizmo::SCALE;
+				if (!rightClick)
+                    data.project.SetGizmoType(ImGuizmo::SCALE);
 
 				break;
 
@@ -921,9 +896,12 @@ namespace Editor {
 				Input::SetCursorLocked(false);
 				Input::SetCursorVisible(true);
 				SetAcceptInputDuringRuntime(false);
+
 				break;
 
 			}
+            default: break;
+
 		}
 
 		return true;
@@ -931,11 +909,11 @@ namespace Editor {
 	}
 	bool OnWindowClose(const Event& e) {
 
+        CUP_FUNCTION();
+
 		if (!data.changes) return true;
 
-		Input::PopupResult test = Input::WarningPopup("Unsaved Changes", "There are Unsaved Changes in the project, do you wish to save the Project before exiting ?");
-
-		switch (test) {
+		switch (Input::WarningPopup("Unsaved Changes", "There are Unsaved Changes in the project, do you wish to save the Project before exiting ?")) {
 
 			case Input::PopupResult::Yes: {
 				
@@ -943,27 +921,15 @@ namespace Editor {
 				SaveEditorData();
 				
 				return true;
-				break;
+
+            }
 			
-			}
-			case Input::PopupResult::No: {
-				
+			case Input::PopupResult::No:
 				return true;
-				break;
-			
-			}
-			case Input::PopupResult::Cancel: {
-
+			case Input::PopupResult::Cancel:
 				return false;
-				break;
-
-			}
-			default: {
-
+			default:
 				return false;
-				break;
-
-			}
 
 		}
 
@@ -981,12 +947,13 @@ namespace Editor {
 	// Am I going to fix it in 0.3 ? ..... No
 	void SetChanges(bool value) {
 
+        CUP_FUNCTION();
+
 		if (data.state == Play) return;
 
 		data.changes = value;
-		data.title = "Copper Editor - TestProject: ";
-		data.title += data.scene->name;
-		data.title += '*';
+
+		data.title = "Copper Editor - " + data.project.GetName() + ": " + data.scene->name + "*";
 		Input::SetWindowTitle(data.title);
 		
 	}

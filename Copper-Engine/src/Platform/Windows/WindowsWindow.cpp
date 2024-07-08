@@ -22,29 +22,35 @@ namespace Copper {
 
 		data.title = title;
 
-#ifdef CU_EDITOR // we cant verify the state in the editor because the editor creates the window before Engine Initialization
-		if (windowCount == 0 && !glfwInit()) { LogError("Could not Initialize GLFW!"); }
-#else
-		if (windowCount == 0) {
+        if (windowCount == 0) {
 
-			VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the main Window");
-			if (!glfwInit()) { LogError("Could not Initialize GLFW"); }
-
-		}
+#ifndef CU_EDITOR
+           VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the main Window"); 
 #endif
+            if (!glfwInit()) {
+
+                LogError("Could not initialize GLFW");
+                exit(-1);
+
+           }
+
+        }
+
 		windowCount++;
 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		windowPtr = (void*)glfwCreateWindow(width, height, data.title.c_str(), NULL, NULL);
+		windowPtr = (void*) glfwCreateWindow(width, height, data.title.c_str(), NULL, NULL);
+        CU_ASSERT(windowPtr, "Could not create GLFW window");
+
 		glfwMakeContextCurrent(WINDOW);
-
 		glfwSetWindowUserPointer(WINDOW, &data);
-		if (maximize) glfwMaximizeWindow(WINDOW);
+		if (maximize)
+            glfwMaximizeWindow(WINDOW);
 
-		data.size = Size();
+        glfwGetWindowSize(WINDOW, (int32*) &data.size.x, (int32*) &data.size.y);
 
 		SetupEvents();
 
@@ -63,7 +69,8 @@ namespace Copper {
 
 		glfwDestroyWindow(WINDOW);
 
-		if (windowCount == 1) glfwTerminate();
+		if (windowCount == 1)
+            glfwTerminate();
 		windowCount--;
 
 	}
@@ -92,16 +99,18 @@ namespace Copper {
 			WindowData& data = GETWINDATA;
 
 			data.windowFocusedEvent.focused = focused;
-			data.windowFocusedEvent.Call();
-			data.windowFocusedEvent.Clear();
+			data.windowFocusedEvent();
 
 			});
 		glfwSetWindowSizeCallback(WINDOW, [](GLFWwindow* window, int32 width, int32 height) {
 
 			WindowData& data = GETWINDATA;
 
-			data.windowResizeEvent.width = width; data.size.x = width;
-			data.windowResizeEvent.height = height; data.size.y = height;
+            data.size.x = width;
+            data.size.y = height;
+
+			data.windowResizeEvent.width = width;
+			data.windowResizeEvent.height = height;
 
 			data.windowResizeEvent();
 
@@ -117,8 +126,7 @@ namespace Copper {
 			{
 
 				data.keyPressedEvent.key = (KeyCode)key;
-				data.keyPressedEvent.Call();
-				data.keyPressedEvent.Clear();
+				data.keyPressedEvent();
 
 				break;
 
@@ -127,8 +135,7 @@ namespace Copper {
 			{
 
 				data.keyPressedEvent.key = (KeyCode)key;
-				data.keyPressedEvent.Call();
-				data.keyPressedEvent.Clear();
+				data.keyPressedEvent();
 
 				break;
 
@@ -137,8 +144,7 @@ namespace Copper {
 			{
 
 				data.keyReleasedEvent.key = (KeyCode)key;
-				data.keyReleasedEvent.Call();
-				data.keyReleasedEvent.Clear();
+				data.keyReleasedEvent();
 
 				break;
 
@@ -160,60 +166,9 @@ namespace Copper {
 
 	}
 
-	bool Window::IsKeyPressed(KeyCode keycode) const {
+	float Window::GetTime() const {
 
-		CUP_FUNCTION();
-
-		return glfwGetKey(WINDOW, (int32) keycode) == GLFW_PRESS;
-
-	}
-	bool Window::IsButtonPressed(MouseCode mousecode) const {
-
-		CUP_FUNCTION();
-
-		return glfwGetMouseButton(WINDOW, (int32) mousecode) == GLFW_PRESS;
-
-	}
-
-	uint32 Window::Width() const {
-
-		uint32 ret;
-
-		glfwGetWindowSize(WINDOW, (int32*) &ret, nullptr);
-
-		return ret;
-
-	}
-	uint32 Window::Height() const {
-
-		uint32_t ret;
-
-		glfwGetWindowSize(WINDOW, nullptr, (int32*) &ret);
-
-		return ret;
-
-	}
-	UVector2I Window::Size() const {
-
-		//TODO: I don't know what zaza I was smoking when I wrote this
-		//		But I am never coding while on that shit again (*tiktok false buzzer*)
-		int32 x, y;
-		glfwGetWindowSize(WINDOW, &x, &y);
-
-		return UVector2I(x, y);
-
-	}
-	float Window::AspectRatio() const {
-
-		UVector2I ret;
-
-		glfwGetWindowSize(WINDOW, (int32*) &ret.x, (int32*) &ret.y);
-
-		return static_cast<float>(ret.x) / ret.y;
-
-	}
-
-	float Window::Time() const {
+        CUP_FUNCTION();
 
 		return (float) glfwGetTime();
 
@@ -229,7 +184,7 @@ namespace Copper {
 
 	}
 
-	void Window::AddWindowCloseEventFunc(std::function<bool(const Event& e)> func) {
+    void Window::AddWindowCloseEventFunc(std::function<bool(const Event& e)> func) {
 
 		data.windowCloseEvent += func;
 		glfwSetWindowUserPointer(WINDOW, &data);
@@ -257,14 +212,14 @@ namespace Copper {
 	void Window::AddKeyReleasedEventFunc(std::function<bool(const Event&)> func) {
 
 		data.keyReleasedEvent += func;
-		glfwSetWindowUserPointer(WINDOW, &data);
+	    glfwSetWindowUserPointer(WINDOW, &data);
 
 	}
 
 	void Window::AddMouseMoveEventFunc(std::function<bool(const Event&)> func) {
 
 		data.mouseMoveEvent += func;
-		glfwSetWindowUserPointer(WINDOW, &data);
+	    glfwSetWindowUserPointer(WINDOW, &data);
 
 	}
 

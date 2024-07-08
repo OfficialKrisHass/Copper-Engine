@@ -31,26 +31,27 @@ namespace Copper::RendererAPI {
 		2, 3, 0
 
 	};
-#endif
 
 	uint32 gameRectVAO;
 	Shader gameRectShader;
+#endif
 
 	Shader shader;
 	Shader lineShader;
 
 	Camera* cam;
 
-	Color ambientColor = Color::white;
-	Vector3 ambientDirection = Vector3(-0.489834040f, 0.210472092f, 0.846028447f);
-
 	void Initialize() {
 
 		CUP_FUNCTION();
 		VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the OpenGL Renderer API");
 
-		if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
-			LogError("Failed to load GLAD!");
+		if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
+
+			LogError("Failed to load GLAD");
+            exit(-1);
+
+        }
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -169,8 +170,8 @@ namespace Copper::RendererAPI {
 		}
 		shader.LoadInt("lightCount", lightCount);
 
-		shader.LoadVec3("ambientDirection", ambientDirection);
-		shader.LoadVec3("ambientColor", ambientColor);
+		shader.LoadVec3("ambientColor", Renderer::AmbientColor());
+		shader.LoadVec3("ambientDirection", Renderer::AmbientDirection());
 
 		shader.LoadFloat("ambientStrength", 0.1f);
 		shader.LoadFloat("specularStrength", 0.5f);
@@ -216,15 +217,20 @@ namespace Copper::RendererAPI {
 
 	void SetWireframe(bool value) {
 
+        CUP_FUNCTION();
+
 		if (value)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		else
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	}
-	void SetShaderPath(const std::string& vertexPath, const std::string& fragmentPath) { shader = Shader(vertexPath, fragmentPath); }
+	void SetShaderPath(const std::string& vertexPath, const std::string& fragmentPath) {
 
-	Color& AmbientColor() { return ambientColor; }
-	Vector3& AmbientDirection() { return ambientDirection; }
+        CUP_FUNCTION();
+
+        shader = Shader(vertexPath, fragmentPath);
+
+    }
 
 }

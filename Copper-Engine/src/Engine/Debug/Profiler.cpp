@@ -86,7 +86,7 @@ namespace Copper::Profiler {
 
 		// Main Frame
 
-		if (!name) {
+		if (name == nullptr) {
 
 			MainFrame().name = "Main";
 			MainFrame().parentFrame = nullptr;

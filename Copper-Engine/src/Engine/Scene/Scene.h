@@ -30,6 +30,7 @@ namespace Copper {
 	public:
 		Scene() {
 
+            CUP_FUNCTION();
 			m_registry.Initialize();
 
 		}
@@ -39,13 +40,13 @@ namespace Copper {
 
 		class Camera* cam = nullptr;
 
-		InternalEntity* CreateEntity(ENTITY_DEFAULT_PROPERTIES_DECLARATION) {
+		InternalEntity* CreateEntity(const Vector3& position = Vector3::zero, const Quaternion& rotation = Quaternion(1.0f, 0.0f, 0.0f, 0.0f), const Vector3& scale = Vector3::one, const std::string& name = "Entity") {
 
             CUP_FUNCTION();
             return m_registry.CreateEntity(this, position, rotation, scale, name);
 
         }
-		InternalEntity* CreateEntityFromID(uint32 id, ENTITY_DEFAULT_PROPERTIES_DECLARATION, bool returnIfExists = true) {
+		InternalEntity* CreateEntityFromID(uint32 id, const Vector3& position = Vector3::zero, const Quaternion& rotation = Quaternion(1.0f, 0.0f, 0.0f, 0.0f), const Vector3& scale = Vector3::one, const std::string& name = "Entity", bool returnIfExists = true) {
 
             CUP_FUNCTION();
             return m_registry.CreateEntityFromID(id, this, position, rotation, scale, name, returnIfExists);
@@ -125,7 +126,52 @@ namespace Copper {
 
 	};
 
+    // Definition in Engine.cpp
 	Scene* GetScene();
-	bool IsSceneRuntimeRunning();
+
+	inline bool IsSceneRuntimeRunning() {
+
+        CUP_FUNCTION();
+        return GetScene()->IsRuntimeRunning();
+
+    }
+
+    inline InternalEntity* CreateEntity(const Vector3& position = Vector3::zero, const Quaternion& rotation = Quaternion(1.0f, 0.0f, 0.0f, 0.0f), const Vector3& scale = Vector3::one, const std::string& name = "Entity") {
+
+        CUP_FUNCTION();
+        return GetScene()->CreateEntity(position, rotation, scale, name);
+
+    }
+	inline InternalEntity* CreateEntityFromID(uint32 id, const Vector3& position = Vector3::zero, const Quaternion& rotation = Quaternion(1.0f, 0.0f, 0.0f, 0.0f), const Vector3& scale = Vector3::one, const std::string& name = "Entity", bool returnIfExists = true) {
+
+        CUP_FUNCTION();
+        return GetScene()->CreateEntityFromID(id, position, rotation, scale, name, returnIfExists);
+
+    }
+	inline InternalEntity* GetEntityFromID(uint32 id) {
+
+        CUP_FUNCTION();
+        return GetScene()->GetEntityFromID(id);
+
+    }
+	inline void RemoveEntity(InternalEntity* entity) {
+
+        CUP_FUNCTION();
+        GetScene()->RemoveEntity(entity);
+
+    }
+	inline void RemoveEntityFromID(uint32 id) {
+
+        CUP_FUNCTION();
+        GetScene()->RemoveEntityFromID(id);
+
+    }
+
+	inline uint32 GetNumOfEntities() {
+
+        CUP_FUNCTION();
+        return GetScene()->GetNumOfEntities();
+
+    }
 
 }

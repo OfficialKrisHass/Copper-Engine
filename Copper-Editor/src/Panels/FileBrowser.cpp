@@ -2,15 +2,14 @@
 
 #include "Core/EditorApp.h"
 
+#include "Projects/Project.h"
+
 #include "Assets/ProjectAssetDatabase.h"
 #include "Assets/Serializer.h"
 #include "Assets/AssetMeta.h"
 
-#include "Engine/Core/Core.h"
 #include "Panels/Properties.h"
-#include "Panels/SceneHierarchy.h"
 
-#include "Engine/AssetStorage/AssetMap.h"
 #include "Engine/AssetStorage/AssetStorage.h"
 
 #include "Engine/Utilities/FileTemplate.h"
@@ -42,10 +41,8 @@ namespace Editor {
     Texture directoryIcon;
     Texture fileIcon;
 
-    FileBrowser::FileBrowser(const fs::path& initialDir) : Panel("File Browser") {
+    void FileBrowser::Initialize() {
         
-        m_projectRelativeDir = initialDir;
-
         directoryIcon.Create(ExecutableFolder() + "/assets/Icons/DirectoryIcon.png", Texture::Format::RGBA);
         fileIcon.Create(ExecutableFolder() + "/assets/Icons/FileIcon.png", Texture::Format::RGBA);
 
@@ -76,12 +73,12 @@ namespace Editor {
 
         // Display Items
 
-        for(const fs::directory_entry& entry : fs::directory_iterator((GetProject().assetsPath / m_projectRelativeDir).string())) {
+        for(const fs::directory_entry& entry : fs::directory_iterator((GetProject().GetAssetsPath() / m_projectRelativeDir).string())) {
 
             // Setup
 
             const bool directory = entry.is_directory();
-            const fs::path path = fs::relative(entry.path(), GetProject().assetsPath);
+            const fs::path path = fs::relative(entry.path(), GetProject().GetAssetsPath());
             const std::string extension = path.extension().string();
             if (extension == ".cum") continue;
 
@@ -145,9 +142,9 @@ namespace Editor {
 
         if (ImGui::BeginMenu("New")) {
 
-            if (ImGui::MenuItem("Folder", 0, false, GetProject().name != "")) {
+            if (ImGui::MenuItem("Folder", 0, false, GetProject().GetName() != "")) {
 
-                fs::path path = GetProject().assetsPath / m_projectRelativeDir;
+                fs::path path = GetProject().GetAssetsPath() / m_projectRelativeDir;
                 path /= "New Folder";
 
                 fs::create_directories(path.string());
@@ -158,8 +155,8 @@ namespace Editor {
             ImGui::Separator();
             if (ImGui::MenuItem("Script")) {
 
-                Utils::FileFromTemplate("Script.cs", (GetProject().assetsPath / m_projectRelativeDir / "Script.cs").string(), {{"ScriptName", "Script"}});
-                editingPath = GetProject().assetsPath / m_projectRelativeDir / "Script.cs";
+                Utils::FileFromTemplate("Script.cs", (GetProject().GetAssetsPath() / m_projectRelativeDir / "Script.cs").string(), {{"ScriptName", "Script"}});
+                editingPath = GetProject().GetAssetsPath() / m_projectRelativeDir / "Script.cs";
 
             }
             if (ImGui::MenuItem("Material")) {
@@ -169,8 +166,8 @@ namespace Editor {
                 MaterialAsset mat = AssetStorage::CreateAsset<Material>();
                 editingPath = path;
 
-                AssetFile::SerializeMaterial(GetProject().assetsPath / path, mat);
-                AssetMeta::Serialize((GetProject().assetsPath / path).string() + ".cum", mat.AssetUUID());
+                AssetFile::SerializeMaterial(GetProject().GetAssetsPath() / path, mat);
+                AssetMeta::Serialize((GetProject().GetAssetsPath() / path).string() + ".cum", mat.AssetUUID());
 
             }
 
@@ -187,9 +184,9 @@ namespace Editor {
 
         if (ImGui::MenuItem("Remove")) {
 
-            fs::remove_all(GetProject().assetsPath / path);
-            if (fs::exists((GetProject().assetsPath / path).string() + ".cum"))
-                fs::remove((GetProject().assetsPath / path).string() + ".cum");
+            fs::remove_all(GetProject().GetAssetsPath() / path);
+            if (fs::exists((GetProject().GetAssetsPath() / path).string() + ".cum"))
+                fs::remove((GetProject().GetAssetsPath() / path).string() + ".cum");
 
         }
         if (ImGui::MenuItem("Edit"))
@@ -201,7 +198,7 @@ namespace Editor {
 
     void FileBrowser::EntryIcon(bool directory) {
 
-        uint32_t iconID = directory ? directoryIcon.ID() : fileIcon.ID();
+        uint32_t iconID = directory ? directoryIcon.GetID() : fileIcon.GetID();
 
         ImGui::PushStyleColor(ImGuiCol_Button, { 0.0f, 0.0f, 0.0f, 0.0f });
         ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64) iconID), { THUMBNAIL_SIZE, THUMBNAIL_SIZE }, { 0, 1 }, { 1, 0 });
@@ -225,7 +222,7 @@ namespace Editor {
         if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
 
             if (extension == ".copper")
-                OpenScene(GetProject().assetsPath / path);
+                OpenScene(GetProject().GetAssetsPath() / path);
 
         }
 
@@ -239,7 +236,7 @@ namespace Editor {
         }
         if ((extension == ".png" || extension == ".jpg") && ImGui::BeginDragDropSource()) {
 
-            TextureAsset& texture = ProjectAssetDatabase::GetAssetFromPath<TextureAsset>(GetProject().assetsPath / path);
+            TextureAsset& texture = ProjectAssetDatabase::GetAssetFromPath<TextureAsset>(GetProject().GetAssetsPath() / path);
 
             ImGui::SetDragDropPayload("FB_TEXTURE", &texture, sizeof(TextureAsset), ImGuiCond_Once);
             ImGui::EndDragDropSource();
@@ -247,7 +244,7 @@ namespace Editor {
         }
         if (extension == ".mat" && ImGui::BeginDragDropSource()) {
 
-            const UUID& uuid = ProjectAssetDatabase::GetAssetFromPath(GetProject().assetsPath / path);
+            const UUID& uuid = ProjectAssetDatabase::GetAssetFromPath(GetProject().GetAssetsPath() / path);
 
             ImGui::SetDragDropPayload("FB_MATERIAL", &uuid, sizeof(UUID), ImGuiCond_Once);
             ImGui::EndDragDropSource();
@@ -258,7 +255,7 @@ namespace Editor {
 
     void FileBrowser::EditName(const Copper::fs::path& path, const std::string& filename) {
 
-        const std::string fullPath = (GetProject().assetsPath / path).string();
+        const std::string fullPath = (GetProject().GetAssetsPath() / path).string();
 
         char buffer[128] = {};
         std::strncpy(buffer, filename.c_str(), filename.length() * sizeof(char));
@@ -270,7 +267,7 @@ namespace Editor {
             editingPath /= buffer;
             editingPath += path.extension();
 
-            const std::string newFullPath = (GetProject().assetsPath / editingPath).string();
+            const std::string newFullPath = (GetProject().GetAssetsPath() / editingPath).string();
 
             fs::rename(fullPath, newFullPath);
             

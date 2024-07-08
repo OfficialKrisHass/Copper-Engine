@@ -10,8 +10,9 @@ namespace Editor {
     class FileBrowser : public Panel {
         
     public:
-        FileBrowser() = default;
-        FileBrowser(const Copper::fs::path& initialDir);
+        FileBrowser() : Panel("File Browser") {}
+
+        void Initialize();
 
         static void SetRelativeDir(const Copper::fs::path& value) { m_projectRelativeDir = value; }
 

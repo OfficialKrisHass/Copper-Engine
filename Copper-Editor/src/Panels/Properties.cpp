@@ -1,13 +1,15 @@
 #include "Properties.h"
 
-#include "Engine/Scripting/ScriptingEngine.h"
-
 #include "Core/EditorApp.h"
+
+#include "Projects/Project.h"
 
 #include "Assets/ProjectAssetDatabase.h"
 #include "Assets/Serializer.h"
 
 #include "UI/TypeWidgets.h"
+
+#include "Engine/Scripting/ScriptingEngine.h"
 
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_internal.h>
@@ -34,8 +36,6 @@ namespace Editor {
 
 	template<typename T> static bool DrawComponent(const std::string& name, T* component);
 	static bool DrawComponent(const std::string& name, Transform* component);
-
-	Properties::Properties() : Panel("Properties") { }
 
 	void Properties::UI() {
 
@@ -183,11 +183,11 @@ namespace Editor {
 		ImGui::Separator();
 
 		std::string extension = m_selectedFile.extension().string();
-		const UUID& asset = ProjectAssetDatabase::GetAssetFromPath(GetProject().assetsPath / m_selectedFile);
+		const UUID& asset = ProjectAssetDatabase::GetAssetFromPath(GetProject().GetAssetsPath() / m_selectedFile);
 
 		if (asset == UUID::GetInvalid()) {
 
-			LogWarn("Selected File is not found in the AssetFileDatabase, try refreshing.\n\tPath: {}", GetProject().assetsPath / m_selectedFile);
+			LogWarn("Selected File is not found in the AssetFileDatabase, try refreshing.\n\tPath: {}", GetProject().GetAssetsPath() / m_selectedFile);
 
 			m_selectedFile = "";
 			return;
@@ -414,7 +414,7 @@ namespace Editor {
 		if (UI::EditFloat("Tiling", &material->tiling)) changed = true;
 
 		if (changed)
-			AssetFile::SerializeMaterial(GetProject().assetsPath / m_selectedFile, material);
+			AssetFile::SerializeMaterial(GetProject().GetAssetsPath() / m_selectedFile, material);
 
 	}
 

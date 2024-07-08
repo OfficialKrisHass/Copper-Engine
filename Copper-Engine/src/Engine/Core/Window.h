@@ -39,21 +39,24 @@ namespace Copper {
 
 		inline void* GetWindowPtr() const { return windowPtr; }
 
-		bool IsKeyPressed(enum KeyCode keycode) const;
-		bool IsButtonPressed(enum MouseCode mousecode) const;
+        // Getters
 
-		uint32 Width() const;
-		uint32 Height() const;
-		UVector2I Size() const;
-		float AspectRatio() const;
+		inline uint32 GetWidth() const { return data.size.x; }
+		inline uint32 GetHeight() const { return data.size.y; }
+		inline const UVector2I& GetSize() const { return data.size; }
+		inline float GetAspectRatio() const { return static_cast<float>(data.size.x) / data.size.y; }
 
-		float Time() const;
+		float GetTime() const;
+        
+        // Setters
 
 		void SetSize(const UVector2I& size);
 
+        // Events
+
 		void AddWindowCloseEventFunc(std::function<bool(const Event&)> func);
 		void AddWindowFocusedEventFunc(std::function<bool(const Event&)> func);
-		void AddWindowResizeEventFunc(std::function<bool(const Event&)> func);
+	    void AddWindowResizeEventFunc(std::function<bool(const Event&)> func);
 
 		void AddKeyPressedEventFunc(std::function<bool(const Event&)> func);
 		void AddKeyReleasedEventFunc(std::function<bool(const Event&)> func);

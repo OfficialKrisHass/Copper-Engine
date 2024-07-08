@@ -1,27 +1,25 @@
 #pragma once
 
-#include "Projects/Project.h"
-
-#define BIT(x) (1 << x)
+#include <Copper.h>
 
 namespace Editor::ProjectChecker {
 
 	enum ProjectIssue : Copper::uint16 {
 
-		MissingAssets = BIT(0),
-		MissingBinaries = BIT(1),
+		MissingAssets = FLAG(0),
+		MissingBinaries = FLAG(1),
 
-		MissingProjectDLL = BIT(2),
-		MissingScriptingDLL = BIT(3),
+		MissingProjectDLL = FLAG(2),
+		MissingScriptingDLL = FLAG(3),
 
-		MissingProjectFile = BIT(4),
+		MissingProjectFile = FLAG(4),
 
 #ifdef CU_WINDOWS
-		MissingSolution = BIT(5),
-		MissingCSProj = BIT(6),
+		MissingSolution = FLAG(5),
+		MissingCSProj = FLAG(6),
 #elif CU_LINUX
-		MissingMakefile = BIT(5),
-		MissingPremake = BIT(6),
+		MissingMakefile = FLAG(5),
+		MissingPremake = FLAG(6),
 #endif
 
 	};

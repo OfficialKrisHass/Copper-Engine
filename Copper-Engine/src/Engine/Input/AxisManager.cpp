@@ -3,12 +3,12 @@
 
 #include "Engine/Core/Engine.h"
 
-// TODO: Rework this you dumbo
-
 namespace Copper::Input {
 
 	std::unordered_map<std::string, Axis> axises;
 	std::unordered_map<std::string, MouseAxis> mouseAxises;
+
+    float GetMouseAxis(const std::string& name);
 
 	void InitializeAxisManager() {
 		
@@ -23,35 +23,23 @@ namespace Copper::Input {
 
 	}
 
-	float GetAxis(const std::string& axisName) {
+	float GetAxis(const std::string& name) {
 
 		CUP_FUNCTION();
 
-		bool isMouseAxis = mouseAxises.find(axisName) != mouseAxises.end();
-		if (!isMouseAxis && axises.find(axisName) == axises.end()) {
-			
-			LogWarn("The axis ({}) doesn't exist, double check if the name you've provided is correct.", axisName);
-			return 0.0f;
-		
-		}
+		bool isMouseAxis = mouseAxises.find(name) != mouseAxises.end();
 
-		// Mouse Axis
+        if (isMouseAxis)
+            return GetMouseAxis(name);
+        else if (axises.find(name) == axises.end()) {
 
-		if (isMouseAxis) {
+            LogWarn("The axis '{}' does not exist, double check if the name you've provided is correct", name);
+            return 0.0f;
 
-			float ret = 0.0f;
-			MouseAxis axis = mouseAxises[axisName];
-
-			ret += axis.isX ? Input::GetCursorPosDifferenceX() : Input::GetCursorPosDifferenceY();
-
-			return ret;
-
-		}
-
-		// Keyboard axis
+        }
 
 		float ret = 0.0f;
-		Axis axis = axises[axisName];
+		const Axis& axis = axises[name];
 
 		if (Input::IsKey(axis.positive)) ret += axis.positiveValue;
 		if (Input::IsKey(axis.negative)) ret += axis.negativeValue;
@@ -59,16 +47,29 @@ namespace Copper::Input {
 		return ret;
 
 	}
+    float GetMouseAxis(const std::string& name) {
+
+        CUP_FUNCTION();
+
+        float ret = 0.0f;
+        const MouseAxis& axis = mouseAxises[name];
+
+        ret += axis.isX ? Input::GetCursorPosDifferenceX() : Input::GetCursorPosDifferenceY();
+        return ret;
+
+    }
 
 	void AddAxis(const std::string& axisName, KeyCode positive, KeyCode negative, float positiveValue, float negativeValue) {
 
 		CUP_FUNCTION();
+
 		axises[axisName] = Axis(positive, negative, positiveValue, negativeValue);
 
 	}
 	void AddMouseAxis(const std::string& axisName, bool isX, float positiveValue, float negativeValue) {
 
 		CUP_FUNCTION();
+
 		mouseAxises[axisName] = MouseAxis(isX, positiveValue, negativeValue);
 
 	}

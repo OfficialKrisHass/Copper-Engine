@@ -48,11 +48,11 @@ namespace Copper::Input {
 		window->AddMouseMoveEventFunc(OnMouseMove);
 
 		if (!pfd::settings::available())
-		#ifdef CU_LINUX
+#ifdef CU_LINUX
 			LogError("Portable File Dialogs are not available! You might be missing these packages:\n\tKDE: KDialog\n\tGnome: Zenity/Matedialog/Qarma");
-		#elif CU_WINDOWS
+#elif CU_WINDOWS
 			LogError("Portable File Dialogs are not available!");
-		#endif
+#endif
 
 		pfd::settings::verbose(false);
 
@@ -70,7 +70,6 @@ namespace Copper::Input {
 		CUP_FUNCTION();
 
 		if (keys[key].first == 0) return false;
-
 		return true;
 
 	}
@@ -135,8 +134,8 @@ namespace Copper::Input {
 		if (!mouseLocked) {
 
 			UVector2I diferenceFull = prevMousePos - event.mouseCoords;
-			mousePosDiference.x = -((float) diferenceFull.x / (float) GetWindow().Width());
-			mousePosDiference.y = -((float) diferenceFull.y / (float) GetWindow().Height());
+			mousePosDiference.x = -((float) diferenceFull.x / (float) GetWindow().GetWidth());
+			mousePosDiference.y = -((float) diferenceFull.y / (float) GetWindow().GetHeight());
 
 			prevMousePos = event.mouseCoords;
 
@@ -158,11 +157,8 @@ namespace Copper::Input {
 			mousePosDiference.y = ((float) event.mouseCoords.y - centre.y) / GetWindowSize().y;
 
 		}
-		else {
-
+		else
 			firstMouseLockedFrame = false;
-
-		}
 
 		prevMousePos = event.mouseCoords;
 
@@ -185,7 +181,8 @@ namespace Copper::Input {
 		CUP_FUNCTION();
 
 		mouseLocked = locked;
-		if (locked) firstMouseLockedFrame = true;
+		if (locked)
+            firstMouseLockedFrame = true;
 
 	}
 	void SetCursorPosition(float x, float y) {
@@ -215,16 +212,7 @@ namespace Copper::Input {
 	float GetCursorPosDifferenceX() { return mousePosDiference.x; }
 	float GetCursorPosDifferenceY() { return mousePosDiference.y; }
 
-	bool IsCursorLocked() {
-
-		return mouseLocked;
-
-	}
-
-	bool IsCursorVisible() {
-
-		return mouseVisible;
-
-	}
+	bool IsCursorLocked() { return mouseLocked; }
+	bool IsCursorVisible() { return mouseVisible; }
 
 }

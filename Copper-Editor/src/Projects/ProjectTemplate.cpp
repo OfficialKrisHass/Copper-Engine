@@ -6,39 +6,45 @@ using std::filesystem::create_directories;
 
 namespace Editor {
 
+    using namespace Copper;
+
 	void CreateFileAndReplace(const fs::path& original, const fs::path& out, const std::string& what, const std::string& replace);
 
 	void CopyFileTo(const fs::path& original, const fs::path& where, bool binary = false);
 
 	void CreateTemplateFromProject(const Project& project) {
 
-		const fs::path path = "assets/Templates/" + project.name;
+        CUP_FUNCTION();
+
+		const fs::path path = "assets/Templates/" + project.GetName();
 
 		create_directories(path.string() + "/Assets/Scenes");
 
-		CreateFileAndReplace(project.path / "Project.cu", path / "Project.cu.cut", project.name, ":{ProjectName}");
+		CreateFileAndReplace(project.GetPath() / "Project.cu", path / "Project.cu.cut", project.GetName(), ":{ProjectName}");
 
-		CopyFileTo(project.assetsPath / project.lastOpenedScene, path / "Assets" / project.lastOpenedScene);
-		CopyFileTo(project.assetsPath / (project.lastOpenedScene.string() + ".cum"), path / "Assets" / (project.lastOpenedScene.string() + ".cum"));
+		CopyFileTo(project.GetAssetsPath() / project.GetLastOpenedScenePath(), path / "Assets" / project.GetLastOpenedScenePath());
+		CopyFileTo(project.GetAssetsPath() / (project.GetLastOpenedScenePath().string() + ".cum"), path / "Assets" / (project.GetLastOpenedScenePath().string() + ".cum"));
 
 	}
 	void CreateProjectFromTemplate(const fs::path& templatePath, Project& project) {
 
-		create_directories(project.path.string() + "/Assets/Scenes");
-		create_directories(project.path.string() + "/Binaries");
-		create_directories(project.path.string() + "/Objs");
+        CUP_FUNCTION();
 
-		CreateFileAndReplace(templatePath / "Project.cu.cut", project.path / "Project.cu", ":{ProjectName}", project.name);
+		create_directories(project.GetPath().string() + "/Assets/Scenes");
+		create_directories(project.GetPath().string() + "/Binaries");
+		create_directories(project.GetPath().string() + "/Objs");
 
-		project.RegenerateIDEFiles();
+		CreateFileAndReplace(templatePath / "Project.cu.cut", project.GetPath() / "Project.cu", ":{ProjectName}", project.GetName());
+
+		project.RegenerateBuildFiles();
 
 		//Copy the Template Scene
-		CopyFileTo(templatePath / "Assets/Scenes/EmptyTemplate.copper", project.assetsPath / "Scenes/EmptyTemplate.copper");
-		CopyFileTo(templatePath / "Assets/Scenes/EmptyTemplate.copper.cum", project.assetsPath / "Scenes/EmptyTemplate.copper.cum");
+		CopyFileTo(templatePath / "Assets/Scenes/EmptyTemplate.copper", project.GetAssetsPath() / "Scenes/EmptyTemplate.copper");
+		CopyFileTo(templatePath / "Assets/Scenes/EmptyTemplate.copper.cum", project.GetAssetsPath() / "Scenes/EmptyTemplate.copper.cum");
 
-		project.lastOpenedScene = "Scenes/EmptyTemplate.copper";
+        project.SetLastOpenedScenePath("Scenes/EmptyTemplate.copper");
 
-		CopyFileTo("assets/ScriptAPI/Copper-ScriptingAPI.dll", project.path / "Binaries/Copper-ScriptingAPI.dll", true);
+		CopyFileTo("assets/ScriptAPI/Copper-ScriptingAPI.dll", project.GetPath() / "Binaries/Copper-ScriptingAPI.dll", true);
 
 	}
 	

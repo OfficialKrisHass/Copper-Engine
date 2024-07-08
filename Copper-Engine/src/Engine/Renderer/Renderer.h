@@ -64,9 +64,6 @@ namespace Copper {
 		void SetWireframe(bool value);
 		void SetShaderPath(const std::string& vertexPath, const std::string& fragmentPath);
 
-		Color& AmbientColor();
-		Vector3& AmbientDirection();
-
 	}
 
 }

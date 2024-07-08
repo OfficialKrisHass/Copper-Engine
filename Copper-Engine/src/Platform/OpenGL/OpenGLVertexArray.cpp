@@ -11,7 +11,7 @@ namespace Copper {
 
 		CUP_FUNCTION();
 
-		this->ibo = ibo;
+		this->m_ibo = ibo;
 
 		glGenVertexArrays(1, &m_id);
 		glBindVertexArray(m_id);
@@ -22,30 +22,31 @@ namespace Copper {
 
 		CUP_FUNCTION();
 
-		uint32 count = vbo->ElementCount();
+		uint32 count = vbo->GetElementCount();
 		for (uint32 i = 0; i < count; i++) {
 
 			ElementType type = vbo->GetType(i);
 
-			glVertexAttribPointer(i, TypeDimensions(type), TypeToOpenGL(type), GL_FALSE, vbo->Stride(), (void*) (uint64) vbo->GetOffset(i));
+			glVertexAttribPointer(i, TypeDimensions(type), TypeToOpenGL(type), GL_FALSE, vbo->GetStride(), (void*) (uint64) vbo->GetOffset(i));
 			glEnableVertexAttribArray(i);
 
 		}
 
 	}
-	void VertexArray::SetIndexBuffer(IndexBuffer* ibo) { this->ibo = ibo; }
 
 	void VertexArray::Bind() const {
-		
-		CUP_FUNCTION();
-		glBindVertexArray(m_id);
-	
-	}
+
+        CUP_FUNCTION();
+
+        glBindVertexArray(m_id);
+
+    }
 	void VertexArray::Unbind() const {
-		
-		CUP_FUNCTION();
-		glBindVertexArray(0);
-	
-	}
+
+        CUP_FUNCTION();
+
+        glBindVertexArray(0);
+
+    }
 
 }

@@ -6,8 +6,8 @@
 
 #include <fstream>
 
-#define COLOR_EDIT(color, text) ImGui::ColorEdit3(text, (float*) &style->Colors[color])
-#define WRITE_COLOR(color) out << YAML::Key << color << YAML::Value << *(Color*) &(this->style->Colors[color])
+#define COLOR_EDIT(color, text) ImGui::ColorEdit3(text, (float*) &m_style->Colors[color])
+#define WRITE_COLOR(color) out << YAML::Key << color << YAML::Value << *(Color*) &(m_style->Colors[color])
 
 using namespace Copper;
 
@@ -15,10 +15,9 @@ namespace Editor {
 
 	void ThemeEditor::UI() {
 
-		if (!this->style)
-			this->style = &ImGui::GetStyle();
+        CU_ASSERT(m_style, "Theme Editor style is nullptr, make sure you called Load or SaveTheme at least once");
 
-		ImGui::DragFloat("Rounding", &this->style->FrameRounding);
+		ImGui::DragFloat("Rounding", &m_style->FrameRounding);
 
 		ImGui::Separator();
 
@@ -75,13 +74,13 @@ namespace Editor {
 
 	void ThemeEditor::SaveTheme(const fs::path& path) {
 
-		if (!this->style)
-			this->style = &ImGui::GetStyle();
+		if (!m_style)
+			m_style = &ImGui::GetStyle();
 
 		YAML::Emitter out;
 		out << YAML::BeginMap; // Main
 
-		out << YAML::Key << "Rounding" << this->style->FrameRounding;
+		out << YAML::Key << "Rounding" << this->m_style->FrameRounding;
 
 		out << YAML::Key << "Colors" << YAML::Value << YAML::BeginMap; // Colors
 
@@ -129,8 +128,8 @@ namespace Editor {
 	}
 	void ThemeEditor::LoadTheme(const fs::path& path) {
 
-		if (!this->style)
-			this->style = &ImGui::GetStyle();
+		if (m_style == nullptr)
+			m_style = &ImGui::GetStyle();
 
 		YAML::Node main;
 		try {
@@ -144,7 +143,7 @@ namespace Editor {
 
 		}
 
-		this->style->FrameRounding = main["Rounding"].as<float>();
+		m_style->FrameRounding = main["Rounding"].as<float>();
 
 		YAML::Node colors = main["Colors"];
 
@@ -152,7 +151,8 @@ namespace Editor {
 
 			uint32 col = it->first.as<uint32>();
 			Color value = it->second.as<Color>();
-			this->style->Colors[col] = *(ImVec4*) &value;
+
+			m_style->Colors[col] = *(ImVec4*) &value;
 
 		}
 

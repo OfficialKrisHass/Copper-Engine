@@ -6,7 +6,7 @@
 #include "Engine/Scene/Entity.h"
 
 #ifdef CU_EDITOR
-namespace Editor { struct Project; class SceneCamera; }
+namespace Editor { class SceneCamera; }
 #endif
 
 namespace Copper {
@@ -18,7 +18,6 @@ namespace Copper {
 		friend class OldSceneVersionSerializer;
 
 	#ifdef CU_EDITOR
-		friend Editor::Project;
 		friend Editor::SceneCamera;
 	#endif
 

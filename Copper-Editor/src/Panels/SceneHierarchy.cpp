@@ -21,8 +21,6 @@ namespace Editor {
 	Scene* SceneHierarchy::m_scene = nullptr;
 	Entity SceneHierarchy::m_selectedEntity = nullptr;
 
-	SceneHierarchy::SceneHierarchy() : Panel("Scene Hierarchy") { }
-
 	void SceneHierarchy::UI() {
 
 		CUP_START_FRAME("Scene Hierarchy");

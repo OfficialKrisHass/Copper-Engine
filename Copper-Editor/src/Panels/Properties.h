@@ -9,7 +9,7 @@ namespace Editor {
 	class Properties : public Panel {
 
 	public:
-		Properties();
+		Properties() : Panel("Properties") {}
 
 		static inline void SetSelectedEntity(Copper::Entity entity) {
 			

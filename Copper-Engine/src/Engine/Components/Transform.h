@@ -59,7 +59,7 @@ namespace Copper {
 		void RemoveChild(Transform* transform);
 		void RemoveChild(uint32 index);
 
-		inline Transform* GetChild(uint32 index) const { CUP_FUNCTION(); return GetEntityFromID(m_children[index])->GetTransform(); }
+		Transform* GetChild(uint32 index) const;
 		inline uint32 NumOfChildren() const { return (uint32) m_children.size(); }
 
 		// Transform matrix

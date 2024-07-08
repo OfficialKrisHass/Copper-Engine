@@ -2,11 +2,11 @@
 
 #include <Copper.h>
 
-#include "Core/SceneMeta.h"
-
-#include "Projects/Project.h"
-
 namespace Editor {
+
+    class Project;
+
+    class SceneMeta;
 
 	enum EditorState {
 
@@ -16,13 +16,15 @@ namespace Editor {
 
 	void NewScene();
 	void OpenScene();
-	void OpenScene(const fs::path& path);
+	void OpenScene(const Copper::fs::path& path);
 	void SaveScene();
 	void SaveSceneAs();
 
 	const Project& GetProject();
+
 	SceneCamera& GetSceneCam();
 	SceneMeta* GetSceneMeta();
+
 	Copper::UVector2I GetViewportSize();
 
 	void SetChanges(bool value);

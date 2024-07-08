@@ -2,21 +2,22 @@
 // Source is in Platform/<API>/<API>Shader.cpp
 
 #include "Engine/Core/Core.h"
-#include "cupch.h"
-
-#include <GLM/mat4x4.hpp>
 
 namespace Copper {
 
-	// Higher level, platform indenpendant wrapper for the VertexArray
+	// Higher level, platform indenpendant wrapper for a Shader 
 	class Shader {
 
 	public:
 		Shader() = default;
 		Shader(const std::string& vertexPath, const std::string& fragmentPath);
 
+        // Using
+
 		void Bind() const;
 		void Unbind() const;
+
+        void Delete();
 
 		// Uniforms
 
@@ -46,10 +47,15 @@ namespace Copper {
 		inline void LoadMat3(const std::string& name, const Matrix3& mat) const { LoadMat3(UniformLocation(name), mat); }
 		inline void LoadMat4(const std::string& name, const Matrix4& mat) const { LoadMat4(UniformLocation(name), mat); }
 
+        // Misc 
+
+        inline operator bool() const { return m_id != 0; }
+        inline bool IsValid() const { return (bool) *this; }
+
 	private:
-		uint32 m_id;
-		uint32 m_vertex;
-		uint32 m_fragment;
+		uint32 m_id = 0;
+		uint32 m_vertex = 0;
+		uint32 m_fragment = 0;
 
 	};
 

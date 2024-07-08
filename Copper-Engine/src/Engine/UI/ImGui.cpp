@@ -15,7 +15,7 @@
 
 namespace Copper {
 
-  static std::string iniPath = "";
+    static std::string iniPath = "";
 
 	std::string mainFontPath = "";
 	float mainFontSize = 0.0f;
@@ -26,9 +26,9 @@ namespace Copper {
 
 		CUP_FUNCTION();
 
-		this->gizmo = gizmo;
-		this->docking = docking;
-		this->viewports = viewports;
+		m_gizmo = gizmo;
+        m_docking = docking;
+		m_viewports = viewports;
 		
 		if(uiCount == 0) {
 			
@@ -38,16 +38,16 @@ namespace Copper {
 		}
 		uiCount++;
 
-		context = ImGui::CreateContext();
-		ImGui::SetCurrentContext(context);
+		m_context = ImGui::CreateContext();
+		ImGui::SetCurrentContext(m_context);
 		ImGuiIO& io = ImGui::GetIO();
 
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NoMouseCursorChange;
 		if (docking) io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		if (viewports) io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
-    iniPath = ExecutableFolder() + "/imgui.ini";
-    io.IniFilename = iniPath.c_str();
+        iniPath = ExecutableFolder() + "/imgui.ini";
+        io.IniFilename = iniPath.c_str();
 
 		if (!mainFontPath.empty())
 			io.FontDefault = io.Fonts->AddFontFromFileTTF(mainFontPath.c_str(), mainFontSize);
@@ -62,7 +62,8 @@ namespace Copper {
 
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext(context);
+		ImGui::DestroyContext(m_context);
+
 		uiCount--;
 
 	}
@@ -74,14 +75,13 @@ namespace Copper {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-		if (gizmo) ImGuizmo::BeginFrame();
+
+		if (m_gizmo) ImGuizmo::BeginFrame();
 
 	}
 	void UIContext::End() {
 
 		CUP_FUNCTION();
-
-		//io.DisplaySize = ImVec2((float) GetWindow().Width(), (float) GetWindow().Height());
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -114,6 +114,12 @@ namespace Copper {
 
 	}
 
-	void UIContext::SetAsCurrent() const { CUP_FUNCTION(); ImGui::SetCurrentContext(context); }
+	void UIContext::SetAsCurrent() const {
+
+        CUP_FUNCTION();
+
+        ImGui::SetCurrentContext(m_context);
+
+    }
 
 }

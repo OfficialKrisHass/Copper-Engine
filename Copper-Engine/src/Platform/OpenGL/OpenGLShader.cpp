@@ -26,7 +26,7 @@ namespace Copper {
 
 	static uint32 CreateShader(const std::string& path, uint32 type);
 	static void CheckShaderCompile(uint32 id, uint32 type);
-	static void CheckShaderLink(uint32 id);
+	static bool CheckShaderLink(uint32 id);
 
 	Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath) {
 
@@ -41,12 +41,22 @@ namespace Copper {
 		glAttachShader(m_id, m_fragment);
 		glLinkProgram(m_id);
 
-		CheckShaderLink(m_id);
+		if (!CheckShaderLink(m_id))
+            Delete(); 
 
 		glDeleteShader(m_vertex);
 		glDeleteShader(m_fragment);
 
 	}
+
+    void Shader::Delete() {
+
+        CUP_FUNCTION();
+
+        glDeleteProgram(m_id);
+        m_id = 0;
+
+    }
 
 	uint32 CreateShader(const std::string& path, uint32 type) {
 
@@ -77,16 +87,18 @@ namespace Copper {
 		LogError("{} Compilation Failed!\n\t{}", ShaderTypeToString(type), infoLog);
 
 	}
-	void CheckShaderLink(uint32 id) {
+	bool CheckShaderLink(uint32 id) {
 
 		CUP_FUNCTION();
 
 		glGetProgramiv(id, GL_LINK_STATUS, &success);
 
-		if (success) return;
+		if (success) return true;
 
 		glGetProgramInfoLog(id, 512, NULL, infoLog);
 		LogError("Shader Linking Failed!\n\t{}", infoLog);
+
+        return false;
 
 	}
 
@@ -105,7 +117,19 @@ namespace Copper {
 	void Shader::LoadMat3(uint32 location, const Matrix3& mat) const { glUniformMatrix3fv(location, 1, GL_FALSE, &(mat.cols[0].x)); }
 	void Shader::LoadMat4(uint32 location, const Matrix4& mat) const { glUniformMatrix4fv(location, 1, GL_FALSE, &(mat.cols[0].x)); }
 
-	void Shader::Bind() const { glUseProgram(m_id); }
-	void Shader::Unbind() const { glUseProgram(0); }
+	void Shader::Bind() const {
+
+        CUP_FUNCTION();
+
+        glUseProgram(m_id);
+
+    }
+	void Shader::Unbind() const {
+
+        CUP_FUNCTION();
+
+        glUseProgram(0);
+
+    }
 
 }

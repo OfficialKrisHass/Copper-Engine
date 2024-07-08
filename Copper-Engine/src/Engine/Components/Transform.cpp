@@ -1,8 +1,6 @@
 #include "cupch.h"
 #include "Transform.h"
 
-#include "Engine/Core/Engine.h"
-
 #include "Engine/Scene/Scene.h"
 
 #include "Engine/Utilities/Math.h"
@@ -202,6 +200,13 @@ namespace Copper {
 		LogError("Can't remove a child. Parent: {}, Child: {}", *GetEntity(), *transform->GetEntity());
 
 	}
+    Transform* Transform::GetChild(uint32 index) const {
+
+        CUP_FUNCTION();
+
+        return GetEntityFromID(m_children[index])->GetTransform();
+
+    }
 
 	void Transform::CalculateMatrix() {
 

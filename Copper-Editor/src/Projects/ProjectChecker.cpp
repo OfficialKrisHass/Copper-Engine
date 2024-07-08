@@ -5,20 +5,24 @@
 #include <filesystem>
 #include <fstream>
 
-#define CHECK_FOLDER(folderName, x) if (!std::filesystem::exists(path + folderName)) {\
-										LogError("Project '{}' is missing the {} folder", project.name, folderName);\
-										ret |= BIT(x); }
-#define CHECK_FILE(fileName, filePath, x) if (!std::filesystem::exists(path + filePath)) {\
-											LogError("Project '{}' is missing the {} ({}) file", project.name, fileName, filePath);\
-											ret |= BIT(x); }
+#define CHECK_FOLDER(folderName, x) if (!std::filesystem::exists(path / folderName)) {\
+										LogError("Project '{}' is missing the {} folder", project.GetName(), folderName);\
+										ret |= FLAG(x); }
+#define CHECK_FILE(fileName, filePath, x) if (!std::filesystem::exists(path / filePath)) {\
+											LogError("Project '{}' is missing the {} ({}) file", project.GetName(), fileName, filePath);\
+											ret |= FLAG(x); }
 
-#define FLAG(x, flag) x & (uint16) flag
+#define GET_FLAG(x, flag) x & (uint16) flag
 
 namespace Editor::ProjectChecker {
 
+    using namespace Copper;
+
 	uint16 CheckProject(const Project& project) {
 
-		const std::string path = project.path.string() + "/";
+        CUP_FUNCTION();
+
+		const fs::path& path = project.GetPath();
 		uint16 ret = 0;
 
 		// Base folders
@@ -28,7 +32,7 @@ namespace Editor::ProjectChecker {
 
 		// Binaries
 
-		CHECK_FILE("Project assembly", "Binaries/" + project.name + ".dll", 2);
+		CHECK_FILE("Project assembly", ("Binaries/" + project.GetName() + ".dll"), 2);
 		CHECK_FILE("Scripting API assembly", "Binaries/Copper-ScriptingAPI.dll", 3);
 
 		// Project files
@@ -52,34 +56,39 @@ namespace Editor::ProjectChecker {
 	}
 	void FixProject(Project& project, const uint16 issueFlags) {
 
-		if (FLAG(issueFlags, MissingAssets)) std::filesystem::create_directories(project.path / "Assets");
-		if (FLAG(issueFlags, MissingBinaries)) std::filesystem::create_directories(project.path / "Binaries");
+        CUP_FUNCTION();
 
-		if (FLAG(issueFlags, MissingProjectFile)) {
+		if (GET_FLAG(issueFlags, MissingAssets))
+            std::filesystem::create_directories(project.GetAssetsPath());
+		if (GET_FLAG(issueFlags, MissingBinaries))
+            std::filesystem::create_directories(project.GetPath() / "Binaries");
 
-			project.name = project.path.parent_path().filename().string();
-			project.RegenerateProjectFile();
+		if (GET_FLAG(issueFlags, MissingProjectFile)) {
+
+            project.SetName(project.GetPath().parent_path().filename());
+			project.RegenerateProjectFiles();
 			
 		}
 
 	#ifdef CU_WINDOWS
-		if (FLAG(issueFlags, MissingSolution) || FLAG(issueFlags, MissingCSProj)) project.RegenerateIDEFiles();
+		if (GET_FLAG(issueFlags, MissingSolution) || GET_FLAG(issueFlags, MissingCSProj)) project.RegenerateBuildFiles();
 	#elif CU_LINUX
-		if (FLAG(issueFlags, MissingPremake)) project.RegenerateIDEFiles();
-		if (FLAG(issueFlags, MissingMakefile)) project.RunPremake();
+		if (GET_FLAG(issueFlags, MissingPremake)) project.RegenerateBuildFiles();
+		if (GET_FLAG(issueFlags, MissingMakefile)) project.RunPremake();
 	#endif
-		if (FLAG(issueFlags, MissingScriptingDLL)) {
+		if (GET_FLAG(issueFlags, MissingScriptingDLL)) {
 
 			std::ifstream dllSrc(ExecutableFolder() + "/assets/ScriptAPI/Copper-ScriptingAPI.dll", std::ios::binary);
 			std::ofstream dllDst;
 
-			dllDst.open(project.path / "Binaries/Copper-ScriptingAPI.dll", std::ios::out | std::ios::binary);
+			dllDst.open(project.GetPath() / "Binaries/Copper-ScriptingAPI.dll", std::ios::out | std::ios::binary);
 			dllDst << dllSrc.rdbuf();
-      dllDst.flush();
+            dllDst.flush();
 			dllDst.close();
 
 		}
-		if (FLAG(issueFlags, MissingProjectDLL)) project.BuildSolution();
+		if (GET_FLAG(issueFlags, MissingProjectDLL))
+            project.BuildScripts();
 
 	}
 

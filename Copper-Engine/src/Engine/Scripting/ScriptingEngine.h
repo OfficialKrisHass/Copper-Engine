@@ -19,7 +19,7 @@ namespace Copper::Scripting {
 
     bool Load(const std::string& path);
     void Unload();
-    bool Reload();
+    bool Reload(const fs::path& path = "");
 
     MonoDomain* AppDomain();
 

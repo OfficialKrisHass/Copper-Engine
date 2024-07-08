@@ -19,7 +19,7 @@ namespace Editor::FileWatcher {
 
 	void Start();
 	void Start(const Copper::fs::path& directory);
-	void PollCallbacks();
+	void PollChanges();
 	void Stop();
 
 	void SetDirectory(const Copper::fs::path& directory);

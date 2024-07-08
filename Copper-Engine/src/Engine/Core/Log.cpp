@@ -20,9 +20,9 @@ namespace Copper {
 
 	void Logger::Initialize() {
 
-		if (initialized) return;
-
 		CUP_FUNCTION();
+
+		if (initialized) return;
 		initialized = true;
 
 		m_ringbufferSink = std::make_shared<spdlog::sinks::ringbuffer_sink_mt>(100);

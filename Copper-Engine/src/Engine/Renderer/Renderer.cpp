@@ -87,6 +87,9 @@ namespace Copper::Renderer {
 
 		Color skyboxColor = Color(0.18f, 0.18f, 0.18f);
 
+        Color ambientColor = Color::white;
+        Vector3 ambientDirection = Vector3(-0.489834040f, 0.210472092f, 0.846028447f);
+
 		bool wireframe = false;
 		
 	};
@@ -382,8 +385,8 @@ namespace Copper::Renderer {
 
 	bool GetWireframe() { return data.wireframe; }
 
-	Color& AmbientColor() { return RendererAPI::AmbientColor(); }
-	Vector3& AmbientDirection() { return RendererAPI::AmbientDirection(); }
+	Color& AmbientColor() { return data.ambientColor; }
+	Vector3& AmbientDirection() { return data.ambientDirection; }
 
 	Color& SkyboxColor() { return data.skyboxColor; }
 

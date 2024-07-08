@@ -16,7 +16,7 @@ namespace Editor {
 
 	SceneCamera::SceneCamera(UVector2I size) : Camera(size) {
 
-		this->m_transform = new Transform(Vector3::zero, Vector3::zero, Vector3::one);
+        m_transform = new Transform(Vector3::zero, Quaternion(1.0f, 0.0f, 0.0f, 0.0f), Vector3::one);
 
 	}
 
@@ -40,7 +40,7 @@ namespace Editor {
 
 			if (m_firstClick) {
 
-				Input::SetCursorPosition((float) GetWindow().Width() / 2, (float) GetWindow().Height() / 2);
+				Input::SetCursorPosition((float) GetWindow().GetWidth() / 2, (float) GetWindow().GetHeight() / 2);
 
 				m_firstClick = false;
 
@@ -51,11 +51,11 @@ namespace Editor {
 			
 			Input::GetCursorPosition(&mouseX, &mouseY);
 			
-			rotX -= sensitivity * (float) (mouseY - (GetWindow().Height() / 2)) / GetWindow().Height();
-			rotY -= sensitivity * (float) (mouseX - (GetWindow().Width() / 2)) / GetWindow().Width();
+			rotX -= sensitivity * (float) (mouseY - (GetWindow().GetHeight() / 2)) / GetWindow().GetHeight();
+			rotY -= sensitivity * (float) (mouseX - (GetWindow().GetWidth() / 2)) / GetWindow().GetWidth();
 			m_transform->SetRotation(Quaternion(rotX, rotY, 0.0f));
 			
-			Input::SetCursorPosition((float) GetWindow().Width() / 2, (float) GetWindow().Height() / 2);
+			Input::SetCursorPosition((float) GetWindow().GetWidth() / 2, (float) GetWindow().GetHeight() / 2);
 
 		} else {
 

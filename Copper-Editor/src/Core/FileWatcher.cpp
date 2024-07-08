@@ -43,13 +43,18 @@ namespace Editor::FileWatcher {
 	void Start() { Start(data.directory); }
 	void Start(const fs::path& directory) {
 
-		if (directory.empty()) { LogError("Can't FileWatch an empty Directory!"); return; }
+		if (directory.empty()) {
+
+            LogError("Can't FileWatch an empty Directory!");
+            return;
+
+        }
 
 		data.directory = directory;
 		data.fw = std::make_unique<filewatch::FileWatch<std::string>>(directory.string(), FileChangeCallback);
 
 	}
-	void PollCallbacks() {
+	void PollChanges() {
 
 		data.polling = true;
 

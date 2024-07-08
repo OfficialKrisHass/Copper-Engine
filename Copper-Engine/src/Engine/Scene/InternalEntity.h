@@ -7,9 +7,6 @@
 #define INVALID_ENTITY_ID 4'294'967'295
 #define MAX_ENTITY_COMPONENTS 32
 
-#define ENTITY_DEFAULT_PROPERTIES_DECLARATION const Vector3& position = Vector3::zero, const Quaternion& rotation = Quaternion(1.0f, 0.0f, 0.0f, 0.0f), const Vector3& scale = Vector3::one, const std::string& name = "Entity"
-#define ENTITY_PROPERTIES_DECLARATION const Vector3& position, const Quaternion& rotation, const Vector3& scale, const std::string& name
-
 namespace Copper {
 
 	class Transform;
@@ -74,13 +71,5 @@ namespace Copper {
 		return os << entity.name << " (" << entity.m_id << ")";
 
 	}
-
-	InternalEntity* CreateEntity(ENTITY_DEFAULT_PROPERTIES_DECLARATION);
-	InternalEntity* CreateEntityFromID(uint32 id, ENTITY_DEFAULT_PROPERTIES_DECLARATION, bool returnIfExists = true);
-	InternalEntity* GetEntityFromID(uint32 id);
-	void RemoveEntity(InternalEntity* entity);
-	void RemoveEntityFromID(uint32 id);
-
-	uint32 GetNumOfEntities();
 
 }

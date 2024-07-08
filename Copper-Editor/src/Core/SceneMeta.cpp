@@ -1,6 +1,7 @@
 #include "SceneMeta.h"
 
 #include "Core/EditorApp.h"
+#include "Viewport/SceneCamera.h"
 
 #include "Engine/YAMLOverloads/Everything.h"
 

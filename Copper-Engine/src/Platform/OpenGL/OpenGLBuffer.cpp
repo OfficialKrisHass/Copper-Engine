@@ -33,8 +33,20 @@ namespace Copper {
 
 	}
 
-	void VertexBuffer::Bind() const { CUP_FUNCTION(); glBindBuffer(GL_ARRAY_BUFFER, m_id); }
-	void VertexBuffer::Unbind() const { CUP_FUNCTION(); glBindBuffer(GL_ARRAY_BUFFER, 0); }
+	void VertexBuffer::Bind() const {
+
+        CUP_FUNCTION();
+
+        glBindBuffer(GL_ARRAY_BUFFER, m_id);
+
+    }
+	void VertexBuffer::Unbind() const {
+
+        CUP_FUNCTION();
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    }
 
 	//-------------
 	// Index Buffer
@@ -69,7 +81,19 @@ namespace Copper {
 
 	}
 
-	void IndexBuffer::Bind() const { CUP_FUNCTION(); glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id); }
-	void IndexBuffer::Unbind() const { CUP_FUNCTION(); glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); }
+	void IndexBuffer::Bind() const {
+
+        CUP_FUNCTION();
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
+
+    }
+	void IndexBuffer::Unbind() const {
+
+        CUP_FUNCTION();
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    }
 
 }

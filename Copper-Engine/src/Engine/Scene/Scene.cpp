@@ -39,6 +39,10 @@
 
 #define MANAGED_REFERENCE_ADD(cID, klass) case cID: Scripting::CreateManagedReference((klass*) event->component, Scripting::GetMonoClass<klass>()); break;
 
+#ifdef CU_EDITOR
+extern bool IsRuntimeRunning();
+#endif
+
 namespace Copper {
 
 	namespace Renderer {
@@ -53,25 +57,25 @@ namespace Copper {
 
 	std::unordered_map<uint32, std::function<bool(const YAML::Node&, Scene*)>> oldDeserializeFunctions;
 
-	void Scene::StartRuntime() {
+    Scene::~Scene() {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		m_runtimeRunning = true;
+        Renderer::ClearLights();
 
-		InitializePhysics();
+    }
+
+    void Scene::Initialize() {
+
+        CUP_FUNCTION();
+
+        InitializePhysics();
 
         for (RigidBody* rb : ComponentView<RigidBody>(this))
             rb->Initialize();
 
-	}
-	void Scene::StopRuntime() {
+    }
 
-		CUP_FUNCTION();
-
-		Renderer::ClearLights();
-
-	}
 	void Scene::Update(float deltaTime) {
 
 		CUP_FUNCTION();
@@ -80,13 +84,19 @@ namespace Copper {
 
 		// Physics
 
-		if (m_runtimeRunning) UpdatePhysics(deltaTime);
+		if (m_hasPhysics
+#ifdef CU_EDITOR
+            && IsRuntimeRunning()
+#endif
+            )
+            UpdatePhysics(deltaTime);
 
 		CUP_START_FRAME("ECS Update");
 
 		for (InternalEntity* entity : EntityView(this)) {
-
-			if (m_runtimeRunning)
+#ifdef CU_EDITOR
+			if (IsRuntimeRunning())
+#endif
 				RuntimeUpdateEntity(entity, deltaTime);
 
 			entity->m_transform->Update();
@@ -100,15 +110,7 @@ namespace Copper {
 			if (Camera* cameraComponent = entity->GetComponent<Camera>()) {
 
 				Renderer::SetCamera(cameraComponent);
-				cam = cameraComponent;
-
-				if (m_runtimeRunning) {
-
-					Raycast::Data hitData;
-					if (Raycast::Fire(entity->m_transform->m_globalPosition, entity->m_transform->m_forward, &hitData)) 
-						Renderer::AddLine(hitData.position, hitData.position + hitData.normal, Color::blue);
-
-				}
+				m_cam = cameraComponent;
 
 			}
 			if (MeshRenderer* renderer = entity->GetComponent<MeshRenderer>())
@@ -118,7 +120,6 @@ namespace Copper {
 				Renderer::AddCube(Vector3::zero, Vector3::one, Color::red, entity->m_transform);
 
 		}
-		if (m_runtimeRunning && !m_runtimeStarted) m_runtimeStarted = true;
 
 		CUP_END_FRAME();
 
@@ -134,7 +135,7 @@ namespace Copper {
 
         if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) {
 
-            if (!m_runtimeStarted)
+            if (Renderer::IsFirstFrame())
                 script->OnBegin();
 
             script->OnUpdate();
@@ -215,10 +216,8 @@ namespace Copper {
 
 		CUP_FUNCTION();
 
-		this->path = path;
-		this->path.replace_extension("copper");
-
-		this->name = path.filename().string();
+		this->m_path = path;
+		this->m_path.replace_extension("copper");
 
 		YAML::Emitter out;
 		out << YAML::BeginMap; // Main
@@ -226,7 +225,7 @@ namespace Copper {
 		// Scene Info
 
 		out << YAML::Key << "Version" << YAML::Value << SCENE_VERSION;
-		out << YAML::Key << "Name" << YAML::Value << name;
+		out << YAML::Key << "Name" << YAML::Value << m_name;
 
 		// Entities
 
@@ -239,7 +238,7 @@ namespace Copper {
 		out << YAML::EndMap; // Entities
 
 		out << YAML::EndMap; // Main
-		std::ofstream file(this->path);
+		std::ofstream file(this->m_path);
 		file << out.c_str();
 
 	}
@@ -248,8 +247,6 @@ namespace Copper {
 		CUP_FUNCTION();
 
 		if (m_physicsInitialized) ShutdownPhysics();
-
-		this->path = path;
 
 		m_registry.Cleanup();
 		m_registry.Initialize();
@@ -260,17 +257,15 @@ namespace Copper {
 		AddComponentAddedEventFunc(BindEventFunc(Scene::ComponentAdded));
 		AddComponentRemovedEventFunc(BindEventFunc(Scene::ComponentRemoved));
 
-		m_runtimeRunning = false;
-		m_runtimeStarted = false;
 		m_physicsInitialized = false;
 
-		cam = nullptr;
+		m_cam = nullptr;
 
 		try {
 
 		YAML::Node data = YAML::LoadFile(path.string());
 
-		this->name = data["Name"].as<std::string>();
+		this->m_name = data["Name"].as<std::string>();
 
 		// Entities
 

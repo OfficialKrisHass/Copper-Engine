@@ -31,8 +31,7 @@ namespace Copper {
             if (m_size == value) return;
             m_size = value;
 
-            if (IsSceneRuntimeRunning())
-                RecreateShape();
+            RecreateShape();
 
         }
 

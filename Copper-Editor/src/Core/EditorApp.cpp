@@ -67,7 +67,9 @@ namespace Editor {
 		// Scene
 
 		Scene* scene;
+        Scene tmpScene;
 		SceneMeta sceneMeta;
+        bool isRuntimeRunning = false;
 		bool changes = false;
 		
 		// Viewport
@@ -332,7 +334,7 @@ namespace Editor {
 			return;
 
 		}
-		if (!data.project || !data.scene->cam) {
+		if (!data.project || !data.scene->GetMainCamera()) {
 
 			ImGui::Text("No Camera Available!");
 
@@ -352,7 +354,7 @@ namespace Editor {
 
 		ImGui::Image(reinterpret_cast<void*>((uint64) GetMainFBO().GetColorTextureID()), windowSize, ImVec2 {0, 1}, ImVec2 {1, 0});
 
-		if (ImGui::IsItemClicked() && !AcceptInputDuringRuntime() && IsSceneRuntimeRunning()) {
+		if (ImGui::IsItemClicked() && !AcceptInputDuringRuntime() && IsRuntimeRunning()) {
 			
 			Input::SetCursorLocked(data.wasCursorLocked);
 			Input::SetCursorVisible(data.wasCursorVisible);
@@ -633,8 +635,9 @@ namespace Editor {
 
 		data.state = Play;
 
-		SaveScene();
-		data.scene->StartRuntime();
+	    data.isRuntimeRunning = true;
+        data.scene->Serialize(ExecutableFolder() + "/assets/Temp/scene_lock.copper");
+        data.scene->SetIsRuntimeRunning(true);
 
 		SetAcceptInputDuringRuntime(true);
 
@@ -647,11 +650,11 @@ namespace Editor {
 			Input::SetCursorLocked(false);
 
 		data.state = Edit;
-		fs::path savedPath = data.scene->path;
 		Entity savedSelectedEntity = SceneHierarchy::GetSelectedEntity();
 
-		data.scene->StopRuntime();
-		data.scene->Deserialize(savedPath);
+        data.isRuntimeRunning = false;
+		data.scene->Deserialize(ExecutableFolder() + "/assets/Temp/scene_lock.copper");
+        data.scene->SetIsRuntimeRunning(false);
 		data.sceneMeta.Deserialize(data.scene);
 
 		SceneHierarchy::SetSelectedEntity(savedSelectedEntity);
@@ -745,7 +748,7 @@ namespace Editor {
 		SceneHierarchy::SetScene(data.scene);
 
 		data.changes = false;
-		data.title = "Copper Editor - " + data.project.GetName() + ": " + data.scene->name;
+		data.title = "Copper Editor - " + data.project.GetName() + ": " + data.scene->GetName();
 		Input::SetWindowTitle(data.title);
 
         data.project.SetLastOpenedScenePath(fs::relative(path, data.project.GetAssetsPath()));
@@ -779,19 +782,19 @@ namespace Editor {
 
         CUP_FUNCTION();
 		
-        if (data.scene->path.empty()) {
+        if (data.scene->GetPath().empty()) {
             
             SaveSceneAs();
             return;
 
         }
 
-        data.scene->Serialize(data.scene->path);
+        data.scene->Serialize(data.scene->GetPath());
         data.sceneMeta.Serialize();
 
         data.changes = false;
         data.title = "Copper Editor - TestProject: ";
-        data.title += data.scene->name;
+        data.title += data.scene->GetName();
         Input::SetWindowTitle(data.title);
 			
 	}
@@ -815,7 +818,7 @@ namespace Editor {
 
 		data.changes = false;
 		data.title = "Copper Editor - TestProject: ";
-		data.title += data.scene->name;
+		data.title += data.scene->GetName();
 		Input::SetWindowTitle(data.title);
 		
 	}
@@ -953,7 +956,7 @@ namespace Editor {
 
 		data.changes = value;
 
-		data.title = "Copper Editor - " + data.project.GetName() + ": " + data.scene->name + "*";
+		data.title = "Copper Editor - " + data.project.GetName() + ": " + data.scene->GetName() + "*";
 		Input::SetWindowTitle(data.title);
 		
 	}
@@ -982,3 +985,4 @@ void AppEntryPoint() {
 
 Window* GetEditorWindow() { return &Editor::data.window; }
 UVector2I GetViewportCentre() { return Editor::data.viewportCentre; }
+bool IsSceneRuntimeRunning() { return Editor::data.isRuntimeRunning; }

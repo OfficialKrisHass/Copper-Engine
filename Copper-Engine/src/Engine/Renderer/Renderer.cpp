@@ -84,6 +84,7 @@ namespace Copper::Renderer {
 		// Misc.
 
 		uint32 drawCalls = 0;
+        bool firstFrame = true;
 
 		Color skyboxColor = Color(0.18f, 0.18f, 0.18f);
 
@@ -175,6 +176,7 @@ namespace Copper::Renderer {
 		CUP_FUNCTION();
 
 		RendererAPI::EndFrame();
+        data.firstFrame = false;
 
 	}
 
@@ -384,6 +386,8 @@ namespace Copper::Renderer {
 	}
 
 	bool GetWireframe() { return data.wireframe; }
+
+    bool IsFirstFrame() { return data.firstFrame; }
 
 	Color& AmbientColor() { return data.ambientColor; }
 	Vector3& AmbientDirection() { return data.ambientDirection; }

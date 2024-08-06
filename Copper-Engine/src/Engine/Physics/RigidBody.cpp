@@ -146,7 +146,7 @@ namespace Copper {
 
         m_mass = value;
         
-        if (!IsSceneRuntimeRunning())
+        if (!IsRuntimeRunning())
             DynamicBody->setMass(m_mass);
 
     }
@@ -159,7 +159,7 @@ namespace Copper {
 
         m_static = value;
 
-        if (!IsSceneRuntimeRunning())
+        if (!IsRuntimeRunning())
             Initialize();
 
     }
@@ -169,7 +169,7 @@ namespace Copper {
 
         m_gravity = value;
 
-        if (!IsSceneRuntimeRunning())
+        if (!IsRuntimeRunning())
             m_actor->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, !m_gravity);
 
     }
@@ -181,7 +181,7 @@ namespace Copper {
 
         m_lockMask = value;
 
-        if (!IsSceneRuntimeRunning())
+        if (!IsRuntimeRunning())
             DynamicBody->setRigidDynamicLockFlags((PxRigidDynamicLockFlag::Enum) m_lockMask);
 
     }

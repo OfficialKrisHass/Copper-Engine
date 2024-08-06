@@ -57,8 +57,7 @@ namespace Copper {
             if (m_trigger == value) return;
             m_trigger = value;
 
-            if (IsSceneRuntimeRunning())
-                RecreateShape();
+            RecreateShape();
 
         }
         void SetCenter(const Vector3& value) {
@@ -68,8 +67,7 @@ namespace Copper {
             if (m_center == value) return;
             m_center = value;
 
-            if (IsSceneRuntimeRunning())
-                RecreateShape();
+            RecreateShape();
 
         }
 

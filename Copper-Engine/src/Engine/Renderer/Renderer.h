@@ -39,6 +39,8 @@ namespace Copper {
 
 		bool GetWireframe();
 
+        bool IsFirstFrame();
+
 		Color& AmbientColor();
 		Vector3& AmbientDirection();
 

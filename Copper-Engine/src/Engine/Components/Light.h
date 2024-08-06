@@ -20,9 +20,9 @@ namespace Copper {
         
         };
 
-        Color color = Color::white;
         Type type = Type::Point;
 
+        Color color = Color::white;
         float intensity = 1.0f;
 
     private:

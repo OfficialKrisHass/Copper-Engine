@@ -34,11 +34,9 @@ namespace Copper {
 			m_registry.Initialize();
 
 		}
+        ~Scene();
 
-		std::string name = "";
-		fs::path path = "";
-
-		class Camera* cam = nullptr;
+        void Initialize();
 
 		InternalEntity* CreateEntity(const Vector3& position = Vector3::zero, const Quaternion& rotation = Quaternion(1.0f, 0.0f, 0.0f, 0.0f), const Vector3& scale = Vector3::one, const std::string& name = "Entity") {
 
@@ -72,28 +70,38 @@ namespace Copper {
 
         }
 
-		void StartRuntime();
-		void StopRuntime();
 		void Update(float deltaTime);
 
-		void Render(Camera* cam, bool gizmos = true);
+		void Render(class Camera* cam, bool gizmos = true);
 
 		void Serialize(const fs::path& path);
 		bool Deserialize(const fs::path& path);
 
-		Registry::ComponentPool* GetComponentPool(int32 cID) { CUP_FUNCTION(); return m_registry.GetComponentPool(cID); }
-		uint32 GetNumOfEntities() { return (uint32) m_registry.m_entities.size(); }
+        inline const std::string& GetName() const { return m_name; }
+        inline const fs::path& GetPath() const { return m_path; }
 
-		bool IsRuntimeRunning() { return m_runtimeRunning; }
+        inline Camera* GetMainCamera() const { return m_cam; }
+
+		Registry::ComponentPool* GetComponentPool(int32 cID) const { CUP_FUNCTION(); return m_registry.GetComponentPool(cID); }
+		uint32 GetNumOfEntities() const { return (uint32) m_registry.m_entities.size(); }
+
+        // TODO: Remove
+        bool IsRuntimeRunning() const { return runtimeRunning; }
+        void SetIsRuntimeRunning(bool value) { runtimeRunning = value; }
 
 	private:
+        std::string m_name = "";
+		fs::path m_path = "";
+
 		Registry m_registry;
+		Camera* m_cam = nullptr;
 
 		physx::PxScene* m_physicsScene = nullptr;
-
-		bool m_runtimeRunning = false;
-		bool m_runtimeStarted = false;
+        bool m_hasPhysics = true;
 		bool m_physicsInitialized = false;
+
+        // tmp
+        bool runtimeRunning = false;
 
         bool EntityCreated(const Event& e);
         bool EntityRemoved(const Event& e);
@@ -129,12 +137,8 @@ namespace Copper {
     // Definition in Engine.cpp
 	Scene* GetScene();
 
-	inline bool IsSceneRuntimeRunning() {
-
-        CUP_FUNCTION();
-        return GetScene()->IsRuntimeRunning();
-
-    }
+    inline bool IsRuntimeRunning() { return GetScene()->IsRuntimeRunning(); }
+    inline void SetIsRuntimeRunning(bool value) { GetScene()->SetIsRuntimeRunning(value); }
 
     inline InternalEntity* CreateEntity(const Vector3& position = Vector3::zero, const Quaternion& rotation = Quaternion(1.0f, 0.0f, 0.0f, 0.0f), const Vector3& scale = Vector3::one, const std::string& name = "Entity") {
 

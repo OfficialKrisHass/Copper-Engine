@@ -334,7 +334,7 @@ namespace Copper {
 
 		}
 
-		ComponentPool* GetComponentPool(uint32 cID) {
+		ComponentPool* GetComponentPool(uint32 cID) const {
 			
 			CUP_FUNCTION();
 

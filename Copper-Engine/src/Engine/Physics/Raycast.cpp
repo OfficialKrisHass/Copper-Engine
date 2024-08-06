@@ -35,14 +35,13 @@ namespace Copper {
 
 		CUP_FUNCTION();
 
-		Scene* scene = GetScene();
-		if (!scene->m_runtimeRunning) return false;
+		if (!IsRuntimeRunning()) return false;
 
 		static const PxHitFlags hitFlags = PxHitFlag::eDEFAULT;
 		PxQueryFilterData filterData = PxQueryFilterData(PxQueryFlag::eDYNAMIC | PxQueryFlag::eSTATIC | PxQueryFlag::ePOSTFILTER);
 
 		PxRaycastBuffer out;
-		if (!scene->m_physicsScene->raycast(PVec3(origin), PVec3(direction), maxDistance, out, hitFlags, filterData, &filterCallback)) return false;
+		if (!GetScene()->m_physicsScene->raycast(PVec3(origin), PVec3(direction), maxDistance, out, hitFlags, filterData, &filterCallback)) return false;
 
 		data->hit = true;
 

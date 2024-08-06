@@ -32,8 +32,7 @@ namespace Copper {
             if (m_radius == value) return;
             m_radius = value;
 
-            if (IsSceneRuntimeRunning())
-                RecreateShape();
+            RecreateShape();
 
         }
         void SetHeight(float value) {
@@ -43,8 +42,7 @@ namespace Copper {
             if (m_height == value) return;
             m_height = value;
 
-            if (IsSceneRuntimeRunning())
-                RecreateShape();
+            RecreateShape();
 
         }
 

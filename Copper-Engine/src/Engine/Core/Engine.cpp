@@ -139,6 +139,8 @@ namespace Copper {
 		CUP_FUNCTION();
 		data.engineState = EngineState::Running;
 
+        data.scene.Initialize();
+
 		while (data.engineState == EngineState::Running) {
 
 			CUP_START_FRAME(nullptr);
@@ -299,7 +301,7 @@ namespace Copper {
 		if (data.fbo.GetSize() == size) return;
 
 		data.fbo.Resize(size);
-		data.scene.cam->Resize(size);
+		data.scene.GetMainCamera()->Resize(size);
 	#else
 		data.window.SetSize(size);
 	#endif

@@ -28,8 +28,7 @@ namespace Copper {
             if (m_radius == value) return;
             m_radius = value;
 
-            if (IsSceneRuntimeRunning())
-                RecreateShape();
+            RecreateShape();
             
         }
 

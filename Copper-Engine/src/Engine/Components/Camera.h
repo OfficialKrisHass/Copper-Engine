@@ -19,7 +19,9 @@ namespace Copper {
 
 	public:
 		Camera() = default;
+#ifdef CU_EDITOR
 		Camera(const UVector2I& size) : size(size) {}
+#endif
 
 		float fov = 90.0f;
 		float nearPlane = 0.1f;
@@ -28,7 +30,9 @@ namespace Copper {
 		Matrix4 CreateViewMatrix() const;
 		Matrix4 CreateProjectionMatrix() const;
 
+#ifdef CU_EDITOR
 		inline void Resize(const UVector2I& size) { this->size = size; }
+#endif
 
 	protected:
 	#ifdef CU_EDITOR

@@ -30,6 +30,8 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+        if (!IsRuntimeRunning()) return;
+
         // Remove current shape
 
         PxShape* shape = nullptr;

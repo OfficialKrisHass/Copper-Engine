@@ -4,6 +4,16 @@
 
 #include "Engine/Components/Component.h"
 
+#ifdef CU_EDITOR
+namespace YAML { class Node; }
+namespace Copper { class InternalEntity; }
+namespace Editor::SceneSerializer {
+    
+    void DeserializeEntityTransform(Copper::InternalEntity* entity, const YAML::Node& data);
+
+}
+#endif
+
 namespace Copper {
 
 	// Stores data about position, rotation, scale and parents/children. Every entity has one
@@ -16,6 +26,7 @@ namespace Copper {
 
 	#ifdef CU_EDITOR
 		friend Editor::SceneCamera;
+        friend void Editor::SceneSerializer::DeserializeEntityTransform(Copper::InternalEntity* transform, const YAML::Node& data);
 	#endif
 
 	public:

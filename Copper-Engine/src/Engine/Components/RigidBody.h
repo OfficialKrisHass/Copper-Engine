@@ -13,7 +13,17 @@ namespace physx {
 }
 
 #ifdef CU_EDITOR
-namespace Editor { class Properties; }
+namespace YAML { class Node; }
+namespace Editor {
+
+    class Properties;
+    namespace SceneSerializer {
+
+        void DeserializeEntityComponents(Copper::InternalEntity* entity, const YAML::Node& data);
+
+    }
+
+}
 #endif
 
 namespace Copper {
@@ -27,6 +37,7 @@ namespace Copper {
 
 #ifdef CU_EDITOR
         friend Editor::Properties;
+        friend void Editor::SceneSerializer::DeserializeEntityComponents(Copper::InternalEntity *entity, const YAML::Node &data);
 #endif
 
     public:

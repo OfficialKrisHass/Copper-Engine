@@ -31,7 +31,14 @@ namespace Copper {
 		Scene() {
 
             CUP_FUNCTION();
+
 			m_registry.Initialize();
+
+            AddEntityCreatedEventFunc(BindEventFunc(Scene::EntityCreated));
+            AddEntityRemovedEventFunc(BindEventFunc(Scene::EntityRemoved));
+
+            AddComponentAddedEventFunc(BindEventFunc(Scene::ComponentAdded));
+            AddComponentRemovedEventFunc(BindEventFunc(Scene::ComponentRemoved));
 
 		}
         ~Scene();
@@ -74,9 +81,6 @@ namespace Copper {
 
 		void Render(class Camera* cam, bool gizmos = true);
 
-		void Serialize(const fs::path& path);
-		bool Deserialize(const fs::path& path);
-
         inline const std::string& GetName() const { return m_name; }
         inline const fs::path& GetPath() const { return m_path; }
 
@@ -84,6 +88,8 @@ namespace Copper {
 
 		Registry::ComponentPool* GetComponentPool(int32 cID) const { CUP_FUNCTION(); return m_registry.GetComponentPool(cID); }
 		uint32 GetNumOfEntities() const { return (uint32) m_registry.m_entities.size(); }
+
+        inline void SetName(const std::string& value) { m_name = value; }
 
         // TODO: Remove
         bool IsRuntimeRunning() const { return runtimeRunning; }
@@ -123,14 +129,6 @@ namespace Copper {
 		void RemovePhysicsBody(physx::PxRigidActor* body);
 
 		physx::PxScene* GetPhysicsScene() { return m_physicsScene; }
-
-		// Serialization
-
-		void SerializeEntity(InternalEntity* entity, YAML::Emitter& out);
-		void DeserializeEntity(InternalEntity* entity, const YAML::Node& node);
-
-        template<typename T> void SerializeField(YAML::Emitter& out, ScriptComponent* instance, const Scripting::Field& field);
-        template<typename T> void DeserializeField(const YAML::Node& fieldNode, ScriptComponent* instance, const Scripting::Field& field);
 
 	};
 

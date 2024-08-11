@@ -5,7 +5,17 @@
 #include "Engine/Components/Component.h"
 
 #ifdef CU_EDITOR
-namespace Editor { struct Project; }
+namespace YAML { class Emitter; }
+namespace Editor {
+
+    struct Project;
+    namespace SceneSerializer {
+
+        void SerializeEntityComponents(Copper::InternalEntity* entity, YAML::Emitter& out);
+
+    }
+
+}
 #endif
 
 namespace Copper {
@@ -15,6 +25,7 @@ namespace Copper {
 		friend class Scene;
 	#ifdef CU_EDITOR
 		friend Editor::Project;
+        friend void Editor::SceneSerializer::SerializeEntityComponents(Copper::InternalEntity *entity, YAML::Emitter &out);
 	#endif
 
 	public:

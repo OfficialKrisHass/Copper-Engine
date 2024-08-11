@@ -1,39 +1,42 @@
 Version: 0
-Name: EmptyTemplate.copper
+Name: EmptyTemplate
 Entities:
-  Sun:
-    ID: 0
+  0:
+    Name: Sun
     Transform:
       Position: [0.99000001, 3.5, 1.08000004]
       Rotation: [0.960344017, -0.102207512, -0.257952273, -0.0274533499]
       Scale: [1, 0.999999642, 1]
-      Parent ID: 4294967295
-      Children: []
+      Parent: 4294967295
+      Children:
+        []
     Light:
       Type: 1
       Color: [1, 1, 1, 1]
       Intensity: 1
-  Camera:
-    ID: 1
+  1:
+    Name: Camera
     Transform:
       Position: [0, 0.349999994, 0]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
-      Parent ID: 2
-      Children: []
+      Parent: 2
+      Children:
+        []
     Camera:
       Fov: 90
       Near Plane: 0.100000001
       Far Plane: 1000
       Size: [1920, 960]
-  Player:
-    ID: 2
+  2:
+    Name: Player
     Transform:
       Position: [0, 0, 3.05898261]
       Rotation: [0.953716934, 0, -0.300705791, 0]
       Scale: [1, 2, 1]
-      Parent ID: 4294967295
-      Children: [1]
+      Parent: 4294967295
+      Children:
+        - 1
     Mesh Renderer:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: 341bba04-c463-48de-88bb-6e5c37cb0213
@@ -70,14 +73,15 @@ Entities:
         lightIntensity:
           Type: 3
           Value: 2
-  Ground:
-    ID: 3
+  3:
+    Name: Ground
     Transform:
       Position: [0, -1.55513918, 0]
       Rotation: [1, 0, 0, 0]
       Scale: [100, 1, 100]
-      Parent ID: 4294967295
-      Children: []
+      Parent: 4294967295
+      Children:
+        []
     Mesh Renderer:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: 8a28e286-e5bf-4153-a926-408c84dcb606
@@ -90,14 +94,15 @@ Entities:
       Trigger: false
       Center: [0, 0, 0]
       Size: [1, 1, 1]
-  Sphere:
-    ID: 4
+  4:
+    Name: Sphere
     Transform:
       Position: [0.0281291008, -0.206776738, -5.25696993]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 0.999999881, 1]
-      Parent ID: 4294967295
-      Children: []
+      Parent: 4294967295
+      Children:
+        []
     Mesh Renderer:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: a2b68d90-7263-4263-8afd-23c3fe4f1768
@@ -110,14 +115,15 @@ Entities:
       Trigger: false
       Center: [0, 0, 0]
       Radius: 0.5
-  Capsule:
-    ID: 5
+  5:
+    Name: Capsule
     Transform:
       Position: [-0.214228153, -0.310026169, -9.50784492]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
-      Parent ID: 4294967295
-      Children: []
+      Parent: 4294967295
+      Children:
+        []
     Mesh Renderer:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: 752720d1-fb00-453d-bd6c-ad1f2d0416da
@@ -131,50 +137,54 @@ Entities:
       Center: [0, 0.5, 0]
       Radius: 0.5
       Height: 1
-  Light:
-    ID: 6
+  6:
+    Name: Light
     Transform:
       Position: [-1.22109795, 0.808751941, 1.37313104]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
-      Parent ID: 4294967295
-      Children: []
+      Parent: 4294967295
+      Children:
+        []
     Light:
       Type: 0
       Color: [1, 0, 0, 1]
       Intensity: 1
-  Light:
-    ID: 7
+  7:
+    Name: Light
     Transform:
       Position: [1.98278117, 0.432969809, 1.23842359]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
-      Parent ID: 4294967295
-      Children: []
+      Parent: 4294967295
+      Children:
+        []
     Light:
       Type: 0
       Color: [0, 1, 0, 1]
       Intensity: 1
-  Light:
-    ID: 8
+  8:
+    Name: Light
     Transform:
       Position: [0, 0.498453379, -4.06571579]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
-      Parent ID: 4294967295
-      Children: []
+      Parent: 4294967295
+      Children:
+        []
     Light:
       Type: 0
       Color: [0, 0, 1, 1]
       Intensity: 1
-  Cube:
-    ID: 9
+  9:
+    Name: Cube
     Transform:
       Position: [0, 0, -3.37348986]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
-      Parent ID: 4294967295
-      Children: []
+      Parent: 4294967295
+      Children:
+        []
     Mesh Renderer:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: b72603e5-b719-4829-aaf1-861c4c40b362
@@ -187,22 +197,24 @@ Entities:
       Trigger: false
       Center: [0, 0, 0]
       Size: [1, 1, 1]
-  Target:
-    ID: 10
+  10:
+    Name: Target
     Transform:
       Position: [0, 0, 0]
       Rotation: [0.988873541, 0, -0.148758739, 0]
       Scale: [1, 1, 1]
-      Parent ID: 4294967295
-      Children: []
+      Parent: 4294967295
+      Children:
+        []
     Mesh Renderer:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: 00000000-0000-0000-0000-000000000000
-  New Light:
-    ID: 11
+  11:
+    Name: New Light
     Transform:
       Position: [0, 2.19634628, 0]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
-      Parent ID: 4294967295
-      Children: []
+      Parent: 4294967295
+      Children:
+        []

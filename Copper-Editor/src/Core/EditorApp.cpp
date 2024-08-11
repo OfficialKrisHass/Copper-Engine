@@ -15,6 +15,7 @@
 
 #include "Core/SceneMeta.h"
 #include "Core/FileWatcher.h"
+#include "Core/SceneSerializer.h"
 
 #include "Core/Utils/ModelLoader.h"
 
@@ -636,7 +637,7 @@ namespace Editor {
 		data.state = Play;
 
 	    data.isRuntimeRunning = true;
-        data.scene->Serialize(ExecutableFolder() + "/assets/Temp/scene_lock.copper");
+        SceneSerializer::Serialize(data.scene, ExecutableFolder() + "/assets/Temp/scene_lock.copper");
         data.scene->SetIsRuntimeRunning(true);
 
 		SetAcceptInputDuringRuntime(true);
@@ -653,7 +654,7 @@ namespace Editor {
 		Entity savedSelectedEntity = SceneHierarchy::GetSelectedEntity();
 
         data.isRuntimeRunning = false;
-		data.scene->Deserialize(ExecutableFolder() + "/assets/Temp/scene_lock.copper");
+        SceneSerializer::Deserialize(data.scene, ExecutableFolder() + "/assets/Temp/scene_lock.copper");
         data.scene->SetIsRuntimeRunning(false);
 		data.sceneMeta.Deserialize(data.scene);
 
@@ -742,7 +743,7 @@ namespace Editor {
 			
 		}
 
-		data.scene->Deserialize(path);
+        SceneSerializer::Deserialize(data.scene, path);
 		data.sceneMeta.Deserialize(data.scene);
 
 		SceneHierarchy::SetScene(data.scene);
@@ -789,7 +790,7 @@ namespace Editor {
 
         }
 
-        data.scene->Serialize(data.scene->GetPath());
+        SceneSerializer::Serialize(data.scene, data.scene->GetPath());
         data.sceneMeta.Serialize();
 
         data.changes = false;
@@ -813,7 +814,7 @@ namespace Editor {
 
 		}
 
-		data.scene->Serialize(path);
+        SceneSerializer::Serialize(data.scene, path);
 		data.sceneMeta.Serialize();
 
 		data.changes = false;

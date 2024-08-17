@@ -16,6 +16,7 @@ namespace Copper {
 	namespace Renderer {
 
 		void Initialize();
+        void Restart();
 
 		void StartBatch();
 		void RenderBatch();

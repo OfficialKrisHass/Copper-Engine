@@ -63,8 +63,10 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        m_physicsInitialized = false;
         m_physicsScene->release();
+
+        m_physicsScene = nullptr;
+        m_physicsInitialized = false;
 
     }
 

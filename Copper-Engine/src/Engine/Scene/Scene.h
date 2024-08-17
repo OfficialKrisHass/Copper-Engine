@@ -44,6 +44,7 @@ namespace Copper {
         ~Scene();
 
         void Initialize();
+        void Cleanup();
 
 		InternalEntity* CreateEntity(const Vector3& position = Vector3::zero, const Quaternion& rotation = Quaternion(1.0f, 0.0f, 0.0f, 0.0f), const Vector3& scale = Vector3::one, const std::string& name = "Entity") {
 
@@ -81,6 +82,7 @@ namespace Copper {
 
 		void Render(class Camera* cam, bool gizmos = true);
 
+        inline bool IsInitialized() const { return initialized; }
         inline const std::string& GetName() const { return m_name; }
         inline const fs::path& GetPath() const { return m_path; }
 
@@ -91,11 +93,9 @@ namespace Copper {
 
         inline void SetName(const std::string& value) { m_name = value; }
 
-        // TODO: Remove
-        bool IsRuntimeRunning() const { return runtimeRunning; }
-        void SetIsRuntimeRunning(bool value) { runtimeRunning = value; }
-
 	private:
+        bool initialized = false;
+
         std::string m_name = "";
 		fs::path m_path = "";
 
@@ -103,11 +103,7 @@ namespace Copper {
 		Camera* m_cam = nullptr;
 
 		physx::PxScene* m_physicsScene = nullptr;
-        bool m_hasPhysics = true;
 		bool m_physicsInitialized = false;
-
-        // tmp
-        bool runtimeRunning = false;
 
         bool EntityCreated(const Event& e);
         bool EntityRemoved(const Event& e);
@@ -128,15 +124,10 @@ namespace Copper {
 		void AddPhysicsBody(physx::PxRigidActor* body);
 		void RemovePhysicsBody(physx::PxRigidActor* body);
 
-		physx::PxScene* GetPhysicsScene() { return m_physicsScene; }
-
 	};
 
     // Definition in Engine.cpp
 	Scene* GetScene();
-
-    inline bool IsRuntimeRunning() { return GetScene()->IsRuntimeRunning(); }
-    inline void SetIsRuntimeRunning(bool value) { GetScene()->SetIsRuntimeRunning(value); }
 
     inline InternalEntity* CreateEntity(const Vector3& position = Vector3::zero, const Quaternion& rotation = Quaternion(1.0f, 0.0f, 0.0f, 0.0f), const Vector3& scale = Vector3::one, const std::string& name = "Entity") {
 

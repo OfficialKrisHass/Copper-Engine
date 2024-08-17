@@ -43,3 +43,8 @@ ifeq ($(OS), linux)
 	@bash scripts/linux/CopyEditorFiles.sh $(CONFIGURATION)
 	@bash scripts/linux/CopyLauncherFiles.sh $(CONFIGURATION)
 endif
+
+clean:
+	@rm -rf Build
+	@rm -rf CMake
+	@rm -f compile_commands.json

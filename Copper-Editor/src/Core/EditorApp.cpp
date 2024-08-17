@@ -243,7 +243,6 @@ namespace Editor {
 		CUP_START_FRAME("Editor UI");
 		
 		RenderDockspace();
-		RenderToolbar();
 		RenderMenu();
 		
 		data.console.UIRender();
@@ -257,6 +256,7 @@ namespace Editor {
 		ProjectSettings::UIRender();
 		Profiler::UIRender();
 
+		RenderToolbar();
 		ImGui::End(); //Dockspace
 
 		CUP_END_FRAME();
@@ -355,7 +355,7 @@ namespace Editor {
 
 		ImGui::Image(reinterpret_cast<void*>((uint64) GetMainFBO().GetColorTextureID()), windowSize, ImVec2 {0, 1}, ImVec2 {1, 0});
 
-		if (ImGui::IsItemClicked() && !AcceptInputDuringRuntime() && IsRuntimeRunning()) {
+		if (ImGui::IsItemClicked() && !AcceptInputDuringRuntime() && data.isRuntimeRunning) {
 			
 			Input::SetCursorLocked(data.wasCursorLocked);
 			Input::SetCursorVisible(data.wasCursorVisible);
@@ -499,11 +499,13 @@ namespace Editor {
 
 		if (data.state == Edit) {
 
-			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64) data.playIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project) StartEditorRuntime();
+			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64) data.playIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project)
+                StartEditorRuntime();
 
 		} else if (data.state == Play) {
 
-			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64) data.stopIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project) StopEditorRuntime();
+			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64) data.stopIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project)
+                StopEditorRuntime();
 
 		}
 
@@ -638,7 +640,7 @@ namespace Editor {
 
 	    data.isRuntimeRunning = true;
         SceneSerializer::Serialize(data.scene, ExecutableFolder() + "/assets/Temp/scene_lock.copper");
-        data.scene->SetIsRuntimeRunning(true);
+        Renderer::Restart();
 
 		SetAcceptInputDuringRuntime(true);
 
@@ -651,11 +653,13 @@ namespace Editor {
 			Input::SetCursorLocked(false);
 
 		data.state = Edit;
+        data.isRuntimeRunning = false;
 		Entity savedSelectedEntity = SceneHierarchy::GetSelectedEntity();
 
-        data.isRuntimeRunning = false;
+        data.scene->Cleanup();
         SceneSerializer::Deserialize(data.scene, ExecutableFolder() + "/assets/Temp/scene_lock.copper");
-        data.scene->SetIsRuntimeRunning(false);
+        data.scene->Initialize();
+
 		data.sceneMeta.Deserialize(data.scene);
 
 		SceneHierarchy::SetSelectedEntity(savedSelectedEntity);
@@ -743,7 +747,10 @@ namespace Editor {
 			
 		}
 
+        data.scene->Cleanup();
         SceneSerializer::Deserialize(data.scene, path);
+        data.scene->Initialize(); 
+
 		data.sceneMeta.Deserialize(data.scene);
 
 		SceneHierarchy::SetScene(data.scene);
@@ -944,6 +951,8 @@ namespace Editor {
 
 	SceneMeta* GetSceneMeta() { return &data.sceneMeta; }
 
+    bool IsRuntimeRunning() { return data.isRuntimeRunning; }
+
 	UVector2I GetViewportSize() { return data.viewportSize; }
 
 	// TODO: This feature is not working, has not been working for the past year, isn't
@@ -986,4 +995,3 @@ void AppEntryPoint() {
 
 Window* GetEditorWindow() { return &Editor::data.window; }
 UVector2I GetViewportCentre() { return Editor::data.viewportCentre; }
-bool IsSceneRuntimeRunning() { return Editor::data.isRuntimeRunning; }

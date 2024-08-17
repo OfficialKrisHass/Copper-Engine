@@ -17,6 +17,8 @@ public class Tester : Component {
 
     void OnBegin() {
 
+        Editor.Log("Test");
+
         TestEntity();
         TestTransform();
         TestEntityReference();

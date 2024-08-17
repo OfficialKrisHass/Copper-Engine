@@ -156,6 +156,13 @@ namespace Copper::Renderer {
 		InitializePrimitives();
 
 	}
+    void Restart() {
+
+        CUP_FUNCTION();
+
+        data.firstFrame = true;
+
+    }
 
 	void StartFrame() {
 

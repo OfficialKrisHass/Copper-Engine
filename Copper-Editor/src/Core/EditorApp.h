@@ -25,6 +25,8 @@ namespace Editor {
 	SceneCamera& GetSceneCam();
 	SceneMeta* GetSceneMeta();
 
+    bool IsRuntimeRunning();
+
 	Copper::UVector2I GetViewportSize();
 
 	void SetChanges(bool value);

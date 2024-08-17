@@ -44,7 +44,8 @@ namespace Editor::SceneSerializer {
 
         out << YAML::EndMap; // Main
 
-        std::fstream file(path);
+        std::ofstream file;
+        file.open(path);
         file << out.c_str();
         file.close();
 

@@ -17,6 +17,22 @@
 
 #define FLAG(bit) (1 << bit)
 
+#ifdef CU_EDITOR
+    namespace Editor {
+
+        extern bool IsRuntimeRunning();
+
+    }
+
+    #define IN_RUNTIME(action) if (Editor::IsRuntimeRunning()) { action; }
+    #define IN_RUNTIME_BEGIN if (Editor::IsRuntimeRunning()) {
+    #define IN_RUNTIME_END }
+#else
+    #define IN_RUNTIME(action)
+    #define IN_RUNTIME_BEGIN
+    #define IN_RUNTIME_END
+#endif
+
 namespace Copper {
 
     namespace fs = std::filesystem;

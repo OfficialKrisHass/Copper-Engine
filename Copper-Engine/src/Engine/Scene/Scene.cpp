@@ -39,10 +39,6 @@
 
 #define MANAGED_REFERENCE_ADD(cID, klass) case cID: Scripting::CreateManagedReference((klass*) event->component, Scripting::GetMonoClass<klass>()); break;
 
-#ifdef CU_EDITOR
-extern bool IsRuntimeRunning();
-#endif
-
 namespace Copper {
 
 	namespace Renderer {
@@ -69,10 +65,28 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+        if (initialized) return;
+
         InitializePhysics();
 
         for (RigidBody* rb : ComponentView<RigidBody>(this))
             rb->Initialize();
+
+        initialized = true;
+
+    }
+    void Scene::Cleanup() {
+
+        CUP_FUNCTION();
+
+        if (!initialized) return;
+
+        m_registry.Cleanup();
+        ShutdownPhysics();
+
+        initialized = false;
+        m_name.clear();
+        m_cam = nullptr;
 
     }
 
@@ -82,22 +96,13 @@ namespace Copper {
 
 		Renderer::StartFrame();
 
-		// Physics
-
-		if (m_hasPhysics
-#ifdef CU_EDITOR
-            && IsRuntimeRunning()
-#endif
-            )
-            UpdatePhysics(deltaTime);
+        IN_RUNTIME(UpdatePhysics(deltaTime));
 
 		CUP_START_FRAME("ECS Update");
 
 		for (InternalEntity* entity : EntityView(this)) {
-#ifdef CU_EDITOR
-			if (IsRuntimeRunning())
-#endif
-				RuntimeUpdateEntity(entity, deltaTime);
+
+			IN_RUNTIME(RuntimeUpdateEntity(entity, deltaTime));
 
 			entity->m_transform->Update();
 

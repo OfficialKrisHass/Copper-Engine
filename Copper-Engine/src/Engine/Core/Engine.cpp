@@ -156,9 +156,11 @@ namespace Copper {
 			CUP_START_FRAME("Window");
 
 			data.GetWindow().Update();
-			data.updateEvent();
+			Input::Update();
 
 			CUP_END_FRAME();
+
+			data.updateEvent();
 
 			CUP_START_FRAME("Scene");
 
@@ -166,6 +168,7 @@ namespace Copper {
 			data.scene.Update(data.deltaTime);
 			data.fbo.Unbind();
 
+			Renderer::EndFrame();
 			RendererAPI::ResizeViewport(data.GetWindow().GetSize());
 
 			CUP_END_FRAME();
@@ -177,15 +180,6 @@ namespace Copper {
 			data.mainUIContext.Begin();
 			data.uiUpdateEvent();
 			data.mainUIContext.End();
-
-			CUP_END_FRAME();
-
-			// Finalize
-
-			CUP_START_FRAME("Finalize");
-
-			Input::Update();
-			Renderer::EndFrame();
 
 			CUP_END_FRAME();
 

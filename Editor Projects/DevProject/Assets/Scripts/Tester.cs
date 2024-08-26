@@ -29,10 +29,28 @@ public class Tester : Component {
     }
     void OnUpdate() {
 
+        TestInput();
+
         if (target == null) return;
 
         target.eulerAngles = new Vector3(0.0f, rot, 0.0f);
         rot += rotationSpeed;
+
+    }
+
+    private void TestInput() {
+
+        if (Input.IsKeyDown(KeyCode.E))
+            Editor.Log("E pressed down");
+
+        if (Input.IsKey(KeyCode.X))
+            Editor.Log("Holding down X");
+
+        if (Input.IsKeyReleased(KeyCode.E))
+            Editor.Log("E released");
+
+        if (Input.IsButton(MouseCode.Button1))
+            Editor.Log("Left button is held down!");
 
     }
 

@@ -96,12 +96,12 @@ project "Copper-Engine"
 
         "_CRT_SECURE_NO_WARNINGS",
         "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
-        
+
         "VERSION_MAJOR=0",
         "VERSION_MINOR=3",
         "VERSION_PATCH=0",
-        "VERSION_TWEAK=160",
-        
+        "VERSION_TWEAK=161",
+
         "SCENE_VERSION=0",
 
     }

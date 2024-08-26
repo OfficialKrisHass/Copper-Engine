@@ -1,10 +1,10 @@
-#pragma once
+using System;
 
 namespace Copper {
 
-	enum class KeyCode : uint16 {
+    public enum KeyCode : ushort {
 
-		None = 0,
+        None = 0,
 
 		Space = 32,
 		Apostrophe = 39,
@@ -127,11 +127,11 @@ namespace Copper {
 		RightSuper = 347,
 		Menu = 348,
 
-	};
+    }
 
-	enum class MouseCode : uint16 {
-		
-		Button1 = 0,
+    public enum MouseCode : ushort {
+
+        Button1 = 0,
 		Button2 = 1,
 		Button3 = 2,
 		Button4 = 3,
@@ -139,7 +139,7 @@ namespace Copper {
 		Button6 = 5,
 		Button7 = 6,
 		Button8 = 7
-		
-	};
+
+    }
 
 }

@@ -11,6 +11,7 @@
 #include "Engine/Scripting/InternalCalls/Components/Transform.cs.h"
 #include "Engine/Scripting/InternalCalls/Core/Entity.cs.h"
 #include "Engine/Scripting/InternalCalls/Editor/Editor.cs.h"
+#include "Engine/Scripting/InternalCalls/Input/Input.cs.h"
 #include "Engine/Scripting/InternalCalls/Math/Quaternion.cs.h"
 
 #include <mono/jit/jit.h>
@@ -84,6 +85,10 @@ namespace Copper::Scripting {
         mono_add_internal_call("Copper.Editor::Internal_EditorLog", (void*) Editor::EditorLog);
         mono_add_internal_call("Copper.Editor::Internal_EditorLogWarn", (void*) Editor::EditorLogWarn);
         mono_add_internal_call("Copper.Editor::Internal_EditorLogError", (void*) Editor::EditorLogError);
+        mono_add_internal_call("Copper.Input::Internal_IsKey", (void*) Input::IsKey);
+        mono_add_internal_call("Copper.Input::Internal_IsKeyDown", (void*) Input::IsKeyDown);
+        mono_add_internal_call("Copper.Input::Internal_IsKeyReleased", (void*) Input::IsKeyReleased);
+        mono_add_internal_call("Copper.Input::Internal_IsButton", (void*) Input::IsButton);
         mono_add_internal_call("Copper.Quaternion::Internal_ToEuler", (void*) Quaternion::ToEuler);
         mono_add_internal_call("Copper.Quaternion::Internal_FromEuler", (void*) Quaternion::FromEuler);
 

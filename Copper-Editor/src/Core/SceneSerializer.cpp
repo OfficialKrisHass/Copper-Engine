@@ -3,7 +3,9 @@
 #include "Engine/Scripting/Script.h"
 #include "Engine/Scripting/ScriptingEngine.h"
 
+#ifdef CU_CMAKE
 #include <Config.h>
+#endif
 
 #include <yaml-cpp/yaml.h>
 
@@ -17,7 +19,7 @@ namespace Editor::SceneSerializer {
     void DeserializeEntity(uint32 id, const YAML::Node& data);
 
     void SerializeEntityTransform(Transform* transform, YAML::Emitter& out);
-    void DeserializeEntityTransform(InternalEntity* entity, const YAML::Node& data);
+    void DeserializeEntityTransform(InternalEntity** entityPtr, const YAML::Node& data);
 
     void SerializeEntityComponents(InternalEntity* entity, YAML::Emitter& out);
     void DeserializeEntityComponents(InternalEntity* entity, const YAML::Node& data);
@@ -29,10 +31,13 @@ namespace Editor::SceneSerializer {
 
         CUP_FUNCTION();
 
+        if (!fs::exists((path.parent_path())))
+            fs::create_directories(path.parent_path());
+
         YAML::Emitter out;
         out << YAML::BeginMap; // Main
         
-        out << YAML::Key << "Version" << YAML::Value << SCENE_VERSION;
+        out << YAML::Key << "Version" << YAML::Value << 0;
         out << YAML::Key << "Name" << YAML::Value << scene->GetName();
 
         // Entities
@@ -95,7 +100,7 @@ namespace Editor::SceneSerializer {
         InternalEntity* entity = CreateEntityFromID(id);
         entity->name = data["Name"].as<std::string>();
 
-        DeserializeEntityTransform(entity, data["Transform"]);
+        DeserializeEntityTransform(&entity, data["Transform"]);
         DeserializeEntityComponents(entity, data);
 
     }
@@ -122,10 +127,11 @@ namespace Editor::SceneSerializer {
         out << YAML::EndMap; // Transform
 
     }
-    void DeserializeEntityTransform(InternalEntity* entity, const YAML::Node& data) {
+    void DeserializeEntityTransform(InternalEntity** entityPtr, const YAML::Node& data) {
 
         CUP_FUNCTION();
 
+        InternalEntity* entity = *entityPtr;
         Transform* transform = entity->GetTransform();
 
         transform->SetPosition(data["Position"].as<Vector3>());
@@ -139,7 +145,7 @@ namespace Editor::SceneSerializer {
 
             uint32 savedID = entity->ID();
             InternalEntity* parent = CreateEntityFromID(parentID);
-            entity = GetEntityFromID(savedID);
+            entity = *entityPtr = GetEntityFromID(savedID);
 
             transform->m_parent = parent->GetTransform();
             parent->GetTransform()->m_children.push_back(savedID);
@@ -457,13 +463,13 @@ namespace Editor::SceneSerializer {
 
                     CUP_SCOPE("Entity Field deserialization", 457);
 
-                    uint64 id = fieldNode["Value"].as<uint32>();
+                    uint64 id = fieldNode["Value"].as<uint64>();
                     if (id == INVALID_ENTITY_ID) break;
 
 					if (id > entity->ID()) {
 
 						uint32 tmp = entity->ID();
-						CreateEntityFromID(id);
+						CreateEntityFromID((uint32) id);
 						entity = GetEntityFromID(tmp);
 
 					}

@@ -6,7 +6,7 @@ namespace Editor {
 
 	class SceneCamera : public Copper::Camera {
 
-		friend struct Project;
+		friend class Project;
 
 	public:
 		SceneCamera() = default;

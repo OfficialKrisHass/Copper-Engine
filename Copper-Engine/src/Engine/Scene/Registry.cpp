@@ -14,36 +14,28 @@
 #include "Engine/Components/SphereCollider.h"
 #include "Engine/Components/CapsuleCollider.h"
 
-namespace Copper {
+#define ASSERT_CID(component, expected) CU_ASSERT(GetCID<component>() == expected, #component ## " component id ({}) is expected to be {}", GetCID<component>(), expected);
 
-	EntityEvent entityCreatedEvent;
-	EntityEvent entityRemovedEvent;
-	ComponentEvent componentAddedEvent;
-	ComponentEvent componentRemovedEvent;
-	
-	void AddEntityCreatedEventFunc(std::function<bool(const Event&)> func) { entityCreatedEvent += func; }
-	void AddEntityRemovedEventFunc(std::function<bool(const Event&)> func) { entityRemovedEvent += func; }
-	void AddComponentAddedEventFunc(std::function<bool(const Event&)> func) { componentAddedEvent += func; }
-	void AddComponentRemovedEventFunc(std::function<bool(const Event&)> func) { componentRemovedEvent += func; }
+namespace Copper {
 
 	void Registry::Initialize() {
 
 		CUP_FUNCTION();
 
-		int32 tcid = GetCID<Transform>(); // 0
+		ASSERT_CID(Transform, TRANSFORM_CID);
 
-		GetCID<MeshRenderer>(); // 1
-		GetCID<Camera>(); // 2
-		GetCID<Light>(); // 3
+		ASSERT_CID(MeshRenderer, MESH_RENDERER_CID);
+		ASSERT_CID(Camera, CAMERA_CID);
+		ASSERT_CID(Light, LIGHT_CID);
 
-        GetCID<ScriptComponent>(); // 4
+		ASSERT_CID(ScriptComponent, SCRIPT_COMPONENT_CID);
 
-		GetCID<RigidBody>(); // 5
+		ASSERT_CID(RigidBody, RIGIDBODY_CID);
 
-		GetCID<Collider>(); // 6
-		GetCID<BoxCollider>(); // 7
-		GetCID<SphereCollider>(); // 8
-		GetCID<CapsuleCollider>(); // 9
+		ASSERT_CID(Collider, COLLIDER_CID);
+		ASSERT_CID(BoxCollider, BOX_COLLIDER_CID);
+		ASSERT_CID(SphereCollider, SPHERE_COLLIDER_CID);
+		ASSERT_CID(CapsuleCollider, CAPSULE_COLLIDER_CID);
 
 		m_pools.resize(cCounter, nullptr);
 

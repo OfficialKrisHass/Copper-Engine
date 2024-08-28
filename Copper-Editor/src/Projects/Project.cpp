@@ -30,7 +30,7 @@ namespace Editor {
         CUP_FUNCTION();
 
         m_path = path;
-        m_name = path.parent_path().filename();
+        m_name = path.parent_path().filename().string();
 
         CreateProjectFromTemplate("assets/Templates/LinuxTesting", *this);
 
@@ -60,7 +60,7 @@ namespace Editor {
         if (Scripting::GameAssembly())
             Scripting::Unload();
 
-        Scripting::Load(path / "Binaries/" / (m_name + ".dll"));
+		Scripting::Load((path / "Binaries/" / (m_name + ".dll")).string());
 
 		FileWatcher::Stop();
 		FileWatcher::SetDirectory(GetAssetsPath());

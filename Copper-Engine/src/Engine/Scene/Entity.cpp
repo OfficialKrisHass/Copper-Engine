@@ -20,6 +20,6 @@ namespace Copper {
 	InternalEntity* Entity::operator->() { return m_scene->GetEntityFromID(m_id); }
 
 	Entity::operator InternalEntity* () const { return m_scene->GetEntityFromID(m_id); }
-	Entity::operator bool() const { return m_id != INVALID_ENTITY_ID && m_scene != nullptr; }
+	Entity::operator bool() const { return m_scene != nullptr && m_scene->GetEntityFromID(m_id) != nullptr; }
 
 }

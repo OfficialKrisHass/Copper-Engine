@@ -34,11 +34,11 @@ namespace Copper {
 
 			m_registry.Initialize();
 
-            AddEntityCreatedEventFunc(BindEventFunc(Scene::EntityCreated));
-            AddEntityRemovedEventFunc(BindEventFunc(Scene::EntityRemoved));
+            m_registry.AddEntityCreatedEventFunc(BindEventFunc(Scene::EntityCreated));
+            m_registry.AddEntityRemovedEventFunc(BindEventFunc(Scene::EntityRemoved));
 
-            AddComponentAddedEventFunc(BindEventFunc(Scene::ComponentAdded));
-            AddComponentRemovedEventFunc(BindEventFunc(Scene::ComponentRemoved));
+            m_registry.AddComponentAddedEventFunc(BindEventFunc(Scene::ComponentAdded));
+            m_registry.AddComponentRemovedEventFunc(BindEventFunc(Scene::ComponentRemoved));
 
 		}
         ~Scene();

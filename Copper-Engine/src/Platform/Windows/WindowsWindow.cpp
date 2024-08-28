@@ -22,19 +22,19 @@ namespace Copper {
 
 		data.title = title;
 
-        if (windowCount == 0) {
+		if (windowCount == 0) {
 
 #ifndef CU_EDITOR
-           VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the main Window"); 
+			VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the main Window");
 #endif
-            if (!glfwInit()) {
+			if (!glfwInit()) {
 
-                LogError("Could not initialize GLFW");
-                exit(-1);
+				LogError("Could not initialize GLFW");
+				exit(-1);
 
-           }
+			}
 
-        }
+		}
 
 		windowCount++;
 
@@ -42,15 +42,15 @@ namespace Copper {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		windowPtr = (void*) glfwCreateWindow(width, height, data.title.c_str(), NULL, NULL);
-        CU_ASSERT(windowPtr, "Could not create GLFW window");
+		windowPtr = (void*)glfwCreateWindow(width, height, data.title.c_str(), NULL, NULL);
+		CU_ASSERT(windowPtr, "Could not create GLFW window");
 
 		glfwMakeContextCurrent(WINDOW);
 		glfwSetWindowUserPointer(WINDOW, &data);
 		if (maximize)
-            glfwMaximizeWindow(WINDOW);
+			glfwMaximizeWindow(WINDOW);
 
-        glfwGetWindowSize(WINDOW, (int32*) &data.size.x, (int32*) &data.size.y);
+		glfwGetWindowSize(WINDOW, (int32*)&data.size.x, (int32*)&data.size.y);
 
 		SetupEvents();
 
@@ -70,7 +70,7 @@ namespace Copper {
 		glfwDestroyWindow(WINDOW);
 
 		if (windowCount == 1)
-            glfwTerminate();
+			glfwTerminate();
 		windowCount--;
 
 	}
@@ -106,8 +106,8 @@ namespace Copper {
 
 			WindowData& data = GETWINDATA;
 
-            data.size.x = width;
-            data.size.y = height;
+			data.size.x = width;
+			data.size.y = height;
 
 			data.windowResizeEvent.width = width;
 			data.windowResizeEvent.height = height;
@@ -158,8 +158,8 @@ namespace Copper {
 
 			WindowData& data = GETWINDATA;
 
-			data.mouseMoveEvent.mouseCoords.x = (uint32) x;
-			data.mouseMoveEvent.mouseCoords.y = (uint32) y;
+			data.mouseMoveEvent.mouseCoords.x = (uint32)x;
+			data.mouseMoveEvent.mouseCoords.y = (uint32)y;
 			data.mouseMoveEvent();
 
 			});
@@ -168,9 +168,9 @@ namespace Copper {
 
 	float Window::GetTime() const {
 
-        CUP_FUNCTION();
+		CUP_FUNCTION();
 
-		return (float) glfwGetTime();
+		return (float)glfwGetTime();
 
 	}
 
@@ -184,7 +184,7 @@ namespace Copper {
 
 	}
 
-    void Window::AddWindowCloseEventFunc(std::function<bool(const Event& e)> func) {
+	void Window::AddWindowCloseEventFunc(std::function<bool(const Event& e)> func) {
 
 		data.windowCloseEvent += func;
 		glfwSetWindowUserPointer(WINDOW, &data);
@@ -212,14 +212,14 @@ namespace Copper {
 	void Window::AddKeyReleasedEventFunc(std::function<bool(const Event&)> func) {
 
 		data.keyReleasedEvent += func;
-	    glfwSetWindowUserPointer(WINDOW, &data);
+		glfwSetWindowUserPointer(WINDOW, &data);
 
 	}
 
 	void Window::AddMouseMoveEventFunc(std::function<bool(const Event&)> func) {
 
 		data.mouseMoveEvent += func;
-	    glfwSetWindowUserPointer(WINDOW, &data);
+		glfwSetWindowUserPointer(WINDOW, &data);
 
 	}
 

@@ -33,16 +33,6 @@ namespace Copper {
 	
 	extern uint32 cCounter;
 
-	extern EntityEvent entityCreatedEvent;
-	extern EntityEvent entityRemovedEvent;
-	extern ComponentEvent componentAddedEvent;
-	extern ComponentEvent componentRemovedEvent;
-
-	void AddEntityCreatedEventFunc(std::function<bool(const Event&)> func);
-	void AddEntityRemovedEventFunc(std::function<bool(const Event&)> func);
-	void AddComponentAddedEventFunc(std::function<bool(const Event&)> func);
-	void AddComponentRemovedEventFunc(std::function<bool(const Event&)> func);
-
 	class Registry {
 
 		friend class Scene;
@@ -344,10 +334,20 @@ namespace Copper {
 
 		}
 
+		void AddEntityCreatedEventFunc(std::function<bool(const Event&)> func) { entityCreatedEvent += func; }
+		void AddEntityRemovedEventFunc(std::function<bool(const Event&)> func) { entityRemovedEvent += func; }
+		void AddComponentAddedEventFunc(std::function<bool(const Event&)> func) { componentAddedEvent += func; }
+		void AddComponentRemovedEventFunc(std::function<bool(const Event&)> func) { componentRemovedEvent += func; }
+
 	private:
 		std::vector<InternalEntity> m_entities;
 		std::vector<ComponentPool*> m_pools;
 		std::vector<uint32> m_gaps;
+
+		EntityEvent entityCreatedEvent;
+		EntityEvent entityRemovedEvent;
+		ComponentEvent componentAddedEvent;
+		ComponentEvent componentRemovedEvent;
 
 		template<typename T> T* AddColliderComponent(uint32 eID, uint8 type);
 		template<typename T> T* GetColliderComponent(uint32 eID, uint8 type);

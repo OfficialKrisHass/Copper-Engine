@@ -9,7 +9,7 @@ namespace YAML { class Node; }
 namespace Copper { class InternalEntity; }
 namespace Editor::SceneSerializer {
     
-    void DeserializeEntityTransform(Copper::InternalEntity* entity, const YAML::Node& data);
+    void DeserializeEntityTransform(Copper::InternalEntity** entityPtr, const YAML::Node& data);
 
 }
 #endif
@@ -26,7 +26,7 @@ namespace Copper {
 
 	#ifdef CU_EDITOR
 		friend Editor::SceneCamera;
-        friend void Editor::SceneSerializer::DeserializeEntityTransform(Copper::InternalEntity* transform, const YAML::Node& data);
+        friend void Editor::SceneSerializer::DeserializeEntityTransform(Copper::InternalEntity**, const YAML::Node&);
 	#endif
 
 	public:

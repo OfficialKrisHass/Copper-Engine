@@ -12,6 +12,7 @@ namespace Copper {
 		Event() = default;
 
 		inline void Call() { (*this)(); }
+		inline void Clear() { m_callbacks.clear(); }
 
 		inline Event& operator+=(std::function<bool(const Event&)> func) { m_callbacks.push_back(func); return *this; }
 		inline bool operator()() {

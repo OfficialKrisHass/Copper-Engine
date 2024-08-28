@@ -68,7 +68,6 @@ namespace Editor {
 		// Scene
 
 		Scene* scene;
-        Scene tmpScene;
 		SceneMeta sceneMeta;
         bool isRuntimeRunning = false;
 		bool changes = false;

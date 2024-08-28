@@ -63,9 +63,11 @@ namespace Copper {
 
 		m_count = size / sizeof(uint32);
 
-		// I do not remember ever putting this log here, I have never bothered
-		// to try and find it, until it started crashing the engine when I removed it
-		// I am afraid of this line of code, and I submit to it's reign, all hail the Log!
+		// Every now and then, this log will break the code on windows. The app will freeze when this
+		// attempt to get executed, for no reason whatsoever, the only solution is to comment it, and
+		// uncomment it back. I do not remember adding this here, and I do not like how ghostly this acts
+		//
+		// I am scared
 		Log(sizeof(uint32));
 
 	}

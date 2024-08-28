@@ -44,7 +44,7 @@ namespace Editor {
 
         project.SetLastOpenedScenePath("Scenes/EmptyTemplate.copper");
 
-		CopyFileTo("assets/ScriptAPI/Copper-ScriptingAPI.dll", project.GetPath() / "Binaries/Copper-ScriptingAPI.dll", true);
+		CopyFileTo(ExecutableFolder() + "/assets/ScriptingAPI/Copper-ScriptingAPI.dll", project.GetPath() / "Binaries/Copper-ScriptingAPI.dll", true);
 
 	}
 	

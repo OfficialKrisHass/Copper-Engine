@@ -41,8 +41,8 @@ namespace Editor::ProjectChecker {
 
 	#ifdef CU_WINDOWS
 
-		CHECK_FILE("Visual Studio project", project.name + ".csproj", 5);
-		CHECK_FILE("Visual Studio solution", project.name + ".sln", 6);
+		CHECK_FILE("Visual Studio project", (project.GetName() + ".csproj"), 5);
+		CHECK_FILE("Visual Studio solution", (project.GetName() + ".sln"), 6);
 
 	#elif CU_LINUX
 
@@ -65,7 +65,7 @@ namespace Editor::ProjectChecker {
 
 		if (GET_FLAG(issueFlags, MissingProjectFile)) {
 
-            project.SetName(project.GetPath().parent_path().filename());
+            project.SetName(project.GetPath().parent_path().filename().string());
 			project.RegenerateProjectFiles();
 			
 		}
@@ -78,7 +78,7 @@ namespace Editor::ProjectChecker {
 	#endif
 		if (GET_FLAG(issueFlags, MissingScriptingDLL)) {
 
-			std::ifstream dllSrc(ExecutableFolder() + "/assets/ScriptAPI/Copper-ScriptingAPI.dll", std::ios::binary);
+			std::ifstream dllSrc(ExecutableFolder() + "/assets/ScriptingAPI/Copper-ScriptingAPI.dll", std::ios::binary);
 			std::ofstream dllDst;
 
 			dllDst.open(project.GetPath() / "Binaries/Copper-ScriptingAPI.dll", std::ios::out | std::ios::binary);

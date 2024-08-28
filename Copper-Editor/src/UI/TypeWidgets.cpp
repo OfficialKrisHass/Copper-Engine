@@ -505,7 +505,7 @@ namespace Editor::UI {
 
 		if (ImGui::BeginCombo(name.c_str(), items[*selected])) {
 
-			for (int i = 0; i < count; i++) {
+			for (uint32 i = 0; i < count; i++) {
 
 				const bool isSelected = (i == *selected);
 				if (ImGui::Selectable(items[i], isSelected))

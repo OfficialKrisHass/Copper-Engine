@@ -322,7 +322,7 @@ namespace Editor {
                 
                 uint64 id;
                 field.GetRefValue(scriptComponent, (void**) &id, (void*) INVALID_ENTITY_ID);
-                InternalEntity* entity = GetEntityFromID(id);
+                InternalEntity* entity = GetEntityFromID((uint32) id);
 
                 if (UI::EditEntity(field.GetName(), &entity)) {
 

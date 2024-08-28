@@ -8,7 +8,7 @@
 namespace YAML { class Emitter; }
 namespace Editor {
 
-    struct Project;
+    class Project;
     namespace SceneSerializer {
 
         void SerializeEntityComponents(Copper::InternalEntity* entity, YAML::Emitter& out);

@@ -6,7 +6,7 @@ namespace Editor {
 
     class Project;
 
-    class SceneMeta;
+    struct SceneMeta;
 
 	enum EditorState {
 

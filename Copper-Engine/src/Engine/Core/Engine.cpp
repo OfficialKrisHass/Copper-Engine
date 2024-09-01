@@ -262,7 +262,7 @@ namespace Copper {
 
 	// Game
 
-	float DeltaTime() { return data.deltaTime; }
+	float GetDeltaTime() { return data.deltaTime; }
 
 	// Declaration in Window.h
 

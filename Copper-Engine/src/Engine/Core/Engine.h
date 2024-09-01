@@ -41,7 +41,7 @@ namespace Copper {
 
 	// Game
 
-	float DeltaTime();
+	float GetDeltaTime();
 
 	// Editor Misc.
 

@@ -10,6 +10,7 @@
 #include "Engine/Scripting/InternalCalls/Components/SphereCollider.cs.h"
 #include "Engine/Scripting/InternalCalls/Components/Transform.cs.h"
 #include "Engine/Scripting/InternalCalls/Core/Entity.cs.h"
+#include "Engine/Scripting/InternalCalls/Core/Game.cs.h"
 #include "Engine/Scripting/InternalCalls/Editor/Editor.cs.h"
 #include "Engine/Scripting/InternalCalls/Input/Input.cs.h"
 #include "Engine/Scripting/InternalCalls/Math/Quaternion.cs.h"
@@ -82,6 +83,7 @@ namespace Copper::Scripting {
         mono_add_internal_call("Copper.Entity::Internal_GetComponent", (void*) Entity::GetComponent);
         mono_add_internal_call("Copper.Entity::Internal_HasComponent", (void*) Entity::HasComponent);
         mono_add_internal_call("Copper.Entity::Internal_RemoveComponent", (void*) Entity::RemoveComponent);
+        mono_add_internal_call("Copper.Game::get_deltaTime", (void*) Game::GetDeltaTime);
         mono_add_internal_call("Copper.Editor::Internal_EditorLog", (void*) Editor::EditorLog);
         mono_add_internal_call("Copper.Editor::Internal_EditorLogWarn", (void*) Editor::EditorLogWarn);
         mono_add_internal_call("Copper.Editor::Internal_EditorLogError", (void*) Editor::EditorLogError);

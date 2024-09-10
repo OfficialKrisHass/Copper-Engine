@@ -7,11 +7,8 @@ namespace Editor {
 	struct SceneMeta {
 
 	public:
-		void Serialize();
-		void Deserialize(Copper::Scene* scene);
-
-	private:
-		Copper::Scene* m_scene = nullptr;
+		void Serialize(const Copper::fs::path& path);
+		void Deserialize(const Copper::fs::path& path);
 
 	};
 

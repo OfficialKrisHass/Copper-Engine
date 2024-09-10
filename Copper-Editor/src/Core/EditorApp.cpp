@@ -69,6 +69,8 @@ namespace Editor {
 
 		Scene* scene;
 		SceneMeta sceneMeta;
+        fs::path scenePath;
+
         bool isRuntimeRunning = false;
 		bool changes = false;
 		
@@ -659,8 +661,6 @@ namespace Editor {
         SceneSerializer::Deserialize(data.scene, ExecutableFolder() + "/assets/Temp/scene_lock.copper");
         data.scene->Initialize();
 
-		data.sceneMeta.Deserialize(data.scene);
-
 		SceneHierarchy::SetSelectedEntity(savedSelectedEntity);
 
 		Input::SetCursorLocked(false);
@@ -746,11 +746,13 @@ namespace Editor {
 			
 		}
 
+        data.scenePath = path;
+
         data.scene->Cleanup();
         SceneSerializer::Deserialize(data.scene, path);
         data.scene->Initialize(); 
 
-		data.sceneMeta.Deserialize(data.scene);
+		data.sceneMeta.Deserialize(path);
 
 		SceneHierarchy::SetScene(data.scene);
 
@@ -789,15 +791,15 @@ namespace Editor {
 
         CUP_FUNCTION();
 		
-        if (data.scene->GetPath().empty()) {
+        if (data.scenePath.empty()) {
             
             SaveSceneAs();
             return;
 
         }
 
-        SceneSerializer::Serialize(data.scene, data.scene->GetPath());
-        data.sceneMeta.Serialize();
+        SceneSerializer::Serialize(data.scene, data.scenePath);
+        data.sceneMeta.Serialize(data.scenePath);
 
         data.changes = false;
         data.title = "Copper Editor - TestProject: ";
@@ -820,8 +822,10 @@ namespace Editor {
 
 		}
 
+        data.scenePath = path;
+
         SceneSerializer::Serialize(data.scene, path);
-		data.sceneMeta.Serialize();
+		data.sceneMeta.Serialize(path);
 
 		data.changes = false;
 		data.title = "Copper Editor - TestProject: ";

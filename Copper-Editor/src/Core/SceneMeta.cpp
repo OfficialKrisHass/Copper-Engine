@@ -14,7 +14,7 @@ using std::filesystem::exists;
 
 namespace Editor {
 
-	void SceneMeta::Serialize() {
+	void SceneMeta::Serialize(const fs::path& path) {
 
 		YAML::Emitter out;
 		out << YAML::BeginMap; // Main
@@ -34,18 +34,16 @@ namespace Editor {
 
 		out << YAML::EndMap; // Main
 		std::ofstream file;
-		file.open(m_scene->GetPath().string() + ".cum");
+		file.open(path.string() + ".cum");
 		file << out.c_str();
 		file.close();
 
 	}
-	void SceneMeta::Deserialize(Scene* scene) {
+	void SceneMeta::Deserialize(const fs::path& path) {
 
-		this->m_scene = scene;
+		if (!exists(path.string() + ".cum")) {
 
-		if (!exists(scene->GetPath().string() + ".cum")) {
-
-			Serialize();
+			Serialize(path);
 			return;
 
 		}
@@ -53,11 +51,11 @@ namespace Editor {
 		YAML::Node main;
 		try {
 			
-			main = YAML::LoadFile(scene->GetPath().string() + ".cum");
+			main = YAML::LoadFile(path.string() + ".cum");
 		
 		} catch (YAML::ParserException e) {
 
-			LogError("Failed to Read The Scene Meta Data file ({})\n    {}", scene->GetPath().string(), e.what());
+			LogError("Failed to Read The Scene Meta Data file ({})\n    {}", path.string(), e.what());
 			return;
 
 		}
@@ -75,7 +73,7 @@ namespace Editor {
 
 		} catch (YAML::Exception e) {
 
-			Log("Encountered an exception when trying to Deserializae the {} Scene meta file!\n\t{}", scene->GetPath(), e.msg);
+			Log("Encountered an exception when trying to Deserializae the {} Scene meta file!\n\t{}", path.string(), e.msg);
 			return;
 
 		}

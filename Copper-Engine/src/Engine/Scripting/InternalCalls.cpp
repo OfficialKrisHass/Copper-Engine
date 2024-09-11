@@ -91,6 +91,7 @@ namespace Copper::Scripting {
         mono_add_internal_call("Copper.Input::Internal_IsKeyDown", (void*) Input::IsKeyDown);
         mono_add_internal_call("Copper.Input::Internal_IsKeyReleased", (void*) Input::IsKeyReleased);
         mono_add_internal_call("Copper.Input::Internal_IsButton", (void*) Input::IsButton);
+        mono_add_internal_call("Copper.Input::Internal_GetAxis", (void*) Input::GetAxis);
         mono_add_internal_call("Copper.Quaternion::Internal_ToEuler", (void*) Quaternion::ToEuler);
         mono_add_internal_call("Copper.Quaternion::Internal_FromEuler", (void*) Quaternion::FromEuler);
 

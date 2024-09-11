@@ -1,8 +1,10 @@
 #include "cupch.h"
 #include "Input.cs.h"
 #include "Engine/Input/Input.h"
+#include "Engine/Input/AxisManager.h"
 
-#include "Engine/Scripting//InternalCalls/Utils.h"
+#include "Engine/Scripting/MonoUtils.h"
+#include "Engine/Scripting/InternalCalls/Utils.h"
 
 #include <mono/jit/jit.h>
 #include <mono/metadata/object.h>
@@ -50,6 +52,19 @@ namespace Copper::Scripting::Input {
 
         CHECK_ACCEPTING_INPUT(false);
         return Input::IsButton(button);
+
+    }
+
+    float GetAxis(MonoString* axis) {
+
+        CUP_FUNCTION();
+
+        CHECK_ACCEPTING_INPUT(0);
+
+        std::string axisName;
+        MonoUtils::MonoStringToString(axis, axisName);
+
+        return Input::GetAxis(axisName);
 
     }
 

@@ -31,6 +31,10 @@ public class Tester : Component {
 
         TestInput();
 
+        float horizontal = Input.GetAxis("Keys_WS");
+        if (horizontal != 0.0f)
+            Editor.Log(horizontal.ToString());
+
         if (target == null) return;
 
         target.eulerAngles = new Vector3(0.0f, rot, 0.0f);

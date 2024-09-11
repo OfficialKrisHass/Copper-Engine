@@ -2,6 +2,12 @@
 
 #include "Engine/Core/Core.h"
 
+extern "C" {
+
+    typedef struct _MonoString MonoString;
+
+}
+
 namespace Copper::Scripting::Input {
 
     bool IsKey(KeyCode key);
@@ -9,5 +15,7 @@ namespace Copper::Scripting::Input {
     bool IsKeyReleased(KeyCode key);
 
     bool IsButton(MouseCode button);
+
+    float GetAxis(MonoString* axis);
 
 }

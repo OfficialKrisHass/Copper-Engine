@@ -13,6 +13,8 @@ namespace Copper {
 
         public static bool IsButton(MouseCode button) { return Internal_IsButton(button); }
 
+        public static float GetAxis(string axis) { return Internal_GetAxis(axis); }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         [NativeFunction("IsKey")]
         internal extern static bool Internal_IsKey(KeyCode key);
@@ -26,6 +28,10 @@ namespace Copper {
         [MethodImpl(MethodImplOptions.InternalCall)]
         [NativeFunction("IsButton")]
         internal extern static bool Internal_IsButton(MouseCode button);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        [NativeFunction("GetAxis")]
+        internal extern static float Internal_GetAxis(string axis);
 
     }
 

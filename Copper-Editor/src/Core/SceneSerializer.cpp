@@ -414,25 +414,25 @@ namespace Editor::SceneSerializer {
 
 		if (YAML::Node scriptNode = data["Script Component"]) {
 
-			ScriptComponent* scriptComponent = entity->AddComponent<ScriptComponent>();
 
             std::string name = scriptNode["Name"].as<std::string>();
             const Scripting::ScriptMap& scriptMap = Scripting::ComponentScripts();
 
-            if (scriptMap.find(name) == scriptMap.end()) {
+            const Scripting::ScriptMap::const_iterator script = scriptMap.find(name);
+            if (script == scriptMap.end()) {
 
                 LogError("Could not deserialize Script Component '{}' on Entity '{}'. Does not exist in loaded Script Map", name, *entity);
                 return;
 
             }
 
-            const Scripting::Script& script = scriptMap.at(name);
-            scriptComponent->Setup(&script);
+			ScriptComponent* scriptComponent = entity->AddComponent<ScriptComponent>();
+            scriptComponent->Setup(&script->second);
 
             // Fields
 
             YAML::Node fieldsNode = scriptNode["Fields"];
-            const std::vector<Scripting::Field>& fields = script.GetFields();
+            const std::vector<Scripting::Field>& fields = script->second.GetFields();
 
             for (const Scripting::Field& field : fields) {
 

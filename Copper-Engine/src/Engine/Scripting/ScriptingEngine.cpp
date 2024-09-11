@@ -9,6 +9,7 @@
 #include "Engine/Scripting/Script.h"
 #include "Engine/Scripting/Field.h"
 #include "Engine/Scripting/Classes.h"
+#include "Engine/Scripting/ManagedReferences.h"
 
 #include "Engine/Components/ScriptComponent.h"
 
@@ -92,9 +93,12 @@ namespace Copper::Scripting {
         mono_domain_set(data.rootDomain, false);
         mono_domain_unload(data.appDomain);
 
+        ClearManagedReferences();
+
         data.game = Assembly();
 
         data.componentScripts.clear();
+
 
     }
     bool Reload(const fs::path& path) {
@@ -107,10 +111,6 @@ namespace Copper::Scripting {
         else
             tmp = path.string();
 
-        std::unordered_map<ScriptComponent*, std::string> scriptComponentNames;
-        for (ScriptComponent* scriptComponent : ComponentView<ScriptComponent>(GetScene()))
-            scriptComponentNames[scriptComponent] = scriptComponent->GetScript()->FullName();
-
         Unload();
 
         InitializeScriptingAPI();
@@ -118,19 +118,6 @@ namespace Copper::Scripting {
 
             LogError("Failed to load game assembly at path '{}'", tmp);
             return false;
-
-        }
-
-        for (auto it = scriptComponentNames.begin(); it != scriptComponentNames.end(); ++it) {
-
-            if (data.componentScripts.find(it->second) == data.componentScripts.end()) {
-
-                LogError("Script '{}' is missing for Script Component on Entity '{}'", it->second, *it->first->GetEntity());
-                continue;
-
-            }
-
-            it->first->Setup(&data.componentScripts[it->second]);
 
         }
 

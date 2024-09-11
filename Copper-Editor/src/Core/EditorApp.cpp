@@ -60,6 +60,8 @@ namespace Editor {
 		Window window;
 		std::string title;
 
+        bool gameAcceptingInput = false;
+
 		// Project
 
 		Project project;
@@ -71,7 +73,6 @@ namespace Editor {
 		SceneMeta sceneMeta;
         fs::path scenePath;
 
-        bool isRuntimeRunning = false;
 		bool changes = false;
 		
 		// Viewport
@@ -104,11 +105,6 @@ namespace Editor {
 		// Theme Editor
 
 		bool themeEditorOpen = false;
-
-        // Misc.
-
-		bool wasCursorLocked = false;
-		bool wasCursorVisible = true;
 
 	};
 
@@ -356,13 +352,15 @@ namespace Editor {
 
 		ImGui::Image(reinterpret_cast<void*>((uint64) GetMainFBO().GetColorTextureID()), windowSize, ImVec2 {0, 1}, ImVec2 {1, 0});
 
-		if (ImGui::IsItemClicked() && !AcceptInputDuringRuntime() && data.isRuntimeRunning) {
-			
-			Input::SetCursorLocked(data.wasCursorLocked);
-			Input::SetCursorVisible(data.wasCursorVisible);
-			SetAcceptInputDuringRuntime(true);
-		
-		}
+        if (!data.gameAcceptingInput && ImGui::IsItemClicked()) {
+
+            data.gameAcceptingInput = true;
+
+            Input::SetCursorPosition(data.viewportCentre.x, data.viewportCentre.y);
+            Input::SetCursorLocked(true);
+            Input::SetCursorVisible(false);
+
+        }
 
 		ImGui::End();
 		ImGui::PopStyleVar();
@@ -639,22 +637,15 @@ namespace Editor {
 
 		data.state = Play;
 
-	    data.isRuntimeRunning = true;
         SceneSerializer::Serialize(data.scene, ExecutableFolder() + "/assets/Temp/scene_lock.copper");
         Renderer::Restart();
-
-		SetAcceptInputDuringRuntime(true);
 
 	}
 	void StopEditorRuntime() {
 
         CUP_FUNCTION();
 
-		if (data.wasCursorLocked)
-			Input::SetCursorLocked(false);
-
 		data.state = Edit;
-        data.isRuntimeRunning = false;
 		Entity savedSelectedEntity = SceneHierarchy::GetSelectedEntity();
 
         data.scene->Cleanup();
@@ -663,9 +654,10 @@ namespace Editor {
 
 		SceneHierarchy::SetSelectedEntity(savedSelectedEntity);
 
+        data.gameAcceptingInput = false;
+
 		Input::SetCursorLocked(false);
 		Input::SetCursorVisible(true);
-		SetAcceptInputDuringRuntime(false);
 
 	}
 
@@ -868,52 +860,50 @@ namespace Editor {
 			}
 			case KeyCode::B: {
 
-				if (data.state == Play) break;
-				if (control)
-                    data.project.BuildScripts();
+				if (data.state == Play || !control) break;
+
+                data.project.BuildScripts();
 
 				break;
 
 			}
 			case KeyCode::Q: {
 
-				if (data.state == Play) break;
-				if (!rightClick)
-                    data.project.SetGizmoType(ImGuizmo::TRANSLATE);
+				if (data.state == Play || rightClick) break;
+
+                data.project.SetGizmoType(ImGuizmo::TRANSLATE);
 
 				break;
 
 			}
 			case KeyCode::W: {
 
-				if (data.state == Play) break;
-				if (!rightClick)
-                    data.project.SetGizmoType(ImGuizmo::ROTATE);
+				if (data.state == Play || rightClick) break;
+
+                data.project.SetGizmoType(ImGuizmo::ROTATE);
 
 				break;
 
 			}
 			case KeyCode::E: {
 
-				if (data.state == Play) break;
-				if (!rightClick)
-                    data.project.SetGizmoType(ImGuizmo::SCALE);
+				if (data.state == Play || rightClick) break;
+
+                data.project.SetGizmoType(ImGuizmo::SCALE);
 
 				break;
 
 			}
-			case KeyCode::Escape: {
+            case KeyCode::F1: {
+                
+                if (data.state == Edit || !shift) break;
 
-				data.wasCursorLocked = Input::IsCursorLocked();
-				data.wasCursorVisible = Input::IsCursorVisible();
+                data.gameAcceptingInput = false;
 
-				Input::SetCursorLocked(false);
-				Input::SetCursorVisible(true);
-				SetAcceptInputDuringRuntime(false);
+                Input::SetCursorLocked(false);
+                Input::SetCursorVisible(true);
 
-				break;
-
-			}
+            }
             default: break;
 
 		}
@@ -954,9 +944,9 @@ namespace Editor {
 
 	SceneMeta* GetSceneMeta() { return &data.sceneMeta; }
 
-    bool IsRuntimeRunning() { return data.isRuntimeRunning; }
-
 	UVector2I GetViewportSize() { return data.viewportSize; }
+
+    bool IsRuntimeRunning() { return data.state == Play; }
 
 	// TODO: This feature is not working, has not been working for the past year, isn't
 	// even used in 90% of the places it should be, and also is done in the stupidest way imaginable.
@@ -998,3 +988,5 @@ void AppEntryPoint() {
 
 Window* GetEditorWindow() { return &Editor::data.window; }
 UVector2I GetViewportCentre() { return Editor::data.viewportCentre; }
+
+bool IsGameAcceptingInput() { return Editor::data.gameAcceptingInput; }

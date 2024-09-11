@@ -41,7 +41,6 @@ namespace Copper {
 	
 	#ifdef CU_EDITOR
 		Window* window = nullptr; // Editor creates its own window and then passes it to the Engine
-		bool acceptInputRuntime = true;
 	#else
 		Window window;
 	#endif
@@ -313,11 +312,5 @@ namespace Copper {
 	// Declaration in Scene.h
 	
 	Scene* GetScene() { return &data.scene; }
-
-// Editor misc.
-#ifdef CU_EDITOR
-	void SetAcceptInputDuringRuntime(bool value) { data.acceptInputRuntime = value; }
-	bool AcceptInputDuringRuntime() { return data.acceptInputRuntime; }
-#endif
 
 }

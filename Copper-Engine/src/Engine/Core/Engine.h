@@ -43,11 +43,4 @@ namespace Copper {
 
 	float GetDeltaTime();
 
-	// Editor Misc.
-
-#ifdef CU_EDITOR
-	void SetAcceptInputDuringRuntime(bool value);
-	bool AcceptInputDuringRuntime();
-#endif
-
 }

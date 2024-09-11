@@ -414,7 +414,6 @@ namespace Editor::SceneSerializer {
 
 		if (YAML::Node scriptNode = data["Script Component"]) {
 
-
             std::string name = scriptNode["Name"].as<std::string>();
             const Scripting::ScriptMap& scriptMap = Scripting::ComponentScripts();
 

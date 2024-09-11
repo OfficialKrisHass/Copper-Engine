@@ -2,7 +2,6 @@
 
 #include "Core/EditorApp.h"
 #include "Core/FileWatcher.h"
-#include "Core/SceneSerializer.h"
 
 #include "Projects/ProjectChecker.h"
 #include "Projects/ProjectTemplate.h"
@@ -154,8 +153,6 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        SceneSerializer::Serialize(GetScene(), ExecutableFolder() + "/assets/Temp/scene_lock.copper");
-
 	#ifdef CU_WINDOWS
 		std::string cmd = "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\MSBuild.exe ";
 
@@ -192,8 +189,6 @@ namespace Editor {
 
         Scripting::Reload(m_path / "Binaries" / (m_name + ".dll"));
 
-        SceneSerializer::Deserialize(GetScene(), ExecutableFolder() + "/assets/Temp/scene_lock.copper");
-        
         return true;
 
 	}

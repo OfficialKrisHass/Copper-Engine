@@ -84,7 +84,6 @@ namespace Copper {
 
         inline bool IsInitialized() const { return initialized; }
         inline const std::string& GetName() const { return m_name; }
-        inline const fs::path& GetPath() const { return m_path; }
 
         inline Camera* GetMainCamera() const { return m_cam; }
 
@@ -97,7 +96,6 @@ namespace Copper {
         bool initialized = false;
 
         std::string m_name = "";
-		fs::path m_path = "";
 
 		Registry m_registry;
 		Camera* m_cam = nullptr;

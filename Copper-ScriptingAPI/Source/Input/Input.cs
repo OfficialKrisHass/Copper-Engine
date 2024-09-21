@@ -7,11 +7,15 @@ namespace Copper {
     [NativeClass("Engine/Scripting/InternalCalls/Input/Input.cs.h")]
     public static class Input {
 
+        // Getting input
+
         public static bool IsKey(KeyCode key) { return Internal_IsKey(key); }
         public static bool IsKeyDown(KeyCode key) { return Internal_IsKeyDown(key); }
         public static bool IsKeyReleased(KeyCode key) { return Internal_IsKeyReleased(key); }
 
         public static bool IsButton(MouseCode button) { return Internal_IsButton(button); }
+
+        // Input axes
 
         public static float GetAxis(string axis) { return Internal_GetAxis(axis); }
 

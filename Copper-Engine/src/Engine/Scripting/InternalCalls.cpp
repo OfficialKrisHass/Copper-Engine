@@ -12,6 +12,7 @@
 #include "Engine/Scripting/InternalCalls/Core/Entity.cs.h"
 #include "Engine/Scripting/InternalCalls/Core/Game.cs.h"
 #include "Engine/Scripting/InternalCalls/Editor/Editor.cs.h"
+#include "Engine/Scripting/InternalCalls/Input/Cursor.cs.h"
 #include "Engine/Scripting/InternalCalls/Input/Input.cs.h"
 #include "Engine/Scripting/InternalCalls/Math/Quaternion.cs.h"
 
@@ -87,6 +88,12 @@ namespace Copper::Scripting {
         mono_add_internal_call("Copper.Editor::Internal_EditorLog", (void*) Editor::EditorLog);
         mono_add_internal_call("Copper.Editor::Internal_EditorLogWarn", (void*) Editor::EditorLogWarn);
         mono_add_internal_call("Copper.Editor::Internal_EditorLogError", (void*) Editor::EditorLogError);
+        mono_add_internal_call("Copper.Cursor::get_visible", (void*) Cursor::IsVisible);
+        mono_add_internal_call("Copper.Cursor::set_visible", (void*) Cursor::SetVisible);
+        mono_add_internal_call("Copper.Cursor::get_locked", (void*) Cursor::IsLocked);
+        mono_add_internal_call("Copper.Cursor::set_locked", (void*) Cursor::SetLocked);
+        mono_add_internal_call("Copper.Cursor::get_position", (void*) Cursor::GetPosition);
+        mono_add_internal_call("Copper.Cursor::set_position", (void*) Cursor::SetPosition);
         mono_add_internal_call("Copper.Input::Internal_IsKey", (void*) Input::IsKey);
         mono_add_internal_call("Copper.Input::Internal_IsKeyDown", (void*) Input::IsKeyDown);
         mono_add_internal_call("Copper.Input::Internal_IsKeyReleased", (void*) Input::IsKeyReleased);

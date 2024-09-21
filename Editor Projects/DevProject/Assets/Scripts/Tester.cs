@@ -19,6 +19,9 @@ public class Tester : Component {
 
         Editor.Log("Test");
 
+        Cursor.visible = true;
+        Cursor.locked = false;
+
         TestEntity();
         TestTransform();
         TestEntityReference();

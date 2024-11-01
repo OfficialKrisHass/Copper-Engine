@@ -9,6 +9,8 @@
 #include "Engine/Renderer/FrameBuffer.h"
 #include "Engine/Renderer/Renderer.h"
 
+#include "Engine/Physics/Raycast.h"
+
 #include "Engine/UI/ImGui.h"
 
 #include "Engine/Scripting/ScriptingEngine.h"
@@ -60,7 +62,7 @@ namespace Editor {
 		Window window;
 		std::string title;
 
-        bool gameAcceptingInput = false;
+    bool gameAcceptingInput = false;
 
 		// Project
 
@@ -71,7 +73,7 @@ namespace Editor {
 
 		Scene* scene;
 		SceneMeta sceneMeta;
-        fs::path scenePath;
+    fs::path scenePath;
 
 		bool changes = false;
 		
@@ -138,14 +140,14 @@ namespace Editor {
 
 		MainUIContext().LoadFont(ExecutableFolder() + "/assets/Fonts/open-sans.regular.ttf");
 
-        data.scene = GetScene();
+    data.scene = GetScene();
 
 		data.viewportFBO = FrameBuffer(data.viewportSize);
 		
 		data.playIcon.Create(ExecutableFolder() + "/assets/Icons/PlayButton.png", Texture::Format::RGBA);
 		data.stopIcon.Create(ExecutableFolder() + "/assets/Icons/StopButton.png", Texture::Format::RGBA);
 
-        data.fileBrowser.Initialize();
+    data.fileBrowser.Initialize();
 		
 		FileWatcher::AddCallback(FileChangedCallback);
 
@@ -227,7 +229,7 @@ namespace Editor {
 
 	void Update() {
 
-        CUP_FUNCTION();
+    CUP_FUNCTION();
 		CUP_START_FRAME("Editor");
 
 		FileWatcher::PollChanges();
@@ -313,7 +315,7 @@ namespace Editor {
 	}
 	void RenderGamePanel() {
 
-        CUP_FUNCTION();
+    CUP_FUNCTION();
 		CUP_START_FRAME("Game Panel");
 
 		//Imgui::Begin returns a bool based on if the Window is visible/open
@@ -352,15 +354,15 @@ namespace Editor {
 
 		ImGui::Image(reinterpret_cast<void*>((uint64) GetMainFBO().GetColorTextureID()), windowSize, ImVec2 {0, 1}, ImVec2 {1, 0});
 
-        if (!data.gameAcceptingInput && ImGui::IsItemClicked()) {
+    if (data.state == Play && !data.gameAcceptingInput && ImGui::IsItemClicked()) {
 
-            data.gameAcceptingInput = true;
+      data.gameAcceptingInput = true;
 
-            Input::SetCursorPosition(data.viewportCentre.x, data.viewportCentre.y);
-            Input::SetCursorLocked(true);
-            Input::SetCursorVisible(false);
+      Input::SetCursorPosition(data.viewportCentre.x, data.viewportCentre.y);
+      Input::SetCursorLocked(true);
+      Input::SetCursorVisible(false);
 
-        }
+    }
 
 		ImGui::End();
 		ImGui::PopStyleVar();
@@ -370,7 +372,7 @@ namespace Editor {
 	}
 	void RenderViewport() {
 
-        CUP_FUNCTION();
+    CUP_FUNCTION();
 		CUP_START_FRAME("Viewport");
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
@@ -633,12 +635,12 @@ namespace Editor {
 
 	void StartEditorRuntime() {
 
-        CUP_FUNCTION();
+    CUP_FUNCTION();
 
 		data.state = Play;
 
-        SceneSerializer::Serialize(data.scene, ExecutableFolder() + "/assets/Temp/scene_lock.copper");
-        Renderer::Restart();
+    SceneSerializer::Serialize(data.scene, ExecutableFolder() + "/assets/Temp/scene_lock.copper");
+    Renderer::Restart();
 
 	}
 	void StopEditorRuntime() {

@@ -31,19 +31,25 @@ namespace Copper {
 		}
 
 		static bool Fire(const Vector3& origin, const Vector3& direction, Data* data, float maxDistance = 1000.0f);
-		bool Fire() { CUP_FUNCTION(); return Fire(m_origin, m_direction, &m_hitData, m_dist); }
+		bool Fire() {
+
+      CUP_FUNCTION();
+
+      return Fire(m_origin, m_direction, &m_hitData, m_dist);
+
+    }
 
 		// Getters
 
 		inline const Data& GetData() const { return m_hitData; }
 
-		inline bool Hit() const { return m_hitData.hit; }
+		inline bool GetHit() const { return m_hitData.hit; }
 		
-		inline float Distance() const { return m_hitData.distance; }
-		inline const Vector3& Position() const { return m_hitData.position; }
-		inline const Vector3& Normal() const { return m_hitData.normal; }
+		inline float GetDistance() const { return m_hitData.distance; }
+		inline const Vector3& GetPosition() const { return m_hitData.position; }
+		inline const Vector3& GetNormal() const { return m_hitData.normal; }
 		
-		inline InternalEntity* Entity() const { return m_hitData.entity; }
+		inline InternalEntity* GetEntity() const { return m_hitData.entity; }
 
 		// Operator overloading
 

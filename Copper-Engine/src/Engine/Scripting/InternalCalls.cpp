@@ -15,6 +15,7 @@
 #include "Engine/Scripting/InternalCalls/Input/Cursor.cs.h"
 #include "Engine/Scripting/InternalCalls/Input/Input.cs.h"
 #include "Engine/Scripting/InternalCalls/Math/Quaternion.cs.h"
+#include "Engine/Scripting/InternalCalls/Physics/Raycast.cs.h"
 
 #include <mono/jit/jit.h>
 
@@ -101,6 +102,7 @@ namespace Copper::Scripting {
         mono_add_internal_call("Copper.Input::Internal_GetAxis", (void*) Input::GetAxis);
         mono_add_internal_call("Copper.Quaternion::Internal_ToEuler", (void*) Quaternion::ToEuler);
         mono_add_internal_call("Copper.Quaternion::Internal_FromEuler", (void*) Quaternion::FromEuler);
+        mono_add_internal_call("Copper.Raycast::Internal_Fire", (void*) Raycast::Fire);
 
     }
 

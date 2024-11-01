@@ -35,8 +35,6 @@ namespace Copper {
 
 		CUP_FUNCTION();
 
-        IN_RUNTIME_BEGIN;
-
 		static const PxHitFlags hitFlags = PxHitFlag::eDEFAULT;
 		PxQueryFilterData filterData = PxQueryFilterData(PxQueryFlag::eDYNAMIC | PxQueryFlag::eSTATIC | PxQueryFlag::ePOSTFILTER);
 
@@ -52,9 +50,6 @@ namespace Copper {
 		data->entity = (InternalEntity*) out.block.actor->userData;
 
 		return true;
-
-        IN_RUNTIME_END;
-        return false;
 
 	}
 

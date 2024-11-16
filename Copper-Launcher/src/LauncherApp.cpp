@@ -9,6 +9,8 @@
 
 #include "ThemeEditor.h"
 
+#include "CreateProjectWindow.h"
+
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_internal.h>
@@ -27,6 +29,8 @@ namespace Launcher {
 		std::vector<ProjectEntry> projectEntries = {};
 
 		ImFont* titleFont = nullptr;
+
+    bool createProjectWinOpen = false;
 
 	};
 	static Data data;
@@ -76,6 +80,8 @@ namespace Launcher {
 			AddProjectButton(cursorY);
 			CreateProjectButton(cursorY);
 
+      CreateProjectWindow::Render(&data.createProjectWinOpen);
+
 			ImGui::Separator();
 
 			ProjectEntries();
@@ -100,6 +106,9 @@ namespace Launcher {
 	void TitleText() {
 
 		ImGui::PushFont(data.titleFont);
+
+    // Bro I wrote this code like a year ago, and I dont know what the fuck is going on in here
+    // Ah the wonders of working with ImGui
 
 		ImGui::SetCursorPosX(WindowPadding);
 		ImGui::SetCursorPosY(ImGui::GetWindowContentRegionMin().y + WindowPadding + ButtonSize.y / 2.0f - ImGui::GetTextLineHeight() / 2.0f);
@@ -131,7 +140,8 @@ namespace Launcher {
 
 		ImGui::SameLine();
 		ImGui::SetCursorPosY(cursorY);
-		ImGui::Button("Create Project", ButtonSize);
+		if (ImGui::Button("Create Project", ButtonSize))
+      data.createProjectWinOpen = true;
 
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + WindowPadding);
 

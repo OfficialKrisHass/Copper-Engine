@@ -4,7 +4,7 @@ message(STATUS "BUILDING Copper-Launcher")
 # Sources
 
 list(APPEND sources Base.h Dialogs.cpp Dialogs.h Entry.cpp LauncherApp.cpp PersistentData.cpp PersistentData.h ProjectEntry.cpp ProjectEntry.h ThemeEditor.cpp
-                    ThemeEditor.h UI.cpp UI.h Window.cpp Window.h Utils.cpp Utils.h CreateProjectWindow.cpp CreateProjectWindow.h)
+                    ThemeEditor.h UI.cpp UI.h Window.cpp Window.h Utils.cpp Utils.h CreateProjectWindow.cpp CreateProjectWindow.h Fonts.h Fonts.cpp)
 list(TRANSFORM sources PREPEND ${PROJECT_SOURCE_DIR}/Copper-Launcher/src/)
 
 # Include dirs

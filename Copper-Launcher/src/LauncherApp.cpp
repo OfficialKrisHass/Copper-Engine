@@ -1,6 +1,7 @@
 #include "Base.h"
 #include "Window.h"
 #include "UI.h"
+#include "Fonts.h"
 
 #include "Dialogs.h"
 #include "PersistentData.h"
@@ -28,8 +29,6 @@ namespace Launcher {
 
 		std::vector<ProjectEntry> projectEntries = {};
 
-		ImFont* titleFont = nullptr;
-
     bool createProjectWinOpen = false;
 
 	};
@@ -54,9 +53,7 @@ namespace Launcher {
 
 		Window::Create(960, 540, "Copper Launcher");
 		UI::Initialize();
-
-		ProjectEntry::InitializeFonts();
-		data.titleFont = UI::AddFont(ExecutableFolder() + MainFontPath, 40.0f);
+    Fonts::Initialize();
 
 		Run();
 
@@ -105,7 +102,7 @@ namespace Launcher {
 
 	void TitleText() {
 
-		ImGui::PushFont(data.titleFont);
+		ImGui::PushFont(Fonts::TitleFont());
 
     // Bro I wrote this code like a year ago, and I dont know what the fuck is going on in here
     // Ah the wonders of working with ImGui

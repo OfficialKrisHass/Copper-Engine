@@ -1,5 +1,7 @@
 #include "CreateProjectWindow.h"
 
+#include "Fonts.h"
+
 #include "Dialogs.h"
 
 #include <ImGui/imgui.h>
@@ -42,6 +44,7 @@ namespace Launcher::CreateProjectWindow {
     ImGui::InputText("##ProjectPath", projectPath, sizeof(projectPath));
 
     ImGui::SameLine();
+    ImGui::PushFont(Fonts::TextFont());
     if (ImGui::Button("Browse")) {
 
       std::string path = Dialogs::OpenFolder("Select path", BaseProjectDir);
@@ -49,16 +52,19 @@ namespace Launcher::CreateProjectWindow {
         path.copy(projectPath, sizeof(projectPath));
 
     }
+    ImGui::PopFont();
 
     // Create Button
     
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + ImGui::GetStyle().ItemInnerSpacing.y * CREATE_BUTTON_Y_OFFSET);
     ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2.0f - CREATE_BUTTON_SIZE_X / 2.0f);
+    ImGui::PushFont(Fonts::BigTextFont());
     if (ImGui::Button("Create", { CREATE_BUTTON_SIZE_X, CREATE_BUTTON_SIZE_Y })) {
 
       //
 
     }
+    ImGui::PopFont();
 
     ImGui::End();
 

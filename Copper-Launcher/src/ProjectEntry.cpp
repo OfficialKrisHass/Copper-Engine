@@ -1,6 +1,7 @@
 #include "ProjectEntry.h"
 
-#include "UI.h"
+#include "Fonts.h"
+
 #include "PersistentData.h"
 
 #include "Utils.h"
@@ -21,19 +22,9 @@ namespace Launcher {
 
 	constexpr float ProjectTabHeight = 85.0f;
 
-	static ImFont* titleFont = nullptr;
-	static ImFont* detailsFont = nullptr;
-
 	static ImGuiID heldID = ImGuiID(0);
 
   extern void OnWindowClose();
-
-	void ProjectEntry::InitializeFonts() {
-
-		titleFont = UI::AddFont(ExecutableFolder() + MainFontPath, 35.0f);
-		detailsFont = UI::AddFont(ExecutableFolder() + MainFontPath, 18.0f);
-
-	}
 
 	void ProjectEntry::Render() const {
 
@@ -56,13 +47,13 @@ namespace Launcher {
 
 		const ImRect tabRect = { ImGui::GetItemRectMin(), ImGui::GetItemRectMin() + size };
 
-		ImGui::PushFont(titleFont);
+		ImGui::PushFont(Fonts::SubtitleFont());
 		ImGui::Text(m_name.c_str());
 		ImGui::PopFont();
 
 		ImGui::SetCursorPosY(ImGui::GetContentRegionMax().y - ImGui::GetTextLineHeight());
 
-		ImGui::PushFont(detailsFont);
+		ImGui::PushFont(Fonts::SmallTextFont());
 		ImGui::Text(m_directory.c_str());
 		ImGui::PopFont();
 

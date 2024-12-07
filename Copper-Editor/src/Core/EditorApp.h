@@ -20,6 +20,8 @@ namespace Editor {
 	void SaveScene();
 	void SaveSceneAs();
 
+  void OpenSceneNext(const Copper::fs::path& path);
+
 	const Project& GetProject();
 
 	SceneCamera& GetSceneCam();

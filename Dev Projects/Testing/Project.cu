@@ -1,3 +1,3 @@
 Name: Testing
-Last scene: Testing.copper
+Last scene: Main.copper
 Gizmo: 0

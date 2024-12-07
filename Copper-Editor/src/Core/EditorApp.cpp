@@ -74,6 +74,7 @@ namespace Editor {
 		Scene* scene;
 		SceneMeta sceneMeta;
     fs::path scenePath;
+    fs::path nextScenePath;
 
 		bool changes = false;
 		
@@ -235,6 +236,13 @@ namespace Editor {
 		CUP_START_FRAME("Editor");
 
 		FileWatcher::PollChanges();
+
+    if (!data.nextScenePath.empty()) {
+
+      OpenScene(data.nextScenePath);
+      data.nextScenePath.clear();
+
+    }
 
 		CUP_END_FRAME();
 
@@ -415,7 +423,8 @@ namespace Editor {
 		RendererAPI::ClearColor(Color(0.18f, 0.18f, 0.18f));
 
 		data.sceneCam.Update();
-		if (data.scene) data.scene->Render(&data.sceneCam);
+		if (data.scene)
+      data.scene->Render(&data.sceneCam);
 
 		//After we are done rendering we are safe to unbind the FBO unless we want to modify it any way
 		data.viewportFBO.Unbind();
@@ -834,6 +843,14 @@ namespace Editor {
 		Input::SetWindowTitle(data.title);
 		
 	}
+
+  void OpenSceneNext(const Copper::fs::path &path) {
+
+    CUP_FUNCTION();
+
+    data.nextScenePath = path;
+
+  }
 
 	bool OnKeyPressed(const Event& e) {
 

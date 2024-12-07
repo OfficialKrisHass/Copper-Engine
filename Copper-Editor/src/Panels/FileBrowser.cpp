@@ -222,7 +222,7 @@ namespace Editor {
         if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
 
             if (extension == ".copper")
-                OpenScene(GetProject().GetAssetsPath() / path);
+                OpenSceneNext(GetProject().GetAssetsPath() / path);
 
         }
 

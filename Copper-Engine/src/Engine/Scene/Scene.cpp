@@ -77,16 +77,16 @@ namespace Copper {
     }
     void Scene::Cleanup() {
 
-        CUP_FUNCTION();
+      CUP_FUNCTION();
 
-        if (!initialized) return;
+      if (!initialized) return;
 
-        m_registry.Cleanup();
-        ShutdownPhysics();
+      m_registry.Cleanup();
+      ShutdownPhysics();
 
-        initialized = false;
-        m_name.clear();
-        m_cam = nullptr;
+      initialized = false;
+      m_name.clear();
+      m_cam = nullptr;
 
     }
 

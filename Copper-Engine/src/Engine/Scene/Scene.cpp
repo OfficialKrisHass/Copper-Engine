@@ -96,7 +96,7 @@ namespace Copper {
 
 		Renderer::StartFrame();
 
-        IN_RUNTIME(UpdatePhysics(deltaTime));
+    IN_RUNTIME(UpdatePhysics(deltaTime));
 
 		CUP_START_FRAME("ECS Update");
 
@@ -128,7 +128,9 @@ namespace Copper {
 
 		CUP_END_FRAME();
 
-		Renderer::RenderBatch();
+    Renderer::LoadBatch();
+    if (m_cam != nullptr)
+      Renderer::RenderBatch();
 
 	}
 	void Scene::RuntimeUpdateEntity(InternalEntity* entity, float deltaTIme) {

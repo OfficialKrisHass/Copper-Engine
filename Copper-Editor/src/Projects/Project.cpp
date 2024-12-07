@@ -25,184 +25,203 @@ namespace Editor {
 
 	static void CreateFileAndReplace(const fs::path& original, const fs::path& out, const std::string& what, const std::string& argument);
 
-    Project::Project(const fs::path& path) {
+  Project::Project(const fs::path& path) {
 
-        CUP_FUNCTION();
+    CUP_FUNCTION();
 
-        m_path = path;
-        m_name = path.parent_path().filename().string();
+    m_path = path;
+    m_name = path.filename().string();
 
-        CreateProjectFromTemplate("assets/Templates/LinuxTesting", *this);
+    fs::create_directories(m_path);
+    fs::create_directories(m_path / "Assets");
+    fs::create_directories(m_path / "Binaries");
+
+    CreateFileAndReplace(ExecutableFolder() + "/assets/Templates/Project Files/Project.cu.cut", m_path / "Project.cu", ":{ProjectName}", m_name);
+    CreateFileAndReplace(ExecutableFolder() + "/assets/Templates/Project Files/premake5.lua.cut", m_path / "premake5.lua", ":{ProjectName}", m_name);
+    CreateFileAndReplace(ExecutableFolder() + "/assets/Templates/Script.cs.cut", m_path / "Assets/Script.cs", ":{ScriptName}", "Script");
+
+  }
+
+  void Project::Open(const fs::path& path) {
+
+    CUP_FUNCTION();
+
+    bool opened = false;
+    try { opened = LoadFile(path); }
+    catch (YAML::Exception e) {
+
+      Input::ErrorPopup("Failed to open project", "Could not open Project.cu file.\n\nPath: " + path.string() + "\n\nError: " + e.msg);
+      exit(-1);
+
+    }
+    if (!opened) return;
+
+    if (uint16_t issueFlags = ProjectChecker::CheckProject(*this)) {
+
+      switch (Input::WarningPopup("Corrupted Project", "This project is missing some of the core folders and/or files that are required by the Editor to function properly. If you want to see the list, check the console.\n\nDo you want the editor to try and fix the project ?")) {
+
+        case Input::PopupResult::Yes: ProjectChecker::FixProject(*this, issueFlags); break;
+        case Input::PopupResult::No: return; 
+        default: return; 
+
+      }
 
     }
 
-    void Project::Open(const fs::path& path) {
+    FileBrowser::SetRelativeDir("");
+    ProjectAssetDatabase::Initialize();
 
-        CUP_FUNCTION();
+    if (Scripting::GameAssembly())
+      Scripting::Unload();
 
-        if (!LoadFile(path)) return;
+    Scripting::Load((path / "Binaries/" / (m_name + ".dll")).string());
 
-		if (uint16_t issueFlags = ProjectChecker::CheckProject(*this)) {
+    FileWatcher::Stop();
+    FileWatcher::SetDirectory(GetAssetsPath());
+    FileWatcher::Start();
 
-			switch (Input::WarningPopup("Corrupted Project", "This project is missing some of the core folders and/or files that are required by the Editor to function properly. If you want to see the list, check the console.\n\nDo you want the editor to try and fix the project ?")) {
+    m_changes = false;
 
-			case Input::PopupResult::Yes: ProjectChecker::FixProject(*this, issueFlags); break;
-			case Input::PopupResult::No: return; 
-            default: return; 
+    if (m_lastOpenedScenePath.empty()) return;
 
-			}
+    Input::SetWindowTitle("Copper Editor - " + m_name + ": " + m_lastOpenedScenePath.filename().string());
 
-		}
+    OpenScene(GetAssetsPath() / m_lastOpenedScenePath);
 
-		FileBrowser::SetRelativeDir("");
-		ProjectAssetDatabase::Initialize();
+  }
+  void Project::Open() {
 
-        if (Scripting::GameAssembly())
-            Scripting::Unload();
+    CUP_FUNCTION();
 
-		Scripting::Load((path / "Binaries/" / (m_name + ".dll")).string());
+    fs::path path = Utilities::FolderOpenDialog("Open Project", m_path.empty() ? ROOT_DIR : m_path.parent_path());
+    if (path.empty()) return;
 
-		FileWatcher::Stop();
-		FileWatcher::SetDirectory(GetAssetsPath());
-		FileWatcher::Start();
+    Open(path);
 
-        m_changes = false;
+  }
+  void Project::Save() const {
 
-		Input::SetWindowTitle("Copper Editor - " + m_name + ": " + m_lastOpenedScenePath.filename().string());
+    CUP_FUNCTION();
 
-		OpenScene(GetAssetsPath() / m_lastOpenedScenePath);
+    if (m_path.empty()) {
 
-    }
-    void Project::Open() {
-
-        CUP_FUNCTION();
-
-        fs::path path = Utilities::FolderOpenDialog("Open Project", m_path.empty() ? ROOT_DIR : m_path.parent_path());
-        if (path.empty()) return;
-
-        Open(path);
-
-    }
-    void Project::Save() const {
-
-        CUP_FUNCTION();
-
-        if (m_path.empty()) {
-
-            LogError("Can't save project at empty path");
-            return;
-
-        }
-
-        YAML::Emitter out;
-        out << YAML::BeginMap; // Main
-
-        out << YAML::Key << "Name" << YAML::Value << m_name;
-        out << YAML::Key << "Last scene" << YAML::Value << m_lastOpenedScenePath;
-
-        out << YAML::Key << "Gizmo" << m_gizmoType;
-
-        out << YAML::EndMap; // Main
-        std::ofstream file(m_path / "Project.cu");
-        file << out.c_str(); 
-
-
-    }
-    void Project::SaveAs() {
-
-        CUP_FUNCTION();
-
-        m_path = Utilities::FolderOpenDialog("Save Project As", m_path.empty() ? ROOT_DIR : m_path.parent_path());
-        if (m_path.empty()) return;
-
-        Save();
+        LogError("Can't save project at empty path");
+        return;
 
     }
 
-    bool Project::LoadFile(const fs::path& path) {
+    YAML::Emitter out;
+    out << YAML::BeginMap; // Main
 
-        CUP_FUNCTION();
+    out << YAML::Key << "Name" << YAML::Value << m_name;
+    out << YAML::Key << "Last scene" << YAML::Value << m_lastOpenedScenePath;
 
-        if (path.empty()) {
+    out << YAML::Key << "Gizmo" << m_gizmoType;
 
-            LogError("Can't open project at empty path");
-            return false;
+    out << YAML::EndMap; // Main
+    std::ofstream file(m_path / "Project.cu");
+    file << out.c_str(); 
 
-        }
+  }
+  void Project::SaveAs() {
 
-        m_path = path;
+    CUP_FUNCTION();
 
-        YAML::Node main;
-        try { main = YAML::LoadFile((path / "Project.cu").string()); } catch (YAML::Exception e) {
+    m_path = Utilities::FolderOpenDialog("Save Project As", m_path.empty() ? ROOT_DIR : m_path.parent_path());
+    if (m_path.empty()) return;
 
-            Input::ErrorPopup("Failed to load Project", "Something went wrong during loading the project.\n\nProject Path:\n" + path.string() + "\n\nError Message:\n" + e.what());
-			return false; 
+    Save();
 
-        }
+  }
 
-		m_name = main["Name"].as<std::string>();
-		m_lastOpenedScenePath = main["Last Scene"].as<std::string>();
+  bool Project::LoadFile(const fs::path& path) {
 
-		m_gizmoType = main["Gizmo"].as<uint32>();
-        
-        return true;
+    CUP_FUNCTION();
+
+    if (path.empty()) {
+
+        LogError("Can't open project at empty path");
+        return false;
 
     }
+    if (!fs::exists(path / "Project.cu")) {
+
+      Input::ErrorPopup("Invalid project", "This folder is not a valid project (Project.cu is missing)");
+      return false;
+
+    }
+
+    m_path = path;
+
+    YAML::Node main;
+    try { main = YAML::LoadFile((path / "Project.cu").string()); } catch (YAML::Exception e) {
+
+      Input::ErrorPopup("Failed to load Project", "Something went wrong during loading the project.\n\nProject Path:\n" + path.string() + "\n\nError Message:\n" + e.what());
+      return false; 
+
+    }
+
+    m_name = main["Name"].as<std::string>();
+    m_lastOpenedScenePath = main["Last scene"].as<fs::path>();
+
+    m_gizmoType = main["Gizmo"].as<uint32>();
+      
+    return true;
+
+  }
     
-    bool Project::BuildScripts() const {
+  bool Project::BuildScripts() const {
 
-        CUP_FUNCTION();
+    CUP_FUNCTION();
 
-	#ifdef CU_WINDOWS
-		std::string cmd = "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\MSBuild.exe ";
+  #ifdef CU_WINDOWS
+    std::string cmd = "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\MSBuild.exe ";
 
-		size_t pos = m_path.string().find_first_of(' ');
-		std::string newPath = m_path.string();
-		while (pos != std::string::npos) {
+    size_t pos = m_path.string().find_first_of(' ');
+    std::string newPath = m_path.string();
+    while (pos != std::string::npos) {
 
-			newPath.erase(pos, 1);
-			newPath.insert(pos, "\" \"");
-			pos = newPath.find_first_of(' ', pos + 3);
+      newPath.erase(pos, 1);
+      newPath.insert(pos, "\" \"");
+      pos = newPath.find_first_of(' ', pos + 3);
 
-		}
+    }
 
-		pos = m_name.find_first_of(' ');
-		std::string newName = m_name;
-		while (pos != std::string::npos) {
+    pos = m_name.find_first_of(' ');
+    std::string newName = m_name;
+    while (pos != std::string::npos) {
 
-			newName.erase(pos, 1);
-			newName.insert(pos, "\" \"");
-			pos = newName.find_first_of(' ', pos + 3);
+      newName.erase(pos, 1);
+      newName.insert(pos, "\" \"");
+      pos = newName.find_first_of(' ', pos + 3);
 
-		}
+    }
 
-		cmd += newPath + "\\" + newName + ".csproj";
-		cmd += " -nologo";
+    cmd += newPath + "\\" + newName + ".csproj";
+    cmd += " -nologo";
 
-		system(cmd.c_str());
-	#else
-        RunPremake();
+    system(cmd.c_str());
+  #else
+    const std::string cmd = "make --no-print-directory -C \"" + m_path.string() + "\" -f Makefile";
+    system(cmd.c_str());
+  #endif
 
-		const std::string cmd = "make --no-print-directory -C \"" + m_path.string() + "\" -f Makefile";
-		system(cmd.c_str());
-	#endif
+    Scripting::Reload(m_path / "Binaries" / (m_name + ".dll"));
 
-        Scripting::Reload(m_path / "Binaries" / (m_name + ".dll"));
+    return true;
 
-        return true;
-
-	}
+  }
 
 	void Project::RegenerateProjectFiles() const {
 
-        CUP_FUNCTION();
+    CUP_FUNCTION();
 
 		CreateFileAndReplace("assets/Templates/Project.cu.cut", m_path / "Project.cu", ":{ProjectName}", m_name);
 
 	}
 	void Project::RegenerateBuildFiles() const {
 
-        CUP_FUNCTION();
+    CUP_FUNCTION();
 
 	#ifdef CU_WINDOWS
 		CreateFileAndReplace(ExecutableFolder() + "/assets/Templates/Template.sln.cut", m_path / (m_name + ".sln"), ":{ProjectName}", m_name);
@@ -216,27 +235,30 @@ namespace Editor {
 #ifdef CU_LINUX
 	void Project::RunPremake() const {
 
-        CUP_FUNCTION();
+    CUP_FUNCTION();
 
-        if (m_path.empty()) {
+    if (m_path.empty()) {
 
-            LogError("Project has an empty path, can't run premake");
-            return;
+        LogError("Project has an empty path, can't run premake");
+        return;
 
-        }
+    }
 
 		// It hurts my eyes, but there is no other solution that I know of
 		//system(("cd \"" + data.project.path.string() + "\" ; ./premake/premake5 gmake2").c_str());
 
 		// Turns out there is :)
-        system((ExecutableFolder() + "/util/premake/premake5 --file=\"" + m_path.string() + "/premake5.lua\" gmake2").c_str());
+    system((ExecutableFolder() + "/util/premake/premake5 --file=\"" + (m_path / "premake5.lua").string() + "\" gmake2").c_str());
 
 	}
 #endif
 
 	static void CreateFileAndReplace(const fs::path& original, const fs::path& out, const std::string& what, const std::string& argument) {
 
-        CUP_FUNCTION();
+    CUP_FUNCTION();
+
+    if (!fs::exists(out.parent_path()))
+      fs::create_directories(out.parent_path());
 
 		std::ifstream originalFile(original);
 		std::ofstream templateFile(out);

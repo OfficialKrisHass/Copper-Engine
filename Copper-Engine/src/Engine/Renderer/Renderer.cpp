@@ -183,7 +183,7 @@ namespace Copper::Renderer {
 		CUP_FUNCTION();
 
 		RendererAPI::EndFrame();
-        data.firstFrame = false;
+    data.firstFrame = false;
 
 	}
 
@@ -197,6 +197,16 @@ namespace Copper::Renderer {
 		data.materialCount = 1;
 
 	}
+  void LoadBatch() {
+
+    CUP_FUNCTION();
+
+    if (data.verticesCount == 0 || data.indicesCount == 0) return;
+
+		data.vbo.SetData((float*) data.vertices, data.verticesCount * 12);
+		data.ibo.SetData(data.indices, data.indicesCount);
+
+  }
 	void RenderBatch() {
 
 		CUP_FUNCTION();
@@ -205,11 +215,7 @@ namespace Copper::Renderer {
 
 		CUP_START_FRAME("Render Batch");
 
-		data.vbo.SetData((float*) data.vertices, data.verticesCount * 12);
-		data.ibo.SetData(data.indices, data.indicesCount);
-
 		RendererAPI::Render(&data.vao, data.indicesCount, data.lights, data.lightCount, data.materials, data.materialCount);
-
 		data.drawCalls++;
 
 		CUP_END_FRAME();

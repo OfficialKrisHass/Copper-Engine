@@ -162,7 +162,7 @@ namespace Editor {
 	}
 	void Shutdown() {
 
-        CUP_FUNCTION();
+    CUP_FUNCTION();
 
 		SaveEditorData();
 
@@ -170,7 +170,7 @@ namespace Editor {
 
 	void SaveEditorData() {
 
-        CUP_FUNCTION();
+    CUP_FUNCTION();
 
 		YAML::Emitter out;
 
@@ -183,10 +183,12 @@ namespace Editor {
 		std::ofstream file(ExecutableFolder() + "/assets/EditorData.cu");
 		file << out.c_str();
 
+    data.project.Save();
+
 	}
 	void LoadEditorData() {
 
-        CUP_FUNCTION();
+    CUP_FUNCTION();
 
 		if (!fs::exists(ExecutableFolder() + "/assets/EditorData.cu")) {
 
@@ -203,12 +205,12 @@ namespace Editor {
 
 		}
     
-        if (Args::Count() > 0) {
+    if (Args::Count() > 0) {
 
-            data.project.Open(Args::Get(0));
-            return;
+        data.project.Open(Args::Get(0));
+        return;
 
-        }
+    }
 		
 		std::string path = main["Last Project"].as<std::string>();
 		if (!std::filesystem::exists(path)) {
@@ -217,7 +219,7 @@ namespace Editor {
 
 			case Input::PopupResult::Yes: data.project.Open(); return;
 			case Input::PopupResult::No: exit(1);
-            default: exit(1);
+      default: exit(1);
 
 			}
 
@@ -525,7 +527,7 @@ namespace Editor {
 	}
 	void RenderMenu() {
 
-        CUP_FUNCTION();
+    CUP_FUNCTION();
 
 		if(ImGui::BeginMenuBar()) {
 
@@ -537,32 +539,32 @@ namespace Editor {
 					data.project.Open();
 				if (ImGui::MenuItem("Save Project", "Ctrl+Shift+S", false, data.project)) {
 
-                    SaveScene();
+            SaveScene();
 
-                    data.project.Save();
-                    SaveEditorData();
+            data.project.Save();
+            SaveEditorData();
 
-                }
+        }
 
 				ImGui::Separator();
 
 				if (ImGui::MenuItem("Create Template", 0, false, data.project))
-                    CreateTemplateFromProject(data.project);
+          CreateTemplateFromProject(data.project);
 
 				ImGui::Separator();
 
 				if (ImGui::MenuItem("Build Scripts", "Ctrl+B", false, data.project))
-                    data.project.BuildScripts();
+          data.project.BuildScripts();
 
 				ImGui::Separator();
 
 				if (ImGui::MenuItem("Project Settings"))
-                    ProjectSettings::Open();
+          ProjectSettings::Open();
 				
 				ImGui::Separator();
 
 				if (ImGui::MenuItem("Copy Copper Scripting API", 0, false, data.project))
-                    CopyScriptingAPI();
+          CopyScriptingAPI();
 
 				ImGui::EndMenu();
 
@@ -570,14 +572,14 @@ namespace Editor {
 
 			if(ImGui::BeginMenu("File")) {
 
-				if(ImGui::MenuItem("New Scene", 0, false, data.project))
-                    NewScene();
+        if(ImGui::MenuItem("New Scene", 0, false, data.project))
+          NewScene();
 				if(ImGui::MenuItem("Open Scene", 0, false, data.project))
-                    OpenScene();
+          OpenScene();
 				if(ImGui::MenuItem("Save Scene", "Ctr+S", false, data.project))
-                    SaveScene();
+          SaveScene();
 				if(ImGui::MenuItem("Save Ass", "Ctrl+Alt+S", false, data.project))
-                    SaveSceneAs();
+          SaveSceneAs();
 
 				ImGui::EndMenu();
 				
@@ -679,7 +681,7 @@ namespace Editor {
 
 	void NewProject() {
 
-        CUP_FUNCTION();
+    CUP_FUNCTION();
 
 		fs::path path = Utilities::FolderOpenDialog("New Project", data.project ? data.project.GetPath().parent_path() : ROOT_DIR);
 		if (path.empty()) return;
@@ -687,14 +689,16 @@ namespace Editor {
 		// Create the Project
 
 		data.project = Project(path);
+    CopyScriptingAPI();
+
 		FileBrowser::SetRelativeDir("");
 
 #ifdef CU_LINUX
-        data.project.RunPremake();
+    data.project.RunPremake();
 #endif
 		data.project.BuildScripts();
 
-        NewScene();
+    NewScene();
 
 		data.changes = false;
 		data.title = "Copper Editor - " + data.project.GetName() + ":";
@@ -704,7 +708,7 @@ namespace Editor {
 
 	void CopyScriptingAPI() {
 
-        CUP_FUNCTION();
+    CUP_FUNCTION();
 
 		std::ifstream dllSrc(ExecutableFolder() + "/assets/ScriptingAPI/Copper-ScriptingAPI.dll", std::ios::binary);
 		std::fstream dllDst;
@@ -717,15 +721,16 @@ namespace Editor {
 
 	void NewScene() {
 
-        CUP_FUNCTION();
+    CUP_FUNCTION();
 
+    data.scenePath = "";
 		*data.scene = Scene();
 		SceneHierarchy::SetScene(data.scene);
 		
 	}
 	void OpenScene(const fs::path& path) {
 
-        CUP_FUNCTION();
+    CUP_FUNCTION();
 
 		if(data.changes) {
 
@@ -734,17 +739,17 @@ namespace Editor {
 			case Input::PopupResult::Yes: SaveScene(); break;
 			case Input::PopupResult::No: break;
 			case Input::PopupResult::Cancel: return;
-            default: return;
+      default: return;
 				
 			}
 			
 		}
 
-        data.scenePath = path;
+    data.scenePath = path;
 
-        data.scene->Cleanup();
-        SceneSerializer::Deserialize(data.scene, path);
-        data.scene->Initialize(); 
+    data.scene->Cleanup();
+    SceneSerializer::Deserialize(data.scene, path);
+    data.scene->Initialize(); 
 
 		data.sceneMeta.Deserialize(path);
 
@@ -754,21 +759,21 @@ namespace Editor {
 		data.title = "Copper Editor - " + data.project.GetName() + ": " + data.scene->GetName();
 		Input::SetWindowTitle(data.title);
 
-        data.project.SetLastOpenedScenePath(fs::relative(path, data.project.GetAssetsPath()));
+    data.project.SetLastOpenedScenePath(fs::relative(path, data.project.GetAssetsPath()));
 		
 	}
 	void OpenScene() {
 
-        CUP_FUNCTION();
+    CUP_FUNCTION();
 
 		fs::path result = Utilities::OpenDialog("Open Scene", { "Copper Scene Files (.copper)", "*.copper" }, data.project.GetAssetsPath());
 
 		if (result.empty()) {
 
-            LogWarn("The Path Specified is empty or is not a Copper Scene File\n {}", result);
-            return;
+        LogWarn("The Path Specified is empty or is not a Copper Scene File\n {}", result);
+        return;
 
-        }
+    }
 
 		fs::path relativeToProjectAssets = fs::relative(result, data.project.GetAssetsPath());
 		if (relativeToProjectAssets.empty()) {
@@ -783,43 +788,45 @@ namespace Editor {
 	}
 	void SaveScene() {
 
-        CUP_FUNCTION();
-		
-        if (data.scenePath.empty()) {
-            
-            SaveSceneAs();
-            return;
+    CUP_FUNCTION();
 
-        }
+    if (data.scenePath.empty()) {
+        
+      SaveSceneAs();
+      return;
 
-        SceneSerializer::Serialize(data.scene, data.scenePath);
-        data.sceneMeta.Serialize(data.scenePath);
+    }
 
-        data.changes = false;
-        data.title = "Copper Editor - TestProject: ";
-        data.title += data.scene->GetName();
-        Input::SetWindowTitle(data.title);
+    SceneSerializer::Serialize(data.scene, data.scenePath);
+    data.sceneMeta.Serialize(data.scenePath);
+
+    data.changes = false;
+    data.title = "Copper Editor - TestProject: ";
+    data.title += data.scene->GetName();
+    Input::SetWindowTitle(data.title);
 			
 	}
 	void SaveSceneAs() {
 
-        CUP_FUNCTION();
+    CUP_FUNCTION();
 
 		fs::path path = Utilities::SaveDialog("Save Scene As", { "Copper Scene Files (.copper)", "*.copper" }, data.project.GetAssetsPath());
 		if (path.empty()) return;
 
-		fs::path relativeToProjectAssets = fs::relative(path, data.project.GetAssetsPath());
-		if (relativeToProjectAssets.empty()) {
+		fs::path relative = fs::relative(path, data.project.GetAssetsPath());
+		if (relative.empty()) {
 
 			Input::ErrorPopup("Invalid Scene", "The Place you want to save this scene is outside of this Project or starts with '..'");
 			return;
 
 		}
 
-        data.scenePath = path;
+    data.scenePath = path;
 
-        SceneSerializer::Serialize(data.scene, path);
+    SceneSerializer::Serialize(data.scene, path);
 		data.sceneMeta.Serialize(path);
+
+    data.project.SetLastOpenedScenePath(relative);
 
 		data.changes = false;
 		data.title = "Copper Editor - TestProject: ";

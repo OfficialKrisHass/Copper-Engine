@@ -183,6 +183,13 @@ namespace Editor {
 		ImGui::Separator();
 
 		std::string extension = m_selectedFile.extension().string();
+
+    if (extension != ".mat") {
+
+			ImGui::Text("This extension is not supported, make sure you called a function for this specific extension!");
+      return;
+
+    }
 		const UUID& asset = ProjectAssetDatabase::GetAssetFromPath(GetProject().GetAssetsPath() / m_selectedFile);
 
 		if (asset == UUID::GetInvalid()) {
@@ -194,10 +201,7 @@ namespace Editor {
 
 		}
 
-		if (extension == ".mat")
-			RenderMaterial(asset);
-		else
-			ImGui::Text("This extension is not supported, make sure you called a function for this specific extension!");
+    RenderMaterial(asset);
 
 	}
 

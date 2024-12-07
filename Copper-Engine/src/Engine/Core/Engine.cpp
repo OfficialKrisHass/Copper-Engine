@@ -138,7 +138,7 @@ namespace Copper {
 		CUP_FUNCTION();
 		data.engineState = EngineState::Running;
 
-        data.scene.Initialize();
+    data.scene.Initialize();
 
 		while (data.engineState == EngineState::Running) {
 

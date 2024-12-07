@@ -20,7 +20,7 @@ namespace Editor::ProjectChecker {
 
 	uint16 CheckProject(const Project& project) {
 
-        CUP_FUNCTION();
+    CUP_FUNCTION();
 
 		const fs::path& path = project.GetPath();
 		uint16 ret = 0;
@@ -56,7 +56,7 @@ namespace Editor::ProjectChecker {
 	}
 	void FixProject(Project& project, const uint16 issueFlags) {
 
-        CUP_FUNCTION();
+    CUP_FUNCTION();
 
 		if (GET_FLAG(issueFlags, MissingAssets))
             std::filesystem::create_directories(project.GetAssetsPath());

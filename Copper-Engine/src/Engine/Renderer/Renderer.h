@@ -16,9 +16,10 @@ namespace Copper {
 	namespace Renderer {
 
 		void Initialize();
-        void Restart();
+    void Restart();
 
 		void StartBatch();
+    void LoadBatch();
 		void RenderBatch();
 		void NewBatch();
 
@@ -40,7 +41,7 @@ namespace Copper {
 
 		bool GetWireframe();
 
-        bool IsFirstFrame();
+    bool IsFirstFrame();
 
 		Color& AmbientColor();
 		Vector3& AmbientDirection();

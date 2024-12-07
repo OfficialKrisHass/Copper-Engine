@@ -1,0 +1,28 @@
+Version: 0
+Name: ""
+Entities:
+  0:
+    Name: Plane
+    Transform:
+      Position: [0, 0, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [10, 1, 10]
+      Parent: 4294967295
+      Children:
+        []
+    Mesh Renderer:
+      Mesh: 3fc27a27-5dc3-4941-bd00-f540d35f4eff
+      Material: 00000000-0000-0000-0000-000000000000
+  1:
+    Name: Light
+    Transform:
+      Position: [0, 1.1291914, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent: 4294967295
+      Children:
+        []
+    Light:
+      Type: 0
+      Color: [1, 0, 1, 1]
+      Intensity: 1

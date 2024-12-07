@@ -1,0 +1,28 @@
+Version: 0
+Name: ""
+Entities:
+  0:
+    Name: Cube
+    Transform:
+      Position: [0, 0, 0]
+      Rotation: [1, 0, 0, 1.16827819e-08]
+      Scale: [10, 1, 10]
+      Parent: 4294967295
+      Children:
+        []
+    Mesh Renderer:
+      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
+      Material: 00000000-0000-0000-0000-000000000000
+  1:
+    Name: Light
+    Transform:
+      Position: [0, 1.56553721, 0]
+      Rotation: [0.931110024, -0.29357782, -0.206422135, -0.0650846511]
+      Scale: [1, 1, 1]
+      Parent: 4294967295
+      Children:
+        []
+    Light:
+      Type: 1
+      Color: [1, 1, 1, 1]
+      Intensity: 1

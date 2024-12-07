@@ -1,34 +1,32 @@
-workspace "Template"
-    location "../"
+workspace "Testing"
+    location ""
     architecture "x64"
     configurations { "Debug", "Release" }
 
-project "Template"
-    location "../"
+project "Testing"
+    location ""
     language "C#"
     kind "SharedLib"
     dotnetframework "4.8"
 
-    targetdir("../Binaries")
-    objdir("../Objs")
+    targetdir("Binaries")
+    objdir("Objs")
 
     files {
 
-        "../Assets/**.cs"
+        "Assets/**.cs"
 
     }
 
     links {
 
-        "../Binaries/Copper-ScriptingAPI.dll"
+        "Binaries/Copper-ScriptingAPI.dll"
 
     }
 
     filter "configurations:Debug"
         optimize "Off"
         symbols "Default"
-
-        debugformat "c7"
 
     filter "configurations:Release"
         optimize "On"

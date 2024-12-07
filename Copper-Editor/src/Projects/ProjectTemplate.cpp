@@ -6,7 +6,7 @@ using std::filesystem::create_directories;
 
 namespace Editor {
 
-    using namespace Copper;
+  using namespace Copper;
 
 	void CreateFileAndReplace(const fs::path& original, const fs::path& out, const std::string& what, const std::string& replace);
 
@@ -14,37 +14,47 @@ namespace Editor {
 
 	void CreateTemplateFromProject(const Project& project) {
 
-        CUP_FUNCTION();
+    CUP_FUNCTION();
 
-		const fs::path path = "assets/Templates/" + project.GetName();
+		const fs::path path = ExecutableFolder() + "/assets/Templates/" + project.GetName() + "_Template";
 
-		create_directories(path.string() + "/Assets/Scenes");
+		create_directories(path.string() + "/Assets");
+    for (const fs::directory_entry& entry : fs::recursive_directory_iterator(project.GetAssetsPath())) {
+
+      const fs::path& filePath = entry.path();
+      if (!fs::exists(filePath.parent_path()))
+        fs::create_directories(filePath.parent_path());
+
+      CopyFileTo(filePath, path / fs::relative(filePath, project.GetPath()));
+
+    }
 
 		CreateFileAndReplace(project.GetPath() / "Project.cu", path / "Project.cu.cut", project.GetName(), ":{ProjectName}");
-
-		CopyFileTo(project.GetAssetsPath() / project.GetLastOpenedScenePath(), path / "Assets" / project.GetLastOpenedScenePath());
-		CopyFileTo(project.GetAssetsPath() / (project.GetLastOpenedScenePath().string() + ".cum"), path / "Assets" / (project.GetLastOpenedScenePath().string() + ".cum"));
 
 	}
 	void CreateProjectFromTemplate(const fs::path& templatePath, Project& project) {
 
-        CUP_FUNCTION();
+    CUP_FUNCTION();
 
-		create_directories(project.GetPath().string() + "/Assets/Scenes");
-		create_directories(project.GetPath().string() + "/Binaries");
-		create_directories(project.GetPath().string() + "/Objs");
+    const fs::path templ = ExecutableFolder() / templatePath;
+    Log("Creating a project from template at path: {}", templ.string());
 
+		create_directories(project.GetAssetsPath());
+    for (const fs::directory_entry& entry : fs::recursive_directory_iterator(templ)) {
+
+      const fs::path& path = entry.path();
+      const fs::path& destination = project.GetPath() / fs::relative(path, templ);
+      
+      if (!fs::exists(destination.parent_path()))
+        fs::create_directories(destination.parent_path());
+
+      CopyFileTo(path, destination);
+
+    }
 		CreateFileAndReplace(templatePath / "Project.cu.cut", project.GetPath() / "Project.cu", ":{ProjectName}", project.GetName());
+		CopyFileTo(ExecutableFolder() + "/assets/ScriptingAPI/Copper-ScriptingAPI.dll", project.GetPath() / "Binaries/Copper-ScriptingAPI.dll", true);
 
 		project.RegenerateBuildFiles();
-
-		//Copy the Template Scene
-		CopyFileTo(templatePath / "Assets/Scenes/EmptyTemplate.copper", project.GetAssetsPath() / "Scenes/EmptyTemplate.copper");
-		CopyFileTo(templatePath / "Assets/Scenes/EmptyTemplate.copper.cum", project.GetAssetsPath() / "Scenes/EmptyTemplate.copper.cum");
-
-        project.SetLastOpenedScenePath("Scenes/EmptyTemplate.copper");
-
-		CopyFileTo(ExecutableFolder() + "/assets/ScriptingAPI/Copper-ScriptingAPI.dll", project.GetPath() / "Binaries/Copper-ScriptingAPI.dll", true);
 
 	}
 	

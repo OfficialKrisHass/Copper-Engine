@@ -21,6 +21,7 @@ namespace Editor {
 	void SaveSceneAs();
 
   void OpenSceneNext(const Copper::fs::path& path);
+  void OpenSceneNext();
 
 	const Project& GetProject();
 

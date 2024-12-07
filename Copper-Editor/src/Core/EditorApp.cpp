@@ -584,7 +584,7 @@ namespace Editor {
         if(ImGui::MenuItem("New Scene", 0, false, data.project))
           NewScene();
 				if(ImGui::MenuItem("Open Scene", 0, false, data.project))
-          OpenScene();
+          OpenSceneNext();
 				if(ImGui::MenuItem("Save Scene", "Ctr+S", false, data.project))
           SaveScene();
 				if(ImGui::MenuItem("Save Ass", "Ctrl+Alt+S", false, data.project))
@@ -849,6 +849,30 @@ namespace Editor {
     CUP_FUNCTION();
 
     data.nextScenePath = path;
+
+  }
+  void OpenSceneNext() {
+
+    CUP_FUNCTION();
+
+    fs::path result = Utilities::OpenDialog("Open Scene", { "Copper Scene Files (.copper)", "*.copper" }, data.project.GetAssetsPath());
+
+		if (result.empty()) {
+
+        LogWarn("The Path Specified is empty or is not a Copper Scene File\n {}", result);
+        return;
+
+    }
+
+		fs::path relativeToProjectAssets = fs::relative(result, data.project.GetAssetsPath());
+		if (relativeToProjectAssets.empty()) {
+
+			Input::ErrorPopup("Invalid Scene Path", "The scene you have tried to Open is outside of the Assets folder of this Project.");
+			return;
+
+		}
+
+    OpenSceneNext(result);
 
   }
 

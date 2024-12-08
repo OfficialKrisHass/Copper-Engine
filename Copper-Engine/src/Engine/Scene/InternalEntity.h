@@ -9,67 +9,67 @@
 
 namespace Copper {
 
-	class Transform;
-	class Scene;
+    class Transform;
+    class Scene;
 
-	std::ostream& operator<<(std::ostream& os, const class InternalEntity& entity);
+    std::ostream& operator<<(std::ostream& os, const class InternalEntity& entity);
 
-	class InternalEntity {
+    class InternalEntity {
 
-		friend class Registry;
-		friend class Scene;
-		friend class OldSceneDeserialization;
-		friend class Entity;
+        friend class Registry;
+        friend class Scene;
+        friend class OldSceneDeserialization;
+        friend class Entity;
 
-		friend std::ostream& operator<<(std::ostream& os, const InternalEntity& entity);
+        friend std::ostream& operator<<(std::ostream& os, const InternalEntity& entity);
 
-	public:
-		InternalEntity() = default;
+    public:
+        InternalEntity() = default;
 
-		std::string name = "";
+        std::string name = "";
 
-		template<typename T> T* AddComponent();
-		template<typename T> T* GetComponent();
-		template<typename T> bool HasComponent();
-		template<typename T> void RemoveComponent();
+        template<typename T> T* AddComponent();
+        template<typename T> T* GetComponent();
+        template<typename T> bool HasComponent();
+        template<typename T> void RemoveComponent();
 
-		void* GetComponent(int componentID);
-		bool HasComponent(int componentID);
-		void RemoveComponent(int componentID);
+        void* GetComponent(int componentID);
+        bool HasComponent(int componentID);
+        void RemoveComponent(int componentID);
 
-		Transform* GetTransform() const { return m_transform; }
-		uint32_t ID() const { return m_id; }
-		const uint32_t* IDPointer() const { return &m_id; }
+        Transform* GetTransform() const { return m_transform; }
+        uint32_t ID() const { return m_id; }
+        const uint32_t* IDPointer() const { return &m_id; }
 
-		bool operator==(const InternalEntity& other) const { return m_id == other.m_id && m_scene == other.m_scene; }
+        bool operator==(const InternalEntity& other) const { return m_id == other.m_id && m_scene == other.m_scene; }
 
-		explicit operator bool() const { return m_id != INVALID_ENTITY_ID && m_scene != nullptr; }
-		explicit operator uint32_t() const { return m_id; };
-		explicit operator int32_t() const { return m_id; };
+        explicit operator bool() const { return m_id != INVALID_ENTITY_ID && m_scene != nullptr; }
+        explicit operator uint32_t() const { return m_id; };
+        explicit operator int32_t() const { return m_id; };
 
-	private:
-		uint32_t m_id = INVALID_ENTITY_ID;
-		Scene* m_scene = nullptr;
-		Transform* m_transform = nullptr;
+    private:
+        uint32_t m_id = INVALID_ENTITY_ID;
+        Scene* m_scene = nullptr;
+        Transform* m_transform = nullptr;
 
-		std::bitset<MAX_ENTITY_COMPONENTS> m_cMask;
+        std::bitset<MAX_ENTITY_COMPONENTS> m_cMask;
 
-		void Invalidate() {
+        void Invalidate() {
 
-			m_id = INVALID_ENTITY_ID;
-			name = "";
-			m_scene = nullptr;
-			m_transform = nullptr;
-			m_cMask.reset();
+            m_id = INVALID_ENTITY_ID;
+            name = "";
+            m_scene = nullptr;
+            m_transform = nullptr;
+            m_cMask.reset();
 
-		}
+        }
 
-	};
+    };
 
-	inline std::ostream& operator<<(std::ostream& os, const InternalEntity& entity) {
+    inline std::ostream& operator<<(std::ostream& os, const InternalEntity& entity) {
 
-		return os << entity.name << " (" << entity.m_id << ")";
+        return os << entity.name << " (" << entity.m_id << ")";
 
-	}
+    }
 
 }

@@ -6,8 +6,8 @@
 
 namespace Editor::ProjectSettings {
 
-	void UIRender();
+    void UIRender();
 
-	void Open();
+    void Open();
 
 }

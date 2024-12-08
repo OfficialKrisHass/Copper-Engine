@@ -6,16 +6,16 @@
 
 namespace Editor {
 
-	// TODO: Actually implement this you fukctard ??
+    // TODO: Actually implement this you fukctard ??
 
-	class Console : public Panel {
+    class Console : public Panel {
 
-	public:
-		Console() : Panel("Console") {}
-		
-	private:
-		virtual void UI() override;
+    public:
+        Console() : Panel("Console") {}
+        
+    private:
+        virtual void UI() override;
 
-	};
+    };
 
 }

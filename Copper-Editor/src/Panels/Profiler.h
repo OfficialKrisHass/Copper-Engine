@@ -6,7 +6,7 @@
 
 namespace Editor::Profiler {
 
-	void Open();
-	void UIRender();
+    void Open();
+    void UIRender();
 
 }

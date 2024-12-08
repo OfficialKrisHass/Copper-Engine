@@ -11,124 +11,124 @@
 
 namespace Launcher {
 
-	ImGuiStyle* style = nullptr;
+    ImGuiStyle* style = nullptr;
 
-	static void ColorEditor();
+    static void ColorEditor();
 
-	void ThemeEditor() {
+    void ThemeEditor() {
 
-		ImGui::Begin("Theme Editor");
+        ImGui::Begin("Theme Editor");
 
-		if (!style)
-			style = &ImGui::GetStyle();
+        if (!style)
+            style = &ImGui::GetStyle();
 
-		ImGui::DragFloat("Rounding", &style->FrameRounding);
+        ImGui::DragFloat("Rounding", &style->FrameRounding);
 
-		ImGui::Separator();
+        ImGui::Separator();
 
-		ColorEditor();
+        ColorEditor();
 
-		ImGui::End();
+        ImGui::End();
 
-	}
+    }
 
-	void ColorEditor() {
+    void ColorEditor() {
 
-		COLOR_EDIT(ImGuiCol_WindowBg, "Window background");
-		COLOR_EDIT(ImGuiCol_ChildBg, "Child window background");
+        COLOR_EDIT(ImGuiCol_WindowBg, "Window background");
+        COLOR_EDIT(ImGuiCol_ChildBg, "Child window background");
 
-		ImGui::Separator();
+        ImGui::Separator();
 
-		COLOR_EDIT(ImGuiCol_Header, "Header");
-		COLOR_EDIT(ImGuiCol_HeaderHovered, "Header hovered");
-		COLOR_EDIT(ImGuiCol_HeaderActive, "Header active");
+        COLOR_EDIT(ImGuiCol_Header, "Header");
+        COLOR_EDIT(ImGuiCol_HeaderHovered, "Header hovered");
+        COLOR_EDIT(ImGuiCol_HeaderActive, "Header active");
 
-		ImGui::Text("");
+        ImGui::Text("");
 
-		COLOR_EDIT(ImGuiCol_TitleBg, "Title bar");
-		COLOR_EDIT(ImGuiCol_TitleBgActive, "Title bar active");
-		COLOR_EDIT(ImGuiCol_TitleBgCollapsed, "Title bar collapsed");
+        COLOR_EDIT(ImGuiCol_TitleBg, "Title bar");
+        COLOR_EDIT(ImGuiCol_TitleBgActive, "Title bar active");
+        COLOR_EDIT(ImGuiCol_TitleBgCollapsed, "Title bar collapsed");
 
-		ImGui::Text("");
+        ImGui::Text("");
 
-		COLOR_EDIT(ImGuiCol_Tab, "Tab");
-		COLOR_EDIT(ImGuiCol_TabHovered, "Tab hovered");
-		COLOR_EDIT(ImGuiCol_TabActive, "Tab active");
-		COLOR_EDIT(ImGuiCol_TabUnfocused, "Tab unfocused");
-		COLOR_EDIT(ImGuiCol_TabUnfocusedActive, "Tab unfocused active");
+        COLOR_EDIT(ImGuiCol_Tab, "Tab");
+        COLOR_EDIT(ImGuiCol_TabHovered, "Tab hovered");
+        COLOR_EDIT(ImGuiCol_TabActive, "Tab active");
+        COLOR_EDIT(ImGuiCol_TabUnfocused, "Tab unfocused");
+        COLOR_EDIT(ImGuiCol_TabUnfocusedActive, "Tab unfocused active");
 
-		ImGui::Separator();
+        ImGui::Separator();
 
-		COLOR_EDIT(ImGuiCol_FrameBg, "Frame background");
-		COLOR_EDIT(ImGuiCol_FrameBgHovered, "Frame background hovered");
-		COLOR_EDIT(ImGuiCol_FrameBgActive, "Frame background active");
+        COLOR_EDIT(ImGuiCol_FrameBg, "Frame background");
+        COLOR_EDIT(ImGuiCol_FrameBgHovered, "Frame background hovered");
+        COLOR_EDIT(ImGuiCol_FrameBgActive, "Frame background active");
 
-		ImGui::Separator();
+        ImGui::Separator();
 
-		COLOR_EDIT(ImGuiCol_Button, "Button");
-		COLOR_EDIT(ImGuiCol_ButtonHovered, "Button hovered");
-		COLOR_EDIT(ImGuiCol_ButtonActive, "Button active");
+        COLOR_EDIT(ImGuiCol_Button, "Button");
+        COLOR_EDIT(ImGuiCol_ButtonHovered, "Button hovered");
+        COLOR_EDIT(ImGuiCol_ButtonActive, "Button active");
 
-		ImGui::Separator();
+        ImGui::Separator();
 
-		COLOR_EDIT(ImGuiCol_CheckMark, "Check mark");
+        COLOR_EDIT(ImGuiCol_CheckMark, "Check mark");
 
-		ImGui::Separator();
+        ImGui::Separator();
 
-		COLOR_EDIT(ImGuiCol_DragDropTarget, "Drag drop overlay");
+        COLOR_EDIT(ImGuiCol_DragDropTarget, "Drag drop overlay");
 
-	}
+    }
 
-	void SaveTheme() {
+    void SaveTheme() {
 
-		if (!style)
-			style = &ImGui::GetStyle();
+        if (!style)
+            style = &ImGui::GetStyle();
 
-		YAML::Emitter out;
-		out << YAML::BeginMap; // Main
+        YAML::Emitter out;
+        out << YAML::BeginMap; // Main
 
-		out << YAML::Key << "Rounding" << style->FrameRounding;
+        out << YAML::Key << "Rounding" << style->FrameRounding;
 
-		out << YAML::Key << "Colors" << YAML::Value << YAML::BeginMap; // Colors
+        out << YAML::Key << "Colors" << YAML::Value << YAML::BeginMap; // Colors
 
-		WRITE_COLOR(ImGuiCol_WindowBg);
-		WRITE_COLOR(ImGuiCol_ChildBg);
+        WRITE_COLOR(ImGuiCol_WindowBg);
+        WRITE_COLOR(ImGuiCol_ChildBg);
 
-		WRITE_COLOR(ImGuiCol_Header);
-		WRITE_COLOR(ImGuiCol_HeaderHovered);
-		WRITE_COLOR(ImGuiCol_HeaderActive);
+        WRITE_COLOR(ImGuiCol_Header);
+        WRITE_COLOR(ImGuiCol_HeaderHovered);
+        WRITE_COLOR(ImGuiCol_HeaderActive);
 
-		WRITE_COLOR(ImGuiCol_TitleBg);
-		WRITE_COLOR(ImGuiCol_TitleBgActive);
-		WRITE_COLOR(ImGuiCol_TitleBgCollapsed);
+        WRITE_COLOR(ImGuiCol_TitleBg);
+        WRITE_COLOR(ImGuiCol_TitleBgActive);
+        WRITE_COLOR(ImGuiCol_TitleBgCollapsed);
 
-		WRITE_COLOR(ImGuiCol_Tab);
-		WRITE_COLOR(ImGuiCol_TabHovered);
-		WRITE_COLOR(ImGuiCol_TabActive);
-		WRITE_COLOR(ImGuiCol_TabUnfocused);
-		WRITE_COLOR(ImGuiCol_TabUnfocusedActive);
+        WRITE_COLOR(ImGuiCol_Tab);
+        WRITE_COLOR(ImGuiCol_TabHovered);
+        WRITE_COLOR(ImGuiCol_TabActive);
+        WRITE_COLOR(ImGuiCol_TabUnfocused);
+        WRITE_COLOR(ImGuiCol_TabUnfocusedActive);
 
-		WRITE_COLOR(ImGuiCol_FrameBg);
-		WRITE_COLOR(ImGuiCol_FrameBgHovered);
-		WRITE_COLOR(ImGuiCol_FrameBgActive);
+        WRITE_COLOR(ImGuiCol_FrameBg);
+        WRITE_COLOR(ImGuiCol_FrameBgHovered);
+        WRITE_COLOR(ImGuiCol_FrameBgActive);
 
-		WRITE_COLOR(ImGuiCol_Button);
-		WRITE_COLOR(ImGuiCol_ButtonHovered);
-		WRITE_COLOR(ImGuiCol_ButtonActive);
+        WRITE_COLOR(ImGuiCol_Button);
+        WRITE_COLOR(ImGuiCol_ButtonHovered);
+        WRITE_COLOR(ImGuiCol_ButtonActive);
 
-		WRITE_COLOR(ImGuiCol_CheckMark);
+        WRITE_COLOR(ImGuiCol_CheckMark);
 
-		WRITE_COLOR(ImGuiCol_DragDropTarget);
+        WRITE_COLOR(ImGuiCol_DragDropTarget);
 
-		out << YAML::EndMap; // Colors
+        out << YAML::EndMap; // Colors
 
-		out << YAML::EndMap; // Main
+        out << YAML::EndMap; // Main
 
-		std::ofstream file;
-		file.open("assets/Launcher.cutheme");
-		file << out.c_str();
-		file.close();
+        std::ofstream file;
+        file.open("assets/Launcher.cutheme");
+        file << out.c_str();
+        file.close();
 
-	}
+    }
 
 }

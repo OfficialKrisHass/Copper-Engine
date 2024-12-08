@@ -9,7 +9,7 @@ namespace Editor {
     public:
         Project() = default;
         Project(const Copper::fs::path& path);
-        
+
         void Open(const Copper::fs::path& path);
         void Open();
         void Save() const;
@@ -37,7 +37,7 @@ namespace Editor {
         inline Copper::uint32 GetGizmoType() const { return m_gizmoType; }
 
         // Setters
-        
+
         inline void SetName(const std::string& value) { m_name = value; }
 
         inline void SetLastOpenedScenePath(const Copper::fs::path& value) { m_lastOpenedScenePath = value; }
@@ -49,7 +49,7 @@ namespace Editor {
         // Operators
 
         inline operator bool() const { return !m_name.empty(); }
-    
+
     private:
         std::string m_name;
 

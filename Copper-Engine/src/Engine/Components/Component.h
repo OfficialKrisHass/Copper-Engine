@@ -11,29 +11,29 @@ namespace Editor { class SceneCamera; }
 
 namespace Copper {
 
-	class Component {
+    class Component {
 
-		friend class Registry;
-		friend class Scene;
-		friend class OldSceneVersionSerializer;
+        friend class Registry;
+        friend class Scene;
+        friend class OldSceneVersionSerializer;
 
-	#ifdef CU_EDITOR
-		friend Editor::SceneCamera;
-	#endif
+#ifdef CU_EDITOR
+        friend Editor::SceneCamera;
+#endif
 
-	public:
-		Entity GetEntity() const { return m_entity; }
-		class Transform* GetTransform() const { return m_transform; }
+    public:
+        Entity GetEntity() const { return m_entity; }
+        class Transform* GetTransform() const { return m_transform; }
 
-		operator bool() const { return m_valid; }
+        operator bool() const { return m_valid; }
 
-	private:
-		Entity m_entity = nullptr;
-		Transform* m_transform = nullptr;
+    private:
+        Entity m_entity = nullptr;
+        Transform* m_transform = nullptr;
 
-		bool m_valid = false;
+        bool m_valid = false;
 
-	};
+    };
 
 }
 

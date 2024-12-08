@@ -5,16 +5,16 @@
 
 #include <mono/metadata/class.h>
 
-#define SET_CLASS(var, name) classes.var = mono_class_from_name(ScriptingAPIAssembly().GetImage(), "Copper", name);\
-    CU_ASSERT(classes.var, "Could not get Copper.{} class", name)
+#define SET_CLASS(var, name)    classes.var = mono_class_from_name(ScriptingAPIAssembly().GetImage(), "Copper", name);\
+                                CU_ASSERT(classes.var, "Could not get Copper.{} class", name)
 
-#define GET_CLASS_FUNC(name, var) MonoClass* name ## Class() { CUP_FUNCTION();\
-    CU_ASSERT(classes.var, "{} Class reference is nullptr. Make Sure you assigned it in InitializeClasses()", #name);\
-    return classes.var; }
+#define GET_CLASS_FUNC(name, var)   MonoClass* name ## Class() { CUP_FUNCTION();\
+                                    CU_ASSERT(classes.var, "{} Class reference is nullptr. Make Sure you assigned it in InitializeClasses()", #name);\
+                                    return classes.var; }
 
-#define GET_TMPL_CLASS_FUNC(type, var) template<> MonoClass* GetMonoClass<type>() { CUP_FUNCTION();\
-    CU_ASSERT(classes.var, "{} is nullptr, make sure you assigned it in InitializeClasses()", #var);\
-    return classes.var; }
+#define GET_TMPL_CLASS_FUNC(type, var)  template<> MonoClass* GetMonoClass<type>() { CUP_FUNCTION();\
+                                        CU_ASSERT(classes.var, "{} is nullptr, make sure you assigned it in InitializeClasses()", #var);\
+                                        return classes.var; }
 
 namespace Copper {
 
@@ -78,7 +78,7 @@ namespace Copper::Scripting {
     }
 
     GET_CLASS_FUNC(Base, baseClass);
-    
+
     GET_TMPL_CLASS_FUNC(InternalEntity, entityClass);
     GET_TMPL_CLASS_FUNC(Component, componentClass);
     GET_TMPL_CLASS_FUNC(Transform, transformClass);

@@ -10,12 +10,12 @@ namespace Copper::Args {
 
     static bool didRun = false;
 
-	static std::vector<std::string> arguments;
+    static std::vector<std::string> arguments;
     static std::string execFolder;
 
-	void Setup(uint32 argc, char* argv[]) {
+    void Setup(uint32 argc, char* argv[]) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
         if (didRun) {
 
@@ -24,15 +24,15 @@ namespace Copper::Args {
 
         }
         if (argc == 0) {
-      
+
             LogError("Command line arguments count is 0 (no exec path)");
             return;
-      
+
         }
 
         didRun = true;
-		arguments.resize(argc - 1);
-    
+        arguments.resize(argc - 1);
+
 #ifdef CU_LINUX
         execFolder = fs::canonical("/proc/self/exe");
         size_t pos = execFolder.find_last_of('/');
@@ -45,23 +45,22 @@ namespace Copper::Args {
 #endif
         execFolder.erase(pos, std::string::npos);
 
-		for (uint32 i = 1; i < argc; i++)
-			arguments[i - 1] = argv[i];
+        for (uint32 i = 1; i < argc; i++)
+            arguments[i - 1] = argv[i];
 
-	}
+    }
 
-	uint32 Count() { return (uint32) arguments.size(); }
-	const std::string& Get(uint32 index) {
+    uint32 Count() { return (uint32) arguments.size(); }
+    const std::string& Get(uint32 index) {
 
         CUP_FUNCTION();
-        
+
         if (index < arguments.size()) return arguments[index];
 
         LogError("Can't get {}-th argument as {} is the amount of arguments", index, arguments.size());
 
         static const std::string empty = "";
         return empty;
-
 
     }
 

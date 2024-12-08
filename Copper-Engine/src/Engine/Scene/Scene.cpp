@@ -41,17 +41,17 @@
 
 namespace Copper {
 
-	namespace Renderer {
+    namespace Renderer {
 
-		extern void StartFrame();
+        extern void StartFrame();
 
-		extern void Render(Camera* cam, bool gizmos);
+        extern void Render(Camera* cam, bool gizmos);
 
-	}
+    }
 
-	uint32 cCounter = 0;
+    uint32 cCounter = 0;
 
-	std::unordered_map<uint32, std::function<bool(const YAML::Node&, Scene*)>> oldDeserializeFunctions;
+    std::unordered_map<uint32, std::function<bool(const YAML::Node&, Scene*)>> oldDeserializeFunctions;
 
     Scene::~Scene() {
 
@@ -77,68 +77,68 @@ namespace Copper {
     }
     void Scene::Cleanup() {
 
-      CUP_FUNCTION();
+        CUP_FUNCTION();
 
-      if (!initialized) return;
+        if (!initialized) return;
 
-      m_registry.Cleanup();
-      ShutdownPhysics();
+        m_registry.Cleanup();
+        ShutdownPhysics();
 
-      initialized = false;
-      m_name.clear();
-      m_cam = nullptr;
+        initialized = false;
+        m_name.clear();
+        m_cam = nullptr;
 
     }
 
-	void Scene::Update(float deltaTime) {
+    void Scene::Update(float deltaTime) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		Renderer::StartFrame();
+        Renderer::StartFrame();
 
-    IN_RUNTIME(UpdatePhysics(deltaTime));
+        IN_RUNTIME(UpdatePhysics(deltaTime));
 
-		CUP_START_FRAME("ECS Update");
+        CUP_START_FRAME("ECS Update");
 
-		for (InternalEntity* entity : EntityView(this)) {
+        for (InternalEntity* entity : EntityView(this)) {
 
-			IN_RUNTIME(RuntimeUpdateEntity(entity, deltaTime));
+            IN_RUNTIME(RuntimeUpdateEntity(entity, deltaTime));
 
-			entity->m_transform->Update();
+            entity->m_transform->Update();
 
-			if (Light* lightComponent = entity->GetComponent<Light>()) {
-				
-				Renderer::AddLight(lightComponent);
-				Renderer::AddLine(Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Color::green, entity->m_transform);
-			
-			}
-			if (Camera* cameraComponent = entity->GetComponent<Camera>()) {
+            if (Light* lightComponent = entity->GetComponent<Light>()) {
+                
+                Renderer::AddLight(lightComponent);
+                Renderer::AddLine(Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Color::green, entity->m_transform);
+            
+            }
+            if (Camera* cameraComponent = entity->GetComponent<Camera>()) {
 
-				Renderer::SetCamera(cameraComponent);
-				m_cam = cameraComponent;
+                Renderer::SetCamera(cameraComponent);
+                m_cam = cameraComponent;
 
-			}
-			if (MeshRenderer* renderer = entity->GetComponent<MeshRenderer>())
-				Renderer::AddMesh(renderer->mesh, entity->m_transform, renderer->material);
+            }
+            if (MeshRenderer* renderer = entity->GetComponent<MeshRenderer>())
+                Renderer::AddMesh(renderer->mesh, entity->m_transform, renderer->material);
 
-			if (Collider* collider = entity->GetComponent<Collider>())
-				Renderer::AddCube(Vector3::zero, Vector3::one, Color::red, entity->m_transform);
+            if (Collider* collider = entity->GetComponent<Collider>())
+                Renderer::AddCube(Vector3::zero, Vector3::one, Color::red, entity->m_transform);
 
-		}
+        }
 
-		CUP_END_FRAME();
+        CUP_END_FRAME();
 
-    Renderer::LoadBatch();
-    if (m_cam != nullptr)
-      Renderer::RenderBatch();
+        Renderer::LoadBatch();
+        if (m_cam != nullptr)
+            Renderer::RenderBatch();
 
-	}
-	void Scene::RuntimeUpdateEntity(InternalEntity* entity, float deltaTIme) {
+    }
+    void Scene::RuntimeUpdateEntity(InternalEntity* entity, float deltaTIme) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		if (RigidBody* rb = entity->GetComponent<RigidBody>())
-			rb->UpdatePositionAndRotation();
+        if (RigidBody* rb = entity->GetComponent<RigidBody>())
+            rb->UpdatePositionAndRotation();
 
         if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) {
 
@@ -149,9 +149,9 @@ namespace Copper {
 
         }
 
-	}
+    }
 
-	void Scene::Render(Camera* cam, bool gizmos) {
+    void Scene::Render(Camera* cam, bool gizmos) {
 
         CUP_FUNCTION();
         Renderer::Render(cam, gizmos);

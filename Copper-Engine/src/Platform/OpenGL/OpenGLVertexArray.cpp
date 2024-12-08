@@ -7,41 +7,41 @@
 
 namespace Copper {
 
-	VertexArray::VertexArray(IndexBuffer* ibo) {
+    VertexArray::VertexArray(IndexBuffer* ibo) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		this->m_ibo = ibo;
+        this->m_ibo = ibo;
 
-		glGenVertexArrays(1, &m_id);
-		glBindVertexArray(m_id);
+        glGenVertexArrays(1, &m_id);
+        glBindVertexArray(m_id);
 
-	}
+    }
 
-	void VertexArray::SetVertexBuffer(VertexBuffer* vbo) {
+    void VertexArray::SetVertexBuffer(VertexBuffer* vbo) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		uint32 count = vbo->GetElementCount();
-		for (uint32 i = 0; i < count; i++) {
+        uint32 count = vbo->GetElementCount();
+        for (uint32 i = 0; i < count; i++) {
 
-			ElementType type = vbo->GetType(i);
+            ElementType type = vbo->GetType(i);
 
-			glVertexAttribPointer(i, TypeDimensions(type), TypeToOpenGL(type), GL_FALSE, vbo->GetStride(), (void*) (uint64) vbo->GetOffset(i));
-			glEnableVertexAttribArray(i);
+            glVertexAttribPointer(i, TypeDimensions(type), TypeToOpenGL(type), GL_FALSE, vbo->GetStride(), (void*) (uint64) vbo->GetOffset(i));
+            glEnableVertexAttribArray(i);
 
-		}
+        }
 
-	}
+    }
 
-	void VertexArray::Bind() const {
+    void VertexArray::Bind() const {
 
         CUP_FUNCTION();
 
         glBindVertexArray(m_id);
 
     }
-	void VertexArray::Unbind() const {
+    void VertexArray::Unbind() const {
 
         CUP_FUNCTION();
 

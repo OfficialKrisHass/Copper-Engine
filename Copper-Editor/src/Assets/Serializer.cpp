@@ -8,52 +8,52 @@
 
 namespace Editor::AssetFile {
 
-	using namespace Copper;
+    using namespace Copper;
 
-	void SerializeMaterial(const fs::path& path, const MaterialAsset& material) {
+    void SerializeMaterial(const fs::path& path, const MaterialAsset& material) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		// Prepare
+        // Prepare
 
-		YAML::Emitter out;
-		out << YAML::BeginMap; // Main
+        YAML::Emitter out;
+        out << YAML::BeginMap; // Main
 
-		// Asset
+        // Asset
 
-		out << YAML::Key << "Texture" << YAML::Value << material->texture;
-		out << YAML::Key << "Albedo" << YAML::Value << material->albedo;
-		out << YAML::Key << "Tiling" << YAML::Value << material->tiling;
+        out << YAML::Key << "Texture" << YAML::Value << material->texture;
+        out << YAML::Key << "Albedo" << YAML::Value << material->albedo;
+        out << YAML::Key << "Tiling" << YAML::Value << material->tiling;
 
-		out << YAML::EndMap; // Main
+        out << YAML::EndMap; // Main
 
-		// Finish
+        // Finish
 
-		std::ofstream file(path);
-		file << out.c_str();
-		file.close();
+        std::ofstream file(path);
+        file << out.c_str();
+        file.close();
 
-	}
-	MaterialAsset DeserializeMaterial(const fs::path& path, const UUID& uuid) {
+    }
+    MaterialAsset DeserializeMaterial(const fs::path& path, const UUID& uuid) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		YAML::Node node;
-		try { node = YAML::LoadFile(path.string()); } catch (YAML::Exception e) {
+        YAML::Node node;
+        try { node = YAML::LoadFile(path.string()); } catch (YAML::Exception e) {
 
-			LogError("Couldn't read Material asset file.\n\tPath: {}\n\tError Message: {}", path.string(), e.msg);
-			return MaterialAsset();
+            LogError("Couldn't read Material asset file.\n\tPath: {}\n\tError Message: {}", path.string(), e.msg);
+            return MaterialAsset();
 
-		}
+        }
 
-		MaterialAsset ret = AssetStorage::InsertAsset<Material>(uuid);
+        MaterialAsset ret = AssetStorage::InsertAsset<Material>(uuid);
 
-		ret->texture = node["Texture"].as<TextureAsset>();
-		ret->albedo = node["Albedo"].as<Color>();
-		ret->tiling = node["Tiling"].as<float>();
+        ret->texture = node["Texture"].as<TextureAsset>();
+        ret->albedo = node["Albedo"].as<Color>();
+        ret->tiling = node["Tiling"].as<float>();
 
-		return ret;
+        return ret;
 
-	}
+    }
 
 }

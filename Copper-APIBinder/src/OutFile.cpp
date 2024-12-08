@@ -43,11 +43,11 @@ namespace APIBinder {
 
     }
     void FinishOutFile(std::ofstream& stream) {
-        
+
         stream << "\n";
         stream << Tab(1) << "}\n\n}";
         stream.close();
 
-    } 
+    }
 
 }

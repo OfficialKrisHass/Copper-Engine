@@ -8,19 +8,19 @@
 
 namespace Copper {
 
-	class Material {
+    class Material {
 
-	public:
-		Material() = default;
+    public:
+        Material() = default;
 
-		TextureAsset texture;
-		Color albedo = Color::white;
-		float tiling = 1.0f;
-		
-		static const MaterialAsset& WhiteMaterial();
+        TextureAsset texture;
+        Color albedo = Color::white;
+        float tiling = 1.0f;
+        
+        static const MaterialAsset& WhiteMaterial();
 
-		inline operator bool() const { return texture; }
+        inline operator bool() const { return texture; }
 
-	};
+    };
 
 }

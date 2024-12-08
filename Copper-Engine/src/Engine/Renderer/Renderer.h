@@ -6,68 +6,68 @@
 
 namespace Copper {
 
-	class VertexArray;
+    class VertexArray;
 
-	class Transform;
-	class Camera;
-	class Light; 
-	class Mesh;
+    class Transform;
+    class Camera;
+    class Light; 
+    class Mesh;
 
-	namespace Renderer {
+    namespace Renderer {
 
-		void Initialize();
-    void Restart();
+        void Initialize();
+        void Restart();
 
-		void StartBatch();
-    void LoadBatch();
-		void RenderBatch();
-		void NewBatch();
+        void StartBatch();
+        void LoadBatch();
+        void RenderBatch();
+        void NewBatch();
 
-		void RenderLines();
+        void RenderLines();
 
-		void AddMesh(const MeshAsset& mesh, Transform* transform, const MaterialAsset& material);
+        void AddMesh(const MeshAsset& mesh, Transform* transform, const MaterialAsset& material);
 
-		void AddLine(const Vector3& start, const Vector3& end, const Color& color);
-		void AddLine(const Vector3& start, const Vector3& end, const Color& color, Transform* transform);
-		void AddCube(const Vector3& centre, const Vector3& size, const Color& color, Transform* transform);
+        void AddLine(const Vector3& start, const Vector3& end, const Color& color);
+        void AddLine(const Vector3& start, const Vector3& end, const Color& color, Transform* transform);
+        void AddCube(const Vector3& centre, const Vector3& size, const Color& color, Transform* transform);
 
-		void AddLight(Light* light);
-		void ClearLights();
+        void AddLight(Light* light);
+        void ClearLights();
 
-		void SetCamera(Camera* cam);
+        void SetCamera(Camera* cam);
 
-		void SetWireframe(bool value = true);
-		void SetShaderPath(const std::string& vertexPath, const std::string& fragmentPath);
+        void SetWireframe(bool value = true);
+        void SetShaderPath(const std::string& vertexPath, const std::string& fragmentPath);
 
-		bool GetWireframe();
+        bool GetWireframe();
 
-    bool IsFirstFrame();
+        bool IsFirstFrame();
 
-		Color& AmbientColor();
-		Vector3& AmbientDirection();
+        Color& AmbientColor();
+        Vector3& AmbientDirection();
 
-		Color& SkyboxColor();
+        Color& SkyboxColor();
 
-	}
+    }
 
-	// A very low Level wrapper for the renderer api
-	// Source is in the Platform/<API> for the current API
-	namespace RendererAPI {
+    // A very low Level wrapper for the renderer api
+    // Source is in the Platform/<API> for the current API
+    namespace RendererAPI {
 
-		void Initialize();
+        void Initialize();
 
-		void ClearColor(const Color& color);
-		void ResizeViewport(const UVector2I& size);
+        void ClearColor(const Color& color);
+        void ResizeViewport(const UVector2I& size);
 
-		void Render(VertexArray* vao, uint32 count, Light** lights, uint32 lightCount, MaterialAsset* materials, uint32 materialCount);
-		void RenderLines(VertexArray* vao, uint32 vertexCount);
-		void EndFrame();
+        void Render(VertexArray* vao, uint32 count, Light** lights, uint32 lightCount, MaterialAsset* materials, uint32 materialCount);
+        void RenderLines(VertexArray* vao, uint32 vertexCount);
+        void EndFrame();
 
-		void SetCamera(Camera* cam);
+        void SetCamera(Camera* cam);
 
-		void SetWireframe(bool value);
-		void SetShaderPath(const std::string& vertexPath, const std::string& fragmentPath);
+        void SetWireframe(bool value);
+        void SetShaderPath(const std::string& vertexPath, const std::string& fragmentPath);
 
-	}
+    }
 
 }

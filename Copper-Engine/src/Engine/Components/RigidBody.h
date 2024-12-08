@@ -96,5 +96,5 @@ namespace Copper {
         void UpdatePositionAndRotation();
 
     };
-    
+
 }

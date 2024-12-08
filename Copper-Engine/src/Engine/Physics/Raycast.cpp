@@ -10,47 +10,47 @@
 
 namespace Copper {
 
-	using namespace physx;
+    using namespace physx;
 
-	class FilterCallback : public PxQueryFilterCallback {
+    class FilterCallback : public PxQueryFilterCallback {
 
-	public:
-		virtual PxQueryHitType::Enum preFilter(const PxFilterData& filterData, const PxShape* shape, const PxRigidActor* actor, PxHitFlags& queryFlags) override { return PxQueryHitType::eBLOCK; }
-		virtual PxQueryHitType::Enum postFilter(const PxFilterData& filterData, const PxQueryHit& hit) override {
+    public:
+        virtual PxQueryHitType::Enum preFilter(const PxFilterData& filterData, const PxShape* shape, const PxRigidActor* actor, PxHitFlags& queryFlags) override { return PxQueryHitType::eBLOCK; }
+        virtual PxQueryHitType::Enum postFilter(const PxFilterData& filterData, const PxQueryHit& hit) override {
 
-			CUP_FUNCTION();
+            CUP_FUNCTION();
 
-			const PxRaycastHit& rayHit = (PxRaycastHit&) hit;
-			if (rayHit.hadInitialOverlap())
-				return PxQueryHitType::eNONE;
+            const PxRaycastHit& rayHit = (PxRaycastHit&) hit;
+            if (rayHit.hadInitialOverlap())
+                return PxQueryHitType::eNONE;
 
-			return PxQueryHitType::eBLOCK;
+            return PxQueryHitType::eBLOCK;
 
-		}
+        }
 
-	};
-	FilterCallback filterCallback;
+    };
+    FilterCallback filterCallback;
 
-	bool Raycast::Fire(const Vector3& origin, const Vector3& direction, Data* data, float maxDistance) {
+    bool Raycast::Fire(const Vector3& origin, const Vector3& direction, Data* data, float maxDistance) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		static const PxHitFlags hitFlags = PxHitFlag::eDEFAULT;
-		PxQueryFilterData filterData = PxQueryFilterData(PxQueryFlag::eDYNAMIC | PxQueryFlag::eSTATIC | PxQueryFlag::ePOSTFILTER);
+        static const PxHitFlags hitFlags = PxHitFlag::eDEFAULT;
+        PxQueryFilterData filterData = PxQueryFilterData(PxQueryFlag::eDYNAMIC | PxQueryFlag::eSTATIC | PxQueryFlag::ePOSTFILTER);
 
-		PxRaycastBuffer out;
-		if (!GetScene()->m_physicsScene->raycast(PVec3(origin), PVec3(direction), maxDistance, out, hitFlags, filterData, &filterCallback)) return false;
+        PxRaycastBuffer out;
+        if (!GetScene()->m_physicsScene->raycast(PVec3(origin), PVec3(direction), maxDistance, out, hitFlags, filterData, &filterCallback)) return false;
 
-		data->hit = true;
+        data->hit = true;
 
-		data->position = CVec3(out.block.position);
-		data->normal = CVec3(out.block.normal);
-		data->distance = out.block.distance;
+        data->position = CVec3(out.block.position);
+        data->normal = CVec3(out.block.normal);
+        data->distance = out.block.distance;
 
-		data->entity = (InternalEntity*) out.block.actor->userData;
+        data->entity = (InternalEntity*) out.block.actor->userData;
 
-		return true;
+        return true;
 
-	}
+    }
 
 }

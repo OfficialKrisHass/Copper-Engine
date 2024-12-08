@@ -11,14 +11,14 @@
 
 namespace Copper {
 
-	class MeshRenderer : public Component {
+    class MeshRenderer : public Component {
 
-	public:
-		MeshRenderer() = default;
+    public:
+        MeshRenderer() = default;
 
-		MeshAsset mesh;
-		MaterialAsset material;
+        MeshAsset mesh;
+        MaterialAsset material;
 
-	};
+    };
 
 }

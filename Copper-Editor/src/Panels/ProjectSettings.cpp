@@ -16,96 +16,96 @@
 
 namespace Editor::ProjectSettings {
 
-	using namespace Copper;
+    using namespace Copper;
 
-	static bool isOpen = false;
+    static bool isOpen = false;
 
-	typedef uint16 Page;
-	Page currentPage = 0;
+    typedef uint16 Page;
+    Page currentPage = 0;
 
-	static void ShowGeneralPage();
-	static void ShowPhysicsPage();
-	static void ShowRenderingPage();
+    static void ShowGeneralPage();
+    static void ShowPhysicsPage();
+    static void ShowRenderingPage();
 
-	void UIRender() {
+    void UIRender() {
 
-		if (!isOpen) return;
+        if (!isOpen) return;
 
-		// Setup window and tables
+        // Setup window and tables
 
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		ImGui::Begin("Project Settings", &isOpen, ImGuiWindowFlags_NoDocking);
-		
-		ImGui::BeginTable("ProjectSettingsTable", 2, ImGuiTableFlags_Resizable);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+        ImGui::Begin("Project Settings", &isOpen, ImGuiWindowFlags_NoDocking);
+        
+        ImGui::BeginTable("ProjectSettingsTable", 2, ImGuiTableFlags_Resizable);
 
-		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0);
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
 
-		// Setup Buttons
+        // Setup Buttons
 
-		const ImVec2 buttonSize = { ImGui::GetContentRegionAvail().x, ImGui::GetFontSize() + 5.0f };
+        const ImVec2 buttonSize = { ImGui::GetContentRegionAvail().x, ImGui::GetFontSize() + 5.0f };
 
-		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, { 0.0f, 0.5f });
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, { 0.0f, 0.5f });
 
-		ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_WindowBg));
+        ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_WindowBg));
 
-		// Page select
+        // Page select
 
-		PageOption(General);
-		PageOption(Rendering);
-		PageOption(Physics);
+        PageOption(General);
+        PageOption(Rendering);
+        PageOption(Physics);
 
-		ImGui::PopStyleVar(2);
-		ImGui::PopStyleColor();
+        ImGui::PopStyleVar(2);
+        ImGui::PopStyleColor();
 
-		// Page
+        // Page
 
-		ImGui::TableSetColumnIndex(1);
+        ImGui::TableSetColumnIndex(1);
 
-		if (currentPage & Page(General))
-			ShowGeneralPage();
-		else if (currentPage & Page(Rendering))
-			ShowRenderingPage();
-		else if (currentPage & Page(Physics))
-			ShowPhysicsPage();
+        if (currentPage & Page(General))
+            ShowGeneralPage();
+        else if (currentPage & Page(Rendering))
+            ShowRenderingPage();
+        else if (currentPage & Page(Physics))
+            ShowPhysicsPage();
 
-		// Finish
+        // Finish
 
-		ImGui::EndTable();
+        ImGui::EndTable();
 
-		ImGui::PopStyleVar();
-		ImGui::End();
+        ImGui::PopStyleVar();
+        ImGui::End();
 
-	}
+    }
 
-	void Open() { isOpen = true; }
+    void Open() { isOpen = true; }
 
-	void ShowGeneralPage() {
+    void ShowGeneralPage() {
 
-		ImGui::Text("General Page");
+        ImGui::Text("General Page");
 
-	}
-	void ShowRenderingPage() {
+    }
+    void ShowRenderingPage() {
 
-		if (ImGui::CollapsingHeader("Ambient light")) {
+        if (ImGui::CollapsingHeader("Ambient light")) {
 
-			UI::EditColor("Color", &Renderer::AmbientColor());
-			UI::EditVector3("Direction", &Renderer::AmbientDirection());
+            UI::EditColor("Color", &Renderer::AmbientColor());
+            UI::EditVector3("Direction", &Renderer::AmbientDirection());
 
-		}
+        }
 
-		if (ImGui::CollapsingHeader("Skybox")) {
+        if (ImGui::CollapsingHeader("Skybox")) {
 
-			UI::EditColor("Skybox color", &Renderer::SkyboxColor());
+            UI::EditColor("Skybox color", &Renderer::SkyboxColor());
 
-		}
+        }
 
-	}
-	void ShowPhysicsPage() {
+    }
+    void ShowPhysicsPage() {
 
-		ImGui::Text("Physics Page");
+        ImGui::Text("Physics Page");
 
-	}
+    }
 
 }

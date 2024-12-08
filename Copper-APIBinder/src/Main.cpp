@@ -67,7 +67,7 @@ namespace APIBinder {
 
         const MonoTableInfo* typeTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
         uint32 num = mono_table_info_get_rows(typeTable);
-        
+
         for (uint32 i = 0; i < num; i++) {
 
             uint32 cols[MONO_TYPEDEF_SIZE];
@@ -85,7 +85,7 @@ namespace APIBinder {
             if (!mono_custom_attrs_has_attr(attrInfo, nativeClassAttr)) continue;
 
             classes.push_back(klass);
-            
+
             // Add include line
 
             MonoObject* attr = mono_custom_attrs_get_attr(attrInfo, nativeClassAttr);
@@ -139,7 +139,7 @@ namespace APIBinder {
         std::cout << name << "\n";
 
         // Write to the file
-        
+
         outFile << Tab(2);
         outFile << "mono_add_internal_call(\"";
 

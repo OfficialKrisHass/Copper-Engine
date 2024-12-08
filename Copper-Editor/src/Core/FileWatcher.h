@@ -4,26 +4,26 @@
 
 namespace Editor::FileWatcher {
 
-	enum class FileChangeType : Copper::uint32 {
+    enum class FileChangeType : Copper::uint32 {
 
-		Created,
-		Changed,
-		Deleted,
+        Created,
+        Changed,
+        Deleted,
 
-		RenamedOldName,
-		RenamedNewName,
+        RenamedOldName,
+        RenamedNewName,
 
-	};
+    };
 
-	typedef std::function<void(const Copper::fs::path&, const FileChangeType)> Callback;
+    typedef std::function<void(const Copper::fs::path&, const FileChangeType)> Callback;
 
-	void Start();
-	void Start(const Copper::fs::path& directory);
-	void PollChanges();
-	void Stop();
+    void Start();
+    void Start(const Copper::fs::path& directory);
+    void PollChanges();
+    void Stop();
 
-	void SetDirectory(const Copper::fs::path& directory);
-	
-	void AddCallback(Callback callback);
+    void SetDirectory(const Copper::fs::path& directory);
+    
+    void AddCallback(Callback callback);
 
 }

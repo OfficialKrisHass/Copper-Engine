@@ -8,40 +8,40 @@ namespace Launcher { extern void OnWindowClose(); }
 
 namespace Launcher::Window {
 
-	GLFWwindow* window = nullptr;
+    GLFWwindow* window = nullptr;
 
-	void Create(uint32 width, uint32 height, const char* title) {
+    void Create(uint32 width, uint32 height, const char* title) {
 
-		if (!glfwInit()) {
+        if (!glfwInit()) {
 
-			std::cout << "Failed to initialize GLFW!\n";
-			return;
+            std::cout << "Failed to initialize GLFW!\n";
+            return;
 
-		}
+        }
 
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		window = glfwCreateWindow(width, height, title, nullptr, nullptr);
-		glfwMakeContextCurrent(window);
+        window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+        glfwMakeContextCurrent(window);
 
-		glfwSetWindowCloseCallback(window, [](GLFWwindow* window) { OnWindowClose(); });
+        glfwSetWindowCloseCallback(window, [](GLFWwindow* window) { OnWindowClose(); });
 
-	}
-	void Update() {
+    }
+    void Update() {
 
-		glfwPollEvents();
-		glfwSwapBuffers(window);
+        glfwPollEvents();
+        glfwSwapBuffers(window);
 
-	}
-	void Shutdown() {
+    }
+    void Shutdown() {
 
-		glfwDestroyWindow(window);
-		glfwTerminate();
+        glfwDestroyWindow(window);
+        glfwTerminate();
 
-	}
+    }
 
-	void* NativePointer() { return window; }
+    void* NativePointer() { return window; }
 
 }

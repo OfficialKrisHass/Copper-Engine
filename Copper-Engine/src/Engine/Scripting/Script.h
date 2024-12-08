@@ -15,7 +15,7 @@ namespace Copper { class ScriptComponent; }
 namespace Copper::Scripting {
 
     struct Assembly;
-    
+
     class Script {
 
         friend ScriptComponent;

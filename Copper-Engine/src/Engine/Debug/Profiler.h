@@ -6,39 +6,39 @@ using chrono = std::chrono::system_clock;
 
 namespace Copper::Profiler {
 
-	// Code Scopes
+    // Code Scopes
 
-	struct Scope {
+    struct Scope {
 
-		Scope(const char* name, const char* file);
-		~Scope();
+        Scope(const char* name, const char* file);
+        ~Scope();
 
-		const char* name = nullptr;
-		const char* file = nullptr;
+        const char* name = nullptr;
+        const char* file = nullptr;
 
-	};
+    };
 
-	void CrashHandler(int sig);
-	void PrintScopeStack();
+    void CrashHandler(int sig);
+    void PrintScopeStack();
 
-	// Frame profiling
+    // Frame profiling
 
-	struct Frame {
+    struct Frame {
 
-		const char* name = nullptr;
-		Frame* parentFrame = nullptr;
+        const char* name = nullptr;
+        Frame* parentFrame = nullptr;
 
-		chrono::time_point start;
-		double duration = 0.0f;
+        chrono::time_point start;
+        double duration = 0.0f;
 
-		std::vector<Frame> subframes;
+        std::vector<Frame> subframes;
 
-	};
+    };
 
-	void StartFrame(const char* name);
-	void EndFrame();
+    void StartFrame(const char* name);
+    void EndFrame();
 
-	const Frame& PreviousMainFrame();
+    const Frame& PreviousMainFrame();
 
 }
 

@@ -6,19 +6,19 @@
 
 namespace Copper {
 
-	class EntityEvent : public Event {
+    class EntityEvent : public Event {
 
-	public:
-		Entity entity;
+    public:
+        Entity entity;
 
-	};
+    };
 
-	class ComponentEvent : public Event {
+    class ComponentEvent : public Event {
 
-	public:
-		class Component* component = nullptr;
+    public:
+        class Component* component = nullptr;
         int32 componentID = 0;
 
-	};
+    };
 
 }

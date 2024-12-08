@@ -4,25 +4,25 @@
 
 namespace Editor {
 
-	class SceneCamera : public Copper::Camera {
+    class SceneCamera : public Copper::Camera {
 
-		friend class Project;
+        friend class Project;
 
-	public:
-		SceneCamera() = default;
-		SceneCamera(Copper::UVector2I size);
+    public:
+        SceneCamera() = default;
+        SceneCamera(Copper::UVector2I size);
 
-		void Update();
-		
-		inline void SetCanLook(bool can) { this->m_canLook = can; }
-		
-		float speed = 0.1f;
-		float sensitivity = 100.0f;
+        void Update();
+        
+        inline void SetCanLook(bool can) { this->m_canLook = can; }
+        
+        float speed = 0.1f;
+        float sensitivity = 100.0f;
 
-	private:
-		bool m_firstClick = true;
-		bool m_canLook = false;
+    private:
+        bool m_firstClick = true;
+        bool m_canLook = false;
 
-	};
+    };
 
 }

@@ -7,18 +7,18 @@
 
 namespace Copper::Scripting::Raycast {
 
-  typedef ::Copper::Raycast Raycast;
+    typedef ::Copper::Raycast Raycast;
 
-  bool Fire(const Vector3& origin, const Vector3& direction, Raycast::Data* data, float maxDistance) {
+    bool Fire(const Vector3& origin, const Vector3& direction, Raycast::Data* data, float maxDistance) {
 
-    CUP_FUNCTION();
+        CUP_FUNCTION();
 
-    bool ret = Raycast::Fire(origin, direction, data, maxDistance);
-    if (ret)
-      data->entity = (InternalEntity*) ManagedReference((void*) (uint64) data->entity->ID());
+        bool ret = Raycast::Fire(origin, direction, data, maxDistance);
+        if (ret)
+            data->entity = (InternalEntity*) ManagedReference((void*) (uint64) data->entity->ID());
 
-    return ret;
+        return ret;
 
-  }
+    }
 
 }

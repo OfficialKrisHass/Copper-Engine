@@ -6,14 +6,14 @@ struct ImFont;
 
 namespace Launcher::UI {
 
-	void Initialize();
+    void Initialize();
 
-	void BeginFrame();
-	void Dockspace();
-	void EndFrame();
+    void BeginFrame();
+    void Dockspace();
+    void EndFrame();
 
-	void Shutdown();
+    void Shutdown();
 
-	ImFont* AddFont(const std::string& path, float size);
+    ImFont* AddFont(const std::string& path, float size);
 
 }

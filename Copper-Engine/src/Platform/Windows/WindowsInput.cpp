@@ -19,200 +19,200 @@ extern Copper::UVector2I GetViewportCentre();
 
 namespace Copper::Input {
 
-	Window* window;
+    Window* window;
 
-	std::unordered_map<KeyCode, std::pair<uint32, bool>> keys;
+    std::unordered_map<KeyCode, std::pair<uint32, bool>> keys;
 
-	bool mouseVisible = true;
-	bool mouseLocked = false;
-	bool firstMouseLockedFrame = true;
+    bool mouseVisible = true;
+    bool mouseLocked = false;
+    bool firstMouseLockedFrame = true;
 
-	UVector2I prevMousePos;
-	Vector2 mousePosDiference;
+    UVector2I prevMousePos;
+    Vector2 mousePosDiference;
 
-	bool OnKeyPressed(const Event& e);
-	bool OnKeyReleased(const Event& e);
+    bool OnKeyPressed(const Event& e);
+    bool OnKeyReleased(const Event& e);
 
-	bool OnMouseMove(const Event& e);
+    bool OnMouseMove(const Event& e);
 
-	void Initialize(Window& win) {
+    void Initialize(Window& win) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize Input");
-		window = &win;
+        VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize Input");
+        window = &win;
 
-		window->AddKeyPressedEventFunc(OnKeyPressed);
-		window->AddKeyReleasedEventFunc(OnKeyReleased);
+        window->AddKeyPressedEventFunc(OnKeyPressed);
+        window->AddKeyReleasedEventFunc(OnKeyReleased);
 
-		window->AddMouseMoveEventFunc(OnMouseMove);
+        window->AddMouseMoveEventFunc(OnMouseMove);
 
-		if (!pfd::settings::available())
+        if (!pfd::settings::available())
 #ifdef CU_LINUX
-			LogError("Portable File Dialogs are not available! You might be missing these packages:\n\tKDE: KDialog\n\tGnome: Zenity/Matedialog/Qarma");
+            LogError("Portable File Dialogs are not available! You might be missing these packages:\n\tKDE: KDialog\n\tGnome: Zenity/Matedialog/Qarma");
 #elif CU_WINDOWS
-			LogError("Portable File Dialogs are not available!");
+            LogError("Portable File Dialogs are not available!");
 #endif
 
-		pfd::settings::verbose(false);
+        pfd::settings::verbose(false);
 
-	}
-	void Update() {
+    }
+    void Update() {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		mousePosDiference = Vector2::zero;
+        mousePosDiference = Vector2::zero;
 
-	}
+    }
 
-	bool IsKey(KeyCode key) {
+    bool IsKey(KeyCode key) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		if (keys[key].first == 0) return false;
-		return true;
+        if (keys[key].first == 0) return false;
+        return true;
 
-	}
-	bool IsKeyDown(KeyCode key) {
+    }
+    bool IsKeyDown(KeyCode key) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		if (keys[key].first != 1) return false;
+        if (keys[key].first != 1) return false;
 
-		keys[key].first++;
-		return true;
+        keys[key].first++;
+        return true;
 
-	}
-	bool IsKeyReleased(KeyCode key) {
+    }
+    bool IsKeyReleased(KeyCode key) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		if (!keys[key].second) return false;
+        if (!keys[key].second) return false;
 
-		keys[key].second = false;
-		return true;
+        keys[key].second = false;
+        return true;
 
-	}
+    }
 
-	bool IsButton(MouseCode button) {
+    bool IsButton(MouseCode button) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		return glfwGetMouseButton(GLFW_WINDOW(window), (int32)button) == GLFW_PRESS ? true : false;
+        return glfwGetMouseButton(GLFW_WINDOW(window), (int32)button) == GLFW_PRESS ? true : false;
 
-	}
+    }
 
-	bool OnKeyPressed(const Event& e) {
+    bool OnKeyPressed(const Event& e) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		KeyCode keycode = ((KeyEvent*)&e)->key;
-		keys[keycode].first++;
-		keys[keycode].second = false;
+        KeyCode keycode = ((KeyEvent*)&e)->key;
+        keys[keycode].first++;
+        keys[keycode].second = false;
 
-		return true;
+        return true;
 
-	}
-	bool OnKeyReleased(const Event& e) {
+    }
+    bool OnKeyReleased(const Event& e) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		KeyCode keycode = ((KeyEvent*)&e)->key;
-		keys[keycode].first = 0;
-		keys[keycode].second = true;
+        KeyCode keycode = ((KeyEvent*)&e)->key;
+        keys[keycode].first = 0;
+        keys[keycode].second = true;
 
-		return true;
+        return true;
 
-	}
+    }
 
-	bool OnMouseMove(const Event& e) {
+    bool OnMouseMove(const Event& e) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		MouseMoveEvent& event = *((MouseMoveEvent*)&e);
+        MouseMoveEvent& event = *((MouseMoveEvent*)&e);
 
-		if (!mouseLocked) {
+        if (!mouseLocked) {
 
-			UVector2I diferenceFull = prevMousePos - event.mouseCoords;
-			mousePosDiference.x = -((float)diferenceFull.x / (float)GetWindow().GetWidth());
-			mousePosDiference.y = -((float)diferenceFull.y / (float)GetWindow().GetHeight());
+            UVector2I diferenceFull = prevMousePos - event.mouseCoords;
+            mousePosDiference.x = -((float)diferenceFull.x / (float)GetWindow().GetWidth());
+            mousePosDiference.y = -((float)diferenceFull.y / (float)GetWindow().GetHeight());
 
-			prevMousePos = event.mouseCoords;
+            prevMousePos = event.mouseCoords;
 
-			return true;
+            return true;
 
-		}
+        }
 
-		UVector2I centre;
+        UVector2I centre;
 #ifdef CU_EDITOR
-		centre = GetViewportCentre();
+        centre = GetViewportCentre();
 #else
-		centre = GetWindowSize() / 2;
+        centre = GetWindowSize() / 2;
 #endif
 
-		if (event.mouseCoords == centre) return true;
-		if (!firstMouseLockedFrame) {
+        if (event.mouseCoords == centre) return true;
+        if (!firstMouseLockedFrame) {
 
-			mousePosDiference.x = ((float)event.mouseCoords.x - centre.x) / GetWindowSize().x;
-			mousePosDiference.y = ((float)event.mouseCoords.y - centre.y) / GetWindowSize().y;
+            mousePosDiference.x = ((float)event.mouseCoords.x - centre.x) / GetWindowSize().x;
+            mousePosDiference.y = ((float)event.mouseCoords.y - centre.y) / GetWindowSize().y;
 
-		}
-		else
-			firstMouseLockedFrame = false;
+        }
+        else
+            firstMouseLockedFrame = false;
 
-		prevMousePos = event.mouseCoords;
+        prevMousePos = event.mouseCoords;
 
-		SetCursorPosition((float)centre.x, (float)centre.y);
+        SetCursorPosition((float)centre.x, (float)centre.y);
 
-		return true;
+        return true;
 
-	}
+    }
 
-	void SetCursorVisible(bool visible) {
+    void SetCursorVisible(bool visible) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		glfwSetInputMode(GLFW_WINDOW(window), GLFW_CURSOR, visible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_HIDDEN);
-		mouseVisible = visible;
+        glfwSetInputMode(GLFW_WINDOW(window), GLFW_CURSOR, visible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_HIDDEN);
+        mouseVisible = visible;
 
-	}
-	void SetCursorLocked(bool locked) {
+    }
+    void SetCursorLocked(bool locked) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		mouseLocked = locked;
-		if (locked)
-			firstMouseLockedFrame = true;
+        mouseLocked = locked;
+        if (locked)
+            firstMouseLockedFrame = true;
 
-	}
-	void SetCursorPosition(float x, float y) {
+    }
+    void SetCursorPosition(float x, float y) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		glfwSetCursorPos(GLFW_WINDOW(window), x, y);
+        glfwSetCursorPos(GLFW_WINDOW(window), x, y);
 
-	}
+    }
 
-	void SetWindowTitle(const std::string& title) {
+    void SetWindowTitle(const std::string& title) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		glfwSetWindowTitle(GLFW_WINDOW(window), title.c_str());
+        glfwSetWindowTitle(GLFW_WINDOW(window), title.c_str());
 
-	}
+    }
 
-	void GetCursorPosition(double* x, double* y) {
+    void GetCursorPosition(double* x, double* y) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		glfwGetCursorPos(GLFW_WINDOW(window), x, y);
+        glfwGetCursorPos(GLFW_WINDOW(window), x, y);
 
-	}
+    }
 
-	float GetCursorPosDifferenceX() { return mousePosDiference.x; }
-	float GetCursorPosDifferenceY() { return mousePosDiference.y; }
+    float GetCursorPosDifferenceX() { return mousePosDiference.x; }
+    float GetCursorPosDifferenceY() { return mousePosDiference.y; }
 
-	bool IsCursorLocked() { return mouseLocked; }
-	bool IsCursorVisible() { return mouseVisible; }
+    bool IsCursorLocked() { return mouseLocked; }
+    bool IsCursorVisible() { return mouseVisible; }
 
 }

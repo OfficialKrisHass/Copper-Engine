@@ -7,38 +7,38 @@
 
 namespace Copper::Input {
 
-	struct Axis {
+    struct Axis {
 
-		KeyCode positive = KeyCode::None;
-		KeyCode negative = KeyCode::None;
+        KeyCode positive = KeyCode::None;
+        KeyCode negative = KeyCode::None;
 
-		float positiveValue =  1.0f;
-		float negativeValue = -1.0f;
+        float positiveValue =  1.0f;
+        float negativeValue = -1.0f;
 
-		Axis() = default;
-		Axis(KeyCode positive, KeyCode negative, float positiveValue = 1.0f, float negativeValue = -1.0f)
-			: positive(positive), negative(negative), positiveValue(positiveValue), negativeValue(negativeValue) {}
+        Axis() = default;
+        Axis(KeyCode positive, KeyCode negative, float positiveValue = 1.0f, float negativeValue = -1.0f)
+            : positive(positive), negative(negative), positiveValue(positiveValue), negativeValue(negativeValue) {}
 
-	};
+    };
 
-	struct MouseAxis {
+    struct MouseAxis {
 
-		bool isX = true;
+        bool isX = true;
 
-		float positiveValue =  1.0f;
-		float negativeValue = -1.0f;
+        float positiveValue =  1.0f;
+        float negativeValue = -1.0f;
 
-		MouseAxis() = default;
-		MouseAxis(bool isX, float positiveValue = 1.0f, float negativeValue = -1.0f)
-			: isX(isX), positiveValue(positiveValue), negativeValue(negativeValue) {}
+        MouseAxis() = default;
+        MouseAxis(bool isX, float positiveValue = 1.0f, float negativeValue = -1.0f)
+            : isX(isX), positiveValue(positiveValue), negativeValue(negativeValue) {}
 
-	};
+    };
 
-	void InitializeAxisManager();
+    void InitializeAxisManager();
 
-	float GetAxis(const std::string& axisName);
+    float GetAxis(const std::string& axisName);
 
-	void AddAxis(const std::string& axisName, KeyCode positive, KeyCode negative, float positiveValue = 1.0f, float negativeValue = -1.0f);
-	void AddMouseAxis(const std::string& axisName, bool isX, float positiveValue = 1.0f, float negativeValue = -1.0f);
+    void AddAxis(const std::string& axisName, KeyCode positive, KeyCode negative, float positiveValue = 1.0f, float negativeValue = -1.0f);
+    void AddMouseAxis(const std::string& axisName, bool isX, float positiveValue = 1.0f, float negativeValue = -1.0f);
 
 }

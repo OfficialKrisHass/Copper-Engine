@@ -29,8 +29,8 @@ namespace Copper {
 
         if (!m_instance) {
 
-           LogError("Could not instantiate the ScriptComponent.\n\tScript name: {}\n\tEntity: {} ({})", m_script->FullName(), GetEntity()->name, GetEntity()->ID());
-           return;
+            LogError("Could not instantiate the ScriptComponent.\n\tScript name: {}\n\tEntity: {} ({})", m_script->FullName(), GetEntity()->name, GetEntity()->ID());
+            return;
 
         }
 
@@ -43,7 +43,7 @@ namespace Copper {
             m_update = (UpdateFunc) mono_method_get_unmanaged_thunk(onUpdate);
 
     }
-    
+
     void ScriptComponent::CallBaseConstructor() {
 
         CUP_FUNCTION();

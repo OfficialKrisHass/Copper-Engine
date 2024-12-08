@@ -7,43 +7,43 @@
 
 namespace Copper {
 
-	inline YAML::Emitter& operator<<(YAML::Emitter& out, const UUID& uuid) {
+    inline YAML::Emitter& operator<<(YAML::Emitter& out, const UUID& uuid) {
 
-		out << uuid.ToString();
-		return out;
+        out << uuid.ToString();
+        return out;
 
-	}
+    }
 
 }
 
 namespace YAML {
 
-	using namespace Copper;
+    using namespace Copper;
 
-	template<> struct convert<UUID> {
+    template<> struct convert<UUID> {
 
-		static Node encode(const UUID& uuid) {
+        static Node encode(const UUID& uuid) {
 
-			Node node;
-			node.push_back(uuid.ToString());
+            Node node;
+            node.push_back(uuid.ToString());
 
-			return node;
+            return node;
 
-		}
-		static bool decode(const Node& node, UUID& uuid) {
+        }
+        static bool decode(const Node& node, UUID& uuid) {
 
-			if (!node.IsScalar()) return false;
+            if (!node.IsScalar()) return false;
 
-			std::string data = node.as<std::string>();
-			if (data == "")
-				uuid = UUID::GetInvalid();
-			else
-				uuid = UUID::CreateFromString(data);
+            std::string data = node.as<std::string>();
+            if (data == "")
+                uuid = UUID::GetInvalid();
+            else
+                uuid = UUID::CreateFromString(data);
 
-			return true;
+            return true;
 
-		}
+        }
 
-	};
+    };
 
 }

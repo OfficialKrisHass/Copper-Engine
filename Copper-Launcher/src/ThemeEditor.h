@@ -2,7 +2,7 @@
 
 namespace Launcher {
 
-	void ThemeEditor();
-	void SaveTheme();
+    void ThemeEditor();
+    void SaveTheme();
 
 }

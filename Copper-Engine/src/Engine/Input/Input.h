@@ -10,32 +10,32 @@ namespace Copper { class Window; }
 
 namespace Copper::Input {
 
-	// Input
+    // Input
 
-	void Initialize(Window& window);
-	void Update();
+    void Initialize(Window& window);
+    void Update();
 
-	bool IsKey(KeyCode key);
-	bool IsKeyDown(KeyCode key);
-	bool IsKeyReleased(KeyCode key);
+    bool IsKey(KeyCode key);
+    bool IsKeyDown(KeyCode key);
+    bool IsKeyReleased(KeyCode key);
 
-	bool IsButton(MouseCode button);
+    bool IsButton(MouseCode button);
 
-	// Setters
+    // Setters
 
-	void SetCursorVisible(bool visible);
-	void SetCursorLocked(bool locked);
-	void SetCursorPosition(float x, float y);
+    void SetCursorVisible(bool visible);
+    void SetCursorLocked(bool locked);
+    void SetCursorPosition(float x, float y);
 
-	void SetWindowTitle(const std::string& title);
+    void SetWindowTitle(const std::string& title);
 
-	// Getters
+    // Getters
 
-	void GetCursorPosition(double* x, double* y);
-	float GetCursorPosDifferenceX();
-	float GetCursorPosDifferenceY();
+    void GetCursorPosition(double* x, double* y);
+    float GetCursorPosDifferenceX();
+    float GetCursorPosDifferenceY();
 
-	bool IsCursorLocked();
-	bool IsCursorVisible();
+    bool IsCursorLocked();
+    bool IsCursorVisible();
 
 }

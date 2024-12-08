@@ -17,117 +17,116 @@
 
 namespace Launcher::UI {
 
-	void LoadTheme();
+    void LoadTheme();
 
-  std::string iniPath = "";
+    std::string iniPath = "";
 
-	void Initialize() {
+    void Initialize() {
 
-		IMGUI_CHECKVERSION();
-		ImGui::SetCurrentContext(ImGui::CreateContext());
-    
-		ImGuiIO& io = ImGui::GetIO();
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NoMouseCursorChange | ImGuiConfigFlags_ViewportsEnable;
-		io.FontDefault = AddFont(ExecutableFolder() + MainFontPath, 25.0f);
+        IMGUI_CHECKVERSION();
+        ImGui::SetCurrentContext(ImGui::CreateContext());
 
-    iniPath = ExecutableFolder() + "/imgui.ini";
-    io.IniFilename = iniPath.c_str();
+        ImGuiIO& io = ImGui::GetIO();
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NoMouseCursorChange | ImGuiConfigFlags_ViewportsEnable;
+        io.FontDefault = AddFont(ExecutableFolder() + MainFontPath, 25.0f);
 
-		LoadTheme();
+        iniPath = ExecutableFolder() + "/imgui.ini";
+        io.IniFilename = iniPath.c_str();
 
-		ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*) Window::NativePointer(), true);
-		ImGui_ImplOpenGL3_Init("#version 460");
+        LoadTheme();
 
+        ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*) Window::NativePointer(), true);
+        ImGui_ImplOpenGL3_Init("#version 460");
 
-	}
+    }
 
-	void BeginFrame() {
+    void BeginFrame() {
 
-		// Backend
+        // Backend
 
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
 
-		ImGui::NewFrame();
+        ImGui::NewFrame();
 
-	}
-	void Dockspace() {
+    }
+    void Dockspace() {
 
-		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
-			ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-		ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
+                                        ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+        ImGuiViewport* viewport = ImGui::GetMainViewport();
 
-		ImGui::SetNextWindowPos(viewport->Pos);
-		ImGui::SetNextWindowSize(viewport->Size);
-		ImGui::SetNextWindowViewport(viewport->ID);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+        ImGui::SetNextWindowPos(viewport->Pos);
+        ImGui::SetNextWindowSize(viewport->Size);
+        ImGui::SetNextWindowViewport(viewport->ID);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 
-		ImGui::Begin("##Dockspace", nullptr, window_flags); //Dockspace
+        ImGui::Begin("##Dockspace", nullptr, window_flags); //Dockspace
 
-		ImGui::PopStyleVar(2);
+        ImGui::PopStyleVar(2);
 
-	}
-	void EndFrame() {
+    }
+    void EndFrame() {
 
-		// Dockspace
+        // Dockspace
 
-		ImGui::End();
+        ImGui::End();
 
-		// Backend
+        // Backend
 
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-		// Viewports
-		
-		ImGuiIO& io = ImGui::GetIO();
-		GLFWwindow* backup = glfwGetCurrentContext();
+        // Viewports
+        
+        ImGuiIO& io = ImGui::GetIO();
+        GLFWwindow* backup = glfwGetCurrentContext();
 
-		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault();
-		glfwMakeContextCurrent(backup);
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+        glfwMakeContextCurrent(backup);
 
-	}
+    }
 
-	void Shutdown() {
+    void Shutdown() {
 
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
 
-		ImGui::DestroyContext();
+        ImGui::DestroyContext();
 
-	}
+    }
 
-	void LoadTheme() {
+    void LoadTheme() {
 
-		YAML::Node main;
-		try { main = YAML::LoadFile(ExecutableFolder() + "/assets/Launcher.cutheme"); } catch (YAML::ParserException e) {
+        YAML::Node main;
+        try { main = YAML::LoadFile(ExecutableFolder() + "/assets/Launcher.cutheme"); } catch (YAML::ParserException e) {
 
-			std::cout << "Failed to Read Default.cutheme file!\n\t" << e.what() << "\n";
-			return;
+            std::cout << "Failed to Read Default.cutheme file!\n\t" << e.what() << "\n";
+            return;
 
-		}
+        }
 
-		ImGuiStyle& style = ImGui::GetStyle();
-		style.FrameRounding = main["Rounding"].as<float>();
+        ImGuiStyle& style = ImGui::GetStyle();
+        style.FrameRounding = main["Rounding"].as<float>();
 
-		YAML::Node colors = main["Colors"];
-		for (YAML::const_iterator it = colors.begin(); it != colors.end(); ++it) {
+        YAML::Node colors = main["Colors"];
+        for (YAML::const_iterator it = colors.begin(); it != colors.end(); ++it) {
 
-			uint32 col = it->first.as<uint32>();
+            uint32 col = it->first.as<uint32>();
 
-			ImVec4 value;
-			value.x = it->second[0].as<float>();
-			value.y = it->second[1].as<float>();
-			value.z = it->second[2].as<float>();
-			value.w = it->second[3].as<float>();
+            ImVec4 value;
+            value.x = it->second[0].as<float>();
+            value.y = it->second[1].as<float>();
+            value.z = it->second[2].as<float>();
+            value.w = it->second[3].as<float>();
 
-			style.Colors[col] = value;
+            style.Colors[col] = value;
 
-		}
+        }
 
-	}
+    }
 
-	ImFont* AddFont(const std::string& path, float size) { return ImGui::GetIO().Fonts->AddFontFromFileTTF(path.c_str(), size); }
+    ImFont* AddFont(const std::string& path, float size) { return ImGui::GetIO().Fonts->AddFontFromFileTTF(path.c_str(), size); }
 }

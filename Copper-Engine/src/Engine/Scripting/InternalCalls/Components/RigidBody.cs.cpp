@@ -10,73 +10,73 @@
 
 namespace Copper::Scripting::RigidBody {
 
-	typedef ::Copper::RigidBody RigidBody;
+    typedef ::Copper::RigidBody RigidBody;
 
-	float GetMass(MonoObject* rigidBody) {
+    float GetMass(MonoObject* rigidBody) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
-		return ptr->GetMass();
+        GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
+        return ptr->GetMass();
 
-	}
-	void SetMass(MonoObject* rigidBody, float value) {
+    }
+    void SetMass(MonoObject* rigidBody, float value) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
-		ptr->SetMass(value);
+        GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
+        ptr->SetMass(value);
 
-	}
+    }
 
-	bool GetIsStatic(MonoObject* rigidBody) {
+    bool GetIsStatic(MonoObject* rigidBody) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
-		return ptr->GetStatic();
+        GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
+        return ptr->GetStatic();
 
-	}
-	void SetIsStatic(MonoObject* rigidBody, bool value) {
+    }
+    void SetIsStatic(MonoObject* rigidBody, bool value) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
-		ptr->SetStatic(value);
+        GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
+        ptr->SetStatic(value);
 
-	}
-	bool GetGravity(MonoObject* rigidBody) {
+    }
+    bool GetGravity(MonoObject* rigidBody) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
-		return ptr->GetGravity();
+        GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
+        return ptr->GetGravity();
 
-	}
-	void SetGravity(MonoObject* rigidBody, bool value) {
+    }
+    void SetGravity(MonoObject* rigidBody, bool value) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
-		ptr->SetGravity(value);
+        GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
+        ptr->SetGravity(value);
 
-	}
-	uint8 GetLockMask(MonoObject* rigidBody) {
+    }
+    uint8 GetLockMask(MonoObject* rigidBody) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
-		return ptr->GetLockMask();
+        GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
+        return ptr->GetLockMask();
 
-	}
-	void SetLockMask(MonoObject* rigidBody, uint8 value) {
+    }
+    void SetLockMask(MonoObject* rigidBody, uint8 value) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
-		ptr->SetLockMask(value);
+        GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
+        ptr->SetLockMask(value);
 
-	}
+    }
 
     MonoObject* GetCollider(MonoObject* rigidBody) {
 
@@ -94,21 +94,21 @@ namespace Copper::Scripting::RigidBody {
 
     }
 
-	void AddForce(MonoObject* rigidBody, const Vector3& force, uint8 forceMode) {
+    void AddForce(MonoObject* rigidBody, const Vector3& force, uint8 forceMode) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
-		ptr->AddForce(force, (RigidBody::ForceMode) forceMode);
+        GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
+        ptr->AddForce(force, (RigidBody::ForceMode) forceMode);
 
-	}
-	void AddTorque(MonoObject* rigidBody, const Vector3& torque, uint8 forceMode) {
+    }
+    void AddTorque(MonoObject* rigidBody, const Vector3& torque, uint8 forceMode) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
-		ptr->AddTorque(torque, (RigidBody::ForceMode) forceMode);
+        GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
+        ptr->AddTorque(torque, (RigidBody::ForceMode) forceMode);
 
-	}
+    }
 
 }

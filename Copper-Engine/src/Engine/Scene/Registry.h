@@ -26,26 +26,26 @@
 
 namespace Copper {
 
-	class Collider;
-	class BoxCollider;
-	class SphereCollider;
-	class CapsuleCollider;
-	
-	extern uint32 cCounter;
+    class Collider;
+    class BoxCollider;
+    class SphereCollider;
+    class CapsuleCollider;
 
-	class Registry {
+    extern uint32 cCounter;
 
-		friend class Scene;
-		friend class Entity;
+    class Registry {
+
+        friend class Scene;
+        friend class Entity;
 
     public:
         struct ComponentPool {
 
             ComponentPool() = default;
-			ComponentPool(uint32 size) : m_cSize(size), m_data(new char[size * MAX_ENTITY_COMPONENTS]) {}
-			~ComponentPool() { delete[] m_data; }
+            ComponentPool(uint32 size) : m_cSize(size), m_data(new char[size * MAX_ENTITY_COMPONENTS]) {}
+            ~ComponentPool() { delete[] m_data; }
 
-			void* Add(uint32 index) {
+            void* Add(uint32 index) {
 
                 CUP_FUNCTION();
 
@@ -62,7 +62,7 @@ namespace Copper {
                 return m_data + index * m_cSize;
 
             }
-			void Remove(uint32 index) {
+            void Remove(uint32 index) {
 
                 CUP_FUNCTION();
 
@@ -71,309 +71,304 @@ namespace Copper {
 
             }
 
-			bool Valid(uint32 index) { CUP_FUNCTION(); return m_validComponents.test(index); }
-			uint32 Count() { return m_count; }
+            bool Valid(uint32 index) { CUP_FUNCTION(); return m_validComponents.test(index); }
+            uint32 Count() { return m_count; }
 
         private:
             uint32 m_cSize = 0;
-			char* m_data = nullptr;
+            char* m_data = nullptr;
 
-			std::bitset<MAX_ENTITY_COMPONENTS> m_validComponents;
-			uint32 m_count = 0;
+            std::bitset<MAX_ENTITY_COMPONENTS> m_validComponents;
+            uint32 m_count = 0;
 
-		};
+        };
 
-	public:
-		void Initialize();
+    public:
+        void Initialize();
 
-		InternalEntity* CreateEntity(Scene* scene, Vector3 position, Quaternion rotation, Vector3 scale, const std::string& name) {
+        InternalEntity* CreateEntity(Scene* scene, Vector3 position, Quaternion rotation, Vector3 scale, const std::string& name) {
 
-			CUP_FUNCTION();
+            CUP_FUNCTION();
 
-			uint32 id;
-			if (m_gaps.empty()) {
+            uint32 id;
+            if (m_gaps.empty()) {
 
-				m_entities.push_back(InternalEntity());
-				id = (uint32) m_entities.size() - 1;
+                m_entities.push_back(InternalEntity());
+                id = (uint32) m_entities.size() - 1;
 
-			} else {
+            } else {
 
-				id = m_gaps.back();
-				m_gaps.pop_back();
+                id = m_gaps.back();
+                m_gaps.pop_back();
 
-			}
+            }
 
-			m_entities[id].m_id = id;
-			m_entities[id].name = name;
-			m_entities[id].m_scene = scene;
-			
-			m_entities[id].m_transform = AddComponent<Transform>(id);
-			m_entities[id].m_transform->m_position = position;
-			m_entities[id].m_transform->m_rotation = rotation;
-			m_entities[id].m_transform->m_scale = scale;
+            m_entities[id].m_id = id;
+            m_entities[id].name = name;
+            m_entities[id].m_scene = scene;
 
-			entityCreatedEvent.entity = &m_entities[id];
-			entityCreatedEvent();
+            m_entities[id].m_transform = AddComponent<Transform>(id);
+            m_entities[id].m_transform->m_position = position;
+            m_entities[id].m_transform->m_rotation = rotation;
+            m_entities[id].m_transform->m_scale = scale;
 
-			return &m_entities[id];
+            entityCreatedEvent.entity = &m_entities[id];
+            entityCreatedEvent();
 
-		}
-		InternalEntity* CreateEntityFromID(uint32 eID, Scene* scene, Vector3 position, Quaternion rotation, Vector3 scale, const std::string& name, bool returnIfExists) {
+            return &m_entities[id];
 
-			CUP_FUNCTION();
+        }
+        InternalEntity* CreateEntityFromID(uint32 eID, Scene* scene, Vector3 position, Quaternion rotation, Vector3 scale, const std::string& name, bool returnIfExists) {
 
-			if (eID >= m_entities.size()) m_entities.resize(eID + 1, InternalEntity());
-			if (returnIfExists && m_entities[eID]) return &m_entities[eID];
+            CUP_FUNCTION();
 
-			bool newEntity = !m_entities[eID];
+            if (eID >= m_entities.size()) m_entities.resize(eID + 1, InternalEntity());
+            if (returnIfExists && m_entities[eID]) return &m_entities[eID];
 
-			m_entities[eID].m_id = eID;
-			m_entities[eID].name = name;
-			m_entities[eID].m_scene = scene;
+            bool newEntity = !m_entities[eID];
 
-			if (!m_entities[eID].m_transform) m_entities[eID].m_transform = AddComponent<Transform>(eID);
-			m_entities[eID].m_transform->m_position = position;
-			m_entities[eID].m_transform->m_rotation = rotation;
-			m_entities[eID].m_transform->m_scale = scale;
+            m_entities[eID].m_id = eID;
+            m_entities[eID].name = name;
+            m_entities[eID].m_scene = scene;
 
-			if (newEntity) {
+            if (!m_entities[eID].m_transform) m_entities[eID].m_transform = AddComponent<Transform>(eID);
+            m_entities[eID].m_transform->m_position = position;
+            m_entities[eID].m_transform->m_rotation = rotation;
+            m_entities[eID].m_transform->m_scale = scale;
 
-				entityCreatedEvent.entity = &m_entities[eID];
-				entityCreatedEvent();
+            if (newEntity) {
 
-			}
+                entityCreatedEvent.entity = &m_entities[eID];
+                entityCreatedEvent();
 
-			return &m_entities[eID];
+            }
 
-		}
-		InternalEntity* GetEntityFromID(uint32 eID) {
+            return &m_entities[eID];
 
-			CUP_FUNCTION();
+        }
+        InternalEntity* GetEntityFromID(uint32 eID) {
 
-			if (eID == INVALID_ENTITY_ID || eID >= m_entities.size() || !m_entities[eID]) return nullptr;
-			return &m_entities[eID];
+            CUP_FUNCTION();
 
-		}
-		void RemoveEntity(uint32 eID) {
+            if (eID == INVALID_ENTITY_ID || eID >= m_entities.size() || !m_entities[eID]) return nullptr;
+            return &m_entities[eID];
 
-			CUP_FUNCTION();
+        }
+        void RemoveEntity(uint32 eID) {
 
-			entityRemovedEvent.entity = &m_entities[eID];
-			entityRemovedEvent();
+            CUP_FUNCTION();
 
-			//Update the Parent
-			if (Transform* parent = m_entities[eID].m_transform->m_parent) {
+            entityRemovedEvent.entity = &m_entities[eID];
+            entityRemovedEvent();
 
-				parent->RemoveChild(m_entities[eID].m_transform);
+            //Update the Parent
+            if (Transform* parent = m_entities[eID].m_transform->m_parent)
+                parent->RemoveChild(m_entities[eID].m_transform);
 
-			}
+            //Update the Children
+            for (uint32 childID : m_entities[eID].m_transform->m_children)
+                RemoveEntity(childID);
 
-			//Update the Children
-			for (uint32 childID : m_entities[eID].m_transform->m_children) {
+            m_entities[eID].m_transform->m_children.clear();
 
-				RemoveEntity(childID);
+            m_entities[eID].Invalidate();
+            m_gaps.push_back(eID);
 
-			}
-			m_entities[eID].m_transform->m_children.clear();
+            for (ComponentPool* pool : m_pools) {
 
-			m_entities[eID].Invalidate();
-			m_gaps.push_back(eID);
+                if (!pool || !pool->Valid(eID)) continue;
+                pool->Remove(eID);
 
-			for (ComponentPool* pool : m_pools) {
+            }
 
-				if (!pool || !pool->Valid(eID)) continue;
-				pool->Remove(eID);
+        }
 
-			}
+        template<typename T> T* AddComponent(uint32 eID) {
 
-		}
+            CUP_FUNCTION();
 
-		template<typename T> T* AddComponent(uint32 eID) {
+            if (eID == INVALID_ENTITY_ID) return nullptr;
+            if (!m_entities[eID]) return nullptr;
 
-			CUP_FUNCTION();
+            int32 cID = GetCID<T>();
 
-			if (eID == INVALID_ENTITY_ID) return nullptr;
-			if (!m_entities[eID]) return nullptr;
+#ifdef CU_DEBUG
+            if (m_pools.size() < cID + 1) m_pools.resize(cID + 1, nullptr);
+#endif
+            if (!m_pools[cID]) m_pools[cID] = new ComponentPool(sizeof(T));
 
-			int32 cID = GetCID<T>();
+            T* component = new (m_pools[cID]->Add(eID)) T;
 
-		#ifdef CU_DEBUG
-			if (m_pools.size() < cID + 1) m_pools.resize(cID + 1, nullptr);
-		#endif
-			if (!m_pools[cID]) m_pools[cID] = new ComponentPool(sizeof(T));
+            component->m_entity = &m_entities[eID];
+            component->m_transform = m_entities[eID].m_transform;
+            component->m_valid = true;
 
-			T* component = new (m_pools[cID]->Add(eID)) T;
+            m_entities[eID].m_cMask.set(cID);
 
-			component->m_entity = &m_entities[eID];
-			component->m_transform = m_entities[eID].m_transform;
-			component->m_valid = true;
-
-			m_entities[eID].m_cMask.set(cID);
-
-			componentAddedEvent.component = (Component*) component;
+            componentAddedEvent.component = (Component*) component;
             componentAddedEvent.componentID = cID;
-			componentAddedEvent();
+            componentAddedEvent();
 
-			return component;
+            return component;
 
-		}
-		template<typename T> T* GetComponent(uint32 eID) {
+        }
+        template<typename T> T* GetComponent(uint32 eID) {
 
-			CUP_FUNCTION();
+            CUP_FUNCTION();
 
-			if (eID == INVALID_ENTITY_ID) return nullptr;
-			if (!m_entities[eID]) return nullptr;
+            if (eID == INVALID_ENTITY_ID) return nullptr;
+            if (!m_entities[eID]) return nullptr;
 
-			int32 cID = GetCID<T>();
-			if (!m_entities[eID].m_cMask.test(cID)) return nullptr;
+            int32 cID = GetCID<T>();
+            if (!m_entities[eID].m_cMask.test(cID)) return nullptr;
 
-			T* component = static_cast<T*>(m_pools[cID]->Get(eID));
-			return component;
+            T* component = static_cast<T*>(m_pools[cID]->Get(eID));
+            return component;
 
-		}
-		template<typename T> bool HasComponent(uint32 eID) {
+        }
+        template<typename T> bool HasComponent(uint32 eID) {
 
-			CUP_FUNCTION();
+            CUP_FUNCTION();
 
-			if (eID == INVALID_ENTITY_ID) return false;
-			if (!m_entities[eID]) return false;
+            if (eID == INVALID_ENTITY_ID) return false;
+            if (!m_entities[eID]) return false;
 
-			int32 cID = GetCID<T>();
-			return m_entities[eID].m_cMask.test(cID);
+            int32 cID = GetCID<T>();
+            return m_entities[eID].m_cMask.test(cID);
 
-		}
-		template<typename T> void RemoveComponent(uint32 eID) {
+        }
+        template<typename T> void RemoveComponent(uint32 eID) {
 
-			CUP_FUNCTION();
+            CUP_FUNCTION();
 
-			if (eID == INVALID_ENTITY_ID) return;
-			if (!m_entities[eID]) return;
+            if (eID == INVALID_ENTITY_ID) return;
+            if (!m_entities[eID]) return;
 
-			int32 cID = GetCID<T>();
-			if (!m_entities[eID].m_cMask.test(cID)) return;
+            int32 cID = GetCID<T>();
+            if (!m_entities[eID].m_cMask.test(cID)) return;
 
-			m_pools[cID]->Remove(eID);
-			m_entities[eID].m_cMask.reset(cID);
+            m_pools[cID]->Remove(eID);
+            m_entities[eID].m_cMask.reset(cID);
 
-			T* component = static_cast<T*>(m_pools[cID]->Get(eID));
-			componentRemovedEvent.component = (Component*) component;
+            T* component = static_cast<T*>(m_pools[cID]->Get(eID));
+            componentRemovedEvent.component = (Component*) component;
             componentRemovedEvent.componentID = cID;
-			componentRemovedEvent();
+            componentRemovedEvent();
 
-			component->m_valid = false;
+            component->m_valid = false;
 
-		}
+        }
 
-		void* GetComponent(uint32 componentID, uint32 eID) {
+        void* GetComponent(uint32 componentID, uint32 eID) {
 
-			CUP_FUNCTION();
+            CUP_FUNCTION();
 
-			if (eID == INVALID_ENTITY_ID) return nullptr;
-			if (!m_entities[eID]) return nullptr;
-			if (!m_entities[eID].m_cMask.test(componentID)) return nullptr;
+            if (eID == INVALID_ENTITY_ID) return nullptr;
+            if (!m_entities[eID]) return nullptr;
+            if (!m_entities[eID].m_cMask.test(componentID)) return nullptr;
 
-			void* component = static_cast<void*>(m_pools[componentID]->Get(eID));
-			return component;
+            void* component = static_cast<void*>(m_pools[componentID]->Get(eID));
+            return component;
 
-		}
-		bool HasComponent(uint32 componentID, uint32 eID) {
+        }
+        bool HasComponent(uint32 componentID, uint32 eID) {
 
-			CUP_FUNCTION();
+            CUP_FUNCTION();
 
-			if (eID == INVALID_ENTITY_ID) return false;
-			if (!m_entities[eID]) return false;
+            if (eID == INVALID_ENTITY_ID) return false;
+            if (!m_entities[eID]) return false;
 
-			return m_entities[eID].m_cMask.test(componentID);
+            return m_entities[eID].m_cMask.test(componentID);
 
-		}
-		void RemoveComponent(uint32 componentID, uint32 eID) {
+        }
+        void RemoveComponent(uint32 componentID, uint32 eID) {
 
-			CUP_FUNCTION();
+            CUP_FUNCTION();
 
-			if (eID == INVALID_ENTITY_ID) return;
-			if (!m_entities[eID]) return;
-			if (!m_entities[eID].m_cMask.test(componentID)) return;
+            if (eID == INVALID_ENTITY_ID) return;
+            if (!m_entities[eID]) return;
+            if (!m_entities[eID].m_cMask.test(componentID)) return;
 
-			m_pools[componentID]->Remove(eID);
-			m_entities[eID].m_cMask.reset(componentID);
+            m_pools[componentID]->Remove(eID);
+            m_entities[eID].m_cMask.reset(componentID);
 
-			Component* component = static_cast<Component*>(m_pools[componentID]->Get(eID));
-			componentRemovedEvent.component = component;
+            Component* component = static_cast<Component*>(m_pools[componentID]->Get(eID));
+            componentRemovedEvent.component = component;
             componentRemovedEvent.componentID = componentID;
-			componentRemovedEvent();
+            componentRemovedEvent();
 
-			component->m_valid = false;
+            component->m_valid = false;
 
-		}
+        }
 
-		void Cleanup() {
+        void Cleanup() {
 
-			for (ComponentPool* pool : m_pools)
-				delete pool;
+            for (ComponentPool* pool : m_pools)
+                delete pool;
 
-			m_entities.clear();
-			m_gaps.clear();
-			m_pools.clear();
+            m_entities.clear();
+            m_gaps.clear();
+            m_pools.clear();
 
-		}
+        }
 
-		template<typename T> static uint32 GetCID() {
+        template<typename T> static uint32 GetCID() {
 
-			static int32 cID = cCounter++;
-			return cID;
+            static int32 cID = cCounter++;
+            return cID;
 
-		}
+        }
 
-		ComponentPool* GetComponentPool(uint32 cID) const {
-			
-			CUP_FUNCTION();
+        ComponentPool* GetComponentPool(uint32 cID) const {
 
-			if (m_pools.size() < cID + 1) return nullptr;
+            CUP_FUNCTION();
 
-			return m_pools[cID];
+            if (m_pools.size() < cID + 1) return nullptr;
 
-		}
+            return m_pools[cID];
 
-		void AddEntityCreatedEventFunc(std::function<bool(const Event&)> func) { entityCreatedEvent += func; }
-		void AddEntityRemovedEventFunc(std::function<bool(const Event&)> func) { entityRemovedEvent += func; }
-		void AddComponentAddedEventFunc(std::function<bool(const Event&)> func) { componentAddedEvent += func; }
-		void AddComponentRemovedEventFunc(std::function<bool(const Event&)> func) { componentRemovedEvent += func; }
+        }
 
-	private:
-		std::vector<InternalEntity> m_entities;
-		std::vector<ComponentPool*> m_pools;
-		std::vector<uint32> m_gaps;
+        void AddEntityCreatedEventFunc(std::function<bool(const Event&)> func) { entityCreatedEvent += func; }
+        void AddEntityRemovedEventFunc(std::function<bool(const Event&)> func) { entityRemovedEvent += func; }
+        void AddComponentAddedEventFunc(std::function<bool(const Event&)> func) { componentAddedEvent += func; }
+        void AddComponentRemovedEventFunc(std::function<bool(const Event&)> func) { componentRemovedEvent += func; }
 
-		EntityEvent entityCreatedEvent;
-		EntityEvent entityRemovedEvent;
-		ComponentEvent componentAddedEvent;
-		ComponentEvent componentRemovedEvent;
+    private:
+        std::vector<InternalEntity> m_entities;
+        std::vector<ComponentPool*> m_pools;
+        std::vector<uint32> m_gaps;
 
-		template<typename T> T* AddColliderComponent(uint32 eID, uint8 type);
-		template<typename T> T* GetColliderComponent(uint32 eID, uint8 type);
-		bool HasColliderComponent(uint32 eID, uint8 type);
-		template<typename T> void RemoveColliderComponent(uint32 eID, uint8 type);
+        EntityEvent entityCreatedEvent;
+        EntityEvent entityRemovedEvent;
+        ComponentEvent componentAddedEvent;
+        ComponentEvent componentRemovedEvent;
 
-	};
+        template<typename T> T* AddColliderComponent(uint32 eID, uint8 type);
+        template<typename T> T* GetColliderComponent(uint32 eID, uint8 type);
+        bool HasColliderComponent(uint32 eID, uint8 type);
+        template<typename T> void RemoveColliderComponent(uint32 eID, uint8 type);
 
-	template<> Collider* Registry::AddComponent<Collider>(uint32 eID);
-	template<> BoxCollider* Registry::AddComponent<BoxCollider>(uint32 eID);
-	template<> SphereCollider* Registry::AddComponent<SphereCollider>(uint32 eID);
-	template<> CapsuleCollider* Registry::AddComponent<CapsuleCollider>(uint32 eID);
+    };
 
-	template<> Collider* Registry::GetComponent<Collider>(uint32 eID);
-	template<> BoxCollider* Registry::GetComponent<BoxCollider>(uint32 eID);
-	template<> SphereCollider* Registry::GetComponent<SphereCollider>(uint32 eID);
-	template<> CapsuleCollider* Registry::GetComponent<CapsuleCollider>(uint32 eID);
+    template<> Collider* Registry::AddComponent<Collider>(uint32 eID);
+    template<> BoxCollider* Registry::AddComponent<BoxCollider>(uint32 eID);
+    template<> SphereCollider* Registry::AddComponent<SphereCollider>(uint32 eID);
+    template<> CapsuleCollider* Registry::AddComponent<CapsuleCollider>(uint32 eID);
 
-	template<> bool Registry::HasComponent<Collider>(uint32 eID);
-	template<> bool Registry::HasComponent<BoxCollider>(uint32 eID);
-	template<> bool Registry::HasComponent<SphereCollider>(uint32 eID);
-	template<> bool Registry::HasComponent<CapsuleCollider>(uint32 eID);
+    template<> Collider* Registry::GetComponent<Collider>(uint32 eID);
+    template<> BoxCollider* Registry::GetComponent<BoxCollider>(uint32 eID);
+    template<> SphereCollider* Registry::GetComponent<SphereCollider>(uint32 eID);
+    template<> CapsuleCollider* Registry::GetComponent<CapsuleCollider>(uint32 eID);
 
-	template<> void Registry::RemoveComponent<Collider>(uint32 eID);
-	template<> void Registry::RemoveComponent<BoxCollider>(uint32 eID);
-	template<> void Registry::RemoveComponent<SphereCollider>(uint32 eID);
-	template<> void Registry::RemoveComponent<CapsuleCollider>(uint32 eID);
+    template<> bool Registry::HasComponent<Collider>(uint32 eID);
+    template<> bool Registry::HasComponent<BoxCollider>(uint32 eID);
+    template<> bool Registry::HasComponent<SphereCollider>(uint32 eID);
+    template<> bool Registry::HasComponent<CapsuleCollider>(uint32 eID);
+
+    template<> void Registry::RemoveComponent<Collider>(uint32 eID);
+    template<> void Registry::RemoveComponent<BoxCollider>(uint32 eID);
+    template<> void Registry::RemoveComponent<SphereCollider>(uint32 eID);
+    template<> void Registry::RemoveComponent<CapsuleCollider>(uint32 eID);
 
 }

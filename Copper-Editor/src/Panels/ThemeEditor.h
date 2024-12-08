@@ -7,21 +7,21 @@
 
 namespace Editor {
 
-	class ThemeEditor : public Panel {
+    class ThemeEditor : public Panel {
 
-	public:
-		ThemeEditor() : Panel("Theme Editor") {}
+    public:
+        ThemeEditor() : Panel("Theme Editor") {}
 
-		void SaveTheme(const Copper::fs::path& path);
-		void LoadTheme(const Copper::fs::path& path);
+        void SaveTheme(const Copper::fs::path& path);
+        void LoadTheme(const Copper::fs::path& path);
 
-	private:
-		virtual void UI() override;
+    private:
+        virtual void UI() override;
 
-		void ColorEditor();
+        void ColorEditor();
 
-		struct ImGuiStyle* m_style = nullptr;
+        struct ImGuiStyle* m_style = nullptr;
 
-	};
+    };
 
 }

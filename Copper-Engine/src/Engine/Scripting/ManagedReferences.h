@@ -10,7 +10,7 @@ extern "C" {
 }
 
 namespace Copper::Scripting {
-    
+
     void ClearManagedReferences();
 
     MonoObject* ManagedReference(void* unmanagedPtr, MonoClass* classToCreate = nullptr);

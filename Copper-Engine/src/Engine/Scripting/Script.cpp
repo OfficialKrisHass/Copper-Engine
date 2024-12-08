@@ -40,7 +40,7 @@ namespace Copper::Scripting {
         if (klass == nullptr) {
 
             LogError("Can't create a script with a nullptr klass");
-            
+
             m_class = nullptr;
             m_namespace.clear();
             m_name.clear();
@@ -82,7 +82,6 @@ namespace Copper::Scripting {
 
         LogError("Failed to get Script mono class.\n\tScript name: {}.{}", m_namespace, m_name);
 
-        
     }
     void Script::GetFields() {
 

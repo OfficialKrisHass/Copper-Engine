@@ -6,7 +6,6 @@
 
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Renderer/FrameBuffer.h"
-
 #include "Engine/UI/ImGui.h"
 
 #include "Engine/Input/AxisManager.h"
@@ -27,290 +26,290 @@ extern Copper::Window* GetEditorWindow();
 
 namespace Copper {
 
-	using namespace EngineCore;
+    using namespace EngineCore;
 
-	namespace Renderer { void EndFrame(); }
+    namespace Renderer { void EndFrame(); }
 
-	struct EngineData {
+    struct EngineData {
 
-		// Core
+        // Core
 
-		EngineState engineState = EngineState::Entry;
+        EngineState engineState = EngineState::Entry;
 
-		// Renderer
-	
-	#ifdef CU_EDITOR
-		Window* window = nullptr; // Editor creates its own window and then passes it to the Engine
-	#else
-		Window window;
-	#endif
-		FrameBuffer fbo = FrameBuffer();
-		UIContext mainUIContext = UIContext();
+        // Renderer
 
-		// Scene
+#ifdef CU_EDITOR
+        Window* window = nullptr; // Editor creates its own window and then passes it to the Engine
+#else
+        Window window;
+#endif
+        FrameBuffer fbo = FrameBuffer();
+        UIContext mainUIContext = UIContext();
 
-		Scene scene;
+        // Scene
 
-		float lastFrameTime = 0.0f;
-		float deltaTime = 0.0f;
+        Scene scene;
 
-		// Engine Events
+        float lastFrameTime = 0.0f;
+        float deltaTime = 0.0f;
 
-		SimpleEvent postInitEvent;
-		SimpleEvent updateEvent;
-		SimpleEvent uiUpdateEvent;
-		Event preShutdownEvent;
-		SimpleEvent postShutdownEvent;
+        // Engine Events
 
-		// Helper func to get the Window without macros everywhere
-		Window& GetWindow() {
+        SimpleEvent postInitEvent;
+        SimpleEvent updateEvent;
+        SimpleEvent uiUpdateEvent;
+        Event preShutdownEvent;
+        SimpleEvent postShutdownEvent;
 
-			CUP_FUNCTION();
+        // Helper func to get the Window without macros everywhere
+        Window& GetWindow() {
 
-		#ifdef CU_EDITOR
-			return *window;
-		#else
-			return window;
-		#endif
+            CUP_FUNCTION();
 
-		}
-			
-	};
-	EngineData data;
+#ifdef CU_EDITOR
+            return *window;
+#else
+            return window;
+#endif
 
-	bool OnWindowClose(const Event& e);
-	bool OnWindowResize(const Event& e);
+        }
 
-	void Run();
-	void Shutdown();
+    };
+    EngineData data;
+
+    bool OnWindowClose(const Event& e);
+    bool OnWindowResize(const Event& e);
+
+    void Run();
+    void Shutdown();
 
 #pragma region EngineCore
-	void EngineCore::Initialize() {
+    void EngineCore::Initialize() {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		VERIFY_STATE_INTERNAL(EngineState::Entry, "Initialize the Engine");
-		data.engineState = EngineState::Initialization;
+        VERIFY_STATE_INTERNAL(EngineState::Entry, "Initialize the Engine");
+        data.engineState = EngineState::Initialization;
 
-	#ifdef CU_DEBUG
-		SignalHandler::RegisterHandler(SignalHandler::Signal::Abort, Profiler::CrashHandler);
+#ifdef CU_DEBUG
+        SignalHandler::RegisterHandler(SignalHandler::Signal::Abort, Profiler::CrashHandler);
         SignalHandler::RegisterHandler(SignalHandler::Signal::Segfault, Profiler::CrashHandler);
-	#endif
+#endif
 
-		// Window & Renderer Initialization
+        // Window & Renderer Initialization
 
-	#ifdef CU_EDITOR
-		data.window = GetEditorWindow();
-		CU_ASSERT(data.window, "Editor Window returned nullptr! Check if you have created a window in AppEntryPoint and provided a GetEditorWindow function!");
-	#else
-		data.window = Window("Copper Engine", 1280, 720);
-	#endif
-		data.GetWindow().AddWindowCloseEventFunc(OnWindowClose);
-		data.GetWindow().AddWindowResizeEventFunc(OnWindowResize);
+#ifdef CU_EDITOR
+        data.window = GetEditorWindow();
+        CU_ASSERT(data.window, "Editor Window returned nullptr! Check if you have created a window in AppEntryPoint and provided a GetEditorWindow function!");
+#else
+        data.window = Window("Copper Engine", 1280, 720);
+#endif
+        data.GetWindow().AddWindowCloseEventFunc(OnWindowClose);
+        data.GetWindow().AddWindowResizeEventFunc(OnWindowResize);
 
-		Renderer::Initialize();
-		Renderer::SetShaderPath(ExecutableFolder() + "/assets/Shaders/vertexDefault.glsl", ExecutableFolder() + "/assets/Shaders/fragmentDefault.glsl");
-		data.fbo = FrameBuffer(UVector2I(1280, 720)); // TODO: Find a solution to this (maybe store the resolution somewhere ?)
+        Renderer::Initialize();
+        Renderer::SetShaderPath(ExecutableFolder() + "/assets/Shaders/vertexDefault.glsl", ExecutableFolder() + "/assets/Shaders/fragmentDefault.glsl");
+        data.fbo = FrameBuffer(UVector2I(1280, 720)); // TODO: Find a solution to this (maybe store the resolution somewhere ?)
 
-		data.mainUIContext.Initialize(data.GetWindow(), true);
+        data.mainUIContext.Initialize(data.GetWindow(), true);
 
-		// Input
+        // Input
 
-		Input::Initialize(data.GetWindow());
-		Input::InitializeAxisManager();
+        Input::Initialize(data.GetWindow());
+        Input::InitializeAxisManager();
 
-		// Other systems initialization
+        // Other systems initialization
 
-		PhysicsEngine::Initialize();
+        PhysicsEngine::Initialize();
         Scripting::Initialize();
 
-		// Finalization
+        // Finalization
 
-		data.engineState = EngineState::PostInitialization;
-		data.postInitEvent();
+        data.engineState = EngineState::PostInitialization;
+        data.postInitEvent();
 
-		// Call it from here so that it doesn't have to be an exposed function
-		Run();
+        // Call it from here so that it doesn't have to be an exposed function
+        Run();
 
-	}
-	void Run() {
+    }
+    void Run() {
 
-		CUP_FUNCTION();
-		data.engineState = EngineState::Running;
+        CUP_FUNCTION();
+        data.engineState = EngineState::Running;
 
-    data.scene.Initialize();
+        data.scene.Initialize();
 
-		while (data.engineState == EngineState::Running) {
+        while (data.engineState == EngineState::Running) {
 
-			CUP_START_FRAME(nullptr);
+            CUP_START_FRAME(nullptr);
 
-			// Calculate delta time
+            // Calculate delta time
 
-			float time = data.GetWindow().GetTime();
-			data.deltaTime = time - data.lastFrameTime;
-			data.lastFrameTime = time;
+            float time = data.GetWindow().GetTime();
+            data.deltaTime = time - data.lastFrameTime;
+            data.lastFrameTime = time;
 
-			// Update
+            // Update
 
-			CUP_START_FRAME("Window");
+            CUP_START_FRAME("Window");
 
-			data.GetWindow().Update();
-			Input::Update();
+            data.GetWindow().Update();
+            Input::Update();
 
-			CUP_END_FRAME();
+            CUP_END_FRAME();
 
-			data.updateEvent();
+            data.updateEvent();
 
-			CUP_START_FRAME("Scene");
+            CUP_START_FRAME("Scene");
 
-			data.fbo.Bind();
-			data.scene.Update(data.deltaTime);
-			data.fbo.Unbind();
+            data.fbo.Bind();
+            data.scene.Update(data.deltaTime);
+            data.fbo.Unbind();
 
-			Renderer::EndFrame();
-			RendererAPI::ResizeViewport(data.GetWindow().GetSize());
+            Renderer::EndFrame();
+            RendererAPI::ResizeViewport(data.GetWindow().GetSize());
 
-			CUP_END_FRAME();
+            CUP_END_FRAME();
 
-			// UI Time window
+            // UI Time window
 
-			CUP_START_FRAME("UI");
+            CUP_START_FRAME("UI");
 
-			data.mainUIContext.Begin();
-			data.uiUpdateEvent();
-			data.mainUIContext.End();
+            data.mainUIContext.Begin();
+            data.uiUpdateEvent();
+            data.mainUIContext.End();
 
-			CUP_END_FRAME();
+            CUP_END_FRAME();
 
-			CUP_END_FRAME(); // Main
+            CUP_END_FRAME(); // Main
 
-		}
+        }
 
-		// Again call this from here so it doesn't have to be exposed
+        // Again call this from here so it doesn't have to be exposed
 
-		Shutdown();
+        Shutdown();
 
-	}
-	void Shutdown() {
+    }
+    void Shutdown() {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		data.mainUIContext.Shutdown();
-		data.GetWindow().Shutdown();
-        
+        data.mainUIContext.Shutdown();
+        data.GetWindow().Shutdown();
+
         Scripting::Shutdown();
         PhysicsEngine::Shutdown();
 
-		data.postShutdownEvent();
+        data.postShutdownEvent();
 
-	}
+    }
 
-	EngineState EngineCore::GetEngineState() { return data.engineState; }
-	std::string EngineCore::EngineStateToString(EngineState state) {
+    EngineState EngineCore::GetEngineState() { return data.engineState; }
+    std::string EngineCore::EngineStateToString(EngineState state) {
 
-		switch (state) {
+        switch (state) {
 
-			case EngineState::Entry: return "Entry"; break;
-			case EngineState::Initialization: return "Initialization"; break;
-			case EngineState::PostInitialization: return "Post Initialization"; break;
-			case EngineState::Running: return "Running"; break;
-			case EngineState::Shutdown: return "Shutdown"; break;
+            case EngineState::Entry: return "Entry"; break;
+            case EngineState::Initialization: return "Initialization"; break;
+            case EngineState::PostInitialization: return "Post Initialization"; break;
+            case EngineState::Running: return "Running"; break;
+            case EngineState::Shutdown: return "Shutdown"; break;
 
-		}
+        }
 
-		return "Invalid Engine State!";
+        return "Invalid Engine State!";
 
-	}
+    }
 
 #pragma endregion
 
-	bool OnWindowClose(const Event& e) {
+    bool OnWindowClose(const Event& e) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		if (!data.preShutdownEvent()) return false;
-		data.engineState = EngineState::Shutdown;
+        if (!data.preShutdownEvent()) return false;
+        data.engineState = EngineState::Shutdown;
 
-		return true;
+        return true;
 
-	}
-	bool OnWindowResize(const Event& e) {
+    }
+    bool OnWindowResize(const Event& e) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		// Editor handles resizing on its own
+        // Editor handles resizing on its own
 
-	#ifndef CU_EDITOR
-		data.fbo.Resize(data.GetWindow().Size());
-		data.scene.cam->Resize(data.GetWindow().Size());
-	#endif
+#ifndef CU_EDITOR
+        data.fbo.Resize(data.GetWindow().Size());
+        data.scene.cam->Resize(data.GetWindow().Size());
+#endif
 
-		return true;
+        return true;
 
-	}
+    }
 
-	// Engine Events
-	
-	void AddPostInitEventFunc(std::function<void()> func) { data.postInitEvent += func; }
+    // Engine Events
 
-	void AddUpdateEventFunc(std::function<void()> func) { data.updateEvent += func; }
-	void AddUIUpdateEventFunc(std::function<void()> func) { data.uiUpdateEvent += func; }
+    void AddPostInitEventFunc(std::function<void()> func) { data.postInitEvent += func; }
 
-	void AddPreShutdownEventFunc(std::function<bool(const Event&)> func) { data.preShutdownEvent += func; }
-	void AddPostShutdownEventFunc(std::function<void()> func) { data.postShutdownEvent += func; }
+    void AddUpdateEventFunc(std::function<void()> func) { data.updateEvent += func; }
+    void AddUIUpdateEventFunc(std::function<void()> func) { data.uiUpdateEvent += func; }
 
-	// Game
+    void AddPreShutdownEventFunc(std::function<bool(const Event&)> func) { data.preShutdownEvent += func; }
+    void AddPostShutdownEventFunc(std::function<void()> func) { data.postShutdownEvent += func; }
 
-	float GetDeltaTime() { return data.deltaTime; }
+    // Game
 
-	// Declaration in Window.h
+    float GetDeltaTime() { return data.deltaTime; }
 
-	Window& GetWindow() { return data.GetWindow(); }
-	UVector2I GetWindowSize() {
-		
-	#ifdef CU_EDITOR
-		return data.fbo.GetSize();
-	#else
-		return data.window.GetSize();
-	#endif
+    // Declaration in Window.h
 
-	}
-	float GetWindowAspectRatio() {
+    Window& GetWindow() { return data.GetWindow(); }
+    UVector2I GetWindowSize() {
 
-	#ifdef CU_EDITOR
-		return static_cast<float>(data.fbo.GetWidth()) / data.fbo.GetHeight();
-	#else
-		return data.window.GetAspectRatio();
-	#endif
+#ifdef CU_EDITOR
+        return data.fbo.GetSize();
+#else
+        return data.window.GetSize();
+#endif
 
-	}
+    }
+    float GetWindowAspectRatio() {
 
-	void SetMainWindowAsCurrent() { data.GetWindow().SetAsCurrentContext(); }
-	void SetWindowSize(const UVector2I& size) {
+#ifdef CU_EDITOR
+        return static_cast<float>(data.fbo.GetWidth()) / data.fbo.GetHeight();
+#else
+        return data.window.GetAspectRatio();
+#endif
 
-		CUP_FUNCTION();
+    }
 
-	#ifdef CU_EDITOR
-		if (data.fbo.GetSize() == size) return;
+    void SetMainWindowAsCurrent() { data.GetWindow().SetAsCurrentContext(); }
+    void SetWindowSize(const UVector2I& size) {
 
-		data.fbo.Resize(size);
-		data.scene.GetMainCamera()->Resize(size);
-	#else
-		data.window.SetSize(size);
-	#endif
-	
-	}
+        CUP_FUNCTION();
 
-	// Declaration in FrameBuffer.h
+#ifdef CU_EDITOR
+        if (data.fbo.GetSize() == size) return;
+
+        data.fbo.Resize(size);
+        data.scene.GetMainCamera()->Resize(size);
+#else
+        data.window.SetSize(size);
+#endif
+
+    }
+
+    // Declaration in FrameBuffer.h
 
     const FrameBuffer& GetMainFBO() { return data.fbo; }
 
-	// Declaration in ImGui.h
+    // Declaration in ImGui.h
 
-	const UIContext& MainUIContext() { return data.mainUIContext; }
+    const UIContext& MainUIContext() { return data.mainUIContext; }
 
-	// Declaration in Scene.h
-	
-	Scene* GetScene() { return &data.scene; }
+    // Declaration in Scene.h
+
+    Scene* GetScene() { return &data.scene; }
 
 }

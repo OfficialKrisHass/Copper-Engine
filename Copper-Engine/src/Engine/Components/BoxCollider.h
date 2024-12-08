@@ -54,5 +54,5 @@ namespace Copper {
         physx::PxShape* CreateShape() const override;
 
     };
-    
+
 }

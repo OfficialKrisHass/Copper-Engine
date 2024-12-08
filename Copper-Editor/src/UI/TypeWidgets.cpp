@@ -12,546 +12,546 @@
 static inline ImVec2  operator+(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x + rhs.x, lhs.y + rhs.y); }
 
 #define DISABLED_BUTTON(label, size) ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);\
-									 ImGui::Button(label, size);\
-									 ImGui::PopItemFlag()
+                                     ImGui::Button(label, size);\
+                                     ImGui::PopItemFlag()
 
 namespace Editor::UI {
 
-	using namespace Copper;
+    using namespace Copper;
 
-	bool EditBool(const std::string& name, bool* show) {
+    bool EditBool(const std::string& name, bool* show) {
 
-		return ImGui::Checkbox(name.c_str(), show);;
+        return ImGui::Checkbox(name.c_str(), show);;
 
-	}
-	bool EditInt(const std::string& name, int32* show) {
+    }
+    bool EditInt(const std::string& name, int32* show) {
 
-		return ImGui::DragInt(name.c_str(), show, DragIntSpeed);
+        return ImGui::DragInt(name.c_str(), show, DragIntSpeed);
 
-	}
-	bool EditUInt(const std::string& name, uint32* show) {
+    }
+    bool EditUInt(const std::string& name, uint32* show) {
 
-		return ImGui::DragInt(name.c_str(), (int*) show, DragIntSpeed, 0);;
+        return ImGui::DragInt(name.c_str(), (int*) show, DragIntSpeed, 0);;
 
-	}
-	bool EditFloat(const std::string& name, float* show) {
+    }
+    bool EditFloat(const std::string& name, float* show) {
 
-		return ImGui::DragFloat(name.c_str(), show, DragFloatSpeed);
+        return ImGui::DragFloat(name.c_str(), show, DragFloatSpeed);
 
-	}
-	bool EditDouble(const std::string& name, double* show) {
+    }
+    bool EditDouble(const std::string& name, double* show) {
 
-		return ImGui::DragFloat(name.c_str(), (float*) show, DragFloatSpeed);
+        return ImGui::DragFloat(name.c_str(), (float*) show, DragFloatSpeed);
 
-	}
-	bool EditString(const std::string& name, std::string* show) {
+    }
+    bool EditString(const std::string& name, std::string* show) {
 
-		return ImGui::InputText(name.c_str(), show);
+        return ImGui::InputText(name.c_str(), show);
 
-	}
-	bool EditChar(const std::string& name, char* show) {
+    }
+    bool EditChar(const std::string& name, char* show) {
 
-		return ImGui::InputText(name.c_str(), show, sizeof(char));
+        return ImGui::InputText(name.c_str(), show, sizeof(char));
 
-	}
+    }
 
-	bool EditVector2(const std::string& name, Vector2* vec) {
+    bool EditVector2(const std::string& name, Vector2* vec) {
 
-		bool ret = false;
+        bool ret = false;
 
-		const float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
-		const ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };
+        const float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+        const ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };
 
-		// Init
+        // Init
 
-		ImGui::PushID(name.c_str());
+        ImGui::PushID(name.c_str());
 
-		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
-		ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_WindowBg));
+        ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+        ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_WindowBg));
 
-		// X
+        // X
 
-		DISABLED_BUTTON("X", buttonSize);
+        DISABLED_BUTTON("X", buttonSize);
 
-		ImGui::SameLine();
-		if (ImGui::DragFloat("##X", &vec->x, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
-		ImGui::PopItemWidth();
-		ImGui::SameLine();
+        ImGui::SameLine();
+        if (ImGui::DragFloat("##X", &vec->x, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
+        ImGui::PopItemWidth();
+        ImGui::SameLine();
 
-		// Y
+        // Y
 
-		DISABLED_BUTTON("Y", buttonSize);
+        DISABLED_BUTTON("Y", buttonSize);
 
-		ImGui::SameLine();
-		if (ImGui::DragFloat("##Y", &vec->y, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
-		ImGui::PopItemWidth();
-		ImGui::SameLine(0.0f, 7.0f);
+        ImGui::SameLine();
+        if (ImGui::DragFloat("##Y", &vec->y, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
+        ImGui::PopItemWidth();
+        ImGui::SameLine(0.0f, 7.0f);
 
-		// Text
+        // Text
 
-		ImGui::Text(name.c_str());
-		ImGui::PopItemWidth();
+        ImGui::Text(name.c_str());
+        ImGui::PopItemWidth();
 
-		// Cleanup
-		ImGui::PopStyleVar();
-		ImGui::PopStyleColor();
+        // Cleanup
+        ImGui::PopStyleVar();
+        ImGui::PopStyleColor();
 
-		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
-		ImGui::PopID();
+        ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+        ImGui::PopID();
 
-		return ret;
+        return ret;
 
-	}
-	bool EditVector3(const std::string& name, Vector3* vec) {
+    }
+    bool EditVector3(const std::string& name, Vector3* vec) {
 
-		bool ret = false;
+        bool ret = false;
 
-		const float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
-		const ImVec2 buttonSize = { lineHeight, lineHeight };
+        const float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+        const ImVec2 buttonSize = { lineHeight, lineHeight };
 
-		// Init
+        // Init
 
-		ImGui::PushID(name.c_str());
+        ImGui::PushID(name.c_str());
 
-		ImGui::PushMultiItemsWidths(4, ImGui::CalcItemWidth());
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
-		ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_WindowBg));
+        ImGui::PushMultiItemsWidths(4, ImGui::CalcItemWidth());
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+        ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_WindowBg));
 
-		// X
+        // X
 
-		DISABLED_BUTTON("X", buttonSize);
+        DISABLED_BUTTON("X", buttonSize);
 
-		ImGui::SameLine();
-		if (ImGui::DragFloat("##X", &vec->x, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
-		ImGui::PopItemWidth();
-		ImGui::SameLine();
+        ImGui::SameLine();
+        if (ImGui::DragFloat("##X", &vec->x, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
+        ImGui::PopItemWidth();
+        ImGui::SameLine();
 
-		// Y
+        // Y
 
-		DISABLED_BUTTON("Y", buttonSize);
+        DISABLED_BUTTON("Y", buttonSize);
 
-		ImGui::SameLine();
-		if (ImGui::DragFloat("##Y", &vec->y, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
-		ImGui::PopItemWidth();
-		ImGui::SameLine();
+        ImGui::SameLine();
+        if (ImGui::DragFloat("##Y", &vec->y, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
+        ImGui::PopItemWidth();
+        ImGui::SameLine();
 
-		// Z
+        // Z
 
-		DISABLED_BUTTON("Z", buttonSize);
+        DISABLED_BUTTON("Z", buttonSize);
 
-		ImGui::SameLine();
-		if (ImGui::DragFloat("##Z", &vec->z, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
-		ImGui::PopItemWidth();
-		ImGui::SameLine(0.0f, 7.0f);
+        ImGui::SameLine();
+        if (ImGui::DragFloat("##Z", &vec->z, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
+        ImGui::PopItemWidth();
+        ImGui::SameLine(0.0f, 7.0f);
 
-		// Text
+        // Text
 
-		ImGui::Text(name.c_str());
-		ImGui::PopItemWidth();
+        ImGui::Text(name.c_str());
+        ImGui::PopItemWidth();
 
-		// Cleanup
+        // Cleanup
 
-		ImGui::PopStyleVar();
-		ImGui::PopStyleColor();
+        ImGui::PopStyleVar();
+        ImGui::PopStyleColor();
 
-		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
-		ImGui::PopID();
+        ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+        ImGui::PopID();
 
-		return ret;
+        return ret;
 
-	}
-	bool EditVector4(const std::string& name, Vector4* vec) {
+    }
+    bool EditVector4(const std::string& name, Vector4* vec) {
 
-		bool ret = false;
+        bool ret = false;
 
-		const float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
-		const ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };
+        const float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+        const ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };
 
-		// Init
+        // Init
 
-		ImGui::PushID(name.c_str());
+        ImGui::PushID(name.c_str());
 
-		ImGui::PushMultiItemsWidths(5, ImGui::CalcItemWidth());
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
-		ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_WindowBg));
+        ImGui::PushMultiItemsWidths(5, ImGui::CalcItemWidth());
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+        ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_WindowBg));
 
-		// X
+        // X
 
-		DISABLED_BUTTON("X", buttonSize);
+        DISABLED_BUTTON("X", buttonSize);
 
-		ImGui::SameLine();
-		if (ImGui::DragFloat("##X", &vec->x, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
-		ImGui::PopItemWidth();
-		ImGui::SameLine();
+        ImGui::SameLine();
+        if (ImGui::DragFloat("##X", &vec->x, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
+        ImGui::PopItemWidth();
+        ImGui::SameLine();
 
-		// Y
+        // Y
 
-		DISABLED_BUTTON("Y", buttonSize);
+        DISABLED_BUTTON("Y", buttonSize);
 
-		ImGui::SameLine();
-		if (ImGui::DragFloat("##Y", &vec->y, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
-		ImGui::PopItemWidth();
-		ImGui::SameLine();
+        ImGui::SameLine();
+        if (ImGui::DragFloat("##Y", &vec->y, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
+        ImGui::PopItemWidth();
+        ImGui::SameLine();
 
-		// Z
+        // Z
 
-		DISABLED_BUTTON("Z", buttonSize);
+        DISABLED_BUTTON("Z", buttonSize);
 
-		ImGui::SameLine();
-		if (ImGui::DragFloat("##Z", &vec->z, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
-		ImGui::PopItemWidth();
-		ImGui::SameLine();
+        ImGui::SameLine();
+        if (ImGui::DragFloat("##Z", &vec->z, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
+        ImGui::PopItemWidth();
+        ImGui::SameLine();
 
-		// W
+        // W
 
-		DISABLED_BUTTON("W", buttonSize);
+        DISABLED_BUTTON("W", buttonSize);
 
-		ImGui::SameLine();
-		if (ImGui::DragFloat("##W", &vec->w, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
-		ImGui::PopItemWidth();
-		ImGui::SameLine(0.0f, 7.0f);
+        ImGui::SameLine();
+        if (ImGui::DragFloat("##W", &vec->w, DragFloatSpeed, 0.0f, 0.0f, "%.2f")) ret = true;
+        ImGui::PopItemWidth();
+        ImGui::SameLine(0.0f, 7.0f);
 
-		// Text
+        // Text
 
-		ImGui::Text(name.c_str());
-		ImGui::PopItemWidth();
+        ImGui::Text(name.c_str());
+        ImGui::PopItemWidth();
 
-		// Cleanup
+        // Cleanup
 
-		ImGui::PopStyleVar();
-		ImGui::PopStyleColor();
+        ImGui::PopStyleVar();
+        ImGui::PopStyleColor();
 
-		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
-		ImGui::PopID();
+        ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+        ImGui::PopID();
 
-		return ret;
+        return ret;
 
-	}
-	bool EditColor(const std::string& name, Color* col) {
+    }
+    bool EditColor(const std::string& name, Color* col) {
 
-		bool ret = false;
+        bool ret = false;
 
-		ImGui::PushID(name.c_str());
+        ImGui::PushID(name.c_str());
 
-		ret = ImGui::ColorEdit3("##Color", &col->r);
-		ImGui::SameLine();
-		ImGui::Text(name.c_str());
+        ret = ImGui::ColorEdit3("##Color", &col->r);
+        ImGui::SameLine();
+        ImGui::Text(name.c_str());
 
-		ImGui::PopID();
+        ImGui::PopID();
 
-		return ret;
+        return ret;
 
-	}
+    }
 
-	bool EditEntity(const std::string& name, InternalEntity** entity) {
+    bool EditEntity(const std::string& name, InternalEntity** entity) {
 
-		ImGuiID id = ImGuiID((uint32) (uint64) name.c_str());
-		ImGui::PushID(id);
+        ImGuiID id = ImGuiID((uint32) (uint64) name.c_str());
+        ImGui::PushID(id);
 
-		bool ret = false;
-		std::string nodeText;
+        bool ret = false;
+        std::string nodeText;
 
-		if (*entity)
-			nodeText = (*entity)->name;
-		else
-			nodeText = "None";
-		nodeText += " (Copper Entity)";
+        if (*entity)
+            nodeText = (*entity)->name;
+        else
+            nodeText = "None";
+        nodeText += " (Copper Entity)";
 
-		const ImGuiStyle& style = ImGui::GetStyle();
-		const ImVec2 cursorPos = ImGui::GetCurrentWindow()->DC.CursorPos;
+        const ImGuiStyle& style = ImGui::GetStyle();
+        const ImVec2 cursorPos = ImGui::GetCurrentWindow()->DC.CursorPos;
 
-		const float textSizeY = ImGui::CalcTextSize(name.c_str(), nullptr, true).y;
-		const ImVec2 frameSize = ImGui::CalcItemSize({ 0, 0 }, ImGui::CalcItemWidth(), textSizeY + style.FramePadding.y * 2.0f);
+        const float textSizeY = ImGui::CalcTextSize(name.c_str(), nullptr, true).y;
+        const ImVec2 frameSize = ImGui::CalcItemSize({ 0, 0 }, ImGui::CalcItemWidth(), textSizeY + style.FramePadding.y * 2.0f);
 
-		const bool hovered = ImGui::IsMouseHoveringRect(cursorPos, cursorPos + frameSize);
+        const bool hovered = ImGui::IsMouseHoveringRect(cursorPos, cursorPos + frameSize);
 
-		// Frame
+        // Frame
 
-		if (hovered)
-			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImGui::GetColorU32(ImGuiCol_FrameBgHovered));
+        if (hovered)
+            ImGui::PushStyleColor(ImGuiCol_FrameBg, ImGui::GetColorU32(ImGuiCol_FrameBgHovered));
 
-		ImGui::BeginChildFrame(id, frameSize);
-		ImGui::Text(nodeText.c_str());
-		ImGui::EndChildFrame();
+        ImGui::BeginChildFrame(id, frameSize);
+        ImGui::Text(nodeText.c_str());
+        ImGui::EndChildFrame();
 
-		if (hovered)
-			ImGui::PopStyleColor();
+        if (hovered)
+            ImGui::PopStyleColor();
 
-		// Name
+        // Name
 
-		ImGui::SameLine(0.0f, style.ItemInnerSpacing.x);
-		ImGui::Text(name.c_str());
+        ImGui::SameLine(0.0f, style.ItemInnerSpacing.x);
+        ImGui::Text(name.c_str());
 
-		// Drag Drop
+        // Drag Drop
 
-		// For some reason the rect sometimes flickers, and it seems to be based entirely on randomness
-		// sometimes it does, sometimes not, Love it :)))))))))))
-		// TODO: Fix
+        // For some reason the rect sometimes flickers, and it seems to be based entirely on randomness
+        // sometimes it does, sometimes not, Love it :)))))))))))
+        // TODO: Fix
 
-		if (ImGui::BeginDragDropTargetCustom({ cursorPos, cursorPos + frameSize }, ImGuiID((uint32) (uint64) name.c_str()))) {
+        if (ImGui::BeginDragDropTargetCustom({ cursorPos, cursorPos + frameSize }, ImGuiID((uint32) (uint64) name.c_str()))) {
 
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE")) {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE")) {
 
-				ret = true;
-				*entity = GetEntityFromID(*((uint32*) payload->Data));
+                ret = true;
+                *entity = GetEntityFromID(*((uint32*) payload->Data));
 
-			}
+            }
 
-			ImGui::EndDragDropTarget();
+            ImGui::EndDragDropTarget();
 
-		}
+        }
 
-		ImGui::PopID();
+        ImGui::PopID();
 
-		return ret;
+        return ret;
 
-	}
-	bool EditTransform(const std::string& name, Transform** transform) {
+    }
+    bool EditTransform(const std::string& name, Transform** transform) {
 
-		bool ret = false;
+        bool ret = false;
 
-		ImGuiID id = ImGuiID((uint32) (uint64) name.c_str());
-		ImGui::PushID(id);
+        ImGuiID id = ImGuiID((uint32) (uint64) name.c_str());
+        ImGui::PushID(id);
 
-		std::string nodeText;
+        std::string nodeText;
 
-		if (*transform)
-			nodeText = (*transform)->GetEntity()->name;
-		else
-			nodeText = "None";
-		nodeText += " (Transform)";
+        if (*transform)
+            nodeText = (*transform)->GetEntity()->name;
+        else
+            nodeText = "None";
+        nodeText += " (Transform)";
 
-		const ImGuiStyle& style = ImGui::GetStyle();
-		const ImVec2 cursorPos = ImGui::GetCurrentWindow()->DC.CursorPos;
+        const ImGuiStyle& style = ImGui::GetStyle();
+        const ImVec2 cursorPos = ImGui::GetCurrentWindow()->DC.CursorPos;
 
-		const float textSizeY = ImGui::CalcTextSize(name.c_str(), nullptr, true).y;
-		const ImVec2 frameSize = ImGui::CalcItemSize({ 0, 0 }, ImGui::CalcItemWidth(), textSizeY + style.FramePadding.y * 2.0f);
+        const float textSizeY = ImGui::CalcTextSize(name.c_str(), nullptr, true).y;
+        const ImVec2 frameSize = ImGui::CalcItemSize({ 0, 0 }, ImGui::CalcItemWidth(), textSizeY + style.FramePadding.y * 2.0f);
 
-		const bool hovered = ImGui::IsMouseHoveringRect(cursorPos, cursorPos + frameSize);
+        const bool hovered = ImGui::IsMouseHoveringRect(cursorPos, cursorPos + frameSize);
 
-		// Frame
+        // Frame
 
-		if (hovered)
-			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImGui::GetColorU32(ImGuiCol_FrameBgHovered));
+        if (hovered)
+            ImGui::PushStyleColor(ImGuiCol_FrameBg, ImGui::GetColorU32(ImGuiCol_FrameBgHovered));
 
-		ImGui::BeginChildFrame(id, frameSize);
-		ImGui::Text(nodeText.c_str());
-		ImGui::EndChildFrame();
+        ImGui::BeginChildFrame(id, frameSize);
+        ImGui::Text(nodeText.c_str());
+        ImGui::EndChildFrame();
 
-		if (hovered)
-			ImGui::PopStyleColor();
+        if (hovered)
+            ImGui::PopStyleColor();
 
-		// Name
+        // Name
 
-		ImGui::SameLine(0.0f, style.ItemInnerSpacing.x);
-		ImGui::Text(name.c_str());
+        ImGui::SameLine(0.0f, style.ItemInnerSpacing.x);
+        ImGui::Text(name.c_str());
 
-		// Drag Drop
+        // Drag Drop
 
-		// For some reason the rect sometimes flickers, and it seems to be based entirely on randomness
-		// sometimes it does, sometimes not, Love it :)))))))))))
-		// TODO: Fix
+        // For some reason the rect sometimes flickers, and it seems to be based entirely on randomness
+        // sometimes it does, sometimes not, Love it :)))))))))))
+        // TODO: Fix
 
-		if (ImGui::BeginDragDropTargetCustom({ cursorPos, cursorPos + frameSize }, ImGuiID((uint32) (uint64) name.c_str()))) {
+        if (ImGui::BeginDragDropTargetCustom({ cursorPos, cursorPos + frameSize }, ImGuiID((uint32) (uint64) name.c_str()))) {
 
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE")) {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE")) {
 
-				ret = true;
+                ret = true;
                 *transform = GetEntityFromID(*((uint32*) payload->Data))->GetTransform();
 
-			}
+            }
 
-			ImGui::EndDragDropTarget();
+            ImGui::EndDragDropTarget();
 
-		}
+        }
 
-		ImGui::PopID();
+        ImGui::PopID();
 
-		return ret;
+        return ret;
 
-	}
+    }
 
-	bool EditTexture(const std::string& name, Copper::TextureAsset* texture) {
+    bool EditTexture(const std::string& name, Copper::TextureAsset* texture) {
 
-		ImGuiID id = ImGuiID((uint32) (uint64) name.c_str());
-		ImGui::PushID(id);
+        ImGuiID id = ImGuiID((uint32) (uint64) name.c_str());
+        ImGui::PushID(id);
 
-		bool ret = false;
-		std::string nodeText;
+        bool ret = false;
+        std::string nodeText;
 
-		if (*texture != Texture::WhiteTexture())
-			nodeText = ProjectAssetDatabase::GetAssetName(*texture);
-		else
-			nodeText = "None";
-		nodeText += " (Texture)";
+        if (*texture != Texture::WhiteTexture())
+            nodeText = ProjectAssetDatabase::GetAssetName(*texture);
+        else
+            nodeText = "None";
+        nodeText += " (Texture)";
 
-		const ImGuiStyle& style = ImGui::GetStyle();
-		const ImVec2 cursorPos = ImGui::GetCurrentWindow()->DC.CursorPos;
+        const ImGuiStyle& style = ImGui::GetStyle();
+        const ImVec2 cursorPos = ImGui::GetCurrentWindow()->DC.CursorPos;
 
-		const float textSizeY = ImGui::CalcTextSize(name.c_str(), nullptr, true).y;
-		const ImVec2 frameSize = ImGui::CalcItemSize({ 0, 0 }, ImGui::CalcItemWidth(), textSizeY + style.FramePadding.y * 2.0f);
+        const float textSizeY = ImGui::CalcTextSize(name.c_str(), nullptr, true).y;
+        const ImVec2 frameSize = ImGui::CalcItemSize({ 0, 0 }, ImGui::CalcItemWidth(), textSizeY + style.FramePadding.y * 2.0f);
 
-		const bool hovered = ImGui::IsMouseHoveringRect(cursorPos, cursorPos + frameSize);
+        const bool hovered = ImGui::IsMouseHoveringRect(cursorPos, cursorPos + frameSize);
 
-		// Frame
+        // Frame
 
-		if (hovered)
-			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImGui::GetColorU32(ImGuiCol_FrameBgHovered));
+        if (hovered)
+            ImGui::PushStyleColor(ImGuiCol_FrameBg, ImGui::GetColorU32(ImGuiCol_FrameBgHovered));
 
-		ImGui::BeginChildFrame(id, frameSize);
-		ImGui::Text(nodeText.c_str());
-		ImGui::EndChildFrame();
+        ImGui::BeginChildFrame(id, frameSize);
+        ImGui::Text(nodeText.c_str());
+        ImGui::EndChildFrame();
 
-		if (hovered)
-			ImGui::PopStyleColor();
+        if (hovered)
+            ImGui::PopStyleColor();
 
-		// Name
+        // Name
 
-		ImGui::SameLine(0.0f, style.ItemInnerSpacing.x);
-		ImGui::Text(name.c_str());
+        ImGui::SameLine(0.0f, style.ItemInnerSpacing.x);
+        ImGui::Text(name.c_str());
 
-		// Drag Drop
+        // Drag Drop
 
-		// For some reason the rect sometimes flickers, and it seems to be based entirely on randomness
-		// sometimes it does, sometimes not, Love it :)))))))))))
-		// TODO: Fix
+        // For some reason the rect sometimes flickers, and it seems to be based entirely on randomness
+        // sometimes it does, sometimes not, Love it :)))))))))))
+        // TODO: Fix
 
-		if (ImGui::BeginDragDropTargetCustom({ cursorPos, cursorPos + frameSize }, ImGuiID((uint32) (uint64) name.c_str()))) {
+        if (ImGui::BeginDragDropTargetCustom({ cursorPos, cursorPos + frameSize }, ImGuiID((uint32) (uint64) name.c_str()))) {
 
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FB_TEXTURE")) {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FB_TEXTURE")) {
 
-				ret = true;
-				*texture = *(TextureAsset*) payload->Data;
+                ret = true;
+                *texture = *(TextureAsset*) payload->Data;
 
-			}
+            }
 
-			ImGui::EndDragDropTarget();
+            ImGui::EndDragDropTarget();
 
-		}
+        }
 
-		ImGui::PopID();
+        ImGui::PopID();
 
-		return ret;
+        return ret;
 
-	}
-	bool EditMaterial(const std::string& name, MaterialAsset* material) {
+    }
+    bool EditMaterial(const std::string& name, MaterialAsset* material) {
 
-		ImGuiID id = ImGuiID((uint32) (uint64) name.c_str());
-		ImGui::PushID(id);
+        ImGuiID id = ImGuiID((uint32) (uint64) name.c_str());
+        ImGui::PushID(id);
 
-		bool ret = false;
-		std::string nodeText;
+        bool ret = false;
+        std::string nodeText;
 
-		if (*material != Material::WhiteMaterial())
-			nodeText = ProjectAssetDatabase::GetAssetName(*material);
-		else
-			nodeText = "None";
-		nodeText += " (Material)";
+        if (*material != Material::WhiteMaterial())
+            nodeText = ProjectAssetDatabase::GetAssetName(*material);
+        else
+            nodeText = "None";
+        nodeText += " (Material)";
 
-		const ImGuiStyle& style = ImGui::GetStyle();
-		const ImVec2 cursorPos = ImGui::GetCurrentWindow()->DC.CursorPos;
+        const ImGuiStyle& style = ImGui::GetStyle();
+        const ImVec2 cursorPos = ImGui::GetCurrentWindow()->DC.CursorPos;
 
-		const float textSizeY = ImGui::CalcTextSize(name.c_str(), nullptr, true).y;
-		const ImVec2 frameSize = ImGui::CalcItemSize({ 0, 0 }, ImGui::CalcItemWidth(), textSizeY + style.FramePadding.y * 2.0f);
+        const float textSizeY = ImGui::CalcTextSize(name.c_str(), nullptr, true).y;
+        const ImVec2 frameSize = ImGui::CalcItemSize({ 0, 0 }, ImGui::CalcItemWidth(), textSizeY + style.FramePadding.y * 2.0f);
 
-		const bool hovered = ImGui::IsMouseHoveringRect(cursorPos, cursorPos + frameSize);
+        const bool hovered = ImGui::IsMouseHoveringRect(cursorPos, cursorPos + frameSize);
 
-		// Frame
+        // Frame
 
-		if (hovered)
-			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImGui::GetColorU32(ImGuiCol_FrameBgHovered));
+        if (hovered)
+            ImGui::PushStyleColor(ImGuiCol_FrameBg, ImGui::GetColorU32(ImGuiCol_FrameBgHovered));
 
-		ImGui::BeginChildFrame(id, frameSize);
-		ImGui::Text(nodeText.c_str());
-		ImGui::EndChildFrame();
+        ImGui::BeginChildFrame(id, frameSize);
+        ImGui::Text(nodeText.c_str());
+        ImGui::EndChildFrame();
 
-		if (hovered)
-			ImGui::PopStyleColor();
+        if (hovered)
+            ImGui::PopStyleColor();
 
-		// Name
+        // Name
 
-		ImGui::SameLine(0.0f, style.ItemInnerSpacing.x);
-		ImGui::Text(name.c_str());
+        ImGui::SameLine(0.0f, style.ItemInnerSpacing.x);
+        ImGui::Text(name.c_str());
 
-		// Drag Drop
+        // Drag Drop
 
-		// For some reason the rect sometimes flickers, and it seems to be based entirely on randomness
-		// sometimes it does, sometimes not, Love it :)))))))))))
-		// TODO: Fix
+        // For some reason the rect sometimes flickers, and it seems to be based entirely on randomness
+        // sometimes it does, sometimes not, Love it :)))))))))))
+        // TODO: Fix
 
-		if (ImGui::BeginDragDropTargetCustom({ cursorPos, cursorPos + frameSize }, ImGuiID((uint32) (uint64) name.c_str()))) {
+        if (ImGui::BeginDragDropTargetCustom({ cursorPos, cursorPos + frameSize }, ImGuiID((uint32) (uint64) name.c_str()))) {
 
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FB_MATERIAL")) {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FB_MATERIAL")) {
 
-				ret = true;
-				*material = *(UUID*) payload->Data;
+                ret = true;
+                *material = *(UUID*) payload->Data;
 
-			}
+            }
 
-			ImGui::EndDragDropTarget();
+            ImGui::EndDragDropTarget();
 
-		}
+        }
 
-		ImGui::PopID();
+        ImGui::PopID();
 
-		return ret;
+        return ret;
 
-	}
+    }
 
-	bool EditDropDown(const std::string& name, const char* items[], uint32 count, uint8* selected) {
+    bool EditDropDown(const std::string& name, const char* items[], uint32 count, uint8* selected) {
 
-		bool ret = false;
+        bool ret = false;
 
-		if (ImGui::BeginCombo(name.c_str(), items[*selected])) {
+        if (ImGui::BeginCombo(name.c_str(), items[*selected])) {
 
-			for (uint32 i = 0; i < count; i++) {
+            for (uint32 i = 0; i < count; i++) {
 
-				const bool isSelected = (i == *selected);
-				if (ImGui::Selectable(items[i], isSelected))
-					*selected = i;
+                const bool isSelected = (i == *selected);
+                if (ImGui::Selectable(items[i], isSelected))
+                    *selected = i;
 
-				if (isSelected)
-					ImGui::SetItemDefaultFocus();
+                if (isSelected)
+                    ImGui::SetItemDefaultFocus();
 
-			}
-			ImGui::EndCombo();
+            }
+            ImGui::EndCombo();
 
-		}
+        }
 
-		return ret;
+        return ret;
 
-	}
-	bool EditMask(const std::string& name, uint32& mask, uint32 num, uint32 maskOffset, char startLabel) {
+    }
+    bool EditMask(const std::string& name, uint32& mask, uint32 num, uint32 maskOffset, char startLabel) {
 
-		ImGui::Text(name.c_str());
+        ImGui::Text(name.c_str());
 
-		bool tmp;
-		bool ret = false;
-		std::string label = "";
+        bool tmp;
+        bool ret = false;
+        std::string label = "";
 
-		for (uint32 i = 0, bit = maskOffset; i < num; i++, bit++) {
+        for (uint32 i = 0, bit = maskOffset; i < num; i++, bit++) {
 
-			ImGui::SameLine();
+            ImGui::SameLine();
 
-			tmp = mask & 1 << bit;
-			label = (char) (startLabel + i);
-			label += "##" + name;
+            tmp = mask & 1 << bit;
+            label = (char) (startLabel + i);
+            label += "##" + name;
 
-			if (!ImGui::Checkbox(label.c_str(), &tmp))
-				continue;
+            if (!ImGui::Checkbox(label.c_str(), &tmp))
+                continue;
 
-			ret = true;
+            ret = true;
 
-			if (tmp)
-				mask |= 1 << bit;
-			else
-				mask &= ~(1 << bit);
+            if (tmp)
+                mask |= 1 << bit;
+            else
+                mask &= ~(1 << bit);
 
-		}
+        }
 
-		return ret;
+        return ret;
 
-	}
+    }
 
 }

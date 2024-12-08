@@ -29,134 +29,134 @@ using namespace Copper;
 
 namespace Editor {
 
-	static const char* s_lightTypes[] = { "Point", "Directional" };
+    static const char* s_lightTypes[] = { "Point", "Directional" };
 
-	Entity Properties::m_selectedEntity = nullptr;
-	fs::path Properties::m_selectedFile = "";
+    Entity Properties::m_selectedEntity = nullptr;
+    fs::path Properties::m_selectedFile = "";
 
-	template<typename T> static bool DrawComponent(const std::string& name, T* component);
-	static bool DrawComponent(const std::string& name, Transform* component);
+    template<typename T> static bool DrawComponent(const std::string& name, T* component);
+    static bool DrawComponent(const std::string& name, Transform* component);
 
-	void Properties::UI() {
+    void Properties::UI() {
 
-		CUP_FUNCTION();
-		CUP_START_FRAME("Properties");
+        CUP_FUNCTION();
+        CUP_START_FRAME("Properties");
 
-		if (m_selectedEntity && m_selectedFile.empty())
-			RenderEntity();
-		else if (!m_selectedFile.empty() && !m_selectedEntity)
-			RenderFile();
+        if (m_selectedEntity && m_selectedFile.empty())
+            RenderEntity();
+        else if (!m_selectedFile.empty() && !m_selectedEntity)
+            RenderFile();
 
-		CUP_END_FRAME();
+        CUP_END_FRAME();
 
-	}
+    }
 
-	void Properties::RenderEntity() {
+    void Properties::RenderEntity() {
 
-		InternalEntity* entity = m_selectedEntity;
+        InternalEntity* entity = m_selectedEntity;
 
-		char buffer[128] = {};
-		std::strncpy(buffer, entity->name.c_str(), sizeof(buffer));
+        char buffer[128] = {};
+        std::strncpy(buffer, entity->name.c_str(), sizeof(buffer));
 
-		if (ImGui::InputText("##Name", buffer, sizeof(buffer))) {
+        if (ImGui::InputText("##Name", buffer, sizeof(buffer))) {
 
-			entity->name = buffer;
-			Editor::SetChanges(true);
+            entity->name = buffer;
+            Editor::SetChanges(true);
 
-		}
+        }
 
-		ImGui::SameLine();
-		ImGui::Separator();
+        ImGui::SameLine();
+        ImGui::Separator();
 
-		if(DrawComponent("Transform", entity->GetTransform())) {
-			
-			Transform* transform = entity->GetTransform();
+        if(DrawComponent("Transform", entity->GetTransform())) {
+            
+            Transform* transform = entity->GetTransform();
 
-			Vector3 pos = transform->Position();
-			if (UI::EditVector3("Position", &pos))
-				transform->SetPosition(pos);
+            Vector3 pos = transform->Position();
+            if (UI::EditVector3("Position", &pos))
+                transform->SetPosition(pos);
 
-			Vector3 newRot = transform->Rotation().EulerAngles();
-			if (UI::EditVector3("Rotation", &newRot))
-				transform->SetRotation(Quaternion(newRot));
+            Vector3 newRot = transform->Rotation().EulerAngles();
+            if (UI::EditVector3("Rotation", &newRot))
+                transform->SetRotation(Quaternion(newRot));
 
-			Vector3 scale = transform->Scale();
-			if (UI::EditVector3("Scale", &scale))
-				transform->SetScale(scale);
+            Vector3 scale = transform->Scale();
+            if (UI::EditVector3("Scale", &scale))
+                transform->SetScale(scale);
 
-			ImGui::PopID();
-			
-		}
+            ImGui::PopID();
 
-		if (MeshRenderer* renderer = entity->GetComponent<MeshRenderer>()) RenderMeshRenderer(renderer);
-		if (Light* light = entity->GetComponent<Light>()) RenderLight(light);
-		if (Camera* camera = entity->GetComponent<Camera>()) RenderCamera(camera);
+        }
 
-		if (RigidBody* rb = entity->GetComponent<RigidBody>()) RenderRigidBody(rb);
+        if (MeshRenderer* renderer = entity->GetComponent<MeshRenderer>()) RenderMeshRenderer(renderer);
+        if (Light* light = entity->GetComponent<Light>()) RenderLight(light);
+        if (Camera* camera = entity->GetComponent<Camera>()) RenderCamera(camera);
 
-		if (BoxCollider* collider = entity->GetComponent<BoxCollider>()) RenderBoxCollider(collider);
-		if (SphereCollider* collider = entity->GetComponent<SphereCollider>()) RenderSphereCollider(collider);
-		if (CapsuleCollider* collider = entity->GetComponent<CapsuleCollider>()) RenderCapsuleCollider(collider);
+        if (RigidBody* rb = entity->GetComponent<RigidBody>()) RenderRigidBody(rb);
+
+        if (BoxCollider* collider = entity->GetComponent<BoxCollider>()) RenderBoxCollider(collider);
+        if (SphereCollider* collider = entity->GetComponent<SphereCollider>()) RenderSphereCollider(collider);
+        if (CapsuleCollider* collider = entity->GetComponent<CapsuleCollider>()) RenderCapsuleCollider(collider);
 
         if (ScriptComponent* scriptComponent = entity->GetComponent<ScriptComponent>()) RenderScriptComponent(scriptComponent);
 
-		ImGui::Spacing();
-		//ImGui::Spacing();
-		ImGui::Separator();
-		ImGui::Spacing();
+        ImGui::Spacing();
+        //ImGui::Spacing();
+        ImGui::Separator();
+        ImGui::Spacing();
 
-		float width = ImGui::GetWindowWidth();
-		ImVec2 size = ImVec2(125, 30);
+        float width = ImGui::GetWindowWidth();
+        ImVec2 size = ImVec2(125, 30);
 
-		ImGui::SetCursorPosX((width - size.x) * 0.5f);
-		if(ImGui::Button("Add Component", size)) {
+        ImGui::SetCursorPosX((width - size.x) * 0.5f);
+        if(ImGui::Button("Add Component", size)) {
 
-			ImGui::OpenPopup("##AddComponent");
-			
-		}
+            ImGui::OpenPopup("##AddComponent");
 
-		if(ImGui::BeginPopup("##AddComponent")) {
+        }
 
-			Collider* collider = entity->GetComponent<Collider>();
-				
-			if (ImGui::MenuItem("Light")) {
-				
-				entity->AddComponent<Light>()->color.r = 0.5f;
-				Editor::SetChanges(true);
-			
-			} else if (ImGui::MenuItem("Mesh Renderer")) {
-				
-				entity->AddComponent<MeshRenderer>();
-				Editor::SetChanges(true);
-			
-			} else if (ImGui::MenuItem("Camera")) {
-				
-				entity->AddComponent<Camera>();
-				Editor::SetChanges(true);
-			
-			} else if (ImGui::MenuItem("Rigid Body")) {
+        if(ImGui::BeginPopup("##AddComponent")) {
 
-				entity->AddComponent<RigidBody>();
-				Editor::SetChanges(true);
+            Collider* collider = entity->GetComponent<Collider>();
 
-			} else if (ImGui::MenuItem("Box Collider") && !collider) {
+            if (ImGui::MenuItem("Light")) {
 
-				entity->AddComponent<BoxCollider>();
-				Editor::SetChanges(true);
+                entity->AddComponent<Light>()->color.r = 0.5f;
+                Editor::SetChanges(true);
 
-			} else if (ImGui::MenuItem("Sphere Collider") && !collider) {
+            } else if (ImGui::MenuItem("Mesh Renderer")) {
 
-				entity->AddComponent<SphereCollider>();
-				Editor::SetChanges(true);
+                entity->AddComponent<MeshRenderer>();
+                Editor::SetChanges(true);
 
-			} else if (ImGui::MenuItem("Capsule Collider") && !collider) {
+            } else if (ImGui::MenuItem("Camera")) {
 
-				entity->AddComponent<CapsuleCollider>();
-				Editor::SetChanges(true);
+                entity->AddComponent<Camera>();
+                Editor::SetChanges(true);
 
-			}
+            } else if (ImGui::MenuItem("Rigid Body")) {
 
-			ImGui::Separator();
+                entity->AddComponent<RigidBody>();
+                Editor::SetChanges(true);
+
+            } else if (ImGui::MenuItem("Box Collider") && !collider) {
+
+                entity->AddComponent<BoxCollider>();
+                Editor::SetChanges(true);
+
+            } else if (ImGui::MenuItem("Sphere Collider") && !collider) {
+
+                entity->AddComponent<SphereCollider>();
+                Editor::SetChanges(true);
+
+            } else if (ImGui::MenuItem("Capsule Collider") && !collider) {
+
+                entity->AddComponent<CapsuleCollider>();
+                Editor::SetChanges(true);
+
+            }
+
+            ImGui::Separator();
 
             const Scripting::ScriptMap& componentScripts = Scripting::ComponentScripts();
             for (Scripting::ScriptMap::const_iterator it = componentScripts.begin(); it != componentScripts.end(); ++it) {
@@ -172,139 +172,139 @@ namespace Editor {
 
             }
 
-			ImGui::EndPopup();
-				
-		}
-		
-	}
-	void Properties::RenderFile() {
+            ImGui::EndPopup();
 
-		ImGui::Text(m_selectedFile.string().c_str());
-		ImGui::Separator();
-
-		std::string extension = m_selectedFile.extension().string();
-
-    if (extension != ".mat") {
-
-			ImGui::Text("This extension is not supported, make sure you called a function for this specific extension!");
-      return;
+        }
 
     }
-		const UUID& asset = ProjectAssetDatabase::GetAssetFromPath(GetProject().GetAssetsPath() / m_selectedFile);
+    void Properties::RenderFile() {
 
-		if (asset == UUID::GetInvalid()) {
+        ImGui::Text(m_selectedFile.string().c_str());
+        ImGui::Separator();
 
-			LogWarn("Selected File is not found in the AssetFileDatabase, try refreshing.\n\tPath: {}", GetProject().GetAssetsPath() / m_selectedFile);
+        std::string extension = m_selectedFile.extension().string();
 
-			m_selectedFile = "";
-			return;
+        if (extension != ".mat") {
 
-		}
+            ImGui::Text("This extension is not supported, make sure you called a function for this specific extension!");
+            return;
 
-    RenderMaterial(asset);
+        }
+        const UUID& asset = ProjectAssetDatabase::GetAssetFromPath(GetProject().GetAssetsPath() / m_selectedFile);
 
-	}
+        if (asset == UUID::GetInvalid()) {
 
-	// Components
+            LogWarn("Selected File is not found in the AssetFileDatabase, try refreshing.\n\tPath: {}", GetProject().GetAssetsPath() / m_selectedFile);
 
-	void Properties::RenderMeshRenderer(Copper::MeshRenderer* renderer) {
+            m_selectedFile = "";
+            return;
 
-		if (!DrawComponent<MeshRenderer>("Mesh Renderer", renderer)) return;
+        }
 
-		UI::EditMaterial("Material", &renderer->material);
+        RenderMaterial(asset);
 
-		ImGui::PopID();
+    }
 
-	}
-	void Properties::RenderLight(Light* light) {
+    // Components
 
-		if (!DrawComponent<Light>("Light", light)) return;
+    void Properties::RenderMeshRenderer(Copper::MeshRenderer* renderer) {
 
-		UI::EditDropDown("Type", s_lightTypes, LIGHT_TYPES, (uint8*) &light->type);
+        if (!DrawComponent<MeshRenderer>("Mesh Renderer", renderer)) return;
 
-		UI::EditColor("Color", &light->color);
-		UI::EditFloat("Intensity", &light->intensity);
+        UI::EditMaterial("Material", &renderer->material);
 
-		ImGui::PopID();
+        ImGui::PopID();
 
-	}
-	void Properties::RenderCamera(Camera* camera) {
+    }
+    void Properties::RenderLight(Light* light) {
 
-		if (!DrawComponent<Camera>("Camera", camera)) return;
+        if (!DrawComponent<Light>("Light", light)) return;
 
-		UI::EditFloat("FOV", &camera->fov);
-		UI::EditFloat("Near Plane", &camera->nearPlane);
-		UI::EditFloat("Far Plane", &camera->farPlane);
+        UI::EditDropDown("Type", s_lightTypes, LIGHT_TYPES, (uint8*) &light->type);
 
-		ImGui::PopID();
+        UI::EditColor("Color", &light->color);
+        UI::EditFloat("Intensity", &light->intensity);
 
-	}
+        ImGui::PopID();
 
-	void Properties::RenderRigidBody(RigidBody* rb) {
+    }
+    void Properties::RenderCamera(Camera* camera) {
 
-		if (!DrawComponent<RigidBody>("Rigid Body", rb)) return;
+        if (!DrawComponent<Camera>("Camera", camera)) return;
 
-		if (UI::EditFloat("Mass", &rb->m_mass)) rb->SetMass(rb->m_mass);
+        UI::EditFloat("FOV", &camera->fov);
+        UI::EditFloat("Near Plane", &camera->nearPlane);
+        UI::EditFloat("Far Plane", &camera->farPlane);
 
-		if (UI::EditBool("Static", &rb->m_static)) rb->SetStatic(rb->m_static);
-		if (UI::EditBool("Gravity", &rb->m_gravity)) rb->SetGravity(rb->m_gravity);
+        ImGui::PopID();
 
-		if (ImGui::TreeNode("Locks")) {
+    }
 
-			// Position Lock
+    void Properties::RenderRigidBody(RigidBody* rb) {
 
-			if (UI::EditMask("Position", (uint32&) rb->m_lockMask, 3)) rb->SetLockMask(rb->m_lockMask);
-			if (UI::EditMask("Rotation", (uint32&) rb->m_lockMask, 3, 3)) rb->SetLockMask(rb->m_lockMask);
+        if (!DrawComponent<RigidBody>("Rigid Body", rb)) return;
 
-			ImGui::TreePop();
-				
-		}
+        if (UI::EditFloat("Mass", &rb->m_mass)) rb->SetMass(rb->m_mass);
 
-		ImGui::PopID();
+        if (UI::EditBool("Static", &rb->m_static)) rb->SetStatic(rb->m_static);
+        if (UI::EditBool("Gravity", &rb->m_gravity)) rb->SetGravity(rb->m_gravity);
 
-	}
-	
-	void Properties::RenderBoxCollider(BoxCollider* collider) {
+        if (ImGui::TreeNode("Locks")) {
 
-		if (!DrawComponent<BoxCollider>("Box Collider", collider)) return;
+            // Position Lock
 
-		if (UI::EditBool("Trigger", &collider->m_trigger)) collider->SetTrigger(collider->m_trigger);
-		if (UI::EditVector3("Center", &collider->m_center)) collider->SetCenter(collider->m_center);
+            if (UI::EditMask("Position", (uint32&) rb->m_lockMask, 3)) rb->SetLockMask(rb->m_lockMask);
+            if (UI::EditMask("Rotation", (uint32&) rb->m_lockMask, 3, 3)) rb->SetLockMask(rb->m_lockMask);
 
-		if (UI::EditVector3("Size", &collider->m_size)) collider->SetSize(collider->m_size);
+            ImGui::TreePop();
 
-		ImGui::PopID();
+        }
 
-	}
-	void Properties::RenderSphereCollider(SphereCollider* collider) {
+        ImGui::PopID();
 
-		if (!DrawComponent<SphereCollider>("Sphere Collider", collider)) return;
+    }
 
-        if (UI::EditBool("Trigger", &collider->m_trigger)) collider->SetTrigger(collider->m_trigger);
-		if (UI::EditVector3("Center", &collider->m_center)) collider->SetCenter(collider->m_center);	
+    void Properties::RenderBoxCollider(BoxCollider* collider) {
 
-		ImGui::Separator();
-
-		if (UI::EditFloat("Radius", &collider->m_radius)) collider->SetRadius(collider->m_radius);
-
-		ImGui::PopID();
-
-	}
-	void Properties::RenderCapsuleCollider(CapsuleCollider* collider) {
-
-		if (!DrawComponent<CapsuleCollider>("Capsule Collider", collider)) return;
+        if (!DrawComponent<BoxCollider>("Box Collider", collider)) return;
 
         if (UI::EditBool("Trigger", &collider->m_trigger)) collider->SetTrigger(collider->m_trigger);
-		if (UI::EditVector3("Center", &collider->m_center)) collider->SetCenter(collider->m_center);	
+        if (UI::EditVector3("Center", &collider->m_center)) collider->SetCenter(collider->m_center);
 
-		ImGui::Separator();
+        if (UI::EditVector3("Size", &collider->m_size)) collider->SetSize(collider->m_size);
 
-        if (UI::EditFloat("Radius", &collider->m_radius)) collider->SetRadius(collider->m_radius);	
-		if (UI::EditFloat("Height", &collider->m_height)) collider->SetHeight(collider->m_height);
+        ImGui::PopID();
 
-		ImGui::PopID();
+    }
+    void Properties::RenderSphereCollider(SphereCollider* collider) {
 
-	}
+        if (!DrawComponent<SphereCollider>("Sphere Collider", collider)) return;
+
+        if (UI::EditBool("Trigger", &collider->m_trigger)) collider->SetTrigger(collider->m_trigger);
+        if (UI::EditVector3("Center", &collider->m_center)) collider->SetCenter(collider->m_center);
+
+        ImGui::Separator();
+
+        if (UI::EditFloat("Radius", &collider->m_radius)) collider->SetRadius(collider->m_radius);
+
+        ImGui::PopID();
+
+    }
+    void Properties::RenderCapsuleCollider(CapsuleCollider* collider) {
+
+        if (!DrawComponent<CapsuleCollider>("Capsule Collider", collider)) return;
+
+        if (UI::EditBool("Trigger", &collider->m_trigger)) collider->SetTrigger(collider->m_trigger);
+        if (UI::EditVector3("Center", &collider->m_center)) collider->SetCenter(collider->m_center);
+
+        ImGui::Separator();
+
+        if (UI::EditFloat("Radius", &collider->m_radius)) collider->SetRadius(collider->m_radius);
+        if (UI::EditFloat("Height", &collider->m_height)) collider->SetHeight(collider->m_height);
+
+        ImGui::PopID();
+
+    }
     void Properties::RenderScriptComponent(ScriptComponent* scriptComponent) {
 
         const Scripting::Script* script = scriptComponent->GetScript();
@@ -314,7 +314,7 @@ namespace Editor {
         for (const Scripting::Field& field : fields) {
 
             switch (field.GetType()) {
-                
+
             case Scripting::Field::Type::Int: { EditField(int32, UI::EditInt); break; }
             case Scripting::Field::Type::UInt: { EditField(uint32, UI::EditUInt); break; }
             case Scripting::Field::Type::Float: { EditField(float, UI::EditFloat); break; }
@@ -323,7 +323,7 @@ namespace Editor {
             case Scripting::Field::Type::Vector3: { EditField(Vector3, UI::EditVector3); break; }
 
             case Scripting::Field::Type::Entity: {
-                
+
                 uint64 id;
                 field.GetRefValue(scriptComponent, (void**) &id, (void*) INVALID_ENTITY_ID);
                 InternalEntity* entity = GetEntityFromID((uint32) id);
@@ -343,83 +343,83 @@ namespace Editor {
             }
 
         }
-        
+
         ImGui::PopID();
 
     }
 
-	template<typename T> static bool DrawComponent(const std::string& name, T* component) {
+    template<typename T> static bool DrawComponent(const std::string& name, T* component) {
 
-		ImGui::PushID((uint32) (uint64) component);
+        ImGui::PushID((uint32) (uint64) component);
 
-		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2 {4, 4});
+        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2 {4, 4});
 
-		bool opened = ImGui::TreeNodeEx((void*) component, flags, name.c_str());
+        bool opened = ImGui::TreeNodeEx((void*) component, flags, name.c_str());
 
-		ImGui::PopStyleVar();
-		if (opened)
-			ImGui::TreePop();
-		else
-			ImGui::PopID();
+        ImGui::PopStyleVar();
+        if (opened)
+            ImGui::TreePop();
+        else
+            ImGui::PopID();
 
-		if (ImGui::BeginPopupContextItem()) {
+        if (ImGui::BeginPopupContextItem()) {
 
-			if (ImGui::MenuItem("Remove Component")) {
-				
-				component->GetEntity()->template RemoveComponent<T>();
+            if (ImGui::MenuItem("Remove Component")) {
 
-				SetChanges(true);
-				ImGui::EndPopup();
-				ImGui::PopID();
+                component->GetEntity()->template RemoveComponent<T>();
 
-				return false;
-			
-			}
+                SetChanges(true);
+                ImGui::EndPopup();
+                ImGui::PopID();
 
-			ImGui::EndPopup();
+                return false;
 
-		}
+            }
 
-		return opened;
+            ImGui::EndPopup();
 
-	}
-	static bool DrawComponent(const std::string& name, Transform* component) {
+        }
 
-		ImGui::PushID((uint32) (uint64) component);
+        return opened;
 
-		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4, 4 });
+    }
+    static bool DrawComponent(const std::string& name, Transform* component) {
 
-		bool opened = ImGui::TreeNodeEx((void*) component, flags, name.c_str());
+        ImGui::PushID((uint32) (uint64) component);
 
-		ImGui::PopStyleVar();
-		if (opened)
-			ImGui::TreePop();
-		else
-			ImGui::PopID();
+        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4, 4 });
 
-		return opened;
+        bool opened = ImGui::TreeNodeEx((void*) component, flags, name.c_str());
 
-	}
+        ImGui::PopStyleVar();
+        if (opened)
+            ImGui::TreePop();
+        else
+            ImGui::PopID();
 
-	// Assets
+        return opened;
 
-	void Properties::RenderMaterial(const MaterialAsset& material) {
+    }
 
-		const std::string name = m_selectedFile.filename().string();
-		ImGui::Text(name.c_str());
-		ImGui::NewLine();
+    // Assets
 
-		bool changed = false;
+    void Properties::RenderMaterial(const MaterialAsset& material) {
 
-		if (UI::EditTexture("Texture", &material->texture)) changed = true;
-		if (UI::EditColor("Albedo", &material->albedo)) changed = true;
-		if (UI::EditFloat("Tiling", &material->tiling)) changed = true;
+        const std::string name = m_selectedFile.filename().string();
+        ImGui::Text(name.c_str());
+        ImGui::NewLine();
 
-		if (changed)
-			AssetFile::SerializeMaterial(GetProject().GetAssetsPath() / m_selectedFile, material);
+        bool changed = false;
 
-	}
+        if (UI::EditTexture("Texture", &material->texture)) changed = true;
+        if (UI::EditColor("Albedo", &material->albedo)) changed = true;
+        if (UI::EditFloat("Tiling", &material->tiling)) changed = true;
+
+        if (changed)
+            AssetFile::SerializeMaterial(GetProject().GetAssetsPath() / m_selectedFile, material);
+
+    }
 
 }

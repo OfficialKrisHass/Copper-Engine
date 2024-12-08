@@ -3,39 +3,39 @@
 #include "Engine/Core/Core.h"
 
 namespace Copper {
-  
-  class Scene;
 
-	class Entity {
+    class Scene;
 
-		friend Scene;
+    class Entity {
 
-	public:
-		Entity() = default;
-		Entity(class InternalEntity* entity);
+        friend Scene;
 
-		inline uint32_t ID() const { return m_id; }
+    public:
+        Entity() = default;
+        Entity(class InternalEntity* entity);
 
-		bool operator==(const Entity& other) const;
-		bool operator==(InternalEntity* other) const;
-		bool operator!=(const Entity& other) const { return !(*this == other); }
-		bool operator!=(InternalEntity* other) const { return !(*this == other); }
+        inline uint32_t ID() const { return m_id; }
 
-		InternalEntity* operator->();
+        bool operator==(const Entity& other) const;
+        bool operator==(InternalEntity* other) const;
+        bool operator!=(const Entity& other) const { return !(*this == other); }
+        bool operator!=(InternalEntity* other) const { return !(*this == other); }
 
-		operator InternalEntity*() const;
-		operator bool() const;
+        InternalEntity* operator->();
 
-	private:
-		uint32_t m_id = 4'294'967'295;
-		Scene* m_scene = nullptr;
+        operator InternalEntity*() const;
+        operator bool() const;
 
-	};
+    private:
+        uint32_t m_id = 4'294'967'295;
+        Scene* m_scene = nullptr;
 
-	inline std::ostream& operator<<(std::ostream& os, const Entity& entity) {
+    };
 
-		return os << entity;
+    inline std::ostream& operator<<(std::ostream& os, const Entity& entity) {
 
-	}
+        return os << entity;
+
+    }
 
 }

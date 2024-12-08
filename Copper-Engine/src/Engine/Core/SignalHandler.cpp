@@ -5,29 +5,29 @@
 
 namespace Copper::SignalHandler {
 
-	constexpr static int32 CSignalToSignal(Signal signal) {
+    constexpr static int32 CSignalToSignal(Signal signal) {
 
-		switch (signal) {
+        switch (signal) {
 
-		case Signal::Abort: return SIGABRT;
-		case Signal::Termination: return SIGTERM;
-		case Signal::Interrupt: return SIGINT;
+        case Signal::Abort: return SIGABRT;
+        case Signal::Termination: return SIGTERM;
+        case Signal::Interrupt: return SIGINT;
 
-		case Signal::Segfault: return SIGSEGV;
-		case Signal::IllegalInstruction: return SIGILL;
-		case Signal::FloatingPointExc: return SIGFPE;
+        case Signal::Segfault: return SIGSEGV;
+        case Signal::IllegalInstruction: return SIGILL;
+        case Signal::FloatingPointExc: return SIGFPE;
 
-		}
+        }
 
-		LogWarn("Invalid Copper Signal ({})", (uint32) signal);
-		return -1;
+        LogWarn("Invalid Copper Signal ({})", (uint32) signal);
+        return -1;
 
-	}
+    }
 
-	void RegisterHandler(Signal cSignal, HandlerFunc handler) {
+    void RegisterHandler(Signal cSignal, HandlerFunc handler) {
 
-		signal(CSignalToSignal(cSignal), handler);
+        signal(CSignalToSignal(cSignal), handler);
 
-	}
+    }
 
 }

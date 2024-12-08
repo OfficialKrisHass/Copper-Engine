@@ -4,14 +4,14 @@
 
 namespace Copper {
 
-	class MouseMoveEvent : public Event {
+    class MouseMoveEvent : public Event {
 
-	public:
-		MouseMoveEvent() = default;
-		MouseMoveEvent(UVector2I mouseCoords) : mouseCoords(mouseCoords) {}
+    public:
+        MouseMoveEvent() = default;
+        MouseMoveEvent(UVector2I mouseCoords) : mouseCoords(mouseCoords) {}
 
-		UVector2I mouseCoords = UVector2I::zero;
+        UVector2I mouseCoords = UVector2I::zero;
 
-	};
+    };
 
 }

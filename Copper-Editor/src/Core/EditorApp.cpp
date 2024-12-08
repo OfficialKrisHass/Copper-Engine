@@ -54,898 +54,899 @@ using namespace Copper;
 // TODO: Fix this you stupid dumbass (me)
 namespace Editor {
 
-	struct EditorData {
+    struct EditorData {
 
-		// Core Data
+        // Core Data
 
-		EditorState state = Edit;
-		Window window;
-		std::string title;
+        EditorState state = Edit;
+        Window window;
+        std::string title;
 
-    bool gameAcceptingInput = false;
+        bool gameAcceptingInput = false;
 
-		// Project
+        // Project
 
-		Project project;
-		bool scriptChanges = false;
+        Project project;
+        bool scriptChanges = false;
 
-		// Scene
+        // Scene
 
-		Scene* scene;
-		SceneMeta sceneMeta;
-    fs::path scenePath;
-    fs::path nextScenePath;
+        Scene* scene;
+        SceneMeta sceneMeta;
+        fs::path scenePath;
+        fs::path nextScenePath;
 
-		bool changes = false;
-		
-		// Viewport
+        bool changes = false;
+        
+        // Viewport
 
-		UVector2I viewportSize = UVector2I(1280, 720);
-		UVector2I viewportCentre;
-		FrameBuffer viewportFBO;
-		bool canLookViewport = true;
+        UVector2I viewportSize = UVector2I(1280, 720);
+        UVector2I viewportCentre;
+        FrameBuffer viewportFBO;
+        bool canLookViewport = true;
 
-		SceneCamera sceneCam = SceneCamera(viewportSize);
+        SceneCamera sceneCam = SceneCamera(viewportSize);
 
-		// Game Panel
+        // Game Panel
 
-		UVector2I gamePanelSize = UVector2I(1280, 720);
-		bool gamePanelFocused = false;
+        UVector2I gamePanelSize = UVector2I(1280, 720);
+        bool gamePanelFocused = false;
 
-		// Icons
+        // Icons
 
-		Texture playIcon;
-		Texture stopIcon;
-		
-		// Panels
+        Texture playIcon;
+        Texture stopIcon;
+        
+        // Panels
 
-		SceneHierarchy sceneHierarchy;
-		Properties properties;
-		FileBrowser fileBrowser;
-		Console console;
-		ThemeEditor themeEditor;
+        SceneHierarchy sceneHierarchy;
+        Properties properties;
+        FileBrowser fileBrowser;
+        Console console;
+        ThemeEditor themeEditor;
 
-		// Theme Editor
+        // Theme Editor
 
-		bool themeEditorOpen = false;
+        bool themeEditorOpen = false;
 
-	};
+    };
 
-	EditorData data;
+    EditorData data;
 
-	void LoadEditorData();
-	void SaveEditorData();
+    void LoadEditorData();
+    void SaveEditorData();
 
-	void RenderDockspace();
-	void RenderGamePanel();
-	void RenderViewport();
-	void RenderToolbar();
-	void RenderMenu();
+    void RenderDockspace();
+    void RenderGamePanel();
+    void RenderViewport();
+    void RenderToolbar();
+    void RenderMenu();
 
-	void NewProject();
+    void NewProject();
 
-	void FileChangedCallback(const fs::path& path, const FileWatcher::FileChangeType changeType);
-	void CopyScriptingAPI();
+    void FileChangedCallback(const fs::path& path, const FileWatcher::FileChangeType changeType);
+    void CopyScriptingAPI();
 
-	void StartEditorRuntime();
-	void StopEditorRuntime();
+    void StartEditorRuntime();
+    void StopEditorRuntime();
 
-	bool OnKeyPressed(const Event& e);
-	bool OnWindowClose(const Event& e);
+    bool OnKeyPressed(const Event& e);
+    bool OnWindowClose(const Event& e);
 
-	void Initialize() {
-
-		CUP_FUNCTION();
-
-		GetWindow().AddKeyPressedEventFunc(Editor::OnKeyPressed);
-
-		MainUIContext().LoadFont(ExecutableFolder() + "/assets/Fonts/open-sans.regular.ttf");
-
-    data.scene = GetScene();
-
-		data.viewportFBO = FrameBuffer(data.viewportSize);
-		
-		data.playIcon.Create(ExecutableFolder() + "/assets/Icons/PlayButton.png", Texture::Format::RGBA);
-		data.stopIcon.Create(ExecutableFolder() + "/assets/Icons/StopButton.png", Texture::Format::RGBA);
-
-    data.fileBrowser.Initialize();
-		
-		FileWatcher::AddCallback(FileChangedCallback);
-
-		LoadEditorData();
-
-		data.themeEditor.LoadTheme(ExecutableFolder() + "/assets/Themes/Default.cutheme");
-
-	#ifdef CU_LINUX
-		data.project.RunPremake();
-	#endif
-
-	}
-	void Shutdown() {
-
-    CUP_FUNCTION();
-
-		SaveEditorData();
-
-	}
-
-	void SaveEditorData() {
-
-    CUP_FUNCTION();
-
-		YAML::Emitter out;
-
-		out << YAML::BeginMap; //Start
-
-		out << YAML::Key << "Last Project" << YAML::Value << data.project.GetPath();
-
-		out << YAML::EndMap; //End
-
-		std::ofstream file(ExecutableFolder() + "/assets/EditorData.cu");
-		file << out.c_str();
-
-    data.project.Save();
-
-	}
-	void LoadEditorData() {
-
-    CUP_FUNCTION();
-
-		if (!fs::exists(ExecutableFolder() + "/assets/EditorData.cu")) {
-
-			LogWarn("EditorData.cu is missing, generating a default one");
-			SaveEditorData();
-
-		}
-
-		YAML::Node main;
-		try { main = YAML::LoadFile(ExecutableFolder() + "/assets/EditorData.cu"); } catch (YAML::Exception e) {
-
-			Input::ErrorPopup("EditorData read failed", "Could not read the EditorData.cu file.\n\nIt shuld be located here:\n" + ExecutableFolder() + "/assets/EditorData.cu" + "\n\nError message:\n" + e.what());
-			exit(1);
-
-		}
-    
-    if (Args::Count() > 0) {
-
-        data.project.Open(Args::Get(0));
-        return;
-
-    }
-		
-		std::string path = main["Last Project"].as<std::string>();
-		if (!std::filesystem::exists(path)) {
-      
-			switch (Input::WarningPopup("Last opened project doesn't exist", "The last opened project no longer exists, do you wish to open a project manually, or exit the Editor ?\n\nLast opened project path:\n" + path)) {
-
-			case Input::PopupResult::Yes: data.project.Open(); return;
-			case Input::PopupResult::No: exit(1);
-      default: exit(1);
-
-			}
-
-		}
-
-		data.project.Open(path);
-
-	}
-
-	void Update() {
-
-    CUP_FUNCTION();
-		CUP_START_FRAME("Editor");
-
-		FileWatcher::PollChanges();
-
-    if (!data.nextScenePath.empty()) {
-
-      OpenScene(data.nextScenePath);
-      data.nextScenePath.clear();
-
-    }
-
-		CUP_END_FRAME();
-
-	}
-	void UIUpdate() {
-		
-		CUP_START_FRAME("Editor UI");
-		
-		RenderDockspace();
-		RenderMenu();
-		
-		data.console.UIRender();
-		data.fileBrowser.UIRender();
-		data.properties.UIRender();
-		data.sceneHierarchy.UIRender();
-		if (data.themeEditorOpen) data.themeEditor.UIRender();
-		RenderGamePanel();
-		RenderViewport();
-
-		ProjectSettings::UIRender();
-		Profiler::UIRender();
-
-		RenderToolbar();
-		ImGui::End(); //Dockspace
-
-		CUP_END_FRAME();
-
-	}
-
-	void RenderDockspace() {
+    void Initialize() {
 
         CUP_FUNCTION();
 
-		static bool dockspaceOpen = true;
-		static bool opt_fullscreen_persistant = true;
-		bool opt_fullscreen = opt_fullscreen_persistant;
-		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+        GetWindow().AddKeyPressedEventFunc(Editor::OnKeyPressed);
 
-		ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+        MainUIContext().LoadFont(ExecutableFolder() + "/assets/Fonts/open-sans.regular.ttf");
 
-		if (opt_fullscreen) {
+        data.scene = GetScene();
 
-			ImGuiViewport* viewport = ImGui::GetMainViewport();
+        data.viewportFBO = FrameBuffer(data.viewportSize);
+        
+        data.playIcon.Create(ExecutableFolder() + "/assets/Icons/PlayButton.png", Texture::Format::RGBA);
+        data.stopIcon.Create(ExecutableFolder() + "/assets/Icons/StopButton.png", Texture::Format::RGBA);
 
-			ImGui::SetNextWindowPos(viewport->Pos);
-			ImGui::SetNextWindowSize(viewport->Size);
-			ImGui::SetNextWindowViewport(viewport->ID);
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+        data.fileBrowser.Initialize();
 
-			window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
-							ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+        FileWatcher::AddCallback(FileChangedCallback);
 
-		}
+        LoadEditorData();
 
-		if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode) window_flags |= ImGuiWindowFlags_NoBackground;
+        data.themeEditor.LoadTheme(ExecutableFolder() + "/assets/Themes/Default.cutheme");
 
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		ImGui::Begin("DockSpace Demo", &dockspaceOpen, window_flags); //Dockspace
-		ImGui::PopStyleVar();
-
-		if (opt_fullscreen) ImGui::PopStyleVar(2);
-
-		ImGuiIO& io = ImGui::GetIO();
-		ImGuiStyle& style = ImGui::GetStyle();
-
-		float minWinSizeX = style.WindowMinSize.x;
-		style.WindowMinSize.x = 370.0f;
-
-		if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
-
-			ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-
-			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-
-		}
-
-		style.WindowMinSize.x = minWinSizeX;
-
-	}
-	void RenderGamePanel() {
-
-    CUP_FUNCTION();
-		CUP_START_FRAME("Game Panel");
-
-		//Imgui::Begin returns a bool based on if the Window is visible/open
-		//So, we store that and then Render the scene and window Only if it's visible
-		//to save some performance
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2 {0, 0});
-		bool open = ImGui::Begin("Game");
-
-		if (!open) {
-
-			ImGui::End();
-			ImGui::PopStyleVar();
-
-			CUP_END_FRAME();
-
-			return;
-
-		}
-		if (!data.project || !data.scene->GetMainCamera()) {
-
-			ImGui::Text("No Camera Available!");
-
-			ImGui::End();
-			ImGui::PopStyleVar();
-
-			CUP_END_FRAME();
-
-			return;
-
-		}
-
-		ImVec2 windowSize = ImGui::GetContentRegionAvail();
-		data.gamePanelSize = UVector2I((uint32) windowSize.x, (uint32) windowSize.y);
-
-		SetWindowSize(data.gamePanelSize);
-
-		ImGui::Image(reinterpret_cast<void*>((uint64) GetMainFBO().GetColorTextureID()), windowSize, ImVec2 {0, 1}, ImVec2 {1, 0});
-
-    if (data.state == Play && !data.gameAcceptingInput && ImGui::IsItemClicked()) {
-
-      data.gameAcceptingInput = true;
-
-      Input::SetCursorPosition(data.viewportCentre.x, data.viewportCentre.y);
-      Input::SetCursorLocked(true);
-      Input::SetCursorVisible(false);
+#ifdef CU_LINUX
+        data.project.RunPremake();
+#endif
 
     }
-
-		ImGui::End();
-		ImGui::PopStyleVar();
-
-		CUP_END_FRAME();
-
-	}
-	void RenderViewport() {
-
-    CUP_FUNCTION();
-		CUP_START_FRAME("Viewport");
-
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
-		bool open = ImGui::Begin("Viewport");
-		if (!open) {
-
-			ImGui::End();
-			ImGui::PopStyleVar();
-
-			CUP_END_FRAME();
-
-			return;
-
-		}
-
-		//TODO: Either Change ImGui To use UVector2I or edit Copper Code to use ImVec2
-		//      so that we don't have to allocate memory for the UVector2I
-		ImVec2 windowSize = ImGui::GetContentRegionAvail();
-		ImVec2 windowPos = ImGui::GetWindowPos();
-
-		data.viewportSize = UVector2I((uint32) windowSize.x, (uint32) windowSize.y);
-
-		data.viewportCentre = data.viewportSize / 2;
-		data.viewportCentre.x += (uint32) windowPos.x;
-		data.viewportCentre.y += (uint32) windowPos.y;
-
-		if (data.viewportFBO.GetWidth() != data.viewportSize.x || data.viewportFBO.GetHeight() != data.viewportSize.y) {
-
-			//We don't need to Call SetWindowSize because if the Viewport size is changed
-			//it only affects the Viewport, not the Actualy Game Engine and the Main Game Panel
-			data.viewportFBO.Resize(data.viewportSize);
-			data.sceneCam.Resize(data.viewportSize);
-
-		}
-
-		//We need to Clear the Color because if we don't we just get a black image
-		data.viewportFBO.Bind();
-		RendererAPI::ClearColor(Color(0.18f, 0.18f, 0.18f));
-
-		data.sceneCam.Update();
-		if (data.scene)
-      data.scene->Render(&data.sceneCam);
-
-		//After we are done rendering we are safe to unbind the FBO unless we want to modify it any way
-		data.viewportFBO.Unbind();
-
-		ImGui::Image(reinterpret_cast<void*>((uint64) data.viewportFBO.GetColorTextureID()), windowSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
-
-		//Gizmos that I stol... I mean, taken inspiration from The Chernos Game Engine series
-		//Yeah, I definitely didn't copy this entire chunk of code that I don't understand but
-		//magically works, naaah.
-		InternalEntity* selectedObj = SceneHierarchy::GetSelectedEntity();
-		if (selectedObj) {
-
-			ImGuizmo::SetOrthographic(false);
-			ImGuizmo::SetDrawlist();
-
-			float wWidth = (float) ImGui::GetWindowWidth();
-			float wHeight = (float) ImGui::GetWindowHeight();
-			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, wWidth, wHeight);
-
-			Matrix4 camProjection = data.sceneCam.CreateProjectionMatrix();
-			Matrix4 camView = data.sceneCam.CreateViewMatrix();
-			glm::mat4 transform = selectedObj->GetTransform()->TransformMatrix();
-
-			// Snapping
-			bool snap = Input::IsKey(KeyCode::LeftControl);
-			float snapValue = 0.5f;
-			if (data.project.GetGizmoType() == ImGuizmo::OPERATION::ROTATE) snapValue = 45.0f;
-
-			float snapValues[3] = {snapValue, snapValue, snapValue};
-
-			ImGuizmo::Manipulate(&(camView.cols[0].x), &(camProjection.cols[0].x),
-								 (ImGuizmo::OPERATION) data.project.GetGizmoType(), ImGuizmo::LOCAL, glm::value_ptr(transform),
-								 nullptr, snap ? snapValues : nullptr);
-
-			if (ImGuizmo::IsUsing()) {
-
-				glm::vec3 position, rotation, scale;
-
-				Math::DecomposeTransform(transform, position, rotation, scale);
-
-				//glm::vec3 deltaRotation = (Vector3) rotation - selectedObj->GetTransform()->rotation;
-				selectedObj->GetTransform()->SetPosition(position);
-				//selectedObj->GetTransform()->rotation += deltaRotation;
-				selectedObj->GetTransform()->SetScale(scale);
-
-				//The rotation doesn't work for some reason, it keeps wiggling around
-				//Unfortunately I'm dum dum so this is what you get :) uwu
-
-				//TODO: Dont be dum dum like a friggin idiot and learn how to do it owo
-
-			}
-
-		}
-
-		data.canLookViewport = ImGui::IsItemHovered();
-		data.sceneCam.SetCanLook(data.canLookViewport);
-		
-		ImGui::End();
-		ImGui::PopStyleVar();
-
-		CUP_END_FRAME();
-
-	}
-	void RenderToolbar() {
+    void Shutdown() {
 
         CUP_FUNCTION();
 
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+        SaveEditorData();
 
-		auto& colors = ImGui::GetStyle().Colors;
+    }
 
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(colors[ImGuiCol_ButtonHovered].x, colors[ImGuiCol_ButtonHovered].y, colors[ImGuiCol_ButtonHovered].z, 0.5f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(colors[ImGuiCol_ButtonActive].x, colors[ImGuiCol_ButtonActive].y, colors[ImGuiCol_ButtonActive].z, 0.5f));
+    void SaveEditorData() {
 
-		ImGuiWindowClass windowClass;
-		windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
-		ImGui::SetNextWindowClass(&windowClass);
-		ImGui::Begin("##ToolBar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+        CUP_FUNCTION();
 
-		ImVec2 buttonSize = ImVec2(25, 25);
-		ImGui::SetCursorPosX((ImGui::GetWindowSize().x - buttonSize.x) * 0.5f);
+        YAML::Emitter out;
 
-		if (data.state == Edit) {
+        out << YAML::BeginMap; //Start
 
-			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64) data.playIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project)
-                StartEditorRuntime();
+        out << YAML::Key << "Last Project" << YAML::Value << data.project.GetPath();
 
-		} else if (data.state == Play) {
+        out << YAML::EndMap; //End
 
-			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64) data.stopIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project)
-                StopEditorRuntime();
+        std::ofstream file(ExecutableFolder() + "/assets/EditorData.cu");
+        file << out.c_str();
 
-		}
+        data.project.Save();
 
-		// Wireframe toggle
-		
-		bool wireframe = Renderer::GetWireframe();
+    }
+    void LoadEditorData() {
 
-		ImGui::SameLine();
-		if (ImGui::Checkbox("Wireframe", &wireframe))
-			Renderer::SetWireframe(wireframe);
+        CUP_FUNCTION();
 
-		ImGui::PopStyleVar(2);
-		ImGui::PopStyleColor(3);
-		ImGui::End();
+        if (!fs::exists(ExecutableFolder() + "/assets/EditorData.cu")) {
 
-	}
-	void RenderMenu() {
-
-    CUP_FUNCTION();
-
-		if(ImGui::BeginMenuBar()) {
-
-			if (ImGui::BeginMenu("Project")) {
-
-				if (ImGui::MenuItem("New Project"))
-					NewProject();
-				if (ImGui::MenuItem("Open Project"))
-					data.project.Open();
-				if (ImGui::MenuItem("Save Project", "Ctrl+Shift+S", false, data.project)) {
-
-            SaveScene();
-
-            data.project.Save();
+            LogWarn("EditorData.cu is missing, generating a default one");
             SaveEditorData();
 
         }
 
-				ImGui::Separator();
+        YAML::Node main;
+        try { main = YAML::LoadFile(ExecutableFolder() + "/assets/EditorData.cu"); } catch (YAML::Exception e) {
 
-				if (ImGui::MenuItem("Create Template", 0, false, data.project))
-          CreateTemplateFromProject(data.project);
+            Input::ErrorPopup("EditorData read failed", "Could not read the EditorData.cu file.\n\nIt shuld be located here:\n" + ExecutableFolder() + "/assets/EditorData.cu" + "\n\nError message:\n" + e.what());
+            exit(1);
 
-				ImGui::Separator();
+        }
+    
+        if (Args::Count() > 0) {
 
-				if (ImGui::MenuItem("Build Scripts", "Ctrl+B", false, data.project))
-          data.project.BuildScripts();
+            data.project.Open(Args::Get(0));
+            return;
 
-				ImGui::Separator();
+        }
 
-				if (ImGui::MenuItem("Project Settings"))
-          ProjectSettings::Open();
-				
-				ImGui::Separator();
+        std::string path = main["Last Project"].as<std::string>();
+        if (!std::filesystem::exists(path)) {
 
-				if (ImGui::MenuItem("Copy Copper Scripting API", 0, false, data.project))
-          CopyScriptingAPI();
+            switch (Input::WarningPopup("Last opened project doesn't exist", "The last opened project no longer exists, do you wish to open a project manually, or exit the Editor ?\n\nLast opened project path:\n" + path)) {
 
-				ImGui::EndMenu();
+                case Input::PopupResult::Yes: data.project.Open(); return;
+                case Input::PopupResult::No: exit(1);
+                default: exit(1);
 
-			}
+            }
 
-			if(ImGui::BeginMenu("File")) {
+        }
 
-        if(ImGui::MenuItem("New Scene", 0, false, data.project))
-          NewScene();
-				if(ImGui::MenuItem("Open Scene", 0, false, data.project))
-          OpenSceneNext();
-				if(ImGui::MenuItem("Save Scene", "Ctr+S", false, data.project))
-          SaveScene();
-				if(ImGui::MenuItem("Save Ass", "Ctrl+Alt+S", false, data.project))
-          SaveSceneAs();
+        data.project.Open(path);
 
-				ImGui::EndMenu();
-				
-			}
+    }
 
-			if (ImGui::BeginMenu("Theme")) {
+    void Update() {
 
-				if (ImGui::MenuItem("Open Theme Editor"))
-					data.themeEditorOpen = true;
+        CUP_FUNCTION();
+        CUP_START_FRAME("Editor");
 
-				if (ImGui::MenuItem("Save Theme", 0, false)) {
+        FileWatcher::PollChanges();
 
-					fs::path path = Utilities::SaveDialog("Save Theme", { "Copper Editor Theme Files (.cutheme)", "*.cutheme" }, "assets\\Themes");
-					if (!path.empty())
-						data.themeEditor.SaveTheme(path);
+        if (!data.nextScenePath.empty()) {
 
-				}
-				if (ImGui::MenuItem("Load Theme", 0, false)) {
+            OpenScene(data.nextScenePath);
+            data.nextScenePath.clear();
 
-					fs::path path = Utilities::OpenDialog("Load Theme", { "Copper Editor Theme Files (.cutheme)", "*.cutheme" }, "assets/Themes");
-					if (!path.empty())
-						data.themeEditor.LoadTheme(path);
+        }
 
-				}
+        CUP_END_FRAME();
 
-				ImGui::EndMenu();
+    }
+    void UIUpdate() {
+        
+        CUP_START_FRAME("Editor UI");
+        
+        RenderDockspace();
+        RenderMenu();
+        
+        data.console.UIRender();
+        data.fileBrowser.UIRender();
+        data.properties.UIRender();
+        data.sceneHierarchy.UIRender();
+        if (data.themeEditorOpen) data.themeEditor.UIRender();
+        RenderGamePanel();
+        RenderViewport();
 
-			}
+        ProjectSettings::UIRender();
+        Profiler::UIRender();
 
-			if(ImGui::BeginMenu("Camera")) {
+        RenderToolbar();
+        ImGui::End(); //Dockspace
 
-				if (ImGui::DragFloat("Speed", &data.sceneCam.speed, 0.01f, 0.001f, 50.0f, "%.4f"))
-                    SetChanges(true);
-				if (ImGui::DragFloat("Sensitivity", &data.sceneCam.sensitivity, 0.1f, 1.0f, 1000.0f))
-                    SetChanges(true);
+        CUP_END_FRAME();
 
-				ImGui::EndMenu();
-				
-			}
+    }
 
-			if (ImGui::BeginMenu("Debug")) {
-
-				if (ImGui::MenuItem("Profiler"))
-					Profiler::Open();
-
-				ImGui::EndMenu();
-
-			}
-
-			ImGui::EndMenuBar();
-			
-		}
-		
-	}
-
-	void StartEditorRuntime() {
-
-    CUP_FUNCTION();
-
-		data.state = Play;
-
-    SceneSerializer::Serialize(data.scene, ExecutableFolder() + "/assets/Temp/scene_lock.copper");
-    Renderer::Restart();
-
-	}
-	void StopEditorRuntime() {
+    void RenderDockspace() {
 
         CUP_FUNCTION();
 
-		data.state = Edit;
-		Entity savedSelectedEntity = SceneHierarchy::GetSelectedEntity();
+        static bool dockspaceOpen = true;
+        static bool opt_fullscreen_persistant = true;
+        bool opt_fullscreen = opt_fullscreen_persistant;
+        static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+
+        ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+
+        if (opt_fullscreen) {
+
+            ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+            ImGui::SetNextWindowPos(viewport->Pos);
+            ImGui::SetNextWindowSize(viewport->Size);
+            ImGui::SetNextWindowViewport(viewport->ID);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+
+            window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
+                            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+        }
+
+        if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode) window_flags |= ImGuiWindowFlags_NoBackground;
+
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+        ImGui::Begin("DockSpace Demo", &dockspaceOpen, window_flags); //Dockspace
+        ImGui::PopStyleVar();
+
+        if (opt_fullscreen)
+            ImGui::PopStyleVar(2);
+
+        ImGuiIO& io = ImGui::GetIO();
+        ImGuiStyle& style = ImGui::GetStyle();
+
+        float minWinSizeX = style.WindowMinSize.x;
+        style.WindowMinSize.x = 370.0f;
+
+        if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
+
+            ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+
+            ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+
+        }
+
+        style.WindowMinSize.x = minWinSizeX;
+
+    }
+    void RenderGamePanel() {
+
+        CUP_FUNCTION();
+        CUP_START_FRAME("Game Panel");
+
+        //Imgui::Begin returns a bool based on if the Window is visible/open
+        //So, we store that and then Render the scene and window Only if it's visible
+        //to save some performance
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2 {0, 0});
+        bool open = ImGui::Begin("Game");
+
+        if (!open) {
+
+            ImGui::End();
+            ImGui::PopStyleVar();
+
+            CUP_END_FRAME();
+
+            return;
+
+        }
+        if (!data.project || !data.scene->GetMainCamera()) {
+
+            ImGui::Text("No Camera Available!");
+
+            ImGui::End();
+            ImGui::PopStyleVar();
+
+            CUP_END_FRAME();
+
+            return;
+
+        }
+
+        ImVec2 windowSize = ImGui::GetContentRegionAvail();
+        data.gamePanelSize = UVector2I((uint32) windowSize.x, (uint32) windowSize.y);
+
+        SetWindowSize(data.gamePanelSize);
+
+        ImGui::Image(reinterpret_cast<void*>((uint64) GetMainFBO().GetColorTextureID()), windowSize, ImVec2 {0, 1}, ImVec2 {1, 0});
+
+        if (data.state == Play && !data.gameAcceptingInput && ImGui::IsItemClicked()) {
+
+            data.gameAcceptingInput = true;
+
+            Input::SetCursorPosition(data.viewportCentre.x, data.viewportCentre.y);
+            Input::SetCursorLocked(true);
+            Input::SetCursorVisible(false);
+
+        }
+
+        ImGui::End();
+        ImGui::PopStyleVar();
+
+        CUP_END_FRAME();
+
+    }
+    void RenderViewport() {
+
+        CUP_FUNCTION();
+        CUP_START_FRAME("Viewport");
+
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
+        bool open = ImGui::Begin("Viewport");
+        if (!open) {
+
+            ImGui::End();
+            ImGui::PopStyleVar();
+
+            CUP_END_FRAME();
+
+            return;
+
+        }
+
+        //TODO: Either Change ImGui To use UVector2I or edit Copper Code to use ImVec2
+        //      so that we don't have to allocate memory for the UVector2I
+        ImVec2 windowSize = ImGui::GetContentRegionAvail();
+        ImVec2 windowPos = ImGui::GetWindowPos();
+
+        data.viewportSize = UVector2I((uint32) windowSize.x, (uint32) windowSize.y);
+
+        data.viewportCentre = data.viewportSize / 2;
+        data.viewportCentre.x += (uint32) windowPos.x;
+        data.viewportCentre.y += (uint32) windowPos.y;
+
+        if (data.viewportFBO.GetWidth() != data.viewportSize.x || data.viewportFBO.GetHeight() != data.viewportSize.y) {
+
+            //We don't need to Call SetWindowSize because if the Viewport size is changed
+            //it only affects the Viewport, not the Actualy Game Engine and the Main Game Panel
+            data.viewportFBO.Resize(data.viewportSize);
+            data.sceneCam.Resize(data.viewportSize);
+
+        }
+
+        //We need to Clear the Color because if we don't we just get a black image
+        data.viewportFBO.Bind();
+        RendererAPI::ClearColor(Color(0.18f, 0.18f, 0.18f));
+
+        data.sceneCam.Update();
+        if (data.scene)
+            data.scene->Render(&data.sceneCam);
+
+        //After we are done rendering we are safe to unbind the FBO unless we want to modify it any way
+        data.viewportFBO.Unbind();
+
+        ImGui::Image(reinterpret_cast<void*>((uint64) data.viewportFBO.GetColorTextureID()), windowSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+
+        //Gizmos that I stol... I mean, taken inspiration from The Chernos Game Engine series
+        //Yeah, I definitely didn't copy this entire chunk of code that I don't understand but
+        //magically works, naaah.
+        InternalEntity* selectedObj = SceneHierarchy::GetSelectedEntity();
+        if (selectedObj) {
+
+            ImGuizmo::SetOrthographic(false);
+            ImGuizmo::SetDrawlist();
+
+            float wWidth = (float) ImGui::GetWindowWidth();
+            float wHeight = (float) ImGui::GetWindowHeight();
+            ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, wWidth, wHeight);
+
+            Matrix4 camProjection = data.sceneCam.CreateProjectionMatrix();
+            Matrix4 camView = data.sceneCam.CreateViewMatrix();
+            glm::mat4 transform = selectedObj->GetTransform()->TransformMatrix();
+
+            // Snapping
+            bool snap = Input::IsKey(KeyCode::LeftControl);
+            float snapValue = 0.5f;
+            if (data.project.GetGizmoType() == ImGuizmo::OPERATION::ROTATE) snapValue = 45.0f;
+
+            float snapValues[3] = {snapValue, snapValue, snapValue};
+
+            ImGuizmo::Manipulate(&(camView.cols[0].x), &(camProjection.cols[0].x),
+                                 (ImGuizmo::OPERATION) data.project.GetGizmoType(), ImGuizmo::LOCAL, glm::value_ptr(transform),
+                                 nullptr, snap ? snapValues : nullptr);
+
+            if (ImGuizmo::IsUsing()) {
+
+                glm::vec3 position, rotation, scale;
+
+                Math::DecomposeTransform(transform, position, rotation, scale);
+
+                //glm::vec3 deltaRotation = (Vector3) rotation - selectedObj->GetTransform()->rotation;
+                selectedObj->GetTransform()->SetPosition(position);
+                //selectedObj->GetTransform()->rotation += deltaRotation;
+                selectedObj->GetTransform()->SetScale(scale);
+
+                //The rotation doesn't work for some reason, it keeps wiggling around
+                //Unfortunately I'm dum dum so this is what you get :) uwu
+
+                //TODO: Dont be dum dum like a friggin idiot and learn how to do it owo
+
+            }
+
+        }
+
+        data.canLookViewport = ImGui::IsItemHovered();
+        data.sceneCam.SetCanLook(data.canLookViewport);
+        
+        ImGui::End();
+        ImGui::PopStyleVar();
+
+        CUP_END_FRAME();
+
+    }
+    void RenderToolbar() {
+
+        CUP_FUNCTION();
+
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+
+        auto& colors = ImGui::GetStyle().Colors;
+
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(colors[ImGuiCol_ButtonHovered].x, colors[ImGuiCol_ButtonHovered].y, colors[ImGuiCol_ButtonHovered].z, 0.5f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(colors[ImGuiCol_ButtonActive].x, colors[ImGuiCol_ButtonActive].y, colors[ImGuiCol_ButtonActive].z, 0.5f));
+
+        ImGuiWindowClass windowClass;
+        windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
+        ImGui::SetNextWindowClass(&windowClass);
+        ImGui::Begin("##ToolBar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+        ImVec2 buttonSize = ImVec2(25, 25);
+        ImGui::SetCursorPosX((ImGui::GetWindowSize().x - buttonSize.x) * 0.5f);
+
+        if (data.state == Edit) {
+
+            if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64) data.playIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project)
+                StartEditorRuntime();
+
+        } else if (data.state == Play) {
+
+            if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64) data.stopIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project)
+                StopEditorRuntime();
+
+        }
+
+        // Wireframe toggle
+        
+        bool wireframe = Renderer::GetWireframe();
+
+        ImGui::SameLine();
+        if (ImGui::Checkbox("Wireframe", &wireframe))
+            Renderer::SetWireframe(wireframe);
+
+        ImGui::PopStyleVar(2);
+        ImGui::PopStyleColor(3);
+        ImGui::End();
+
+    }
+    void RenderMenu() {
+
+        CUP_FUNCTION();
+
+        if(ImGui::BeginMenuBar()) {
+
+            if (ImGui::BeginMenu("Project")) {
+
+                if (ImGui::MenuItem("New Project"))
+                    NewProject();
+                if (ImGui::MenuItem("Open Project"))
+                    data.project.Open();
+                if (ImGui::MenuItem("Save Project", "Ctrl+Shift+S", false, data.project)) {
+
+                    SaveScene();
+
+                    data.project.Save();
+                    SaveEditorData();
+
+                }
+
+                ImGui::Separator();
+
+                if (ImGui::MenuItem("Create Template", 0, false, data.project))
+                    CreateTemplateFromProject(data.project);
+
+                ImGui::Separator();
+
+                if (ImGui::MenuItem("Build Scripts", "Ctrl+B", false, data.project))
+                    data.project.BuildScripts();
+
+                ImGui::Separator();
+
+                if (ImGui::MenuItem("Project Settings"))
+                    ProjectSettings::Open();
+                
+                ImGui::Separator();
+
+                if (ImGui::MenuItem("Copy Copper Scripting API", 0, false, data.project))
+                    CopyScriptingAPI();
+
+                ImGui::EndMenu();
+
+            }
+
+            if(ImGui::BeginMenu("File")) {
+
+                if(ImGui::MenuItem("New Scene", 0, false, data.project))
+                    NewScene();
+                if(ImGui::MenuItem("Open Scene", 0, false, data.project))
+                    OpenSceneNext();
+                if(ImGui::MenuItem("Save Scene", "Ctr+S", false, data.project))
+                    SaveScene();
+                if(ImGui::MenuItem("Save Ass", "Ctrl+Alt+S", false, data.project))
+                    SaveSceneAs();
+
+                ImGui::EndMenu();
+
+            }
+
+            if (ImGui::BeginMenu("Theme")) {
+
+                if (ImGui::MenuItem("Open Theme Editor"))
+                    data.themeEditorOpen = true;
+
+                if (ImGui::MenuItem("Save Theme", 0, false)) {
+
+                    fs::path path = Utilities::SaveDialog("Save Theme", { "Copper Editor Theme Files (.cutheme)", "*.cutheme" }, "assets\\Themes");
+                    if (!path.empty())
+                        data.themeEditor.SaveTheme(path);
+
+                }
+                if (ImGui::MenuItem("Load Theme", 0, false)) {
+
+                    fs::path path = Utilities::OpenDialog("Load Theme", { "Copper Editor Theme Files (.cutheme)", "*.cutheme" }, "assets/Themes");
+                    if (!path.empty())
+                        data.themeEditor.LoadTheme(path);
+
+                }
+
+                ImGui::EndMenu();
+
+            }
+
+            if(ImGui::BeginMenu("Camera")) {
+
+                if (ImGui::DragFloat("Speed", &data.sceneCam.speed, 0.01f, 0.001f, 50.0f, "%.4f"))
+                    SetChanges(true);
+                if (ImGui::DragFloat("Sensitivity", &data.sceneCam.sensitivity, 0.1f, 1.0f, 1000.0f))
+                    SetChanges(true);
+
+                ImGui::EndMenu();
+
+            }
+
+            if (ImGui::BeginMenu("Debug")) {
+
+                if (ImGui::MenuItem("Profiler"))
+                    Profiler::Open();
+
+                ImGui::EndMenu();
+
+            }
+
+            ImGui::EndMenuBar();
+
+        }
+
+    }
+
+    void StartEditorRuntime() {
+
+        CUP_FUNCTION();
+
+        data.state = Play;
+
+        SceneSerializer::Serialize(data.scene, ExecutableFolder() + "/assets/Temp/scene_lock.copper");
+        Renderer::Restart();
+
+    }
+    void StopEditorRuntime() {
+
+        CUP_FUNCTION();
+
+        data.state = Edit;
+        Entity savedSelectedEntity = SceneHierarchy::GetSelectedEntity();
 
         data.scene->Cleanup();
         SceneSerializer::Deserialize(data.scene, ExecutableFolder() + "/assets/Temp/scene_lock.copper");
         data.scene->Initialize();
 
-		SceneHierarchy::SetSelectedEntity(savedSelectedEntity);
+        SceneHierarchy::SetSelectedEntity(savedSelectedEntity);
 
         data.gameAcceptingInput = false;
 
-		Input::SetCursorLocked(false);
-		Input::SetCursorVisible(true);
+        Input::SetCursorLocked(false);
+        Input::SetCursorVisible(true);
 
-	}
+    }
 
-	void FileChangedCallback(const fs::path& path, const FileWatcher::FileChangeType changeType) {
+    void FileChangedCallback(const fs::path& path, const FileWatcher::FileChangeType changeType) {
 
         CUP_FUNCTION();
 
-		if (path.extension().string() != ".cs") return;
-
-	#ifdef CU_LINUX
-		if (changeType != FileWatcher::FileChangeType::Changed)
-      data.project.RunPremake();
-	#endif
-		data.project.BuildScripts();
-
-	}
-
-	void NewProject() {
-
-    CUP_FUNCTION();
-
-		fs::path path = Utilities::FolderOpenDialog("New Project", data.project ? data.project.GetPath().parent_path() : ROOT_DIR);
-		if (path.empty()) return;
-
-		// Create the Project
-
-		data.project = Project(path);
-    CopyScriptingAPI();
-
-		FileBrowser::SetRelativeDir("");
+        if (path.extension().string() != ".cs") return;
 
 #ifdef CU_LINUX
-    data.project.RunPremake();
+        if (changeType != FileWatcher::FileChangeType::Changed)
+            data.project.RunPremake();
 #endif
-		data.project.BuildScripts();
-
-    NewScene();
-
-		data.changes = false;
-		data.title = "Copper Editor - " + data.project.GetName() + ":";
-		Input::SetWindowTitle(data.title);
-
-	}
-
-	void CopyScriptingAPI() {
-
-    CUP_FUNCTION();
-
-		std::ifstream dllSrc(ExecutableFolder() + "/assets/ScriptingAPI/Copper-ScriptingAPI.dll", std::ios::binary);
-		std::fstream dllDst;
-
-		dllDst.open(data.project.GetPath() / "Binaries/Copper-ScriptingAPI.dll", std::ios::out | std::ios::binary);
-		dllDst << dllSrc.rdbuf();
-		dllDst.close();
-
-	}
-
-	void NewScene() {
-
-    CUP_FUNCTION();
-
-    data.scenePath = "";
-		*data.scene = Scene();
-		SceneHierarchy::SetScene(data.scene);
-		
-	}
-	void OpenScene(const fs::path& path) {
-
-    CUP_FUNCTION();
-
-		if(data.changes) {
-
-			switch(Input::WarningPopup("Unsaved Changes", "There are unsaved changes made to this scene, do you wish to save before opening a new scene ?")) {
-
-			case Input::PopupResult::Yes: SaveScene(); break;
-			case Input::PopupResult::No: break;
-			case Input::PopupResult::Cancel: return;
-      default: return;
-				
-			}
-			
-		}
-
-    data.scenePath = path;
-
-    data.scene->Cleanup();
-    SceneSerializer::Deserialize(data.scene, path);
-    data.scene->Initialize(); 
-
-		data.sceneMeta.Deserialize(path);
-
-		SceneHierarchy::SetScene(data.scene);
-
-		data.changes = false;
-		data.title = "Copper Editor - " + data.project.GetName() + ": " + data.scene->GetName();
-		Input::SetWindowTitle(data.title);
-
-    data.project.SetLastOpenedScenePath(fs::relative(path, data.project.GetAssetsPath()));
-		
-	}
-	void OpenScene() {
-
-    CUP_FUNCTION();
-
-		fs::path result = Utilities::OpenDialog("Open Scene", { "Copper Scene Files (.copper)", "*.copper" }, data.project.GetAssetsPath());
-
-		if (result.empty()) {
-
-        LogWarn("The Path Specified is empty or is not a Copper Scene File\n {}", result);
-        return;
+        data.project.BuildScripts();
 
     }
 
-		fs::path relativeToProjectAssets = fs::relative(result, data.project.GetAssetsPath());
-		if (relativeToProjectAssets.empty()) {
-
-			Input::ErrorPopup("Invalid Scene Path", "The scene you have tried to Open is outside of the Assets folder of this Project.");
-			return;
-
-		}
-
-		OpenScene(result);
-		
-	}
-	void SaveScene() {
-
-    CUP_FUNCTION();
-
-    if (data.scenePath.empty()) {
-        
-      SaveSceneAs();
-      return;
-
-    }
-
-    SceneSerializer::Serialize(data.scene, data.scenePath);
-    data.sceneMeta.Serialize(data.scenePath);
-
-    data.changes = false;
-    data.title = "Copper Editor - TestProject: ";
-    data.title += data.scene->GetName();
-    Input::SetWindowTitle(data.title);
-			
-	}
-	void SaveSceneAs() {
-
-    CUP_FUNCTION();
-
-		fs::path path = Utilities::SaveDialog("Save Scene As", { "Copper Scene Files (.copper)", "*.copper" }, data.project.GetAssetsPath());
-		if (path.empty()) return;
-
-		fs::path relative = fs::relative(path, data.project.GetAssetsPath());
-		if (relative.empty()) {
-
-			Input::ErrorPopup("Invalid Scene", "The Place you want to save this scene is outside of this Project or starts with '..'");
-			return;
-
-		}
-
-    data.scenePath = path;
-
-    SceneSerializer::Serialize(data.scene, path);
-		data.sceneMeta.Serialize(path);
-
-    data.project.SetLastOpenedScenePath(relative);
-
-		data.changes = false;
-		data.title = "Copper Editor - TestProject: ";
-		data.title += data.scene->GetName();
-		Input::SetWindowTitle(data.title);
-		
-	}
-
-  void OpenSceneNext(const Copper::fs::path &path) {
-
-    CUP_FUNCTION();
-
-    data.nextScenePath = path;
-
-  }
-  void OpenSceneNext() {
-
-    CUP_FUNCTION();
-
-    fs::path result = Utilities::OpenDialog("Open Scene", { "Copper Scene Files (.copper)", "*.copper" }, data.project.GetAssetsPath());
-
-		if (result.empty()) {
-
-        LogWarn("The Path Specified is empty or is not a Copper Scene File\n {}", result);
-        return;
-
-    }
-
-		fs::path relativeToProjectAssets = fs::relative(result, data.project.GetAssetsPath());
-		if (relativeToProjectAssets.empty()) {
-
-			Input::ErrorPopup("Invalid Scene Path", "The scene you have tried to Open is outside of the Assets folder of this Project.");
-			return;
-
-		}
-
-    OpenSceneNext(result);
-
-  }
-
-	bool OnKeyPressed(const Event& e) {
+    void NewProject() {
 
         CUP_FUNCTION();
 
-		bool control = Input::IsKey(KeyCode::LeftControl) || Input::IsKey(KeyCode::RightControl);
-		bool shift = Input::IsKey(KeyCode::LeftShift) || Input::IsKey(KeyCode::RightShift);
-		bool alt = Input::IsKey(KeyCode::LeftAlt) || Input::IsKey(KeyCode::RightAlt);
+        fs::path path = Utilities::FolderOpenDialog("New Project", data.project ? data.project.GetPath().parent_path() : ROOT_DIR);
+        if (path.empty()) return;
 
-		bool rightClick = Input::IsButton(MouseCode::Button2);
+        // Create the Project
 
-		KeyEvent event = *(KeyEvent*) &e;
+        data.project = Project(path);
+        CopyScriptingAPI();
 
-		switch (event.key) {
+        FileBrowser::SetRelativeDir("");
 
-			case KeyCode::S: {
+#ifdef CU_LINUX
+        data.project.RunPremake();
+#endif
+        data.project.BuildScripts();
 
-				if (data.state == Play) break;
-				if (control && shift) {
+        NewScene();
+
+        data.changes = false;
+        data.title = "Copper Editor - " + data.project.GetName() + ":";
+        Input::SetWindowTitle(data.title);
+
+    }
+
+    void CopyScriptingAPI() {
+
+        CUP_FUNCTION();
+
+        std::ifstream dllSrc(ExecutableFolder() + "/assets/ScriptingAPI/Copper-ScriptingAPI.dll", std::ios::binary);
+        std::fstream dllDst;
+
+        dllDst.open(data.project.GetPath() / "Binaries/Copper-ScriptingAPI.dll", std::ios::out | std::ios::binary);
+        dllDst << dllSrc.rdbuf();
+        dllDst.close();
+
+    }
+
+    void NewScene() {
+
+        CUP_FUNCTION();
+
+        data.scenePath = "";
+        *data.scene = Scene();
+        SceneHierarchy::SetScene(data.scene);
+        
+    }
+    void OpenScene(const fs::path& path) {
+
+        CUP_FUNCTION();
+
+        if(data.changes) {
+
+            switch(Input::WarningPopup("Unsaved Changes", "There are unsaved changes made to this scene, do you wish to save before opening a new scene ?")) {
+
+                case Input::PopupResult::Yes: SaveScene(); break;
+                case Input::PopupResult::No: break;
+                case Input::PopupResult::Cancel: return;
+                default: return;
+
+            }
+
+        }
+
+        data.scenePath = path;
+
+        data.scene->Cleanup();
+        SceneSerializer::Deserialize(data.scene, path);
+        data.scene->Initialize(); 
+
+        data.sceneMeta.Deserialize(path);
+
+        SceneHierarchy::SetScene(data.scene);
+
+        data.changes = false;
+        data.title = "Copper Editor - " + data.project.GetName() + ": " + data.scene->GetName();
+        Input::SetWindowTitle(data.title);
+
+        data.project.SetLastOpenedScenePath(fs::relative(path, data.project.GetAssetsPath()));
+
+    }
+    void OpenScene() {
+
+        CUP_FUNCTION();
+
+        fs::path result = Utilities::OpenDialog("Open Scene", { "Copper Scene Files (.copper)", "*.copper" }, data.project.GetAssetsPath());
+
+        if (result.empty()) {
+
+            LogWarn("The Path Specified is empty or is not a Copper Scene File\n {}", result);
+            return;
+
+        }
+
+        fs::path relativeToProjectAssets = fs::relative(result, data.project.GetAssetsPath());
+        if (relativeToProjectAssets.empty()) {
+
+            Input::ErrorPopup("Invalid Scene Path", "The scene you have tried to Open is outside of the Assets folder of this Project.");
+            return;
+
+        }
+
+        OpenScene(result);
+        
+    }
+    void SaveScene() {
+
+        CUP_FUNCTION();
+
+        if (data.scenePath.empty()) {
+
+            SaveSceneAs();
+            return;
+
+        }
+
+        SceneSerializer::Serialize(data.scene, data.scenePath);
+        data.sceneMeta.Serialize(data.scenePath);
+
+        data.changes = false;
+        data.title = "Copper Editor - TestProject: ";
+        data.title += data.scene->GetName();
+        Input::SetWindowTitle(data.title);
+
+    }
+    void SaveSceneAs() {
+
+        CUP_FUNCTION();
+
+        fs::path path = Utilities::SaveDialog("Save Scene As", { "Copper Scene Files (.copper)", "*.copper" }, data.project.GetAssetsPath());
+        if (path.empty()) return;
+
+        fs::path relative = fs::relative(path, data.project.GetAssetsPath());
+        if (relative.empty()) {
+
+            Input::ErrorPopup("Invalid Scene", "The Place you want to save this scene is outside of this Project or starts with '..'");
+            return;
+
+        }
+
+        data.scenePath = path;
+
+        SceneSerializer::Serialize(data.scene, path);
+        data.sceneMeta.Serialize(path);
+
+        data.project.SetLastOpenedScenePath(relative);
+
+        data.changes = false;
+        data.title = "Copper Editor - TestProject: ";
+        data.title += data.scene->GetName();
+        Input::SetWindowTitle(data.title);
+        
+    }
+
+    void OpenSceneNext(const Copper::fs::path &path) {
+
+        CUP_FUNCTION();
+
+        data.nextScenePath = path;
+
+    }
+    void OpenSceneNext() {
+
+        CUP_FUNCTION();
+
+        fs::path result = Utilities::OpenDialog("Open Scene", { "Copper Scene Files (.copper)", "*.copper" }, data.project.GetAssetsPath());
+
+            if (result.empty()) {
+
+            LogWarn("The Path Specified is empty or is not a Copper Scene File\n {}", result);
+            return;
+
+        }
+
+        fs::path relativeToProjectAssets = fs::relative(result, data.project.GetAssetsPath());
+        if (relativeToProjectAssets.empty()) {
+
+            Input::ErrorPopup("Invalid Scene Path", "The scene you have tried to Open is outside of the Assets folder of this Project.");
+            return;
+
+        }
+
+        OpenSceneNext(result);
+
+    }
+
+    bool OnKeyPressed(const Event& e) {
+
+        CUP_FUNCTION();
+
+        bool control = Input::IsKey(KeyCode::LeftControl) || Input::IsKey(KeyCode::RightControl);
+        bool shift = Input::IsKey(KeyCode::LeftShift) || Input::IsKey(KeyCode::RightShift);
+        bool alt = Input::IsKey(KeyCode::LeftAlt) || Input::IsKey(KeyCode::RightAlt);
+
+        bool rightClick = Input::IsButton(MouseCode::Button2);
+
+        KeyEvent event = *(KeyEvent*) &e;
+
+        switch (event.key) {
+
+            case KeyCode::S: {
+
+                if (data.state == Play) break;
+                if (control && shift) {
 
                     data.project.Save();
                     SaveEditorData();
                     SaveScene();
 
                 }
-				if (control && alt)
+                if (control && alt)
                     SaveSceneAs();
-				if (control)
+                if (control)
                     SaveScene();
 
-				break;
+                break;
 
-			}
-			case KeyCode::B: {
+            }
+            case KeyCode::B: {
 
-				if (data.state == Play || !control) break;
+                if (data.state == Play || !control) break;
 
                 data.project.BuildScripts();
 
-				break;
+                break;
 
-			}
-			case KeyCode::Q: {
+            }
+            case KeyCode::Q: {
 
-				if (data.state == Play || rightClick) break;
+                if (data.state == Play || rightClick) break;
 
                 data.project.SetGizmoType(ImGuizmo::TRANSLATE);
 
-				break;
+                break;
 
-			}
-			case KeyCode::W: {
+            }
+            case KeyCode::W: {
 
-				if (data.state == Play || rightClick) break;
+                if (data.state == Play || rightClick) break;
 
                 data.project.SetGizmoType(ImGuizmo::ROTATE);
 
-				break;
+                break;
 
-			}
-			case KeyCode::E: {
+            }
+            case KeyCode::E: {
 
-				if (data.state == Play || rightClick) break;
+                if (data.state == Play || rightClick) break;
 
                 data.project.SetGizmoType(ImGuizmo::SCALE);
 
-				break;
+                break;
 
-			}
+            }
             case KeyCode::F1: {
-                
+
                 if (data.state == Edit || !shift) break;
 
                 data.gameAcceptingInput = false;
@@ -956,63 +957,63 @@ namespace Editor {
             }
             default: break;
 
-		}
+        }
 
-		return true;
+        return true;
 
-	}
-	bool OnWindowClose(const Event& e) {
+    }
+    bool OnWindowClose(const Event& e) {
 
         CUP_FUNCTION();
 
-		if (!data.changes) return true;
+        if (!data.changes) return true;
 
-		switch (Input::WarningPopup("Unsaved Changes", "There are Unsaved Changes in the project, do you wish to save the Project before exiting ?")) {
+        switch (Input::WarningPopup("Unsaved Changes", "There are Unsaved Changes in the project, do you wish to save the Project before exiting ?")) {
 
-			case Input::PopupResult::Yes: {
-				
-				SaveScene();
-				SaveEditorData();
-				
-				return true;
+            case Input::PopupResult::Yes: {
+
+                SaveScene();
+                SaveEditorData();
+
+                return true;
 
             }
-			
-			case Input::PopupResult::No:
-				return true;
-			case Input::PopupResult::Cancel:
-				return false;
-			default:
-				return false;
 
-		}
+            case Input::PopupResult::No:
+                return true;
+            case Input::PopupResult::Cancel:
+                return false;
+            default:
+                return false;
 
-	}
-	
-	const Project& GetProject() { return data.project; }
-	SceneCamera& GetSceneCam() { return data.sceneCam; }
+        }
 
-	SceneMeta* GetSceneMeta() { return &data.sceneMeta; }
+    }
+    
+    const Project& GetProject() { return data.project; }
+    SceneCamera& GetSceneCam() { return data.sceneCam; }
 
-	UVector2I GetViewportSize() { return data.viewportSize; }
+    SceneMeta* GetSceneMeta() { return &data.sceneMeta; }
+
+    UVector2I GetViewportSize() { return data.viewportSize; }
 
     bool IsRuntimeRunning() { return data.state == Play; }
 
-	// TODO: This feature is not working, has not been working for the past year, isn't
-	// even used in 90% of the places it should be, and also is done in the stupidest way imaginable.
-	// Am I going to fix it in 0.3 ? ..... No
-	void SetChanges(bool value) {
+    // TODO: This feature is not working, has not been working for the past year, isn't
+    // even used in 90% of the places it should be, and also is done in the stupidest way imaginable.
+    // Am I going to fix it in 0.3 ? ..... No
+    void SetChanges(bool value) {
 
         CUP_FUNCTION();
 
-		if (data.state == Play) return;
+        if (data.state == Play) return;
 
-		data.changes = value;
+        data.changes = value;
 
-		data.title = "Copper Editor - " + data.project.GetName() + ": " + data.scene->GetName() + "*";
-		Input::SetWindowTitle(data.title);
-		
-	}
+        data.title = "Copper Editor - " + data.project.GetName() + ": " + data.scene->GetName() + "*";
+        Input::SetWindowTitle(data.title);
+
+    }
 
 }
 
@@ -1021,17 +1022,17 @@ namespace Editor {
 
 void AppEntryPoint() {
 
-	CUP_FUNCTION();
+    CUP_FUNCTION();
 
-	// In the editor case, we have our own window that is bigger then the engine region
-	// so we have to create and store it ourselves
-	Editor::data.window = Window("Copper Editor", 1280, 720);
+    // In the editor case, we have our own window that is bigger then the engine region
+    // so we have to create and store it ourselves
+    Editor::data.window = Window("Copper Editor", 1280, 720);
 
-	AddPostInitEventFunc(Editor::Initialize);
-	AddUpdateEventFunc(Editor::Update);
-	AddUIUpdateEventFunc(Editor::UIUpdate);
-	AddPreShutdownEventFunc(Editor::OnWindowClose);
-	AddPostShutdownEventFunc(Editor::Shutdown);
+    AddPostInitEventFunc(Editor::Initialize);
+    AddUpdateEventFunc(Editor::Update);
+    AddUIUpdateEventFunc(Editor::UIUpdate);
+    AddPreShutdownEventFunc(Editor::OnWindowClose);
+    AddPostShutdownEventFunc(Editor::Shutdown);
 
 }
 #pragma endregion 

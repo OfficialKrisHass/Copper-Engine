@@ -4,6 +4,6 @@
 
 namespace Launcher::Utils {
 
-	std::string ReplaceSpaces(const std::string& string);
+    std::string ReplaceSpaces(const std::string& string);
 
 }

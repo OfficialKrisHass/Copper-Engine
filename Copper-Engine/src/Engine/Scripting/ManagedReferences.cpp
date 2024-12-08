@@ -8,7 +8,7 @@
 namespace Copper::Scripting {
 
     std::unordered_map<void*, MonoObject*> references;
-    
+
     void ClearManagedReferences() {
 
         CUP_FUNCTION();

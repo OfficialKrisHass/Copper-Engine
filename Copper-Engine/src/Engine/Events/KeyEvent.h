@@ -6,14 +6,14 @@
 
 namespace Copper {
 
-	class KeyEvent : public Event {
+    class KeyEvent : public Event {
 
-	public:
-		KeyEvent() = default;
-		KeyEvent(KeyCode key) : key(key) {}
+    public:
+        KeyEvent() = default;
+        KeyEvent(KeyCode key) : key(key) {}
 
-		KeyCode key = KeyCode::None;
+        KeyCode key = KeyCode::None;
 
-	};
+    };
 
 }

@@ -8,35 +8,35 @@
 
 namespace Editor {
 
-	class SceneHierarchy : public Panel {
+    class SceneHierarchy : public Panel {
 
-	public:
-		SceneHierarchy() : Panel("Scene Hierarchy") {}
-		
-		// Getters
-		inline static Copper::Entity GetSelectedEntity() { return m_selectedEntity; }
+    public:
+        SceneHierarchy() : Panel("Scene Hierarchy") {}
+        
+        // Getters
+        inline static Copper::Entity GetSelectedEntity() { return m_selectedEntity; }
 
-		// Setters
+        // Setters
 
-		inline static void SetScene(Copper::Scene* scene) {
-			
-			m_scene = scene;
-			m_selectedEntity = nullptr;
-		
-		}
-		inline static void SetSelectedEntity(Copper::InternalEntity* entity) { m_selectedEntity = entity; }
+        inline static void SetScene(Copper::Scene* scene) {
+            
+            m_scene = scene;
+            m_selectedEntity = nullptr;
+        
+        }
+        inline static void SetSelectedEntity(Copper::InternalEntity* entity) { m_selectedEntity = entity; }
 
-	private:
-		static Copper::Entity m_selectedEntity;
-		static Copper::Scene* m_scene;
+    private:
+        static Copper::Entity m_selectedEntity;
+        static Copper::Scene* m_scene;
 
-		virtual void UI() override;
+        virtual void UI() override;
 
-		void DrawEntityNode(Copper::InternalEntity* entity);
-		void PopupWindow();
+        void DrawEntityNode(Copper::InternalEntity* entity);
+        void PopupWindow();
 
-		void RemoveParentTarget();
+        void RemoveParentTarget();
 
-	};
+    };
 
 }

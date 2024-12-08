@@ -22,152 +22,152 @@
 #include <filesystem>
 
 namespace Launcher {
-  
-	struct Data {
 
-		bool running = true;
+    struct Data {
 
-		std::vector<ProjectEntry> projectEntries = {};
+        bool running = true;
 
-    bool createProjectWinOpen = false;
+        std::vector<ProjectEntry> projectEntries = {};
 
-	};
-	static Data data;
+        bool createProjectWinOpen = false;
 
-	constexpr ImVec2 ButtonSize = { 175, 50 };
+    };
+    static Data data;
 
-	static void Run();
-	static void Shutdown();
+    constexpr ImVec2 ButtonSize = { 175, 50 };
 
-	static void TitleText();
-	static void AddProjectButton(float cursorY);
-	static void CreateProjectButton(float cursorY);
+    static void Run();
+    static void Shutdown();
 
-	static void ProjectEntries();
+    static void TitleText();
+    static void AddProjectButton(float cursorY);
+    static void CreateProjectButton(float cursorY);
 
-	int Entry() {
+    static void ProjectEntries();
 
-		std::cout << "Hello, World!\n";
+    int Entry() {
 
-		PersistentData::Load(data.projectEntries);
+        std::cout << "Hello, World!\n";
 
-		Window::Create(960, 540, "Copper Launcher");
-		UI::Initialize();
-    Fonts::Initialize();
+        PersistentData::Load(data.projectEntries);
 
-		Run();
+        Window::Create(960, 540, "Copper Launcher");
+        UI::Initialize();
+        Fonts::Initialize();
 
-		return 0;
+        Run();
 
-	}
-	void Run() {
+        return 0;
 
-		while (data.running) {
+    }
+    void Run() {
 
-			Window::Update();
-			UI::BeginFrame();
+        while (data.running) {
 
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
-			UI::Dockspace();
-			ImGui::PopStyleVar();
+            Window::Update();
+            UI::BeginFrame();
 
-			float cursorY = ImGui::GetCursorPosY() + WindowPadding;
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
+            UI::Dockspace();
+            ImGui::PopStyleVar();
 
-			TitleText();
-			AddProjectButton(cursorY);
-			CreateProjectButton(cursorY);
+            float cursorY = ImGui::GetCursorPosY() + WindowPadding;
 
-      CreateProjectWindow::Render(&data.createProjectWinOpen);
+            TitleText();
+            AddProjectButton(cursorY);
+            CreateProjectButton(cursorY);
 
-			ImGui::Separator();
+            CreateProjectWindow::Render(&data.createProjectWinOpen);
 
-			ProjectEntries();
+            ImGui::Separator();
 
-			UI::EndFrame();
+            ProjectEntries();
 
-		}
+            UI::EndFrame();
 
-		SaveTheme();
-    PersistentData::Save(data.projectEntries);
+        }
 
-		Shutdown();
+        SaveTheme();
+        PersistentData::Save(data.projectEntries);
 
-	}
-	void Shutdown() {
+        Shutdown();
 
-		UI::Shutdown();
-		Window::Shutdown();
+    }
+    void Shutdown() {
 
-	}
+        UI::Shutdown();
+        Window::Shutdown();
 
-	void TitleText() {
+    }
 
-		ImGui::PushFont(Fonts::TitleFont());
+    void TitleText() {
 
-    // Bro I wrote this code like a year ago, and I dont know what the fuck is going on in here
-    // Ah the wonders of working with ImGui
+        ImGui::PushFont(Fonts::TitleFont());
 
-		ImGui::SetCursorPosX(WindowPadding);
-		ImGui::SetCursorPosY(ImGui::GetWindowContentRegionMin().y + WindowPadding + ButtonSize.y / 2.0f - ImGui::GetTextLineHeight() / 2.0f);
-		ImGui::Text("Copper Launcher");
+        // Bro I wrote this code like a year ago, and I dont know what the fuck is going on in here
+        // Ah the wonders of working with ImGui
 
-		ImGui::PopFont();
+        ImGui::SetCursorPosX(WindowPadding);
+        ImGui::SetCursorPosY(ImGui::GetWindowContentRegionMin().y + WindowPadding + ButtonSize.y / 2.0f - ImGui::GetTextLineHeight() / 2.0f);
+        ImGui::Text("Copper Launcher");
 
-	}
-	void AddProjectButton(float cursorY) {
+        ImGui::PopFont();
 
-		ImGui::SameLine();
-		ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x - ImGui::GetStyle().ItemInnerSpacing.x - WindowPadding - ButtonSize.x * 2.0f);
-		ImGui::SetCursorPosY(cursorY);
-		if (!ImGui::Button("Add Project", ButtonSize)) return;
+    }
+    void AddProjectButton(float cursorY) {
 
-		std::string path = Dialogs::OpenFolder("Select Project Folder", BaseProjectDir);
-		if (path == "") return;
-		if (!std::filesystem::exists(path + "/Project.cu")) {
+        ImGui::SameLine();
+        ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x - ImGui::GetStyle().ItemInnerSpacing.x - WindowPadding - ButtonSize.x * 2.0f);
+        ImGui::SetCursorPosY(cursorY);
+        if (!ImGui::Button("Add Project", ButtonSize)) return;
 
-			Dialogs::Error("Invalid Project", "The folder you have selected does not contain a Project.cu file! Check if you have selected the correct folder");
-			return;
+        std::string path = Dialogs::OpenFolder("Select Project Folder", BaseProjectDir);
+        if (path == "") return;
+        if (!std::filesystem::exists(path + "/Project.cu")) {
 
-		}
+            Dialogs::Error("Invalid Project", "The folder you have selected does not contain a Project.cu file! Check if you have selected the correct folder");
+            return;
 
-		data.projectEntries.push_back(ProjectEntry(std::filesystem::path(path).filename().string(), path));
+        }
 
-	}
-	void CreateProjectButton(float cursorY) {
+        data.projectEntries.push_back(ProjectEntry(std::filesystem::path(path).filename().string(), path));
 
-		ImGui::SameLine();
-		ImGui::SetCursorPosY(cursorY);
-		if (ImGui::Button("Create Project", ButtonSize))
-      data.createProjectWinOpen = true;
+    }
+    void CreateProjectButton(float cursorY) {
 
-		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + WindowPadding);
+        ImGui::SameLine();
+        ImGui::SetCursorPosY(cursorY);
+        if (ImGui::Button("Create Project", ButtonSize))
+            data.createProjectWinOpen = true;
 
-	}
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + WindowPadding);
 
-	void ProjectEntries() {
+    }
 
-		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { WindowPadding, 0 });
-		ImGui::PushStyleColor(ImGuiCol_FrameBg, ImGui::GetStyleColorVec4(ImGuiCol_WindowBg));
+    void ProjectEntries() {
 
-		ImGui::BeginChildFrame(ImGuiID(51515415555255), { ImGui::GetContentRegionAvail().x, ImGui::GetWindowHeight() - ImGui::GetCursorPosY() });
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { WindowPadding, 0 });
+        ImGui::PushStyleColor(ImGuiCol_FrameBg, ImGui::GetStyleColorVec4(ImGuiCol_WindowBg));
 
-		ImGui::PopStyleVar(2);
-		ImGui::PopStyleColor();
+        ImGui::BeginChildFrame(ImGuiID(51515415555255), { ImGui::GetContentRegionAvail().x, ImGui::GetWindowHeight() - ImGui::GetCursorPosY() });
 
-		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + WindowPadding);
+        ImGui::PopStyleVar(2);
+        ImGui::PopStyleColor();
 
-		for (const ProjectEntry& entry : data.projectEntries)
-			entry.Render();
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + WindowPadding);
 
-		ImGui::EndChildFrame();
+        for (const ProjectEntry& entry : data.projectEntries)
+            entry.Render();
 
-	}
+        ImGui::EndChildFrame();
 
-	void OnWindowClose() {
+    }
 
-		data.running = false;
+    void OnWindowClose() {
 
-	}
+        data.running = false;
+
+    }
 
 }

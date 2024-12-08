@@ -7,30 +7,30 @@ struct ImGuiContext;
 
 namespace Copper {
 
-	class UIContext {
+    class UIContext {
 
-	public:
-		UIContext() = default;
+    public:
+        UIContext() = default;
 
-		void Initialize(const Window& window, bool gizmo = false, bool docking = true, bool viewports = true);
-		void Shutdown();
+        void Initialize(const Window& window, bool gizmo = false, bool docking = true, bool viewports = true);
+        void Shutdown();
 
-		void Begin();
-		void End();
+        void Begin();
+        void End();
 
-		void LoadFont(const std::string& path, float fontSize = 18.0f) const;
+        void LoadFont(const std::string& path, float fontSize = 18.0f) const;
 
-		void SetAsCurrent() const;
-	
-	private:
-		bool m_gizmo = false;
-		bool m_docking = true;
-		bool m_viewports = true;
+        void SetAsCurrent() const;
+    
+    private:
+        bool m_gizmo = false;
+        bool m_docking = true;
+        bool m_viewports = true;
 
-		ImGuiContext* m_context = nullptr;
+        ImGuiContext* m_context = nullptr;
 
-	};
+    };
 
-	const UIContext& MainUIContext();
+    const UIContext& MainUIContext();
 
 }

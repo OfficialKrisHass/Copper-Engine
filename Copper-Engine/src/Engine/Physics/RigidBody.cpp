@@ -145,7 +145,7 @@ namespace Copper {
         if (m_static) return;
 
         m_mass = value;
-        
+
         IN_RUNTIME(DynamicBody->setMass(m_mass));
 
     }

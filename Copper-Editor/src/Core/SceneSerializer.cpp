@@ -36,7 +36,7 @@ namespace Editor::SceneSerializer {
 
         YAML::Emitter out;
         out << YAML::BeginMap; // Main
-        
+
         out << YAML::Key << "Version" << YAML::Value << 0;
         out << YAML::Key << "Name" << YAML::Value << scene->GetName();
 
@@ -176,91 +176,91 @@ namespace Editor::SceneSerializer {
 
         if (MeshRenderer* renderer = entity->GetComponent<MeshRenderer>()) {
 
-			out << YAML::Key << "Mesh Renderer" << YAML::Value << YAML::BeginMap; // Mesh Renderer
+            out << YAML::Key << "Mesh Renderer" << YAML::Value << YAML::BeginMap; // Mesh Renderer
 
-			out << YAML::Key << "Mesh" << YAML::Value << renderer->mesh;
-			out << YAML::Key << "Material" << YAML::Value << renderer->material;
+            out << YAML::Key << "Mesh" << YAML::Value << renderer->mesh;
+            out << YAML::Key << "Material" << YAML::Value << renderer->material;
 
-			out << YAML::EndMap; // Mesh Renderer
+            out << YAML::EndMap; // Mesh Renderer
 
-		}
-		if (Light* light = entity->GetComponent<Light>()) {
+        }
+        if (Light* light = entity->GetComponent<Light>()) {
 
-			out << YAML::Key << "Light" << YAML::Value << YAML::BeginMap; // Light
+            out << YAML::Key << "Light" << YAML::Value << YAML::BeginMap; // Light
 
-			out << YAML::Key << "Type" << YAML::Value << (uint32) light->type;
+            out << YAML::Key << "Type" << YAML::Value << (uint32) light->type;
 
-			out << YAML::Key << "Color" << YAML::Value << light->color;
-			out << YAML::Key << "Intensity" << YAML::Value << light->intensity;
+            out << YAML::Key << "Color" << YAML::Value << light->color;
+            out << YAML::Key << "Intensity" << YAML::Value << light->intensity;
 
-			out << YAML::EndMap; // Light
+            out << YAML::EndMap; // Light
 
-		}
-		if (Camera* camera = entity->GetComponent<Camera>()) {
+        }
+        if (Camera* camera = entity->GetComponent<Camera>()) {
 
-			out << YAML::Key << "Camera" << YAML::Value << YAML::BeginMap; // Camera
+            out << YAML::Key << "Camera" << YAML::Value << YAML::BeginMap; // Camera
 
-			out << YAML::Key << "Fov" << YAML::Value << camera->fov;
-			out << YAML::Key << "Near Plane" << YAML::Value << camera->nearPlane;
-			out << YAML::Key << "Far Plane" << YAML::Value << camera->farPlane;
+            out << YAML::Key << "Fov" << YAML::Value << camera->fov;
+            out << YAML::Key << "Near Plane" << YAML::Value << camera->nearPlane;
+            out << YAML::Key << "Far Plane" << YAML::Value << camera->farPlane;
 
-			out << YAML::Key << "Size" << YAML::Value << camera->size;
+            out << YAML::Key << "Size" << YAML::Value << camera->size;
 
-			out << YAML::EndMap; // Camera
+            out << YAML::EndMap; // Camera
 
-		}
+        }
 
-		if (RigidBody* rb = entity->GetComponent<RigidBody>()) {
+        if (RigidBody* rb = entity->GetComponent<RigidBody>()) {
 
-			out << YAML::Key << "Rigid Body" << YAML::Value << YAML::BeginMap; // Rigid Body
+            out << YAML::Key << "Rigid Body" << YAML::Value << YAML::BeginMap; // Rigid Body
 
-			out << YAML::Key << "Mass" << YAML::Value << rb->GetMass();
+            out << YAML::Key << "Mass" << YAML::Value << rb->GetMass();
 
-			out << YAML::Key << "Static" << YAML::Value << rb->GetStatic();
-			out << YAML::Key << "Gravity" << YAML::Value << rb->GetGravity();
-			out << YAML::Key << "Lock Mask" << YAML::Value << (uint32) rb->GetLockMask();
+            out << YAML::Key << "Static" << YAML::Value << rb->GetStatic();
+            out << YAML::Key << "Gravity" << YAML::Value << rb->GetGravity();
+            out << YAML::Key << "Lock Mask" << YAML::Value << (uint32) rb->GetLockMask();
 
-			out << YAML::EndMap; // Rigid Body
+            out << YAML::EndMap; // Rigid Body
 
-		}
+        }
 
-		if (BoxCollider* collider = entity->GetComponent<BoxCollider>()) {
+        if (BoxCollider* collider = entity->GetComponent<BoxCollider>()) {
 
-			out << YAML::Key << "Box Collider" << YAML::Value << YAML::BeginMap; // Box Collider
+            out << YAML::Key << "Box Collider" << YAML::Value << YAML::BeginMap; // Box Collider
 
-			out << YAML::Key << "Trigger" << YAML::Value << collider->m_trigger;
-			out << YAML::Key << "Center" << YAML::Value << collider->m_center;
+            out << YAML::Key << "Trigger" << YAML::Value << collider->m_trigger;
+            out << YAML::Key << "Center" << YAML::Value << collider->m_center;
 
-			out << YAML::Key << "Size" << YAML::Value << collider->m_size;
+            out << YAML::Key << "Size" << YAML::Value << collider->m_size;
 
-			out << YAML::EndMap; // Box Collider
+            out << YAML::EndMap; // Box Collider
 
-		}
-		if (SphereCollider* collider = entity->GetComponent<SphereCollider>()) {
+        }
+        if (SphereCollider* collider = entity->GetComponent<SphereCollider>()) {
 
-			out << YAML::Key << "Sphere Collider" << YAML::Value << YAML::BeginMap; // Sphere Collider
+            out << YAML::Key << "Sphere Collider" << YAML::Value << YAML::BeginMap; // Sphere Collider
 
-			out << YAML::Key << "Trigger" << YAML::Value << collider->m_trigger;
-			out << YAML::Key << "Center" << YAML::Value << collider->m_center;
+            out << YAML::Key << "Trigger" << YAML::Value << collider->m_trigger;
+            out << YAML::Key << "Center" << YAML::Value << collider->m_center;
 
-			out << YAML::Key << "Radius" << YAML::Value << collider->m_radius;
+            out << YAML::Key << "Radius" << YAML::Value << collider->m_radius;
 
-			out << YAML::EndMap; // Sphere Collider
+            out << YAML::EndMap; // Sphere Collider
 
-		}
-		if (CapsuleCollider* collider = entity->GetComponent<CapsuleCollider>()) {
+        }
+        if (CapsuleCollider* collider = entity->GetComponent<CapsuleCollider>()) {
 
-			out << YAML::Key << "Capsule Collider" << YAML::Value << YAML::BeginMap; // Sphere Collider
+            out << YAML::Key << "Capsule Collider" << YAML::Value << YAML::BeginMap; // Sphere Collider
 
-			out << YAML::Key << "Trigger" << YAML::Value << collider->m_trigger;
-			out << YAML::Key << "Center" << YAML::Value << collider->m_center;
+            out << YAML::Key << "Trigger" << YAML::Value << collider->m_trigger;
+            out << YAML::Key << "Center" << YAML::Value << collider->m_center;
 
-			out << YAML::Key << "Radius" << YAML::Value << collider->m_radius;
-			out << YAML::Key << "Height" << YAML::Value << collider->m_height;
+            out << YAML::Key << "Radius" << YAML::Value << collider->m_radius;
+            out << YAML::Key << "Height" << YAML::Value << collider->m_height;
 
-			out << YAML::EndMap; // Sphere Collider
+            out << YAML::EndMap; // Sphere Collider
 
-		}
+        }
 
         if (ScriptComponent* scriptComponent = entity->GetComponent<ScriptComponent>()) {
 
@@ -284,7 +284,7 @@ namespace Editor::SceneSerializer {
                 case Scripting::Field::Type::UInt: SerializeField<uint32>(out, scriptComponent, field); break;
                 case Scripting::Field::Type::Float: SerializeField<float>(out, scriptComponent, field); break;
                 case Scripting::Field::Type::Double: SerializeField<double>(out, scriptComponent, field); break;
-                                                     
+
                 case Scripting::Field::Type::Vector2: SerializeField<Vector2>(out, scriptComponent, field); break;
                 case Scripting::Field::Type::Vector3: SerializeField<Vector3>(out, scriptComponent, field); break;
                 case Scripting::Field::Type::Quaternion: SerializeField<Quaternion>(out, scriptComponent, field); break;
@@ -300,13 +300,13 @@ namespace Editor::SceneSerializer {
                     out << YAML::Key << "Value" << YAML::Value << (uint32) id;
 
                     out << YAML::EndMap; // Field
-                    
+
                     break;
 
 
                 }
                 case Scripting::Field::Type::Transform: {
-                    
+
                     Transform* transform = nullptr;
                     field.GetRefValue(scriptComponent, (void**) &transform);
 
@@ -337,82 +337,82 @@ namespace Editor::SceneSerializer {
     void DeserializeEntityComponents(InternalEntity* entity, const YAML::Node& data) {
 
         CUP_FUNCTION();
-        
+
         if (YAML::Node rendererNode = data["Mesh Renderer"]) {
 
-			MeshRenderer* renderer = entity->AddComponent<MeshRenderer>();
+            MeshRenderer* renderer = entity->AddComponent<MeshRenderer>();
 
-			renderer->mesh = rendererNode["Mesh"].as<MeshAsset>();
-			renderer->material = rendererNode["Material"].as<MaterialAsset>();
+            renderer->mesh = rendererNode["Mesh"].as<MeshAsset>();
+            renderer->material = rendererNode["Material"].as<MaterialAsset>();
 
-		}
-		if (YAML::Node lightNode = data["Light"]) {
+        }
+        if (YAML::Node lightNode = data["Light"]) {
 
-			Light* light = entity->AddComponent<Light>();
+            Light* light = entity->AddComponent<Light>();
 
-			light->type = (Light::Type) lightNode["Type"].as<uint32>();
+            light->type = (Light::Type) lightNode["Type"].as<uint32>();
 
-			light->color = lightNode["Color"].as<Color>();
-			light->intensity = lightNode["Intensity"].as<float>();
+            light->color = lightNode["Color"].as<Color>();
+            light->intensity = lightNode["Intensity"].as<float>();
 
-		}
-		if (YAML::Node camNode = data["Camera"]) {
+        }
+        if (YAML::Node camNode = data["Camera"]) {
 
-			Camera* cam = entity->AddComponent<Camera>();
+            Camera* cam = entity->AddComponent<Camera>();
 
-			cam->fov = camNode["Fov"].as<float>();
-			cam->nearPlane = camNode["Near Plane"].as<float>();
-			cam->farPlane = camNode["Far Plane"].as<float>();
+            cam->fov = camNode["Fov"].as<float>();
+            cam->nearPlane = camNode["Near Plane"].as<float>();
+            cam->farPlane = camNode["Far Plane"].as<float>();
 
-			cam->Resize(camNode["Size"].as<UVector2I>());
+            cam->Resize(camNode["Size"].as<UVector2I>());
 
-		}
+        }
 
-		if (YAML::Node rbNode = data["Rigid Body"]) {
+        if (YAML::Node rbNode = data["Rigid Body"]) {
 
-			RigidBody* rb = entity->AddComponent<RigidBody>();
+            RigidBody* rb = entity->AddComponent<RigidBody>();
 
-			rb->m_mass = rbNode["Mass"].as<float>();
+            rb->m_mass = rbNode["Mass"].as<float>();
 
-			rb->m_static = rbNode["Static"].as<bool>();
-			rb->m_gravity = rbNode["Gravity"].as<bool>();
-			rb->m_lockMask = rbNode["Lock Mask"].as<uint8>();
+            rb->m_static = rbNode["Static"].as<bool>();
+            rb->m_gravity = rbNode["Gravity"].as<bool>();
+            rb->m_lockMask = rbNode["Lock Mask"].as<uint8>();
 
-		}
+        }
 
-		if (YAML::Node colliderNode = data["Box Collider"]) {
+        if (YAML::Node colliderNode = data["Box Collider"]) {
 
-			BoxCollider* collider = entity->AddComponent<BoxCollider>();
+            BoxCollider* collider = entity->AddComponent<BoxCollider>();
 
-			collider->m_trigger = colliderNode["Trigger"].as<bool>();
-			collider->m_center = colliderNode["Center"].as<Vector3>();
+            collider->m_trigger = colliderNode["Trigger"].as<bool>();
+            collider->m_center = colliderNode["Center"].as<Vector3>();
 
-			collider->m_size = colliderNode["Size"].as<Vector3>();
+            collider->m_size = colliderNode["Size"].as<Vector3>();
 
-		}
-		if (YAML::Node colliderNode = data["Sphere Collider"]) {
+        }
+        if (YAML::Node colliderNode = data["Sphere Collider"]) {
 
-			SphereCollider* collider = entity->AddComponent<SphereCollider>();
+            SphereCollider* collider = entity->AddComponent<SphereCollider>();
 
-			collider->m_trigger = colliderNode["Trigger"].as<bool>();
-			collider->m_center = colliderNode["Center"].as<Vector3>();
+            collider->m_trigger = colliderNode["Trigger"].as<bool>();
+            collider->m_center = colliderNode["Center"].as<Vector3>();
 
-			collider->m_radius = colliderNode["Radius"].as<float>();
+            collider->m_radius = colliderNode["Radius"].as<float>();
 
-		}
-		if (YAML::Node colliderNode = data["Capsule Collider"]) {
+        }
+        if (YAML::Node colliderNode = data["Capsule Collider"]) {
 
-			CapsuleCollider* collider = entity->AddComponent<CapsuleCollider>();
+            CapsuleCollider* collider = entity->AddComponent<CapsuleCollider>();
 
-			collider->m_trigger = colliderNode["Trigger"].as<bool>();
-			collider->m_center = colliderNode["Center"].as<Vector3>();
+            collider->m_trigger = colliderNode["Trigger"].as<bool>();
+            collider->m_center = colliderNode["Center"].as<Vector3>();
 
-			collider->m_radius = colliderNode["Radius"].as<float>();
-			collider->m_height = colliderNode["Height"].as<float>();
+            collider->m_radius = colliderNode["Radius"].as<float>();
+            collider->m_height = colliderNode["Height"].as<float>();
 
-		}
+        }
 
-		if (YAML::Node scriptNode = data["Script Component"]) {
+        if (YAML::Node scriptNode = data["Script Component"]) {
 
             std::string name = scriptNode["Name"].as<std::string>();
             const Scripting::ScriptMap& scriptMap = Scripting::ComponentScripts();
@@ -425,7 +425,7 @@ namespace Editor::SceneSerializer {
 
             }
 
-			ScriptComponent* scriptComponent = entity->AddComponent<ScriptComponent>();
+            ScriptComponent* scriptComponent = entity->AddComponent<ScriptComponent>();
             scriptComponent->Setup(&script->second);
 
             // Fields
@@ -444,7 +444,7 @@ namespace Editor::SceneSerializer {
 
                 }
                 if (fieldNode["Type"].as<uint32>() != (uint32) field.GetType()) continue;
-                
+
                 switch (field.GetType()) {
 
                 case Scripting::Field::Type::None: break;
@@ -465,13 +465,13 @@ namespace Editor::SceneSerializer {
                     uint64 id = fieldNode["Value"].as<uint64>();
                     if (id == INVALID_ENTITY_ID) break;
 
-					if (id > entity->ID()) {
+                    if (id > entity->ID()) {
 
-						uint32 tmp = entity->ID();
-						CreateEntityFromID((uint32) id);
-						entity = GetEntityFromID(tmp);
+                        uint32 tmp = entity->ID();
+                        CreateEntityFromID((uint32) id);
+                        entity = GetEntityFromID(tmp);
 
-					}
+                    }
 
                     field.SetRefValue(scriptComponent, (void*) id);
                     break;
@@ -486,11 +486,11 @@ namespace Editor::SceneSerializer {
 
                     if (id > entity->ID()) {
 
-						uint32 tmp = entity->ID();
-						CreateEntityFromID(id);
-						entity = GetEntityFromID(tmp);
+                        uint32 tmp = entity->ID();
+                        CreateEntityFromID(id);
+                        entity = GetEntityFromID(tmp);
 
-					}
+                    }
 
                     Transform* transform = GetEntityFromID(id)->GetTransform();
                     field.SetRefValue(scriptComponent, transform);

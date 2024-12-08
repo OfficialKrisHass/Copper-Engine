@@ -11,7 +11,7 @@ namespace Copper {
     inline YAML::Emitter& operator<<(YAML::Emitter& out, const InternalEntity* entity) {
 
         out << (entity ? entity->ID() : INVALID_ENTITY_ID);
-		return out;
+        return out;
 
     }
 
@@ -46,4 +46,3 @@ namespace YAML {
     };
 
 }
-

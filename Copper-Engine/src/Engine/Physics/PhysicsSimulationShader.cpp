@@ -12,7 +12,7 @@ namespace Copper::PhysicsEngine {
                                           PxFilterObjectAttributes attributes1, PxFilterData filterData1,
                                           PxPairFlags& pairFlags, const void* constantBlock, uint32_t constantBlockSize) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
         PX_UNUSED(constantBlock);
         PX_UNUSED(constantBlockSize);

@@ -14,213 +14,213 @@
 
 namespace Copper {
 
-	uint32 windowCount = 0;
+    uint32 windowCount = 0;
 
-	Window::Window(const std::string& title, uint32 width, uint32 height, bool maximize) {
+    Window::Window(const std::string& title, uint32 width, uint32 height, bool maximize) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		data.title = title;
+        data.title = title;
 
         if (windowCount == 0) {
 
 #ifndef CU_EDITOR
-           VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the main Window"); 
+            VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the main Window"); 
 #endif
             if (!glfwInit()) {
 
                 LogError("Could not initialize GLFW");
                 exit(-1);
 
-           }
+            }
 
         }
 
-		windowCount++;
+        windowCount++;
 
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		windowPtr = (void*) glfwCreateWindow(width, height, data.title.c_str(), NULL, NULL);
+        windowPtr = (void*) glfwCreateWindow(width, height, data.title.c_str(), NULL, NULL);
         CU_ASSERT(windowPtr, "Could not create GLFW window");
 
-		glfwMakeContextCurrent(WINDOW);
-		glfwSetWindowUserPointer(WINDOW, &data);
-		if (maximize)
+        glfwMakeContextCurrent(WINDOW);
+        glfwSetWindowUserPointer(WINDOW, &data);
+        if (maximize)
             glfwMaximizeWindow(WINDOW);
 
         glfwGetWindowSize(WINDOW, (int32*) &data.size.x, (int32*) &data.size.y);
 
-		SetupEvents();
+        SetupEvents();
 
-	}
-	void Window::Update() {
+    }
+    void Window::Update() {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		glfwPollEvents();
-		glfwSwapBuffers(WINDOW);
+        glfwPollEvents();
+        glfwSwapBuffers(WINDOW);
 
-	}
-	void Window::Shutdown() {
+    }
+    void Window::Shutdown() {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		glfwDestroyWindow(WINDOW);
+        glfwDestroyWindow(WINDOW);
 
-		if (windowCount == 1)
+        if (windowCount == 1)
             glfwTerminate();
-		windowCount--;
+        windowCount--;
 
-	}
+    }
 
-	void Window::SetAsCurrentContext() {
+    void Window::SetAsCurrentContext() {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		glfwMakeContextCurrent(WINDOW);
+        glfwMakeContextCurrent(WINDOW);
 
-	}
+    }
 
-	void Window::SetupEvents() {
+    void Window::SetupEvents() {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		glfwSetWindowCloseCallback(WINDOW, [](GLFWwindow* window) {
+        glfwSetWindowCloseCallback(WINDOW, [](GLFWwindow* window) {
 
-			WindowData& data = GETWINDATA;
+            WindowData& data = GETWINDATA;
 
-			data.windowCloseEvent();
+            data.windowCloseEvent();
 
-			});
-		glfwSetWindowFocusCallback(WINDOW, [](GLFWwindow* window, int32 focused) {
+        });
+        glfwSetWindowFocusCallback(WINDOW, [](GLFWwindow* window, int32 focused) {
 
-			WindowData& data = GETWINDATA;
+            WindowData& data = GETWINDATA;
 
-			data.windowFocusedEvent.focused = focused;
-			data.windowFocusedEvent();
+            data.windowFocusedEvent.focused = focused;
+            data.windowFocusedEvent();
 
-			});
-		glfwSetWindowSizeCallback(WINDOW, [](GLFWwindow* window, int32 width, int32 height) {
+        });
+        glfwSetWindowSizeCallback(WINDOW, [](GLFWwindow* window, int32 width, int32 height) {
 
-			WindowData& data = GETWINDATA;
+            WindowData& data = GETWINDATA;
 
             data.size.x = width;
             data.size.y = height;
 
-			data.windowResizeEvent.width = width;
-			data.windowResizeEvent.height = height;
+            data.windowResizeEvent.width = width;
+            data.windowResizeEvent.height = height;
 
-			data.windowResizeEvent();
+            data.windowResizeEvent();
 
-			});
+        });
 
-		glfwSetKeyCallback(WINDOW, [](GLFWwindow* window, int32 key, int32 scancode, int32 action, int32 mods) {
+        glfwSetKeyCallback(WINDOW, [](GLFWwindow* window, int32 key, int32 scancode, int32 action, int32 mods) {
 
-			WindowData& data = GETWINDATA;
+            WindowData& data = GETWINDATA;
 
-			switch (action) {
+            switch (action) {
 
-			case GLFW_PRESS:
-			{
+            case GLFW_PRESS:
+            {
 
-				data.keyPressedEvent.key = (KeyCode)key;
-				data.keyPressedEvent();
+                data.keyPressedEvent.key = (KeyCode)key;
+                data.keyPressedEvent();
 
-				break;
+                break;
 
-			}
-			case GLFW_REPEAT:
-			{
+            }
+            case GLFW_REPEAT:
+            {
 
-				data.keyPressedEvent.key = (KeyCode)key;
-				data.keyPressedEvent();
+                data.keyPressedEvent.key = (KeyCode)key;
+                data.keyPressedEvent();
 
-				break;
+                break;
 
-			}
-			case GLFW_RELEASE:
-			{
+            }
+            case GLFW_RELEASE:
+            {
 
-				data.keyReleasedEvent.key = (KeyCode)key;
-				data.keyReleasedEvent();
+                data.keyReleasedEvent.key = (KeyCode)key;
+                data.keyReleasedEvent();
 
-				break;
+                break;
 
-			}
+            }
 
-			}
+            }
 
-			});
+        });
 
-		glfwSetCursorPosCallback(WINDOW, [](GLFWwindow* window, double x, double y) {
+        glfwSetCursorPosCallback(WINDOW, [](GLFWwindow* window, double x, double y) {
 
-			WindowData& data = GETWINDATA;
+            WindowData& data = GETWINDATA;
 
-			data.mouseMoveEvent.mouseCoords.x = (uint32) x;
-			data.mouseMoveEvent.mouseCoords.y = (uint32) y;
-			data.mouseMoveEvent();
+            data.mouseMoveEvent.mouseCoords.x = (uint32) x;
+            data.mouseMoveEvent.mouseCoords.y = (uint32) y;
+            data.mouseMoveEvent();
 
-			});
+        });
 
-	}
+    }
 
-	float Window::GetTime() const {
+    float Window::GetTime() const {
 
         CUP_FUNCTION();
 
-		return (float) glfwGetTime();
+        return (float) glfwGetTime();
 
-	}
+    }
 
-	void Window::SetSize(const UVector2I& size) {
+    void Window::SetSize(const UVector2I& size) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		glfwSetWindowSize(WINDOW, size.x, size.y);
-		data.size.x = size.x;
-		data.size.y = size.y;
+        glfwSetWindowSize(WINDOW, size.x, size.y);
+        data.size.x = size.x;
+        data.size.y = size.y;
 
-	}
+    }
 
     void Window::AddWindowCloseEventFunc(std::function<bool(const Event& e)> func) {
 
-		data.windowCloseEvent += func;
-		glfwSetWindowUserPointer(WINDOW, &data);
+        data.windowCloseEvent += func;
+        glfwSetWindowUserPointer(WINDOW, &data);
 
-	}
-	void Window::AddWindowFocusedEventFunc(std::function<bool(const Event& e)> func) {
+    }
+    void Window::AddWindowFocusedEventFunc(std::function<bool(const Event& e)> func) {
 
-		data.windowFocusedEvent += func;
-		glfwSetWindowUserPointer(WINDOW, &data);
+        data.windowFocusedEvent += func;
+        glfwSetWindowUserPointer(WINDOW, &data);
 
-	}
-	void Window::AddWindowResizeEventFunc(std::function<bool(const Event& e)> func) {
+    }
+    void Window::AddWindowResizeEventFunc(std::function<bool(const Event& e)> func) {
 
-		data.windowResizeEvent += func;
-		glfwSetWindowUserPointer(WINDOW, &data);
+        data.windowResizeEvent += func;
+        glfwSetWindowUserPointer(WINDOW, &data);
 
-	}
+    }
 
-	void Window::AddKeyPressedEventFunc(std::function<bool(const Event&)> func) {
+    void Window::AddKeyPressedEventFunc(std::function<bool(const Event&)> func) {
 
-		data.keyPressedEvent += func;
-		glfwSetWindowUserPointer(WINDOW, &data);
+        data.keyPressedEvent += func;
+        glfwSetWindowUserPointer(WINDOW, &data);
 
-	}
-	void Window::AddKeyReleasedEventFunc(std::function<bool(const Event&)> func) {
+    }
+    void Window::AddKeyReleasedEventFunc(std::function<bool(const Event&)> func) {
 
-		data.keyReleasedEvent += func;
-	    glfwSetWindowUserPointer(WINDOW, &data);
+        data.keyReleasedEvent += func;
+        glfwSetWindowUserPointer(WINDOW, &data);
 
-	}
+    }
 
-	void Window::AddMouseMoveEventFunc(std::function<bool(const Event&)> func) {
+    void Window::AddMouseMoveEventFunc(std::function<bool(const Event&)> func) {
 
-		data.mouseMoveEvent += func;
-	    glfwSetWindowUserPointer(WINDOW, &data);
+        data.mouseMoveEvent += func;
+        glfwSetWindowUserPointer(WINDOW, &data);
 
-	}
+    }
 
 }

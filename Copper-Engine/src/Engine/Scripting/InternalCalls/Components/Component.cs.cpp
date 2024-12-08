@@ -13,7 +13,7 @@
 namespace Copper::Scripting::Component {
 
     typedef ::Copper::Component Component;
-    
+
     MonoObject* GetEntity(MonoObject* component) {
 
         CUP_FUNCTION();

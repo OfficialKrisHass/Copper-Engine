@@ -7,36 +7,36 @@
 
 namespace Copper {
 
-	// Higher level, platform indenpendant wrapper for the Vertex Buffer
-	class VertexBuffer {
+    // Higher level, platform indenpendant wrapper for the Vertex Buffer
+    class VertexBuffer {
 
-	public:
-		VertexBuffer() = default;
-		VertexBuffer(float* vertices, uint32 size, const std::initializer_list<ElementType>& layout);
+    public:
+        VertexBuffer() = default;
+        VertexBuffer(float* vertices, uint32 size, const std::initializer_list<ElementType>& layout);
 
         // Modification
 
-		void SetData(float* vertices, uint32 count);
+        void SetData(float* vertices, uint32 count);
 
         // Using
 
-		void Bind() const;
-		void Unbind() const;
+        void Bind() const;
+        void Unbind() const;
 
         // Getters
 
-		inline uint32 GetStride() const { return m_stride; }
-		inline uint32 GetElementCount() const { return (uint32) m_offsets.size(); }
+        inline uint32 GetStride() const { return m_stride; }
+        inline uint32 GetElementCount() const { return (uint32) m_offsets.size(); }
 
-		inline ElementType GetType(uint32 index) const { return m_offsets[index].first; }
-		inline uint32 GetOffset(uint32 index) const { return m_offsets[index].second; }
+        inline ElementType GetType(uint32 index) const { return m_offsets[index].first; }
+        inline uint32 GetOffset(uint32 index) const { return m_offsets[index].second; }
 
-	private:
-		uint32 m_id = 0;
-		uint32 m_stride = 0;
-		std::vector<std::pair<ElementType, uint32>> m_offsets;
+    private:
+        uint32 m_id = 0;
+        uint32 m_stride = 0;
+        std::vector<std::pair<ElementType, uint32>> m_offsets;
 
-		void CalculateOffsetsAndStride(const std::initializer_list<ElementType>& layout) {
+        void CalculateOffsetsAndStride(const std::initializer_list<ElementType>& layout) {
 
             CUP_FUNCTION();
 
@@ -56,32 +56,32 @@ namespace Copper {
 
         }
 
-	};
+    };
 
-	// Higher level, platform indenpendant wrapper for the Index Buffer
-	class IndexBuffer {
+    // Higher level, platform indenpendant wrapper for the Index Buffer
+    class IndexBuffer {
 
-	public:
-		IndexBuffer() = default;
-		IndexBuffer(uint32* indices, uint32 size);
+    public:
+        IndexBuffer() = default;
+        IndexBuffer(uint32* indices, uint32 size);
 
         // Modification
 
-		void SetData(uint32* indices, uint32 count);
+        void SetData(uint32* indices, uint32 count);
 
         // Using
 
-		void Bind() const;
-		void Unbind() const;
+        void Bind() const;
+        void Unbind() const;
 
         // Getters
 
-		inline uint32 GetCount() const { return m_count; }
+        inline uint32 GetCount() const { return m_count; }
 
-	private:
-		uint32 m_id = 0;
-		uint32 m_count = 0;
+    private:
+        uint32 m_id = 0;
+        uint32 m_count = 0;
 
-	};
+    };
 
 }

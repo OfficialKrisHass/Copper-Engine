@@ -16,174 +16,174 @@ using namespace Copper;
 
 namespace Editor {
 
-	uint32 clickedEntityID = INVALID_ENTITY_ID;
+    uint32 clickedEntityID = INVALID_ENTITY_ID;
 
-	Scene* SceneHierarchy::m_scene = nullptr;
-	Entity SceneHierarchy::m_selectedEntity = nullptr;
+    Scene* SceneHierarchy::m_scene = nullptr;
+    Entity SceneHierarchy::m_selectedEntity = nullptr;
 
-	void SceneHierarchy::UI() {
+    void SceneHierarchy::UI() {
 
-		CUP_START_FRAME("Scene Hierarchy");
+        CUP_START_FRAME("Scene Hierarchy");
 
-		if (ImGui::BeginPopupContextWindow("##Scene Hierarchy")) {
+        if (ImGui::BeginPopupContextWindow("##Scene Hierarchy")) {
 
-			PopupWindow();
-			ImGui::EndPopup();
-
-		}
-
-		for (InternalEntity* entity : EntityView(GetScene())) {
-
-			if (!entity) continue;
-			if (entity->GetTransform()->Parent()) continue;
-
-			DrawEntityNode(entity);
-
-		}
-
-		RemoveParentTarget();
-
-		CUP_END_FRAME();
-
-	}
-
-	void SceneHierarchy::DrawEntityNode(InternalEntity* entity) {
-
-		ImGui::PushID((uint32) (uint64) entity);
-
-		ImGuiTreeNodeFlags flags = ((m_selectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
-		bool opened = ImGui::TreeNodeEx(entity, flags, entity->name.c_str());
-
-		if (ImGui::IsItemClicked())
-			clickedEntityID = entity->ID();
-
-		if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered() && entity->ID() == clickedEntityID) {
-
-			m_selectedEntity = entity;
-			Properties::SetSelectedEntity(entity);
+            PopupWindow();
+            ImGui::EndPopup();
 
         }
 
-		if (ImGui::BeginDragDropSource()) {
+        for (InternalEntity* entity : EntityView(GetScene())) {
+
+            if (!entity) continue;
+            if (entity->GetTransform()->Parent()) continue;
+
+            DrawEntityNode(entity);
+
+        }
+
+        RemoveParentTarget();
+
+        CUP_END_FRAME();
+
+    }
+
+    void SceneHierarchy::DrawEntityNode(InternalEntity* entity) {
+
+        ImGui::PushID((uint32) (uint64) entity);
+
+        ImGuiTreeNodeFlags flags = ((m_selectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
+        bool opened = ImGui::TreeNodeEx(entity, flags, entity->name.c_str());
+
+        if (ImGui::IsItemClicked())
+            clickedEntityID = entity->ID();
+
+        if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered() && entity->ID() == clickedEntityID) {
+
+            m_selectedEntity = entity;
+            Properties::SetSelectedEntity(entity);
+
+        }
+
+        if (ImGui::BeginDragDropSource()) {
 
             uint32 data = entity->ID();
 
-			ImGui::SetDragDropPayload("SCH_ENTITY_NODE", &data, sizeof(uint32), ImGuiCond_Once);
-			ImGui::EndDragDropSource();
+            ImGui::SetDragDropPayload("SCH_ENTITY_NODE", &data, sizeof(uint32), ImGuiCond_Once);
+            ImGui::EndDragDropSource();
 
-		}
-		if (ImGui::BeginDragDropTarget()) {
+        }
+        if (ImGui::BeginDragDropTarget()) {
 
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE"))
-				entity->GetTransform()->AddChild(((InternalEntity*) payload->Data)->GetTransform());
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE"))
+                entity->GetTransform()->AddChild(((InternalEntity*) payload->Data)->GetTransform());
 
-			ImGui::EndDragDropTarget();
+            ImGui::EndDragDropTarget();
 
-		}
+        }
 
-		if (ImGui::BeginPopupContextItem()) {
+        if (ImGui::BeginPopupContextItem()) {
 
-			if (ImGui::MenuItem("Remove")) {
+            if (ImGui::MenuItem("Remove")) {
 
-				m_scene->RemoveEntity(entity);
-				m_selectedEntity = nullptr;
+                m_scene->RemoveEntity(entity);
+                m_selectedEntity = nullptr;
 
-				ImGui::EndPopup();
-				ImGui::PopID();
+                ImGui::EndPopup();
+                ImGui::PopID();
 
-				return;
+                return;
 
-			}
+            }
 
-			ImGui::EndPopup();
+            ImGui::EndPopup();
 
-		}
+        }
 
-		if (opened) {
+        if (opened) {
 
-			for (uint32 i = 0; i < entity->GetTransform()->NumOfChildren(); i++) {
+            for (uint32 i = 0; i < entity->GetTransform()->NumOfChildren(); i++) {
 
-				DrawEntityNode(entity->GetTransform()->GetChild(i)->GetEntity());
+                DrawEntityNode(entity->GetTransform()->GetChild(i)->GetEntity());
 
-			}
+            }
 
-			ImGui::TreePop();
+            ImGui::TreePop();
 
-		}
+        }
 
-		ImGui::PopID();
+        ImGui::PopID();
 
-	}
-	void SceneHierarchy::PopupWindow() {
+    }
+    void SceneHierarchy::PopupWindow() {
 
-		if (ImGui::MenuItem("Entity", 0, false, m_scene)) {
-			
-			m_selectedEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one);
-			SetChanges(true);
+        if (ImGui::MenuItem("Entity", 0, false, m_scene)) {
+            
+            m_selectedEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one);
+            SetChanges(true);
 
-		}
+        }
 
-		ImGui::Separator();
+        ImGui::Separator();
 
-		if (ImGui::BeginMenu("3D Objects")) {
+        if (ImGui::BeginMenu("3D Objects")) {
 
-			if (ImGui::MenuItem("Plane", 0, false, m_scene)) {
+            if (ImGui::MenuItem("Plane", 0, false, m_scene)) {
 
-				m_selectedEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Plane");
+                m_selectedEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Plane");
 
-				MeshRenderer* renderer = m_selectedEntity->AddComponent<MeshRenderer>();
-				renderer->mesh = PlaneMesh();
-				renderer->material = Material::WhiteMaterial();
+                MeshRenderer* renderer = m_selectedEntity->AddComponent<MeshRenderer>();
+                renderer->mesh = PlaneMesh();
+                renderer->material = Material::WhiteMaterial();
 
-				SetChanges(true);
+                SetChanges(true);
 
-			}
-			if (ImGui::MenuItem("Cube", 0, false, m_scene)) {
+            }
+            if (ImGui::MenuItem("Cube", 0, false, m_scene)) {
 
-				m_selectedEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Cube");
+                m_selectedEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Cube");
 
-				MeshRenderer* renderer = m_selectedEntity->AddComponent<MeshRenderer>();
-				renderer->mesh = CubeMesh();
-				renderer->material = Material::WhiteMaterial();
+                MeshRenderer* renderer = m_selectedEntity->AddComponent<MeshRenderer>();
+                renderer->mesh = CubeMesh();
+                renderer->material = Material::WhiteMaterial();
 
-				SetChanges(true);
+                SetChanges(true);
 
-			}
+            }
 
-			ImGui::EndMenu();
+            ImGui::EndMenu();
 
-		}
+        }
 
-		if (ImGui::MenuItem("Light", 0, false, m_scene)) {
+        if (ImGui::MenuItem("Light", 0, false, m_scene)) {
 
-			m_selectedEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Light");
-			Light* l = m_selectedEntity->AddComponent<Light>();
+            m_selectedEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Light");
+            Light* l = m_selectedEntity->AddComponent<Light>();
 
-			SetChanges(true);
+            SetChanges(true);
 
-		}
-		if (ImGui::MenuItem("Camera", 0, false, m_scene)) {
+        }
+        if (ImGui::MenuItem("Camera", 0, false, m_scene)) {
 
-			m_selectedEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Camera");
-			Camera* c = m_selectedEntity->AddComponent<Camera>();
+            m_selectedEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Camera");
+            Camera* c = m_selectedEntity->AddComponent<Camera>();
 
-			SetChanges(true);
+            SetChanges(true);
 
-		}
+        }
 
-	}
+    }
 
-	void SceneHierarchy::RemoveParentTarget() {
+    void SceneHierarchy::RemoveParentTarget() {
 
-		const ImVec2 regionMax = ImGui::GetWindowContentRegionMax();
-		const ImRect windowRect{ { ImGui::GetWindowContentRegionMin().x + 1, ImGui::GetItemRectMax().y + 2 }, { regionMax.x, regionMax.y + 80 } };
-		if (!ImGui::BeginDragDropTargetCustom(windowRect, ImGuiID(310320231753))) return;
+        const ImVec2 regionMax = ImGui::GetWindowContentRegionMax();
+        const ImRect windowRect{ { ImGui::GetWindowContentRegionMin().x + 1, ImGui::GetItemRectMax().y + 2 }, { regionMax.x, regionMax.y + 80 } };
+        if (!ImGui::BeginDragDropTargetCustom(windowRect, ImGuiID(310320231753))) return;
 
-		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE"))
-			((InternalEntity*) payload->Data)->GetTransform()->SetParent(nullptr);
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE"))
+            ((InternalEntity*) payload->Data)->GetTransform()->SetParent(nullptr);
 
-		ImGui::EndDragDropTarget();
+        ImGui::EndDragDropTarget();
 
-	}
+    }
 
 }

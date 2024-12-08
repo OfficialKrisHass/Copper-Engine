@@ -6,6 +6,6 @@
 
 namespace Copper::Scripting::Raycast {
 
-  bool Fire(const Vector3& origin, const Vector3& direction, ::Copper::Raycast::Data* data, float maxDistance);
+    bool Fire(const Vector3& origin, const Vector3& direction, ::Copper::Raycast::Data* data, float maxDistance);
 
 }

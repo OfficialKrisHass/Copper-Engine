@@ -20,84 +20,84 @@
 
 namespace Launcher {
 
-	constexpr float ProjectTabHeight = 85.0f;
+    constexpr float ProjectTabHeight = 85.0f;
 
-	static ImGuiID heldID = ImGuiID(0);
+    static ImGuiID heldID = ImGuiID(0);
 
-  extern void OnWindowClose();
+    extern void OnWindowClose();
 
-	void ProjectEntry::Render() const {
+    void ProjectEntry::Render() const {
 
-		const ImGuiID id = ImGui::GetID(m_name.c_str());
-		const ImVec2 size = { ImGui::GetContentRegionAvail().x, ProjectTabHeight };
-		const bool isHovered = heldID == ImGuiID(0) && ImGui::GetHoveredID() == id;
-		const bool isHeld = heldID == id;
+        const ImGuiID id = ImGui::GetID(m_name.c_str());
+        const ImVec2 size = { ImGui::GetContentRegionAvail().x, ProjectTabHeight };
+        const bool isHovered = heldID == ImGuiID(0) && ImGui::GetHoveredID() == id;
+        const bool isHeld = heldID == id;
 
-		if (isHeld)
-			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
-		else if (isHovered)
-			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
+        if (isHeld)
+            ImGui::PushStyleColor(ImGuiCol_FrameBg, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
+        else if (isHovered)
+            ImGui::PushStyleColor(ImGuiCol_FrameBg, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
 
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { WindowPadding, 0 });
-		ImGui::BeginChildFrame(id, size, ImGuiWindowFlags_NoScrollbar);
-		ImGui::PopStyleVar();
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { WindowPadding, 0 });
+        ImGui::BeginChildFrame(id, size, ImGuiWindowFlags_NoScrollbar);
+        ImGui::PopStyleVar();
 
-		if (isHovered || isHeld)
-			ImGui::PopStyleColor();
+        if (isHovered || isHeld)
+            ImGui::PopStyleColor();
 
-		const ImRect tabRect = { ImGui::GetItemRectMin(), ImGui::GetItemRectMin() + size };
+        const ImRect tabRect = { ImGui::GetItemRectMin(), ImGui::GetItemRectMin() + size };
 
-		ImGui::PushFont(Fonts::SubtitleFont());
-		ImGui::Text(m_name.c_str());
-		ImGui::PopFont();
+        ImGui::PushFont(Fonts::SubtitleFont());
+        ImGui::Text(m_name.c_str());
+        ImGui::PopFont();
 
-		ImGui::SetCursorPosY(ImGui::GetContentRegionMax().y - ImGui::GetTextLineHeight());
+        ImGui::SetCursorPosY(ImGui::GetContentRegionMax().y - ImGui::GetTextLineHeight());
 
-		ImGui::PushFont(Fonts::SmallTextFont());
-		ImGui::Text(m_directory.c_str());
-		ImGui::PopFont();
+        ImGui::PushFont(Fonts::SmallTextFont());
+        ImGui::Text(m_directory.c_str());
+        ImGui::PopFont();
 
-		bool held = false;
-		if (ImGui::ButtonBehavior(tabRect, id, nullptr, &held, ImGuiButtonFlags_PressedOnClickRelease | ImGuiButtonFlags_PressedOnRelease)) {
+        bool held = false;
+        if (ImGui::ButtonBehavior(tabRect, id, nullptr, &held, ImGuiButtonFlags_PressedOnClickRelease | ImGuiButtonFlags_PressedOnRelease)) {
 
 #ifdef CU_LINUX
-      pid_t pid = fork();
+            pid_t pid = fork();
 
-      if (pid == 0) { // Child procces
+            if (pid == 0) { // Child procces
 
-        char* args[] = { (char*) PersistentData::EditorPath().data(), (char*) m_directory.data(), nullptr };
-        execv(PersistentData::EditorPath().c_str(), args);
+                char* args[] = { (char*) PersistentData::EditorPath().data(), (char*) m_directory.data(), nullptr };
+                execv(PersistentData::EditorPath().c_str(), args);
 
-      } else
-        OnWindowClose();
+            } else
+                OnWindowClose();
 #elif CU_WINDOWS
-			std::string editorPath = Utils::ReplaceSpaces(PersistentData::EditorPath());
-			std::string projectPath = Utils::ReplaceSpaces(m_directory);
-			std::string args = editorPath + " " + projectPath;
+            std::string editorPath = Utils::ReplaceSpaces(PersistentData::EditorPath());
+            std::string projectPath = Utils::ReplaceSpaces(m_directory);
+            std::string args = editorPath + " " + projectPath;
 
-			STARTUPINFOA si;
-			PROCESS_INFORMATION pi;
-			
-			ZeroMemory(&si, sizeof(si));
-			ZeroMemory(&pi, sizeof(pi));
-			si.cb = sizeof(si);
+            STARTUPINFOA si;
+            PROCESS_INFORMATION pi;
+            
+            ZeroMemory(&si, sizeof(si));
+            ZeroMemory(&pi, sizeof(pi));
+            si.cb = sizeof(si);
 
-			CreateProcessA(editorPath.c_str(), args.data(), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
-			CloseHandle(pi.hProcess);
-			CloseHandle(pi.hThread);
+            CreateProcessA(editorPath.c_str(), args.data(), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
+            CloseHandle(pi.hProcess);
+            CloseHandle(pi.hThread);
 
-			OnWindowClose();
+            OnWindowClose();
 #endif
 
     }
 
-		if (held)
-			heldID = id;
-		else if (heldID == id && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
-			heldID = ImGuiID(0);
+        if (held)
+            heldID = id;
+        else if (heldID == id && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+            heldID = ImGuiID(0);
 
-		ImGui::EndChildFrame();
+        ImGui::EndChildFrame();
 
-	}
+    }
 
 }

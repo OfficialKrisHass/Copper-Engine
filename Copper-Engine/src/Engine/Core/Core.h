@@ -2,8 +2,9 @@
 
 #include <filesystem>
 #include <string>
+
 #ifdef CU_CMAKE
-    #include <Config.h>
+#include <Config.h>
 #endif
 
 #include "Engine/Core/Log.h"
@@ -24,13 +25,13 @@
 
     }
 
-    #define IN_RUNTIME(action) if (Editor::IsRuntimeRunning()) { action; }
-    #define IN_RUNTIME_BEGIN if (Editor::IsRuntimeRunning()) {
-    #define IN_RUNTIME_END }
+#define IN_RUNTIME(action) if (Editor::IsRuntimeRunning()) { action; }
+#define IN_RUNTIME_BEGIN if (Editor::IsRuntimeRunning()) {
+#define IN_RUNTIME_END }
 #else
-    #define IN_RUNTIME(action)
-    #define IN_RUNTIME_BEGIN
-    #define IN_RUNTIME_END
+#define IN_RUNTIME(action)
+#define IN_RUNTIME_BEGIN
+#define IN_RUNTIME_END
 #endif
 
 namespace Copper {
@@ -70,7 +71,7 @@ namespace Copper {
 
     typedef long long           int64;
     typedef unsigned long long  uint64;
-    
+
     const std::string& ExecutableFolder();
 
 }

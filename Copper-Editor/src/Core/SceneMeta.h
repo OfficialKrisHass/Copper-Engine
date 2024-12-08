@@ -4,12 +4,12 @@
 
 namespace Editor {
 
-	struct SceneMeta {
+    struct SceneMeta {
 
-	public:
-		void Serialize(const Copper::fs::path& path);
-		void Deserialize(const Copper::fs::path& path);
+    public:
+        void Serialize(const Copper::fs::path& path);
+        void Deserialize(const Copper::fs::path& path);
 
-	};
+    };
 
 }

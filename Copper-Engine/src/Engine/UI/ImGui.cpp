@@ -17,104 +17,104 @@ namespace Copper {
 
     static std::string iniPath = "";
 
-	std::string mainFontPath = "";
-	float mainFontSize = 0.0f;
+    std::string mainFontPath = "";
+    float mainFontSize = 0.0f;
 
-	uint32 uiCount = 0;
+    uint32 uiCount = 0;
 
-	void UIContext::Initialize(const Window& window, bool gizmo, bool docking, bool viewports) {
+    void UIContext::Initialize(const Window& window, bool gizmo, bool docking, bool viewports) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		m_gizmo = gizmo;
+        m_gizmo = gizmo;
         m_docking = docking;
-		m_viewports = viewports;
-		
-		if(uiCount == 0) {
-			
-			VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the main UI");
-			IMGUI_CHECKVERSION();
+        m_viewports = viewports;
+        
+        if(uiCount == 0) {
+            
+            VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the main UI");
+            IMGUI_CHECKVERSION();
 
-		}
-		uiCount++;
+        }
+        uiCount++;
 
-		m_context = ImGui::CreateContext();
-		ImGui::SetCurrentContext(m_context);
-		ImGuiIO& io = ImGui::GetIO();
+        m_context = ImGui::CreateContext();
+        ImGui::SetCurrentContext(m_context);
+        ImGuiIO& io = ImGui::GetIO();
 
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NoMouseCursorChange;
-		if (docking) io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-		if (viewports) io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NoMouseCursorChange;
+        if (docking) io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+        if (viewports) io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
         iniPath = ExecutableFolder() + "/imgui.ini";
         io.IniFilename = iniPath.c_str();
 
-		if (!mainFontPath.empty())
-			io.FontDefault = io.Fonts->AddFontFromFileTTF(mainFontPath.c_str(), mainFontSize);
+        if (!mainFontPath.empty())
+            io.FontDefault = io.Fonts->AddFontFromFileTTF(mainFontPath.c_str(), mainFontSize);
 
-		ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(window.GetWindowPtr()), true);
-		ImGui_ImplOpenGL3_Init("#version 460");
+        ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(window.GetWindowPtr()), true);
+        ImGui_ImplOpenGL3_Init("#version 460");
 
-	}
-	void UIContext::Shutdown() {
+    }
+    void UIContext::Shutdown() {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext(m_context);
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+        ImGui::DestroyContext(m_context);
 
-		uiCount--;
+        uiCount--;
 
-	}
+    }
 
-	void UIContext::Begin() {
+    void UIContext::Begin() {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
 
-		if (m_gizmo) ImGuizmo::BeginFrame();
+        if (m_gizmo) ImGuizmo::BeginFrame();
 
-	}
-	void UIContext::End() {
+    }
+    void UIContext::End() {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-		ImGuiIO& io = ImGui::GetIO();
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+        ImGuiIO& io = ImGui::GetIO();
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
 
-			GLFWwindow* backup = glfwGetCurrentContext();
-			ImGui::UpdatePlatformWindows();
-			ImGui::RenderPlatformWindowsDefault();
-			glfwMakeContextCurrent(backup);
+            GLFWwindow* backup = glfwGetCurrentContext();
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+            glfwMakeContextCurrent(backup);
 
-		}
+        }
 
-	}
+    }
 
-	void UIContext::LoadFont(const std::string& path, float fontSize) const {
+    void UIContext::LoadFont(const std::string& path, float fontSize) const {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		ImGuiIO& io = ImGui::GetIO();
-		io.FontDefault = io.Fonts->AddFontFromFileTTF(path.c_str(), fontSize);
-		
-		if(mainFontPath.empty()) {
+        ImGuiIO& io = ImGui::GetIO();
+        io.FontDefault = io.Fonts->AddFontFromFileTTF(path.c_str(), fontSize);
+        
+        if(mainFontPath.empty()) {
 
-			mainFontPath = path;
-			mainFontSize = fontSize;
+            mainFontPath = path;
+            mainFontSize = fontSize;
 
-		}
+        }
 
-	}
+    }
 
-	void UIContext::SetAsCurrent() const {
+    void UIContext::SetAsCurrent() const {
 
         CUP_FUNCTION();
 

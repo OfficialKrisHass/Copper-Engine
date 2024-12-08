@@ -22,7 +22,7 @@ namespace Copper {
 
     const UUID UUID::m_invalid = UUID();
 
-	void  m128itos(__m128i x, char* mem);
+    void  m128itos(__m128i x, char* mem);
     __m128i stom128i(const char* mem);
 
     UUID::UUID(const UUID& other) {

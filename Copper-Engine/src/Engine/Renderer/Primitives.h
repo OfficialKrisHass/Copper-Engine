@@ -8,7 +8,7 @@
 
 namespace Copper {
 
-	const MeshAsset& PlaneMesh();
-	const MeshAsset& CubeMesh();
+    const MeshAsset& PlaneMesh();
+    const MeshAsset& CubeMesh();
 
 }

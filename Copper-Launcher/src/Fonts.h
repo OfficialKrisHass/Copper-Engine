@@ -6,13 +6,13 @@ class ImFont;
 
 namespace Launcher::Fonts {
 
-  void Initialize();
+    void Initialize();
 
-  ImFont* TitleFont();
-  ImFont* SubtitleFont();
+    ImFont* TitleFont();
+    ImFont* SubtitleFont();
 
-  ImFont* TextFont();
-  ImFont* SmallTextFont();
-  ImFont* BigTextFont();
+    ImFont* TextFont();
+    ImFont* SmallTextFont();
+    ImFont* BigTextFont();
 
 }

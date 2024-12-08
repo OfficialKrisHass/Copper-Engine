@@ -18,175 +18,175 @@
 
 namespace Copper {
 
-	void Registry::Initialize() {
+    void Registry::Initialize() {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		ASSERT_CID(Transform, TRANSFORM_CID);
+        ASSERT_CID(Transform, TRANSFORM_CID);
 
-		ASSERT_CID(MeshRenderer, MESH_RENDERER_CID);
-		ASSERT_CID(Camera, CAMERA_CID);
-		ASSERT_CID(Light, LIGHT_CID);
+        ASSERT_CID(MeshRenderer, MESH_RENDERER_CID);
+        ASSERT_CID(Camera, CAMERA_CID);
+        ASSERT_CID(Light, LIGHT_CID);
 
-		ASSERT_CID(ScriptComponent, SCRIPT_COMPONENT_CID);
+        ASSERT_CID(ScriptComponent, SCRIPT_COMPONENT_CID);
 
-		ASSERT_CID(RigidBody, RIGIDBODY_CID);
+        ASSERT_CID(RigidBody, RIGIDBODY_CID);
 
-		ASSERT_CID(Collider, COLLIDER_CID);
-		ASSERT_CID(BoxCollider, BOX_COLLIDER_CID);
-		ASSERT_CID(SphereCollider, SPHERE_COLLIDER_CID);
-		ASSERT_CID(CapsuleCollider, CAPSULE_COLLIDER_CID);
+        ASSERT_CID(Collider, COLLIDER_CID);
+        ASSERT_CID(BoxCollider, BOX_COLLIDER_CID);
+        ASSERT_CID(SphereCollider, SPHERE_COLLIDER_CID);
+        ASSERT_CID(CapsuleCollider, CAPSULE_COLLIDER_CID);
 
-		m_pools.resize(cCounter, nullptr);
+        m_pools.resize(cCounter, nullptr);
 
-	}
+    }
 
-	template<> Collider* Registry::AddComponent<Collider>(uint32 eID) {
+    template<> Collider* Registry::AddComponent<Collider>(uint32 eID) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		LogError("Can't add a base Collider component to entity. Entity: {}", m_entities[eID]);
-		return nullptr;
+        LogError("Can't add a base Collider component to entity. Entity: {}", m_entities[eID]);
+        return nullptr;
 
-	}
-	template<> BoxCollider* Registry::AddComponent<BoxCollider>(uint32 eID) { CUP_FUNCTION(); return AddColliderComponent<BoxCollider>(eID, Collider::Type::Box); }
-	template<> SphereCollider* Registry::AddComponent<SphereCollider>(uint32 eID) { CUP_FUNCTION(); return AddColliderComponent<SphereCollider>(eID, Collider::Type::Sphere); }
-	template<> CapsuleCollider* Registry::AddComponent<CapsuleCollider>(uint32 eID) { CUP_FUNCTION(); return AddColliderComponent<CapsuleCollider>(eID, Collider::Type::Capsule); }
+    }
+    template<> BoxCollider* Registry::AddComponent<BoxCollider>(uint32 eID) { CUP_FUNCTION(); return AddColliderComponent<BoxCollider>(eID, Collider::Type::Box); }
+    template<> SphereCollider* Registry::AddComponent<SphereCollider>(uint32 eID) { CUP_FUNCTION(); return AddColliderComponent<SphereCollider>(eID, Collider::Type::Sphere); }
+    template<> CapsuleCollider* Registry::AddComponent<CapsuleCollider>(uint32 eID) { CUP_FUNCTION(); return AddColliderComponent<CapsuleCollider>(eID, Collider::Type::Capsule); }
 
-	template<> Collider* Registry::GetComponent<Collider>(uint32 eID) {
+    template<> Collider* Registry::GetComponent<Collider>(uint32 eID) {
 
-		if (eID == INVALID_ENTITY_ID) return nullptr;
-		if (!m_entities[eID]) return nullptr;
+        if (eID == INVALID_ENTITY_ID) return nullptr;
+        if (!m_entities[eID]) return nullptr;
 
-		int cID = GetCID<Collider>();
-		if (!m_entities[eID].m_cMask.test(cID)) return nullptr;
+        int cID = GetCID<Collider>();
+        if (!m_entities[eID].m_cMask.test(cID)) return nullptr;
 
-		uint8_t type = *(uint8_t*) m_pools[cID]->Get(eID);
-		Collider* component = static_cast<Collider*>(m_pools[cID + type]->Get(eID));
-		return component;
+        uint8_t type = *(uint8_t*) m_pools[cID]->Get(eID);
+        Collider* component = static_cast<Collider*>(m_pools[cID + type]->Get(eID));
+        return component;
 
-	}
-	template<> BoxCollider* Registry::GetComponent<BoxCollider>(uint32 eID) { CUP_FUNCTION(); return GetColliderComponent<BoxCollider>(eID, Collider::Type::Box); }
-	template<> SphereCollider* Registry::GetComponent<SphereCollider>(uint32 eID) { CUP_FUNCTION(); return GetColliderComponent<SphereCollider>(eID, Collider::Type::Sphere); }
-	template<> CapsuleCollider* Registry::GetComponent<CapsuleCollider>(uint32 eID) { CUP_FUNCTION(); return GetColliderComponent<CapsuleCollider>(eID, Collider::Type::Capsule); }
+    }
+    template<> BoxCollider* Registry::GetComponent<BoxCollider>(uint32 eID) { CUP_FUNCTION(); return GetColliderComponent<BoxCollider>(eID, Collider::Type::Box); }
+    template<> SphereCollider* Registry::GetComponent<SphereCollider>(uint32 eID) { CUP_FUNCTION(); return GetColliderComponent<SphereCollider>(eID, Collider::Type::Sphere); }
+    template<> CapsuleCollider* Registry::GetComponent<CapsuleCollider>(uint32 eID) { CUP_FUNCTION(); return GetColliderComponent<CapsuleCollider>(eID, Collider::Type::Capsule); }
 
-	template<> bool Registry::HasComponent<Collider>(uint32 eID) { CUP_FUNCTION(); return HasColliderComponent(eID, 0); }
-	template<> bool Registry::HasComponent<BoxCollider>(uint32 eID) { CUP_FUNCTION(); return HasColliderComponent(eID, Collider::Type::Box); }
-	template<> bool Registry::HasComponent<SphereCollider>(uint32 eID) { CUP_FUNCTION(); return HasColliderComponent(eID, Collider::Type::Sphere); }
-	template<> bool Registry::HasComponent<CapsuleCollider>(uint32 eID) { CUP_FUNCTION(); return HasColliderComponent(eID, Collider::Type::Capsule); }
+    template<> bool Registry::HasComponent<Collider>(uint32 eID) { CUP_FUNCTION(); return HasColliderComponent(eID, 0); }
+    template<> bool Registry::HasComponent<BoxCollider>(uint32 eID) { CUP_FUNCTION(); return HasColliderComponent(eID, Collider::Type::Box); }
+    template<> bool Registry::HasComponent<SphereCollider>(uint32 eID) { CUP_FUNCTION(); return HasColliderComponent(eID, Collider::Type::Sphere); }
+    template<> bool Registry::HasComponent<CapsuleCollider>(uint32 eID) { CUP_FUNCTION(); return HasColliderComponent(eID, Collider::Type::Capsule); }
 
-	template<> void Registry::RemoveComponent<Collider>(uint32 eID) {
+    template<> void Registry::RemoveComponent<Collider>(uint32 eID) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		if (eID == INVALID_ENTITY_ID) return;
-		if (!m_entities[eID]) return;
+        if (eID == INVALID_ENTITY_ID) return;
+        if (!m_entities[eID]) return;
 
-		int32 cID = GetCID<Collider>();
-		if (!m_entities[eID].m_cMask.test(cID)) return;
+        int32 cID = GetCID<Collider>();
+        if (!m_entities[eID].m_cMask.test(cID)) return;
 
-		uint8 type = *(uint8*) m_pools[cID]->Get(eID);
+        uint8 type = *(uint8*) m_pools[cID]->Get(eID);
 
-		m_pools[cID + type]->Remove(eID);
-		m_entities[eID].m_cMask.reset(cID + type);
+        m_pools[cID + type]->Remove(eID);
+        m_entities[eID].m_cMask.reset(cID + type);
 
-		m_pools[cID]->Remove(eID);
-		m_entities[eID].m_cMask.reset(cID);
+        m_pools[cID]->Remove(eID);
+        m_entities[eID].m_cMask.reset(cID);
 
-		Collider* component = static_cast<Collider*>(m_pools[cID + type]->Get(eID));
-		componentRemovedEvent.component = (Component*) component;
+        Collider* component = static_cast<Collider*>(m_pools[cID + type]->Get(eID));
+        componentRemovedEvent.component = (Component*) component;
         componentRemovedEvent.componentID = cID + type;
-		componentRemovedEvent();
+        componentRemovedEvent();
 
-		component->m_valid = false;
+        component->m_valid = false;
 
-	}
-	template<> void Registry::RemoveComponent<BoxCollider>(uint32 eID) { CUP_FUNCTION(); RemoveColliderComponent<BoxCollider>(eID, Collider::Type::Box); }
-	template<> void Registry::RemoveComponent<SphereCollider>(uint32 eID) { CUP_FUNCTION(); RemoveColliderComponent<BoxCollider>(eID, Collider::Type::Sphere); }
-	template<> void Registry::RemoveComponent<CapsuleCollider>(uint32 eID) { CUP_FUNCTION(); RemoveColliderComponent<CapsuleCollider>(eID, Collider::Type::Capsule); }
+    }
+    template<> void Registry::RemoveComponent<BoxCollider>(uint32 eID) { CUP_FUNCTION(); RemoveColliderComponent<BoxCollider>(eID, Collider::Type::Box); }
+    template<> void Registry::RemoveComponent<SphereCollider>(uint32 eID) { CUP_FUNCTION(); RemoveColliderComponent<BoxCollider>(eID, Collider::Type::Sphere); }
+    template<> void Registry::RemoveComponent<CapsuleCollider>(uint32 eID) { CUP_FUNCTION(); RemoveColliderComponent<CapsuleCollider>(eID, Collider::Type::Capsule); }
 
-	template<typename T> T* Registry::AddColliderComponent(uint32 eID, uint8 type) {
+    template<typename T> T* Registry::AddColliderComponent(uint32 eID, uint8 type) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		if (eID == INVALID_ENTITY_ID) return nullptr;
-		if (!m_entities[eID]) return nullptr;
+        if (eID == INVALID_ENTITY_ID) return nullptr;
+        if (!m_entities[eID]) return nullptr;
 
-		int32 cID = GetCID<Collider>();
+        int32 cID = GetCID<Collider>();
 
-	#ifdef CU_DEBUG
-		if (m_pools.size() < cID + COLLIDER_TYPES + 1) m_pools.resize(cID + COLLIDER_TYPES + 1, nullptr);
-	#endif
-		if (!m_pools[cID]) m_pools[cID] = new ComponentPool(sizeof(Collider::Type));
-		if (!m_pools[cID + type]) m_pools[cID + type] = new ComponentPool(sizeof(T));
+#ifdef CU_DEBUG
+        if (m_pools.size() < cID + COLLIDER_TYPES + 1) m_pools.resize(cID + COLLIDER_TYPES + 1, nullptr);
+#endif
+        if (!m_pools[cID]) m_pools[cID] = new ComponentPool(sizeof(Collider::Type));
+        if (!m_pools[cID + type]) m_pools[cID + type] = new ComponentPool(sizeof(T));
 
-		*(uint8*) m_pools[cID]->Add(eID) = (Collider::Type) type;
-		T* component = new (m_pools[cID + type]->Add(eID)) T();
+        *(uint8*) m_pools[cID]->Add(eID) = (Collider::Type) type;
+        T* component = new (m_pools[cID + type]->Add(eID)) T();
 
-		component->m_entity = &m_entities[eID];
-		component->m_transform = m_entities[eID].m_transform;
-		component->m_valid = true;
+        component->m_entity = &m_entities[eID];
+        component->m_transform = m_entities[eID].m_transform;
+        component->m_valid = true;
 
-		component->m_type = (Collider::Type) type;
+        component->m_type = (Collider::Type) type;
 
-		m_entities[eID].m_cMask.set(cID);
-		m_entities[eID].m_cMask.set(cID + type);
+        m_entities[eID].m_cMask.set(cID);
+        m_entities[eID].m_cMask.set(cID + type);
 
-		componentAddedEvent.component = (Component*) component;
+        componentAddedEvent.component = (Component*) component;
         componentAddedEvent.componentID = cID + type;
-		componentAddedEvent();
+        componentAddedEvent();
 
-		return component;
+        return component;
 
-	}
-	template<typename T> T* Registry::GetColliderComponent(uint32 eID, uint8 type) {
+    }
+    template<typename T> T* Registry::GetColliderComponent(uint32 eID, uint8 type) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		if (eID == INVALID_ENTITY_ID) return nullptr;
-		if (!m_entities[eID]) return nullptr;
+        if (eID == INVALID_ENTITY_ID) return nullptr;
+        if (!m_entities[eID]) return nullptr;
 
-		int32 cID = GetCID<Collider>();
-		if (!m_entities[eID].m_cMask.test(cID + type)) return nullptr;
+        int32 cID = GetCID<Collider>();
+        if (!m_entities[eID].m_cMask.test(cID + type)) return nullptr;
 
-		T* component = static_cast<T*>(m_pools[cID + type]->Get(eID));
-		return component;
+        T* component = static_cast<T*>(m_pools[cID + type]->Get(eID));
+        return component;
 
-	}
-	bool Registry::HasColliderComponent(uint32 eID, uint8 type) {
+    }
+    bool Registry::HasColliderComponent(uint32 eID, uint8 type) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		if (eID == INVALID_ENTITY_ID) return false;
-		if (!m_entities[eID]) return false;
+        if (eID == INVALID_ENTITY_ID) return false;
+        if (!m_entities[eID]) return false;
 
-		int32 cID = GetCID<Collider>();
-		return m_entities[eID].m_cMask.test(cID + type);
+        int32 cID = GetCID<Collider>();
+        return m_entities[eID].m_cMask.test(cID + type);
 
-	}
-	template<typename T> void Registry::RemoveColliderComponent(uint32 eID, uint8 type) {
+    }
+    template<typename T> void Registry::RemoveColliderComponent(uint32 eID, uint8 type) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		if (eID == INVALID_ENTITY_ID) return;
-		if (!m_entities[eID]) return;
+        if (eID == INVALID_ENTITY_ID) return;
+        if (!m_entities[eID]) return;
 
-		int32 cID = GetCID<Collider>();
-		if (!m_entities[eID].m_cMask.test(cID + type)) return;
+        int32 cID = GetCID<Collider>();
+        if (!m_entities[eID].m_cMask.test(cID + type)) return;
 
-		m_pools[cID + type]->Remove(eID);
-		m_entities[eID].m_cMask.reset(cID + type);
+        m_pools[cID + type]->Remove(eID);
+        m_entities[eID].m_cMask.reset(cID + type);
 
-		m_pools[cID]->Remove(eID);
-		m_entities[eID].m_cMask.reset(cID);
+        m_pools[cID]->Remove(eID);
+        m_entities[eID].m_cMask.reset(cID);
 
-		T* component = static_cast<T*>(m_pools[cID + type]->Get(eID));
-		componentRemovedEvent.component = (Component*) component;
+        T* component = static_cast<T*>(m_pools[cID + type]->Get(eID));
+        componentRemovedEvent.component = (Component*) component;
         componentRemovedEvent.componentID = cID + type;
-		componentRemovedEvent();
+        componentRemovedEvent();
 
-		component->m_valid = false;
+        component->m_valid = false;
 
-	}
+    }
 
 }

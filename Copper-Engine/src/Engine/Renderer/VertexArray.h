@@ -7,26 +7,26 @@
 
 namespace Copper {
 
-	// Higher level, platform indenpendant wrapper for the Vertex Array
-	class VertexArray {
+    // Higher level, platform indenpendant wrapper for the Vertex Array
+    class VertexArray {
 
-	public:
-		VertexArray() = default;
-		VertexArray(IndexBuffer* ibo);
+    public:
+        VertexArray() = default;
+        VertexArray(IndexBuffer* ibo);
 
         // Using
 
-		void Bind() const;
-		void Unbind() const;
+        void Bind() const;
+        void Unbind() const;
 
         // Modification
 
-		void SetVertexBuffer(VertexBuffer* vbo);
-		inline void SetIndexBuffer(IndexBuffer* ibo) { m_ibo = ibo; }
+        void SetVertexBuffer(VertexBuffer* vbo);
+        inline void SetIndexBuffer(IndexBuffer* ibo) { m_ibo = ibo; }
 
         // Getters
 
-		inline uint32 GetCount() const {
+        inline uint32 GetCount() const {
 
             CUP_FUNCTION();
 
@@ -35,10 +35,10 @@ namespace Copper {
 
         }
 
-	private:
-		uint32 m_id = 0;
-		IndexBuffer* m_ibo = nullptr;
+    private:
+        uint32 m_id = 0;
+        IndexBuffer* m_ibo = nullptr;
 
-	};
+    };
 
 }

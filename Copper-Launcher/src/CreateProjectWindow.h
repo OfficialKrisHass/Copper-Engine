@@ -4,6 +4,6 @@
 
 namespace Launcher::CreateProjectWindow {
 
-  void Render(bool* open);
+    void Render(bool* open);
 
 }

@@ -22,5 +22,5 @@ namespace Copper::Input {
     PopupResult InfoPopup(const std::string& title, const std::string& description, bool hasCancel = false);
     PopupResult WarningPopup(const std::string& title, const std::string& description, bool hasCancel = false);
     PopupResult ErrorPopup(const std::string& title, const std::string& description);
-    
+
 }

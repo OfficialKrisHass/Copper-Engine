@@ -29,12 +29,12 @@ namespace Copper {
 
     class RigidBody;
 
-	class Collider : public Component {
+    class Collider : public Component {
 
-		friend class Registry;
-		friend Scene;
+        friend class Registry;
+        friend Scene;
 
-		friend RigidBody;
+        friend RigidBody;
 
 #ifdef CU_EDITOR
         friend Editor::Properties;
@@ -42,16 +42,16 @@ namespace Copper {
         friend void Editor::SceneSerializer::DeserializeEntityComponents(Copper::InternalEntity *entity, const YAML::Node &data);
 #endif
 
-	public:
-		enum Type : uint8 {
+    public:
+        enum Type : uint8 {
 
-			None,
+            None,
 
-			Box,
-			Sphere,
-			Capsule,
+            Box,
+            Sphere,
+            Capsule,
 
-		};
+        };
 
         // Getters
 
@@ -62,7 +62,7 @@ namespace Copper {
         inline const Vector3& GetCenter() const { return m_center; }
 
         // Setters
-        
+
         void SetTrigger(bool value) {
 
             CUP_FUNCTION();
@@ -84,18 +84,18 @@ namespace Copper {
 
         }
 
-	protected:
-		Type m_type = Type::None;
-		RigidBody* m_rb = nullptr;
+    protected:
+        Type m_type = Type::None;
+        RigidBody* m_rb = nullptr;
 
-		bool m_trigger = false;
-		Vector3 m_center = Vector3::zero;
+        bool m_trigger = false;
+        Vector3 m_center = Vector3::zero;
 
         void RecreateShape();
 
-	private:
-		virtual physx::PxShape* CreateShape() const = 0;
+    private:
+        virtual physx::PxShape* CreateShape() const = 0;
 
-	};
+    };
 
 }

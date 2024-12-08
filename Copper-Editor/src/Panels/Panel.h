@@ -6,25 +6,25 @@
 
 namespace Editor {
 
-	class Panel {
+    class Panel {
 
-	public:
-		Panel() = default;
-		Panel(const std::string& name) : name(name) {}
+    public:
+        Panel() = default;
+        Panel(const std::string& name) : name(name) {}
 
-		std::string name;
+        std::string name;
 
-		void UIRender() {
+        void UIRender() {
 
-			ImGui::Begin(name.c_str());
-			UI();
-			ImGui::End();
+            ImGui::Begin(name.c_str());
+            UI();
+            ImGui::End();
 
-		}
+        }
 
-	private:
-		virtual void UI() = 0;
+    private:
+        virtual void UI() = 0;
 
-	};
+    };
 
 }

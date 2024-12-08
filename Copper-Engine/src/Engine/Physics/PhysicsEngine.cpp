@@ -24,7 +24,7 @@ namespace Copper::PhysicsEngine {
         foundation = PxCreateFoundation(PX_PHYSICS_VERSION, allocator, errCallback);
         physics = PxCreatePhysics(PX_PHYSICS_VERSION, *foundation, PxTolerancesScale());
         dispatcher = PxDefaultCpuDispatcherCreate(1);
-        
+
     }
 
     void Shutdown() {

@@ -21,9 +21,9 @@ namespace Editor {
 
 namespace Copper {
 
-	class SphereCollider : public Collider {
+    class SphereCollider : public Collider {
 
-		friend Scene;
+        friend Scene;
 
 #ifdef CU_EDITOR
         friend Editor::Properties;
@@ -31,7 +31,7 @@ namespace Copper {
         friend void Editor::SceneSerializer::DeserializeEntityComponents(Copper::InternalEntity *entity, const YAML::Node &data);
 #endif
 
-	public:
+    public:
         float GetRadius() const { return m_radius; }
 
         void SetRadius(float value) {
@@ -45,11 +45,11 @@ namespace Copper {
             
         }
 
-	private:
-		float m_radius = 0.5f;
+    private:
+        float m_radius = 0.5f;
 
-		physx::PxShape* CreateShape() const override;
+        physx::PxShape* CreateShape() const override;
 
-	};
+    };
 
 }

@@ -6,9 +6,9 @@
 #include "Engine/Core/Core.h"
 
 namespace Editor {
-    
+
     class FileBrowser : public Panel {
-        
+
     public:
         FileBrowser() : Panel("File Browser") {}
 
@@ -18,7 +18,7 @@ namespace Editor {
 
     private:
         static Copper::fs::path m_projectRelativeDir;
-        
+
         virtual void UI() override;
 
         void RelativeDirHeader();
@@ -33,6 +33,7 @@ namespace Editor {
         void EditName(const Copper::fs::path& path, const std::string& filename);
 
         void NewScript(const Copper::fs::path& path);
-    
+
     };
+
 }

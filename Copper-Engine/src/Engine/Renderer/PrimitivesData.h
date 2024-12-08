@@ -259,5 +259,5 @@ namespace Copper {
 
     };
 #pragma endregion 
-    
+
 }

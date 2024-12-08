@@ -5,85 +5,85 @@
 
 namespace Copper::Utilities {
 
-	std::string ReadFile(const fs::path& path) {
+    std::string ReadFile(const fs::path& path) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		std::string ret;
-		std::ifstream file;
+        std::string ret;
+        std::ifstream file;
 
-		file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+        file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
-		try {
+        try {
 
-			file.open(path.string());
+            file.open(path.string());
 
-			std::stringstream ss;
+            std::stringstream ss;
 
-			ss << file.rdbuf();
-			file.close();
+            ss << file.rdbuf();
+            file.close();
 
-			ret = ss.str();
+            ret = ss.str();
 
-		} catch (std::ifstream::failure e) {
+        } catch (std::ifstream::failure e) {
 
-			LogError("Failed to open File: {0}", path.string());
+            LogError("Failed to open File: {0}", path.string());
 
-		}
+        }
 
-		return ret;
+        return ret;
 
-	}
-	char* ReadFileBinary(const fs::path& path, uint32* outSize) {
-		
-		// I stole this from the Cherno's implementation of mono
-		// Don't ask me how it works, And if it doesn't, well cry about it
+    }
+    char* ReadFileBinary(const fs::path& path, uint32* outSize) {
+        
+        // I stole this from the Cherno's implementation of mono
+        // Don't ask me how it works, And if it doesn't, well cry about it
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		std::ifstream stream;
-		stream.open(path.string(), std::ios::binary | std::ios::ate);
+        std::ifstream stream;
+        stream.open(path.string(), std::ios::binary | std::ios::ate);
 
-		if (!stream) return nullptr;
+        if (!stream) return nullptr;
 
-		std::streampos end = stream.tellg();
-		stream.seekg(0, std::ios::beg);
-		uint32 size = (uint32) (end - stream.tellg());
+        std::streampos end = stream.tellg();
+        stream.seekg(0, std::ios::beg);
+        uint32 size = (uint32) (end - stream.tellg());
 
-		if (size == 0) return nullptr;
+        if (size == 0) return nullptr;
 
-		char* buffer = new char[size];
-		stream.read((char*) buffer, size);
-		stream.close();
+        char* buffer = new char[size];
+        stream.read((char*) buffer, size);
+        stream.close();
 
-		*outSize = size;
-		return buffer;
-		
-	}
+        *outSize = size;
+        return buffer;
+        
+    }
 
-	fs::path OpenDialog(const std::string& title, const std::vector<std::string>& filters, const fs::path& initialDir) {
+    fs::path OpenDialog(const std::string& title, const std::vector<std::string>& filters, const fs::path& initialDir) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		std::vector<std::string> ret = pfd::open_file(title, initialDir.string(), filters).result();
-		return ret.size() != 0 ? ret[0] : "";
+        std::vector<std::string> ret = pfd::open_file(title, initialDir.string(), filters).result();
+        return ret.size() != 0 ? ret[0] : "";
 
-	}
+    }
 
-	fs::path SaveDialog(const std::string& title, const std::vector<std::string>& filters, const fs::path& initialDir) {
+    fs::path SaveDialog(const std::string& title, const std::vector<std::string>& filters, const fs::path& initialDir) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		return pfd::save_file(title, initialDir.string(), filters).result();
+        return pfd::save_file(title, initialDir.string(), filters).result();
 
-	}
+    }
 
-	fs::path FolderOpenDialog(const std::string& title, const fs::path& initialDir) {
+    fs::path FolderOpenDialog(const std::string& title, const fs::path& initialDir) {
 
-		CUP_FUNCTION();
+        CUP_FUNCTION();
 
-		return pfd::select_folder(title, initialDir.string()).result();
+        return pfd::select_folder(title, initialDir.string()).result();
 
-	}
+    }
 
 }

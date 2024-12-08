@@ -77,12 +77,12 @@ namespace Copper::Scripting {
     }
 
     Field::Accessibility FieldAccessibility(MonoClassField* field) {
-        
+
         CUP_FUNCTION();
 
         uint32_t accessibility = mono_field_get_flags(field) & MONO_FIELD_ATTR_FIELD_ACCESS_MASK;
         switch (accessibility) {
-        
+
             case MONO_FIELD_ATTR_PRIVATE: return Field::Accessibility::Private;
             case MONO_FIELD_ATTR_FAMILY: return Field::Accessibility::Protected;
             case MONO_FIELD_ATTR_ASSEMBLY: return Field::Accessibility::Internal;

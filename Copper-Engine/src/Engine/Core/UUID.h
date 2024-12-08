@@ -10,138 +10,138 @@ namespace Copper {
 
     struct UUID {
 
-        public:
-            // Generates an invalid UUID
-            UUID() = default;
+    public:
+        // Generates an invalid UUID
+        UUID() = default;
 
-            UUID(const UUID& other);
+        UUID(const UUID& other);
 
-            UUID(uint64 x, uint64 y);
-            UUID(const uint8* bytes);
+        UUID(uint64 x, uint64 y);
+        UUID(const uint8* bytes);
 
-            explicit UUID(const std::string& bytes);
+        explicit UUID(const std::string& bytes);
 
-            // Generate functions
-            
-            inline static UUID Generate() {
+        // Generate functions
 
-                CUP_FUNCTION();
+        inline static UUID Generate() {
 
-                UUID ret;
-                Generate(ret);
+            CUP_FUNCTION();
 
-                return ret;
+            UUID ret;
+            Generate(ret);
 
-            }
-            inline static void Generate(UUID& out) {
+            return ret;
 
-                CUP_FUNCTION();
+        }
+        inline static void Generate(UUID& out) {
 
-                GenerateUUID(out.m_data);
+            CUP_FUNCTION();
 
-            }
-            inline void Regenerate() {
+            GenerateUUID(out.m_data);
 
-                CUP_FUNCTION();
+        }
+        inline void Regenerate() {
 
-                GenerateUUID(m_data);
+            CUP_FUNCTION();
 
-            }
+            GenerateUUID(m_data);
 
-            // Byte string
+        }
 
-            inline std::string ToBytes() const {
+        // Byte string
 
-                CUP_FUNCTION();
+        inline std::string ToBytes() const {
 
-                std::string ret;
-                ToBytes(ret);
+            CUP_FUNCTION();
 
-                return ret;
+            std::string ret;
+            ToBytes(ret);
 
-            }
-            inline void ToBytes(std::string& out) const {
+            return ret;
 
-                CUP_FUNCTION();
+        }
+        inline void ToBytes(std::string& out) const {
 
-                out.resize(sizeof(m_data));
-                ToBytes((char*) out.data());
+            CUP_FUNCTION();
 
-            }
-            void ToBytes(char* out) const;
+            out.resize(sizeof(m_data));
+            ToBytes((char*) out.data());
 
-            // Pretty string
-            
-            inline static UUID CreateFromString(const std::string& string) {
+        }
+        void ToBytes(char* out) const;
 
-                CUP_FUNCTION();
-                return CreateFromString(string.c_str());
+        // Pretty string
+        
+        inline static UUID CreateFromString(const std::string& string) {
 
-            }
-            inline static UUID CreateFromString(const char* string) {
+            CUP_FUNCTION();
+            return CreateFromString(string.c_str());
 
-                CUP_FUNCTION();
+        }
+        inline static UUID CreateFromString(const char* string) {
 
-                UUID ret;
-                ret.SetString(string);
+            CUP_FUNCTION();
 
-                return ret;
+            UUID ret;
+            ret.SetString(string);
 
-            }
-            void SetString(const char* string);
-            
-            inline std::string ToString() const {
+            return ret;
 
-                CUP_FUNCTION();
+        }
+        void SetString(const char* string);
 
-                std::string ret;
-                ToString(ret);
-                
-                return ret;
+        inline std::string ToString() const {
 
-            }
-            inline void ToString(std::string& out) const {
+            CUP_FUNCTION();
 
-                CUP_FUNCTION();
+            std::string ret;
+            ToString(ret);
 
-                out.resize(36);
-                ToString((char*) out.data());
+            return ret;
 
-            }
-            void ToString(char* out) const;
+        }
+        inline void ToString(std::string& out) const {
 
-            // Operators
+            CUP_FUNCTION();
 
-            bool operator==(const UUID& other) const;
-            bool operator<(const UUID& other) const;
-            UUID& operator=(const UUID& other);
+            out.resize(36);
+            ToString((char*) out.data());
 
-            inline bool operator!=(const UUID& other) const { return !(*this == other); }
-            inline bool operator>(const UUID& other) const { return other < *this; }
-            inline bool operator<=(const UUID& other) const { return !(*this > other); }
-            inline bool operator>=(const UUID& other) const { return !(*this < other); }
+        }
+        void ToString(char* out) const;
 
-            inline operator bool() const { return *this != m_invalid; }
+        // Operators
 
-            // Misc. 
+        bool operator==(const UUID& other) const;
+        bool operator<(const UUID& other) const;
+        UUID& operator=(const UUID& other);
 
-            inline size_t hash() const {
+        inline bool operator!=(const UUID& other) const { return !(*this == other); }
+        inline bool operator>(const UUID& other) const { return other < *this; }
+        inline bool operator<=(const UUID& other) const { return !(*this > other); }
+        inline bool operator>=(const UUID& other) const { return !(*this < other); }
 
-                const uint64 a = *((uint64*) m_data);
-                const uint64 b = *((uint64*) &m_data[8]);
-                return a ^ (b + 0x9e3779b9 + (a << 6) + (a >> 2));
+        inline operator bool() const { return *this != m_invalid; }
 
-            }
+        // Misc. 
 
-            inline static const UUID& GetInvalid() { return m_invalid; }
-            
-        private:
+        inline size_t hash() const {
 
-            alignas(128) uint8 m_data[16];
+            const uint64 a = *((uint64*) m_data);
+            const uint64 b = *((uint64*) &m_data[8]);
+            return a ^ (b + 0x9e3779b9 + (a << 6) + (a >> 2));
 
-            static const UUID m_invalid;
+        }
 
-            static void GenerateUUID(uint8* bytes);
+        inline static const UUID& GetInvalid() { return m_invalid; }
+
+    private:
+
+        alignas(128) uint8 m_data[16];
+
+        static const UUID m_invalid;
+
+        static void GenerateUUID(uint8* bytes);
 
     };
 
@@ -161,7 +161,7 @@ namespace Copper {
 
         std::string tmp;
         stream >> tmp;
-        
+
         uuid.SetString(tmp.c_str());
         return stream;
 

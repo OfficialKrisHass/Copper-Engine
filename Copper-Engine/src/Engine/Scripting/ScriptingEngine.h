@@ -30,5 +30,5 @@ namespace Copper::Scripting {
     const ScriptMap& ComponentScripts();
 
     MonoClassField* UnmanagedPtrField(); 
-    
+
 }

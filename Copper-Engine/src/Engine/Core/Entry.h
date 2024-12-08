@@ -12,17 +12,17 @@ extern void AppEntryPoint();
 
 int main(int argc, char* argv[]) {
 
-	CUP_FUNCTION();
+    CUP_FUNCTION();
 
-	using namespace Copper;
+    using namespace Copper;
 
-	//TODO: Start being consistent with function naming and stop eeny miny moe-ing between 'Initialize' and 'Setup' for gods sake
-	Logger::Initialize();
-	Args::Setup(argc, argv);
-	
-	AppEntryPoint();
-	EngineCore::Initialize();
+    //TODO: Start being consistent with function naming and stop eeny miny moe-ing between 'Initialize' and 'Setup' for gods sake
+    Logger::Initialize();
+    Args::Setup(argc, argv);
+    
+    AppEntryPoint();
+    EngineCore::Initialize();
 
-	return 0;
+    return 0;
 
 }

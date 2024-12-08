@@ -28,7 +28,7 @@ namespace Copper::Scripting::MonoUtils {
         return mono_string_new(AppDomain(), string.c_str());
 
     }
-    
+
     void PrintExceptionDetails(MonoObject* exception) {
 
         CUP_FUNCTION();

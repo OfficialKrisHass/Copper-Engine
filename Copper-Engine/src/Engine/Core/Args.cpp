@@ -11,7 +11,9 @@ namespace Copper::Args {
     static bool didRun = false;
 
     static std::vector<std::string> arguments;
-    static std::string execFolder;
+
+    static fs::path execFolder;
+    static fs::path projectPath;
 
     void Setup(uint32 argc, char* argv[]) {
 
@@ -33,20 +35,39 @@ namespace Copper::Args {
         didRun = true;
         arguments.resize(argc - 1);
 
+        for (uint32 i = 1; i < argc; i++) {
+
+            arguments[i - 1] = argv[i];
+
+#ifdef CU_DEBUG
+            if (i == argc - 1 || arguments[i - 1] != "-a") continue;
+
+            i++;
+            execFolder = argv[i];
+            arguments[i - 1] = argv[i];
+
+#endif
+
+        }
+
+        if (argc != 1 && arguments[0] != "-a")
+            projectPath = arguments[0];
+
+        if (!execFolder.empty()) return;
+
 #ifdef CU_LINUX
-        execFolder = fs::canonical("/proc/self/exe");
-        size_t pos = execFolder.find_last_of('/');
+        std::string tmp = fs::canonical("/proc/self/exe");
+        size_t pos = tmp.find_last_of('/');
 #elif CU_WINDOWS
         CHAR path[MAX_PATH];
         GetModuleFileNameA(NULL, path, MAX_PATH);
 
-        execFolder = path;
-        size_t pos = execFolder.find_last_of('\\');
+        std::string tmp = path;
+        size_t pos = tmp.find_last_of('\\');
 #endif
-        execFolder.erase(pos, std::string::npos);
+        tmp.erase(pos, std::string::npos);
 
-        for (uint32 i = 1; i < argc; i++)
-            arguments[i - 1] = argv[i];
+        execFolder = tmp;
 
     }
 
@@ -64,10 +85,12 @@ namespace Copper::Args {
 
     }
 
+    const fs::path& ProjectPath() { return projectPath; }
+
 }
 
 namespace Copper {
 
-    const std::string& ExecutableFolder() { return Args::execFolder; }
+    const fs::path& ExecutableFolder() { return Args::execFolder; }
 
 }

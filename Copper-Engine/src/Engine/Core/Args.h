@@ -11,4 +11,6 @@ namespace Copper::Args {
     uint32 Count();
     const std::string& Get(uint32 index);
 
+    const fs::path& ProjectPath();
+
 }

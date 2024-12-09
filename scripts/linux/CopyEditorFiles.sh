@@ -54,23 +54,25 @@ if [[ ! -d "$build_dir" ]]; then
   mkdir -p $build_dir
 fi
 
-echo Copying Editor assets
-cp -r $editor_dir/assets $build_dir
+if [ $configuration == Release ]; then
+    echo Copying Editor assets
+    cp -r $editor_dir/assets $build_dir
 
-echo
-echo Copying Editor utils
-cp -r $editor_dir/util $build_dir
+    echo
+    echo Copying Editor utils
+    cp -r $editor_dir/util $build_dir
 
-echo
-echo Copying mono files
-mkdir -p $build_dir/lib/mono
-cp -r $editor_dir/lib/mono/lib/linux/mono $build_dir/lib
+    echo
+    echo Copying mono files
+    mkdir -p $build_dir/lib/mono
+    cp -r $editor_dir/lib/mono/lib/linux/mono $build_dir/lib
+
+    echo
+    echo Copying etc
+    cp $editor_dir/imgui.ini $build_dir
+    echo
+fi
+
+echo Copying editor binaries
 cp $editor_dir/lib/mono/bin/linux/$configuration/libmonosgen-2.0.a $build_dir
-
-echo
-echo Copying PhysX files
 cp -r $editor_dir/lib/PhysX/linux/$configuration/. $build_dir
-
-echo
-echo Copying etc
-cp $editor_dir/imgui.ini $build_dir

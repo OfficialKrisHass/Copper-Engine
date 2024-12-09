@@ -46,7 +46,7 @@ namespace Copper {
         if (docking) io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
         if (viewports) io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
-        iniPath = ExecutableFolder() + "/imgui.ini";
+        iniPath = ExecutableFolder() / "imgui.ini";
         io.IniFilename = iniPath.c_str();
 
         if (!mainFontPath.empty())

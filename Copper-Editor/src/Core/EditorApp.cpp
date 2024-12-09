@@ -139,14 +139,14 @@ namespace Editor {
 
         GetWindow().AddKeyPressedEventFunc(Editor::OnKeyPressed);
 
-        MainUIContext().LoadFont(ExecutableFolder() + "/assets/Fonts/open-sans.regular.ttf");
+        MainUIContext().LoadFont(ExecutableFolder() / "assets/Fonts/open-sans.regular.ttf");
 
         data.scene = GetScene();
 
         data.viewportFBO = FrameBuffer(data.viewportSize);
         
-        data.playIcon.Create(ExecutableFolder() + "/assets/Icons/PlayButton.png", Texture::Format::RGBA);
-        data.stopIcon.Create(ExecutableFolder() + "/assets/Icons/StopButton.png", Texture::Format::RGBA);
+        data.playIcon.Create(ExecutableFolder() / "assets/Icons/PlayButton.png", Texture::Format::RGBA);
+        data.stopIcon.Create(ExecutableFolder() / "assets/Icons/StopButton.png", Texture::Format::RGBA);
 
         data.fileBrowser.Initialize();
 
@@ -154,7 +154,7 @@ namespace Editor {
 
         LoadEditorData();
 
-        data.themeEditor.LoadTheme(ExecutableFolder() + "/assets/Themes/Default.cutheme");
+        data.themeEditor.LoadTheme(ExecutableFolder() / "assets/Themes/Default.cutheme");
 
 #ifdef CU_LINUX
         data.project.RunPremake();
@@ -181,7 +181,7 @@ namespace Editor {
 
         out << YAML::EndMap; //End
 
-        std::ofstream file(ExecutableFolder() + "/assets/EditorData.cu");
+        std::ofstream file(ExecutableFolder() / "assets/EditorData.cu");
         file << out.c_str();
 
         data.project.Save();
@@ -191,7 +191,7 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        if (!fs::exists(ExecutableFolder() + "/assets/EditorData.cu")) {
+        if (!fs::exists(ExecutableFolder() / "assets/EditorData.cu")) {
 
             LogWarn("EditorData.cu is missing, generating a default one");
             SaveEditorData();
@@ -199,14 +199,14 @@ namespace Editor {
         }
 
         YAML::Node main;
-        try { main = YAML::LoadFile(ExecutableFolder() + "/assets/EditorData.cu"); } catch (YAML::Exception e) {
+        try { main = YAML::LoadFile(ExecutableFolder() / "assets/EditorData.cu"); } catch (YAML::Exception e) {
 
-            Input::ErrorPopup("EditorData read failed", "Could not read the EditorData.cu file.\n\nIt shuld be located here:\n" + ExecutableFolder() + "/assets/EditorData.cu" + "\n\nError message:\n" + e.what());
+            Input::ErrorPopup("EditorData read failed", "Could not read the EditorData.cu file.\n\nIt shuld be located here:\n" + (ExecutableFolder() / "assets/EditorData.cu").string() + "\n\nError message:\n" + e.what());
             exit(1);
 
         }
     
-        if (Args::Count() > 0) {
+        if (!Args::ProjectPath().empty()) {
 
             data.project.Open(Args::Get(0));
             return;
@@ -651,7 +651,7 @@ namespace Editor {
 
         data.state = Play;
 
-        SceneSerializer::Serialize(data.scene, ExecutableFolder() + "/assets/Temp/scene_lock.copper");
+        SceneSerializer::Serialize(data.scene, ExecutableFolder() / "assets/Temp/scene_lock.copper");
         Renderer::Restart();
 
     }
@@ -663,7 +663,7 @@ namespace Editor {
         Entity savedSelectedEntity = SceneHierarchy::GetSelectedEntity();
 
         data.scene->Cleanup();
-        SceneSerializer::Deserialize(data.scene, ExecutableFolder() + "/assets/Temp/scene_lock.copper");
+        SceneSerializer::Deserialize(data.scene, ExecutableFolder() / "assets/Temp/scene_lock.copper");
         data.scene->Initialize();
 
         SceneHierarchy::SetSelectedEntity(savedSelectedEntity);
@@ -720,7 +720,7 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        std::ifstream dllSrc(ExecutableFolder() + "/assets/ScriptingAPI/Copper-ScriptingAPI.dll", std::ios::binary);
+        std::ifstream dllSrc(ExecutableFolder() / "assets/ScriptingAPI/Copper-ScriptingAPI.dll", std::ios::binary);
         std::fstream dllDst;
 
         dllDst.open(data.project.GetPath() / "Binaries/Copper-ScriptingAPI.dll", std::ios::out | std::ios::binary);

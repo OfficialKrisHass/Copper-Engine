@@ -19,11 +19,11 @@
 #define FLAG(bit) (1 << bit)
 
 #ifdef CU_EDITOR
-    namespace Editor {
+namespace Editor {
 
-        extern bool IsRuntimeRunning();
+    extern bool IsRuntimeRunning();
 
-    }
+}
 
 #define IN_RUNTIME(action) if (Editor::IsRuntimeRunning()) { action; }
 #define IN_RUNTIME_BEGIN if (Editor::IsRuntimeRunning()) {
@@ -72,6 +72,6 @@ namespace Copper {
     typedef long long           int64;
     typedef unsigned long long  uint64;
 
-    const std::string& ExecutableFolder();
+    const fs::path& ExecutableFolder();
 
 }

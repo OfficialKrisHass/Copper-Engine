@@ -36,9 +36,9 @@ namespace Editor {
         fs::create_directories(m_path / "Assets");
         fs::create_directories(m_path / "Binaries");
 
-        CreateFileAndReplace(ExecutableFolder() + "/assets/Templates/Project Files/Project.cu.cut", m_path / "Project.cu", ":{ProjectName}", m_name);
-        CreateFileAndReplace(ExecutableFolder() + "/assets/Templates/Project Files/premake5.lua.cut", m_path / "premake5.lua", ":{ProjectName}", m_name);
-        CreateFileAndReplace(ExecutableFolder() + "/assets/Templates/Script.cs.cut", m_path / "Assets/Script.cs", ":{ScriptName}", "Script");
+        CreateFileAndReplace(ExecutableFolder() / "assets/Templates/Project Files/Project.cu.cut", m_path / "Project.cu", ":{ProjectName}", m_name);
+        CreateFileAndReplace(ExecutableFolder() / "assets/Templates/Project Files/premake5.lua.cut", m_path / "premake5.lua", ":{ProjectName}", m_name);
+        CreateFileAndReplace(ExecutableFolder() / "assets/Templates/Script.cs.cut", m_path / "Assets/Script.cs", ":{ScriptName}", "Script");
 
     }
 
@@ -224,10 +224,10 @@ namespace Editor {
         CUP_FUNCTION();
 
 #ifdef CU_WINDOWS
-        CreateFileAndReplace(ExecutableFolder() + "/assets/Templates/Template.sln.cut", m_path / (m_name + ".sln"), ":{ProjectName}", m_name);
-        CreateFileAndReplace(ExecutableFolder() + "/assets/Templates/Template.csproj.cut", m_path / (m_name + ".csproj"), ":{ProjectName}", m_name);
+        CreateFileAndReplace(ExecutableFolder() / "assets/Templates/Template.sln.cut", m_path / (m_name + ".sln"), ":{ProjectName}", m_name);
+        CreateFileAndReplace(ExecutableFolder() / "assets/Templates/Template.csproj.cut", m_path / (m_name + ".csproj"), ":{ProjectName}", m_name);
 #elif CU_LINUX
-        CreateFileAndReplace(ExecutableFolder() + "/assets/Templates/premake5.lua.cut", m_path / "premake5.lua", ":{ProjectName}", m_name);
+        CreateFileAndReplace(ExecutableFolder() / "assets/Templates/premake5.lua.cut", m_path / "premake5.lua", ":{ProjectName}", m_name);
 #endif
 
     }
@@ -248,7 +248,7 @@ namespace Editor {
         //system(("cd \"" + data.project.path.string() + "\" ; ./premake/premake5 gmake2").c_str());
 
         // Turns out there is :)
-        system((ExecutableFolder() + "/util/premake/premake5 --file=\"" + (m_path / "premake5.lua").string() + "\" gmake2").c_str());
+        system(((ExecutableFolder() / "util/premake/premake5 --file=\"").string() + (m_path / "premake5.lua").string() + "\" gmake2").c_str());
 
     }
 #endif

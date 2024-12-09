@@ -36,7 +36,11 @@ run:
 
 run-editor:
 	@export LD_PRELOAD=libmonosgen-2.0.so
+ifeq ($(CONFIGURATION), Debug)
+	@./$(BUILD_DIR)/Copper-Editor/Copper-Editor -a $(CURDIR)/Copper-Editor/
+else
 	@./$(BUILD_DIR)/Copper-Editor/Copper-Editor
+endif
 
 copy-files:
 ifeq ($(OS), linux)

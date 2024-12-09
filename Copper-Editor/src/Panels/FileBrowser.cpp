@@ -43,8 +43,8 @@ namespace Editor {
 
     void FileBrowser::Initialize() {
 
-        directoryIcon.Create(ExecutableFolder() + "/assets/Icons/DirectoryIcon.png", Texture::Format::RGBA);
-        fileIcon.Create(ExecutableFolder() + "/assets/Icons/FileIcon.png", Texture::Format::RGBA);
+        directoryIcon.Create(ExecutableFolder() / "assets/Icons/DirectoryIcon.png", Texture::Format::RGBA);
+        fileIcon.Create(ExecutableFolder() / "assets/Icons/FileIcon.png", Texture::Format::RGBA);
 
     }
 

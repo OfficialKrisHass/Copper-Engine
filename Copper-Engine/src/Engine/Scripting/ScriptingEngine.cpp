@@ -51,8 +51,8 @@ namespace Copper::Scripting {
         CUP_FUNCTION();
         VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the Scripting Engine");
 
-        mono_config_parse((ExecutableFolder() + "/lib/mono/config").c_str());
-        mono_set_assemblies_path((ExecutableFolder() + "/lib").c_str());
+        mono_config_parse((ExecutableFolder() / "lib/mono/config").c_str());
+        mono_set_assemblies_path((ExecutableFolder() / "lib").c_str());
 
         data.rootDomain = mono_jit_init("CUSRootDomain");
         if (!data.rootDomain) {
@@ -134,7 +134,7 @@ namespace Copper::Scripting {
 
         // I forgot I changed the dir name from ScriptAPI to Script - ing - API only here and didnt change the
         // Scripting api build directory and spent 2 days trying to figure out why the fuck nothing was working
-        data.scriptingAPI = Assembly(ExecutableFolder() + "/assets/ScriptingAPI/Copper-ScriptingAPI.dll");
+        data.scriptingAPI = Assembly(ExecutableFolder() / "assets/ScriptingAPI/Copper-ScriptingAPI.dll");
 
         SetupInternalCalls();
         InitializeClasses();

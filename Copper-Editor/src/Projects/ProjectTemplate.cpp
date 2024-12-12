@@ -16,31 +16,34 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        const fs::path path = ExecutableFolder() / "assets/Templates" / (project.GetName() + "_Template");
+        const fs::path path = ExecutableFolder() / "assets/Templates/Projects" / project.GetName();
 
         create_directories(path.string() + "/Assets");
         for (const fs::directory_entry& entry : fs::recursive_directory_iterator(project.GetAssetsPath())) {
 
-            const fs::path& filePath = entry.path();
-            if (!fs::exists(filePath.parent_path()))
-                fs::create_directories(filePath.parent_path());
+            const fs::path& relPath = fs::relative(entry.path(), project.GetPath());
+            const fs::path tmplPath = path / relPath;
 
-            CopyFileTo(filePath, path / fs::relative(filePath, project.GetPath()));
+            if (!fs::exists(tmplPath.parent_path()))
+                fs::create_directories(tmplPath.parent_path());
+
+            CopyFileTo(project.GetPath() / relPath, tmplPath);
 
         }
 
         CreateFileAndReplace(project.GetPath() / "Project.cu", path / "Project.cu.cut", project.GetName(), ":{ProjectName}");
 
     }
-    void CreateProjectFromTemplate(const fs::path& templatePath, Project& project) {
+    void CreateProjectFromTemplate(const std::string& templateName, Project& project) {
 
         CUP_FUNCTION();
 
-        const fs::path templ = ExecutableFolder() / templatePath;
-        Log("Creating a project from template at path: {}", templ.string());
+        const fs::path templ = ExecutableFolder() / "assets/Templates/Projects" / templateName;
 
         create_directories(project.GetAssetsPath());
-        for (const fs::directory_entry& entry : fs::recursive_directory_iterator(templ)) {
+        create_directories((project.GetPath() / "Binaries"));
+
+        for (const fs::directory_entry& entry : fs::recursive_directory_iterator(templ / "Assets")) {
 
             const fs::path& path = entry.path();
             const fs::path& destination = project.GetPath() / fs::relative(path, templ);
@@ -51,7 +54,8 @@ namespace Editor {
             CopyFileTo(path, destination);
 
         }
-        CreateFileAndReplace(templatePath / "Project.cu.cut", project.GetPath() / "Project.cu", ":{ProjectName}", project.GetName());
+
+        CreateFileAndReplace(templ / "Project.cu.cut", project.GetPath() / "Project.cu", ":{ProjectName}", project.GetName());
         CopyFileTo(ExecutableFolder() / "assets/ScriptingAPI/Copper-ScriptingAPI.dll", project.GetPath() / "Binaries/Copper-ScriptingAPI.dll", true);
 
         project.RegenerateBuildFiles();

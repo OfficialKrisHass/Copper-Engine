@@ -32,13 +32,10 @@ namespace Editor {
         m_path = path;
         m_name = path.filename().string();
 
-        fs::create_directories(m_path);
-        fs::create_directories(m_path / "Assets");
-        fs::create_directories(m_path / "Binaries");
+        if (!fs::exists(m_path))
+            fs::create_directories(m_path);
 
-        CreateFileAndReplace(ExecutableFolder() / "assets/Templates/Project Files/Project.cu.cut", m_path / "Project.cu", ":{ProjectName}", m_name);
-        CreateFileAndReplace(ExecutableFolder() / "assets/Templates/Project Files/premake5.lua.cut", m_path / "premake5.lua", ":{ProjectName}", m_name);
-        CreateFileAndReplace(ExecutableFolder() / "assets/Templates/Script.cs.cut", m_path / "Assets/Script.cs", ":{ScriptName}", "Script");
+        CreateProjectFromTemplate("Empty", *this);
 
     }
 
@@ -216,7 +213,7 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        CreateFileAndReplace("assets/Templates/Project.cu.cut", m_path / "Project.cu", ":{ProjectName}", m_name);
+        CreateFileAndReplace("assets/Templates/Project Files/Project.cu.cut", m_path / "Project.cu", ":{ProjectName}", m_name);
 
     }
     void Project::RegenerateBuildFiles() const {
@@ -224,10 +221,10 @@ namespace Editor {
         CUP_FUNCTION();
 
 #ifdef CU_WINDOWS
-        CreateFileAndReplace(ExecutableFolder() / "assets/Templates/Template.sln.cut", m_path / (m_name + ".sln"), ":{ProjectName}", m_name);
-        CreateFileAndReplace(ExecutableFolder() / "assets/Templates/Template.csproj.cut", m_path / (m_name + ".csproj"), ":{ProjectName}", m_name);
+        CreateFileAndReplace(ExecutableFolder() / "assets/Templates/Project Files/Template.sln.cut", m_path / (m_name + ".sln"), ":{ProjectName}", m_name);
+        CreateFileAndReplace(ExecutableFolder() / "assets/Templates/Project Files/Template.csproj.cut", m_path / (m_name + ".csproj"), ":{ProjectName}", m_name);
 #elif CU_LINUX
-        CreateFileAndReplace(ExecutableFolder() / "assets/Templates/premake5.lua.cut", m_path / "premake5.lua", ":{ProjectName}", m_name);
+        CreateFileAndReplace(ExecutableFolder() / "assets/Templates/Project Files/premake5.lua.cut", m_path / "premake5.lua", ":{ProjectName}", m_name);
 #endif
 
     }

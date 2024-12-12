@@ -699,7 +699,6 @@ namespace Editor {
         // Create the Project
 
         data.project = Project(path);
-        CopyScriptingAPI();
 
         FileBrowser::SetRelativeDir("");
 

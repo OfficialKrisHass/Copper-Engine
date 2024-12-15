@@ -14,6 +14,8 @@ namespace Launcher {
 
         static void LoadTemplates();
 
+        void CreateProject(const std::string& name, const fs::path& path) const;
+
         inline const std::string& GetName() const { return m_name; }
         inline const std::string& GetPath() const { return m_description; }
 

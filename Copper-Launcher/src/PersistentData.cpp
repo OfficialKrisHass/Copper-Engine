@@ -7,33 +7,40 @@
 
 #include <string>
 #include <fstream>
-#include <filesystem>
 
 namespace Launcher::PersistentData {
 
     static const std::string filename = "LauncherData.cup";
 #ifdef CU_WINDOWS
-    static const std::string persistenFolder = std::string(getenv("appdata")) + "\\Copper-Editor\\";
+    static const fs::path persistenFolder = std::string(getenv("appdata")) + "\\Copper-Editor";
 #elif CU_LINUX
-    static const std::string persistenFolder = std::string("/home/") + cuserid(nullptr)+ "/.config/Copper-Editor/";
+    static const fs::path persistenFolder = std::string("/home/") + cuserid(nullptr)+ "/.config/Copper-Editor";
 #endif
 
-    static std::string editorPath = "";
+    static fs::path editorPath = "";
 
     static void LocateEditor();
+#ifdef CU_DEBUG
+    static fs::path editorAssetsPath = "";
+    
+    static void LocateEditorAssets();
+#endif
 
     void Load(std::vector<ProjectEntry>& projectEntries) {
 
         YAML::Node node;
-        try { node = YAML::LoadFile(persistenFolder + filename); }
+        try { node = YAML::LoadFile(persistenFolder / filename); }
         catch (YAML::Exception e) {
 
             Dialogs::Error("Couldn't Read LauncherData.cup", "Encountered an exception trying to Load the LauncherData.cup file.\nProvide the path to the Editor and we will create a new one");
             LocateEditor();
+#ifdef CU_DEBUG
+            LocateEditorAssets();
+#endif
 
             Save(projectEntries);
 
-            try { node = YAML::LoadFile(persistenFolder + filename); }
+            try { node = YAML::LoadFile(persistenFolder / filename); }
             catch (YAML::Exception e) {
 
                 Dialogs::Error("Couldn't Read LauncherData.cup", e.msg);
@@ -44,6 +51,9 @@ namespace Launcher::PersistentData {
         }
 
         editorPath = node["Editor Path"].as<std::string>();
+#ifdef CU_DEBUG
+        editorAssetsPath = node["Editor assets Path"].as<std::string>();
+#endif
 
         YAML::Node entries = node["Project Entries"];
         for (uint32 i = 0; i < entries.size(); i++) {
@@ -56,6 +66,32 @@ namespace Launcher::PersistentData {
 
         }
 
+#ifdef CU_DEBUG
+        bool save = false;
+#endif
+
+        if (editorPath.empty()) {
+
+            LocateEditor();
+#ifdef CU_DEBUG
+            save = true;
+#elif
+            Save(projectEntries);
+#endif
+
+        }
+#ifdef CU_DEBUG
+        if (editorAssetsPath.empty()) {
+
+            LocateEditorAssets();
+            save = true;
+
+        }
+
+        if (save)
+            Save(projectEntries);
+#endif
+
     }
     void Save(const std::vector<ProjectEntry>& projectEntries) {
 
@@ -64,6 +100,9 @@ namespace Launcher::PersistentData {
         out << YAML::BeginMap; // Main
 
         out << YAML::Key << "Editor Path" << YAML::Value << editorPath;
+#ifdef CU_DEBUG
+        out << YAML::Key << "Editor assets Path" << YAML::Value << editorAssetsPath;
+#endif 
 
         out << YAML::Key << "Project Entries" << YAML::Value << YAML::BeginSeq; // Project Entries
 
@@ -85,13 +124,22 @@ namespace Launcher::PersistentData {
         if (!std::filesystem::exists(persistenFolder))
             std::filesystem::create_directories(persistenFolder);
 
-        std::ofstream file(persistenFolder + filename);
+        std::ofstream file(persistenFolder / filename);
         file << out.c_str();
         file.close();
 
     }
 
-    const std::string& EditorPath() { return editorPath; }
+    const fs::path& EditorPath() { return editorPath; }
+    const fs::path& EditorAssetsPath() {
+
+#ifdef CU_DEBUG
+        return editorAssetsPath;
+#elif
+        return editorPath / "assets";
+#endif
+
+    }
 
     void LocateEditor() {
 
@@ -100,7 +148,7 @@ namespace Launcher::PersistentData {
 #elif CU_WINDOWS
         editorPath = Dialogs::OpenFile("Locate Copper-Editor.exe", { "Executable files", "*.exe" }, "C:\\");
 #endif
-        if (editorPath == "") {
+        if (editorPath.empty()) {
 
             Dialogs::Error("Invalid File", "Invalid File");
             exit(-1);
@@ -108,5 +156,28 @@ namespace Launcher::PersistentData {
         }
 
     }
+#ifdef CU_DEBUG
+    void LocateEditorAssets() {
+
+#ifdef CU_LINUX
+        editorAssetsPath = Dialogs::OpenFolder("Locate Copper-Editor Assets folder", "~");
+#elif CU_WINDOWS
+        editorAssetsPath = Dialogs:::OpenFolder("Locate Copper-Editor Assets folder", "C:\\");
+#endif
+
+        if (editorAssetsPath.empty()) {
+
+            Dialogs::Error("Invalid folder", "Invalid path");
+            exit(-1);
+
+        }
+
+        if (fs::exists(editorAssetsPath / "EditorData.cu")) return;
+
+        Dialogs::Error("Invalid folder", "This is not the Editor assets folder (EditorData.cu is missing)");
+        exit(-1);
+
+    }
+#endif
 
 }

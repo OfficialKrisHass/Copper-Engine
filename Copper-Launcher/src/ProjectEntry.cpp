@@ -65,7 +65,7 @@ namespace Launcher {
 
             if (pid == 0) { // Child procces
 
-                char* args[] = { (char*) PersistentData::EditorPath().data(), (char*) m_directory.data(), nullptr };
+                char* args[] = { (char*) PersistentData::EditorPath().c_str(), (char*) m_directory.data(), nullptr };
                 execv(PersistentData::EditorPath().c_str(), args);
 
             } else

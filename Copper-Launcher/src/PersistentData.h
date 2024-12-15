@@ -10,6 +10,7 @@ namespace Launcher::PersistentData {
     void Load(std::vector<ProjectEntry>& entries);
     void Save(const std::vector<ProjectEntry>& entries);
 
-    const std::string& EditorPath();
+    const fs::path& EditorPath();
+    const fs::path& EditorAssetsPath();
 
 }

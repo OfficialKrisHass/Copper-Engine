@@ -3,7 +3,11 @@
 #include <cstdio>
 #include <string>
 
+#include <filesystem>
+
 namespace Launcher {
+
+    namespace fs = std::filesystem;
 
     inline constexpr float WindowPadding = 10.0f;
     inline constexpr const char* MainFontPath = "/assets/open-sans.regular.ttf";

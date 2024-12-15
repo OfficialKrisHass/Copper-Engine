@@ -7,6 +7,7 @@
 #include "PersistentData.h"
 
 #include "ProjectEntry.h"
+#include "ProjectTemplate.h"
 
 #include "ThemeEditor.h"
 
@@ -50,6 +51,7 @@ namespace Launcher {
         std::cout << "Hello, World!\n";
 
         PersistentData::Load(data.projectEntries);
+        ProjectTemplate::LoadTemplates();
 
         Window::Create(960, 540, "Copper Launcher");
         UI::Initialize();

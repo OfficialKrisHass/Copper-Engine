@@ -1,5 +1,7 @@
 #include "CreateProjectWindow.h"
 
+#include "ProjectTemplate.h"
+
 #include "Fonts.h"
 
 #include "Dialogs.h"
@@ -8,6 +10,8 @@
 #include <ImGui/imgui_internal.h>
 
 #include <string>
+
+#include <iostream>
 
 #define INPUT_TEXT_WIDTH 350.0f
 
@@ -24,11 +28,13 @@ namespace Launcher::CreateProjectWindow {
 
         if (!*open) return;
 
+        ImGuiStyle& style = ImGui::GetStyle();
+
         ImGui::Begin("Create Project", open, ImGuiWindowFlags_NoResize);
 
         // Name and path
 
-        float xOff = ImGui::CalcTextSize("Name:").x + WindowPadding + ImGui::GetStyle().ItemInnerSpacing.x;
+        float xOff = ImGui::CalcTextSize("Name:").x + style.WindowPadding.x + style.ItemInnerSpacing.x;
 
         ImGui::Text("Name:");
         ImGui::SameLine();
@@ -36,7 +42,7 @@ namespace Launcher::CreateProjectWindow {
         ImGui::SetNextItemWidth(INPUT_TEXT_WIDTH);
         ImGui::InputText("##ProjectName", projectName, sizeof(projectName));
 
-        ImGui::SetCursorPosX(xOff - ImGui::CalcTextSize("Path:").x - ImGui::GetStyle().ItemInnerSpacing.x - 2);
+        ImGui::SetCursorPosX(xOff - ImGui::CalcTextSize("Path:").x - style.ItemInnerSpacing.x - 2);
         ImGui::Text("Path:");
         ImGui::SameLine();
         ImGui::SetCursorPosX(xOff);
@@ -53,6 +59,35 @@ namespace Launcher::CreateProjectWindow {
 
         }
         ImGui::PopFont();
+
+        float winWidth = ImGui::GetWindowWidth() - style.WindowPadding.x * 2.0f;
+
+        static const std::vector<ProjectTemplate>& templates = ProjectTemplate::GetTemplates();
+        static int currItem = 0;
+
+        ImGui::Text("Template:");
+        if (ImGui::BeginListBox("##Template", ImVec2(winWidth / 2.0f, 0.0f))) {
+
+            for (int i = 0; i < templates.size(); i++) {
+
+                bool selected = (currItem == i);
+                if (ImGui::Selectable(templates[i].GetName().c_str(), selected))
+                    currItem = i;
+
+                if (selected)
+                    ImGui::SetItemDefaultFocus();
+
+            }
+
+            ImGui::EndListBox();
+
+        }
+        ImGui::SameLine();
+
+        // ImGui is retarded and I hate it why the fuck does it exist ????????
+        ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + 240.0f);
+        ImGui::Text("Template description here broski");
+        ImGui::PopTextWrapPos();
 
         // Create Button
 

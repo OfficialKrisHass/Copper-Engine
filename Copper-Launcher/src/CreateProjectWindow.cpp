@@ -95,8 +95,9 @@ namespace Launcher::CreateProjectWindow {
         ImGui::PushFont(Fonts::BigTextFont());
 
         ImGui::BeginDisabled(projectPath.empty() || projectName.empty());
-        if (ImGui::Button("Create", { CREATE_BUTTON_SIZE_X, CREATE_BUTTON_SIZE_Y }))
-            templates[selectedTemplate].CreateProject(projectName, projectPath);
+        if (ImGui::Button("Create", { CREATE_BUTTON_SIZE_X, CREATE_BUTTON_SIZE_Y }) &&
+            templates[selectedTemplate].CreateProject(projectName, projectPath))
+            LaunchEditor(projectPath + "/" + projectName);
         ImGui::EndDisabled();
 
         ImGui::PopFont();

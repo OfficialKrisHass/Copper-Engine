@@ -58,38 +58,8 @@ namespace Launcher {
         ImGui::PopFont();
 
         bool held = false;
-        if (ImGui::ButtonBehavior(tabRect, id, nullptr, &held, ImGuiButtonFlags_PressedOnClickRelease | ImGuiButtonFlags_PressedOnRelease)) {
-
-#ifdef CU_LINUX
-            pid_t pid = fork();
-
-            if (pid == 0) { // Child procces
-
-                char* args[] = { (char*) PersistentData::EditorPath().c_str(), (char*) m_directory.data(), nullptr };
-                execv(PersistentData::EditorPath().c_str(), args);
-
-            } else
-                OnWindowClose();
-#elif CU_WINDOWS
-            std::string editorPath = Utils::ReplaceSpaces(PersistentData::EditorPath());
-            std::string projectPath = Utils::ReplaceSpaces(m_directory);
-            std::string args = editorPath + " " + projectPath;
-
-            STARTUPINFOA si;
-            PROCESS_INFORMATION pi;
-            
-            ZeroMemory(&si, sizeof(si));
-            ZeroMemory(&pi, sizeof(pi));
-            si.cb = sizeof(si);
-
-            CreateProcessA(editorPath.c_str(), args.data(), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
-            CloseHandle(pi.hProcess);
-            CloseHandle(pi.hThread);
-
-            OnWindowClose();
-#endif
-
-    }
+        if (ImGui::ButtonBehavior(tabRect, id, nullptr, &held, ImGuiButtonFlags_PressedOnClickRelease | ImGuiButtonFlags_PressedOnRelease))
+            LaunchEditor(m_directory);
 
         if (held)
             heldID = id;

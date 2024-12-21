@@ -172,9 +172,9 @@ namespace Launcher::PersistentData {
 
         }
 
-        if (fs::exists(editorAssetsPath / "EditorData.cu")) return;
+        if (fs::exists(editorAssetsPath / "assets/EditorData.cu")) return;
 
-        Dialogs::Error("Invalid folder", "This is not the Editor assets folder (EditorData.cu is missing)");
+        Dialogs::Error("Invalid folder", "This is not the Editor assets folder (assets/EditorData.cu is missing)");
         exit(-1);
 
     }

@@ -32,4 +32,6 @@ namespace Launcher {
 
     const std::string& ExecutableFolder();
 
+    void LaunchEditor(const std::string& projectPath);
+
 }

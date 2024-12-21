@@ -6,6 +6,9 @@
 compile_commands.json
 Copper-ScriptingAPI.dll
 
+[Tt]emp/
+Objs/
+
 *.make
 *.mingw
 .vscode

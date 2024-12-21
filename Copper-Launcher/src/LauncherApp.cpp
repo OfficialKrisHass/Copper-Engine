@@ -22,6 +22,14 @@
 
 #include <filesystem>
 
+#ifdef CU_LINUX
+#include <sys/types.h>
+#include <unistd.h>
+#elif CU_WINDOWS
+#include <Windows.h>
+#include <processthreadsapi.h>
+#endif
+
 namespace Launcher {
 
     struct Data {
@@ -169,6 +177,50 @@ namespace Launcher {
     void OnWindowClose() {
 
         data.running = false;
+
+    }
+
+    void LaunchEditor(const std::string& projectPath) {
+
+#ifdef CU_LINUX
+        pid_t pid = fork();
+
+        if (pid == 0) { // Child procces
+
+            char* args[] = {
+                (char*) PersistentData::EditorPath().c_str(),
+                (char*) projectPath.data(),
+#ifdef CU_DEBUG
+                (char*) "-a",
+                (char*) PersistentData::EditorAssetsPath().c_str(),
+#endif
+                nullptr };
+
+            execv(PersistentData::EditorPath().c_str(), args);
+
+        } else
+            OnWindowClose();
+#elif CU_WINDOWS
+        std::string editorPath = Utils::ReplaceSpaces(PersistentData::EditorPath());
+        std::string path = Utils::ReplaceSpaces(projectPath);
+        std::string args = editorPath + " " + path;
+#ifdef CU_DEBUG
+        args += " -a " + PersistentData::EditorAssetsPath().string();
+#endif
+
+        STARTUPINFOA si;
+        PROCESS_INFORMATION pi;
+        
+        ZeroMemory(&si, sizeof(si));
+        ZeroMemory(&pi, sizeof(pi));
+        si.cb = sizeof(si);
+
+        CreateProcessA(editorPath.c_str(), args.data(), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
+        CloseHandle(pi.hProcess);
+        CloseHandle(pi.hThread);
+
+        OnWindowClose();
+#endif
 
     }
 

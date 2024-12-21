@@ -14,7 +14,7 @@ namespace Launcher {
 
         static void LoadTemplates();
 
-        void CreateProject(const std::string& name, const fs::path& path) const;
+        bool CreateProject(const std::string& name, const fs::path& path) const;
 
         inline const std::string& GetName() const { return m_name; }
         inline const std::string& GetPath() const { return m_description; }
@@ -26,6 +26,9 @@ namespace Launcher {
         std::string m_description = "";
 
         static std::vector<ProjectTemplate> s_templates;
+
+        void GenerateBuildFiles(const std::string& name, const fs::path& path) const;
+        void BuildProject(const std::string& name, const fs::path& path) const;
 
     };
 

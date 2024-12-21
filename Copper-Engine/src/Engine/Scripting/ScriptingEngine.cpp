@@ -163,6 +163,8 @@ namespace Copper::Scripting {
 
             if (std::string(name) == "<Module>") continue;
 
+            Log("{}.{}", nameSpace, name);
+
             // Filter out non component Scripts
 
             MonoClass* klass = mono_class_from_name_case(data.game.GetImage(), nameSpace, name);
@@ -172,6 +174,8 @@ namespace Copper::Scripting {
             Script& script = data.componentScripts[fullName] = Script(klass);
 
         }
+
+        Log(data.componentScripts.size());
 
     }
 

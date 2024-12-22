@@ -222,6 +222,15 @@ namespace Launcher {
         OnWindowClose();
 #endif
 
+        const std::string projectName = fs::path(projectPath).filename().string();
+        for (const ProjectEntry& entry : data.projectEntries) {
+
+            if (entry.Name() == projectName) return;
+
+        }
+
+        data.projectEntries.insert(data.projectEntries.begin(), ProjectEntry(projectName, projectPath));
+
     }
 
 }

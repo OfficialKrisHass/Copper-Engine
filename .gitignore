@@ -7,7 +7,11 @@ compile_commands.json
 Copper-ScriptingAPI.dll
 
 [Tt]emp/
+
+# Copper-Editor projects
 Objs/
+Binaries/
+Makefile
 
 *.make
 *.mingw
@@ -28,11 +32,6 @@ Objs/
 *.csproj
 *.vcxproj
 *.filters
-
-# Project files
-Editor Projects/DevProject/Binaries
-Editor Projects/DevProject/Makefile
-Editor Projects/DevProject/premake5.lua
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

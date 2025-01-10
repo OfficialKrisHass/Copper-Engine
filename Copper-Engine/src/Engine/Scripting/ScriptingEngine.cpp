@@ -44,15 +44,19 @@ namespace Copper::Scripting {
 
     extern void SetupInternalCalls();
     extern void InitializeClasses();
-    extern void InitializeFields();
 
     void Initialize() {
 
         CUP_FUNCTION();
         VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the Scripting Engine");
 
-        mono_config_parse((ExecutableFolder() / "lib/mono/config").c_str());
-        mono_set_assemblies_path((ExecutableFolder() / "lib").c_str());
+#ifdef CU_LINUX
+        mono_set_assemblies_path((ExecutableFolder() / "lib/mono/lib/linux").string().c_str());
+#elif CU_WINDOWS
+        mono_set_assemblies_path((ExecutableFolder() / "lib/mono/lib/windows").string().c_str());
+#endif
+
+        mono_config_parse((ExecutableFolder() / "lib/mono/config").string().c_str());
 
         data.rootDomain = mono_jit_init("CUSRootDomain");
         if (!data.rootDomain) {
@@ -74,11 +78,11 @@ namespace Copper::Scripting {
 
     }
 
-    bool Load(const std::string& path) {
+    bool Load(const fs::path& assemblyPath) {
 
         CUP_FUNCTION();
 
-        data.game = Assembly(path);
+        data.game = Assembly(assemblyPath);
         if (!data.game) return false;
 
         InitializeGame();
@@ -101,22 +105,22 @@ namespace Copper::Scripting {
 
 
     }
-    bool Reload(const fs::path& path) {
+    bool Reload(const fs::path& assemblyPath) {
 
         CUP_FUNCTION();
 
-        std::string tmp;
-        if (path.empty())
-            tmp = data.game.Path();
+        fs::path path;
+        if (assemblyPath.empty())
+            path = data.game.Path();
         else
-            tmp = path.string();
+            path = assemblyPath.string();
 
         Unload();
 
         InitializeScriptingAPI();
-        if (!Load(tmp)) {
+        if (!Load(path)) {
 
-            LogError("Failed to load game assembly at path '{}'", tmp);
+            LogError("Failed to load game assembly at path '{}'", path);
             return false;
 
         }

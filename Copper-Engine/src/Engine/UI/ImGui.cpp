@@ -17,7 +17,7 @@ namespace Copper {
 
     static std::string iniPath = "";
 
-    std::string mainFontPath = "";
+    fs::path mainFontPath;
     float mainFontSize = 0.0f;
 
     uint32 uiCount = 0;
@@ -46,11 +46,11 @@ namespace Copper {
         if (docking) io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
         if (viewports) io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
-        iniPath = ExecutableFolder() / "imgui.ini";
+        iniPath = (ExecutableFolder() / "imgui.ini").string();
         io.IniFilename = iniPath.c_str();
 
         if (!mainFontPath.empty())
-            io.FontDefault = io.Fonts->AddFontFromFileTTF(mainFontPath.c_str(), mainFontSize);
+            io.FontDefault = io.Fonts->AddFontFromFileTTF(mainFontPath.string().c_str(), mainFontSize);
 
         ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(window.GetWindowPtr()), true);
         ImGui_ImplOpenGL3_Init("#version 460");
@@ -98,12 +98,12 @@ namespace Copper {
 
     }
 
-    void UIContext::LoadFont(const std::string& path, float fontSize) const {
+    void UIContext::LoadFont(const fs::path& path, float fontSize) const {
 
         CUP_FUNCTION();
 
         ImGuiIO& io = ImGui::GetIO();
-        io.FontDefault = io.Fonts->AddFontFromFileTTF(path.c_str(), fontSize);
+        io.FontDefault = io.Fonts->AddFontFromFileTTF(path.string().c_str(), fontSize);
         
         if(mainFontPath.empty()) {
 

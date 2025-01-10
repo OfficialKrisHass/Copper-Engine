@@ -35,7 +35,7 @@ namespace Copper {
         glGenerateMipmap(GL_TEXTURE_2D);
 
     }
-    void Texture::Create(const std::string& filePath, Format format) {
+    void Texture::Create(const fs::path& filePath, Format format) {
 
         CUP_FUNCTION();
 
@@ -44,7 +44,7 @@ namespace Copper {
         stbi_set_flip_vertically_on_load(1);
 
         int32 width, height, channels;
-        uint8* pixels = stbi_load(filePath.c_str(), &width, &height, &channels, 0);
+        uint8* pixels = stbi_load(filePath.string().c_str(), &width, &height, &channels, 0);
         if (pixels == nullptr) {
 
             LogError("Couldn't read image pixels! Path: {}", filePath);

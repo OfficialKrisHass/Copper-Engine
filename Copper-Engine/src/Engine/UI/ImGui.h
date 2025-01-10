@@ -18,7 +18,7 @@ namespace Copper {
         void Begin();
         void End();
 
-        void LoadFont(const std::string& path, float fontSize = 18.0f) const;
+        void LoadFont(const fs::path& path, float fontSize = 18.0f) const;
 
         void SetAsCurrent() const;
     

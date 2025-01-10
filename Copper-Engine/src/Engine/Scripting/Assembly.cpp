@@ -7,7 +7,7 @@
 
 namespace Copper::Scripting {
 
-    Assembly::Assembly(const std::string& path) {
+    Assembly::Assembly(const fs::path& path) {
 
         CUP_FUNCTION();
 
@@ -21,7 +21,7 @@ namespace Copper::Scripting {
 
     }
 
-    void Assembly::OpenImage(const std::string& path) {
+    void Assembly::OpenImage(const fs::path& path) {
 
         CUP_FUNCTION();
 
@@ -49,14 +49,14 @@ namespace Copper::Scripting {
 
 
     }
-    void Assembly::LoadAssembly(const std::string& path) {
+    void Assembly::LoadAssembly(const fs::path& path) {
 
         CUP_FUNCTION();
 
         if (!m_image) return;
 
         MonoImageOpenStatus status;
-        m_assembly = mono_assembly_load_from_full(m_image, path.c_str(), &status, false);
+        m_assembly = mono_assembly_load_from_full(m_image, path.string().c_str(), &status, false);
         mono_image_close(m_image);
         
         if (m_assembly) return;

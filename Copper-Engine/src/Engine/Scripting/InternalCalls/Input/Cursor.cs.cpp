@@ -37,7 +37,7 @@ namespace Copper::Scripting::Cursor {
         double x, y;
         Input::GetCursorPosition(&x, &y);
 
-        return Vector2(x, y);
+        return Vector2((float) x, (float) y);
 
     }
     void SetPosition(Vector2 value) {

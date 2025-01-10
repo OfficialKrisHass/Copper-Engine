@@ -11,25 +11,27 @@ call:set_configuration %1
 set editor_dir=%~dp0..\..\Copper-Editor
 set build_dir=%~dp0..\..\Build\windows-x86_64-%configuration%\Copper-Editor
 
-echo Copying Editor assets
-xcopy %editor_dir%\assets %build_dir%\assets\ /s /e /q /y
+if "%configuration"=="Release" (
+    echo Copying Editor assets
+    xcopy %editor_dir%\assets %build_dir%\assets\ /s /e /q /y
 
-echo.
-echo Copying Editor utils
-xcopy %editor_dir%\util %build_dir%\util\ /s /e /q /y
+    echo.
+    echo Copying Editor utils
+    xcopy %editor_dir%\util %build_dir%\util\ /s /e /q /y
 
-echo.
-echo Copying mono files
-xcopy %editor_dir%\lib\mono\lib\windows\mono %build_dir%\lib\mono\ /s /e /q /y
-xcopy %editor_dir%\lib\mono\bin\windows\%configuration%\mono-2.0-sgen.dll %build_dir%\ /q /y
+    echo.
+    echo Copying mono files
+    xcopy %editor_dir%\lib\mono\lib\windows\mono %build_dir%\lib\mono\ /s /e /q /y
 
-echo.
-echo Copying PhysX files
+    echo.
+    echo Copying misc
+    xcopy %editor_dir%\imgui.ini %build_dir%\ /q /y
+    echo.
+)
+
+echo Copying Editor binaries
 xcopy %editor_dir%\lib\PhysX\windows\%configuration% %build_dir%\ /q /y
-
-echo.
-echo Copying etc
-xcopy %editor_dir%\imgui.ini %build_dir%\ /q /y
+xcopy %editor_dir%\lib\mono\bin\windows\%configuration%\mono-2.0-sgen.dll %build_dir%\ /q /y
 
 pause
 exit /b 0

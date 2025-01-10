@@ -50,8 +50,10 @@ namespace Copper::Args {
 
         }
 
-        if (argc != 1 && arguments[0] != "-a")
-            projectPath = arguments[0];
+        // If there's at least 1 argument (1st is execPath) and the second to last one
+        // isn't the assets folder option, then the last argument is a projectPath
+        if (argc > 1 && arguments[argc - 3] != "-a")
+            projectPath = arguments[argc - 2];
 
         if (!execFolder.empty()) return;
 

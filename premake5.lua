@@ -100,7 +100,7 @@ project "Copper-Engine"
         "VERSION_MAJOR=0",
         "VERSION_MINOR=3",
         "VERSION_PATCH=0",
-        "VERSION_TWEAK=184",
+        "VERSION_TWEAK=185",
 
         "SCENE_VERSION=0",
 
@@ -194,6 +194,8 @@ project "Copper-Editor"
         symbols "on"
 
         postbuildcommands "%{os.getcwd()}/scripts/windows/CopyEditorFiles.bat Debug"
+
+        debugargs { "-a", os.getcwd() .. "/%{prj.name}/" }
 
     filter "configurations:Release"
         defines "CU_RELEASE"

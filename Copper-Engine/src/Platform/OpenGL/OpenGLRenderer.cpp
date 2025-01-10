@@ -225,7 +225,7 @@ namespace Copper::RendererAPI {
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     }
-    void SetShaderPath(const std::string& vertexPath, const std::string& fragmentPath) {
+    void SetShaderPath(const fs::path& vertexPath, const fs::path& fragmentPath) {
 
         CUP_FUNCTION();
 

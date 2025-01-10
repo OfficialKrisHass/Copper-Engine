@@ -13,6 +13,8 @@
 
 #include "CreateProjectWindow.h"
 
+#include "Utils.h"
+
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_internal.h>
@@ -201,7 +203,7 @@ namespace Launcher {
         } else
             OnWindowClose();
 #elif CU_WINDOWS
-        std::string editorPath = Utils::ReplaceSpaces(PersistentData::EditorPath());
+        std::string editorPath = Utils::ReplaceSpaces(PersistentData::EditorPath().string());
         std::string path = Utils::ReplaceSpaces(projectPath);
         std::string args = editorPath + " " + path;
 #ifdef CU_DEBUG

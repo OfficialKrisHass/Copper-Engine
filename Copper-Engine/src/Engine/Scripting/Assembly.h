@@ -18,9 +18,9 @@ namespace Copper::Scripting {
         friend Script;
 
         Assembly() = default;
-        Assembly(const std::string& path);
+        Assembly(const fs::path& path);
         
-        inline const std::string& Path() const { return m_path; }
+        inline const fs::path& Path() const { return m_path; }
 
         inline MonoAssembly* GetAssembly() const { return m_assembly; }
         inline MonoImage* GetImage() const { return m_image; }
@@ -28,13 +28,13 @@ namespace Copper::Scripting {
         inline operator bool() const { return m_assembly != nullptr; }
 
     private:
-        std::string m_path = "";
+        fs::path m_path = "";
 
         MonoAssembly* m_assembly = nullptr;
         MonoImage* m_image = nullptr;
 
-        void OpenImage(const std::string& path);
-        void LoadAssembly(const std::string& path);
+        void OpenImage(const fs::path& path);
+        void LoadAssembly(const fs::path& path);
 
     };
 

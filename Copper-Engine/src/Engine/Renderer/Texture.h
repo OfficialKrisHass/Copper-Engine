@@ -22,11 +22,11 @@ namespace Copper {
 
         inline Texture(const UVector2I& size, Format format = Format::RGB, uint8* pixels = nullptr) { Create(size.x, size.y, format, pixels); }
         inline Texture(uint32 width, uint32 height, Format format = Format::RGB, uint8* pixels = nullptr) { Create(width, height, format, pixels); }
-        inline Texture(const std::string& filePath, Format format = Format::RGB) { Create(filePath, format); }
+        inline Texture(const fs::path& filePath, Format format = Format::RGB) { Create(filePath, format); }
 
         inline void Create(const UVector2I& size, Format format = Format::RGB, uint8* pixels = nullptr) { Create(size.x, size.y, format, pixels); }
         void Create(uint32 width, uint32 height, Format format = Format::RGB, uint8* pixels = nullptr);
-        void Create(const std::string& filePath, Format format = Format::RGB);
+        void Create(const fs::path& filePath, Format format = Format::RGB);
 
         // Modificication
 

@@ -68,7 +68,7 @@ if [ $configuration == Release ]; then
     cp -r $editor_dir/lib/mono/lib/linux/mono $build_dir/lib
 
     echo
-    echo Copying etc
+    echo Copying misc
     cp $editor_dir/imgui.ini $build_dir
     echo
 fi

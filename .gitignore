@@ -43,6 +43,8 @@ mono_crash.*
 [Bb]uild/
 [Bb]uild[Ii]nt/
 [Cc]Make/
+[Dd]ebug/
+[Rr]elease/
 
 [Dd]ocs
 

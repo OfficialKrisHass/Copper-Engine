@@ -2,7 +2,7 @@
 
 #include "Base.h"
 
-class ImFont;
+struct ImFont;
 
 namespace Launcher::Fonts {
 

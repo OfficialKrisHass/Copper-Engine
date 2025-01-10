@@ -24,11 +24,11 @@ namespace Copper {
 
     }
 
-    static uint32 CreateShader(const std::string& path, uint32 type);
+    static uint32 CreateShader(const fs::path& path, uint32 type);
     static void CheckShaderCompile(uint32 id, uint32 type);
     static bool CheckShaderLink(uint32 id);
 
-    Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath) {
+    Shader::Shader(const fs::path& vertexPath, const fs::path& fragmentPath) {
 
         CUP_FUNCTION();
 
@@ -58,7 +58,7 @@ namespace Copper {
 
     }
 
-    uint32 CreateShader(const std::string& path, uint32 type) {
+    uint32 CreateShader(const fs::path& path, uint32 type) {
 
         CUP_FUNCTION();
 

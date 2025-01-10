@@ -390,7 +390,7 @@ namespace Copper::Renderer {
         RendererAPI::SetWireframe(value);
     
     }
-    void SetShaderPath(const std::string& vertexPath, const std::string& fragmentPath) {
+    void SetShaderPath(const fs::path& vertexPath, const fs::path& fragmentPath) {
         
         CUP_FUNCTION();
 

@@ -71,7 +71,7 @@ namespace Editor {
 
         // Scene
 
-        Scene* scene;
+        Scene* scene = nullptr;
         SceneMeta sceneMeta;
         fs::path scenePath;
         fs::path nextScenePath;
@@ -199,7 +199,8 @@ namespace Editor {
         }
 
         YAML::Node main;
-        try { main = YAML::LoadFile(ExecutableFolder() / "assets/EditorData.cu"); } catch (YAML::Exception e) {
+        try { main = YAML::LoadFile((ExecutableFolder() / "assets/EditorData.cu").string()); }
+        catch (YAML::Exception e) {
 
             Input::ErrorPopup("EditorData read failed", "Could not read the EditorData.cu file.\n\nIt shuld be located here:\n" + (ExecutableFolder() / "assets/EditorData.cu").string() + "\n\nError message:\n" + e.what());
             exit(1);
@@ -369,7 +370,7 @@ namespace Editor {
 
             data.gameAcceptingInput = true;
 
-            Input::SetCursorPosition(data.viewportCentre.x, data.viewportCentre.y);
+            Input::SetCursorPosition((float) data.viewportCentre.x, (float) data.viewportCentre.y);
             Input::SetCursorLocked(true);
             Input::SetCursorVisible(false);
 
@@ -952,6 +953,8 @@ namespace Editor {
 
                 Input::SetCursorLocked(false);
                 Input::SetCursorVisible(true);
+
+                break;
 
             }
             default: break;

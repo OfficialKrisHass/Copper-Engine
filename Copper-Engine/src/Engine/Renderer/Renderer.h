@@ -37,7 +37,7 @@ namespace Copper {
         void SetCamera(Camera* cam);
 
         void SetWireframe(bool value = true);
-        void SetShaderPath(const std::string& vertexPath, const std::string& fragmentPath);
+        void SetShaderPath(const fs::path &vertexPath, const fs::path& fragmentPath);
 
         bool GetWireframe();
 
@@ -66,7 +66,7 @@ namespace Copper {
         void SetCamera(Camera* cam);
 
         void SetWireframe(bool value);
-        void SetShaderPath(const std::string& vertexPath, const std::string& fragmentPath);
+        void SetShaderPath(const fs::path& vertexPath, const fs::path& fragmentPath);
 
     }
 

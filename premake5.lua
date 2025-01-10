@@ -100,7 +100,7 @@ project "Copper-Engine"
         "VERSION_MAJOR=0",
         "VERSION_MINOR=3",
         "VERSION_PATCH=0",
-        "VERSION_TWEAK=183",
+        "VERSION_TWEAK=184",
 
         "SCENE_VERSION=0",
 
@@ -243,71 +243,6 @@ project "Copper-APIBinder"
         defines "CU_RELEASE"
         runtime "Release"
         optimize "on"
-
-project "Copper-CppTesting"
-    location "Copper-CppTesting"
-    kind "ConsoleApp"
-    language "C++"
-    cppdialect "C++20"
-    staticruntime "on"
-
-    targetdir("Build/" .. outputDir .. "/%{prj.name}")
-    objdir("BuildInt/" .. outputDir .. "/%{prj.name}")
-
-    files {
-
-        "%{prj.name}/src/**.h",
-        "%{prj.name}/src/**.cpp",
-
-    }
-
-    includedirs {
-
-        "Copper-Engine/src",
-
-        "Copper-Engine/lib/spdlog",
-        "Copper-Engine/lib/ImGui",
-        "Copper-Engine/lib/ImGuizmo",
-        "Copper-Engine/lib/Copper-Math",
-        
-        "Copper-Engine/lib/GLM/include",
-        "Copper-Engine/lib/yaml-cpp/include",
-        "Copper-Engine/lib/assimp/include",
-
-    }
-
-    links {
-
-        "Copper-Engine",
-        "Copper-Engine/lib/mono/lib/%{cfg.buildcfg}/mono-2.0-sgen.lib",
-
-    }
-
-    filter "configurations:Debug"
-        defines "CU_DEBUG"
-        runtime "Debug"
-        symbols "on"
-
-        linkoptions {
-
-            '/NODEFAULTLIB:"libcmt.lib"',
-            '/NODEFAULTLIB:"msvcrt.lib"',
-            '/NODEFAULTLIB:"msvcrtd.lib"'
-
-        }
-
-    filter "configurations:Release"
-        defines "CU_RELEASE"
-        runtime "Release"
-        optimize "on"
-
-        linkoptions {
-
-            '/NODEFAULTLIB:"msvcrt.lib"',
-            '/NODEFAULTLIB:"libcmtd.lib"',
-            '/NODEFAULTLIB:"msvcrtd.lib"'
-
-        }
 
 project "Copper-Launcher"
     location "Copper-Launcher"

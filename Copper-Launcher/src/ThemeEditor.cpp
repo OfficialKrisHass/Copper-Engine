@@ -7,7 +7,6 @@
 #include <yaml-cpp/yaml.h>
 
 #include <fstream>
-#include <iostream>
 
 #define COLOR_EDIT(color, text) ImGui::ColorEdit3(text, (float*) &style->Colors[color])
 
@@ -190,8 +189,6 @@ namespace Launcher {
         READ_COLOR(ImGuiCol_DragDropTarget);
 
         disabled = colors["Disabled"].as<ImVec4>();
-
-        std::cout << disabled.x << "\n";
 
     }
 

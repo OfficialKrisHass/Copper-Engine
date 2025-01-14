@@ -1,37 +1,61 @@
 #include <iostream>
-#include <string>
+#include <string.h>
 
-#ifdef CU_LINUX
 #include <filesystem>
-#elif CU_WINDOWS
+#ifdef CU_WINDOWS 
 #include <Windows.h>
 #include <libloaderapi.h>
 #endif
 
-std::string execFolder = "";
+std::filesystem::path execFolder = "";
 
 namespace Launcher {
     
     extern int Entry(); // LauncherApp.cpp
-    const std::string& ExecutableFolder() { return execFolder; } // Base.h
+    const std::filesystem::path& ExecutableFolder() { return execFolder; } // Base.h
 
 }
 
+void GetExecutableFolder();
+
 int main(int argc, char* argv[]) {
 
+#ifdef CU_DEBUG
+    for (int i = 0; i < argc; i++) {
+        
+        if (i == i - 2 || strcmp(argv[i], "-a") != 0) continue;
+
+        i++;
+        execFolder = argv[i];
+
+    }
+#endif
+
+    if (execFolder.empty())
+        GetExecutableFolder();
+
+    std::cout << execFolder << "\n";
+
+    return Launcher::Entry();
+
+}
+
+void GetExecutableFolder() {
+
+    std::string tmp;
+
 #ifdef CU_LINUX
-    execFolder = std::filesystem::canonical("/proc/self/exe");
-    size_t pos = execFolder.find_last_of('/');
+    tmp = std::filesystem::canonical("/proc/self/exe");
+    size_t pos = tmp.find_last_of('/');
 #elif CU_WINDOWS
     CHAR path[MAX_PATH];
     GetModuleFileNameA(NULL, path, MAX_PATH);
 
-    execFolder = path;
+    tmp = path;
     size_t pos = execFolder.find_last_of('\\');
 #endif
-    execFolder.erase(pos, std::string::npos);
-    std::cout << execFolder << "\n";
+    tmp.erase(pos, std::string::npos);
 
-    return Launcher::Entry();
+    execFolder = tmp;
 
 }

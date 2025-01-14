@@ -11,12 +11,14 @@ call:set_configuration %1
 set launcher_dir=%~dp0..\..\Copper-Launcher
 set build_dir=%~dp0..\..\Build\windows-x86_64-%configuration%\Copper-Launcher
 
-echo Copying Launcher assets
-xcopy %launcher_dir%\assets %build_dir%\assets\ /s /e /q /y
+if "%configuration"=="Release" (
+    echo Copying Launcher assets
+    xcopy %launcher_dir%\assets %build_dir%\assets\ /s /e /q /y
 
-echo.
-echo Copying etc
-xcopy %launcher_dir%\imgui.ini %build_dir%\ /q /y
+    echo.
+    echo Copying etc
+    xcopy %launcher_dir%\imgui.ini %build_dir%\ /q /y
+)
 
 pause
 exit /b 0

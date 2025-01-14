@@ -31,11 +31,13 @@ apibinder:
 	@${MAKE} --no-print-directory -C CMake/$(CONFIGURATION)/Copper-APIBinder -f Makefile
 
 run:
-	@export LD_PRELOAD=libmonosgen-2.0.so # Hack since mono is retarded
-	@./Build/linux-x86_64-$(CONFIGURATION)/Copper-Launcher/Copper-Launcher
+ifeq ($(CONFIGURATION), Debug)
+	@./$(BUILD_DIR)/Copper-Launcher/Copper-Launcher -a $(CURDIR)/Copper-Launcher/
+else
+	@./$(BUILD_DIR)/Copper-Launcher/Copper-Launcher
+endif
 
 run-editor:
-	@export LD_PRELOAD=libmonosgen-2.0.so
 ifeq ($(CONFIGURATION), Debug)
 	@./$(BUILD_DIR)/Copper-Editor/Copper-Editor -a $(CURDIR)/Copper-Editor/
 else

@@ -1,10 +1,9 @@
 #include "ProjectEntry.h"
 
+#include "Dialogs.h"
+
+#include "ThemeEditor.h"
 #include "Fonts.h"
-
-#include "PersistentData.h"
-
-#include "Utils.h"
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <ImGui/imgui.h>
@@ -30,10 +29,14 @@ namespace Launcher {
 
         const ImGuiID id = ImGui::GetID(m_name.c_str());
         const ImVec2 size = { ImGui::GetContentRegionAvail().x, ProjectTabHeight };
+
+        const bool exists = fs::exists(m_directory / "Project.cu");
         const bool isHovered = heldID == ImGuiID(0) && ImGui::GetHoveredID() == id;
         const bool isHeld = heldID == id;
 
-        if (isHeld)
+        if (!exists)
+            ImGui::PushStyleColor(ImGuiCol_FrameBg, ColorDisabled());
+        else if (isHeld)
             ImGui::PushStyleColor(ImGuiCol_FrameBg, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
         else if (isHovered)
             ImGui::PushStyleColor(ImGuiCol_FrameBg, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
@@ -42,7 +45,7 @@ namespace Launcher {
         ImGui::BeginChildFrame(id, size, ImGuiWindowFlags_NoScrollbar);
         ImGui::PopStyleVar();
 
-        if (isHovered || isHeld)
+        if (!exists || isHovered || isHeld)
             ImGui::PopStyleColor();
 
         const ImRect tabRect = { ImGui::GetItemRectMin(), ImGui::GetItemRectMin() + size };
@@ -58,8 +61,11 @@ namespace Launcher {
         ImGui::PopFont();
 
         bool held = false;
-        if (ImGui::ButtonBehavior(tabRect, id, nullptr, &held, ImGuiButtonFlags_PressedOnClickRelease | ImGuiButtonFlags_PressedOnRelease))
+        if (ImGui::ButtonBehavior(tabRect, id, nullptr, &held, ImGuiButtonFlags_PressedOnClickRelease | ImGuiButtonFlags_PressedOnRelease)) {
+
             LaunchEditor(m_directory);
+
+        }
 
         if (held)
             heldID = id;

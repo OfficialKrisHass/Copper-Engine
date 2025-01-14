@@ -52,9 +52,11 @@ if [[ ! -d "$build_dir" ]]; then
   mkdir -p $build_dir
 fi
 
-echo Copying Launcher assets
-cp -r $launcher_dir/assets $build_dir
+if [ $configuration == Release ]; then
+    echo Copying Launcher assets
+    cp -r $launcher_dir/assets $build_dir
 
-echo
-echo Copying imgui.ini
-cp $launcher_dir/imgui.ini $build_dir
+    echo
+    echo Copying imgui.ini
+    cp $launcher_dir/imgui.ini $build_dir
+fi

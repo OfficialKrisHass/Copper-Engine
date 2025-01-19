@@ -34,4 +34,6 @@ namespace Launcher {
 
     void LaunchEditor(const std::string& projectPath);
 
+    void RemoveEntry(const class ProjectEntry& entry);
+
 }

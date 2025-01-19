@@ -50,6 +50,15 @@ namespace Launcher {
 
         const ImRect tabRect = { ImGui::GetItemRectMin(), ImGui::GetItemRectMin() + size };
 
+        if (ImGui::BeginPopupContextWindow("##Entry actions")) {
+
+            if (ImGui::MenuItem("Remove from list"))
+                RemoveEntry(*this);
+
+            ImGui::EndPopup();
+
+        }
+
         ImGui::PushFont(Fonts::SubtitleFont());
         ImGui::Text(m_name.c_str());
         ImGui::PopFont();
@@ -61,11 +70,8 @@ namespace Launcher {
         ImGui::PopFont();
 
         bool held = false;
-        if (ImGui::ButtonBehavior(tabRect, id, nullptr, &held, ImGuiButtonFlags_PressedOnClickRelease | ImGuiButtonFlags_PressedOnRelease)) {
-
+        if (ImGui::ButtonBehavior(tabRect, id, nullptr, &held, ImGuiButtonFlags_PressedOnClickRelease | ImGuiButtonFlags_PressedOnRelease))
             LaunchEditor(m_directory);
-
-        }
 
         if (held)
             heldID = id;

@@ -144,10 +144,8 @@ namespace Editor {
 
             if (ImGui::MenuItem("Folder", 0, false, GetProject().GetName() != "")) {
 
-                fs::path path = GetProject().GetAssetsPath() / m_projectRelativeDir;
-                path /= "New Folder";
-
-                fs::create_directories(path.string());
+                fs::path path = m_projectRelativeDir / "New Folder";
+                fs::create_directories(GetProject().GetAssetsPath() / path.string());
 
                 editingPath = path;
 
@@ -156,18 +154,19 @@ namespace Editor {
             if (ImGui::MenuItem("Script")) {
 
                 Utils::FileFromTemplate("Script.cs", (GetProject().GetAssetsPath() / m_projectRelativeDir / "Script.cs").string(), {{"ScriptName", "Script"}});
-                editingPath = GetProject().GetAssetsPath() / m_projectRelativeDir / "Script.cs";
+
+                editingPath = m_projectRelativeDir / "Script.cs";
 
             }
             if (ImGui::MenuItem("Material")) {
 
                 fs::path path = m_projectRelativeDir / "Material.mat";
-
                 MaterialAsset mat = AssetStorage::CreateAsset<Material>();
-                editingPath = path;
 
                 AssetFile::SerializeMaterial(GetProject().GetAssetsPath() / path, mat);
                 AssetMeta::Serialize((GetProject().GetAssetsPath() / path).string() + ".cum", mat.AssetUUID());
+
+                editingPath = path;
 
             }
 
@@ -217,7 +216,7 @@ namespace Editor {
         if (ImGui::IsItemClicked())
             clickedFile = path;
         if (clickedFile == path && ImGui::IsItemHovered() && ImGui::IsMouseReleased(0))
-            Properties::SetSelectedFile(path);
+            SetSelectedFile(path);
 
         if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
 
@@ -277,8 +276,8 @@ namespace Editor {
                 extension == ".mat")
                 fs::rename(fullPath + ".cum", newFullPath + ".cum");
 
-            if (Properties::GetSelectedFile() == path)
-                Properties::SetSelectedFile(editingPath);
+            if (GetSelectedFile() == path)
+                SetSelectedFile(editingPath);
 
             editingPath = "";
 
@@ -288,7 +287,7 @@ namespace Editor {
 
     void FileBrowser::NewScript(const Copper::fs::path& path) {
 
-        std::ifstream templ("assets/Templates/Script.cs.cut");
+        std::ifstream templ(ExecutableFolder() / "assets/Templates/Script.cs.cut");
         std::ofstream out(path / "Script.cs");
 
         out << templ.rdbuf();

@@ -1,1 +1,1 @@
-Last Project: /home/jakub/programming/Copper-Engine/Dev Projects/TemplateTest
+Last Project: /home/jakub/programming/Copper-Engine/Dev Projects/First-Game

@@ -58,7 +58,7 @@ namespace Editor {
 
         // Core Data
 
-        EditorState state = Edit;
+        EditorState state = EditorState::Edit;
         Window window;
         std::string title;
 
@@ -104,6 +104,11 @@ namespace Editor {
         FileBrowser fileBrowser;
         Console console;
         ThemeEditor themeEditor;
+
+        // Selected assets
+
+        Entity selectedEntity;
+        fs::path selectedFile = "";
 
         // Theme Editor
 
@@ -366,7 +371,7 @@ namespace Editor {
 
         ImGui::Image(reinterpret_cast<void*>((uint64) GetMainFBO().GetColorTextureID()), windowSize, ImVec2 {0, 1}, ImVec2 {1, 0});
 
-        if (data.state == Play && !data.gameAcceptingInput && ImGui::IsItemClicked()) {
+        if (data.state == EditorState::Play && !data.gameAcceptingInput && ImGui::IsItemClicked()) {
 
             data.gameAcceptingInput = true;
 
@@ -436,7 +441,7 @@ namespace Editor {
         //Gizmos that I stol... I mean, taken inspiration from The Chernos Game Engine series
         //Yeah, I definitely didn't copy this entire chunk of code that I don't understand but
         //magically works, naaah.
-        InternalEntity* selectedObj = SceneHierarchy::GetSelectedEntity();
+        InternalEntity* selectedObj = data.selectedEntity;
         if (selectedObj) {
 
             ImGuizmo::SetOrthographic(false);
@@ -511,12 +516,12 @@ namespace Editor {
         ImVec2 buttonSize = ImVec2(25, 25);
         ImGui::SetCursorPosX((ImGui::GetWindowSize().x - buttonSize.x) * 0.5f);
 
-        if (data.state == Edit) {
+        if (data.state == EditorState::Edit) {
 
             if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64) data.playIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project)
                 StartEditorRuntime();
 
-        } else if (data.state == Play) {
+        } else if (data.state == EditorState::Play) {
 
             if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64) data.stopIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project)
                 StopEditorRuntime();
@@ -650,7 +655,7 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        data.state = Play;
+        data.state = EditorState::Play;
 
         SceneSerializer::Serialize(data.scene, ExecutableFolder() / "assets/Temp/scene_lock.copper");
         Renderer::Restart();
@@ -660,14 +665,11 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        data.state = Edit;
-        Entity savedSelectedEntity = SceneHierarchy::GetSelectedEntity();
+        data.state = EditorState::Edit;
 
         data.scene->Cleanup();
         SceneSerializer::Deserialize(data.scene, ExecutableFolder() / "assets/Temp/scene_lock.copper");
         data.scene->Initialize();
-
-        SceneHierarchy::SetSelectedEntity(savedSelectedEntity);
 
         data.gameAcceptingInput = false;
 
@@ -893,7 +895,7 @@ namespace Editor {
 
             case KeyCode::S: {
 
-                if (data.state == Play) break;
+                if (data.state == EditorState::Play) break;
                 if (control && shift) {
 
                     data.project.Save();
@@ -911,7 +913,7 @@ namespace Editor {
             }
             case KeyCode::B: {
 
-                if (data.state == Play || !control) break;
+                if (data.state == EditorState::Play || !control) break;
 
                 data.project.BuildScripts();
 
@@ -920,7 +922,7 @@ namespace Editor {
             }
             case KeyCode::Q: {
 
-                if (data.state == Play || rightClick) break;
+                if (data.state == EditorState::Play || rightClick) break;
 
                 data.project.SetGizmoType(ImGuizmo::TRANSLATE);
 
@@ -929,7 +931,7 @@ namespace Editor {
             }
             case KeyCode::W: {
 
-                if (data.state == Play || rightClick) break;
+                if (data.state == EditorState::Play || rightClick) break;
 
                 data.project.SetGizmoType(ImGuizmo::ROTATE);
 
@@ -938,7 +940,7 @@ namespace Editor {
             }
             case KeyCode::E: {
 
-                if (data.state == Play || rightClick) break;
+                if (data.state == EditorState::Play || rightClick) break;
 
                 data.project.SetGizmoType(ImGuizmo::SCALE);
 
@@ -947,7 +949,7 @@ namespace Editor {
             }
             case KeyCode::F1: {
 
-                if (data.state == Edit || !shift) break;
+                if (data.state == EditorState::Edit || !shift) break;
 
                 data.gameAcceptingInput = false;
 
@@ -997,9 +999,25 @@ namespace Editor {
 
     SceneMeta* GetSceneMeta() { return &data.sceneMeta; }
 
+    Entity& GetSelectedEntity() { return data.selectedEntity; }
+    fs::path& GetSelectedFile() { return data.selectedFile; }
+
+    void SetSelectedEntity(const Copper::Entity& value) {
+
+        data.selectedEntity = value;
+        data.selectedFile = "";
+
+    }
+    void SetSelectedFile(const Copper::fs::path& value) {
+
+        data.selectedFile = value;
+        data.selectedEntity = nullptr;
+
+    }
+
     UVector2I GetViewportSize() { return data.viewportSize; }
 
-    bool IsRuntimeRunning() { return data.state == Play; }
+    bool IsRuntimeRunning() { return data.state == EditorState::Play; }
 
     // TODO: This feature is not working, has not been working for the past year, isn't
     // even used in 90% of the places it should be, and also is done in the stupidest way imaginable.
@@ -1008,7 +1026,7 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        if (data.state == Play) return;
+        if (data.state == EditorState::Play) return;
 
         data.changes = value;
 

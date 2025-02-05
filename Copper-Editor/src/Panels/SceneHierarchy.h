@@ -2,6 +2,7 @@
 
 #include "Copper.h"
 
+#include "Core/EditorApp.h"
 #include "Core/SceneMeta.h"
 
 #include "Panels/Panel.h"
@@ -13,21 +14,16 @@ namespace Editor {
     public:
         SceneHierarchy() : Panel("Scene Hierarchy") {}
         
-        // Getters
-        inline static Copper::Entity GetSelectedEntity() { return m_selectedEntity; }
-
         // Setters
 
         inline static void SetScene(Copper::Scene* scene) {
             
             m_scene = scene;
-            m_selectedEntity = nullptr;
+            SetSelectedEntity(nullptr);
         
         }
-        inline static void SetSelectedEntity(Copper::InternalEntity* entity) { m_selectedEntity = entity; }
 
     private:
-        static Copper::Entity m_selectedEntity;
         static Copper::Scene* m_scene;
 
         virtual void UI() override;

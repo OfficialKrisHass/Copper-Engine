@@ -8,7 +8,9 @@ namespace Editor {
 
     struct SceneMeta;
 
-    enum EditorState {
+    struct SelectedAsset;
+
+    enum class EditorState {
 
         Edit, Play
 
@@ -27,6 +29,12 @@ namespace Editor {
 
     SceneCamera& GetSceneCam();
     SceneMeta* GetSceneMeta();
+
+    Copper::Entity& GetSelectedEntity();
+    Copper::fs::path& GetSelectedFile();
+
+    void SetSelectedEntity(const Copper::Entity& value);
+    void SetSelectedFile(const Copper::fs::path& value);
 
     bool IsRuntimeRunning();
 

@@ -11,24 +11,9 @@ namespace Editor {
     public:
         Properties() : Panel("Properties") {}
 
-        static inline void SetSelectedEntity(Copper::Entity entity) {
-            
-            m_selectedEntity = entity;
-            m_selectedFile = "";
-
-        }
-        static inline void SetSelectedFile(const Copper::fs::path& path) {
-            
-            m_selectedFile = path;
-            m_selectedEntity = nullptr;
-        
-        }
-
-        static inline const Copper::fs::path& GetSelectedFile() { return m_selectedFile; }
-    
     private:
-        static Copper::Entity m_selectedEntity;
-        static Copper::fs::path m_selectedFile;
+        static Copper::Entity* m_selectedEntity;
+        static Copper::fs::path* m_selectedFile;
 
         virtual void UI() override;
 

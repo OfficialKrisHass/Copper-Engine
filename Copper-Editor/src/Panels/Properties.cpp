@@ -31,8 +31,8 @@ namespace Editor {
 
     static const char* s_lightTypes[] = { "Point", "Directional" };
 
-    Entity Properties::m_selectedEntity = nullptr;
-    fs::path Properties::m_selectedFile = "";
+    Entity* Properties::m_selectedEntity = &GetSelectedEntity();
+    fs::path* Properties::m_selectedFile = &GetSelectedFile();
 
     template<typename T> static bool DrawComponent(const std::string& name, T* component);
     static bool DrawComponent(const std::string& name, Transform* component);
@@ -42,9 +42,9 @@ namespace Editor {
         CUP_FUNCTION();
         CUP_START_FRAME("Properties");
 
-        if (m_selectedEntity && m_selectedFile.empty())
+        if (m_selectedEntity->ID() != INVALID_ENTITY_ID && m_selectedFile->empty())
             RenderEntity();
-        else if (!m_selectedFile.empty() && !m_selectedEntity)
+        else if (!m_selectedFile->empty() && m_selectedEntity->ID() == INVALID_ENTITY_ID)
             RenderFile();
 
         CUP_END_FRAME();
@@ -53,7 +53,9 @@ namespace Editor {
 
     void Properties::RenderEntity() {
 
-        InternalEntity* entity = m_selectedEntity;
+        if (m_selectedEntity->ID() == INVALID_ENTITY_ID) return;
+
+        InternalEntity* entity = *m_selectedEntity;
 
         char buffer[128] = {};
         std::strncpy(buffer, entity->name.c_str(), sizeof(buffer));
@@ -179,10 +181,12 @@ namespace Editor {
     }
     void Properties::RenderFile() {
 
-        ImGui::Text(m_selectedFile.string().c_str());
+        if (m_selectedFile->empty()) return;
+
+        ImGui::Text(m_selectedFile->string().c_str());
         ImGui::Separator();
 
-        std::string extension = m_selectedFile.extension().string();
+        std::string extension = m_selectedFile->extension().string();
 
         if (extension != ".mat") {
 
@@ -190,13 +194,13 @@ namespace Editor {
             return;
 
         }
-        const UUID& asset = ProjectAssetDatabase::GetAssetFromPath(GetProject().GetAssetsPath() / m_selectedFile);
+        const UUID& asset = ProjectAssetDatabase::GetAssetFromPath(GetProject().GetAssetsPath() / *m_selectedFile);
 
         if (asset == UUID::GetInvalid()) {
 
-            LogWarn("Selected File is not found in the AssetFileDatabase, try refreshing.\n\tPath: {}", GetProject().GetAssetsPath() / m_selectedFile);
+            LogWarn("Selected File is not found in the AssetFileDatabase, try refreshing.\n\tPath: {}", GetProject().GetAssetsPath() / *m_selectedFile);
 
-            m_selectedFile = "";
+            SetSelectedFile("");
             return;
 
         }
@@ -407,7 +411,7 @@ namespace Editor {
 
     void Properties::RenderMaterial(const MaterialAsset& material) {
 
-        const std::string name = m_selectedFile.filename().string();
+        const std::string name = m_selectedFile->filename().string();
         ImGui::Text(name.c_str());
         ImGui::NewLine();
 
@@ -418,7 +422,7 @@ namespace Editor {
         if (UI::EditFloat("Tiling", &material->tiling)) changed = true;
 
         if (changed)
-            AssetFile::SerializeMaterial(GetProject().GetAssetsPath() / m_selectedFile, material);
+            AssetFile::SerializeMaterial(GetProject().GetAssetsPath() / *m_selectedFile, material);
 
     }
 

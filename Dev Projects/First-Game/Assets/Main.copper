@@ -1,0 +1,72 @@
+Version: 0
+Name: ""
+Entities:
+  0:
+    Name: Ground
+    Transform:
+      Position: [0, 0, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [10, 1, 10]
+      Parent: 4294967295
+      Children:
+        []
+    Mesh Renderer:
+      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
+      Material: 00000000-0000-0000-0000-000000000000
+    Rigid Body:
+      Mass: 1
+      Static: true
+      Gravity: false
+      Lock Mask: 0
+    Box Collider:
+      Trigger: false
+      Center: [0, 0, 0]
+      Size: [1, 1, 1]
+  1:
+    Name: Light
+    Transform:
+      Position: [0, 0, 0]
+      Rotation: [0.924098909, -0.260623187, -0.269000322, -0.0758660436]
+      Scale: [1, 1, 1]
+      Parent: 4294967295
+      Children:
+        []
+    Light:
+      Type: 1
+      Color: [1, 1, 1, 1]
+      Intensity: 1
+  2:
+    Name: Camera
+    Transform:
+      Position: [0, 0.300000012, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent: 3
+      Children:
+        []
+    Camera:
+      Fov: 90
+      Near Plane: 0.100000001
+      Far Plane: 1000
+      Size: [1920, 960]
+  3:
+    Name: Player
+    Transform:
+      Position: [0, 2.79474354, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 2, 1]
+      Parent: 4294967295
+      Children:
+        - 2
+    Mesh Renderer:
+      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
+      Material: 00000000-0000-0000-0000-000000000000
+    Rigid Body:
+      Mass: 1
+      Static: false
+      Gravity: true
+      Lock Mask: 56
+    Box Collider:
+      Trigger: false
+      Center: [0, 0, 0]
+      Size: [1, 1, 1]

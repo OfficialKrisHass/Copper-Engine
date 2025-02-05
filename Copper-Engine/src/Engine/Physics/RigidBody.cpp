@@ -103,6 +103,9 @@ namespace Copper {
         CUP_FUNCTION();
 
         if (m_static) return;
+
+        CU_ASSERT(m_actor, "m_actor is nullptr!");
+        CU_ASSERT(m_collider, "m_collider is nullptr!");
     
         GetTransform()->SetPosition(PhysXToCopper(m_actor->getGlobalPose().p) + m_collider->m_center);
         GetTransform()->SetRotation(PhysXToCopper(m_actor->getGlobalPose().q));

@@ -72,7 +72,7 @@ namespace Editor {
         if (ImGui::BeginDragDropTarget()) {
 
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE"))
-                entity->GetTransform()->AddChild(((InternalEntity*) payload->Data)->GetTransform());
+                entity->GetTransform()->AddChild(GetEntityFromID(*static_cast<uint32*>(payload->Data))->GetTransform());
 
             ImGui::EndDragDropTarget();
 

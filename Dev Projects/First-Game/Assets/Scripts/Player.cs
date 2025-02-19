@@ -3,6 +3,6 @@ using Copper;
 
 public class Player : Component {
 
-    [ShowInEditor] private float speed = 1.0f;
+    [ShowInEditor] private float speed = 2.0f;
 
 }

@@ -15,7 +15,7 @@ list(TRANSFORM sources PREPEND ${PROJECT_SOURCE_DIR}/Copper-Editor/)
 list(APPEND includeDirs lib/spdlog lib/ImGui lib/ImGuizmo lib/Copper-Math lib/GLM/include lib/yaml-cpp/include lib/assimp/include)
 list(TRANSFORM includeDirs PREPEND ../Copper-Engine/)
 
-list(APPEND includeDirs ../Copper-Engine/src ../Copper-Engine/lib/uuid ${PROJECT_BINARY_DIR}/Copper-Engine/src lib/FileWatch src)
+list(APPEND includeDirs ../Copper-Engine/src ../Copper-Engine/lib/uuid ${PROJECT_BINARY_DIR}/Copper-Engine/src lib/Filewatch src)
 
 # Defines
 list(APPEND defines CU_EDITOR INCLUDE_GLM _CRT_SECURE_NO_WARNING)

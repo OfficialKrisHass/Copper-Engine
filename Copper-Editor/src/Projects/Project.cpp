@@ -73,9 +73,7 @@ namespace Editor {
 
         Scripting::Load((path / "Binaries/" / (m_name + ".dll")).string());
 
-        FileWatcher::Stop();
-        FileWatcher::SetDirectory(GetAssetsPath());
-        FileWatcher::Start();
+        FileWatcher::Start(GetAssetsPath());
 
         m_changes = false;
 

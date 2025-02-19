@@ -4,11 +4,11 @@
 
 namespace Editor::FileWatcher {
 
-    enum class FileChangeType : Copper::uint32 {
+    enum class FileChangeType : Copper::uint8 {
 
-        Created,
-        Changed,
+        Created = 0,
         Deleted,
+        Changed,
 
         RenamedOldName,
         RenamedNewName,
@@ -22,8 +22,6 @@ namespace Editor::FileWatcher {
     void PollChanges();
     void Stop();
 
-    void SetDirectory(const Copper::fs::path& directory);
-    
     void AddCallback(Callback callback);
 
 }

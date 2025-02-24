@@ -36,6 +36,15 @@ namespace Editor::FileWatcher {
         data.directory = directory;
         data.fw = std::make_unique<filewatch::FileWatch<std::string>>(directory.string(), FileChangeCallback);
 
+        for (const fs::directory_entry& entry : fs::recursive_directory_iterator(directory)) {
+
+            if (!entry.is_directory()) continue;
+
+            const fs::path& path = entry.path();
+            data.fw->AddDirectory(path, fs::relative(path, data.directory));
+
+        }
+
     }
     void Stop() {
 

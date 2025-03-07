@@ -10,6 +10,8 @@
 
 #include "Panels/Properties.h"
 
+#include "UI/NewFileWindow.h"
+
 #include "Engine/AssetStorage/AssetStorage.h"
 
 #include "Engine/Utilities/FileTemplate.h"
@@ -140,9 +142,11 @@ namespace Editor {
 
         if (!ImGui::BeginPopupContextWindow("##File Browser")) return;
 
-        if (ImGui::BeginMenu("New")) {
+        if (ImGui::MenuItem("New", nullptr, false, GetProject())) {
 
-            if (ImGui::MenuItem("Folder", 0, false, GetProject().GetName() != "")) {
+            NewFileWindow::Open();
+
+            /*if (ImGui::MenuItem("Folder", 0, false, GetProject().GetName() != "")) {
 
                 fs::path path = m_projectRelativeDir / "New Folder";
                 fs::create_directories(GetProject().GetAssetsPath() / path.string());
@@ -168,9 +172,7 @@ namespace Editor {
 
                 editingPath = path;
 
-            }
-
-            ImGui::EndMenu();
+            }*/
 
         }
         

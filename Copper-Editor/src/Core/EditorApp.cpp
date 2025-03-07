@@ -114,6 +114,11 @@ namespace Editor {
 
         bool themeEditorOpen = false;
 
+        // Debug only
+#ifdef CU_DEBUG
+        bool imguiDemoWindow = false;
+#endif
+
     };
 
     EditorData data;
@@ -272,6 +277,12 @@ namespace Editor {
         Profiler::UIRender();
 
         RenderToolbar();
+
+#ifdef CU_DEBUG
+        if (data.imguiDemoWindow)
+            ImGui::ShowDemoWindow(&data.imguiDemoWindow);
+#endif
+
         ImGui::End(); //Dockspace
 
         CUP_END_FRAME();
@@ -640,6 +651,13 @@ namespace Editor {
 
                 if (ImGui::MenuItem("Profiler"))
                     Profiler::Open();
+
+#ifdef CU_DEBUG
+                ImGui::Separator();
+
+                if (ImGui::MenuItem("ImGui demo Window"))
+                    data.imguiDemoWindow = true;
+#endif
 
                 ImGui::EndMenu();
 

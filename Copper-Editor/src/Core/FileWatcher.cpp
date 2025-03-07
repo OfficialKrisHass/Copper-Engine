@@ -14,14 +14,14 @@ namespace Editor::FileWatcher {
         std::unique_ptr<filewatch::FileWatch<std::string>> fw = nullptr;
 
         std::mutex mutex;
-        std::vector<std::pair<std::string, FileChangeType>> changes;
+        std::vector<std::tuple<std::string, FileChangeType, int>> changes;
 
         std::vector<Callback> callbacks;
 
     };
     FilewatchData data;
 
-    static void FileChangeCallback(const std::string& directory, const std::string& name, const filewatch::Event changeType);
+    static void FileChangeCallback(const std::string& directory, const std::string& name, const filewatch::Event changeType, int cookie);
 
     void Start() { Start(data.directory); }
     void Start(const Copper::fs::path &directory) {
@@ -60,21 +60,30 @@ namespace Editor::FileWatcher {
 
         std::lock_guard<std::mutex> lock(data.mutex);
 
+        std::unordered_map<int, std::string> renameMap;
+
         for (const auto& it : data.changes) {
 
-            Log("FileChange: '{}', type: {}", it.first, static_cast<uint8>(it.second));
+            const std::string& path = std::get<0>(it);
+            const FileChangeType type = std::get<1>(it);
+            const int cookie = std::get<2>(it);
 
-            if (fs::is_directory(data.directory / it.first)) {
+            if (type == FileChangeType::RenamedOldName)
+                renameMap[cookie] = path;
+            
+            if (fs::is_directory(data.directory / path)) {
 
-                if (it.second == FileChangeType::Created)
-                    data.fw->AddDirectory(data.directory / it.first, it.first);
-                if (it.second == FileChangeType::Deleted)
-                    data.fw->RemoveDirectory(it.first);
+                if (type == FileChangeType::Created)
+                    data.fw->AddDirectory(data.directory / path, path);
+                else if (type == FileChangeType::Deleted)
+                    data.fw->RemoveDirectory(path);
+                else if (type == FileChangeType::RenamedNewName)
+                    data.fw->UpdateDirectory(renameMap[cookie], path);
 
             }
 
             for (const Callback& callback : data.callbacks)
-                callback(it.first, it.second);
+                callback(path, type);
 
         }
 
@@ -84,14 +93,14 @@ namespace Editor::FileWatcher {
 
     void AddCallback(Callback callback) { data.callbacks.push_back(callback); }
 
-    void FileChangeCallback(const std::string& directory, const std::string& name, const filewatch::Event changeType) {
+    void FileChangeCallback(const std::string& directory, const std::string& name, const filewatch::Event changeType, int cookie) {
 
         CUP_FUNCTION();
 
         std::lock_guard<std::mutex> lock(data.mutex);
 
         const fs::path path = fs::path(directory) / name;
-        data.changes.push_back({ path, static_cast<FileChangeType>(changeType) });
+        data.changes.push_back({ path, static_cast<FileChangeType>(changeType), cookie });
 
     }
 

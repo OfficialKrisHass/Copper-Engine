@@ -97,7 +97,7 @@ namespace filewatch {
 		removed,
 		modified,
 		renamed_old,
-		renamed_new
+		renamed_new,
 	};
       
       template<typename StringType>
@@ -176,9 +176,15 @@ namespace filewatch {
 		typedef std::basic_string<C, std::char_traits<C>> UnderpinningString;
 		typedef std::basic_regex<C, std::regex_traits<C>> UnderpinningRegex;
 
+#ifdef WIN32
+        typedef std::function<void(const StringType&, const StringType&, const Event)> CallbackFunc;
+#elif __unix__
+        typedef std::function<void(const StringType&, const StringType&, const Event, int)> CallbackFunc;
+#endif
+
 	public:
 
-		FileWatch(StringType path, UnderpinningRegex pattern, std::function<void(const StringType& dir, const StringType& name, const Event event_type)> callback) :
+		FileWatch(StringType path, UnderpinningRegex pattern, CallbackFunc callback) :
 			_path(absolute_path_of(path)),
 			_pattern(pattern),
 			_callback(callback),
@@ -187,7 +193,7 @@ namespace filewatch {
 			init();
 		}
 
-		FileWatch(StringType path, std::function<void(const StringType& dir, const StringType& name, const Event event_type)> callback) :
+		FileWatch(StringType path, CallbackFunc callback) :
 			FileWatch<StringType>(path, UnderpinningRegex(_regex_all), callback) {}
 
 		~FileWatch() {
@@ -212,18 +218,37 @@ namespace filewatch {
 		FileWatch<StringType>(FileWatch<StringType>&&) = delete;
 		FileWatch<StringType>& operator=(FileWatch<StringType>&&) & = delete;
 
+#if __unix__
         void AddDirectory(const StringType& dir, const StringType& subdir) {
 
-#if __unix__
-            int watch = inotify_add_watch(_directory.folder, dir.c_str(), IN_MODIFY | IN_CREATE | IN_DELETE);
+            int watch = inotify_add_watch(_directory.folder, dir.c_str(), _listen_filters);
             _directory.subWatches[watch] = subdir;
-#endif
+
+        }
+        void UpdateDirectory(const StringType& oldDir, const StringType& newDir) {
+
+            int watch = -1;
+            for (const auto& it : _directory.subWatches) {
+
+                if (it.second != oldDir) continue;
+
+                watch = it.first;
+                break;
+
+            }
+            if (watch == -1) {
+
+                LogError("Could not get watch from '{}'", oldDir);
+                return;
+
+            }
+
+            _directory.subWatches[watch] = newDir;
 
         }
         void RemoveDirectory(const StringType& dir) {
 
-#if __unix__
-            int watch = 0;
+            int watch = -1;
             for (const auto& it : _directory.subWatches) {
 
                 if (it.second != dir) continue;
@@ -233,11 +258,13 @@ namespace filewatch {
 
             }
 
+            if (watch == -1) return;
+
             inotify_rm_watch(_directory.folder, watch);
             _directory.subWatches.erase(watch);
-#endif
 
         }
+#endif
 
 	private:
 		static constexpr C _regex_all[] = { '.', '*', '\0' };
@@ -258,13 +285,17 @@ namespace filewatch {
 		// only used if watch a single file
 		StringType _filename;
 
-		std::function<void(const StringType& directory, const StringType& name, const Event event_type)> _callback;
+		CallbackFunc _callback;
 
 		std::thread _watch_thread;
 
 		std::condition_variable _cv;
 		std::mutex _callback_mutex;
-		std::vector<std::pair<PathParts, Event>> _callback_information;
+#ifdef WIN32
+        std::vector<std::pair<PathParts, Event>> _callback_information;
+#elif __unix__
+		std::vector<std::tuple<PathParts, Event, int>> _callback_information;
+#endif
 		std::thread _callback_thread;
 
 		std::promise<void> _running;
@@ -303,7 +334,7 @@ namespace filewatch {
 
 		FolderInfo  _directory;
 
-		const std::uint32_t _listen_filters = IN_MODIFY | IN_CREATE | IN_DELETE;
+		static constexpr std::uint32_t _listen_filters = IN_MODIFY | IN_CREATE | IN_DELETE | IN_MOVED_FROM | IN_MOVED_TO;
 
 		const static std::size_t event_size = (sizeof(struct inotify_event));
 #endif // __unix__
@@ -632,7 +663,7 @@ namespace filewatch {
 				}
 			}();
 
-			const auto watch = inotify_add_watch(folder, watch_path.c_str(), IN_MODIFY | IN_CREATE | IN_DELETE);
+			const auto watch = inotify_add_watch(folder, watch_path.c_str(), _listen_filters);
 			if (watch < 0) 
 			{
 				throw std::system_error(errno, std::system_category());
@@ -651,7 +682,7 @@ namespace filewatch {
 				if (length > 0) 
 				{
 					int i = 0;
-					std::vector<std::pair<PathParts, Event>> parsed_information;
+					std::vector<std::tuple<PathParts, Event, int>> parsed_information;
 					while (i < length) 
 					{
 						struct inotify_event *event = reinterpret_cast<struct inotify_event *>(&buffer[i]); // NOLINT
@@ -661,18 +692,19 @@ namespace filewatch {
                             const StringType directory{ _directory.subWatches[event->wd] };
 							if (pass_filter(changed_file))
 							{
-								if (event->mask & IN_CREATE) 
-								{
-									parsed_information.emplace_back(PathParts(directory, changed_file), Event::added);
-								}
-								else if (event->mask & IN_DELETE) 
-								{
-									parsed_information.emplace_back(PathParts(directory, changed_file), Event::removed);
-								}
-								else if (event->mask & IN_MODIFY) 
-								{
-									parsed_information.emplace_back(PathParts(directory, changed_file), Event::modified);
-								}
+                                Event type = Event::added;
+								if (event->mask & IN_CREATE)
+                                    type = Event::added;
+								else if (event->mask & IN_DELETE)
+                                    type = Event::removed;
+								else if (event->mask & IN_MODIFY)
+                                    type = Event::modified;
+                                else if (event->mask & IN_MOVED_FROM)
+                                    type = Event::renamed_old;
+                                else if (event->mask & IN_MOVED_TO)
+                                    type = Event::renamed_new;
+
+                                parsed_information.emplace_back(PathParts(directory, changed_file), type, event->cookie);
 							}
 						}
 						i += event_size + event->len;
@@ -1258,7 +1290,7 @@ namespace filewatch {
 					if (_callback) {
 						try
 						{
-							_callback(file.first.directory, file.first.filename, file.second);
+                            _callback(std::get<0>(file).directory, std::get<0>(file).filename, std::get<1>(file), std::get<2>(file));
 						}
 						catch (const std::exception&)
 						{

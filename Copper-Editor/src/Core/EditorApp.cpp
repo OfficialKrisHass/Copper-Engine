@@ -34,6 +34,8 @@
 #include "Panels/Profiler.h"
 #include "Panels/ThemeEditor.h"
 
+#include "UI/NewModal.h"
+
 #include "Viewport/SceneCamera.h"
 
 #include <GLM/gtc/type_ptr.hpp>
@@ -272,6 +274,8 @@ namespace Editor {
         if (data.themeEditorOpen) data.themeEditor.UIRender();
         RenderGamePanel();
         RenderViewport();
+
+        NewModal::UIRender();
 
         ProjectSettings::UIRender();
         Profiler::UIRender();

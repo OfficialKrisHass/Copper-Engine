@@ -10,7 +10,7 @@
 
 #include "Panels/Properties.h"
 
-#include "UI/NewFileWindow.h"
+#include "UI/NewModal.h"
 
 #include "Engine/AssetStorage/AssetStorage.h"
 
@@ -42,6 +42,8 @@ namespace Editor {
 
     Texture directoryIcon;
     Texture fileIcon;
+    
+    bool openNewModal = false;
 
     void FileBrowser::Initialize() {
 
@@ -114,6 +116,16 @@ namespace Editor {
 
         ImGui::Columns(1);
 
+        // New modal
+
+        if (openNewModal) {
+
+            NewModal::Open();
+            openNewModal = false;
+
+        }
+        NewModal::UIRender();
+
         CUP_END_FRAME();
         
     }
@@ -144,7 +156,7 @@ namespace Editor {
 
         if (ImGui::MenuItem("New", nullptr, false, GetProject())) {
 
-            NewFileWindow::Open();
+            openNewModal = true;
 
             /*if (ImGui::MenuItem("Folder", 0, false, GetProject().GetName() != "")) {
 

@@ -1,12 +1,19 @@
 #include "NewModal.h"
 
+#include "UI/NewModalData.h"
+
 #include <ImGui/imgui.h>
+
+#define NAME_MAX_LENGTH 64
 
 using namespace Copper;
 
 namespace Editor::NewModal {
 
-    bool open = false;
+    static bool open = false;
+    static uint32 selectedOption = 0;
+
+    static char nameInput[NAME_MAX_LENGTH];
 
     void Options();
     void Details();
@@ -26,15 +33,13 @@ namespace Editor::NewModal {
         ImGui::SameLine();
         Details();
 
-        ImGui::Text("Input the name of then ew thing:");
+        ImGui::Text("Name:");
+        ImGui::SameLine();
+        ImGui::InputText("##Name", nameInput, NAME_MAX_LENGTH);
 
         ImGui::EndPopup();
 
     }
-
-    static const char* options[] = { "Folder", "Script", "Material" };
-    static constexpr int optionsCount = IM_ARRAYSIZE(options);
-    static int selectedOption = -1;
 
     void Options() {
 
@@ -46,12 +51,12 @@ namespace Editor::NewModal {
         ImVec2 size = ImVec2(-FLT_MIN, ImGui::GetContentRegionAvail().y);
         if (ImGui::BeginListBox("##OptionsList", size)) {
 
-            for (int i = 0; i < optionsCount; i++) {
+            for (int i = 0; i < Data::optionsCount; i++) {
 
                 ImGui::PushID(i);
 
                 const bool selected = i == selectedOption;
-                if (ImGui::Selectable(options[i], selected))
+                if (ImGui::Selectable(Data::options[i], selected))
                     selectedOption = i;
 
                 if (selected)
@@ -76,7 +81,7 @@ namespace Editor::NewModal {
 
         ImGui::BeginChild("##Details", ImVec2(0, 90.0f * ImGui::GetContentRegionAvail().y / 100.0f));
 
-        ImGui::Text("Here is some info about the selected option");
+        ImGui::TextWrapped(Data::optionsDetails[selectedOption]);
 
         ImGui::EndChild();
 

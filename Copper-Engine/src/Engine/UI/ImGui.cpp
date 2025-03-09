@@ -3,13 +3,9 @@
 
 #include "Engine/Core/Engine.h"
 
-#define IMGUI_IMPL_OPENGL_LOADER_GLAD
-#include <imgui_impl_opengl3.cpp>
-#include <imgui_impl_glfw.cpp>
-
 #include <ImGui/imgui.h>
-#include <imgui_impl_opengl3.h>
-#include <imgui_impl_glfw.h>
+#include <ImGui/backends/imgui_impl_opengl3.h>
+#include <ImGui/backends/imgui_impl_glfw.h>
 
 #include <ImGuizmo/ImGuizmo.h>
 

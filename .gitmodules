@@ -4,3 +4,6 @@
 [submodule "Copper-Engine/lib/ImGui/ImGui"]
 	path = Copper-Engine/lib/ImGui/ImGui
 	url = https://github.com/ocornut/imgui.git
+[submodule "Copper-Engine/lib/ImGuizmo/ImGuizmo"]
+	path = Copper-Engine/lib/ImGuizmo/ImGuizmo
+	url = https://github.com/CedricGuillemet/ImGuizmo

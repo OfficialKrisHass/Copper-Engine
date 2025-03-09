@@ -380,7 +380,7 @@ namespace Editor {
 
         SetWindowSize(data.gamePanelSize);
 
-        ImGui::Image(reinterpret_cast<void*>((uint64) GetMainFBO().GetColorTextureID()), windowSize, ImVec2 {0, 1}, ImVec2 {1, 0});
+        ImGui::Image(reinterpret_cast<ImTextureID>((uint64) GetMainFBO().GetColorTextureID()), windowSize, ImVec2 {0, 1}, ImVec2 {1, 0});
 
         if (data.state == EditorState::Play && !data.gameAcceptingInput && ImGui::IsItemClicked()) {
 
@@ -447,7 +447,7 @@ namespace Editor {
         //After we are done rendering we are safe to unbind the FBO unless we want to modify it any way
         data.viewportFBO.Unbind();
 
-        ImGui::Image(reinterpret_cast<void*>((uint64) data.viewportFBO.GetColorTextureID()), windowSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+        ImGui::Image(reinterpret_cast<ImTextureID>((uint64) data.viewportFBO.GetColorTextureID()), windowSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
         //Gizmos that I stol... I mean, taken inspiration from The Chernos Game Engine series
         //Yeah, I definitely didn't copy this entire chunk of code that I don't understand but
@@ -529,12 +529,12 @@ namespace Editor {
 
         if (data.state == EditorState::Edit) {
 
-            if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64) data.playIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project)
+            if (ImGui::ImageButton("##StartButton", static_cast<ImTextureID>((uint64) data.playIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project)
                 StartEditorRuntime();
 
         } else if (data.state == EditorState::Play) {
 
-            if (ImGui::ImageButton(reinterpret_cast<ImTextureID>((uint64) data.stopIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project)
+            if (ImGui::ImageButton("##StopButton", static_cast<ImTextureID>((uint64) data.stopIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project)
                 StopEditorRuntime();
 
         }

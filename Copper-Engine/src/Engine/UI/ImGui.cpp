@@ -9,6 +9,8 @@
 
 #include <ImGuizmo/ImGuizmo.h>
 
+#include <GLFW/glfw3.h>
+
 namespace Copper {
 
     static std::string iniPath = "";

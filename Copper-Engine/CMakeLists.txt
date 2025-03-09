@@ -50,7 +50,8 @@ list(TRANSFORM sources PREPEND ${PROJECT_SOURCE_DIR}/Copper-Engine/)
 configure_file(src/Config.h.in src/Config.h)
 
 set_source_files_properties(src/Engine/Core/UUID.cpp PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
-set_source_files_properties(src/Engine/UI/ImGui.cpp PROPERTIES INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/lib/ImGui/ImGui)
+
+set_source_files_properties(src/Engine/UI/ImGui.cpp lib/ImGuizmo/ImGuizmo/ImGuizmo.cpp PROPERTIES INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/Copper-Engine/lib/ImGui/ImGui)
 
 # Core
 add_library(Copper-Engine STATIC ${sources})

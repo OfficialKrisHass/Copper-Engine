@@ -5,16 +5,10 @@
 #include "Projects/Project.h"
 
 #include "Assets/ProjectAssetDatabase.h"
-#include "Assets/Serializer.h"
-#include "Assets/AssetMeta.h"
 
 #include "Panels/Properties.h"
 
 #include "UI/NewModal.h"
-
-#include "Engine/AssetStorage/AssetStorage.h"
-
-#include "Engine/Utilities/FileTemplate.h"
 
 #include <ImGui/imgui.h>
 
@@ -154,39 +148,8 @@ namespace Editor {
 
         if (!ImGui::BeginPopupContextWindow("##File Browser")) return;
 
-        if (ImGui::MenuItem("New", nullptr, false, GetProject())) {
-
+        if (ImGui::MenuItem("New", nullptr, false, GetProject()))
             openNewModal = true;
-
-            /*if (ImGui::MenuItem("Folder", 0, false, GetProject().GetName() != "")) {
-
-                fs::path path = m_projectRelativeDir / "New Folder";
-                fs::create_directories(GetProject().GetAssetsPath() / path.string());
-
-                editingPath = path;
-
-            }
-            ImGui::Separator();
-            if (ImGui::MenuItem("Script")) {
-
-                Utils::FileFromTemplate("Script.cs", (GetProject().GetAssetsPath() / m_projectRelativeDir / "Script.cs").string(), {{"ScriptName", "Script"}});
-
-                editingPath = m_projectRelativeDir / "Script.cs";
-
-            }
-            if (ImGui::MenuItem("Material")) {
-
-                fs::path path = m_projectRelativeDir / "Material.mat";
-                MaterialAsset mat = AssetStorage::CreateAsset<Material>();
-
-                AssetFile::SerializeMaterial(GetProject().GetAssetsPath() / path, mat);
-                AssetMeta::Serialize((GetProject().GetAssetsPath() / path).string() + ".cum", mat.AssetUUID());
-
-                editingPath = path;
-
-            }*/
-
-        }
         
         ImGui::EndPopup();
 

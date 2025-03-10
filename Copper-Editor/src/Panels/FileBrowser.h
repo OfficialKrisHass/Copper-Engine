@@ -15,6 +15,7 @@ namespace Editor {
         void Initialize();
 
         static void SetRelativeDir(const Copper::fs::path& value) { m_projectRelativeDir = value; }
+        static const Copper::fs::path& GetRelativeDir() { return m_projectRelativeDir; }
 
     private:
         static Copper::fs::path m_projectRelativeDir;

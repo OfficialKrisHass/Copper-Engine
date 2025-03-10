@@ -1,9 +1,25 @@
 #include "NewModal.h"
+#include "NewModalData.h"
 
-#include "UI/NewModalData.h"
+#include "Core/EditorApp.h"
+
+#include "Projects/Project.h"
+
+#include "Assets/AssetMeta.h"
+#include "Assets/Serializer.h"
+
+#include "Panels/FileBrowser.h"
+
+#include <Engine/Renderer/Material.h>
+
+#include <Engine/AssetStorage/AssetStorage.h>
+#include <Engine/AssetStorage/AssetPtr.h>
+
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <ImGui/imgui.h>
+
+#include <fstream>
 
 #define NAME_MAX_LENGTH 64
 
@@ -18,8 +34,33 @@ namespace Editor::NewModal {
 
     static char nameInput[NAME_MAX_LENGTH];
 
+    static fs::path directory;
+
     void Options();
     void Details();
+
+    void Create();
+
+    void CreateFolder();
+    void CreateScript();
+    void CreateMaterial();
+
+    void Open() {
+
+        CUP_FUNCTION();
+        open = true;
+
+        ImGui::OpenPopup("New");
+
+        directory = GetProject().GetAssetsPath() / FileBrowser::GetRelativeDir();
+
+    }
+    void Close() {
+
+        CUP_FUNCTION();
+        open = false;
+
+    }
 
     void UIRender() {
 
@@ -43,17 +84,15 @@ namespace Editor::NewModal {
 
         // Button
         
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, style.FramePadding * 3.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { style.FramePadding.x * 3.0f, style.FramePadding.y * 3.0f });
 
         const ImVec2 size = ImVec2(ImGui::CalcTextSize("Create").x + style.FramePadding.x * 8.0f, BUTTON_HEIGHT);
         ImGui::SetCursorPos(ImVec2(ImGui::GetContentRegionMax().x - size.x - style.WindowPadding.x,
                                    ImGui::GetContentRegionMax().y - size.y - style.ItemSpacing.y));
 
-        if (ImGui::Button("Create", size)) {
+        if (ImGui::Button("Create", size))
+            Create();
 
-            Close();
-
-        }
         ImGui::PopStyleVar();
         ImGui::SameLine();
 
@@ -117,18 +156,68 @@ namespace Editor::NewModal {
 
     }
 
-    void Open() {
+    void Create() {
 
         CUP_FUNCTION();
-        open = true;
 
-        ImGui::OpenPopup("New");
+        switch (selectedOption) {
+
+            case 0: CreateFolder(); break;
+            case 1: CreateScript(); break;
+            case 2: CreateMaterial(); break;
+
+        }
+
+        Close();
 
     }
-    void Close() {
+
+    void CreateFolder() {
 
         CUP_FUNCTION();
-        open = false;
+        fs::create_directories(directory / nameInput);
+
+    }
+    void CreateScript() {
+
+        CUP_FUNCTION();
+
+        std::ifstream templ;
+        std::ofstream file;
+
+        templ.open(ExecutableFolder() / "assets/Templates/Script.cs.cut");
+        file.open((directory / nameInput).replace_extension(".cs"));
+
+        std::string line;
+        while (std::getline(templ, line)) {
+
+            std::size_t pos = line.find(":{ScriptName}");
+            while (pos != std::string::npos) {
+
+                line.erase(pos, strlen(":{ScriptName}"));
+                line.insert(pos, nameInput);
+
+                pos = line.find(":{ScriptName}");
+
+            }
+
+            file << line << "\n";
+
+        }
+
+        file.close();
+        templ.close();
+
+    }
+    void CreateMaterial() {
+
+        CUP_FUNCTION();
+
+        MaterialAsset material = AssetStorage::CreateAsset<Material>();
+        material->texture = Texture::WhiteTexture();
+
+        AssetMeta::Serialize((directory / nameInput).replace_extension(".mat.cum"), material.AssetUUID());
+        AssetFile::SerializeMaterial((directory / nameInput).replace_extension(".mat"), material);
 
     }
 

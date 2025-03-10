@@ -52,7 +52,7 @@ namespace Editor::ProjectAssetDatabase {
             // Filter all entries that aren't an Asset file
 
             if (entry.is_directory()) continue;
-            fs::path path = entry.path();
+            fs::path path = fs::relative(entry.path(), dir);
 
             std::string extension = path.extension().string();
             if (!CheckExtension(extension)) continue;
@@ -111,14 +111,16 @@ namespace Editor::ProjectAssetDatabase {
         CUP_FUNCTION();
 
         AssetMeta meta;
-        if (!meta.Deserialize(path.string() + ".cum")) return;
+        if (!meta.Deserialize((GetProject().GetAssetsPath() / path).replace_extension(".mat.cum"))) return;
 
         UUID assetUUID = meta.AssetUUID();
         CU_ASSERT(assetUUID != UUID::GetInvalid(), "Invalid UUID loaded from meta file.\n\tPath: {}", path.string());
 
         if (extension == ".png" || extension == ".jpg")
             AssetStorage::InsertAsset<Texture>(assetUUID, path.string());
-        else if (extension == ".mat" && !AssetFile::DeserializeMaterial(path, assetUUID)) return;
+        else if (extension == ".mat" && !AssetFile::DeserializeMaterial(GetProject().GetAssetsPath() / path, assetUUID)) return;
+
+        Log(path);
 
         assetFiles[path] = assetUUID;
         assetNames[assetUUID] = path.filename().string();
@@ -127,6 +129,8 @@ namespace Editor::ProjectAssetDatabase {
     void RemoveAsset(const fs::path& path, const std::string& extension) {
 
         CUP_FUNCTION();
+
+        Log(path);
 
         if (!assetFiles.contains(path)) {
 

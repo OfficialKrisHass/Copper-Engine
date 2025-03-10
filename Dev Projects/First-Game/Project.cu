@@ -1,3 +1,3 @@
 Name: First-Game
 Last scene: Main.copper
-Gizmo: 0
+Gizmo: 896

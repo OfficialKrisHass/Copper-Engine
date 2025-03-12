@@ -110,6 +110,8 @@ namespace Copper {
         }
         void ToString(char* out) const;
 
+        inline bool IsValid() const { return *this != m_invalid; }
+
         // Operators
 
         bool operator==(const UUID& other) const;
@@ -120,8 +122,6 @@ namespace Copper {
         inline bool operator>(const UUID& other) const { return other < *this; }
         inline bool operator<=(const UUID& other) const { return !(*this > other); }
         inline bool operator>=(const UUID& other) const { return !(*this < other); }
-
-        inline operator bool() const { return *this != m_invalid; }
 
         // Misc. 
 

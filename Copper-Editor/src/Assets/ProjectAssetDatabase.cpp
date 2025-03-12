@@ -4,6 +4,7 @@
 #include "Core/EditorApp.h"
 
 #include "Projects/Project.h"
+#include "Projects/ProjectMetadata.h"
 
 #include "Assets/Serializer.h"
 #include "Assets/AssetMeta.h"
@@ -33,8 +34,11 @@ namespace Editor::ProjectAssetDatabase {
 
         CUP_FUNCTION();
 
-        Refresh();
         FileWatcher::AddCallback(FileChangeCallback);
+ 
+        ProjectMetadata::Deserialize(assetFiles);
+        Refresh();
+
 
     }
     void Refresh() {
@@ -60,6 +64,81 @@ namespace Editor::ProjectAssetDatabase {
             LoadAsset(path, extension);
 
         }
+
+    }
+    void Shutdown() {
+
+        CUP_FUNCTION();
+
+        ProjectMetadata::Serialize(assetFiles);
+
+    }
+
+    void LoadAsset(const fs::path& path, const std::string& extension) {
+
+        CUP_FUNCTION();
+
+        UUID assetUUID; 
+        if (assetFiles.contains(path))
+            assetUUID = assetFiles.at(path);
+        else {
+
+            LogWarn("{} was not loaded from ProjectMetadata.cum, creating new UUID", path);
+            UUID::Generate(assetUUID);
+
+        }
+
+        Log(assetUUID);
+
+        CU_ASSERT(assetUUID != UUID::GetInvalid(), "Invalid UUID loaded for asset {}", path);
+
+        if (extension == ".png" || extension == ".jpg")
+            AssetStorage::InsertAsset<Texture>(assetUUID, GetProject().GetAssetsPath() / path);
+        else if (extension == ".mat" && !AssetFile::DeserializeMaterial(GetProject().GetAssetsPath() / path, assetUUID)) return;
+
+        assetFiles[path] = assetUUID;
+        assetNames[assetUUID] = path.filename().string();
+
+    }
+    void RemoveAsset(const fs::path& path, const std::string& extension) {
+
+        CUP_FUNCTION();
+
+        if (!assetFiles.contains(path)) {
+
+            LogError("Can't remove an asset that is not loaded!\n\tPath: {}", path.string());
+            return;
+
+        }
+
+        const UUID& uuid = assetFiles.at(path);
+
+        // Delete actual asset
+
+        if (extension == ".png" || extension == ".jpg")
+            AssetStorage::DeleteAsset<Texture>(uuid);
+        else if (extension == ".mat")
+            AssetStorage::DeleteAsset<Material>(uuid);
+
+        assetNames.erase(uuid);
+        assetFiles.erase(path);
+
+    }
+
+    void FileChangeCallback(const fs::path& path, const FileWatcher::FileChangeType changeType) {
+
+        CUP_FUNCTION();
+
+        const std::string extension = path.extension().string();
+        if (!CheckExtension(extension)) return;
+
+        if (changeType == FileWatcher::FileChangeType::Created || changeType == FileWatcher::FileChangeType::RenamedNewName)
+            LoadAsset(path, extension);
+        else if (changeType == FileWatcher::FileChangeType::Deleted || changeType == FileWatcher::FileChangeType::RenamedOldName)
+            RemoveAsset(path, extension);
+
+        ProjectMetadata::Serialize(assetFiles);
+
 
     }
 
@@ -91,67 +170,7 @@ namespace Editor::ProjectAssetDatabase {
 
     }
 
-    void FileChangeCallback(const fs::path& path, const FileWatcher::FileChangeType changeType) {
 
-        CUP_FUNCTION();
-
-        const std::string extension = path.extension().string();
-        if (!CheckExtension(extension)) return;
-
-        if (changeType == FileWatcher::FileChangeType::Created || changeType == FileWatcher::FileChangeType::RenamedNewName)
-            LoadAsset(path, extension);
-        else if (changeType == FileWatcher::FileChangeType::Deleted || changeType == FileWatcher::FileChangeType::RenamedOldName)
-            RemoveAsset(path, extension);
-
-
-    }
-
-    void LoadAsset(const fs::path& path, const std::string& extension) {
-
-        CUP_FUNCTION();
-
-        AssetMeta meta;
-        if (!meta.Deserialize((GetProject().GetAssetsPath() / path).replace_extension(".mat.cum"))) return;
-
-        UUID assetUUID = meta.AssetUUID();
-        CU_ASSERT(assetUUID != UUID::GetInvalid(), "Invalid UUID loaded from meta file.\n\tPath: {}", path.string());
-
-        if (extension == ".png" || extension == ".jpg")
-            AssetStorage::InsertAsset<Texture>(assetUUID, path.string());
-        else if (extension == ".mat" && !AssetFile::DeserializeMaterial(GetProject().GetAssetsPath() / path, assetUUID)) return;
-
-        Log(path);
-
-        assetFiles[path] = assetUUID;
-        assetNames[assetUUID] = path.filename().string();
-
-    }
-    void RemoveAsset(const fs::path& path, const std::string& extension) {
-
-        CUP_FUNCTION();
-
-        Log(path);
-
-        if (!assetFiles.contains(path)) {
-
-            LogError("Can't remove an asset that is not loaded!\n\tPath: {}", path.string());
-            return;
-
-        }
-
-        const UUID& uuid = assetFiles.at(path);
-
-        // Delete actual asset
-
-        if (extension == ".png" || extension == ".jpg")
-            AssetStorage::DeleteAsset<Texture>(uuid);
-        else if (extension == ".mat")
-            AssetStorage::DeleteAsset<Material>(uuid);
-
-        assetNames.erase(uuid);
-        assetFiles.erase(path);
-
-    }
 
     bool CheckExtension(const std::string& extension) {
 

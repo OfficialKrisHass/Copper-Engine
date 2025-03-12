@@ -6,7 +6,7 @@
 namespace Editor {
 
     using namespace Copper;
-    
+
     void AssetMeta::Serialize(const fs::path& path, const UUID& assetUUID) {
 
         CUP_FUNCTION();

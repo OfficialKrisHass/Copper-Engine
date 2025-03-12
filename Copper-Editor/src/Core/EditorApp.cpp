@@ -175,6 +175,8 @@ namespace Editor {
 
         CUP_FUNCTION();
 
+        ProjectAssetDatabase::Shutdown();
+
         SaveEditorData();
 
     }

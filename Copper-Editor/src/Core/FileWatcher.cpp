@@ -82,6 +82,8 @@ namespace Editor::FileWatcher {
 
             }
 
+            Log("Filewatch event {}, name: '{}'", static_cast<uint32>(type), path);
+
             for (const Callback& callback : data.callbacks)
                 callback(path, type);
 

@@ -39,14 +39,11 @@ namespace Editor::ProjectAssetDatabase {
         ProjectMetadata::Deserialize(assetFiles);
         Refresh();
 
-
     }
     void Refresh() {
 
         CUP_FUNCTION();
         CU_ASSERT(GetProject(), "Current project is invalid, make sure you called AssetFileDatabase::Refresh when there is a valid project");
-
-        assetFiles.clear();
 
         const fs::path& dir = GetProject().GetAssetsPath();
         CU_ASSERT(dir != "", "Project has no Assets path");
@@ -79,16 +76,16 @@ namespace Editor::ProjectAssetDatabase {
         CUP_FUNCTION();
 
         UUID assetUUID; 
-        if (assetFiles.contains(path))
+        if (assetFiles.find(path) != assetFiles.end())
             assetUUID = assetFiles.at(path);
         else {
 
             LogWarn("{} was not loaded from ProjectMetadata.cum, creating new UUID", path);
+
             UUID::Generate(assetUUID);
+            assetFiles[path] = assetUUID;
 
         }
-
-        Log(assetUUID);
 
         CU_ASSERT(assetUUID != UUID::GetInvalid(), "Invalid UUID loaded for asset {}", path);
 
@@ -96,7 +93,6 @@ namespace Editor::ProjectAssetDatabase {
             AssetStorage::InsertAsset<Texture>(assetUUID, GetProject().GetAssetsPath() / path);
         else if (extension == ".mat" && !AssetFile::DeserializeMaterial(GetProject().GetAssetsPath() / path, assetUUID)) return;
 
-        assetFiles[path] = assetUUID;
         assetNames[assetUUID] = path.filename().string();
 
     }

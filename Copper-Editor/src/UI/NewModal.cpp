@@ -216,7 +216,6 @@ namespace Editor::NewModal {
         MaterialAsset material = AssetStorage::CreateAsset<Material>();
         material->texture = Texture::WhiteTexture();
 
-        AssetMeta::Serialize((directory / nameInput).replace_extension(".mat.cum"), material.AssetUUID());
         AssetFile::SerializeMaterial((directory / nameInput).replace_extension(".mat"), material);
 
     }

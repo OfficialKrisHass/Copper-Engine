@@ -1,0 +1,7 @@
+Assets:
+  Materials/Ground.mat:
+    UUID: ea25238c-be4f-4fea-b659-a1a21b6b95ba
+  Textures/gridbox.png:
+    UUID: 9bf9086b-6e21-4eed-b2e5-dffdb7e7a8b0
+  Textures/wall.jpg:
+    UUID: 507c99c5-36c1-4250-8fd3-8c5eebf0783b

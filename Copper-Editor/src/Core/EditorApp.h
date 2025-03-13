@@ -6,8 +6,6 @@ namespace Editor {
 
     class Project;
 
-    struct SceneMeta;
-
     struct SelectedAsset;
 
     enum class EditorState {
@@ -28,7 +26,6 @@ namespace Editor {
     const Project& GetProject();
 
     SceneCamera& GetSceneCam();
-    SceneMeta* GetSceneMeta();
 
     Copper::Entity& GetSelectedEntity();
     Copper::fs::path& GetSelectedFile();

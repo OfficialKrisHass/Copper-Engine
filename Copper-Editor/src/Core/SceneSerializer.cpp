@@ -1,5 +1,9 @@
 #include "SceneSerializer.h"
 
+#include "Core/EditorApp.h"
+
+#include "Viewport/SceneCamera.h"
+
 #include "Engine/Scripting/Script.h"
 #include "Engine/Scripting/ScriptingEngine.h"
 
@@ -15,6 +19,7 @@ using namespace Copper;
 
 namespace Editor::SceneSerializer {
 
+
     void SerializeEntity(InternalEntity* entity, YAML::Emitter& out);
     void DeserializeEntity(uint32 id, const YAML::Node& data);
 
@@ -23,6 +28,9 @@ namespace Editor::SceneSerializer {
 
     void SerializeEntityComponents(InternalEntity* entity, YAML::Emitter& out);
     void DeserializeEntityComponents(InternalEntity* entity, const YAML::Node& data);
+
+    void SerializeSceneCamera(YAML::Emitter& out);
+    void DeserializeSceneCamera(const YAML::Node& data);
 
     template<typename T> void SerializeField(YAML::Emitter& out, ScriptComponent* instance, const Scripting::Field& field);
     template<typename T> void DeserializeField(const YAML::Node& data, ScriptComponent* instance, const Scripting::Field& field);
@@ -47,6 +55,8 @@ namespace Editor::SceneSerializer {
             SerializeEntity(entity, out);
         out << YAML::EndMap; // Entities;
 
+        SerializeSceneCamera(out);
+
         out << YAML::EndMap; // Main
 
         std::ofstream file;
@@ -69,6 +79,8 @@ namespace Editor::SceneSerializer {
         YAML::Node entities = data["Entities"];
         for (YAML::const_iterator it = entities.begin(); it != entities.end(); ++it)
             DeserializeEntity(it->first.as<uint32>(), it->second);
+
+        DeserializeSceneCamera(data["Scene Camera"]);
 
         } catch (YAML::Exception e) {
 
@@ -503,6 +515,37 @@ namespace Editor::SceneSerializer {
             }
 
         }
+
+    }
+
+    void SerializeSceneCamera(YAML::Emitter& out) {
+
+        CUP_FUNCTION();
+
+        out << YAML::Key << "Scene Camera" << YAML::Value << YAML::BeginMap;
+
+        const SceneCamera& sceneCam = GetSceneCam();
+
+        out << YAML::Key << "Position" << YAML::Value << sceneCam.GetTransform()->Position();
+        out << YAML::Key << "Rotation" << YAML::Value << sceneCam.GetTransform()->Rotation();
+
+        out << YAML::Key << "Speed" << YAML::Value << sceneCam.speed;
+        out << YAML::Key << "Sensitivity" << YAML::Value << sceneCam.sensitivity;
+
+        out << YAML::EndMap;
+
+    }
+    void DeserializeSceneCamera(const YAML::Node& data) {
+
+        CUP_FUNCTION();
+
+        SceneCamera& sceneCam = GetSceneCam();
+
+        sceneCam.GetTransform()->SetPosition(data["Position"].as<Vector3>());
+        sceneCam.GetTransform()->SetRotation(data["Rotation"].as<Quaternion>());
+
+        sceneCam.speed = data["Speed"].as<float>();
+        sceneCam.sensitivity = data["Sensitivity"].as<float>();
 
     }
 

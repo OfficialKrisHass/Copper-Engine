@@ -15,7 +15,6 @@
 
 #include "Engine/Scripting/ScriptingEngine.h"
 
-#include "Core/SceneMeta.h"
 #include "Core/FileWatcher.h"
 #include "Core/SceneSerializer.h"
 
@@ -72,7 +71,6 @@ namespace Editor {
         // Scene
 
         Scene* scene = nullptr;
-        SceneMeta sceneMeta;
         fs::path scenePath;
         fs::path nextScenePath;
 
@@ -783,8 +781,6 @@ namespace Editor {
         SceneSerializer::Deserialize(data.scene, path);
         data.scene->Initialize(); 
 
-        data.sceneMeta.Deserialize(path);
-
         SceneHierarchy::SetScene(data.scene);
 
         data.changes = false;
@@ -830,7 +826,6 @@ namespace Editor {
         }
 
         SceneSerializer::Serialize(data.scene, data.scenePath);
-        data.sceneMeta.Serialize(data.scenePath);
 
         data.changes = false;
         data.title = "Copper Editor - TestProject: ";
@@ -856,7 +851,6 @@ namespace Editor {
         data.scenePath = path;
 
         SceneSerializer::Serialize(data.scene, path);
-        data.sceneMeta.Serialize(path);
 
         data.project.SetLastOpenedScenePath(relative);
 
@@ -1016,8 +1010,6 @@ namespace Editor {
     
     const Project& GetProject() { return data.project; }
     SceneCamera& GetSceneCam() { return data.sceneCam; }
-
-    SceneMeta* GetSceneMeta() { return &data.sceneMeta; }
 
     Entity& GetSelectedEntity() { return data.selectedEntity; }
     fs::path& GetSelectedFile() { return data.selectedFile; }

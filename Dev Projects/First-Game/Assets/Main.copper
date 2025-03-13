@@ -70,3 +70,8 @@ Entities:
       Trigger: false
       Center: [0, 0, 0]
       Size: [1, 1, 1]
+Scene Camera:
+  Position: [8.08577347, 6.05672455, -0.473982364]
+  Rotation: [0.920383334, -0.17579712, 0.343068659, 0.0655275732]
+  Speed: 0.100000001
+  Sensitivity: 100

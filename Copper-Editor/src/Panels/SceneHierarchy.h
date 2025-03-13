@@ -3,7 +3,6 @@
 #include "Copper.h"
 
 #include "Core/EditorApp.h"
-#include "Core/SceneMeta.h"
 
 #include "Panels/Panel.h"
 

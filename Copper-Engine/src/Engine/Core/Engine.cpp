@@ -91,6 +91,8 @@ namespace Copper {
         VERIFY_STATE_INTERNAL(EngineState::Entry, "Initialize the Engine");
         data.engineState = EngineState::Initialization;
 
+        Log("Running Copper Engine Version {}.{}.{}.{}", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_TWEAK);
+
 #ifdef CU_DEBUG
         SignalHandler::RegisterHandler(SignalHandler::Signal::Abort, Profiler::CrashHandler);
         SignalHandler::RegisterHandler(SignalHandler::Signal::Segfault, Profiler::CrashHandler);

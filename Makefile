@@ -2,6 +2,8 @@ OS = linux
 CONFIGURATION = Debug
 BUILD_DIR = Build/$(OS)-x86_64-$(CONFIGURATION)
 
+export COPPER_VERSION := $(shell cat VERSION)
+
 cmake: CMakeLists.txt Copper-Engine/CMakeLists.txt Copper-Editor/CMakeLists.txt Copper-Launcher/CMakeLists.txt
 	@cmake . -B CMake/$(CONFIGURATION) -DCMAKE_BUILD_TYPE=$(CONFIGURATION) -DCMAKE_EXPORT_COMPILE_COMMANDS=1
 	@rm -f compile_commands.json

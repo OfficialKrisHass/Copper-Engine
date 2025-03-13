@@ -17,6 +17,10 @@ group ""
 
 include "Copper-ScriptingAPI"
 
+local versionString = os.getenv("COPPER_VERSION")
+local version = {}
+versionString:gsub("[^%.]+", function (str) table.insert(version, tonumber(str)) end)
+
 project "Copper-Engine"
     location "Copper-Engine"
     kind "StaticLib"
@@ -89,6 +93,8 @@ project "Copper-Engine"
         "CU_EDITOR",
         "CU_WINDOWS",
 
+        "CU_PREMAKE",
+
         "YAML_CPP_STATIC_DEFINE",
 
         "INCLUDE_GLM",
@@ -97,10 +103,10 @@ project "Copper-Engine"
         "_CRT_SECURE_NO_WARNINGS",
         "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
 
-        "VERSION_MAJOR=0",
-        "VERSION_MINOR=3",
-        "VERSION_PATCH=0",
-        "VERSION_TWEAK=204",
+        "VERSION_MAJOR=" .. version[1],
+        "VERSION_MINOR=" .. version[2],
+        "VERSION_PATCH=" .. version[3],
+        "VERSION_TWEAK=" .. version[4],
 
         "SCENE_VERSION=0",
 

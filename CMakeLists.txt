@@ -7,8 +7,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 
 set(SCENE_VERSION 0)
 
-project(Copper-Engine VERSION 0.3.0.20 LANGUAGES CXX C)
-message(STATUS "Building with configuration - ${CMAKE_BUILD_TYPE}")
+project(Copper-Engine VERSION $ENV{COPPER_VERSION} LANGUAGES CXX C)
+message(STATUS "Building Copper Engine with configuration - ${CMAKE_BUILD_TYPE}")
+message(STATUS "Version $ENV{COPPER_VERSION}")
 
 set(OUTPUT_DIR linux-x86_64-${CMAKE_BUILD_TYPE})
 

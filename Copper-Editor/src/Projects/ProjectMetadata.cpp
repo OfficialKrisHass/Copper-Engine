@@ -49,8 +49,6 @@ namespace Editor::ProjectMetadata {
 
         }
 
-        Log("1");
-
         YAML::Node assets = node["Assets"];
         for (YAML::const_iterator it = assets.begin(); it != assets.end(); ++it)
             DeserializeAsset(it, assetMetas);

@@ -94,7 +94,6 @@ namespace Editor::FileWatcher {
     }
 
     void AddCallback(Callback callback) { data.callbacks.push_back(callback); }
-
     void FileChangeCallback(const std::string& directory, const std::string& name, const filewatch::Event changeType, int cookie) {
 
         CUP_FUNCTION();

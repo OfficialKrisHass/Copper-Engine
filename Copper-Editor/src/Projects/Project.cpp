@@ -201,8 +201,6 @@ namespace Editor {
         system(cmd.c_str());
 #endif
 
-        Scripting::Reload(m_path / "Binaries" / (m_name + ".dll"));
-
         return true;
 
     }

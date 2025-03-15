@@ -82,6 +82,9 @@ namespace Copper::Scripting {
 
         CUP_FUNCTION();
 
+        if (!data.scriptingAPI)
+            InitializeScriptingAPI();
+
         data.game = Assembly(assemblyPath);
         if (!data.game) return false;
 
@@ -100,27 +103,31 @@ namespace Copper::Scripting {
         ClearManagedReferences();
 
         data.game = Assembly();
+        data.scriptingAPI = Assembly();
 
         data.componentScripts.clear();
 
 
     }
-    bool Reload(const fs::path& assemblyPath) {
+    bool Reload() {
 
         CUP_FUNCTION();
 
-        fs::path path;
-        if (assemblyPath.empty())
-            path = data.game.Path();
-        else
-            path = assemblyPath.string();
+        if (!data.game) {
+
+            LogError("Can't reload without a loaded game assembly");
+            return false;
+
+        }
+
+        fs::path savedPath = data.game.Path();
 
         Unload();
 
         InitializeScriptingAPI();
-        if (!Load(path)) {
+        if (!Load(savedPath)) {
 
-            LogError("Failed to load game assembly at path '{}'", path);
+            LogError("Failed to load game assembly at path '{}'", savedPath);
             return false;
 
         }
@@ -136,7 +143,7 @@ namespace Copper::Scripting {
         data.appDomain = mono_domain_create_appdomain(AppDomainName, nullptr);
         mono_domain_set(data.appDomain, true);
 
-        // I forgot I changed the dir name from ScriptAPI to Script - ing - API only here and didnt change the
+        // I forgot I changed the dir name from ScriptAPI to Script - ING - API only here and didnt change the
         // Scripting api build directory and spent 2 days trying to figure out why the fuck nothing was working
         data.scriptingAPI = Assembly(ExecutableFolder() / "assets/ScriptingAPI/Copper-ScriptingAPI.dll");
 
@@ -167,7 +174,7 @@ namespace Copper::Scripting {
 
             if (std::string(name) == "<Module>") continue;
 
-            Log("{}.{}", nameSpace, name);
+            Log("Found class in C#: {}.{}", nameSpace, name);
 
             // Filter out non component Scripts
 
@@ -179,7 +186,7 @@ namespace Copper::Scripting {
 
         }
 
-        Log(data.componentScripts.size());
+        Log("Game assembly contains {} valid scripts", data.componentScripts.size());
 
     }
 

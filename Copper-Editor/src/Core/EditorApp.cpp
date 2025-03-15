@@ -580,8 +580,12 @@ namespace Editor {
 
                 ImGui::Separator();
 
-                if (ImGui::MenuItem("Build Scripts", "Ctrl+B", false, data.project))
+                if (ImGui::MenuItem("Build Scripts", "Ctrl+B", false, data.project)) {
+
                     data.project.BuildScripts();
+                    Scripting::Reload();
+
+                }
 
                 ImGui::Separator();
 
@@ -707,6 +711,7 @@ namespace Editor {
             data.project.RunPremake();
 #endif
         data.project.BuildScripts();
+        Scripting::Reload();
 
     }
 
@@ -727,6 +732,7 @@ namespace Editor {
         data.project.RunPremake();
 #endif
         data.project.BuildScripts();
+        Scripting::Load(data.project.GetPath() / "Binraries" / (data.project.GetName() + ".dll"));
 
         NewScene();
 
@@ -930,6 +936,7 @@ namespace Editor {
                 if (data.state == EditorState::Play || !control) break;
 
                 data.project.BuildScripts();
+                Scripting::Reload();
 
                 break;
 

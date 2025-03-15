@@ -1,3 +1,3 @@
 Name: TemplateTest
-Last scene: ""
+Last scene: Main.copper
 Gizmo: 0

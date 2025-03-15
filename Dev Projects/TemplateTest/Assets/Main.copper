@@ -1,4 +1,29 @@
 Version: 0
 Name: ""
 Entities:
-  {}
+  0:
+    Name: Entity
+    Transform:
+      Position: [0, 0, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent: 4294967295
+      Children:
+        []
+  1:
+    Name: Cube
+    Transform:
+      Position: [0, 0, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent: 4294967295
+      Children:
+        []
+    Mesh Renderer:
+      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
+      Material: 00000000-0000-0000-0000-000000000000
+Scene Camera:
+  Position: [1.84587777, 2.931077, 1.99915922]
+  Rotation: [0.891402364, -0.34984985, 0.268193305, 0.105258182]
+  Speed: 0.100000001
+  Sensitivity: 100

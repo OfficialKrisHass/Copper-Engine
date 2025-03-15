@@ -1,7 +1,7 @@
 using System;
 using Copper;
 
-public class Script : Component {
+public class Player : Component {
 
     private void Create() {
 

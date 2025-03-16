@@ -6,13 +6,13 @@ Entities:
     Transform:
       Position: [0, 0, 0]
       Rotation: [1, 0, 0, 0]
-      Scale: [10, 1, 10]
+      Scale: [50, 1, 50]
       Parent: 4294967295
       Children:
         []
     Mesh Renderer:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
-      Material: 00000000-0000-0000-0000-000000000000
+      Material: ea25238c-be4f-4fea-b659-a1a21b6b95ba
     Rigid Body:
       Mass: 1
       Static: true
@@ -60,7 +60,7 @@ Entities:
         - 2
     Mesh Renderer:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
-      Material: 00000000-0000-0000-0000-000000000000
+      Material: 1ab67eee-3544-4f0a-81f2-8c902a7a088c
     Rigid Body:
       Mass: 1
       Static: false
@@ -70,8 +70,47 @@ Entities:
       Trigger: false
       Center: [0, 0, 0]
       Size: [1, 1, 1]
+  4:
+    Name: Light
+    Transform:
+      Position: [2.13679218, 3.10610747, 3.45558596]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent: 4294967295
+      Children:
+        []
+    Light:
+      Type: 0
+      Color: [1, 0, 0, 1]
+      Intensity: 1
+  5:
+    Name: Light
+    Transform:
+      Position: [0.411599636, 1.78098571, -5.47920656]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent: 4294967295
+      Children:
+        []
+    Light:
+      Type: 0
+      Color: [0, 1, 0, 1]
+      Intensity: 1
+  6:
+    Name: Light
+    Transform:
+      Position: [-3.63050675, 1.92398763, 2.90859127]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent: 4294967295
+      Children:
+        []
+    Light:
+      Type: 0
+      Color: [0, 0, 1, 1]
+      Intensity: 1
 Scene Camera:
-  Position: [8.08577347, 6.05672455, -0.473982364]
-  Rotation: [0.920383334, -0.17579712, 0.343068659, 0.0655275732]
+  Position: [4.73322344, 5.28846693, -0.0208114237]
+  Rotation: [-0.652844667, 0.142362162, -0.726911426, -0.158513486]
   Speed: 0.100000001
   Sensitivity: 100

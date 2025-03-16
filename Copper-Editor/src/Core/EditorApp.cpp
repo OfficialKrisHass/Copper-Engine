@@ -142,12 +142,14 @@ namespace Editor {
 
     bool OnKeyPressed(const Event& e);
     bool OnWindowClose(const Event& e);
+    bool OnWindowFocused(const Event& e);
 
     void Initialize() {
 
         CUP_FUNCTION();
 
         GetWindow().AddKeyPressedEventFunc(Editor::OnKeyPressed);
+        GetWindow().AddWindowFocusedEventFunc(Editor::OnWindowFocused);
 
         MainUIContext().LoadFont(ExecutableFolder() / "assets/Fonts/open-sans.regular.ttf");
 
@@ -719,12 +721,12 @@ namespace Editor {
 
         if (path.extension().string() != ".cs") return;
 
+        data.scriptChanges = true;
+
 #ifdef CU_LINUX
         if (changeType != FileWatcher::FileChangeType::Changed)
             data.project.RunPremake();
 #endif
-        data.project.BuildScripts();
-        Scripting::Reload();
 
     }
 
@@ -1025,6 +1027,21 @@ namespace Editor {
                 return false;
 
         }
+
+    }
+    bool OnWindowFocused(const Event& e) {
+
+        CUP_FUNCTION();
+
+        const WindowFocusedEvent& event = static_cast<const WindowFocusedEvent&>(e);
+        if (!event.focused || !data.scriptChanges) return true;
+
+        data.project.BuildScripts();
+        Scripting::Reload();
+
+        data.scriptChanges = false;
+
+        return true;
 
     }
     

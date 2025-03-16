@@ -9,9 +9,9 @@ Copper-ScriptingAPI.dll
 [Tt]emp/
 
 # Copper-Editor projects
-Objs/
-Binaries/
-Makefile
+[Oo]bjs/
+[Bb]inaries/
+[Mm]akefile
 
 *.make
 *.mingw

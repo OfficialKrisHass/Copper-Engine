@@ -68,6 +68,8 @@ namespace Editor {
         Project project;
         bool scriptChanges = false;
 
+        fs::path projectToLoad;
+
         // Scene
 
         Scene* scene = nullptr;
@@ -252,6 +254,12 @@ namespace Editor {
 
             OpenScene(data.nextScenePath);
             data.nextScenePath.clear();
+
+        }
+        if (!data.projectToLoad.empty()) {
+
+            data.project.Open(data.projectToLoad);
+            data.projectToLoad.clear();
 
         }
 
@@ -562,8 +570,13 @@ namespace Editor {
 
                 if (ImGui::MenuItem("New Project"))
                     NewProject();
-                if (ImGui::MenuItem("Open Project"))
-                    data.project.Open();
+                if (ImGui::MenuItem("Open Project")) {
+
+                    fs::path path = Utilities::FolderOpenDialog("Open Project", data.project.GetPath().empty() ? ROOT_DIR : data.project.GetPath().parent_path());
+                    if (!path.empty() && path != data.project.GetPath())
+                        data.projectToLoad = path;
+
+                }
                 if (ImGui::MenuItem("Save Project", "Ctrl+Shift+S", false, data.project)) {
 
                     SaveScene();

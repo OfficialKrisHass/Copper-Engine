@@ -52,7 +52,7 @@ void GetExecutableFolder() {
     GetModuleFileNameA(NULL, path, MAX_PATH);
 
     tmp = path;
-    size_t pos = execFolder.find_last_of('\\');
+    size_t pos = tmp.find_last_of('\\');
 #endif
     tmp.erase(pos, std::string::npos);
 

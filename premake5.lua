@@ -74,6 +74,10 @@ project "Copper-Engine"
         "%{prj.name}/lib/pfd",
         "%{prj.name}/lib/uuid",
 
+        -- Stupid premake doesn't support include dirs for a single file so the entire project
+        -- needs this, just for ImGuizmo.cpp to use it :)))))
+        "%{prj.name}/lib/ImGui/ImGui",
+
     }
 
     links {
@@ -114,6 +118,7 @@ project "Copper-Engine"
 
     filter "files:Copper-Engine/lib/ImGuizmo/ImGuizmo/**.cpp"
         flags { "NoPCH" }
+        includedirs { "%{prj.name}/lib/ImGui/ImGui" }
 
     filter "configurations:Debug"
         defines "CU_DEBUG"
@@ -276,6 +281,10 @@ project "Copper-Launcher"
         "Copper-Engine/lib/yaml-cpp/include",
         "Copper-Engine/lib/ImGui",
         "Copper-Engine/lib/pfd",
+
+        -- Stupid premake doesn't support include dirs for a single file so the entire project
+        -- needs this, just for ImGuizmo.cpp to use it :)))))
+        "Copper-Engine/lib/ImGui/ImGui",
 
     }
 

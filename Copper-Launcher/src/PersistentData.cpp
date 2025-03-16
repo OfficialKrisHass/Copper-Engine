@@ -52,7 +52,14 @@ namespace Launcher::PersistentData {
 
         editorPath = node["Editor Path"].as<std::string>();
 #ifdef CU_DEBUG
-        editorAssetsPath = node["Editor assets Path"].as<std::string>();
+        if (node["Editor assets Path"])
+            editorAssetsPath = node["Editor assets Path"].as<std::string>();
+        else {
+
+            Dialogs::Error("Unkown Editor assets directory", "Couldn't read the editor assets directory from persistant data storage. Please locate the editor assets directory in then next dialog");
+            LocateEditorAssets();
+
+        }
 #endif
 
         YAML::Node entries = node["Project Entries"];
@@ -111,7 +118,7 @@ namespace Launcher::PersistentData {
             out << YAML::BeginMap; // Entry
 
             out << YAML::Key << "Name" << YAML::Value << entry.Name();
-            out << YAML::Key << "Directory" << YAML::Value << entry.Directory();
+            out << YAML::Key << "Directory" << YAML::Value << entry.Directory().string();
 
             out << YAML::EndMap; // Entry
 
@@ -174,7 +181,7 @@ namespace Launcher::PersistentData {
 
         if (fs::exists(editorAssetsPath / "assets/EditorData.cu")) return;
 
-        Dialogs::Error("Invalid folder", "This is not the Editor assets folder (assets/EditorData.cu is missing)");
+        Dialogs::Error("Invalid folder", "Invalid Editor assets directory.");
         exit(-1);
 
     }

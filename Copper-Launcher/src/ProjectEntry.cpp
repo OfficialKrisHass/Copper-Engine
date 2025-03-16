@@ -66,12 +66,12 @@ namespace Launcher {
         ImGui::SetCursorPosY(ImGui::GetContentRegionMax().y - ImGui::GetTextLineHeight());
 
         ImGui::PushFont(Fonts::SmallTextFont());
-        ImGui::Text(m_directory.c_str());
+        ImGui::Text(m_directory.string().c_str());
         ImGui::PopFont();
 
         bool held = false;
         if (ImGui::ButtonBehavior(tabRect, id, nullptr, &held, ImGuiButtonFlags_PressedOnClickRelease | ImGuiButtonFlags_PressedOnRelease))
-            LaunchEditor(m_directory);
+            LaunchEditor(m_directory.string());
 
         if (held)
             heldID = id;

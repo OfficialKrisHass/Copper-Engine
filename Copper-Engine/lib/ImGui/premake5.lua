@@ -7,10 +7,8 @@ project "ImGui"
     targetdir("Build/" .. outputDir)
     objdir("BuildInt/" .. outputDir)
 
-    includedirs { "ImGui" }
-
     files {
-
+        
         "ImGui/imconfig.h",
         "ImGui/imgui_demo.cpp",
         "ImGui/imgui_draw.cpp",
@@ -22,9 +20,25 @@ project "ImGui"
         "ImGui/imstb_rectpack.h",
         "ImGui/imstb_textedit.h",
         "ImGui/imstb_truetype.h",
-
+        
         "ImGui/misc/cpp/imgui_stdlib.h",
-        "ImGui/misc/cpp/imgui_stdlib.cpp"
+        "ImGui/misc/cpp/imgui_stdlib.cpp",
+        
+        "ImGui/backends/imgui_impl_opengl3.cpp",
+        "ImGui/backends/imgui_impl_glfw.cpp",
+        
+    }
+    
+    includedirs {
+        
+        "ImGui",
+        "../GLFW/include"
+    
+    }
+
+    defines {
+
+        "IMGUI_IMPL_OPENGL_LOADER_GLAD",
 
     }
 

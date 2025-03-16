@@ -147,7 +147,7 @@ namespace Launcher {
             style = &ImGui::GetStyle();
 
         YAML::Node theme;
-        try { theme = YAML::LoadFile(ExecutableFolder() / "assets/Launcher.cutheme"); }
+        try { theme = YAML::LoadFile((ExecutableFolder() / "assets/Launcher.cutheme").string()); }
         catch (YAML::Exception e) {
 
             Dialogs::Error("Theme load failed", "Could not load theme file Launcher.cutheme.\n\nError:\n" + e.msg);

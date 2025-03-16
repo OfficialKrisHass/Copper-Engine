@@ -177,7 +177,7 @@ namespace Editor {
         uint32_t iconID = directory ? directoryIcon.GetID() : fileIcon.GetID();
 
         ImGui::PushStyleColor(ImGuiCol_Button, { 0.0f, 0.0f, 0.0f, 0.0f });
-        ImGui::ImageButton("##Entry", reinterpret_cast<ImTextureID>((uint64) iconID), { THUMBNAIL_SIZE, THUMBNAIL_SIZE }, { 0, 1 }, { 1, 0 });
+        ImGui::ImageButton("##Entry", static_cast<ImTextureID>((uint64) iconID), { THUMBNAIL_SIZE, THUMBNAIL_SIZE }, { 0, 1 }, { 1, 0 });
         ImGui::PopStyleColor();
 
     }

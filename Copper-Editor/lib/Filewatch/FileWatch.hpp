@@ -562,7 +562,7 @@ namespace filewatch {
 			auto async_pending = false;
 			_running.set_value();
 			do {
-				std::vector<std::pair<StringType, Event>> parsed_information;
+				std::vector<std::pair<PathParts, Event>> parsed_information;
 				ReadDirectoryChangesW(
 					_directory,
 					buffer.data(), static_cast<DWORD>(buffer.size()),
@@ -594,7 +594,7 @@ namespace filewatch {
 						convert_wstring(changed_file_w, changed_file);
 						if (pass_filter(changed_file))
 						{
-							parsed_information.emplace_back(StringType{ changed_file }, _event_type_mapping.at(file_information->Action));
+							parsed_information.emplace_back(split_directory_and_file(StringType { changed_file }), _event_type_mapping.at(file_information->Action));
 						}
 
 						if (file_information->NextEntryOffset == 0) {
@@ -1290,7 +1290,11 @@ namespace filewatch {
 					if (_callback) {
 						try
 						{
+#ifdef __unix__
                             _callback(std::get<0>(file).directory, std::get<0>(file).filename, std::get<1>(file), std::get<2>(file));
+#elif _WIN32
+                            _callback(file.first.directory, file.first.filename, file.second);
+#endif
 						}
 						catch (const std::exception&)
 						{

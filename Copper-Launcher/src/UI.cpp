@@ -5,13 +5,11 @@
 
 #include "ThemeEditor.h"
 
-#define IMGUI_IMPL_OPENGL_LOADER_GLAD
-#include <imgui_impl_opengl3.cpp>
-#include <imgui_impl_glfw.cpp>
+#include <GLFW/glfw3.h>
 
 #include <ImGui/imgui.h>
-#include <imgui_impl_opengl3.h>
-#include <imgui_impl_glfw.h>
+#include <ImGui/backends/imgui_impl_opengl3.h>
+#include <ImGui/backends/imgui_impl_glfw.h>
 
 namespace Launcher::UI {
 
@@ -26,7 +24,7 @@ namespace Launcher::UI {
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NoMouseCursorChange | ImGuiConfigFlags_ViewportsEnable;
         io.FontDefault = AddFont(ExecutableFolder() / MainFontPath, 25.0f);
 
-        iniPath = ExecutableFolder() / "imgui.ini";
+        iniPath = (ExecutableFolder() / "imgui.ini").string();
         io.IniFilename = iniPath.c_str();
 
         LoadTheme();

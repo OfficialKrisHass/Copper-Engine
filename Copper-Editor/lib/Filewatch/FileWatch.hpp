@@ -268,7 +268,6 @@ namespace filewatch {
 
 	private:
 		static constexpr C _regex_all[] = { '.', '*', '\0' };
-		static constexpr C _this_directory[] = { '.', '/', '\0' };
 
 		struct PathParts
 		{
@@ -464,7 +463,7 @@ namespace filewatch {
 			//if the path is something like "test.txt" there will be no directory part, however we still need one, so insert './'
 			const StringType directory = [&]() {
 				const auto extracted_directory = UnderpinningString(path_string.begin(), pivot);
-				return (extracted_directory.size() > 0) ? extracted_directory : UnderpinningString(_this_directory);
+                return (extracted_directory.size() > 0) ? extracted_directory : UnderpinningString("");
 			}();
 			const StringType filename = UnderpinningString(pivot, path_string.end());
 			return PathParts(directory, filename);
@@ -1306,6 +1305,5 @@ namespace filewatch {
 	};
 
 	template<class StringType> constexpr typename FileWatch<StringType>::C FileWatch<StringType>::_regex_all[];
-	template<class StringType> constexpr typename FileWatch<StringType>::C FileWatch<StringType>::_this_directory[];
 }
 #endif

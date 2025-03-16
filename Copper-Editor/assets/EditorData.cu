@@ -1,1 +1,1 @@
-Last Project: /home/jakub/programming/Copper-Engine/Dev Projects/TemplateTest
+Last Project: C:\Programming\Copper-Engine\Dev Projects\TemplateTest

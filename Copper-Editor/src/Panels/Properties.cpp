@@ -194,7 +194,7 @@ namespace Editor {
             return;
 
         }
-        const UUID& asset = ProjectAssetDatabase::GetAssetFromPath(GetProject().GetAssetsPath() / *m_selectedFile);
+        const UUID& asset = ProjectAssetDatabase::GetAssetFromPath(*m_selectedFile);
 
         if (asset == UUID::GetInvalid()) {
 

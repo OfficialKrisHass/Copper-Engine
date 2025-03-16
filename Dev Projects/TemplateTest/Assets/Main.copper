@@ -21,9 +21,22 @@ Entities:
         []
     Mesh Renderer:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
-      Material: 00000000-0000-0000-0000-000000000000
+      Material: a88a9390-4dd3-4575-8e8a-d61ac46446d4
+  2:
+    Name: Light
+    Transform:
+      Position: [0.156965479, 3.46030188, 0.585803092]
+      Rotation: [0.945557833, 0.298133105, 0.124485053, -0.0392499641]
+      Scale: [1, 1, 1]
+      Parent: 4294967295
+      Children:
+        []
+    Light:
+      Type: 1
+      Color: [1, 1, 1, 1]
+      Intensity: 1
 Scene Camera:
-  Position: [1.84587777, 2.931077, 1.99915922]
-  Rotation: [0.891402364, -0.34984985, 0.268193305, 0.105258182]
+  Position: [2.49091768, 2.47227216, 0.944830537]
+  Rotation: [-0.796602964, 0.0561452061, -0.600400507, -0.0423167013]
   Speed: 0.100000001
   Sensitivity: 100

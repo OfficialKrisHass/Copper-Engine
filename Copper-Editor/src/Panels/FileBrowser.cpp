@@ -212,7 +212,7 @@ namespace Editor {
         }
         if ((extension == ".png" || extension == ".jpg") && ImGui::BeginDragDropSource()) {
 
-            TextureAsset& texture = ProjectAssetDatabase::GetAssetFromPath<TextureAsset>(GetProject().GetAssetsPath() / path);
+            TextureAsset& texture = ProjectAssetDatabase::GetAssetFromPath<TextureAsset>(path);
 
             ImGui::SetDragDropPayload("FB_TEXTURE", &texture, sizeof(TextureAsset), ImGuiCond_Once);
             ImGui::EndDragDropSource();
@@ -220,7 +220,7 @@ namespace Editor {
         }
         if (extension == ".mat" && ImGui::BeginDragDropSource()) {
 
-            const UUID& uuid = ProjectAssetDatabase::GetAssetFromPath(GetProject().GetAssetsPath() / path);
+            const UUID& uuid = ProjectAssetDatabase::GetAssetFromPath(path);
 
             ImGui::SetDragDropPayload("FB_MATERIAL", &uuid, sizeof(UUID), ImGuiCond_Once);
             ImGui::EndDragDropSource();

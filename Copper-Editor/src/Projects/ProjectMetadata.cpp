@@ -41,7 +41,7 @@ namespace Editor::ProjectMetadata {
         CUP_FUNCTION();
 
         YAML::Node node;
-        try { node = YAML::LoadFile(GetProject().GetPath() / "ProjectMetadata.cum"); }
+        try { node = YAML::LoadFile((GetProject().GetPath() / "ProjectMetadata.cum").string()); }
         catch (YAML::Exception e) {
 
             LogError("Could not load Project metadata.\n\tError: {}\n\tPath: {}", e.what(), GetProject().GetPath() / "ProjectMetadata.cum");

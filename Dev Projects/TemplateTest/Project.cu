@@ -1,3 +1,3 @@
 Name: TemplateTest
 Last scene: Main.copper
-Gizmo: 0
+Gizmo: 7

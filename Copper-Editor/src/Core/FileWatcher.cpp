@@ -73,7 +73,7 @@ namespace Editor::FileWatcher {
         std::lock_guard<std::mutex> lock(data.mutex);
 
 #ifdef CU_LINUX
-        std::ordered_map<int, std::string> renameMap;
+        std::unordered_map<int, std::string> renameMap;
 #endif
 
         for (const auto& it : data.changes) {

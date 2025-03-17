@@ -45,6 +45,8 @@ namespace Editor::NewModal {
     void CreateScript();
     void CreateMaterial();
 
+    bool CreateDisabled();
+
     void Open() {
 
         CUP_FUNCTION();
@@ -59,6 +61,8 @@ namespace Editor::NewModal {
 
         CUP_FUNCTION();
         open = false;
+
+        nameInput[0] = '\0';
 
     }
 
@@ -90,8 +94,12 @@ namespace Editor::NewModal {
         ImGui::SetCursorPos(ImVec2(ImGui::GetContentRegionMax().x - size.x - style.WindowPadding.x,
                                    ImGui::GetContentRegionMax().y - size.y - style.ItemSpacing.y));
 
-        if (ImGui::Button("Create", size))
+        bool disabled = CreateDisabled();
+
+        ImGui::BeginDisabled(disabled);
+        if ((ImGui::Button("Create", size) || Input::IsKeyDown(KeyCode::Enter)) && !disabled)
             Create();
+        ImGui::EndDisabled();
 
         ImGui::PopStyleVar();
         ImGui::SameLine();
@@ -105,6 +113,9 @@ namespace Editor::NewModal {
         ImGui::SameLine();
         ImGui::SetCursorPosY(cursorY + tmp / 4.0f);
         ImGui::InputText("##Name", nameInput, NAME_MAX_LENGTH);
+
+        if (Input::IsKeyDown(KeyCode::Escape))
+            Close();
 
         ImGui::EndPopup();
 
@@ -217,6 +228,25 @@ namespace Editor::NewModal {
         material->texture = Texture::WhiteTexture();
 
         AssetFile::SerializeMaterial((directory / nameInput).replace_extension(".mat"), material);
+
+    }
+
+    bool CreateDisabled() {
+
+        CUP_FUNCTION();
+
+        fs::path path = directory / nameInput;
+
+        switch (selectedOption) {
+
+            case 0: break;
+            case 1: path.replace_extension(".cs"); break;
+            case 2: path.replace_extension(".mat"); break;
+            default: break;
+
+        }
+
+        return fs::exists(path);
 
     }
 

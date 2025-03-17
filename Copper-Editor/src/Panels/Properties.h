@@ -20,6 +20,8 @@ namespace Editor {
         void RenderEntity();
         void RenderFile();
 
+        void SerializeFile();
+
         // Components
 
         void RenderMeshRenderer(Copper::MeshRenderer* renderer);
@@ -36,7 +38,7 @@ namespace Editor {
 
         // Assets
 
-        void RenderMaterial(const Copper::MaterialAsset& material);
+        void RenderMaterial();
 
     };
 

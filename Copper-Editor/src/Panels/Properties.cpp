@@ -188,24 +188,44 @@ namespace Editor {
 
         std::string extension = m_selectedFile->extension().string();
 
-        if (extension != ".mat") {
+        if (extension == ".mat")
+            RenderMaterial();
+        else {
 
-            ImGui::Text("This extension is not supported, make sure you called a function for this specific extension!");
+            ImGui::TextWrapped("This extension is not supported, make sure you called a function for this specific extension!");
             return;
 
         }
-        const UUID& asset = ProjectAssetDatabase::GetAssetFromPath(*m_selectedFile);
 
+        const ImGuiStyle& style = ImGui::GetStyle();
+        ImGui::PushStyleVarX(ImGuiStyleVar_FramePadding, style.FramePadding.x * 6.0f);
+        ImGui::PushStyleVarY(ImGuiStyleVar_FramePadding, style.FramePadding.y * 2.5f);
+
+        const ImVec2* framePadding = (const ImVec2*) ImGui::GetStyleVarInfo(ImGuiStyleVar_FramePadding)->GetVarPtr((void*) &style);
+        ImGui::SetCursorPosX(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize("Save").x - framePadding->x - style.WindowPadding.x - style.ItemSpacing.x);
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + style.ItemSpacing.y);
+
+        if (ImGui::Button("Save"))
+            SerializeFile();
+
+        ImGui::PopStyleVar(2);
+
+    }
+
+    void Properties::SerializeFile() {
+
+        CUP_FUNCTION();
+
+        const UUID& asset = ProjectAssetDatabase::GetAssetFromPath(*m_selectedFile);
         if (asset == UUID::GetInvalid()) {
 
-            LogWarn("Selected File is not found in the AssetFileDatabase, try refreshing.\n\tPath: {}", GetProject().GetAssetsPath() / *m_selectedFile);
-
-            SetSelectedFile("");
+            LogError("Can't serialize an asset that isn't loaded! Path: {}", *m_selectedFile);
             return;
 
         }
 
-        RenderMaterial(asset);
+        if (m_selectedFile->extension().string() == ".mat")
+            AssetFile::SerializeMaterial(GetProject().GetAssetsPath() / *m_selectedFile, asset);
 
     }
 
@@ -409,20 +429,25 @@ namespace Editor {
 
     // Assets
 
-    void Properties::RenderMaterial(const MaterialAsset& material) {
+    void Properties::RenderMaterial() {
+
+        const MaterialAsset& material = ProjectAssetDatabase::GetAssetFromPath(*m_selectedFile);
+        if (material == UUID::GetInvalid()) {
+
+            LogWarn("Selected File is not found in the AssetFileDatabase, try refreshing.\n\tPath: {}", GetProject().GetAssetsPath() / *m_selectedFile);
+
+            SetSelectedFile("");
+            return;
+
+        }
 
         const std::string name = m_selectedFile->filename().string();
         ImGui::Text(name.c_str());
         ImGui::NewLine();
 
-        bool changed = false;
-
-        if (UI::EditTexture("Texture", &material->texture)) changed = true;
-        if (UI::EditColor("Albedo", &material->albedo)) changed = true;
-        if (UI::EditFloat("Tiling", &material->tiling)) changed = true;
-
-        if (changed)
-            AssetFile::SerializeMaterial(GetProject().GetAssetsPath() / *m_selectedFile, material);
+        UI::EditTexture("Texture", &material->texture);
+        UI::EditColor("Albedo", &material->albedo);
+        UI::EditFloat("Tiling", &material->tiling);
 
     }
 

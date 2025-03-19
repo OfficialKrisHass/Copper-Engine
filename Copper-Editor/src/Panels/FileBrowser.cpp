@@ -193,7 +193,7 @@ namespace Editor {
         if (ImGui::IsItemClicked())
             clickedFile = path;
         if (clickedFile == path && ImGui::IsItemHovered() && ImGui::IsMouseReleased(0))
-            SetSelectedFile(path);
+            Properties::SetSelectedFile(path);
 
         if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
 
@@ -253,8 +253,8 @@ namespace Editor {
                 extension == ".mat")
                 fs::rename(fullPath + ".cum", newFullPath + ".cum");
 
-            if (GetSelectedFile() == path)
-                SetSelectedFile(editingPath);
+            if (Properties::GetSelectedDataType() == Properties::SelectedDataType::File && Properties::GetSelectedData().file == path)
+                Properties::SetSelectedFile(editingPath);
 
             editingPath = "";
 

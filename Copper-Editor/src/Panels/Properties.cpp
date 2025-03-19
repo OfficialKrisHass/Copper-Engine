@@ -31,8 +31,8 @@ namespace Editor {
 
     static const char* s_lightTypes[] = { "Point", "Directional" };
 
-    Entity* Properties::m_selectedEntity = &GetSelectedEntity();
-    fs::path* Properties::m_selectedFile = &GetSelectedFile();
+    Properties::SelectedData Properties::m_selectedData = { fs::path("") };
+    Properties::SelectedDataType Properties::m_selectedDataType = SelectedDataType::None;
 
     template<typename T> static bool DrawComponent(const std::string& name, T* component);
     static bool DrawComponent(const std::string& name, Transform* component);
@@ -42,9 +42,9 @@ namespace Editor {
         CUP_FUNCTION();
         CUP_START_FRAME("Properties");
 
-        if (m_selectedEntity->ID() != INVALID_ENTITY_ID && m_selectedFile->empty())
+        if (m_selectedDataType == SelectedDataType::Entity)
             RenderEntity();
-        else if (!m_selectedFile->empty() && m_selectedEntity->ID() == INVALID_ENTITY_ID)
+        else if (m_selectedDataType == SelectedDataType::File)
             RenderFile();
 
         CUP_END_FRAME();
@@ -53,9 +53,11 @@ namespace Editor {
 
     void Properties::RenderEntity() {
 
-        if (m_selectedEntity->ID() == INVALID_ENTITY_ID) return;
+        CU_ASSERT(m_selectedDataType == SelectedDataType::Entity, "Can't render an entity when one isn't selected!");
 
-        InternalEntity* entity = *m_selectedEntity;
+        if (!m_selectedData.entity) return;
+
+        InternalEntity* entity = m_selectedData.entity;
 
         char buffer[128] = {};
         std::strncpy(buffer, entity->name.c_str(), sizeof(buffer));
@@ -181,12 +183,13 @@ namespace Editor {
     }
     void Properties::RenderFile() {
 
-        if (m_selectedFile->empty()) return;
+        CU_ASSERT(m_selectedDataType == SelectedDataType::File, "Can't render file when a file is not selected!");
+        if (m_selectedData.file.empty()) return;
 
-        ImGui::Text(m_selectedFile->string().c_str());
+        ImGui::Text(m_selectedData.file.string().c_str());
         ImGui::Separator();
 
-        std::string extension = m_selectedFile->extension().string();
+        std::string extension = m_selectedData.file.extension().string();
 
         if (extension == ".mat")
             RenderMaterial();
@@ -216,16 +219,16 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        const UUID& asset = ProjectAssetDatabase::GetAssetFromPath(*m_selectedFile);
+        const UUID& asset = ProjectAssetDatabase::GetAssetFromPath(m_selectedData.file);
         if (asset == UUID::GetInvalid()) {
 
-            LogError("Can't serialize an asset that isn't loaded! Path: {}", *m_selectedFile);
+            LogError("Can't serialize an asset that isn't loaded! Path: {}", m_selectedData.file);
             return;
 
         }
 
-        if (m_selectedFile->extension().string() == ".mat")
-            AssetFile::SerializeMaterial(GetProject().GetAssetsPath() / *m_selectedFile, asset);
+        if (m_selectedData.file.extension().string() == ".mat")
+            AssetFile::SerializeMaterial(GetProject().GetAssetsPath() / m_selectedData.file, asset);
 
     }
 
@@ -431,17 +434,17 @@ namespace Editor {
 
     void Properties::RenderMaterial() {
 
-        const MaterialAsset& material = ProjectAssetDatabase::GetAssetFromPath(*m_selectedFile);
+        const MaterialAsset& material = ProjectAssetDatabase::GetAssetFromPath(m_selectedData.file);
         if (material == UUID::GetInvalid()) {
 
-            LogWarn("Selected File is not found in the AssetFileDatabase, try refreshing.\n\tPath: {}", GetProject().GetAssetsPath() / *m_selectedFile);
+            LogWarn("Selected File is not found in the AssetFileDatabase, try refreshing.\n\tPath: {}", GetProject().GetAssetsPath() / m_selectedData.file);
+            m_selectedDataType = SelectedDataType::None;
 
-            SetSelectedFile("");
             return;
 
         }
 
-        const std::string name = m_selectedFile->filename().string();
+        const std::string name = m_selectedData.file.filename().string();
         ImGui::Text(name.c_str());
         ImGui::NewLine();
 

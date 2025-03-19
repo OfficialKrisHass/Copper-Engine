@@ -15,12 +15,7 @@ namespace Editor {
         
         // Setters
 
-        inline static void SetScene(Copper::Scene* scene) {
-            
-            m_scene = scene;
-            SetSelectedEntity(nullptr);
-        
-        }
+        static void SetScene(Copper::Scene* scene);
 
     private:
         static Copper::Scene* m_scene;

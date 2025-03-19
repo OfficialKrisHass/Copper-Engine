@@ -11,9 +11,44 @@ namespace Editor {
     public:
         Properties() : Panel("Properties") {}
 
+        union SelectedData {
+
+            Copper::fs::path file;
+            Copper::Entity entity;
+
+            ~SelectedData() {}
+
+        };
+        enum class SelectedDataType : Copper::uint8 {
+
+            Entity = 0,
+            File,
+
+            None,
+
+        };
+
+        static const SelectedData& GetSelectedData() { return m_selectedData; }
+        static SelectedDataType GetSelectedDataType() { return m_selectedDataType; }
+
+        static void SetSelectedEntity(Copper::Entity entity) {
+
+            m_selectedData.entity = entity;
+            m_selectedDataType = SelectedDataType::Entity;
+
+        }
+        static void SetSelectedFile(const Copper::fs::path& file) {
+
+            m_selectedData.file = file;
+            m_selectedDataType = SelectedDataType::File;
+
+        }
+
+        static void ClearSelectedData() { m_selectedDataType = SelectedDataType::None; }
+            
     private:
-        static Copper::Entity* m_selectedEntity;
-        static Copper::fs::path* m_selectedFile;
+        static SelectedData m_selectedData;
+        static SelectedDataType m_selectedDataType;
 
         virtual void UI() override;
 

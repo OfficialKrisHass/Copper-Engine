@@ -6,8 +6,6 @@ namespace Editor {
 
     class Project;
 
-    struct SelectedAsset;
-
     enum class EditorState {
 
         Edit, Play
@@ -26,12 +24,6 @@ namespace Editor {
     const Project& GetProject();
 
     SceneCamera& GetSceneCam();
-
-    Copper::Entity& GetSelectedEntity();
-    Copper::fs::path& GetSelectedFile();
-
-    void SetSelectedEntity(const Copper::Entity& value);
-    void SetSelectedFile(const Copper::fs::path& value);
 
     bool IsRuntimeRunning();
 

@@ -50,16 +50,17 @@ namespace Editor {
 
         ImGui::PushID((uint32) (uint64) entity);
 
-        Entity& selectedEntity = GetSelectedEntity();
+        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
+        if (Properties::GetSelectedDataType() == Properties::SelectedDataType::Entity && Properties::GetSelectedData().entity == entity)
+            flags |= ImGuiTreeNodeFlags_OpenOnArrow;
 
-        ImGuiTreeNodeFlags flags = ((selectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
         bool opened = ImGui::TreeNodeEx(entity, flags, entity->name.c_str());
 
         if (ImGui::IsItemClicked())
             clickedEntityID = entity->ID();
 
         if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered() && entity->ID() == clickedEntityID)
-            SetSelectedEntity(entity);
+            Properties::SetSelectedEntity(entity);
 
         if (ImGui::BeginDragDropSource()) {
 
@@ -84,8 +85,8 @@ namespace Editor {
 
                 m_scene->RemoveEntity(entity);
 
-                if (selectedEntity == entity)
-                    SetSelectedEntity(nullptr);
+                if (Properties::GetSelectedDataType() == Properties::SelectedDataType::Entity && Properties::GetSelectedData().entity == entity)
+                    Properties::ClearSelectedData();
 
                 ImGui::EndPopup();
                 ImGui::PopID();
@@ -117,7 +118,7 @@ namespace Editor {
 
         if (ImGui::MenuItem("Entity", 0, false, m_scene)) {
             
-            SetSelectedEntity(m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one));
+            Properties::SetSelectedEntity(m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one));
             SetChanges(true);
 
         }
@@ -135,7 +136,7 @@ namespace Editor {
                 renderer->material = Material::WhiteMaterial();
 
                 SetChanges(true);
-                SetSelectedEntity(selectedEntity);
+                Properties::SetSelectedEntity(selectedEntity);
 
             }
             if (ImGui::MenuItem("Cube", 0, false, m_scene)) {
@@ -147,7 +148,7 @@ namespace Editor {
                 renderer->material = Material::WhiteMaterial();
 
                 SetChanges(true);
-                SetSelectedEntity(selectedEntity);
+                Properties::SetSelectedEntity(selectedEntity);
 
             }
 
@@ -161,7 +162,7 @@ namespace Editor {
             Light* l = selectedEntity->AddComponent<Light>();
 
             SetChanges(true);
-            SetSelectedEntity(selectedEntity);
+            Properties::SetSelectedEntity(selectedEntity);
 
         }
         if (ImGui::MenuItem("Camera", 0, false, m_scene)) {
@@ -170,7 +171,7 @@ namespace Editor {
             Camera* c = selectedEntity->AddComponent<Camera>();
 
             SetChanges(true);
-            SetSelectedEntity(selectedEntity);
+            Properties::SetSelectedEntity(selectedEntity);
 
         }
 
@@ -186,6 +187,15 @@ namespace Editor {
             ((InternalEntity*) payload->Data)->GetTransform()->SetParent(nullptr);
 
         ImGui::EndDragDropTarget();
+
+    }
+
+    void SceneHierarchy::SetScene(Scene* scene) {
+
+        CUP_FUNCTION();
+
+        m_scene = scene;
+        Properties::ClearSelectedData();
 
     }
 

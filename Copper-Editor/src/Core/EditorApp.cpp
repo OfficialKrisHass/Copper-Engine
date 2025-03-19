@@ -105,11 +105,6 @@ namespace Editor {
         Console console;
         ThemeEditor themeEditor;
 
-        // Selected assets
-
-        Entity selectedEntity;
-        fs::path selectedFile = "";
-
         // Theme Editor
 
         bool themeEditorOpen = false;
@@ -462,8 +457,9 @@ namespace Editor {
         //Gizmos that I stol... I mean, taken inspiration from The Chernos Game Engine series
         //Yeah, I definitely didn't copy this entire chunk of code that I don't understand but
         //magically works, naaah.
-        InternalEntity* selectedObj = data.selectedEntity;
-        if (selectedObj) {
+        if (Properties::GetSelectedDataType() == Properties::SelectedDataType::Entity) {
+
+            InternalEntity* selectedObj = Properties::GetSelectedData().entity;
 
             ImGuizmo::SetOrthographic(false);
             ImGuizmo::SetDrawlist();
@@ -1047,22 +1043,6 @@ namespace Editor {
     
     const Project& GetProject() { return data.project; }
     SceneCamera& GetSceneCam() { return data.sceneCam; }
-
-    Entity& GetSelectedEntity() { return data.selectedEntity; }
-    fs::path& GetSelectedFile() { return data.selectedFile; }
-
-    void SetSelectedEntity(const Copper::Entity& value) {
-
-        data.selectedEntity = value;
-        data.selectedFile = "";
-
-    }
-    void SetSelectedFile(const Copper::fs::path& value) {
-
-        data.selectedFile = value;
-        data.selectedEntity = nullptr;
-
-    }
 
     UVector2I GetViewportSize() { return data.viewportSize; }
 

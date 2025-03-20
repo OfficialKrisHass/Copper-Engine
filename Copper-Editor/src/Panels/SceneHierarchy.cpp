@@ -51,7 +51,7 @@ namespace Editor {
         ImGui::PushID((uint32) (uint64) entity);
 
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
-        if (Properties::GetSelectedDataType() == Properties::SelectedDataType::Entity && Properties::GetSelectedData().entity == entity)
+        if (Properties::GetSelectedData().type == SelectedData::Type::Entity && Properties::GetSelectedData().entity == entity)
             flags |= ImGuiTreeNodeFlags_OpenOnArrow;
 
         bool opened = ImGui::TreeNodeEx(entity, flags, entity->name.c_str());
@@ -85,7 +85,7 @@ namespace Editor {
 
                 m_scene->RemoveEntity(entity);
 
-                if (Properties::GetSelectedDataType() == Properties::SelectedDataType::Entity && Properties::GetSelectedData().entity == entity)
+                if (Properties::GetSelectedData().type == SelectedData::Type::Entity && Properties::GetSelectedData().entity == entity)
                     Properties::ClearSelectedData();
 
                 ImGui::EndPopup();

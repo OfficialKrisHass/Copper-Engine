@@ -31,8 +31,7 @@ namespace Editor {
 
     static const char* s_lightTypes[] = { "Point", "Directional" };
 
-    Properties::SelectedData Properties::m_selectedData = { fs::path("") };
-    Properties::SelectedDataType Properties::m_selectedDataType = SelectedDataType::None;
+    SelectedData Properties::m_selectedData = SelectedData();
 
     template<typename T> static bool DrawComponent(const std::string& name, T* component);
     static bool DrawComponent(const std::string& name, Transform* component);
@@ -42,9 +41,9 @@ namespace Editor {
         CUP_FUNCTION();
         CUP_START_FRAME("Properties");
 
-        if (m_selectedDataType == SelectedDataType::Entity)
+        if (m_selectedData.type == SelectedData::Type::Entity)
             RenderEntity();
-        else if (m_selectedDataType == SelectedDataType::File)
+        else if (m_selectedData.type == SelectedData::Type::File)
             RenderFile();
 
         CUP_END_FRAME();
@@ -53,7 +52,7 @@ namespace Editor {
 
     void Properties::RenderEntity() {
 
-        CU_ASSERT(m_selectedDataType == SelectedDataType::Entity, "Can't render an entity when one isn't selected!");
+        CU_ASSERT(m_selectedData.type == SelectedData::Type::Entity, "Can't render an entity when one isn't selected!");
 
         if (!m_selectedData.entity) return;
 
@@ -183,7 +182,7 @@ namespace Editor {
     }
     void Properties::RenderFile() {
 
-        CU_ASSERT(m_selectedDataType == SelectedDataType::File, "Can't render file when a file is not selected!");
+        CU_ASSERT(m_selectedData.type == SelectedData::Type::File, "Can't render file when a file is not selected!");
         if (m_selectedData.file.empty()) return;
 
         ImGui::Text(m_selectedData.file.string().c_str());
@@ -438,7 +437,7 @@ namespace Editor {
         if (material == UUID::GetInvalid()) {
 
             LogWarn("Selected File is not found in the AssetFileDatabase, try refreshing.\n\tPath: {}", GetProject().GetAssetsPath() / m_selectedData.file);
-            m_selectedDataType = SelectedDataType::None;
+            m_selectedData.type = SelectedData::Type::None;
 
             return;
 

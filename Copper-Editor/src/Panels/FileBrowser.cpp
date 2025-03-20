@@ -253,7 +253,7 @@ namespace Editor {
                 extension == ".mat")
                 fs::rename(fullPath + ".cum", newFullPath + ".cum");
 
-            if (Properties::GetSelectedDataType() == Properties::SelectedDataType::File && Properties::GetSelectedData().file == path)
+            if (Properties::GetSelectedData().type == SelectedData::Type::File && Properties::GetSelectedData().file == path)
                 Properties::SetSelectedFile(editingPath);
 
             editingPath = "";

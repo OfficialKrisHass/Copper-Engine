@@ -457,7 +457,7 @@ namespace Editor {
         //Gizmos that I stol... I mean, taken inspiration from The Chernos Game Engine series
         //Yeah, I definitely didn't copy this entire chunk of code that I don't understand but
         //magically works, naaah.
-        if (Properties::GetSelectedDataType() == Properties::SelectedDataType::Entity) {
+        if (Properties::GetSelectedData().type == SelectedData::Type::Entity) {
 
             InternalEntity* selectedObj = Properties::GetSelectedData().entity;
 

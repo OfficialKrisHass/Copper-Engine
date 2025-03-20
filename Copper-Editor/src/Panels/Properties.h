@@ -2,6 +2,8 @@
 
 #include "Copper.h"
 
+#include "Core/SelectedData.h"
+
 #include "Panels/Panel.h"
 
 namespace Editor {
@@ -11,44 +13,26 @@ namespace Editor {
     public:
         Properties() : Panel("Properties") {}
 
-        union SelectedData {
-
-            Copper::fs::path file;
-            Copper::Entity entity;
-
-            ~SelectedData() {}
-
-        };
-        enum class SelectedDataType : Copper::uint8 {
-
-            Entity = 0,
-            File,
-
-            None,
-
-        };
-
         static const SelectedData& GetSelectedData() { return m_selectedData; }
-        static SelectedDataType GetSelectedDataType() { return m_selectedDataType; }
 
         static void SetSelectedEntity(Copper::Entity entity) {
 
             m_selectedData.entity = entity;
-            m_selectedDataType = SelectedDataType::Entity;
+            m_selectedData.type = SelectedData::Type::Entity;
 
         }
         static void SetSelectedFile(const Copper::fs::path& file) {
 
+            new(&m_selectedData.file) fs::path();
             m_selectedData.file = file;
-            m_selectedDataType = SelectedDataType::File;
+            m_selectedData.type = SelectedData::Type::File;
 
         }
 
-        static void ClearSelectedData() { m_selectedDataType = SelectedDataType::None; }
+        static void ClearSelectedData() { m_selectedData.type = SelectedData::Type::None; }
             
     private:
         static SelectedData m_selectedData;
-        static SelectedDataType m_selectedDataType;
 
         virtual void UI() override;
 

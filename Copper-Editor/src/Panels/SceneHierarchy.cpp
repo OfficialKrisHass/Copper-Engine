@@ -83,10 +83,10 @@ namespace Editor {
 
             if (ImGui::MenuItem("Remove")) {
 
-                m_scene->RemoveEntity(entity);
-
                 if (Properties::GetSelectedData().type == SelectedData::Type::Entity && Properties::GetSelectedData().entity == entity)
                     Properties::ClearSelectedData();
+
+                m_scene->RemoveEntity(entity);
 
                 ImGui::EndPopup();
                 ImGui::PopID();

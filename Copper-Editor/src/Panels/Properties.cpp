@@ -64,7 +64,7 @@ namespace Editor {
         if (ImGui::InputText("##Name", buffer, sizeof(buffer))) {
 
             entity->name = buffer;
-            Editor::SetChanges(true);
+            Editor::SetChanges();
 
         }
 
@@ -125,37 +125,37 @@ namespace Editor {
             if (ImGui::MenuItem("Light")) {
 
                 entity->AddComponent<Light>()->color.r = 0.5f;
-                Editor::SetChanges(true);
+                Editor::SetChanges();
 
             } else if (ImGui::MenuItem("Mesh Renderer")) {
 
                 entity->AddComponent<MeshRenderer>();
-                Editor::SetChanges(true);
+                Editor::SetChanges();
 
             } else if (ImGui::MenuItem("Camera")) {
 
                 entity->AddComponent<Camera>();
-                Editor::SetChanges(true);
+                Editor::SetChanges();
 
             } else if (ImGui::MenuItem("Rigid Body")) {
 
                 entity->AddComponent<RigidBody>();
-                Editor::SetChanges(true);
+                Editor::SetChanges();
 
             } else if (ImGui::MenuItem("Box Collider") && !collider) {
 
                 entity->AddComponent<BoxCollider>();
-                Editor::SetChanges(true);
+                Editor::SetChanges();
 
             } else if (ImGui::MenuItem("Sphere Collider") && !collider) {
 
                 entity->AddComponent<SphereCollider>();
-                Editor::SetChanges(true);
+                Editor::SetChanges();
 
             } else if (ImGui::MenuItem("Capsule Collider") && !collider) {
 
                 entity->AddComponent<CapsuleCollider>();
-                Editor::SetChanges(true);
+                Editor::SetChanges();
 
             }
 
@@ -169,7 +169,7 @@ namespace Editor {
 
                 ScriptComponent* component = entity->AddComponent<ScriptComponent>();
                 component->Setup(&script);
-                Editor::SetChanges(true);
+                Editor::SetChanges();
 
                 break;
 
@@ -395,7 +395,7 @@ namespace Editor {
 
                 component->GetEntity()->template RemoveComponent<T>();
 
-                SetChanges(true);
+                SetChanges();
                 ImGui::EndPopup();
                 ImGui::PopID();
 

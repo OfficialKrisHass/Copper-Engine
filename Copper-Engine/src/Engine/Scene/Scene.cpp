@@ -85,7 +85,6 @@ namespace Copper {
         ShutdownPhysics();
 
         initialized = false;
-        m_name.clear();
         m_cam = nullptr;
 
     }

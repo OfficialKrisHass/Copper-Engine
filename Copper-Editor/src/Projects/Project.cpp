@@ -37,6 +37,15 @@ namespace Editor {
 
         CreateProjectFromTemplate("Empty", *this);
 
+        bool opened = false;
+        try { opened = LoadFile(path); }
+        catch (YAML::Exception& e) {
+
+            Input::ErrorPopup("Failed to open project", "Could not open Project.cu file.\n\nPath: " + path.string() + "\n\nError: " + e.msg);
+            exit(-1);
+
+        }
+
     }
 
     void Project::Open(const fs::path& path) {
@@ -74,8 +83,6 @@ namespace Editor {
         Scripting::Load((path / "Binaries/" / (m_name + ".dll")).string());
 
         FileWatcher::Start(GetAssetsPath());
-
-        m_changes = false;
 
         if (m_lastOpenedScenePath.empty()) return;
 

@@ -1,5 +1,4 @@
 Version: 0
-Name: ""
 Entities:
   0:
     Name: Cube
@@ -40,3 +39,8 @@ Entities:
       Near Plane: 0.100000001
       Far Plane: 1000
       Size: [1177, 518]
+Scene Camera:
+  Position: [0, 0, 0]
+  Rotation: [1, 0, 0, 0]
+  Speed: 0.100000001
+  Sensitivity: 100

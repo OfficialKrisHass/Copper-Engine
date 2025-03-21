@@ -119,7 +119,7 @@ namespace Editor {
         if (ImGui::MenuItem("Entity", 0, false, m_scene)) {
             
             Properties::SetSelectedEntity(m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one));
-            SetChanges(true);
+            SetChanges();
 
         }
 
@@ -135,7 +135,7 @@ namespace Editor {
                 renderer->mesh = PlaneMesh();
                 renderer->material = Material::WhiteMaterial();
 
-                SetChanges(true);
+                SetChanges();
                 Properties::SetSelectedEntity(selectedEntity);
 
             }
@@ -147,7 +147,7 @@ namespace Editor {
                 renderer->mesh = CubeMesh();
                 renderer->material = Material::WhiteMaterial();
 
-                SetChanges(true);
+                SetChanges();
                 Properties::SetSelectedEntity(selectedEntity);
 
             }
@@ -161,7 +161,7 @@ namespace Editor {
             Entity selectedEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Light");
             Light* l = selectedEntity->AddComponent<Light>();
 
-            SetChanges(true);
+            SetChanges();
             Properties::SetSelectedEntity(selectedEntity);
 
         }
@@ -170,7 +170,7 @@ namespace Editor {
             Entity selectedEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Camera");
             Camera* c = selectedEntity->AddComponent<Camera>();
 
-            SetChanges(true);
+            SetChanges();
             Properties::SetSelectedEntity(selectedEntity);
 
         }

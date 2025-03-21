@@ -83,19 +83,14 @@ namespace Copper {
         void Render(class Camera* cam, bool gizmos = true);
 
         inline bool IsInitialized() const { return initialized; }
-        inline const std::string& GetName() const { return m_name; }
 
         inline Camera* GetMainCamera() const { return m_cam; }
 
         Registry::ComponentPool* GetComponentPool(int32 cID) const { CUP_FUNCTION(); return m_registry.GetComponentPool(cID); }
         uint32 GetNumOfEntities() const { return (uint32) m_registry.m_entities.size(); }
 
-        inline void SetName(const std::string& value) { m_name = value; }
-
     private:
         bool initialized = false;
-
-        std::string m_name = "";
 
         Registry m_registry;
         Camera* m_cam = nullptr;

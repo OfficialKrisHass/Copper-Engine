@@ -69,6 +69,7 @@ namespace Editor {
         bool scriptChanges = false;
 
         fs::path projectToLoad;
+        bool shouldCreateNewProject = false;
 
         // Scene
 
@@ -257,6 +258,12 @@ namespace Editor {
 
             data.project.Open(data.projectToLoad);
             data.projectToLoad.clear();
+
+        }
+        if (data.shouldCreateNewProject) {
+
+            NewProject();
+            data.shouldCreateNewProject = false;
 
         }
 
@@ -567,7 +574,7 @@ namespace Editor {
             if (ImGui::BeginMenu("Project")) {
 
                 if (ImGui::MenuItem("New Project"))
-                    NewProject();
+                    data.shouldCreateNewProject = true;
                 if (ImGui::MenuItem("Open Project")) {
 
                     fs::path path = Utilities::FolderOpenDialog("Open Project", data.project.GetPath().empty() ? ROOT_DIR : data.project.GetPath().parent_path());
@@ -654,9 +661,9 @@ namespace Editor {
             if(ImGui::BeginMenu("Camera")) {
 
                 if (ImGui::DragFloat("Speed", &data.sceneCam.speed, 0.01f, 0.001f, 50.0f, "%.4f"))
-                    SetChanges(true);
+                    SetChanges();
                 if (ImGui::DragFloat("Sensitivity", &data.sceneCam.sensitivity, 0.1f, 1.0f, 1000.0f))
-                    SetChanges(true);
+                    SetChanges();
 
                 ImGui::EndMenu();
 
@@ -743,12 +750,16 @@ namespace Editor {
         data.project.RunPremake();
 #endif
         data.project.BuildScripts();
-        Scripting::Load(data.project.GetPath() / "Binraries" / (data.project.GetName() + ".dll"));
+        Scripting::Load(data.project.GetPath() / "Binaries" / (data.project.GetName() + ".dll"));
 
-        NewScene();
+        data.scene->Cleanup();
+        SceneSerializer::Deserialize(data.scene, path / "Assets" / data.project.GetLastOpenedScenePath());
+        data.scene->Initialize();
+
+        SceneHierarchy::SetScene(data.scene);
 
         data.changes = false;
-        data.title = "Copper Editor - " + data.project.GetName() + ":";
+        data.title = "Copper Editor - " + data.project.GetName() + ": Main.copper";
         Input::SetWindowTitle(data.title);
 
     }
@@ -801,7 +812,7 @@ namespace Editor {
         SceneHierarchy::SetScene(data.scene);
 
         data.changes = false;
-        data.title = "Copper Editor - " + data.project.GetName() + ": " + data.scene->GetName();
+        data.title = "Copper Editor - " + data.project.GetName() + ": " + data.project.GetLastOpenedSceneName();
         Input::SetWindowTitle(data.title);
 
         data.project.SetLastOpenedScenePath(fs::relative(path, data.project.GetAssetsPath()));
@@ -845,8 +856,7 @@ namespace Editor {
         SceneSerializer::Serialize(data.scene, data.scenePath);
 
         data.changes = false;
-        data.title = "Copper Editor - TestProject: ";
-        data.title += data.scene->GetName();
+        data.title = "Copper Editor - " + data.project.GetName() + ": " + data.project.GetLastOpenedSceneName();
         Input::SetWindowTitle(data.title);
 
     }
@@ -872,8 +882,7 @@ namespace Editor {
         data.project.SetLastOpenedScenePath(relative);
 
         data.changes = false;
-        data.title = "Copper Editor - TestProject: ";
-        data.title += data.scene->GetName();
+        data.title = "Copper Editor - " + data.project.GetName() + ": " + data.project.GetLastOpenedSceneName(); 
         Input::SetWindowTitle(data.title);
         
     }
@@ -1051,15 +1060,16 @@ namespace Editor {
     // TODO: This feature is not working, has not been working for the past year, isn't
     // even used in 90% of the places it should be, and also is done in the stupidest way imaginable.
     // Am I going to fix it in 0.3 ? ..... No
-    void SetChanges(bool value) {
+    // UPDATE: It is still not working, but working on fixing it
+    void SetChanges() {
 
         CUP_FUNCTION();
 
-        if (data.state == EditorState::Play) return;
+        if (data.changes || data.state == EditorState::Play) return;
 
-        data.changes = value;
+        data.changes = true;
 
-        data.title = "Copper Editor - " + data.project.GetName() + ": " + data.scene->GetName() + "*";
+        data.title += '*';
         Input::SetWindowTitle(data.title);
 
     }

@@ -29,6 +29,6 @@ namespace Editor {
 
     Copper::UVector2I GetViewportSize();
 
-    void SetChanges(bool value);
+    void SetChanges();
 
 }

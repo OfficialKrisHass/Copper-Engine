@@ -46,7 +46,6 @@ namespace Editor::SceneSerializer {
         out << YAML::BeginMap; // Main
 
         out << YAML::Key << "Version" << YAML::Value << 0;
-        out << YAML::Key << "Name" << YAML::Value << scene->GetName();
 
         // Entities
 
@@ -73,14 +72,12 @@ namespace Editor::SceneSerializer {
 
         YAML::Node data = YAML::LoadFile(path.string());
 
-        // TODO: Remove
-        scene->SetName(data["Name"].as<std::string>());
-
         YAML::Node entities = data["Entities"];
         for (YAML::const_iterator it = entities.begin(); it != entities.end(); ++it)
             DeserializeEntity(it->first.as<uint32>(), it->second);
 
-        DeserializeSceneCamera(data["Scene Camera"]);
+        if (data["Scene Camera"])
+            DeserializeSceneCamera(data["Scene Camera"]);
 
         } catch (YAML::Exception e) {
 

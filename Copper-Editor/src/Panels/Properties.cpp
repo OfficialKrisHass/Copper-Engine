@@ -76,12 +76,25 @@ namespace Editor {
             Transform* transform = entity->GetTransform();
 
             Vector3 pos = transform->Position();
-            if (UI::EditVector3("Position", &pos))
+            if (UI::EditVector3("Position", &pos)) {
+
                 transform->SetPosition(pos);
 
+                if (RigidBody* rb = entity->GetComponent<RigidBody>())
+                    rb->SetPosition(pos);
+
+            }
+
             Vector3 newRot = transform->Rotation().EulerAngles();
-            if (UI::EditVector3("Rotation", &newRot))
-                transform->SetRotation(Quaternion(newRot));
+            if (UI::EditVector3("Rotation", &newRot)) {
+
+                Quaternion rot = Quaternion(newRot);
+                transform->SetRotation(rot);
+
+                if (RigidBody* rb = entity->GetComponent<RigidBody>())
+                    rb->SetRotation(rot);
+
+            }
 
             Vector3 scale = transform->Scale();
             if (UI::EditVector3("Scale", &scale))

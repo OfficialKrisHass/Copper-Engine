@@ -498,6 +498,8 @@ namespace Editor {
 
                 //glm::vec3 deltaRotation = (Vector3) rotation - selectedObj->GetTransform()->rotation;
                 selectedObj->GetTransform()->SetPosition(position);
+                if (RigidBody* rb = selectedObj->GetComponent<RigidBody>())
+                    rb->SetPosition(position);
                 //selectedObj->GetTransform()->rotation += deltaRotation;
                 selectedObj->GetTransform()->SetScale(scale);
 

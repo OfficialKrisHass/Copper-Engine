@@ -185,4 +185,23 @@ namespace Copper {
 
     }
 
+    void RigidBody::SetPosition(const Vector3& position) {
+
+        if (m_actor == nullptr || m_static) return;
+
+        PxTransform pose = m_actor->getGlobalPose();
+        pose.p = CopperToPhysX(position);
+        m_actor->setGlobalPose(pose);
+
+    }
+    void RigidBody::SetRotation(const Quaternion& rotation) {
+
+        if (m_actor == nullptr || m_static) return;
+
+        PxTransform pose = m_actor->getGlobalPose();
+        pose.q = CopperToPhysX(rotation);
+        m_actor->setGlobalPose(pose);
+
+    }
+
 }

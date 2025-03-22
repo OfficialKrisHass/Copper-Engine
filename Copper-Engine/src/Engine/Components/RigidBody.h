@@ -77,6 +77,10 @@ namespace Copper {
         void SetGravity(bool value);
         void SetLockMask(uint8 value);
 
+        // TODO: Remove this in favour of shared Position and Rotation between PhysX and Copper
+        void SetPosition(const Vector3& position);
+        void SetRotation(const Quaternion& rotation);
+
     private:
         physx::PxRigidActor* m_actor = nullptr;
         Collider* m_collider = nullptr;

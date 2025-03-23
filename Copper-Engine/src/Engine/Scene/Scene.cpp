@@ -121,7 +121,7 @@ namespace Copper {
                 Renderer::AddMesh(renderer->mesh, entity->m_transform, renderer->material);
 
             if (Collider* collider = entity->GetComponent<Collider>())
-                Renderer::AddCube(Vector3::zero, Vector3::one, Color::red, entity->m_transform);
+                Renderer::AddCube(collider->GetCenter(), Vector3::one, Color::red, entity->m_transform);
 
         }
 

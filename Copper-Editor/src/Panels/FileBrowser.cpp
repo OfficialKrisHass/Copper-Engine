@@ -247,12 +247,6 @@ namespace Editor {
 
             fs::rename(fullPath, newFullPath);
             
-            std::string extension = path.extension().string();
-            if (extension == ".copper" ||
-                extension == ".png" || extension == ".jpg" ||
-                extension == ".mat")
-                fs::rename(fullPath + ".cum", newFullPath + ".cum");
-
             if (Properties::GetSelectedData().type == SelectedData::Type::File && Properties::GetSelectedData().file == path)
                 Properties::SetSelectedFile(editingPath);
 

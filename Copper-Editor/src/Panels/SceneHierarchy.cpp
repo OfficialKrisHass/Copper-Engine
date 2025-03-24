@@ -24,12 +24,8 @@ namespace Editor {
 
         CUP_START_FRAME("Scene Hierarchy");
 
-        if (ImGui::BeginPopupContextWindow("##Scene Hierarchy")) {
-
+        if (ImGui::BeginPopupContextWindow("##Scene Hierarchy"))
             PopupWindow();
-            ImGui::EndPopup();
-
-        }
 
         for (InternalEntity* entity : EntityView(GetScene())) {
 
@@ -41,6 +37,13 @@ namespace Editor {
         }
 
         RemoveParentTarget();
+
+        if (m_entityToRemove) {
+
+            m_scene->RemoveEntity(m_entityToRemove);
+            m_entityToRemove = Entity();
+
+        }
 
         CUP_END_FRAME();
 
@@ -72,32 +75,21 @@ namespace Editor {
         }
         if (ImGui::BeginDragDropTarget()) {
 
-            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE"))
-                entity->GetTransform()->AddChild(GetEntityFromID(*static_cast<uint32*>(payload->Data))->GetTransform());
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE")) {
+
+                Entity child = GetEntityFromID(*static_cast<uint32*>(payload->Data));
+                entity->GetTransform()->AddChild(child->GetTransform());
+
+                SetChanges();
+
+            }
 
             ImGui::EndDragDropTarget();
 
         }
 
-        if (ImGui::BeginPopupContextItem()) {
-
-            if (ImGui::MenuItem("Remove")) {
-
-                if (Properties::GetSelectedData().type == SelectedData::Type::Entity && Properties::GetSelectedData().entity == entity)
-                    Properties::ClearSelectedData();
-
-                m_scene->RemoveEntity(entity);
-
-                ImGui::EndPopup();
-                ImGui::PopID();
-
-                return;
-
-            }
-
-            ImGui::EndPopup();
-
-        }
+        if (ImGui::BeginPopupContextItem())
+            EntityPopup(entity);
 
         if (opened) {
 
@@ -114,41 +106,32 @@ namespace Editor {
         ImGui::PopID();
 
     }
-    void SceneHierarchy::PopupWindow() {
 
-        if (ImGui::MenuItem("Entity", 0, false, m_scene)) {
-            
-            Properties::SetSelectedEntity(m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one));
-            SetChanges();
+    void SceneHierarchy::CommonPopup(Entity& newEntity) {
 
-        }
+        CUP_FUNCTION();
 
-        ImGui::Separator();
+        if (ImGui::MenuItem("Entity", 0, false, m_scene))
+            newEntity = m_scene->CreateEntity();
 
         if (ImGui::BeginMenu("3D Objects")) {
 
             if (ImGui::MenuItem("Plane", 0, false, m_scene)) {
 
-                Entity selectedEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Plane");
+                newEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Plane");
+                MeshRenderer* renderer = newEntity->AddComponent<MeshRenderer>();
 
-                MeshRenderer* renderer = selectedEntity->AddComponent<MeshRenderer>();
                 renderer->mesh = PlaneMesh();
                 renderer->material = Material::WhiteMaterial();
-
-                SetChanges();
-                Properties::SetSelectedEntity(selectedEntity);
 
             }
             if (ImGui::MenuItem("Cube", 0, false, m_scene)) {
 
-                Entity selectedEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Cube");
+                newEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Cube");
+                MeshRenderer* renderer = newEntity->AddComponent<MeshRenderer>();
 
-                MeshRenderer* renderer = selectedEntity->AddComponent<MeshRenderer>();
                 renderer->mesh = CubeMesh();
                 renderer->material = Material::WhiteMaterial();
-
-                SetChanges();
-                Properties::SetSelectedEntity(selectedEntity);
 
             }
 
@@ -158,22 +141,56 @@ namespace Editor {
 
         if (ImGui::MenuItem("Light", 0, false, m_scene)) {
 
-            Entity selectedEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Light");
-            Light* l = selectedEntity->AddComponent<Light>();
-
-            SetChanges();
-            Properties::SetSelectedEntity(selectedEntity);
+            newEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Light");
+            Light* l = newEntity->AddComponent<Light>();
 
         }
         if (ImGui::MenuItem("Camera", 0, false, m_scene)) {
 
-            Entity selectedEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Camera");
-            Camera* c = selectedEntity->AddComponent<Camera>();
-
-            SetChanges();
-            Properties::SetSelectedEntity(selectedEntity);
+            newEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Camera");
+            Camera* c = newEntity->AddComponent<Camera>();
 
         }
+
+        if (newEntity) {
+
+            Properties::SetSelectedEntity(newEntity);
+            SetChanges();
+
+        } 
+
+    }
+    void SceneHierarchy::EntityPopup(Entity entity) {
+
+        CUP_FUNCTION();
+
+        if (ImGui::MenuItem("Remove")) {
+
+            if (Properties::GetSelectedData().type == SelectedData::Type::Entity && Properties::GetSelectedData().entity == entity)
+                Properties::ClearSelectedData();
+
+            m_entityToRemove = entity;
+            SetChanges();
+
+        }
+
+        ImGui::Separator();
+
+        Entity newEntity;
+
+        CommonPopup(newEntity);
+        if (newEntity)
+            newEntity->GetTransform()->SetParent(entity->GetTransform());
+
+        ImGui::EndPopup();
+
+    }
+    void SceneHierarchy::PopupWindow() {
+
+        Entity newEntity;
+        CommonPopup(newEntity);
+
+        ImGui::EndPopup();
 
     }
 
@@ -183,8 +200,14 @@ namespace Editor {
         const ImRect windowRect{ { ImGui::GetWindowContentRegionMin().x + 1, ImGui::GetItemRectMax().y + 2 }, { regionMax.x, regionMax.y + 80 } };
         if (!ImGui::BeginDragDropTargetCustom(windowRect, ImGuiID(310320231753))) return;
 
-        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE"))
-            ((InternalEntity*) payload->Data)->GetTransform()->SetParent(nullptr);
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE")) {
+
+            Entity entity = GetEntityFromID(*static_cast<uint32*>(payload->Data));
+            entity->GetTransform()->SetParent(nullptr);
+
+            SetChanges();
+
+        }
 
         ImGui::EndDragDropTarget();
 
@@ -195,7 +218,6 @@ namespace Editor {
         CUP_FUNCTION();
 
         m_scene = scene;
-        Properties::ClearSelectedData();
 
     }
 

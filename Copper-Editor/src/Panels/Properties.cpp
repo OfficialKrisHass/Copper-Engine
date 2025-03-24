@@ -64,7 +64,7 @@ namespace Editor {
         if (ImGui::InputText("##Name", buffer, sizeof(buffer))) {
 
             entity->name = buffer;
-            Editor::SetChanges();
+            SetChanges();
 
         }
 
@@ -83,6 +83,8 @@ namespace Editor {
                 if (RigidBody* rb = entity->GetComponent<RigidBody>())
                     rb->SetPosition(pos);
 
+                SetChanges();
+
             }
 
             Vector3 newRot = transform->Rotation().EulerAngles();
@@ -94,11 +96,18 @@ namespace Editor {
                 if (RigidBody* rb = entity->GetComponent<RigidBody>())
                     rb->SetRotation(rot);
 
+                SetChanges();
+
             }
 
             Vector3 scale = transform->Scale();
-            if (UI::EditVector3("Scale", &scale))
+            if (UI::EditVector3("Scale", &scale)) {
+
                 transform->SetScale(scale);
+
+                SetChanges();
+
+            }
 
             ImGui::PopID();
 

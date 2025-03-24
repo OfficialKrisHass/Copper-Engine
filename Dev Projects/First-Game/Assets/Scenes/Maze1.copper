@@ -44,6 +44,7 @@ Entities:
       Children:
         - 3
         - 5
+        - 7
   3:
     Name: Cube
     Transform:
@@ -64,7 +65,7 @@ Entities:
       Scale: [1, 2, 1]
       Parent: 4294967295
       Children:
-        []
+        - 6
     Mesh Renderer:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: 00000000-0000-0000-0000-000000000000
@@ -80,8 +81,34 @@ Entities:
     Mesh Renderer:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: e4427019-9f8e-4425-8930-166fdedc0817
+  6:
+    Name: Camera
+    Transform:
+      Position: [0, 0.400000006, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent: 4
+      Children:
+        []
+    Camera:
+      Fov: 90
+      Near Plane: 0.100000001
+      Far Plane: 1000
+      Size: [1920, 960]
+  7:
+    Name: Cube
+    Transform:
+      Position: [5.5, 2.5, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 5, 6]
+      Parent: 2
+      Children:
+        []
+    Mesh Renderer:
+      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
+      Material: e4427019-9f8e-4425-8930-166fdedc0817
 Scene Camera:
-  Position: [10.0863981, 11.0179758, -2.26507235]
-  Rotation: [-0.287611604, 0.0847504213, -0.915088177, -0.269648731]
+  Position: [-1.72527969, 6.06842661, 0.467337012]
+  Rotation: [-0.628747284, 0.178194404, 0.728235245, 0.206390485]
   Speed: 0.100000001
   Sensitivity: 100

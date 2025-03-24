@@ -759,6 +759,7 @@ namespace Editor {
         data.scene->Initialize();
 
         SceneHierarchy::SetScene(data.scene);
+        Properties::ClearSelectedData();
 
         data.changes = false;
         data.title = "Copper Editor - " + data.project.GetName() + ": Main.copper";
@@ -785,7 +786,9 @@ namespace Editor {
 
         data.scenePath = "";
         *data.scene = Scene();
+
         SceneHierarchy::SetScene(data.scene);
+        Properties::ClearSelectedData();
         
     }
     void OpenScene(const fs::path& path) {
@@ -812,6 +815,7 @@ namespace Editor {
         data.scene->Initialize(); 
 
         SceneHierarchy::SetScene(data.scene);
+        Properties::ClearSelectedData();
 
         data.changes = false;
         data.title = "Copper Editor - " + data.project.GetName() + ": " + data.project.GetLastOpenedSceneName();

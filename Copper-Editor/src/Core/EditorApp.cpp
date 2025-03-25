@@ -267,6 +267,22 @@ namespace Editor {
 
         }
 
+        if (data.viewportFBO.GetWidth() != data.viewportSize.x || data.viewportFBO.GetHeight() != data.viewportSize.y) {
+
+            data.viewportFBO.Resize(data.viewportSize);
+            data.sceneCam.Resize(data.viewportSize);
+
+        }
+
+        data.viewportFBO.Bind();
+        RendererAPI::ClearColor(Color(0.18f, 0.18f, 0.18f));
+
+        data.sceneCam.Update();
+        if (data.scene)
+            data.scene->Render(&data.sceneCam);
+
+        data.viewportFBO.Unbind();
+
         CUP_END_FRAME();
 
     }
@@ -438,26 +454,6 @@ namespace Editor {
         data.viewportCentre = data.viewportSize / 2;
         data.viewportCentre.x += (uint32) windowPos.x;
         data.viewportCentre.y += (uint32) windowPos.y;
-
-        if (data.viewportFBO.GetWidth() != data.viewportSize.x || data.viewportFBO.GetHeight() != data.viewportSize.y) {
-
-            //We don't need to Call SetWindowSize because if the Viewport size is changed
-            //it only affects the Viewport, not the Actualy Game Engine and the Main Game Panel
-            data.viewportFBO.Resize(data.viewportSize);
-            data.sceneCam.Resize(data.viewportSize);
-
-        }
-
-        //We need to Clear the Color because if we don't we just get a black image
-        data.viewportFBO.Bind();
-        RendererAPI::ClearColor(Color(0.18f, 0.18f, 0.18f));
-
-        data.sceneCam.Update();
-        if (data.scene)
-            data.scene->Render(&data.sceneCam);
-
-        //After we are done rendering we are safe to unbind the FBO unless we want to modify it any way
-        data.viewportFBO.Unbind();
 
         ImGui::Image(static_cast<ImTextureID>((uint64) data.viewportFBO.GetColorTextureID()), windowSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 

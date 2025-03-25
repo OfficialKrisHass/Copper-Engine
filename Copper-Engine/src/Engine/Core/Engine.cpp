@@ -160,13 +160,14 @@ namespace Copper {
 
             CUP_END_FRAME();
 
-            data.updateEvent();
 
             CUP_START_FRAME("Scene");
 
             data.fbo.Bind();
             data.scene.Update(data.deltaTime);
             data.fbo.Unbind();
+
+            data.updateEvent();
 
             Renderer::EndFrame();
             RendererAPI::ResizeViewport(data.GetWindow().GetSize());

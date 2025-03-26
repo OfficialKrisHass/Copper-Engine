@@ -1,3 +1,3 @@
 Name: First-Game
-Last scene: Main.copper
-Gizmo: 7
+Last scene: Scenes/Maze1.copper
+Gizmo: 896

@@ -183,7 +183,7 @@ namespace Copper::Renderer {
         CUP_FUNCTION();
 
         RendererAPI::EndFrame();
-    data.firstFrame = false;
+        data.firstFrame = false;
 
     }
 

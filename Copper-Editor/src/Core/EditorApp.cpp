@@ -119,6 +119,8 @@ namespace Editor {
 
     EditorData data;
 
+    void QueuedTasks();
+
     void LoadEditorData();
     void SaveEditorData();
 
@@ -151,7 +153,7 @@ namespace Editor {
 
         data.scene = GetScene();
 
-        data.viewportFBO = FrameBuffer(data.viewportSize);
+        data.viewportFBO = FrameBuffer(data.viewportSize, { FrameBuffer::Attachment::Format::RGB8 });
         
         data.playIcon.Create(ExecutableFolder() / "assets/Icons/PlayButton.png", Texture::Format::RGBA);
         data.stopIcon.Create(ExecutableFolder() / "assets/Icons/StopButton.png", Texture::Format::RGBA);
@@ -248,26 +250,7 @@ namespace Editor {
 
         FileWatcher::PollChanges();
 
-        if (!data.nextScenePath.empty()) {
-
-            OpenScene(data.nextScenePath);
-            data.nextScenePath.clear();
-
-        }
-        if (!data.projectToLoad.empty()) {
-
-            data.project.Open(data.projectToLoad);
-            data.projectToLoad.clear();
-
-        }
-        if (data.shouldCreateNewProject) {
-
-            NewProject();
-            data.shouldCreateNewProject = false;
-
-        }
-
-        if (data.viewportFBO.GetWidth() != data.viewportSize.x || data.viewportFBO.GetHeight() != data.viewportSize.y) {
+        if (data.viewportFBO.GetSize().x != data.viewportSize.x || data.viewportFBO.GetSize().y != data.viewportSize.y) {
 
             data.viewportFBO.Resize(data.viewportSize);
             data.sceneCam.Resize(data.viewportSize);
@@ -282,6 +265,8 @@ namespace Editor {
             data.scene->Render(&data.sceneCam);
 
         data.viewportFBO.Unbind();
+
+        QueuedTasks();
 
         CUP_END_FRAME();
 
@@ -314,6 +299,31 @@ namespace Editor {
         ImGui::End(); //Dockspace
 
         CUP_END_FRAME();
+
+    }
+
+    void QueuedTasks() {
+
+        CUP_FUNCTION();
+
+        if (!data.nextScenePath.empty()) {
+
+            OpenScene(data.nextScenePath);
+            data.nextScenePath.clear();
+
+        }
+        if (!data.projectToLoad.empty()) {
+
+            data.project.Open(data.projectToLoad);
+            data.projectToLoad.clear();
+
+        }
+        if (data.shouldCreateNewProject) {
+
+            NewProject();
+            data.shouldCreateNewProject = false;
+
+        }
 
     }
 
@@ -408,7 +418,7 @@ namespace Editor {
 
         SetWindowSize(data.gamePanelSize);
 
-        ImGui::Image(static_cast<ImTextureID>((uint64) GetMainFBO().GetColorTextureID()), windowSize, ImVec2 {0, 1}, ImVec2 {1, 0});
+        ImGui::Image(static_cast<ImTextureID>((uint64) GetMainFBO().GetColorAttachmentID(0)), windowSize, ImVec2 {0, 1}, ImVec2 {1, 0});
 
         if (data.state == EditorState::Play && !data.gameAcceptingInput && ImGui::IsItemClicked()) {
 
@@ -455,7 +465,7 @@ namespace Editor {
         data.viewportCentre.x += (uint32) windowPos.x;
         data.viewportCentre.y += (uint32) windowPos.y;
 
-        ImGui::Image(static_cast<ImTextureID>((uint64) data.viewportFBO.GetColorTextureID()), windowSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+        ImGui::Image(static_cast<ImTextureID>((uint64) data.viewportFBO.GetColorAttachmentID(0)), windowSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
         //Gizmos that I stol... I mean, taken inspiration from The Chernos Game Engine series
         //Yeah, I definitely didn't copy this entire chunk of code that I don't understand but

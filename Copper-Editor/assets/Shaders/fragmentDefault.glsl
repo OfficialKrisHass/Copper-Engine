@@ -47,7 +47,7 @@ uniform float specularStrength;
 
 uniform Material materials[MAX_MATERIALS];
 
-out vec4 FragColor;
+layout(location = 0) out vec4 FragColor;
 
 vec3 LightColor(vec3 direction, vec3 color, vec3 normal, vec3 viewDir);
 vec3 AmbientLightColor(vec3 direction, vec3 color, vec3 normal);

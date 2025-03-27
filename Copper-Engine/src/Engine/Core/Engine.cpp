@@ -111,7 +111,7 @@ namespace Copper {
 
         Renderer::Initialize();
         Renderer::SetShaderPath(ExecutableFolder() / "assets/Shaders/vertexDefault.glsl", ExecutableFolder() / "assets/Shaders/fragmentDefault.glsl");
-        data.fbo = FrameBuffer(UVector2I(1280, 720)); // TODO: Find a solution to this (maybe store the resolution somewhere ?)
+        data.fbo = FrameBuffer(UVector2I(1280, 720), { FrameBuffer::Attachment::Format::RGB8 }); // TODO: Find a solution to this (maybe store the resolution somewhere ?)
 
         data.mainUIContext.Initialize(data.GetWindow(), true);
 
@@ -280,7 +280,7 @@ namespace Copper {
     float GetWindowAspectRatio() {
 
 #ifdef CU_EDITOR
-        return static_cast<float>(data.fbo.GetWidth()) / data.fbo.GetHeight();
+        return static_cast<float>(data.fbo.GetSize().x) / data.fbo.GetSize().y;
 #else
         return data.window.GetAspectRatio();
 #endif

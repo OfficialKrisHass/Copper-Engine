@@ -43,12 +43,6 @@ namespace Copper::Renderer {
         uint32 entityID = INVALID_ENTITY_ID;
 #endif
 
-#ifndef CU_EDITOR
-        static const uint32 MEMBER_COUNT = 12;
-#else
-        static const uint32 MEMBER_COUNT = 13;
-#endif
-
     };
     struct LineVertex {
 
@@ -217,7 +211,7 @@ namespace Copper::Renderer {
 
         if (data.verticesCount == 0 || data.indicesCount == 0) return;
 
-        data.vbo.SetData((void*) data.vertices, data.verticesCount * Vertex::MEMBER_COUNT);
+        data.vbo.SetData((void*) data.vertices, data.verticesCount * sizeof(Vertex));
         data.ibo.SetData(data.indices, data.indicesCount);
 
     }

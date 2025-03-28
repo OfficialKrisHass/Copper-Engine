@@ -24,12 +24,12 @@ namespace Copper {
 
     }
 
-    void VertexBuffer::SetData(void* vertices, uint32 count) {
+    void VertexBuffer::SetData(void* vertices, uint32 size) {
 
         CUP_FUNCTION();
 
         glBindBuffer(GL_ARRAY_BUFFER, m_id);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, count * sizeof(float), vertices);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, size, vertices);
 
     }
 

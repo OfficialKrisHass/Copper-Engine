@@ -8,7 +8,7 @@ namespace Copper {
 
     enum class ElementType : uint32 {
 
-        Int, Float, Bool,
+        Int, UInt, Float, Bool,
 
         Vec2, Vec3, Vec4,
         Vec2I, Vec3I, Vec4I,
@@ -20,6 +20,7 @@ namespace Copper {
         switch (type) {
 
         case ElementType::Int:
+        case ElementType::UInt:
         case ElementType::Float:    return 4;
         case ElementType::Bool:     return 1;
 
@@ -40,6 +41,7 @@ namespace Copper {
         switch (type) {
 
         case ElementType::Int:
+        case ElementType::UInt:
         case ElementType::Float:
         case ElementType::Bool:     return 1;
 

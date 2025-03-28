@@ -52,6 +52,10 @@ namespace Copper {
         void Bind() const;
         void Unbind() const;
 
+        uint32 ReadPixel(uint32 attachment, uint32 x, uint32 y) const;
+
+        void ClearAttachment(uint32 attachment, uint32 value);
+
         // Getters
 
         inline uint32 GetColorAttachmentID(uint32 index) const {

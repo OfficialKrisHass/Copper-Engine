@@ -27,8 +27,23 @@ namespace Copper {
 
             ElementType type = vbo->GetType(i);
 
-            glVertexAttribPointer(i, TypeDimensions(type), TypeToOpenGL(type), GL_FALSE, vbo->GetStride(), (void*) (uint64) vbo->GetOffset(i));
+
             glEnableVertexAttribArray(i);
+            switch (type) {
+
+            case ElementType::Float:
+            case ElementType::Vec2:
+            case ElementType::Vec3:
+            case ElementType::Vec4: glVertexAttribPointer(i, TypeDimensions(type), TypeToOpenGL(type), GL_FALSE, vbo->GetStride(), (void*) (uint64) vbo->GetOffset(i)); break;
+
+            case ElementType::Int:
+            case ElementType::UInt:     
+            case ElementType::Vec2I:
+            case ElementType::Vec3I:
+            case ElementType::Vec4I:
+            case ElementType::Bool: glVertexAttribIPointer(i, TypeDimensions(type), TypeToOpenGL(type), vbo->GetStride(), (void*) (uint64) vbo->GetOffset(i)); break;
+
+            }
 
         }
 

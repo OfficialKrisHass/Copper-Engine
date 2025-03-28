@@ -43,11 +43,12 @@ namespace Copper {
 
                 case Attachment::Format::RGB8: CreateTexture(GL_RGB8, GL_RGB); break;
                 case Attachment::Format::RGBA8: CreateTexture(GL_RGBA8, GL_RGBA); break;
+                case Attachment::Format::RedInteger: CreateTexture(GL_R32UI, GL_RED_INTEGER); break;
                 default: break;
 
             }
 
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, attachment.id, 0);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, attachment.id, 0);
 
         }
 
@@ -125,6 +126,31 @@ namespace Copper {
         CUP_FUNCTION();
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    }
+
+    uint32 FrameBuffer::ReadPixel(uint32 attachment, uint32 x, uint32 y) const {
+
+        CUP_FUNCTION();
+
+        CU_ASSERT(attachment < m_attachments.size(), "Can't read from attachment {} (out of range index)", attachment);
+
+        uint32 ret;
+
+        glReadBuffer(GL_COLOR_ATTACHMENT0 + attachment);
+        glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_UNSIGNED_INT, &ret);
+
+        return ret;
+
+    }
+
+    void FrameBuffer::ClearAttachment(uint32 attachment, uint32 value) {
+
+        CUP_FUNCTION();
+
+        CU_ASSERT(attachment < m_attachments.size(), "Can't clear attachment {} (out of range index)", attachment);
+
+        glClearTexImage(m_attachments[attachment].id, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, &value);
 
     }
 

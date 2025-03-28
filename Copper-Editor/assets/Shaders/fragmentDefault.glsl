@@ -29,6 +29,7 @@ in vec3 a_color;
 in vec3 a_normal;
 in vec2 a_uv;
 flat in int a_matIndex;
+flat in uint a_entityID;
 
 uniform vec3 camPos;
 
@@ -48,6 +49,7 @@ uniform float specularStrength;
 uniform Material materials[MAX_MATERIALS];
 
 layout(location = 0) out vec4 FragColor;
+layout(location = 1) out uint EntityID;
 
 vec3 LightColor(vec3 direction, vec3 color, vec3 normal, vec3 viewDir);
 vec3 AmbientLightColor(vec3 direction, vec3 color, vec3 normal);
@@ -80,6 +82,8 @@ void main() {
 		textureColor = vec4(1.0f, 0.0f, 1.0f, 1.0f);
 
 	FragColor = textureColor * vec4(lightResult * a_color, 1.0f);
+
+    EntityID = a_entityID;
 
 }
 

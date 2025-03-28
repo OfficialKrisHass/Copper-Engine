@@ -39,6 +39,10 @@ namespace Copper::Renderer {
         Vector2 uv;
         float materialIndex;
 
+#ifdef CU_EDITOR
+        uint32 entityID;
+#endif
+
     };
     struct LineVertex {
 
@@ -118,6 +122,10 @@ namespace Copper::Renderer {
 
             ElementType::Vec2, // UV
             ElementType::Float, // Material Index
+
+#ifdef CU_EDITOR
+            ElementType::UInt, // Entity ID
+#endif
 
         });
         data.ibo = IndexBuffer(nullptr, MaxIndices * sizeof(uint32));
@@ -258,8 +266,12 @@ namespace Copper::Renderer {
 
         if (data.indicesCount + indicesCount > MaxIndices ||
             data.verticesCount + verticesCount > MaxVertices ||
-            data.materialCount >= MaxMaterials)
+            data.materialCount >= MaxMaterials) {
+
+            Log("Batch is full!");
             NewBatch();
+
+        }
 
         // Load Mesh Data
 
@@ -273,6 +285,10 @@ namespace Copper::Renderer {
 
             vertex.uv = mesh->uvs[i];
             vertex.materialIndex = (float) matIndex; // TODO: Figure the fuck out why it has to be a float on shader side
+
+#ifdef CU_EDITOR
+            vertex.entityID = transform->GetEntity()->ID();
+#endif
 
         }
         for (uint32 i = 0; i < indicesCount; i++)

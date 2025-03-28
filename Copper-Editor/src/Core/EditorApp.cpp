@@ -81,9 +81,12 @@ namespace Editor {
         
         // Viewport
 
+        FrameBuffer viewportFBO;
+
         UVector2I viewportSize = UVector2I(1280, 720);
         UVector2I viewportCentre;
-        FrameBuffer viewportFBO;
+        Vector2I viewportMousePos;
+
         bool canLookViewport = true;
 
         SceneCamera sceneCam = SceneCamera(viewportSize);
@@ -153,7 +156,7 @@ namespace Editor {
 
         data.scene = GetScene();
 
-        data.viewportFBO = FrameBuffer(data.viewportSize, { FrameBuffer::Attachment::Format::RGB8 });
+        data.viewportFBO = FrameBuffer(data.viewportSize, { FrameBuffer::Attachment::Format::RGB8, FrameBuffer::Attachment::Format::RedInteger });
         
         data.playIcon.Create(ExecutableFolder() / "assets/Icons/PlayButton.png", Texture::Format::RGBA);
         data.stopIcon.Create(ExecutableFolder() / "assets/Icons/StopButton.png", Texture::Format::RGBA);
@@ -258,11 +261,22 @@ namespace Editor {
         }
 
         data.viewportFBO.Bind();
+        
         RendererAPI::ClearColor(Color(0.18f, 0.18f, 0.18f));
+        data.viewportFBO.ClearAttachment(1, INVALID_ENTITY_ID);
 
         data.sceneCam.Update();
         if (data.scene)
             data.scene->Render(&data.sceneCam);
+
+        if (data.viewportMousePos.x > -1 && data.viewportMousePos.y > -1 && data.viewportMousePos.x < data.viewportSize.x && data.viewportMousePos.y < data.viewportSize.y &&
+            Input::IsButton(MouseCode::Button1)) {
+
+            uint32 id = data.viewportFBO.ReadPixel(1, data.viewportMousePos.x, data.viewportMousePos.y);
+            if (id != INVALID_ENTITY_ID)
+                Properties::SetSelectedEntity(Entity(GetEntityFromID(id)));
+
+        }
 
         data.viewportFBO.Unbind();
 
@@ -454,8 +468,10 @@ namespace Editor {
 
         }
 
+
         //TODO: Either Change ImGui To use UVector2I or edit Copper Code to use ImVec2
         //      so that we don't have to allocate memory for the UVector2I
+        float tabBarHeight = ImGui::GetCursorPos().y;
         ImVec2 windowSize = ImGui::GetContentRegionAvail();
         ImVec2 windowPos = ImGui::GetWindowPos();
 
@@ -464,6 +480,11 @@ namespace Editor {
         data.viewportCentre = data.viewportSize / 2;
         data.viewportCentre.x += (uint32) windowPos.x;
         data.viewportCentre.y += (uint32) windowPos.y;
+
+        ImVec2 mousePos = ImGui::GetMousePos();
+        data.viewportMousePos.x = mousePos.x - windowPos.x;
+        data.viewportMousePos.y = mousePos.y - windowPos.y - tabBarHeight;
+        data.viewportMousePos.y = data.viewportSize.y - data.viewportMousePos.y;
 
         ImGui::Image(static_cast<ImTextureID>((uint64) data.viewportFBO.GetColorAttachmentID(0)), windowSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 

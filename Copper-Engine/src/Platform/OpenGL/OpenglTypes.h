@@ -22,6 +22,8 @@ namespace Copper {
         case ElementType::Vec3I:
         case ElementType::Vec4I:    return GL_INT;
 
+        case ElementType::UInt:     return GL_UNSIGNED_INT;
+
         case ElementType::Bool:     return GL_BOOL;
 
         }

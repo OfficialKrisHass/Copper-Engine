@@ -24,7 +24,7 @@ namespace Copper {
 
     }
 
-    void VertexBuffer::SetData(float* vertices, uint32 count) {
+    void VertexBuffer::SetData(void* vertices, uint32 count) {
 
         CUP_FUNCTION();
 

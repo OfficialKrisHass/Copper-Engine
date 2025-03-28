@@ -37,10 +37,16 @@ namespace Copper::Renderer {
         Vector3 normal;
 
         Vector2 uv;
-        float materialIndex;
+        uint32 materialIndex = 0.0f;
 
 #ifdef CU_EDITOR
-        uint32 entityID;
+        uint32 entityID = INVALID_ENTITY_ID;
+#endif
+
+#ifndef CU_EDITOR
+        static const uint32 MEMBER_COUNT = 12;
+#else
+        static const uint32 MEMBER_COUNT = 13;
 #endif
 
     };
@@ -121,7 +127,7 @@ namespace Copper::Renderer {
             ElementType::Vec3, // Normal
 
             ElementType::Vec2, // UV
-            ElementType::Float, // Material Index
+            ElementType::UInt, // Material Index
 
 #ifdef CU_EDITOR
             ElementType::UInt, // Entity ID
@@ -207,11 +213,11 @@ namespace Copper::Renderer {
     }
     void LoadBatch() {
 
-    CUP_FUNCTION();
+        CUP_FUNCTION();
 
-    if (data.verticesCount == 0 || data.indicesCount == 0) return;
+        if (data.verticesCount == 0 || data.indicesCount == 0) return;
 
-        data.vbo.SetData((float*) data.vertices, data.verticesCount * 12);
+        data.vbo.SetData((void*) data.vertices, data.verticesCount * Vertex::MEMBER_COUNT);
         data.ibo.SetData(data.indices, data.indicesCount);
 
     }
@@ -287,7 +293,7 @@ namespace Copper::Renderer {
             vertex.materialIndex = (float) matIndex; // TODO: Figure the fuck out why it has to be a float on shader side
 
 #ifdef CU_EDITOR
-            vertex.entityID = transform->GetEntity()->ID();
+            vertex.entityID = transform->GetEntity().ID();
 #endif
 
         }

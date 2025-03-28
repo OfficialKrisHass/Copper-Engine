@@ -28,7 +28,7 @@ in vec3 a_position;
 in vec3 a_color;
 in vec3 a_normal;
 in vec2 a_uv;
-flat in int a_matIndex;
+flat in uint a_matIndex;
 flat in uint a_entityID;
 
 uniform vec3 camPos;
@@ -76,7 +76,7 @@ void main() {
 	lightResult += AmbientLightColor(ambientDirection, ambientColor, normal);
 
 	vec4 textureColor;
-	if (a_matIndex != MAX_MATERIALS)
+	if (a_matIndex != uint(MAX_MATERIALS))
 		textureColor = texture(materials[a_matIndex].texture, a_uv * materials[a_matIndex].tiling) * materials[a_matIndex].albedo;
 	else
 		textureColor = vec4(1.0f, 0.0f, 1.0f, 1.0f);

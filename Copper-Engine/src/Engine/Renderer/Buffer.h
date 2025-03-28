@@ -16,7 +16,7 @@ namespace Copper {
 
         // Modification
 
-        void SetData(float* vertices, uint32 count);
+        void SetData(void* vertices, uint32 count);
 
         // Using
 

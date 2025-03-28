@@ -71,7 +71,7 @@ namespace Copper {
         // Finalize
         
         GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
-        glDrawBuffers(m_attachments.size(), buffers);
+        glDrawBuffers(static_cast<int32>(m_attachments.size()), buffers);
 
         CU_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Could not create a FrameBuffer");
 

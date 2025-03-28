@@ -1,0 +1,8 @@
+Version: 0
+Entities:
+  {}
+Scene Camera:
+  Position: [10.5465012, 2.23899245, 2.5662744]
+  Rotation: [0.942313433, -0.220060542, 0.24561891, 0.0573599264]
+  Speed: 0.100000001
+  Sensitivity: 100

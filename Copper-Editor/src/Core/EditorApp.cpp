@@ -482,8 +482,8 @@ namespace Editor {
         data.viewportCentre.y += (uint32) windowPos.y;
 
         ImVec2 mousePos = ImGui::GetMousePos();
-        data.viewportMousePos.x = mousePos.x - windowPos.x;
-        data.viewportMousePos.y = mousePos.y - windowPos.y - tabBarHeight;
+        data.viewportMousePos.x = static_cast<int32>(mousePos.x) - windowPos.x;
+        data.viewportMousePos.y = static_cast<int32>(mousePos.y) - windowPos.y - tabBarHeight;
         data.viewportMousePos.y = data.viewportSize.y - data.viewportMousePos.y;
 
         ImGui::Image(static_cast<ImTextureID>((uint64) data.viewportFBO.GetColorAttachmentID(0)), windowSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });

@@ -2,15 +2,18 @@
 
 #include "Engine/Events/Event.h"
 
+#include "Engine/Input/KeyCodes.h"
+
 namespace Copper {
 
-    class MouseMoveEvent : public Event {
+    class MouseEvent : public Event {
 
     public:
-        MouseMoveEvent() = default;
-        MouseMoveEvent(UVector2I mouseCoords) : mouseCoords(mouseCoords) {}
+        MouseEvent() = default;
+        MouseEvent(UVector2I mouseCoords) : mouseCoords(mouseCoords) {}
 
         UVector2I mouseCoords = UVector2I::zero;
+        KeyCode button = KeyCode::None;
 
     };
 

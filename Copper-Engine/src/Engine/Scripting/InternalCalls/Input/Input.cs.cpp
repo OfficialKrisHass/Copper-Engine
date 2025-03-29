@@ -21,37 +21,12 @@ namespace Copper::Scripting::Input {
 
     namespace Input = ::Copper::Input;
 
-    bool IsKey(KeyCode key) {
+    KeyState GetKeyState(KeyCode key) {
 
         CUP_FUNCTION();
 
-        CHECK_ACCEPTING_INPUT(false);
-        return Input::IsKey(key);
-
-    }
-    bool IsKeyDown(KeyCode key) {
-
-        CUP_FUNCTION();
-
-        CHECK_ACCEPTING_INPUT(false);
-        return Input::IsKeyDown(key);
-
-    }
-    bool IsKeyReleased(KeyCode key) {
-
-        CUP_FUNCTION();
-
-        CHECK_ACCEPTING_INPUT(false);
-        return Input::IsKeyReleased(key);
-
-    }
-
-    bool IsButton(MouseCode button) {
-
-        CUP_FUNCTION();
-
-        CHECK_ACCEPTING_INPUT(false);
-        return Input::IsButton(button);
+        CHECK_ACCEPTING_INPUT(KeyState::None);
+        return Input::GetKeyState(key);
 
     }
 

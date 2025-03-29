@@ -21,7 +21,12 @@ namespace Copper::Input {
 
     Window* window;
 
-    std::unordered_map<KeyCode, std::pair<uint32, bool>> keys;
+    // Key states
+
+    std::unordered_map<KeyCode, KeyState> keyStates;
+    std::vector<KeyCode> keysToUpdate;
+
+    // Mouse
 
     bool mouseVisible = true;
     bool mouseLocked = false;
@@ -33,18 +38,22 @@ namespace Copper::Input {
     bool OnKeyPressed(const Event& e);
     bool OnKeyReleased(const Event& e);
 
+    bool OnButtonPressed(const Event& e);
+    bool OnButtonReleased(const Event& e);
     bool OnMouseMove(const Event& e);
 
-    void Initialize(Window& win) {
+    void Initialize(Window* win) {
 
         CUP_FUNCTION();
 
         VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize Input");
-        window = &win;
+        window = win;
 
         window->AddKeyPressedEventFunc(OnKeyPressed);
         window->AddKeyReleasedEventFunc(OnKeyReleased);
 
+        window->AddMouseButtonPressedEventFunc(OnButtonPressed);
+        window->AddMouseButtonReleasedEventFunc(OnButtonReleased);
         window->AddMouseMoveEventFunc(OnMouseMove);
 
         if (!pfd::settings::available())
@@ -63,42 +72,23 @@ namespace Copper::Input {
 
         mousePosDiference = Vector2::zero;
 
-    }
+        for (KeyCode key : keysToUpdate) {
 
-    bool IsKey(KeyCode key) {
+            CU_ASSERT(keyStates.at(key) < KeyState::None, "Tried to increment KeyState for key '{}' past the limit", static_cast<uint16>(key));
+            keyStates[key] = static_cast<KeyState>(static_cast<uint8>(keyStates[key]) + 1);
 
-        CUP_FUNCTION();
+        }
 
-        if (keys[key].first == 0) return false;
-        return true;
-
-    }
-    bool IsKeyDown(KeyCode key) {
-
-        CUP_FUNCTION();
-
-        if (keys[key].first != 1) return false;
-
-        keys[key].first++;
-        return true;
-
-    }
-    bool IsKeyReleased(KeyCode key) {
-
-        CUP_FUNCTION();
-
-        if (!keys[key].second) return false;
-
-        keys[key].second = false;
-        return true;
+        keysToUpdate.clear();
 
     }
 
-    bool IsButton(MouseCode button) {
+    KeyState GetKeyState(KeyCode key) {
 
         CUP_FUNCTION();
 
-        return glfwGetMouseButton(GLFW_WINDOW(window), (int32) button) == GLFW_PRESS ? true : false;
+        if (keyStates.find(key) == keyStates.end()) return KeyState::None;
+        return keyStates.at(key);
 
     }
 
@@ -106,9 +96,10 @@ namespace Copper::Input {
 
         CUP_FUNCTION();
 
-        KeyCode keycode = ((KeyEvent*)&e)->key;
-        keys[keycode].first++;
-        keys[keycode].second = false;
+        const KeyEvent& event = static_cast<const KeyEvent&>(e);
+
+        keyStates[event.key] = KeyState::Pressed;
+        keysToUpdate.push_back(event.key);
 
         return true;
 
@@ -117,19 +108,44 @@ namespace Copper::Input {
 
         CUP_FUNCTION();
 
-        KeyCode keycode = ((KeyEvent*)&e)->key;
-        keys[keycode].first = 0;
-        keys[keycode].second = true;
+        const KeyEvent& event = static_cast<const KeyEvent&>(e);
+
+        keyStates[event.key] = KeyState::Released;
+        keysToUpdate.push_back(event.key);
 
         return true;
 
     }
 
+    bool OnButtonPressed(const Event& e) {
+
+        CUP_FUNCTION();
+
+        const MouseEvent& event = static_cast<const MouseEvent&>(e);
+
+        keyStates[event.button] = KeyState::Pressed;
+        keysToUpdate.push_back(event.button);
+
+        return true;
+
+    }
+    bool OnButtonReleased(const Event& e) {
+
+        CUP_FUNCTION();
+
+        const MouseEvent& event = static_cast<const MouseEvent&>(e);
+
+        keyStates[event.button] = KeyState::Released;
+        keysToUpdate.push_back(event.button);
+
+        return true;
+
+    }
     bool OnMouseMove(const Event& e) {
 
         CUP_FUNCTION();
 
-        MouseMoveEvent& event = *((MouseMoveEvent*)&e);
+        const MouseEvent& event = static_cast<const MouseEvent&>(e);
 
         if (!mouseLocked) {
 

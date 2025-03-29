@@ -270,7 +270,7 @@ namespace Editor {
             data.scene->Render(&data.sceneCam);
 
         if (data.viewportMousePos.x > -1 && data.viewportMousePos.y > -1 && data.viewportMousePos.x < data.viewportSize.x && data.viewportMousePos.y < data.viewportSize.y &&
-            Input::IsButton(MouseCode::Button1)) {
+            Input::GetKeyState(KeyCode::Mouse0) == KeyState::Pressed) {
 
             uint32 id = data.viewportFBO.ReadPixel(1, data.viewportMousePos.x, data.viewportMousePos.y);
             if (id != INVALID_ENTITY_ID)
@@ -507,7 +507,7 @@ namespace Editor {
             glm::mat4 transform = selectedObj->GetTransform()->TransformMatrix();
 
             // Snapping
-            bool snap = Input::IsKey(KeyCode::LeftControl);
+            bool snap = Input::GetKeyState(KeyCode::LeftControl) == KeyState::Down;
             float snapValue = 0.5f;
             if (data.project.GetGizmoType() == ImGuizmo::OPERATION::ROTATE) snapValue = 45.0f;
 
@@ -956,11 +956,11 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        bool control = Input::IsKey(KeyCode::LeftControl) || Input::IsKey(KeyCode::RightControl);
-        bool shift = Input::IsKey(KeyCode::LeftShift) || Input::IsKey(KeyCode::RightShift);
-        bool alt = Input::IsKey(KeyCode::LeftAlt) || Input::IsKey(KeyCode::RightAlt);
+        bool control = Input::GetKeyState(KeyCode::LeftControl) == KeyState::Down || Input::GetKeyState(KeyCode::RightControl) == KeyState::Down;
+        bool shift = Input::GetKeyState(KeyCode::LeftShift) == KeyState::Down || Input::GetKeyState(KeyCode::RightShift) == KeyState::Down;
+        bool alt = Input::GetKeyState(KeyCode::LeftAlt) == KeyState::Down || Input::GetKeyState(KeyCode::RightAlt) == KeyState::Down;
 
-        bool rightClick = Input::IsButton(MouseCode::Button2);
+        bool rightClick = Input::GetKeyState(KeyCode::Mouse1) == KeyState::Down;
 
         KeyEvent event = *(KeyEvent*) &e;
 

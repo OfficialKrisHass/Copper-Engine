@@ -2,6 +2,15 @@ using System;
 
 namespace Copper {
 
+    public enum KeyState : byte {
+
+        Pressed = 0,
+        Down,
+        Released,
+        None,
+
+    };
+
     public enum KeyCode : ushort {
 
         None = 0,
@@ -127,18 +136,14 @@ namespace Copper {
 		RightSuper = 347,
 		Menu = 348,
 
-    }
-
-    public enum MouseCode : ushort {
-
-        Button1 = 0,
-		Button2 = 1,
-		Button3 = 2,
-		Button4 = 3,
-		Button5 = 4,
-		Button6 = 5,
-		Button7 = 6,
-		Button8 = 7
+        Mouse0 = 400,
+        Mouse1,
+		Mouse2,
+		Mouse3,
+		Mouse4,
+		Mouse5,
+		Mouse6,
+		Mouse7,
 
     }
 

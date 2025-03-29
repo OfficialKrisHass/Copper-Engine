@@ -14,8 +14,13 @@ namespace APIBinder {
 
         std::cout << "Initializing Mono\n";
 
-        mono_config_parse("Copper-Editor/lib/mono/config");
-        mono_set_assemblies_path("Copper-Editor/lib");
+        mono_config_parse((EditorDir() / "lib/mono/config").string().c_str());
+
+#ifdef CU_LINUX
+        mono_set_assemblies_path((EditorDir() / "lib/mono/lib/linux").string().c_str());
+#elif CU_WINDOWS
+        mono_set_assemblies_path((EditorDir() / "lib/mono/lib/windows").string().c_str());
+#endif
 
         MonoDomain* ret = mono_jit_init("APIBinderDomain");
         if (ret == nullptr) {
@@ -31,10 +36,10 @@ namespace APIBinder {
     }
     MonoAssembly* LoadAssembly(MonoImage** image) {
 
-        std::cout << "Loading Assembly at path: Copper-Editor/assets/ScriptingAPI/Copper-ScriptingAPI.dll\n";
+        std::cout << "Loading Assembly at path:" << EditorDir().string() << "/assets/ScriptingAPI/Copper-ScriptingAPI.dll\n";
 
         uint32 size = 0;
-        char* data = ReadFileBinary("Copper-Editor/assets/ScriptingAPI/Copper-ScriptingAPI.dll", &size);
+        char* data = ReadFileBinary(EditorDir() / "assets/ScriptingAPI/Copper-ScriptingAPI.dll", &size);
         if (!data) {
 
             std::cerr << "Could not read Assembly!\n";
@@ -52,7 +57,7 @@ namespace APIBinder {
 
         }
 
-        MonoAssembly* ret = mono_assembly_load_from_full(*image, "Copper-Editor/assets/ScriptingAPI/Copper-ScriptingAPI.dll", &status, false);
+        MonoAssembly* ret = mono_assembly_load_from_full(*image, (EditorDir() / "assets/ScriptingAPI/Copper-ScriptingAPI.dll").string().c_str(), &status, false);
         mono_image_close(*image);
 
         if (ret == nullptr) {

@@ -41,8 +41,8 @@ namespace Copper::Input {
         float ret = 0.0f;
         const Axis& axis = axises[name];
 
-        if (Input::IsKey(axis.positive)) ret += axis.positiveValue;
-        if (Input::IsKey(axis.negative)) ret += axis.negativeValue;
+        if (Input::GetKeyState(axis.positive) == KeyState::Down) ret += axis.positiveValue;
+        if (Input::GetKeyState(axis.negative) == KeyState::Down) ret += axis.negativeValue;
 
         return ret;
 

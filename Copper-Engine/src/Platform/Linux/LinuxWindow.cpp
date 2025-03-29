@@ -134,8 +134,8 @@ namespace Copper {
             case GLFW_REPEAT:
             {
 
-                data.keyPressedEvent.key = (KeyCode)key;
-                data.keyPressedEvent();
+                data.keyRepeatEvent.key = (KeyCode)key;
+                data.keyRepeatEvent();
 
                 break;
 
@@ -149,6 +149,35 @@ namespace Copper {
                 break;
 
             }
+
+            }
+
+        });
+        glfwSetMouseButtonCallback(WINDOW, [](GLFWwindow* window, int32 button, int32 action, int32 mods) {
+
+            WindowData& data = GETWINDATA;
+
+            uint16 keycode = static_cast<uint16>(KeyCode::Mouse0) + button;
+
+            switch (action) {
+
+            case GLFW_PRESS: {
+
+                data.mouseButtonPressedEvent.button = static_cast<KeyCode>(keycode);
+                data.mouseButtonPressedEvent();
+
+                break;
+
+            }
+            case GLFW_RELEASE: {
+
+                data.mouseButtonReleasedEvent.button = static_cast<KeyCode>(keycode);
+                data.mouseButtonReleasedEvent();
+
+                break;
+
+            }
+            default: break;
 
             }
 
@@ -209,6 +238,12 @@ namespace Copper {
         glfwSetWindowUserPointer(WINDOW, &data);
 
     }
+    void Window::AddKeyRepeatEventFunc(std::function<bool(const Event&)> func) {
+
+        data.keyRepeatEvent += func;
+        glfwSetWindowUserPointer(WINDOW, &data);
+
+    }
     void Window::AddKeyReleasedEventFunc(std::function<bool(const Event&)> func) {
 
         data.keyReleasedEvent += func;
@@ -219,6 +254,18 @@ namespace Copper {
     void Window::AddMouseMoveEventFunc(std::function<bool(const Event&)> func) {
 
         data.mouseMoveEvent += func;
+        glfwSetWindowUserPointer(WINDOW, &data);
+
+    }
+    void Window::AddMouseButtonPressedEventFunc(std::function<bool(const Event&)> func) {
+
+        data.mouseButtonPressedEvent += func;
+        glfwSetWindowUserPointer(WINDOW, &data);
+
+    }
+    void Window::AddMouseButtonReleasedEventFunc(std::function<bool(const Event&)> func) {
+
+        data.mouseButtonReleasedEvent += func;
         glfwSetWindowUserPointer(WINDOW, &data);
 
     }

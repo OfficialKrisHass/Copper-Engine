@@ -12,14 +12,10 @@ namespace Copper::Input {
 
     // Input
 
-    void Initialize(Window& window);
+    void Initialize(Window* window);
     void Update();
 
-    bool IsKey(KeyCode key);
-    bool IsKeyDown(KeyCode key);
-    bool IsKeyReleased(KeyCode key);
-
-    bool IsButton(MouseCode button);
+    KeyState GetKeyState(KeyCode key);
 
     // Setters
 

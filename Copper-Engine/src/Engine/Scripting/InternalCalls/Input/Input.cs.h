@@ -10,11 +10,7 @@ extern "C" {
 
 namespace Copper::Scripting::Input {
 
-    bool IsKey(KeyCode key);
-    bool IsKeyDown(KeyCode key);
-    bool IsKeyReleased(KeyCode key);
-
-    bool IsButton(MouseCode button);
+    KeyState GetKeyState(KeyCode key);
 
     float GetAxis(MonoString* axis);
 

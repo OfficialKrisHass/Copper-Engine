@@ -26,15 +26,17 @@ namespace Editor {
 
         if(!m_canLook) return;
 
-        if (Input::IsButton(MouseCode::Button2)) {
+        if (Input::GetKeyState(KeyCode::Mouse1) == KeyState::Down) {
 
-            if (Input::IsKey(KeyCode::W)) { m_transform->AddPosition( m_transform->Forward() * speed); }
-            if (Input::IsKey(KeyCode::S)) { m_transform->AddPosition(-m_transform->Forward() * speed); }
-            if (Input::IsKey(KeyCode::A)) { m_transform->AddPosition(-m_transform->Right() * speed); }
-            if (Input::IsKey(KeyCode::D)) { m_transform->AddPosition( m_transform->Right() * speed); }
+            float horizontal = Input::GetAxis("Keys_WS") * speed;
+            float vertical = Input::GetAxis("Keys_DA") * speed;
 
-            if (Input::IsKey(KeyCode::Space))       { m_transform->AddPosition( m_transform->Up() * speed); }
-            if (Input::IsKey(KeyCode::LeftControl)) { m_transform->AddPosition(-m_transform->Up() * speed); }
+            m_transform->AddPosition(m_transform->Forward() * horizontal + m_transform->Right() * vertical);
+
+            if (Input::GetKeyState(KeyCode::Space) == KeyState::Down)
+                m_transform->AddPosition( m_transform->Up() * speed);
+            if (Input::GetKeyState(KeyCode::LeftControl) == KeyState::Down)
+                m_transform->AddPosition(-m_transform->Up() * speed);
 
             Input::SetCursorVisible(false);
 

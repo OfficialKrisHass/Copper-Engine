@@ -117,7 +117,7 @@ namespace Copper {
 
         // Input
 
-        Input::Initialize(data.GetWindow());
+        Input::Initialize(&data.GetWindow());
         Input::InitializeAxisManager();
 
         // Other systems initialization
@@ -156,10 +156,8 @@ namespace Copper {
             CUP_START_FRAME("Window");
 
             data.GetWindow().Update();
-            Input::Update();
 
             CUP_END_FRAME();
-
 
             CUP_START_FRAME("Scene");
 
@@ -183,6 +181,8 @@ namespace Copper {
             data.mainUIContext.End();
 
             CUP_END_FRAME();
+
+            Input::Update();
 
             CUP_END_FRAME(); // Main
 

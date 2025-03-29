@@ -16,6 +16,8 @@
 
 namespace APIBinder {
 
+    std::filesystem::path editorDir;
+
     MonoDomain* domain = nullptr;
 
     MonoImage* image = nullptr;
@@ -31,7 +33,22 @@ namespace APIBinder {
     void BindClass(MonoClass* klass);
     void BindMethod(MonoClass* klass, MonoMethod* method, MonoCustomAttrInfo* attrInfo);
 
-    int Entry() {
+    int Entry(int argc, char** argv) {
+
+        if (argc < 2) {
+
+            std::cerr << "Editor directory argument is missing, please provide the directory where the folder assets is located, as the first argument\n";
+            exit(-1);
+
+        }
+
+        editorDir = argv[1];
+        if (!std::filesystem::exists(editorDir / "assets/EditorData.cu")) {
+
+            std::cerr << "Invalid Editor directory argument (" << editorDir.string() << "/assets/EditorData.cu doesn't exist)\n";
+            exit(-1);
+
+        }
 
         std::cout << "\nRunning Copper Scripting API Binder\n\n";
 
@@ -153,6 +170,8 @@ namespace APIBinder {
 
     }
 
+    const std::filesystem::path& EditorDir() { return editorDir; }
+
 }
 
-int main() { return APIBinder::Entry(); }
+int main(int argc, char** argv) { return APIBinder::Entry(argc, argv); }

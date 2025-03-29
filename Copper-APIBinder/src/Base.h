@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <filesystem>
 
 namespace APIBinder {
 
@@ -15,5 +16,7 @@ namespace APIBinder {
 
     typedef long long           int64;
     typedef unsigned long long  uint64;
+
+    const std::filesystem::path& EditorDir();
 
 }

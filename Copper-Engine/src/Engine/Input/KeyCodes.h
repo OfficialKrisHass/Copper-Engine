@@ -2,6 +2,15 @@
 
 namespace Copper {
 
+    enum class KeyState : uint8 {
+
+        Pressed = 0,
+        Down,
+        Released,
+        None,
+
+    };
+
     enum class KeyCode : uint16 {
 
         None = 0,
@@ -127,19 +136,15 @@ namespace Copper {
         RightSuper = 347,
         Menu = 348,
 
-    };
+        Mouse0 = 400,
+        Mouse1,
+        Mouse2,
+        Mouse3,
+        Mouse4,
+        Mouse5,
+        Mouse6,
+        Mouse7,
 
-    enum class MouseCode : uint16 {
-        
-        Button1 = 0,
-        Button2 = 1,
-        Button3 = 2,
-        Button4 = 3,
-        Button5 = 4,
-        Button6 = 5,
-        Button7 = 6,
-        Button8 = 7
-        
     };
 
 }

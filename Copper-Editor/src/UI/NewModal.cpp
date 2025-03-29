@@ -97,7 +97,7 @@ namespace Editor::NewModal {
         bool disabled = CreateDisabled();
 
         ImGui::BeginDisabled(disabled);
-        if ((ImGui::Button("Create", size) || Input::IsKeyDown(KeyCode::Enter)) && !disabled)
+        if ((ImGui::Button("Create", size) || Input::GetKeyState(KeyCode::Enter) == KeyState::Pressed) && !disabled)
             Create();
         ImGui::EndDisabled();
 
@@ -114,7 +114,7 @@ namespace Editor::NewModal {
         ImGui::SetCursorPosY(cursorY + tmp / 4.0f);
         ImGui::InputText("##Name", nameInput, NAME_MAX_LENGTH);
 
-        if (Input::IsKeyDown(KeyCode::Escape))
+        if (Input::GetKeyState(KeyCode::Escape) == KeyState::Pressed)
             Close();
 
         ImGui::EndPopup();

@@ -18,9 +18,12 @@ namespace Copper {
         WindowResizeEvent windowResizeEvent;
 
         KeyEvent keyPressedEvent;
+        KeyEvent keyRepeatEvent;
         KeyEvent keyReleasedEvent;
 
-        MouseMoveEvent mouseMoveEvent;
+        MouseEvent mouseMoveEvent;
+        MouseEvent mouseButtonPressedEvent;
+        MouseEvent mouseButtonReleasedEvent;
 
         WindowData() = default;
 
@@ -59,9 +62,12 @@ namespace Copper {
         void AddWindowResizeEventFunc(std::function<bool(const Event&)> func);
 
         void AddKeyPressedEventFunc(std::function<bool(const Event&)> func);
+        void AddKeyRepeatEventFunc(std::function<bool(const Event&)> func);
         void AddKeyReleasedEventFunc(std::function<bool(const Event&)> func);
 
         void AddMouseMoveEventFunc(std::function<bool(const Event&)> func);
+        void AddMouseButtonPressedEventFunc(std::function<bool(const Event&)> func);
+        void AddMouseButtonReleasedEventFunc(std::function<bool(const Event&)> func);
 
     private:
         WindowData data;

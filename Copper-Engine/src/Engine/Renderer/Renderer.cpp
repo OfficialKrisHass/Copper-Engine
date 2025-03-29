@@ -244,7 +244,7 @@ namespace Copper::Renderer {
 
         if (data.lineVertexCount == 0) return;
 
-        data.lineVbo.SetData((float*) data.lineVertices, data.lineVertexCount * 6);
+        data.lineVbo.SetData((float*) data.lineVertices, data.lineVertexCount * sizeof(LineVertex));
         RendererAPI::RenderLines(&data.lineVao, data.lineVertexCount);
 
         data.drawCalls++;

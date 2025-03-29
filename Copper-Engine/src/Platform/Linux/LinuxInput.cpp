@@ -15,8 +15,6 @@ extern Copper::UVector2I GetViewportCentre();
 
 #define GLFW_WINDOW(win) (GLFWwindow*) win->GetWindowPtr()
 
-// TODO: Rework this to make it less complicated
-
 namespace Copper::Input {
 
     Window* window;

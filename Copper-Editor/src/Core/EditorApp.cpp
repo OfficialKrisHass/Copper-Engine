@@ -493,7 +493,8 @@ namespace Editor {
         //magically works, naaah.
         if (Properties::GetSelectedData().type == SelectedData::Type::Entity) {
 
-            InternalEntity* selectedObj = Properties::GetSelectedData().entity;
+            InternalEntity* selectedEntity = Properties::GetSelectedData().entity;
+            CU_ASSERT(selectedEntity, "Selected entity is invalid");
 
             ImGuizmo::SetOrthographic(false);
             ImGuizmo::SetDrawlist();
@@ -504,7 +505,7 @@ namespace Editor {
 
             Matrix4 camProjection = data.sceneCam.CreateProjectionMatrix();
             Matrix4 camView = data.sceneCam.CreateViewMatrix();
-            glm::mat4 transform = selectedObj->GetTransform()->TransformMatrix();
+            glm::mat4 transform = selectedEntity->GetTransform()->TransformMatrix();
 
             // Snapping
             bool snap = Input::GetKeyState(KeyCode::LeftControl) == KeyState::Down;
@@ -524,16 +525,25 @@ namespace Editor {
                 Math::DecomposeTransform(transform, position, rotation, scale);
 
                 //glm::vec3 deltaRotation = (Vector3) rotation - selectedObj->GetTransform()->rotation;
-                selectedObj->GetTransform()->SetPosition(position);
-                if (RigidBody* rb = selectedObj->GetComponent<RigidBody>())
+                selectedEntity->GetTransform()->SetPosition(position);
+                if (RigidBody* rb = selectedEntity->GetComponent<RigidBody>())
                     rb->SetPosition(position);
                 //selectedObj->GetTransform()->rotation += deltaRotation;
-                selectedObj->GetTransform()->SetScale(scale);
+                selectedEntity->GetTransform()->SetScale(scale);
 
                 //The rotation doesn't work for some reason, it keeps wiggling around
                 //Unfortunately I'm dum dum so this is what you get :) uwu
 
                 //TODO: Dont be dum dum like a friggin idiot and learn how to do it owo
+
+            }
+
+            if (ImGui::IsWindowFocused() && Input::GetKeyState(KeyCode::Delete) == KeyState::Pressed) {
+
+                RemoveEntity(selectedEntity);
+                Properties::ClearSelectedData();
+
+                SetChanges();
 
             }
 

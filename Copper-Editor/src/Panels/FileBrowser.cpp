@@ -85,7 +85,7 @@ namespace Editor {
                 filename = filename.substr(0, filename.find_last_of('.'));
 
             ImGui::PushID(path.string().c_str());
-            EntryIcon(directory);
+            EntryIcon(path, directory);
 
             // Functionality
 
@@ -106,6 +106,13 @@ namespace Editor {
             ImGui::NextColumn();
             ImGui::PopID();
             
+        }
+
+        if (Properties::GetSelectedData().type == SelectedData::Type::File && ImGui::IsWindowFocused() && Input::GetKeyState(KeyCode::Delete) == KeyState::Pressed) {
+
+            fs::remove_all(GetProject().GetAssetsPath() / Properties::GetSelectedData().file);
+            Properties::ClearSelectedData();
+
         }
 
         ImGui::Columns(1);
@@ -161,8 +168,6 @@ namespace Editor {
         if (ImGui::MenuItem("Remove")) {
 
             fs::remove_all(GetProject().GetAssetsPath() / path);
-            if (fs::exists((GetProject().GetAssetsPath() / path).string() + ".cum"))
-                fs::remove((GetProject().GetAssetsPath() / path).string() + ".cum");
 
         }
         if (ImGui::MenuItem("Edit"))
@@ -172,12 +177,17 @@ namespace Editor {
 
     }
 
-    void FileBrowser::EntryIcon(bool directory) {
+    void FileBrowser::EntryIcon(const fs::path& path, bool directory) {
 
         uint32_t iconID = directory ? directoryIcon.GetID() : fileIcon.GetID();
 
-        ImGui::PushStyleColor(ImGuiCol_Button, { 0.0f, 0.0f, 0.0f, 0.0f });
+        if (Properties::GetSelectedData().type == SelectedData::Type::File && Properties::GetSelectedData().file == path)
+            ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyle().Colors[ImGuiCol_TabSelected]);
+        else
+            ImGui::PushStyleColor(ImGuiCol_Button, { 0.0f, 0.0f, 0.0f, 0.0f });
+
         ImGui::ImageButton("##Entry", static_cast<ImTextureID>((uint64) iconID), { THUMBNAIL_SIZE, THUMBNAIL_SIZE }, { 0, 1 }, { 1, 0 });
+
         ImGui::PopStyleColor();
 
     }

@@ -23,11 +23,14 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+
         if (m_id != 0)
             Delete();
 
         glGenFramebuffers(1, &m_id);
         glBindFramebuffer(GL_FRAMEBUFFER, m_id);
+
+        Log("Recreate called for fbo {}", m_id);
 
         // Color attachments
 

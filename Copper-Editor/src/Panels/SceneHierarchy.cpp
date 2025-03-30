@@ -38,12 +38,24 @@ namespace Editor {
 
         RemoveParentTarget();
 
+        if (Properties::GetSelectedData().type == SelectedData::Type::Entity && ImGui::IsWindowFocused() && Input::GetKeyState(KeyCode::Delete) == KeyState::Pressed) {
+
+            CU_ASSERT(Properties::GetSelectedData().entity, "Selected entity is invalid, can't delete!");
+
+            m_entityToRemove = Properties::GetSelectedData().entity;
+            Properties::ClearSelectedData();
+
+            SetChanges();
+
+        }
+
         if (m_entityToRemove) {
 
             m_scene->RemoveEntity(m_entityToRemove);
             m_entityToRemove = Entity();
 
         }
+
 
         CUP_END_FRAME();
 
@@ -55,7 +67,7 @@ namespace Editor {
 
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
         if (Properties::GetSelectedData().type == SelectedData::Type::Entity && Properties::GetSelectedData().entity == entity)
-            flags |= ImGuiTreeNodeFlags_OpenOnArrow;
+            flags |= ImGuiTreeNodeFlags_Selected;
 
         bool opened = ImGui::TreeNodeEx(entity, flags, entity->name.c_str());
 

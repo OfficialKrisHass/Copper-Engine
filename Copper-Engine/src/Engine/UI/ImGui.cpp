@@ -46,6 +46,7 @@ namespace Copper {
 
         iniPath = (ExecutableFolder() / "imgui.ini").string();
         io.IniFilename = iniPath.c_str();
+        ImGui::LoadIniSettingsFromDisk(io.IniFilename);
 
         if (!mainFontPath.empty())
             io.FontDefault = io.Fonts->AddFontFromFileTTF(mainFontPath.string().c_str(), mainFontSize);

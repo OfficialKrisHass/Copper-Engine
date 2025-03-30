@@ -83,13 +83,14 @@ namespace Editor {
 
         FrameBuffer viewportFBO;
 
+        bool viewportFirstFrame = true;
         UVector2I viewportSize = UVector2I(1280, 720);
         UVector2I viewportCentre;
         Vector2I viewportMousePos;
 
         bool canLookViewport = true;
 
-        SceneCamera sceneCam = SceneCamera(viewportSize);
+        SceneCamera sceneCam;
 
         // Game Panel
 
@@ -156,7 +157,16 @@ namespace Editor {
 
         data.scene = GetScene();
 
+        CU_ASSERT(ImGui::FindWindowSettingsByID(ImHashStr("Viewport")) != nullptr, "Could not get Window Settings for Viewport window");
+        
+        data.themeEditor.LoadTheme(ExecutableFolder() / "assets/Themes/Default.cutheme");
+
+        ImVec2ih size = ImGui::FindWindowSettingsByID(ImHashStr("Viewport"))->Size;
+        float tabBarHeight = 18.0f + ImGui::GetStyle().FramePadding.y * 2;
+        data.viewportSize = UVector2I(size.x, size.y - tabBarHeight);
+
         data.viewportFBO = FrameBuffer(data.viewportSize, { FrameBuffer::Attachment::Format::RGB8, FrameBuffer::Attachment::Format::RedInteger });
+        data.sceneCam = SceneCamera(data.viewportSize);
         
         data.playIcon.Create(ExecutableFolder() / "assets/Icons/PlayButton.png", Texture::Format::RGBA);
         data.stopIcon.Create(ExecutableFolder() / "assets/Icons/StopButton.png", Texture::Format::RGBA);
@@ -167,7 +177,6 @@ namespace Editor {
 
         LoadEditorData();
 
-        data.themeEditor.LoadTheme(ExecutableFolder() / "assets/Themes/Default.cutheme");
 
 #ifdef CU_LINUX
         data.project.RunPremake();
@@ -253,8 +262,8 @@ namespace Editor {
 
         FileWatcher::PollChanges();
 
-        if (data.viewportFBO.GetSize().x != data.viewportSize.x || data.viewportFBO.GetSize().y != data.viewportSize.y) {
-
+        if (data.viewportFBO.GetSize() != data.viewportSize) {
+            
             data.viewportFBO.Resize(data.viewportSize);
             data.sceneCam.Resize(data.viewportSize);
 
@@ -288,7 +297,7 @@ namespace Editor {
     void UIUpdate() {
         
         CUP_START_FRAME("Editor UI");
-        
+
         RenderDockspace();
         RenderMenu();
         
@@ -472,10 +481,17 @@ namespace Editor {
         //TODO: Either Change ImGui To use UVector2I or edit Copper Code to use ImVec2
         //      so that we don't have to allocate memory for the UVector2I
         float tabBarHeight = ImGui::GetCursorPos().y;
-        ImVec2 windowSize = ImGui::GetContentRegionAvail();
         ImVec2 windowPos = ImGui::GetWindowPos();
 
-        data.viewportSize = UVector2I((uint32) windowSize.x, (uint32) windowSize.y);
+        if (!data.viewportFirstFrame) {
+
+            ImVec2 windowSize = ImGui::GetContentRegionAvail();
+            if (data.viewportSize.x != windowSize.x || data.viewportSize.y != windowSize.y)
+                data.viewportSize = UVector2I(static_cast<uint32>(windowSize.x), static_cast<uint32>(windowSize.y));
+
+        }
+
+        data.viewportFirstFrame = false;
 
         data.viewportCentre = data.viewportSize / 2;
         data.viewportCentre.x += (uint32) windowPos.x;
@@ -486,7 +502,7 @@ namespace Editor {
         data.viewportMousePos.y = static_cast<int32>(mousePos.y) - windowPos.y - tabBarHeight;
         data.viewportMousePos.y = data.viewportSize.y - data.viewportMousePos.y;
 
-        ImGui::Image(static_cast<ImTextureID>((uint64) data.viewportFBO.GetColorAttachmentID(0)), windowSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+        ImGui::Image(static_cast<ImTextureID>((uint64) data.viewportFBO.GetColorAttachmentID(0)), { static_cast<float>(data.viewportSize.x), static_cast<float>(data.viewportSize.y) }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
         //Gizmos that I stol... I mean, taken inspiration from The Chernos Game Engine series
         //Yeah, I definitely didn't copy this entire chunk of code that I don't understand but

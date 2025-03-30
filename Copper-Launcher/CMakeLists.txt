@@ -10,7 +10,7 @@ list(TRANSFORM sources PREPEND ${PROJECT_SOURCE_DIR}/Copper-Launcher/src/)
 
 # Include dirs
 
-list(APPEND includes GLFW/include GLAD/include yaml-cpp/include ImGui pfd)
+list(APPEND includes GLFW/include GLAD/include yaml-cpp/include ImGui portable-file-dialogs)
 list(TRANSFORM includes PREPEND ${PROJECT_SOURCE_DIR}/Copper-Engine/lib/)
 
 # Defines

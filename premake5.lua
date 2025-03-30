@@ -71,7 +71,7 @@ project "Copper-Engine"
         "%{prj.name}/lib/ImGuizmo",
         "%{prj.name}/lib/stb",
         "%{prj.name}/lib/Copper-Math",
-        "%{prj.name}/lib/pfd",
+        "%{prj.name}/lib/portable-file-dialogs",
         "%{prj.name}/lib/uuid",
 
         -- Stupid premake doesn't support include dirs for a single file so the entire project
@@ -280,7 +280,7 @@ project "Copper-Launcher"
         "Copper-Engine/lib/GLAD/include",
         "Copper-Engine/lib/yaml-cpp/include",
         "Copper-Engine/lib/ImGui",
-        "Copper-Engine/lib/pfd",
+        "Copper-Engine/lib/portable-file-dialogs",
 
         -- Stupid premake doesn't support include dirs for a single file so the entire project
         -- needs this, just for ImGuizmo.cpp to use it :)))))

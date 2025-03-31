@@ -65,17 +65,27 @@ namespace Editor {
 
         ImGui::PushID((uint32) (uint64) entity);
 
-        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
+        ImVec2 pos = ImGui::GetCursorScreenPos();
+        ImVec2 min = { pos.x + ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.x, pos.y };
+        ImVec2 max = { pos.x + ImGui::GetContentRegionAvail().x - ImGui::GetStyle().FramePadding.x, pos.y + ImGui::GetTextLineHeight() };
+
+        if (ImGui::IsMouseHoveringRect(min, max)) {
+
+            switch (Input::GetKeyState(KeyCode::Mouse0)) {
+
+            case KeyState::Pressed: clickedEntityID = entity->ID(); break;
+            case KeyState::Released: Properties::SetSelectedEntity(entity); break;
+            default: break;
+
+            }
+
+        }
+
+        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
         if (Properties::GetSelectedData().type == SelectedData::Type::Entity && Properties::GetSelectedData().entity == entity)
             flags |= ImGuiTreeNodeFlags_Selected;
 
         bool opened = ImGui::TreeNodeEx(entity, flags, entity->name.c_str());
-
-        if (ImGui::IsItemClicked())
-            clickedEntityID = entity->ID();
-
-        if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered() && entity->ID() == clickedEntityID)
-            Properties::SetSelectedEntity(entity);
 
         if (ImGui::BeginDragDropSource()) {
 

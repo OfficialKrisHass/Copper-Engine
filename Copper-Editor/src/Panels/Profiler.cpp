@@ -22,7 +22,7 @@ namespace Editor::Profiler {
             Subframe(subframe);
 
         ImGui::Text("");
-        ImGui::Text(fmt::format("Total: {}ms", frame.duration).c_str());
+        ImGui::Text("Total: %.2fms", frame.duration);
 #else
         ImGui::Text("Profiler works only in Debug mode!");
 #endif

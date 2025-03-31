@@ -279,7 +279,7 @@ namespace Editor {
             data.scene->Render(&data.sceneCam);
 
         if (data.viewportMousePos.x > -1 && data.viewportMousePos.y > -1 && data.viewportMousePos.x < data.viewportSize.x && data.viewportMousePos.y < data.viewportSize.y &&
-            Input::GetKeyState(KeyCode::Mouse0) == KeyState::Pressed) {
+            Input::GetKeyState(KeyCode::Mouse0) == KeyState::Pressed && !ImGuizmo::IsOver()) {
 
             uint32 id = data.viewportFBO.ReadPixel(1, data.viewportMousePos.x, data.viewportMousePos.y);
             if (id != INVALID_ENTITY_ID)
@@ -514,45 +514,36 @@ namespace Editor {
 
             ImGuizmo::SetOrthographic(false);
             ImGuizmo::SetDrawlist();
+            ImGuizmo::SetRect(windowPos.x, windowPos.y, static_cast<float>(data.viewportSize.x), data.viewportSize.y + tabBarHeight);
 
-            float wWidth = (float) ImGui::GetWindowWidth();
-            float wHeight = (float) ImGui::GetWindowHeight();
-            ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, wWidth, wHeight);
+            Matrix4 projection = data.sceneCam.CreateProjectionMatrix();
+            Matrix4 view = data.sceneCam.CreateViewMatrix();
+            Matrix4 transform = selectedEntity->GetTransform()->TransformMatrix();
 
-            Matrix4 camProjection = data.sceneCam.CreateProjectionMatrix();
-            Matrix4 camView = data.sceneCam.CreateViewMatrix();
-            glm::mat4 transform = selectedEntity->GetTransform()->TransformMatrix();
-
-            // Snapping
             bool snap = Input::GetKeyState(KeyCode::LeftControl) == KeyState::Down;
-            float snapValue = 0.5f;
-            if (data.project.GetGizmoType() == ImGuizmo::OPERATION::ROTATE) snapValue = 45.0f;
+            float snapValues[3] = { 0.5f, 0.5f, 0.5f };
 
-            float snapValues[3] = {snapValue, snapValue, snapValue};
-
-            ImGuizmo::Manipulate(&(camView.cols[0].x), &(camProjection.cols[0].x),
-                                 (ImGuizmo::OPERATION) data.project.GetGizmoType(), ImGuizmo::LOCAL, glm::value_ptr(transform),
-                                 nullptr, snap ? snapValues : nullptr);
+            ImGuizmo::Manipulate(&view.cols[0].x, &projection.cols[0].x, static_cast<ImGuizmo::OPERATION>(data.project.GetGizmoType()), ImGuizmo::LOCAL, &transform.cols[0].x, nullptr, snap ? snapValues : nullptr);
 
             if (ImGuizmo::IsUsing()) {
 
-                glm::vec3 position, rotation, scale;
+                Vector3 position, rotation, scale;
+                ImGuizmo::DecomposeMatrixToComponents(&transform.cols[0].x, &position.x, &rotation.x, &scale.x);
 
-                Math::DecomposeTransform(transform, position, rotation, scale);
-
-                //glm::vec3 deltaRotation = (Vector3) rotation - selectedObj->GetTransform()->rotation;
                 selectedEntity->GetTransform()->SetPosition(position);
-                if (RigidBody* rb = selectedEntity->GetComponent<RigidBody>())
-                    rb->SetPosition(position);
-                //selectedObj->GetTransform()->rotation += deltaRotation;
+                selectedEntity->GetTransform()->SetRotation(rotation);
                 selectedEntity->GetTransform()->SetScale(scale);
 
-                //The rotation doesn't work for some reason, it keeps wiggling around
-                //Unfortunately I'm dum dum so this is what you get :) uwu
+                if (RigidBody* rb = selectedEntity->GetComponent<RigidBody>()) {
 
-                //TODO: Dont be dum dum like a friggin idiot and learn how to do it owo
+                    rb->SetPosition(position);
+                    rb->SetRotation(rotation);
 
-            }
+                }
+
+                SetChanges();
+
+            } 
 
             if (ImGui::IsWindowFocused() && Input::GetKeyState(KeyCode::Delete) == KeyState::Pressed) {
 

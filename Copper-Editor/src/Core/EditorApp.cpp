@@ -92,6 +92,9 @@ namespace Editor {
 
         SceneCamera sceneCam;
 
+        ImGuizmo::OPERATION gizmoOperation = ImGuizmo::TRANSLATE;
+        ImGuizmo::MODE gizmoMode = ImGuizmo::LOCAL;
+
         // Game Panel
 
         UVector2I gamePanelSize = UVector2I(1280, 720);
@@ -203,6 +206,9 @@ namespace Editor {
 
         out << YAML::Key << "Last Project" << YAML::Value << data.project.GetPath();
 
+        out << YAML::Key << "Gizmo operation" << YAML::Value << static_cast<uint32>(data.gizmoOperation);
+        out << YAML::Key << "Gizmo mode" << YAML::Value << static_cast<uint32>(data.gizmoMode);
+
         out << YAML::EndMap; //End
 
         std::ofstream file(ExecutableFolder() / "assets/EditorData.cu");
@@ -230,6 +236,9 @@ namespace Editor {
             exit(1);
 
         }
+
+        data.gizmoOperation = static_cast<ImGuizmo::OPERATION>(main["Gizmo operation"].as<uint32>());
+        data.gizmoMode = static_cast<ImGuizmo::MODE>(main["Gizmo mode"].as<uint32>());
     
         if (!Args::ProjectPath().empty()) {
 
@@ -466,10 +475,10 @@ namespace Editor {
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
         bool open = ImGui::Begin("Viewport");
+        ImGui::PopStyleVar();
         if (!open) {
 
             ImGui::End();
-            ImGui::PopStyleVar();
 
             CUP_END_FRAME();
 
@@ -523,7 +532,7 @@ namespace Editor {
             bool snap = Input::GetKeyState(KeyCode::LeftControl) == KeyState::Down;
             float snapValues[3] = { 0.5f, 0.5f, 0.5f };
 
-            ImGuizmo::Manipulate(&view.cols[0].x, &projection.cols[0].x, static_cast<ImGuizmo::OPERATION>(data.project.GetGizmoType()), ImGuizmo::LOCAL, &transform.cols[0].x, nullptr, snap ? snapValues : nullptr);
+            ImGuizmo::Manipulate(&view.cols[0].x, &projection.cols[0].x, data.gizmoOperation, data.gizmoMode, &transform.cols[0].x, nullptr, snap ? snapValues : nullptr);
 
             if (ImGuizmo::IsUsing()) {
 
@@ -558,9 +567,39 @@ namespace Editor {
 
         data.canLookViewport = ImGui::IsItemHovered();
         data.sceneCam.SetCanLook(data.canLookViewport);
+
+        // Gizmo controls
+        // TODO: Add icons instead of text
+
+        //static const float buttonSize = 20.f;
+        const float buttonSize = ImGui::CalcTextSize("W").x + ImGui::GetStyle().FramePadding.x * 2.5;
+
+        ImGui::SetCursorPos({ ImGui::GetStyle().WindowPadding.x, ImGui::GetStyle().WindowPadding.y + tabBarHeight });
+        if (ImGui::Button("P", { buttonSize, buttonSize }))
+            data.gizmoOperation = ImGuizmo::TRANSLATE;
+
+        ImGui::SameLine();
+        if (ImGui::Button("R", { buttonSize, buttonSize }))
+           data.gizmoOperation = ImGuizmo::ROTATE; 
+
+        ImGui::SameLine();
+        if (ImGui::Button("S", { buttonSize, buttonSize }))
+           data.gizmoOperation = ImGuizmo::SCALE; 
+
+        ImGui::PushStyleVarX(ImGuiStyleVar_ItemSpacing, ImGui::GetStyle().ItemSpacing.x * 2);
+
+        ImGui::SameLine();
+        if (ImGui::Button("W", { buttonSize, buttonSize }))
+           data.gizmoMode = ImGuizmo::WORLD;
+
+        ImGui::PopStyleVar();
+
+        ImGui::SameLine();
+        if (ImGui::Button("L", { buttonSize, buttonSize }))
+           data.gizmoMode = ImGuizmo::LOCAL;
+
         
         ImGui::End();
-        ImGui::PopStyleVar();
 
         CUP_END_FRAME();
 
@@ -1015,7 +1054,7 @@ namespace Editor {
 
                 if (data.state == EditorState::Play || rightClick) break;
 
-                data.project.SetGizmoType(ImGuizmo::TRANSLATE);
+                data.gizmoOperation = ImGuizmo::TRANSLATE;
 
                 break;
 
@@ -1024,7 +1063,7 @@ namespace Editor {
 
                 if (data.state == EditorState::Play || rightClick) break;
 
-                data.project.SetGizmoType(ImGuizmo::ROTATE);
+                data.gizmoOperation = ImGuizmo::ROTATE;
 
                 break;
 
@@ -1033,7 +1072,7 @@ namespace Editor {
 
                 if (data.state == EditorState::Play || rightClick) break;
 
-                data.project.SetGizmoType(ImGuizmo::SCALE);
+                data.gizmoOperation = ImGuizmo::SCALE;
 
                 break;
 

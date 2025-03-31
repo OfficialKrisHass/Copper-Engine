@@ -72,11 +72,15 @@ namespace Copper::Input {
 
         for (KeyCode key : keysToUpdate) {
 
-            CU_ASSERT(keyStates.at(key) < KeyState::None, "Tried to increment KeyState for key '{}' past the limit", static_cast<uint16>(key));
-            keyStates[key] = static_cast<KeyState>(static_cast<uint8>(keyStates[key]) + 1);
+            switch (keyStates.at(key)) {
+
+            case KeyState::Pressed: keyStates[key] = KeyState::Down; break;
+            case KeyState::Released: keyStates[key] = KeyState::None; break;
+            default: break;
+
+            }
 
         }
-
         keysToUpdate.clear();
 
     }

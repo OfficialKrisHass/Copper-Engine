@@ -33,15 +33,11 @@ namespace Editor {
         inline const Copper::fs::path& GetLastOpenedScenePath() const { return m_lastOpenedScenePath; }
         inline const std::string GetLastOpenedSceneName() const { return m_lastOpenedScenePath.filename().string(); }
 
-        inline Copper::uint32 GetGizmoType() const { return m_gizmoType; }
-
         // Setters
 
         inline void SetName(const std::string& value) { m_name = value; }
 
         inline void SetLastOpenedScenePath(const Copper::fs::path& value) { m_lastOpenedScenePath = value; }
-
-        inline void SetGizmoType(Copper::uint32 value) { m_gizmoType = value; }
 
         // Operators
 
@@ -52,8 +48,6 @@ namespace Editor {
 
         Copper::fs::path m_path;
         Copper::fs::path m_lastOpenedScenePath;
-
-        Copper::uint32 m_gizmoType = 0;
 
         bool LoadFile(const Copper::fs::path& path);
 

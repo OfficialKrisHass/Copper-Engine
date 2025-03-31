@@ -118,8 +118,6 @@ namespace Editor {
         out << YAML::Key << "Name" << YAML::Value << m_name;
         out << YAML::Key << "Last scene" << YAML::Value << m_lastOpenedScenePath;
 
-        out << YAML::Key << "Gizmo" << m_gizmoType;
-
         out << YAML::EndMap; // Main
         std::ofstream file(m_path / "Project.cu");
         file << out.c_str(); 
@@ -165,8 +163,6 @@ namespace Editor {
 
         m_name = main["Name"].as<std::string>();
         m_lastOpenedScenePath = main["Last scene"].as<fs::path>();
-
-        m_gizmoType = main["Gizmo"].as<uint32>();
 
         return true;
 

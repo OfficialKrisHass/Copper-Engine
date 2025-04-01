@@ -89,6 +89,7 @@ namespace Editor {
         Vector2I viewportMousePos;
 
         bool canLookViewport = true;
+        bool viewportFocused = false;
 
         SceneCamera sceneCam;
 
@@ -567,6 +568,8 @@ namespace Editor {
 
         data.canLookViewport = ImGui::IsItemHovered();
         data.sceneCam.SetCanLook(data.canLookViewport);
+
+        data.viewportFocused = ImGui::IsWindowFocused();
 
         // Gizmo controls
         // TODO: Add icons instead of text
@@ -1052,7 +1055,7 @@ namespace Editor {
             }
             case KeyCode::Q: {
 
-                if (data.state == EditorState::Play || rightClick) break;
+                if (!data.viewportFocused || data.state == EditorState::Play || rightClick) break;
 
                 data.gizmoOperation = ImGuizmo::TRANSLATE;
 
@@ -1061,7 +1064,7 @@ namespace Editor {
             }
             case KeyCode::W: {
 
-                if (data.state == EditorState::Play || rightClick) break;
+                if (!data.viewportFocused || data.state == EditorState::Play || rightClick) break;
 
                 data.gizmoOperation = ImGuizmo::ROTATE;
 
@@ -1070,7 +1073,7 @@ namespace Editor {
             }
             case KeyCode::E: {
 
-                if (data.state == EditorState::Play || rightClick) break;
+                if (!data.viewportFocused || data.state == EditorState::Play || rightClick) break;
 
                 data.gizmoOperation = ImGuizmo::SCALE;
 

@@ -275,10 +275,17 @@ namespace Editor::SceneSerializer {
 
             using namespace Scripting;
 
+            const Script* script = GetScript(scriptComponent->GetScriptName());
+            if (script == nullptr) {
+
+                LogError("Can't serialize a Script component ({}) on entity {} because it isn't loaded in the Script Map", scriptComponent->GetScriptName(), *entity);
+                return;
+
+            }
+
             out << YAML::Key << "Script Component" << YAML::Value << YAML::BeginMap; // Script Component
             
-            const Script* script = scriptComponent->GetScript();
-            out << YAML::Key << "Name" << YAML::Value << script->FullName();
+            out << YAML::Key << "Name" << YAML::Value << scriptComponent->GetScriptName();
             
             out << YAML::Key << "Fields" << YAML::Value << YAML::BeginMap; // Fields
 
@@ -424,10 +431,9 @@ namespace Editor::SceneSerializer {
         if (YAML::Node scriptNode = data["Script Component"]) {
 
             std::string name = scriptNode["Name"].as<std::string>();
-            const Scripting::ScriptMap& scriptMap = Scripting::ComponentScripts();
+            const Scripting::Script* script = Scripting::GetScript(name);
 
-            const Scripting::ScriptMap::const_iterator script = scriptMap.find(name);
-            if (script == scriptMap.end()) {
+            if (script == nullptr) {
 
                 LogError("Could not deserialize Script Component '{}' on Entity '{}'. Does not exist in loaded Script Map", name, *entity);
                 return;
@@ -435,12 +441,12 @@ namespace Editor::SceneSerializer {
             }
 
             ScriptComponent* scriptComponent = entity->AddComponent<ScriptComponent>();
-            scriptComponent->Setup(&script->second);
+            scriptComponent->Setup(script);
 
             // Fields
 
             YAML::Node fieldsNode = scriptNode["Fields"];
-            const std::vector<Scripting::Field>& fields = script->second.GetFields();
+            const std::vector<Scripting::Field>& fields = script->GetFields();
 
             for (const Scripting::Field& field : fields) {
 

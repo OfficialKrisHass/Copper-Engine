@@ -182,7 +182,7 @@ namespace Copper::Scripting {
             if (!mono_class_is_subclass_of(klass, GetMonoClass<Component>(), false)) continue;
 
             std::string fullName = mono_class_get_name(klass);
-            Script& script = data.componentScripts[fullName] = Script(klass);
+            data.componentScripts[fullName] = Script(klass);
 
         }
 
@@ -196,6 +196,14 @@ namespace Copper::Scripting {
     const Assembly& GameAssembly() { return data.game; }
 
     const ScriptMap& ComponentScripts() { return data.componentScripts; }
+    const Script* GetScript(const std::string& name) {
+
+        CUP_FUNCTION();
+
+        if (data.componentScripts.find(name) == data.componentScripts.end()) return nullptr;
+        return &data.componentScripts.at(name);
+
+    }
 
     MonoClassField* UnmanagedPtrField() { return data.unmanagedPtrField; }
 

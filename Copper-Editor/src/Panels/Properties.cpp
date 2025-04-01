@@ -356,6 +356,8 @@ namespace Editor {
     void Properties::RenderScriptComponent(ScriptComponent* scriptComponent) {
 
         const Scripting::Script* script = scriptComponent->GetScript();
+        if (script == nullptr) return;
+
         if (!DrawComponent<ScriptComponent>(script->Name(), scriptComponent)) return;
 
         const std::vector<Scripting::Field>& fields = script->GetFields();

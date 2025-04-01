@@ -4,6 +4,8 @@
 
 #include "Engine/Components/Component.h"
 
+#include "Engine/Scripting/ScriptingEngine.h"
+
 extern "C" {
 
     typedef struct _MonoObject MonoObject;
@@ -23,17 +25,33 @@ namespace Copper {
     public:
         ScriptComponent() = default;
         
+        void Setup(const std::string& scriptName) {
+
+            CUP_FUNCTION();
+
+            const Scripting::Script* script = Scripting::GetScript(scriptName);
+            if (script == nullptr) {
+
+                Log("Can't setup script component with an invalid script ({})", scriptName);
+                return;
+
+            }
+
+            Setup(script);
+
+        }
         void Setup(const Scripting::Script* script);
 
         void OnBegin() const;
         void OnUpdate() const;
 
-        inline const Scripting::Script* GetScript() const { return m_script; }
+        inline const Scripting::Script* GetScript() const { return Scripting::GetScript(m_scriptName); }
+        inline const std::string& GetScriptName() const { return m_scriptName; } 
 
         inline operator bool() const { return m_instance != nullptr; }
 
     private:
-        const Scripting::Script* m_script = nullptr;
+        std::string m_scriptName;
         MonoObject* m_instance = nullptr;
 
         MonoMethod* m_begin = nullptr;

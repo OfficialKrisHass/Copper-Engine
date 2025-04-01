@@ -28,6 +28,7 @@ namespace Copper::Scripting {
 
     typedef std::unordered_map<std::string, Script> ScriptMap;
     const ScriptMap& ComponentScripts();
+    const Script* GetScript(const std::string& name);
 
     MonoClassField* UnmanagedPtrField(); 
 

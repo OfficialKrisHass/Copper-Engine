@@ -71,6 +71,12 @@ Entities:
     Mesh Renderer:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: 00000000-0000-0000-0000-000000000000
+    Script Component:
+      Name: Player
+      Fields:
+        speed:
+          Type: 3
+          Value: 0
   5:
     Name: Cube
     Transform:
@@ -134,7 +140,7 @@ Entities:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: e4427019-9f8e-4425-8930-166fdedc0817
 Scene Camera:
-  Position: [-6.35806227, 8.43848038, -10.4580145]
-  Rotation: [-0.0322079025, 0.00966260023, 0.957282722, 0.287191659]
+  Position: [-9.60883141, 8.60701561, -0.695383251]
+  Rotation: [-0.677295089, 0.197476909, 0.680382848, 0.198377192]
   Speed: 0.100000001
   Sensitivity: 100

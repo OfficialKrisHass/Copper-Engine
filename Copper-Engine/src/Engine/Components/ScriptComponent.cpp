@@ -24,12 +24,12 @@ namespace Copper {
 
         }
 
-        this->m_script = script;
-        this->m_instance = mono_object_new(AppDomain(), m_script->m_class);
+        m_scriptName = script->FullName();
+        m_instance = mono_object_new(AppDomain(), script->m_class);
 
         if (!m_instance) {
 
-            LogError("Could not instantiate the ScriptComponent.\n\tScript name: {}\n\tEntity: {} ({})", m_script->FullName(), GetEntity()->name, GetEntity()->ID());
+            LogError("Could not instantiate the ScriptComponent.\n\tScript name: {}\n\tEntity: {} ({})", m_scriptName, GetEntity()->name, GetEntity()->ID());
             return;
 
         }
@@ -38,7 +38,7 @@ namespace Copper {
 
         m_begin = mono_class_get_method_from_name(script->m_class, "OnBegin", 0);
 
-        MonoMethod* onUpdate = mono_class_get_method_from_name(m_script->m_class, "OnUpdate", 0);
+        MonoMethod* onUpdate = mono_class_get_method_from_name(script->m_class, "OnUpdate", 0);
         if (onUpdate)
             m_update = (UpdateFunc) mono_method_get_unmanaged_thunk(onUpdate);
 

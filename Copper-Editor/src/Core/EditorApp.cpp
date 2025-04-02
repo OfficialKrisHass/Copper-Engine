@@ -17,6 +17,7 @@
 
 #include "Core/FileWatcher.h"
 #include "Core/SceneSerializer.h"
+#include "Core/ChangeHandler.h"
 
 #include "Core/Utils/ModelLoader.h"
 
@@ -77,8 +78,6 @@ namespace Editor {
         fs::path scenePath;
         fs::path nextScenePath;
 
-        bool changes = false;
-        
         // Viewport
 
         FrameBuffer viewportFBO;
@@ -92,9 +91,6 @@ namespace Editor {
         bool viewportFocused = false;
 
         SceneCamera sceneCam;
-
-        ImGuizmo::OPERATION gizmoOperation = ImGuizmo::TRANSLATE;
-        ImGuizmo::MODE gizmoMode = ImGuizmo::LOCAL;
 
         // Game Panel
 
@@ -124,8 +120,21 @@ namespace Editor {
 #endif
 
     };
+    struct Gizmo {
+
+        bool active = false;
+
+        ImGuizmo::OPERATION operation = ImGuizmo::TRANSLATE;
+        ImGuizmo::MODE mode = ImGuizmo::LOCAL;
+
+        Vector3 savedPosition;
+        Quaternion savedRotation;
+        Vector3 savedScale;
+
+    };
 
     EditorData data;
+    Gizmo gizmo;
 
     void QueuedTasks();
 
@@ -181,7 +190,6 @@ namespace Editor {
 
         LoadEditorData();
 
-
 #ifdef CU_LINUX
         data.project.RunPremake();
 #endif
@@ -207,8 +215,8 @@ namespace Editor {
 
         out << YAML::Key << "Last Project" << YAML::Value << data.project.GetPath();
 
-        out << YAML::Key << "Gizmo operation" << YAML::Value << static_cast<uint32>(data.gizmoOperation);
-        out << YAML::Key << "Gizmo mode" << YAML::Value << static_cast<uint32>(data.gizmoMode);
+        out << YAML::Key << "Gizmo operation" << YAML::Value << static_cast<uint32>(gizmo.operation);
+        out << YAML::Key << "Gizmo mode" << YAML::Value << static_cast<uint32>(gizmo.mode);
 
         out << YAML::EndMap; //End
 
@@ -238,8 +246,8 @@ namespace Editor {
 
         }
 
-        data.gizmoOperation = static_cast<ImGuizmo::OPERATION>(main["Gizmo operation"].as<uint32>());
-        data.gizmoMode = static_cast<ImGuizmo::MODE>(main["Gizmo mode"].as<uint32>());
+        gizmo.operation = static_cast<ImGuizmo::OPERATION>(main["Gizmo operation"].as<uint32>());
+        gizmo.mode = static_cast<ImGuizmo::MODE>(main["Gizmo mode"].as<uint32>());
     
         if (!Args::ProjectPath().empty()) {
 
@@ -533,9 +541,19 @@ namespace Editor {
             bool snap = Input::GetKeyState(KeyCode::LeftControl) == KeyState::Down;
             float snapValues[3] = { 0.5f, 0.5f, 0.5f };
 
-            ImGuizmo::Manipulate(&view.cols[0].x, &projection.cols[0].x, data.gizmoOperation, data.gizmoMode, &transform.cols[0].x, nullptr, snap ? snapValues : nullptr);
+            ImGuizmo::Manipulate(&view.cols[0].x, &projection.cols[0].x, gizmo.operation, gizmo.mode, &transform.cols[0].x, nullptr, snap ? snapValues : nullptr);
 
             if (ImGuizmo::IsUsing()) {
+
+                if (!gizmo.active) {
+
+                    gizmo.active = true;
+
+                    gizmo.savedPosition = selectedEntity->GetTransform()->Position();
+                    gizmo.savedRotation = selectedEntity->GetTransform()->Rotation();
+                    gizmo.savedScale = selectedEntity->GetTransform()->Scale();
+
+                }
 
                 Vector3 position, rotation, scale;
                 ImGuizmo::DecomposeMatrixToComponents(&transform.cols[0].x, &position.x, &rotation.x, &scale.x);
@@ -551,9 +569,14 @@ namespace Editor {
 
                 }
 
-                SetChanges();
+            } else if (gizmo.active) {
 
-            } 
+                gizmo.active = false;
+
+                Change& change = AddChange(Change::Type::EntityTransformed);
+                change << selectedEntity->ID() << gizmo.savedPosition << gizmo.savedRotation << gizmo.savedScale;
+
+            }
 
             if (ImGui::IsWindowFocused() && Input::GetKeyState(KeyCode::Delete) == KeyState::Pressed) {
 
@@ -579,27 +602,27 @@ namespace Editor {
 
         ImGui::SetCursorPos({ ImGui::GetStyle().WindowPadding.x, ImGui::GetStyle().WindowPadding.y + tabBarHeight });
         if (ImGui::Button("P", { buttonSize, buttonSize }))
-            data.gizmoOperation = ImGuizmo::TRANSLATE;
+            gizmo.operation = ImGuizmo::TRANSLATE;
 
         ImGui::SameLine();
         if (ImGui::Button("R", { buttonSize, buttonSize }))
-           data.gizmoOperation = ImGuizmo::ROTATE; 
+           gizmo.operation = ImGuizmo::ROTATE; 
 
         ImGui::SameLine();
         if (ImGui::Button("S", { buttonSize, buttonSize }))
-           data.gizmoOperation = ImGuizmo::SCALE; 
+           gizmo.operation = ImGuizmo::SCALE; 
 
         ImGui::PushStyleVarX(ImGuiStyleVar_ItemSpacing, ImGui::GetStyle().ItemSpacing.x * 2);
 
         ImGui::SameLine();
         if (ImGui::Button("W", { buttonSize, buttonSize }))
-           data.gizmoMode = ImGuizmo::WORLD;
+           gizmo.mode = ImGuizmo::WORLD;
 
         ImGui::PopStyleVar();
 
         ImGui::SameLine();
         if (ImGui::Button("L", { buttonSize, buttonSize }))
-           data.gizmoMode = ImGuizmo::LOCAL;
+           gizmo.mode = ImGuizmo::LOCAL;
 
         
         ImGui::End();
@@ -847,7 +870,8 @@ namespace Editor {
         SceneHierarchy::SetScene(data.scene);
         Properties::ClearSelectedData();
 
-        data.changes = false;
+        ClearChanges();
+
         data.title = "Copper Editor - " + data.project.GetName() + ": Main.copper";
         Input::SetWindowTitle(data.title);
 
@@ -881,7 +905,7 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        if(data.changes) {
+        if(UnsavedChanges()) {
 
             switch(Input::WarningPopup("Unsaved Changes", "There are unsaved changes made to this scene, do you wish to save before opening a new scene ?")) {
 
@@ -903,7 +927,8 @@ namespace Editor {
         SceneHierarchy::SetScene(data.scene);
         Properties::ClearSelectedData();
 
-        data.changes = false;
+        ClearChanges();
+
         data.title = "Copper Editor - " + data.project.GetName() + ": " + data.project.GetLastOpenedSceneName();
         Input::SetWindowTitle(data.title);
 
@@ -947,7 +972,8 @@ namespace Editor {
 
         SceneSerializer::Serialize(data.scene, data.scenePath);
 
-        data.changes = false;
+        ResetUnsavedChanges();
+
         data.title = "Copper Editor - " + data.project.GetName() + ": " + data.project.GetLastOpenedSceneName();
         Input::SetWindowTitle(data.title);
 
@@ -973,7 +999,8 @@ namespace Editor {
 
         data.project.SetLastOpenedScenePath(relative);
 
-        data.changes = false;
+        ResetUnsavedChanges();
+
         data.title = "Copper Editor - " + data.project.GetName() + ": " + data.project.GetLastOpenedSceneName(); 
         Input::SetWindowTitle(data.title);
         
@@ -1057,7 +1084,7 @@ namespace Editor {
 
                 if (!data.viewportFocused || data.state == EditorState::Play || rightClick) break;
 
-                data.gizmoOperation = ImGuizmo::TRANSLATE;
+                gizmo.operation = ImGuizmo::TRANSLATE;
 
                 break;
 
@@ -1066,7 +1093,7 @@ namespace Editor {
 
                 if (!data.viewportFocused || data.state == EditorState::Play || rightClick) break;
 
-                data.gizmoOperation = ImGuizmo::ROTATE;
+                gizmo.operation = ImGuizmo::ROTATE;
 
                 break;
 
@@ -1075,7 +1102,7 @@ namespace Editor {
 
                 if (!data.viewportFocused || data.state == EditorState::Play || rightClick) break;
 
-                data.gizmoOperation = ImGuizmo::SCALE;
+                gizmo.operation = ImGuizmo::SCALE;
 
                 break;
 
@@ -1103,7 +1130,7 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        if (!data.changes) return true;
+        if (!UnsavedChanges()) return true;
 
         switch (Input::WarningPopup("Unsaved Changes", "There are Unsaved Changes in the project, do you wish to save the Project before exiting ?")) {
 
@@ -1141,6 +1168,8 @@ namespace Editor {
         return true;
 
     }
+
+    const std::string& GetWindowTitle() { return data.title; }
     
     const Project& GetProject() { return data.project; }
     SceneCamera& GetSceneCam() { return data.sceneCam; }
@@ -1157,12 +1186,12 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        if (data.changes || data.state == EditorState::Play) return;
+        /*if (data.changes || data.state == EditorState::Play) return;
 
         data.changes = true;
 
         data.title += '*';
-        Input::SetWindowTitle(data.title);
+        Input::SetWindowTitle(data.title);*/
 
     }
 

@@ -21,6 +21,8 @@ namespace Editor {
     void OpenSceneNext(const Copper::fs::path& path);
     void OpenSceneNext();
 
+    const std::string& GetWindowTitle();
+
     const Project& GetProject();
 
     SceneCamera& GetSceneCam();

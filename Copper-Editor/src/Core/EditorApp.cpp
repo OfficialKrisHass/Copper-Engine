@@ -176,7 +176,7 @@ namespace Editor {
 
         ImVec2ih size = ImGui::FindWindowSettingsByID(ImHashStr("Viewport"))->Size;
         float tabBarHeight = 18.0f + ImGui::GetStyle().FramePadding.y * 2;
-        data.viewportSize = UVector2I(size.x, size.y - tabBarHeight);
+        data.viewportSize = UVector2I(size.x, size.y - static_cast<uint32>(tabBarHeight));
 
         data.viewportFBO = FrameBuffer(data.viewportSize, { FrameBuffer::Attachment::Format::RGB8, FrameBuffer::Attachment::Format::RedInteger });
         data.sceneCam = SceneCamera(data.viewportSize);
@@ -516,8 +516,8 @@ namespace Editor {
         data.viewportCentre.y += (uint32) windowPos.y;
 
         ImVec2 mousePos = ImGui::GetMousePos();
-        data.viewportMousePos.x = static_cast<int32>(mousePos.x) - windowPos.x;
-        data.viewportMousePos.y = static_cast<int32>(mousePos.y) - windowPos.y - tabBarHeight;
+        data.viewportMousePos.x = static_cast<int32>(mousePos.x - windowPos.x);
+        data.viewportMousePos.y = static_cast<int32>(mousePos.y - windowPos.y - tabBarHeight);
         data.viewportMousePos.y = data.viewportSize.y - data.viewportMousePos.y;
 
         ImGui::Image(static_cast<ImTextureID>((uint64) data.viewportFBO.GetColorAttachmentID(0)), { static_cast<float>(data.viewportSize.x), static_cast<float>(data.viewportSize.y) }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
@@ -598,7 +598,7 @@ namespace Editor {
         // TODO: Add icons instead of text
 
         //static const float buttonSize = 20.f;
-        const float buttonSize = ImGui::CalcTextSize("W").x + ImGui::GetStyle().FramePadding.x * 2.5;
+        const float buttonSize = ImGui::CalcTextSize("W").x + ImGui::GetStyle().FramePadding.x * 2.5f;
 
         ImGui::SetCursorPos({ ImGui::GetStyle().WindowPadding.x, ImGui::GetStyle().WindowPadding.y + tabBarHeight });
         if (ImGui::Button("P", { buttonSize, buttonSize }))

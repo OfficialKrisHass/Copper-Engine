@@ -39,7 +39,7 @@ namespace APIBinder {
         std::cout << "Loading Assembly at path:" << EditorDir().string() << "/assets/ScriptingAPI/Copper-ScriptingAPI.dll\n";
 
         uint32 size = 0;
-        char* data = ReadFileBinary(EditorDir() / "assets/ScriptingAPI/Copper-ScriptingAPI.dll", &size);
+        char* data = ReadFileBinary((EditorDir() / "assets/ScriptingAPI/Copper-ScriptingAPI.dll").string(), &size);
         if (!data) {
 
             std::cerr << "Could not read Assembly!\n";

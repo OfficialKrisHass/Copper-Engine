@@ -1107,6 +1107,7 @@ namespace Editor {
                 break;
 
             }
+            case KeyCode::Z: UndoChange(); break;
             case KeyCode::F1: {
 
                 if (data.state == EditorState::Edit || !shift) break;

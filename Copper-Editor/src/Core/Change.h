@@ -22,7 +22,7 @@ namespace Editor {
         Change() = default;
         Change(Type type) : type(type) {}
 
-        inline Change& operator<<(int32 data) {
+        template<typename T> Change& operator<<(T data) {
 
             CUP_FUNCTION();
 
@@ -30,63 +30,40 @@ namespace Editor {
             return *this;
 
         }
-        inline Change& operator<<(uint32 data) {
+        Change& operator<<(const std::string& data);
+
+        Change& operator<<(const Vector3& data);
+        Change& operator<<(const Quaternion& data);
+
+        template<typename T> Change& operator>>(T& out) {
 
             CUP_FUNCTION();
 
-            m_data.push_back(std::to_string(data));
-            return *this;
+            CU_ASSERT(m_index < m_data.size(), "Can't read from change as the read index ({}) is out of range ({})", m_index, m_data.size());
 
-        }
-        inline Change& operator<<(float data) {
+            Read(out);
 
-            CUP_FUNCTION();
-
-            m_data.push_back(std::to_string(data));
-            return *this;
-
-        }
-        inline Change& operator<<(double data) {
-
-            CUP_FUNCTION();
-
-            m_data.push_back(std::to_string(data));
-            return *this;
-
-        }
-        inline Change& operator<<(const std::string& data) {
-
-            CUP_FUNCTION();
-
-            m_data.push_back(data);
+            m_index++;
             return *this;
 
         }
 
-        inline Change& operator<<(const Vector3& data) {
-
-            CUP_FUNCTION();
-
-            std::stringstream ss;
-            ss << data.x << ' ' << data.y << ' ' << data.z;
-            m_data.push_back(ss.str());
-
-            return * this;
-
-        }
-        inline Change& operator<<(const Quaternion& data) {
-
-            CUP_FUNCTION();
-
-            std::stringstream ss;
-            ss << data.w << ' ' << data.x << ' ' << data.y << ' ' << data.z;
-            m_data.push_back(ss.str());
-
-            return * this;
-
-        }
-        
+    public:
         std::vector<std::string> m_data;
+        uint32 m_index = 0;
+
+        template<typename T> void Read(T& out) {
+
+            CUP_FUNCTION();
+
+            std::stringstream ss = std::stringstream(m_data[m_index]);
+            ss >> out;
+
+        }
+        void Read(std::string& out);
+
+        void Read(Vector3& out);
+        void Read(Quaternion& out);
 
     };
 

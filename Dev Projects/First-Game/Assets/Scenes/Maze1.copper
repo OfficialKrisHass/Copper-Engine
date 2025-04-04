@@ -3,7 +3,7 @@ Entities:
   0:
     Name: Ground
     Transform:
-      Position: [-3.15220618, 0, 0]
+      Position: [0, 0, 0]
       Rotation: [1, 0, 0, 0]
       Scale: [100, 1, 100]
       Parent: 4294967295
@@ -140,7 +140,7 @@ Entities:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: e4427019-9f8e-4425-8930-166fdedc0817
 Scene Camera:
-  Position: [-15.7250328, 8.60701561, -1.43384409]
-  Rotation: [0.868818283, -0.260651529, -0.403215259, -0.120967381]
+  Position: [-4.6115737, 11.651041, 2.93374109]
+  Rotation: [0.933951974, -0.354782373, -0.0403519124, -0.0153285693]
   Speed: 0.100000001
   Sensitivity: 100

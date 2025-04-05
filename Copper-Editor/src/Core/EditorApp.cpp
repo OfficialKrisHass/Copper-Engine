@@ -573,8 +573,22 @@ namespace Editor {
 
                 gizmo.active = false;
 
-                Change& change = AddChange(Change::Type::EntityTransformed);
-                change << selectedEntity->ID() << gizmo.savedPosition << gizmo.savedRotation << gizmo.savedScale;
+                if (gizmo.savedPosition != selectedEntity->GetTransform()->Position()) {
+
+                    Change& change = AddChange(Change::Type::EntityMoved);
+                    change << selectedEntity->ID() << gizmo.savedPosition << selectedEntity->GetTransform()->Position();
+
+                } else if (gizmo.savedRotation != selectedEntity->GetTransform()->Rotation()) {
+
+                    Change& change = AddChange(Change::Type::EntityRotated);
+                    change << selectedEntity->ID() << gizmo.savedRotation << selectedEntity->GetTransform()->Rotation();
+
+                } else if (gizmo.savedScale != selectedEntity->GetTransform()->Scale()) {
+
+                    Change& change = AddChange(Change::Type::EntityMoved);
+                    change << selectedEntity->ID() << gizmo.savedScale << selectedEntity->GetTransform()->Scale();
+
+                }
 
             }
 
@@ -1107,7 +1121,20 @@ namespace Editor {
                 break;
 
             }
-            case KeyCode::Z: UndoChange(); break;
+            case KeyCode::Z: {
+                
+                if (control) {
+
+                    if (shift)
+                        RedoChange();
+                    else
+                        UndoChange();
+
+                }
+
+                break;
+
+            }
             case KeyCode::F1: {
 
                 if (data.state == EditorState::Edit || !shift) break;

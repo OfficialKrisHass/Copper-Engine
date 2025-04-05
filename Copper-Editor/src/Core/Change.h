@@ -13,7 +13,10 @@ namespace Editor {
             None = 0,
 
             EntityCreated,
-            EntityTransformed,
+
+            EntityMoved,
+            EntityRotated,
+            EntityScaled,
 
         };
 
@@ -48,7 +51,11 @@ namespace Editor {
 
         }
 
-    public:
+        inline void ResetIndex() { m_index = 0; }
+
+        inline const std::vector<std::string>& GetData() const { return m_data; }
+
+    private:
         std::vector<std::string> m_data;
         uint32 m_index = 0;
 

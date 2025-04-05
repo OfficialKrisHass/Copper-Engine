@@ -5,7 +5,7 @@
 namespace Editor {
 
     std::vector<Change> changes;
-    uint32 changeIndex = 0;
+    int32 changeIndex = -1;
 
     bool unsaved = false;
 
@@ -30,29 +30,105 @@ namespace Editor {
 
     }
 
+    void RedoChange() {
+
+        CUP_FUNCTION();
+
+        CU_ASSERT(changeIndex >= -1, "Change index went too low: {}", changeIndex);
+
+        if (changeIndex + 1 >= changes.size()) return;
+        changeIndex++;
+
+        Change& change = changes[changeIndex];
+        change.ResetIndex();
+
+        switch (change.type) {
+
+        case Change::Type::EntityMoved: {
+
+            uint32 id;
+            Vector3 value;
+            change >> id >> value >> value;
+
+            CU_ASSERT(GetEntityFromID(id) != nullptr, "Invalid entity in Change data. ID: {}, change index: {}", id, changeIndex);
+            GetEntityFromID(id)->GetTransform()->SetPosition(value);
+
+            break;
+
+        }
+        case Change::Type::EntityRotated: {
+
+            uint32 id;
+            Quaternion value;
+            change >> id >> value >> value;
+
+            CU_ASSERT(GetEntityFromID(id) != nullptr, "Invalid entity in Change data. ID: {}, change index: {}", id, changeIndex);
+            GetEntityFromID(id)->GetTransform()->SetRotation(value);
+
+            break;
+
+        }
+        case Change::Type::EntityScaled: {
+
+            uint32 id;
+            Vector3 value;
+            change >> id >> value >> value;
+
+            CU_ASSERT(GetEntityFromID(id) != nullptr, "Invalid entity in Change data. ID: {}, change index: {}", id, changeIndex);
+            GetEntityFromID(id)->GetTransform()->SetScale(value);
+
+            break;
+
+        }                                       
+        default: break;
+
+        }
+
+
+    }
     void UndoChange() {
 
         CUP_FUNCTION();
 
-        if (changes.size() == 0) return;
-        if (changeIndex >= changes.size()) return; // Since it's a uint32, the value will wrap around to the max value, therefore bigger than the size
+        if (changeIndex < 0 || changeIndex >= changes.size()) return; // Since it's a uint32, the value will wrap around to the max value, therefore bigger than the size
 
         Change& change = changes[changeIndex];
+        change.ResetIndex();
 
         switch (change.type) {
         
-        case Change::Type::EntityTransformed: {
+        case Change::Type::EntityMoved: {
 
             uint32 id;
-            Vector3 pos, scale;
-            Quaternion rot;
-            change >> id >> pos >> rot >> scale;
+            Vector3 value;
+            change >> id >> value;
 
-            InternalEntity* entity = GetEntityFromID(id);
+            CU_ASSERT(GetEntityFromID(id) != nullptr, "Invalid entity in Change data. ID: {}, change index: {}", id, changeIndex);
+            GetEntityFromID(id)->GetTransform()->SetPosition(value);
 
-            entity->GetTransform()->SetPosition(pos);
-            entity->GetTransform()->SetRotation(rot);
-            entity->GetTransform()->SetScale(scale);
+            break;
+
+        }
+        case Change::Type::EntityRotated: {
+
+            uint32 id;
+            Quaternion value;
+            change >> id >> value;
+
+            CU_ASSERT(GetEntityFromID(id) != nullptr, "Invalid entity in Change data. ID: {}, change index: {}", id, changeIndex);
+            GetEntityFromID(id)->GetTransform()->SetRotation(value);
+
+            break;
+
+        }
+        case Change::Type::EntityScaled: {
+
+            uint32 id;
+            Vector3 value;
+            change >> id >> value;
+
+            CU_ASSERT(GetEntityFromID(id) != nullptr, "Invalid entity in Change data. ID: {}, change index: {}", id, changeIndex);
+            GetEntityFromID(id)->GetTransform()->SetScale(value);
 
             break;
 

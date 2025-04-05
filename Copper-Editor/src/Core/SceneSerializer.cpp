@@ -19,15 +19,8 @@ using namespace Copper;
 
 namespace Editor::SceneSerializer {
 
-
     void SerializeEntity(InternalEntity* entity, YAML::Emitter& out);
     void DeserializeEntity(uint32 id, const YAML::Node& data);
-
-    void SerializeEntityTransform(Transform* transform, YAML::Emitter& out);
-    void DeserializeEntityTransform(InternalEntity** entityPtr, const YAML::Node& data);
-
-    void SerializeEntityComponents(InternalEntity* entity, YAML::Emitter& out);
-    void DeserializeEntityComponents(InternalEntity* entity, const YAML::Node& data);
 
     void SerializeSceneCamera(YAML::Emitter& out);
     void DeserializeSceneCamera(const YAML::Node& data);

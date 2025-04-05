@@ -2,6 +2,7 @@
 
 #include "Core/EditorApp.h"
 #include "Core/ChangeHandler.h"
+#include "Core/Clipboard.h"
 
 #include "Core/Utils/ModelLoader.h"
 
@@ -135,6 +136,11 @@ namespace Editor {
 
         CUP_FUNCTION();
 
+        if (ImGui::MenuItem("Paste", nullptr, false, !ClipboardEmpty()))
+            newEntity = PasteFromClipboard();
+
+        ImGui::Separator();
+
         if (ImGui::MenuItem("Entity", 0, false, m_scene))
             newEntity = m_scene->CreateEntity();
 
@@ -198,7 +204,8 @@ namespace Editor {
 
         }
 
-        ImGui::Separator();
+        if (ImGui::MenuItem("Copy"))
+            CopyToClipboard(entity);
 
         Entity newEntity;
 

@@ -4,7 +4,15 @@
 
 namespace Editor::SceneSerializer {
 
-    void Serialize(Copper::Scene* scene, const Copper::fs::path& path);
-    void Deserialize(Copper::Scene* scene, const Copper::fs::path& path);
+    using namespace Copper;
+
+    void Serialize(Scene* scene, const fs::path& path);
+    void Deserialize(Scene* scene, const fs::path& path);
+
+    void SerializeEntityTransform(Transform* transform, YAML::Emitter& out);
+    void DeserializeEntityTransform(InternalEntity** entityPtr, const YAML::Node& data);
+
+    void SerializeEntityComponents(InternalEntity* entity, YAML::Emitter& out);
+    void DeserializeEntityComponents(InternalEntity* entity, const YAML::Node& data);
 
 }

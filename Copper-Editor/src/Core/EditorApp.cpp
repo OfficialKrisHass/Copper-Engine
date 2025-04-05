@@ -1198,6 +1198,16 @@ namespace Editor {
     }
 
     const std::string& GetWindowTitle() { return data.title; }
+    void SetWindowTitle(const std::string& value) {
+
+        CUP_FUNCTION();
+
+        if (data.title == value) return;
+
+        data.title = value;
+        Input::SetWindowTitle(data.title);
+
+    }
     
     const Project& GetProject() { return data.project; }
     SceneCamera& GetSceneCam() { return data.sceneCam; }
@@ -1205,23 +1215,6 @@ namespace Editor {
     UVector2I GetViewportSize() { return data.viewportSize; }
 
     bool IsRuntimeRunning() { return data.state == EditorState::Play; }
-
-    // TODO: This feature is not working, has not been working for the past year, isn't
-    // even used in 90% of the places it should be, and also is done in the stupidest way imaginable.
-    // Am I going to fix it in 0.3 ? ..... No
-    // UPDATE: It is still not working, but working on fixing it
-    void SetChanges() {
-
-        CUP_FUNCTION();
-
-        /*if (data.changes || data.state == EditorState::Play) return;
-
-        data.changes = true;
-
-        data.title += '*';
-        Input::SetWindowTitle(data.title);*/
-
-    }
 
 }
 

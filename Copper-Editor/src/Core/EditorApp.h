@@ -22,6 +22,7 @@ namespace Editor {
     void OpenSceneNext();
 
     const std::string& GetWindowTitle();
+    void SetWindowTitle(const std::string& value);
 
     const Project& GetProject();
 
@@ -30,7 +31,5 @@ namespace Editor {
     bool IsRuntimeRunning();
 
     Copper::UVector2I GetViewportSize();
-
-    void SetChanges();
 
 }

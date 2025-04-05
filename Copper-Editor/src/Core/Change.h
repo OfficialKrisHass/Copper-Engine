@@ -12,7 +12,7 @@ namespace Editor {
 
             None = 0,
 
-            EntityCreated,
+            EntityRenamed,
 
             EntityMoved,
             EntityRotated,

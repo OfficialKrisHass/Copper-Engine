@@ -1,6 +1,8 @@
 #include "SceneHierarchy.h"
 
 #include "Core/EditorApp.h"
+#include "Core/ChangeHandler.h"
+
 #include "Core/Utils/ModelLoader.h"
 
 #include "Panels/Properties.h"

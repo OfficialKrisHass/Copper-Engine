@@ -19,7 +19,18 @@ namespace Editor {
 
             std::string title = GetWindowTitle(); 
             title += '*';
-            Input::SetWindowTitle(title);
+            SetWindowTitle(title);
+
+        }
+
+        if (changeIndex != changes.size() - 1) {
+
+            changes.resize(changeIndex + 1);
+
+            changeIndex++;
+            changes.push_back(type);
+
+            return changes.back();
 
         }
 
@@ -138,6 +149,19 @@ namespace Editor {
         }
 
         changeIndex--;
+
+    }
+    void SetChanges() {
+
+        CUP_FUNCTION();
+
+        if (unsaved) return;
+
+        unsaved = true;
+
+        std::string title = GetWindowTitle(); 
+        title += '*';
+        SetWindowTitle(title);
 
     }
     void ClearChanges() {

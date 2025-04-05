@@ -1,6 +1,7 @@
 #include "Properties.h"
 
 #include "Core/EditorApp.h"
+#include "Core/ChangeHandler.h"
 
 #include "Projects/Project.h"
 

@@ -12,6 +12,7 @@ namespace Editor {
 
     void UndoChange();
     void RedoChange();
+    void SetChanges(); // TEMPORARY
     void ClearChanges();
 
     void ResetUnsavedChanges();

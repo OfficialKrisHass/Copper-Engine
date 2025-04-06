@@ -47,6 +47,18 @@ Entities:
         - 7
         - 8
         - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+        - 16
+        - 17
+        - 18
+        - 19
+        - 20
+        - 21
   3:
     Name: Cube
     Transform:
@@ -106,9 +118,9 @@ Entities:
   7:
     Name: Cube
     Transform:
-      Position: [5.5, 2.5, -2.5]
+      Position: [5.5, 2.5, -9.5]
       Rotation: [1, 0, 0, 0]
-      Scale: [1, 5, 11]
+      Scale: [1, 5, 25.0000038]
       Parent: 2
       Children:
         []
@@ -130,7 +142,151 @@ Entities:
   9:
     Name: Cube
     Transform:
-      Position: [1.5, 2.5, -7.5]
+      Position: [-10, 2.5, -7.5]
+      Rotation: [1, 0, 0, 0]
+      Scale: [30, 5, 1]
+      Parent: 2
+      Children:
+        []
+    Mesh Renderer:
+      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
+      Material: e4427019-9f8e-4425-8930-166fdedc0817
+  10:
+    Name: Cube Copy
+    Transform:
+      Position: [-10.5, 2.5, 4.5]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 5, 15]
+      Parent: 2
+      Children:
+        []
+    Mesh Renderer:
+      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
+      Material: e4427019-9f8e-4425-8930-166fdedc0817
+  11:
+    Name: Cube Copy
+    Transform:
+      Position: [1, 2.5, 19.5]
+      Rotation: [1, 0, 0, 0]
+      Scale: [12, 5, 1]
+      Parent: 2
+      Children:
+        []
+    Mesh Renderer:
+      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
+      Material: e4427019-9f8e-4425-8930-166fdedc0817
+  12:
+    Name: Cube Copy
+    Transform:
+      Position: [11.5, 2.5, 18]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 5, 30]
+      Parent: 2
+      Children:
+        []
+    Mesh Renderer:
+      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
+      Material: e4427019-9f8e-4425-8930-166fdedc0817
+  13:
+    Name: Cube Copy Copy
+    Transform:
+      Position: [0.5, 2.5, 24.5]
+      Rotation: [1, 0, 0, 0]
+      Scale: [13, 5, 1]
+      Parent: 2
+      Children:
+        []
+    Mesh Renderer:
+      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
+      Material: e4427019-9f8e-4425-8930-166fdedc0817
+  14:
+    Name: Cube Copy Copy
+    Transform:
+      Position: [3.5, 2.5, 14.5]
+      Rotation: [1, 0, 0, 0]
+      Scale: [7, 5, 1]
+      Parent: 2
+      Children:
+        []
+    Mesh Renderer:
+      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
+      Material: e4427019-9f8e-4425-8930-166fdedc0817
+  15:
+    Name: Cube Copy
+    Transform:
+      Position: [-0.5, 2.5, 11]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 5, 8]
+      Parent: 2
+      Children:
+        []
+    Mesh Renderer:
+      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
+      Material: e4427019-9f8e-4425-8930-166fdedc0817
+  16:
+    Name: Cube Copy Copy Copy
+    Transform:
+      Position: [5.5, 2.5, 9.5]
+      Rotation: [1, 0, 0, 0]
+      Scale: [11, 5, 1]
+      Parent: 2
+      Children:
+        []
+    Mesh Renderer:
+      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
+      Material: e4427019-9f8e-4425-8930-166fdedc0817
+  17:
+    Name: Cube Copy
+    Transform:
+      Position: [20.9795742, 2.5, 2.5]
+      Rotation: [1, 0, 0, 0]
+      Scale: [30, 5, 1]
+      Parent: 2
+      Children:
+        []
+    Mesh Renderer:
+      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
+      Material: e4427019-9f8e-4425-8930-166fdedc0817
+  18:
+    Name: Cube Copy Copy
+    Transform:
+      Position: [-10.5, 2.5, 23.5]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 5, 15]
+      Parent: 2
+      Children:
+        []
+    Mesh Renderer:
+      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
+      Material: e4427019-9f8e-4425-8930-166fdedc0817
+  19:
+    Name: Cube Copy Copy
+    Transform:
+      Position: [-15.5, 2.5, 4]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 5, 14]
+      Parent: 2
+      Children:
+        []
+    Mesh Renderer:
+      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
+      Material: e4427019-9f8e-4425-8930-166fdedc0817
+  20:
+    Name: Cube Copy Copy
+    Transform:
+      Position: [-18.5, 2.5, 11.5]
+      Rotation: [0.707106769, 0, 0.707106769, 0]
+      Scale: [0.99998647, 5, 14.9999809]
+      Parent: 2
+      Children:
+        []
+    Mesh Renderer:
+      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
+      Material: e4427019-9f8e-4425-8930-166fdedc0817
+  21:
+    Name: Cube Copy Copy Copy
+    Transform:
+      Position: [-14.5, 2.5, 16.5]
       Rotation: [1, 0, 0, 0]
       Scale: [7, 5, 1]
       Parent: 2
@@ -140,7 +296,7 @@ Entities:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: e4427019-9f8e-4425-8930-166fdedc0817
 Scene Camera:
-  Position: [-1.07914162, 3.53427601, -5.41520739]
-  Rotation: [0.995712042, -0.069661431, -0.0607188046, -0.00424797414]
+  Position: [-6.56673193, 25.5154514, -0.479395002]
+  Rotation: [0.796434999, -0.545072377, -0.21612303, -0.147912502]
   Speed: 0.100000001
   Sensitivity: 100

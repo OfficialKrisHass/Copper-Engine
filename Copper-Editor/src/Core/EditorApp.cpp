@@ -20,8 +20,6 @@
 #include "Core/ChangeHandler.h"
 #include "Core/Clipboard.h"
 
-#include "Core/Utils/ModelLoader.h"
-
 #include "Assets/ProjectAssetDatabase.h"
 
 #include "Projects/Project.h"

@@ -44,5 +44,5 @@ target_compile_definitions(Copper-Editor PRIVATE ${defines})
 target_link_directories(Copper-Editor PRIVATE lib/mono/bin/linux/${CMAKE_BUILD_TYPE} lib/PhysX/linux/${CMAKE_BUILD_TYPE})
 target_link_libraries(Copper-Editor PRIVATE Copper-Engine glfw GLAD ImGui yaml-cpp assimp
                                             monosgen-2.0 /usr/lib/libpthread.a
-                                            -lX11 -lstdc++fs
+                                            -lX11 -lstdc++fs -lz
                                             PhysXExtensions_static_64 PhysX_static_64 PhysXPvdSDK_static_64 PhysXCooking_static_64 PhysXCommon_static_64 PhysXFoundation_static_64)

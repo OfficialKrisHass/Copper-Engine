@@ -4,8 +4,6 @@
 #include "Core/ChangeHandler.h"
 #include "Core/Clipboard.h"
 
-#include "Core/Utils/ModelLoader.h"
-
 #include "Panels/Properties.h"
 
 #include "Engine/Renderer/Primitives.h"

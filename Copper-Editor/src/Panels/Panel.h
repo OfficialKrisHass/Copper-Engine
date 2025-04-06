@@ -2,27 +2,23 @@
 
 #include "Copper.h"
 
-#include <ImGui/imgui.h>
-
 namespace Editor {
 
     class Panel {
 
     public:
         Panel() = default;
-        Panel(const std::string& name) : name(name) {}
+        Panel(const std::string& name) : m_name(name) {}
 
-        std::string name;
+        void UIRender();
 
-        void UIRender() {
-
-            ImGui::Begin(name.c_str());
-            UI();
-            ImGui::End();
-
-        }
+        inline bool IsFocused() const { return m_focused; }
 
     private:
+        std::string m_name;
+
+        bool m_focused = false;
+
         virtual void UI() = 0;
 
     };

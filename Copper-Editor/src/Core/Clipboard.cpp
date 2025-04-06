@@ -37,8 +37,6 @@ namespace Editor {
 
         data = out.c_str();
 
-        Log(data);
-
     }
     InternalEntity* PasteFromClipboard() {
 

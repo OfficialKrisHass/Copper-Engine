@@ -4,6 +4,7 @@
 
 #include "Panels/Panel.h"
 
+struct ImGuiStyle;
 
 namespace Editor {
 
@@ -20,7 +21,7 @@ namespace Editor {
 
         void ColorEditor();
 
-        struct ImGuiStyle* m_style = nullptr;
+        ImGuiStyle* m_style = nullptr;
 
     };
 

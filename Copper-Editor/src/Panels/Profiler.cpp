@@ -1,5 +1,7 @@
 #include "Profiler.h"
 
+#include <ImGui/imgui.h>
+
 namespace Editor::Profiler {
 
     using namespace Copper;

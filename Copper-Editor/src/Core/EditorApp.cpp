@@ -18,6 +18,7 @@
 #include "Core/FileWatcher.h"
 #include "Core/SceneSerializer.h"
 #include "Core/ChangeHandler.h"
+#include "Core/Clipboard.h"
 
 #include "Core/Utils/ModelLoader.h"
 
@@ -1117,6 +1118,26 @@ namespace Editor {
                 if (!data.viewportFocused || data.state == EditorState::Play || rightClick) break;
 
                 gizmo.operation = ImGuizmo::SCALE;
+
+                break;
+
+            }
+            case KeyCode::C: {
+
+                if (control && Properties::GetSelectedData().type == SelectedData::Type::Entity && (data.sceneHierarchy.IsFocused() || data.viewportFocused))
+                    CopyToClipboard(Properties::GetSelectedData().entity);
+
+                break;
+
+            }
+            case KeyCode::V: {
+
+                if (control && !ClipboardEmpty() && (data.sceneHierarchy.IsFocused() || data.viewportFocused)) {
+
+                    Properties::SetSelectedEntity(PasteFromClipboard());
+                    SetChanges();
+
+                }
 
                 break;
 

@@ -1,5 +1,5 @@
 list(APPEND assetsSources ProjectAssetDatabase.h Serializer.h AssetMeta.h
-						  ProjectAssetDatabase.cpp Serializer.cpp AssetMeta.cpp)
+                          ProjectAssetDatabase.cpp Serializer.cpp AssetMeta.cpp ModelLoader.cpp)
 list(TRANSFORM assetsSources PREPEND src/Assets/)
 
 list(APPEND sources ${assetsSources})

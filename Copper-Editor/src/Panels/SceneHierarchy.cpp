@@ -227,12 +227,25 @@ namespace Editor {
 
         const ImVec2 regionMax = ImGui::GetWindowContentRegionMax();
         const ImRect windowRect{ { ImGui::GetWindowContentRegionMin().x + 1, ImGui::GetItemRectMax().y + 2 }, { regionMax.x, regionMax.y + 80 } };
+
         if (!ImGui::BeginDragDropTargetCustom(windowRect, ImGuiID(310320231753))) return;
 
         if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCH_ENTITY_NODE")) {
 
             Entity entity = GetEntityFromID(*static_cast<uint32*>(payload->Data));
             entity->GetTransform()->SetParent(nullptr);
+
+            SetChanges();
+
+        }
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FB_MODEL")) {
+
+            Entity entity = CreateEntity();
+
+            MeshRenderer* meshRenderer = entity->AddComponent<MeshRenderer>();
+            CU_ASSERT(meshRenderer != nullptr, "Could not add mesh renderer to entity {}", *entity);
+
+            meshRenderer->mesh = *static_cast<MeshAsset*>(payload->Data);
 
             SetChanges();
 

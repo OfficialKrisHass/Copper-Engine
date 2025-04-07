@@ -114,7 +114,7 @@ Entities:
       Fov: 90
       Near Plane: 0.100000001
       Far Plane: 1000
-      Size: [1920, 964]
+      Size: [1920, 960]
   7:
     Name: Cube
     Transform:
@@ -295,8 +295,20 @@ Entities:
     Mesh Renderer:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: e4427019-9f8e-4425-8930-166fdedc0817
+  22:
+    Name: Entity
+    Transform:
+      Position: [0, 10.6823997, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent: 4294967295
+      Children:
+        []
+    Mesh Renderer:
+      Mesh: 5c16222d-56ac-4f11-a1a0-ee268170cb7c
+      Material: 00000000-0000-0000-0000-000000000000
 Scene Camera:
-  Position: [-6.56673193, 25.5154514, -0.479395002]
-  Rotation: [0.796434999, -0.545072377, -0.21612303, -0.147912502]
+  Position: [-0.135768965, 10.8095789, -0.671169639]
+  Rotation: [-0.00227378472, 4.33122368e-05, 0.99981606, 0.0190450177]
   Speed: 0.100000001
   Sensitivity: 100

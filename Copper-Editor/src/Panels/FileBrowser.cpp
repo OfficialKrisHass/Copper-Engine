@@ -212,11 +212,11 @@ namespace Editor {
 
         }
 
-        if ((extension == ".fbx" || extension == ".gltf" || extension == ".obj") && ImGui::BeginDragDropSource()) {
+        if (extension == ".fbx" && ImGui::BeginDragDropSource()) {
 
-            char* itemPath = (char*) path.string().c_str();
+            MeshAsset& mesh = ProjectAssetDatabase::GetAssetFromPath<MeshAsset>(path);
 
-            ImGui::SetDragDropPayload("MODEL", itemPath, (path.string().size() + 1) * sizeof(char), ImGuiCond_Once);
+            ImGui::SetDragDropPayload("FB_MODEL", &mesh, sizeof(MeshAsset), ImGuiCond_Once);
             ImGui::EndDragDropSource();
 
         }
@@ -230,9 +230,9 @@ namespace Editor {
         }
         if (extension == ".mat" && ImGui::BeginDragDropSource()) {
 
-            const UUID& uuid = ProjectAssetDatabase::GetAssetFromPath(path);
+            MaterialAsset& material = ProjectAssetDatabase::GetAssetFromPath<MaterialAsset>(path);
 
-            ImGui::SetDragDropPayload("FB_MATERIAL", &uuid, sizeof(UUID), ImGuiCond_Once);
+            ImGui::SetDragDropPayload("FB_MATERIAL", &material, sizeof(MaterialAsset), ImGuiCond_Once);
             ImGui::EndDragDropSource();
 
         }

@@ -8,6 +8,7 @@
 
 #include "Assets/Serializer.h"
 #include "Assets/AssetMeta.h"
+#include "Assets/ModelLoader.h"
 
 #include "Engine/AssetStorage/AssetMap.h"
 #include "Engine/AssetStorage/AssetStorage.h"
@@ -92,6 +93,8 @@ namespace Editor::ProjectAssetDatabase {
         if (extension == ".png" || extension == ".jpg")
             AssetStorage::InsertAsset<Texture>(assetUUID, GetProject().GetAssetsPath() / path);
         else if (extension == ".mat" && !AssetFile::DeserializeMaterial(GetProject().GetAssetsPath() / path, assetUUID)) return;
+        else if (extension == ".fbx")
+            ModelLoader::Load(GetProject().GetAssetsPath() / path, assetUUID);
 
         assetNames[assetUUID] = path.filename().string();
 
@@ -171,7 +174,8 @@ namespace Editor::ProjectAssetDatabase {
     bool CheckExtension(const std::string& extension) {
 
         return extension == ".png" || extension == ".jpg" || // Textures
-               extension == ".mat"; // Materials
+               extension == ".mat" || // Materials
+               extension == ".fbx"; // Models
 
     }
 

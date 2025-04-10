@@ -305,7 +305,7 @@ Entities:
       Children:
         []
     Mesh Renderer:
-      Mesh: 5c16222d-56ac-4f11-a1a0-ee268170cb7c
+      Mesh: e7997efa-f04e-4f43-8ef4-2a36e73abadb
       Material: 00000000-0000-0000-0000-000000000000
 Scene Camera:
   Position: [-0.135768965, 10.8095789, -0.671169639]

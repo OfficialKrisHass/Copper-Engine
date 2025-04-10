@@ -114,7 +114,7 @@ namespace Copper::Renderer {
 
         data.vao = VertexArray(nullptr);
         
-        data.vbo = VertexBuffer(nullptr, MaxVertices * sizeof(float), {
+        data.vbo = VertexBuffer(nullptr, MaxVertices * sizeof(Vertex), {
 
             ElementType::Vec3, // Position
             ElementType::Vec3, // Color

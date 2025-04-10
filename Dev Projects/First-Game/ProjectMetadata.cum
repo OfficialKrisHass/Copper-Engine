@@ -1,13 +1,11 @@
 Assets:
-  Models/Coin.fbx:
-    UUID: e7997efa-f04e-4f43-8ef4-2a36e73abadb
-  Materials/Wall.mat:
-    UUID: e4427019-9f8e-4425-8930-166fdedc0817
-  Textures/wall.jpg:
-    UUID: 223fd27b-895d-4c6c-a6ae-bbf2e156735f
-  Materials/Ground.mat:
-    UUID: ea25238c-be4f-4fea-b659-a1a21b6b95ba
   Textures/ground.jpg:
     UUID: 2abdecbf-41fd-42fe-b6ed-ef8bed771774
-  Models/Cube.fbx:
-    UUID: 5c16222d-56ac-4f11-a1a0-ee268170cb7c
+  Materials/Ground.mat:
+    UUID: ea25238c-be4f-4fea-b659-a1a21b6b95ba
+  Textures/wall.jpg:
+    UUID: 223fd27b-895d-4c6c-a6ae-bbf2e156735f
+  Materials/Wall.mat:
+    UUID: e4427019-9f8e-4425-8930-166fdedc0817
+  Models/Coin.fbx:
+    UUID: e7997efa-f04e-4f43-8ef4-2a36e73abadb

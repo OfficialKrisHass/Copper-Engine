@@ -238,7 +238,7 @@ Entities:
   17:
     Name: Cube Copy
     Transform:
-      Position: [20.9795742, 2.5, 2.5]
+      Position: [20.9796009, 2.5, 2.5]
       Rotation: [1, 0, 0, 0]
       Scale: [30, 5, 1]
       Parent: 2
@@ -295,20 +295,8 @@ Entities:
     Mesh Renderer:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: e4427019-9f8e-4425-8930-166fdedc0817
-  22:
-    Name: Entity
-    Transform:
-      Position: [0, 10.6823997, 0]
-      Rotation: [1, 0, 0, 0]
-      Scale: [1, 1, 1]
-      Parent: 4294967295
-      Children:
-        []
-    Mesh Renderer:
-      Mesh: e7997efa-f04e-4f43-8ef4-2a36e73abadb
-      Material: 00000000-0000-0000-0000-000000000000
 Scene Camera:
-  Position: [-0.135768965, 10.8095789, -0.671169639]
-  Rotation: [-0.00227378472, 4.33122368e-05, 0.99981606, 0.0190450177]
+  Position: [-3.66656423, 12.1681385, -5.98145437]
+  Rotation: [0.441883475, -0.189974949, -0.8054443, -0.346277356]
   Speed: 0.100000001
   Sensitivity: 100

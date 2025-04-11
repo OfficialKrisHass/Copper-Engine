@@ -8,6 +8,8 @@ namespace Editor::ProjectAssetDatabase {
     void Refresh();
     void Shutdown();
 
+    void AddAsset(const Copper::UUID& uuid, const Copper::fs::path& path);
+
     const Copper::UUID& GetAssetFromPath(const Copper::fs::path& path);
     template<typename T> inline T& GetAssetFromPath(const Copper::fs::path& path) { return *(T*) &GetAssetFromPath(path); } // AssetPtr is basically just an UUID with functions, so we can do this
 

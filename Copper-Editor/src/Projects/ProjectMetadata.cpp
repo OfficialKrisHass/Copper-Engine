@@ -4,6 +4,8 @@
 
 #include "Projects/Project.h"
 
+#include "Assets/Model.h"
+
 #include <yaml-cpp/yaml.h>
 #include <fstream>
 
@@ -59,9 +61,22 @@ namespace Editor::ProjectMetadata {
 
         CUP_FUNCTION();
 
-        out << YAML::Key << assetMeta.first << YAML::Value << YAML::BeginMap; // Asset
+        const fs::path& path = assetMeta.first;
+        if (!fs::exists(GetProject().GetAssetsPath() / path)) return;
+
+        out << YAML::Key << path << YAML::Value << YAML::BeginMap; // Asset
 
         out << YAML::Key << "UUID" << YAML::Value << assetMeta.second;
+        if (path.extension() == ".fbx") {
+
+            out << YAML::Key << "Sub Assets" << YAML::Value << YAML::BeginMap;
+
+            const ModelAsset model = static_cast<const ModelAsset>(assetMeta.second);
+            model->SerializeMetadata(out);
+
+            out << YAML::EndMap;
+
+        }
 
         out << YAML::EndMap; // Asset
 
@@ -76,6 +91,15 @@ namespace Editor::ProjectMetadata {
         if (!fs::exists(GetProject().GetAssetsPath() / path)) return;
 
         assetMetas[path] = metadata["UUID"].as<UUID>(); 
+
+        const YAML::Node& subAssets = metadata["Sub Assets"];
+        if (!subAssets) return;
+
+        for (YAML::const_iterator sub = subAssets.begin(); sub != subAssets.end(); ++sub) {
+
+            assetMetas[path / sub->first.as<std::string>()] = sub->second.as<UUID>();
+
+        }
 
     }
 

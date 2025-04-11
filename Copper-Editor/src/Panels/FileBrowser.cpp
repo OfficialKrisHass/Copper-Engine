@@ -5,6 +5,7 @@
 #include "Projects/Project.h"
 
 #include "Assets/ProjectAssetDatabase.h"
+#include "Assets/Model.h"
 
 #include "Panels/Properties.h"
 
@@ -214,9 +215,9 @@ namespace Editor {
 
         if (extension == ".fbx" && ImGui::BeginDragDropSource()) {
 
-            MeshAsset& mesh = ProjectAssetDatabase::GetAssetFromPath<MeshAsset>(path);
+            ModelAsset& model = ProjectAssetDatabase::GetAssetFromPath<ModelAsset>(path);
 
-            ImGui::SetDragDropPayload("FB_MODEL", &mesh, sizeof(MeshAsset), ImGuiCond_Once);
+            ImGui::SetDragDropPayload("FB_MODEL", &model, sizeof(ModelAsset), ImGuiCond_Once);
             ImGui::EndDragDropSource();
 
         }

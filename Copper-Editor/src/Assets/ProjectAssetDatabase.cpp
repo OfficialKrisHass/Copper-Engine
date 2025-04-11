@@ -7,8 +7,7 @@
 #include "Projects/ProjectMetadata.h"
 
 #include "Assets/Serializer.h"
-#include "Assets/AssetMeta.h"
-#include "Assets/ModelLoader.h"
+#include "Assets/Model.h"
 
 #include "Engine/AssetStorage/AssetMap.h"
 #include "Engine/AssetStorage/AssetStorage.h"
@@ -94,7 +93,7 @@ namespace Editor::ProjectAssetDatabase {
             AssetStorage::InsertAsset<Texture>(assetUUID, GetProject().GetAssetsPath() / path);
         else if (extension == ".mat" && !AssetFile::DeserializeMaterial(GetProject().GetAssetsPath() / path, assetUUID)) return;
         else if (extension == ".fbx")
-            ModelLoader::Load(GetProject().GetAssetsPath() / path, assetUUID);
+            AssetStorage::InsertAsset<Model>(assetUUID, path);
 
         assetNames[assetUUID] = path.filename().string();
 
@@ -138,6 +137,22 @@ namespace Editor::ProjectAssetDatabase {
 
         ProjectMetadata::Serialize(assetFiles);
 
+
+    }
+
+    void AddAsset(const UUID &uuid, const fs::path &path) {
+
+        CUP_FUNCTION();
+
+        if (assetFiles.find(path) != assetFiles.end()) {
+
+            LogError("Can't add asset {}, it's already loaded", path);
+            return;
+
+        }
+
+        assetFiles[path] = uuid;
+        assetNames[uuid] = path.filename().string();
 
     }
 

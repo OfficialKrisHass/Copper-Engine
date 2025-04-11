@@ -4,6 +4,8 @@
 #include "Core/ChangeHandler.h"
 #include "Core/Clipboard.h"
 
+#include "Assets/Model.h"
+
 #include "Panels/Properties.h"
 
 #include "Engine/Renderer/Primitives.h"
@@ -102,6 +104,14 @@ namespace Editor {
 
                 Entity child = GetEntityFromID(*static_cast<uint32*>(payload->Data));
                 entity->GetTransform()->AddChild(child->GetTransform());
+
+                SetChanges();
+
+            }
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FB_MODEL")) {
+
+                ModelAsset& model = *static_cast<ModelAsset*>(payload->Data);
+                model->Instantiate(entity->GetTransform());
 
                 SetChanges();
 
@@ -240,12 +250,8 @@ namespace Editor {
         }
         if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FB_MODEL")) {
 
-            Entity entity = CreateEntity();
-
-            MeshRenderer* meshRenderer = entity->AddComponent<MeshRenderer>();
-            CU_ASSERT(meshRenderer != nullptr, "Could not add mesh renderer to entity {}", *entity);
-
-            meshRenderer->mesh = *static_cast<MeshAsset*>(payload->Data);
+            ModelAsset& model = *static_cast<ModelAsset*>(payload->Data);
+            model->Instantiate(nullptr);
 
             SetChanges();
 

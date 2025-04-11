@@ -5,7 +5,6 @@
 
 #include "Projects/Project.h"
 
-#include "Assets/AssetMeta.h"
 #include "Assets/Serializer.h"
 
 #include "Panels/FileBrowser.h"

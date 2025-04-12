@@ -22,9 +22,13 @@ namespace Editor {
     private:
         struct Node {
 
+            // TODO: Implement per node transforms
+
             std::string name = "Node";
 
-            uint32 index = UINT_MAX;
+            uint32 meshIndex = UINT_MAX;
+            uint32 materialIndex = UINT_MAX;
+
             std::vector<Node> children;
 
         };
@@ -32,9 +36,13 @@ namespace Editor {
         fs::path m_path;
 
         std::vector<std::pair<MeshAsset, std::string>> m_meshes;
+        std::vector<std::pair<MaterialAsset, std::string>> m_materials;
+
         Node m_rootNode;
 
+        void ProcessMaterials(const aiScene* scene);
         void ProcessNode(Node& node, const aiNode* modelNode, const aiScene* scene);
+
         void InstantiateNode(const Node& node, Transform* parent) const;
 
     };

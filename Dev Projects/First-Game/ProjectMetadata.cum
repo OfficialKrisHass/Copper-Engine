@@ -5,9 +5,10 @@ Assets:
     UUID: ea25238c-be4f-4fea-b659-a1a21b6b95ba
   Textures/wall.jpg:
     UUID: 223fd27b-895d-4c6c-a6ae-bbf2e156735f
-  Models/Coin.fbx:
-    UUID: 789de7ef-8bf1-44d0-827b-4f8c62d6b6f6
-    Sub Assets:
-      _Cylinder.001.cum: c0bb3d8a-fd7f-0000-85ad-bb62dd550000
   Materials/Wall.mat:
     UUID: e4427019-9f8e-4425-8930-166fdedc0817
+  Models/Coin.fbx:
+    UUID: fb7e43d7-b5b7-4897-965d-a91c89d68e2e
+    Sub Assets:
+      Cylinder.001.cum: 84a23014-cff5-493b-aa04-c42af32715c6
+      Coin.mat: f54bd74b-580f-43aa-b1f4-1463a53c8acd

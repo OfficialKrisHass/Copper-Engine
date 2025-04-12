@@ -28,6 +28,8 @@ namespace Editor {
 
         }
 
+        ProcessMaterials(scene);
+
         m_meshes.reserve(scene->mNumMeshes);
         ProcessNode(m_rootNode, scene->mRootNode, scene);
 
@@ -41,11 +43,56 @@ namespace Editor {
 
     }
 
+    void Model::ProcessMaterials(const aiScene* scene) {
+
+        CUP_FUNCTION();
+
+        m_materials.reserve(scene->mNumMaterials);
+        for (uint32 i = 0; i < scene->mNumMaterials; i++) {
+
+            const aiMaterial* modelMaterial = scene->mMaterials[i];
+            CU_ASSERT(modelMaterial != nullptr, "Material #{} on model {} is nullptr!", i, m_path);
+
+            // Get the name
+
+            std::string name;
+            {
+                aiString tmp;
+                modelMaterial->Get(AI_MATKEY_NAME, tmp);
+
+                name = tmp.C_Str();
+            }
+            name += ".mat";
+
+            // On first import, the UUID won't be loaded, so we create a new one and load it. It will be stored
+            // when ProjectMetadata gets serialized, and loaded on later runs
+
+            UUID uuid = ProjectAssetDatabase::GetAssetFromPath(m_path / name);
+            if (uuid == UUID::GetInvalid()) {
+
+                LogWarn("UUID for material {} of model {} does not exist, creating new one", name, m_path);
+
+                UUID::Generate(uuid);
+                ProjectAssetDatabase::AddAsset(uuid, m_path / name);
+
+            }
+
+            MaterialAsset material = AssetStorage::InsertAsset<Material>(uuid);
+            m_materials.push_back({ material, name });
+
+            if (modelMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, *reinterpret_cast<aiColor4D*>(&material->albedo)) != AI_SUCCESS)
+                LogError("Could not get albedo color from material {}", name);
+
+        }
+
+    }
     void Model::ProcessNode(Node& node, const aiNode* modelNode, const aiScene* scene) {
 
         CUP_FUNCTION();
 
         CU_ASSERT(modelNode != nullptr, "Node is nullptr");
+
+        // Node name
 
         if (&node == &m_rootNode) {
 
@@ -55,6 +102,8 @@ namespace Editor {
         } else if (modelNode->mName.length != 0)
             node.name = modelNode->mName.C_Str();
 
+        // Load mesh (only the first one)
+
         if (modelNode->mNumMeshes > 1)
             LogWarn("Node ({}) from model {} has more than one mesh, Copper supports single mesh nodes only, loading first mesh", node.name, m_path);
         else if (modelNode->mNumMeshes == 1) {
@@ -62,25 +111,35 @@ namespace Editor {
             const aiMesh* modelMesh = scene->mMeshes[modelNode->mMeshes[0]];
             CU_ASSERT(modelMesh != nullptr, "Could not get mesh from node {}, model: {}", node.name, m_path);
 
-            node.index = m_meshes.size();
+            node.meshIndex = m_meshes.size();
+            node.materialIndex = modelMesh->mMaterialIndex;
 
-            std::string meshName = "_";
+            // Mesh name (for asset dtabase purposes)
+
+            std::string meshName;
             if (modelMesh->mName.length > 0)
-                meshName += modelMesh->mName.C_Str();
+                meshName = modelMesh->mName.C_Str();
             else
-                meshName += std::to_string(m_meshes.size());
+                meshName = std::to_string(m_meshes.size());
             meshName += ".cum";
+
+            // On first import, the UUID won't be loaded, so we create a new one and load it. It will be stored
+            // when ProjectMetadata gets serialized, and loaded on later runs
 
             UUID uuid = ProjectAssetDatabase::GetAssetFromPath(m_path / meshName);
             if (uuid == UUID::GetInvalid()) {
 
                 LogWarn("UUID for mesh {} of model {} does not exist, creating new one", meshName, m_path);
+
                 UUID::Generate(uuid);
+                ProjectAssetDatabase::AddAsset(uuid, m_path / meshName);
 
             }
 
             MeshAsset mesh = AssetStorage::InsertAsset<Mesh>(uuid);
             m_meshes.push_back({ mesh, meshName });
+
+            // TODO: Maybe move this to the Mesh constructor since all of them get reserved the same size
 
             mesh->vertices.reserve(modelMesh->mNumVertices);
             mesh->normals.reserve(modelMesh->mNumVertices);
@@ -95,6 +154,8 @@ namespace Editor {
                 mesh->vertices.push_back(Vector3(position.x, position.y, position.z));
                 mesh->normals.push_back(Vector3(-normal.x, -normal.y, -normal.z));
 
+                // TODO: Maybe there's a better way ?
+
                 if (modelMesh->HasVertexColors(0))
                     mesh->colors.push_back(Color(modelMesh->mColors[0][i].r, modelMesh->mColors[0][i].g, modelMesh->mColors[0][i].b));
                 else
@@ -106,6 +167,8 @@ namespace Editor {
                     mesh->uvs.push_back(Vector2::zero);
 
             }
+
+            // NOTE: This doesn't feel right, but why the fuck would you have non triangle faces
 
             mesh->indices.reserve(modelMesh->mNumFaces * 3);
             for (uint32 i = 0; i < modelMesh->mNumFaces; i++) {
@@ -121,30 +184,46 @@ namespace Editor {
 
         }
 
+        // Process children 
+
         node.children.resize(modelNode->mNumChildren);
         for (uint32 i = 0; i < modelNode->mNumChildren; i++)
             ProcessNode(node.children[i], modelNode->mChildren[i], scene);
 
     } 
+
     void Model::InstantiateNode(const Node& node, Transform* parent) const {
 
         CUP_FUNCTION();
+
+        // Entity setup (every node is equivalent to an entity)
 
         Entity entity = CreateEntity(Vector3::zero, Quaternion(1.0f, 0.0f, 0.0f, 0.0f), Vector3::one, node.name);
 
         if (parent != nullptr)
             entity->GetTransform()->SetParent(parent);
 
-        if (node.index != UINT_MAX) {
+        // Set the mesh
 
-            CU_ASSERT(m_meshes.size() > node.index, "Invalid mesh index for node {}", node.name);
+        if (node.meshIndex != UINT_MAX) {
+
+            CU_ASSERT(m_meshes.size() > node.meshIndex, "Invalid mesh index for node {} of model", node.name, m_path);
 
             MeshRenderer* renderer = entity->AddComponent<MeshRenderer>();
             CU_ASSERT(renderer != nullptr, "Could not add MeshRenderer to entity {}", *entity);
 
-            renderer->mesh = m_meshes[node.index].first;
+            renderer->mesh = m_meshes[node.meshIndex].first;
+
+            if (node.materialIndex != UINT_MAX) {
+
+                CU_ASSERT(m_materials.size() > node.materialIndex, "Invalid material index for node {} of model {}", node.name, m_path);
+                renderer->material = m_materials[node.materialIndex].first;
+
+            }
 
         }
+
+        // Process children
 
         for (const Node& child : node.children)
             InstantiateNode(child, entity->GetTransform());
@@ -157,6 +236,9 @@ namespace Editor {
 
         for (const std::pair<MeshAsset, std::string>& mesh : m_meshes)
             out << YAML::Key << mesh.second << YAML::Value << mesh.first;
+
+        for (const std::pair<MaterialAsset, std::string>& material : m_materials)
+            out << YAML::Key << material.second << YAML::Value << material.first;
 
     }
 

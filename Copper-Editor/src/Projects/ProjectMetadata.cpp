@@ -4,6 +4,7 @@
 
 #include "Projects/Project.h"
 
+#include "Assets/ProjectAssetDatabase.h"
 #include "Assets/Model.h"
 
 #include <yaml-cpp/yaml.h>
@@ -95,11 +96,8 @@ namespace Editor::ProjectMetadata {
         const YAML::Node& subAssets = metadata["Sub Assets"];
         if (!subAssets) return;
 
-        for (YAML::const_iterator sub = subAssets.begin(); sub != subAssets.end(); ++sub) {
-
-            assetMetas[path / sub->first.as<std::string>()] = sub->second.as<UUID>();
-
-        }
+        for (YAML::const_iterator sub = subAssets.begin(); sub != subAssets.end(); ++sub)
+            ProjectAssetDatabase::AddAsset(sub->second.as<UUID>(), path / sub->first.as<std::string>());
 
     }
 

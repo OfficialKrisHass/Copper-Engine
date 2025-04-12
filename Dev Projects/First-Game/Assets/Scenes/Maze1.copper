@@ -295,27 +295,6 @@ Entities:
     Mesh Renderer:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: e4427019-9f8e-4425-8930-166fdedc0817
-  22:
-    Name: Coin
-    Transform:
-      Position: [0, 8.961092, 0]
-      Rotation: [1, 0, 0, 0]
-      Scale: [1, 1, 1]
-      Parent: 4294967295
-      Children:
-        - 23
-  23:
-    Name: Cylinder
-    Transform:
-      Position: [0, 0, 0]
-      Rotation: [1, 0, 0, 0]
-      Scale: [1, 1, 1]
-      Parent: 22
-      Children:
-        []
-    Mesh Renderer:
-      Mesh: 84a23014-cff5-493b-aa04-c42af32715c6
-      Material: f54bd74b-580f-43aa-b1f4-1463a53c8acd
 Scene Camera:
   Position: [-2.70775533, 11.0895987, -0.634284973]
   Rotation: [0.32902059, -0.0616642125, -0.926181376, -0.173582599]

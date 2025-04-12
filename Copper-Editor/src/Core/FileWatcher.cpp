@@ -9,9 +9,9 @@ using namespace Copper;
 namespace Editor::FileWatcher {
 
 #ifdef CU_LINUX
-    typedef std::tuple<std::string, FileChangeType, int> FileChange;
+    typedef std::pair<FileChangeType, int> FileChange;
 #elif CU_WINDOWS
-    typedef std::tuple<fs::path, FileChangeType> FileChange;
+    typedef FileChangeType FileChange;
 #endif
 
     struct FilewatchData {
@@ -20,7 +20,7 @@ namespace Editor::FileWatcher {
         std::unique_ptr<filewatch::FileWatch<std::string>> fw = nullptr;
 
         std::mutex mutex;
-        std::vector<FileChange> changes;
+        std::unordered_map<fs::path, FileChange> changes;
 
         std::vector<Callback> callbacks;
 
@@ -78,11 +78,11 @@ namespace Editor::FileWatcher {
 
         for (const auto& it : data.changes) {
 
-            const fs::path& path = std::get<0>(it);
-            const FileChangeType type = std::get<1>(it);
+            const fs::path& path = it.first;
 
 #ifdef CU_LINUX
-            const int cookie = std::get<2>(it);
+            const FileChangeType type = it.second.first;
+            const int cookie = it.second.second;
 
             if (type == FileChangeType::RenamedOldName)
                 renameMap[cookie] = path;
@@ -97,6 +97,8 @@ namespace Editor::FileWatcher {
                     data.fw->UpdateDirectory(renameMap[cookie], path);
 
             }
+#elif CU_WINDOWS
+            const FileChangeType type = it.second;
 #endif
 
             Log("Filewatch event {}, name: '{}'", static_cast<uint32>(type), path);
@@ -123,10 +125,12 @@ namespace Editor::FileWatcher {
         std::lock_guard<std::mutex> lock(data.mutex);
 
         const fs::path path = fs::path(directory) / name;
+        if (data.changes.contains(path)) return;
+
 #ifdef CU_LINUX
-        data.changes.push_back({ path, static_cast<FileChangeType>(changeType), cookie });
+        data.changes[path] = { static_cast<FileChangeType>(changeType), cookie };
 #elif CU_WINDOWS
-        data.changes.push_back(std::make_pair(path, static_cast<FileChangeType>(changeType)));
+        data.changes[path] = static_cast<FileChangeType>(changeType);
 #endif
 
     }

@@ -130,10 +130,15 @@ namespace Editor::ProjectAssetDatabase {
         const std::string extension = path.extension().string();
         if (!CheckExtension(extension)) return;
 
-        if (changeType == FileWatcher::FileChangeType::Created || changeType == FileWatcher::FileChangeType::RenamedNewName)
-            LoadAsset(path, extension);
-        else if (changeType == FileWatcher::FileChangeType::Deleted || changeType == FileWatcher::FileChangeType::RenamedOldName)
-            RemoveAsset(path, extension);
+        switch (changeType) {
+
+        case FileWatcher::FileChangeType::Created:
+        case FileWatcher::FileChangeType::Changed:
+        case FileWatcher::FileChangeType::RenamedNewName: LoadAsset(path, extension); break;
+        case FileWatcher::FileChangeType::Deleted:
+        case FileWatcher::FileChangeType::RenamedOldName: RemoveAsset(path, extension); break;
+
+        }
 
         ProjectMetadata::Serialize(assetFiles);
 

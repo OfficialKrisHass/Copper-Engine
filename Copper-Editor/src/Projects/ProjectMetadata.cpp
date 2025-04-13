@@ -34,7 +34,7 @@ namespace Editor::ProjectMetadata {
         out << YAML::EndMap; // Main
 
         std::ofstream file;
-        file.open(GetProject().GetPath() / "ProjectMetadata.cum");
+        file.open(GetProject().GetPath() / "ProjectMetadata.cu");
         file << out.c_str();
         file.close();
 
@@ -44,10 +44,10 @@ namespace Editor::ProjectMetadata {
         CUP_FUNCTION();
 
         YAML::Node node;
-        try { node = YAML::LoadFile((GetProject().GetPath() / "ProjectMetadata.cum").string()); }
+        try { node = YAML::LoadFile((GetProject().GetPath() / "ProjectMetadata.cu").string()); }
         catch (YAML::Exception e) {
 
-            LogError("Could not load Project metadata.\n\tError: {}\n\tPath: {}", e.what(), GetProject().GetPath() / "ProjectMetadata.cum");
+            LogError("Could not load Project metadata.\n\tError: {}\n\tPath: {}", e.what(), GetProject().GetPath() / "ProjectMetadata.cu");
             return;
 
         }

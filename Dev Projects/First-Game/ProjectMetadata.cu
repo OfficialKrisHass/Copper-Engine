@@ -1,9 +1,9 @@
 Assets:
   Models/Coin.fbx:
-    UUID: fb7e43d7-b5b7-4897-965d-a91c89d68e2e
+    UUID: 563231c7-13fb-4481-90c4-8c59d741ad32
     Sub Assets:
-      Cylinder.001.cum: 84a23014-cff5-493b-aa04-c42af32715c6
-      Coin.mat: f54bd74b-580f-43aa-b1f4-1463a53c8acd
+      Cylinder.001.cum: f118339c-609a-4fae-becc-de764f210183
+      Coin.mat: 02e31da7-08e0-4fff-9f6a-d4feab1f7984
   Materials/Wall.mat:
     UUID: e4427019-9f8e-4425-8930-166fdedc0817
   Textures/wall.jpg:

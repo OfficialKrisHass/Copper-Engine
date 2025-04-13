@@ -8,6 +8,8 @@ namespace Editor::ProjectAssetDatabase {
     void Refresh();
     void Shutdown();
 
+    void Save();
+
     void AddAsset(const Copper::UUID& uuid, const Copper::fs::path& path);
 
     const Copper::UUID& GetAssetFromPath(const Copper::fs::path& path);

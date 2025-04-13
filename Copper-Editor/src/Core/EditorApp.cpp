@@ -222,8 +222,6 @@ namespace Editor {
         std::ofstream file(ExecutableFolder() / "assets/EditorData.cu");
         file << out.c_str();
 
-        data.project.Save();
-
     }
     void LoadEditorData() {
 
@@ -711,6 +709,7 @@ namespace Editor {
                     SaveScene();
 
                     data.project.Save();
+
                     SaveEditorData();
 
                 }
@@ -984,6 +983,7 @@ namespace Editor {
         }
 
         SceneSerializer::Serialize(data.scene, data.scenePath);
+        ProjectAssetDatabase::Save();
 
         ResetUnsavedChanges();
 
@@ -1070,9 +1070,10 @@ namespace Editor {
                 if (data.state == EditorState::Play) break;
                 if (control && shift) {
 
+                    SaveScene();
+
                     data.project.Save();
                     SaveEditorData();
-                    SaveScene();
 
                 }
                 if (control && alt)

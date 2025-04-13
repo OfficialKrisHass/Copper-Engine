@@ -67,7 +67,31 @@ namespace Editor::ProjectAssetDatabase {
 
         CUP_FUNCTION();
 
+        Save();
+
+    }
+
+    void Save() {
+
+        CUP_FUNCTION();
+
         ProjectMetadata::Serialize(assetFiles);
+
+    }
+
+    void AddAsset(const UUID &uuid, const fs::path &path) {
+
+        CUP_FUNCTION();
+
+        if (assetFiles.find(path) != assetFiles.end()) {
+
+            LogError("Can't add asset {}, it's already loaded", path);
+            return;
+
+        }
+
+        assetFiles[path] = uuid;
+        assetNames[uuid] = path.filename().string();
 
     }
 
@@ -80,7 +104,7 @@ namespace Editor::ProjectAssetDatabase {
             assetUUID = assetFiles.at(path);
         else {
 
-            LogWarn("{} was not loaded from ProjectMetadata.cum, creating new UUID", path);
+            LogWarn("{} was not loaded from ProjectMetadata.cu, creating new UUID", path);
 
             UUID::Generate(assetUUID);
             assetFiles[path] = assetUUID;
@@ -139,25 +163,6 @@ namespace Editor::ProjectAssetDatabase {
         case FileWatcher::FileChangeType::RenamedOldName: RemoveAsset(path, extension); break;
 
         }
-
-        ProjectMetadata::Serialize(assetFiles);
-
-
-    }
-
-    void AddAsset(const UUID &uuid, const fs::path &path) {
-
-        CUP_FUNCTION();
-
-        if (assetFiles.find(path) != assetFiles.end()) {
-
-            LogError("Can't add asset {}, it's already loaded", path);
-            return;
-
-        }
-
-        assetFiles[path] = uuid;
-        assetNames[uuid] = path.filename().string();
 
     }
 

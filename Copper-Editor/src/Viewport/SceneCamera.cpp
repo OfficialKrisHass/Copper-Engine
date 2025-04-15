@@ -16,7 +16,7 @@ namespace Editor {
 
     SceneCamera::SceneCamera(UVector2I size) : Camera(size) {
 
-        m_transform = new Transform(Vector3::zero, Quaternion(1.0f, 0.0f, 0.0f, 0.0f), Vector3::one);
+        m_transform = new Transform(Vector3::zero, Quaternion::identity, Vector3::one);
 
     }
 

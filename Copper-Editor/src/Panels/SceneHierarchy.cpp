@@ -156,7 +156,7 @@ namespace Editor {
 
             if (ImGui::MenuItem("Plane", 0, false, m_scene)) {
 
-                newEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Plane");
+                newEntity = m_scene->CreateEntity(Vector3::zero, Quaternion::identity, Vector3::one, "Plane");
                 MeshRenderer* renderer = newEntity->AddComponent<MeshRenderer>();
 
                 renderer->mesh = PlaneMesh();
@@ -165,7 +165,7 @@ namespace Editor {
             }
             if (ImGui::MenuItem("Cube", 0, false, m_scene)) {
 
-                newEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Cube");
+                newEntity = m_scene->CreateEntity(Vector3::zero, Quaternion::identity, Vector3::one, "Cube");
                 MeshRenderer* renderer = newEntity->AddComponent<MeshRenderer>();
 
                 renderer->mesh = CubeMesh();
@@ -179,13 +179,13 @@ namespace Editor {
 
         if (ImGui::MenuItem("Light", 0, false, m_scene)) {
 
-            newEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Light");
+            newEntity = m_scene->CreateEntity(Vector3::zero, Quaternion::identity, Vector3::one, "Light");
             Light* l = newEntity->AddComponent<Light>();
 
         }
         if (ImGui::MenuItem("Camera", 0, false, m_scene)) {
 
-            newEntity = m_scene->CreateEntity(Vector3::zero, Vector3::zero, Vector3::one, "Camera");
+            newEntity = m_scene->CreateEntity(Vector3::zero, Quaternion::identity, Vector3::one, "Camera");
             Camera* c = newEntity->AddComponent<Camera>();
 
         }

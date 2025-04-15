@@ -46,13 +46,13 @@ namespace Copper {
         void Initialize();
         void Cleanup();
 
-        InternalEntity* CreateEntity(const Vector3& position = Vector3::zero, const Quaternion& rotation = Quaternion(1.0f, 0.0f, 0.0f, 0.0f), const Vector3& scale = Vector3::one, const std::string& name = "Entity") {
+        InternalEntity* CreateEntity(const Vector3& position = Vector3::zero, const Quaternion& rotation = Quaternion::identity, const Vector3& scale = Vector3::one, const std::string& name = "Entity") {
 
             CUP_FUNCTION();
             return m_registry.CreateEntity(this, position, rotation, scale, name);
 
         }
-        InternalEntity* CreateEntityFromID(uint32 id, const Vector3& position = Vector3::zero, const Quaternion& rotation = Quaternion(1.0f, 0.0f, 0.0f, 0.0f), const Vector3& scale = Vector3::one, const std::string& name = "Entity", bool returnIfExists = true) {
+        InternalEntity* CreateEntityFromID(uint32 id, const Vector3& position = Vector3::zero, const Quaternion& rotation = Quaternion::identity, const Vector3& scale = Vector3::one, const std::string& name = "Entity", bool returnIfExists = true) {
 
             CUP_FUNCTION();
             return m_registry.CreateEntityFromID(id, this, position, rotation, scale, name, returnIfExists);
@@ -122,13 +122,13 @@ namespace Copper {
     // Definition in Engine.cpp
     Scene* GetScene();
 
-    inline InternalEntity* CreateEntity(const Vector3& position = Vector3::zero, const Quaternion& rotation = Quaternion(1.0f, 0.0f, 0.0f, 0.0f), const Vector3& scale = Vector3::one, const std::string& name = "Entity") {
+    inline InternalEntity* CreateEntity(const Vector3& position = Vector3::zero, const Quaternion& rotation = Quaternion::identity, const Vector3& scale = Vector3::one, const std::string& name = "Entity") {
 
         CUP_FUNCTION();
         return GetScene()->CreateEntity(position, rotation, scale, name);
 
     }
-    inline InternalEntity* CreateEntityFromID(uint32 id, const Vector3& position = Vector3::zero, const Quaternion& rotation = Quaternion(1.0f, 0.0f, 0.0f, 0.0f), const Vector3& scale = Vector3::one, const std::string& name = "Entity", bool returnIfExists = true) {
+    inline InternalEntity* CreateEntityFromID(uint32 id, const Vector3& position = Vector3::zero, const Quaternion& rotation = Quaternion::identity, const Vector3& scale = Vector3::one, const std::string& name = "Entity", bool returnIfExists = true) {
 
         CUP_FUNCTION();
         return GetScene()->CreateEntityFromID(id, position, rotation, scale, name, returnIfExists);

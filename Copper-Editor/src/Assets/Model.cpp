@@ -198,7 +198,7 @@ namespace Editor {
 
         // Entity setup (every node is equivalent to an entity)
 
-        Entity entity = CreateEntity(Vector3::zero, Quaternion(1.0f, 0.0f, 0.0f, 0.0f), Vector3::one, node.name);
+        Entity entity = CreateEntity(Vector3::zero, Quaternion::identity, Vector3::one, node.name);
 
         if (parent != nullptr)
             entity->GetTransform()->SetParent(parent);

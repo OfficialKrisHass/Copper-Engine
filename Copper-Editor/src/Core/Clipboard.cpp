@@ -45,7 +45,7 @@ namespace Editor {
         YAML::Node node = YAML::Load(data);
 
         std::string name = node["Name"].as<std::string>() + " Copy";
-        InternalEntity* entity = CreateEntity(Vector3::zero, Quaternion(1.0f, 0.0f, 0.0f, 0.0f), Vector3::one, name);
+        InternalEntity* entity = CreateEntity(Vector3::zero, Quaternion::identity, Vector3::one, name);
 
         SceneSerializer::DeserializeEntityTransform(&entity, node["Transform"]);
         SceneSerializer::DeserializeEntityComponents(entity, node);

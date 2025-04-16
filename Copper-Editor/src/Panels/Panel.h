@@ -10,11 +10,11 @@ namespace Editor {
         Panel() = default;
         Panel(const std::string& name) : m_name(name) {}
 
-        void UIRender();
+        virtual void UIRender();
 
         inline bool IsFocused() const { return m_focused; }
 
-    private:
+    protected:
         std::string m_name;
 
         bool m_focused = false;

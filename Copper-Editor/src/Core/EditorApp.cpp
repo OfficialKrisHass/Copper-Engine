@@ -25,6 +25,7 @@
 #include "Projects/Project.h"
 #include "Projects/ProjectTemplate.h"
 
+#include "Panels/Viewport.h"
 #include "Panels/SceneHierarchy.h"
 #include "Panels/Properties.h"
 #include "Panels/FileBrowser.h"
@@ -77,20 +78,6 @@ namespace Editor {
         fs::path scenePath;
         fs::path nextScenePath;
 
-        // Viewport
-
-        FrameBuffer viewportFBO;
-
-        bool viewportFirstFrame = true;
-        UVector2I viewportSize = UVector2I(1280, 720);
-        UVector2I viewportCentre;
-        Vector2I viewportMousePos;
-
-        bool canLookViewport = true;
-        bool viewportFocused = false;
-
-        SceneCamera sceneCam;
-
         // Game Panel
 
         UVector2I gamePanelSize = UVector2I(1280, 720);
@@ -103,6 +90,7 @@ namespace Editor {
         
         // Panels
 
+        Viewport viewport;
         SceneHierarchy sceneHierarchy;
         Properties properties;
         FileBrowser fileBrowser;
@@ -119,21 +107,8 @@ namespace Editor {
 #endif
 
     };
-    struct Gizmo {
-
-        bool active = false;
-
-        ImGuizmo::OPERATION operation = ImGuizmo::TRANSLATE;
-        ImGuizmo::MODE mode = ImGuizmo::LOCAL;
-
-        Vector3 savedPosition;
-        Quaternion savedRotation;
-        Vector3 savedScale;
-
-    };
 
     EditorData data;
-    Gizmo gizmo;
 
     void QueuedTasks();
 
@@ -142,7 +117,6 @@ namespace Editor {
 
     void RenderDockspace();
     void RenderGamePanel();
-    void RenderViewport();
     void RenderToolbar();
     void RenderMenu();
 
@@ -169,21 +143,13 @@ namespace Editor {
 
         data.scene = GetScene();
 
-        CU_ASSERT(ImGui::FindWindowSettingsByID(ImHashStr("Viewport")) != nullptr, "Could not get Window Settings for Viewport window");
-        
+        data.viewport.Initialize();
+        data.fileBrowser.Initialize();
+
         data.themeEditor.LoadTheme(ExecutableFolder() / "assets/Themes/Default.cutheme");
 
-        ImVec2ih size = ImGui::FindWindowSettingsByID(ImHashStr("Viewport"))->Size;
-        float tabBarHeight = 18.0f + ImGui::GetStyle().FramePadding.y * 2;
-        data.viewportSize = UVector2I(size.x, size.y - static_cast<uint32>(tabBarHeight));
-
-        data.viewportFBO = FrameBuffer(data.viewportSize, { FrameBuffer::Attachment::Format::RGB8, FrameBuffer::Attachment::Format::RedInteger });
-        data.sceneCam = SceneCamera(data.viewportSize);
-        
         data.playIcon.Create(ExecutableFolder() / "assets/Icons/PlayButton.png", Texture::Format::RGBA);
         data.stopIcon.Create(ExecutableFolder() / "assets/Icons/StopButton.png", Texture::Format::RGBA);
-
-        data.fileBrowser.Initialize();
 
         FileWatcher::AddCallback(FileChangedCallback);
 
@@ -214,8 +180,8 @@ namespace Editor {
 
         out << YAML::Key << "Last Project" << YAML::Value << data.project.GetPath();
 
-        out << YAML::Key << "Gizmo operation" << YAML::Value << static_cast<uint32>(gizmo.operation);
-        out << YAML::Key << "Gizmo mode" << YAML::Value << static_cast<uint32>(gizmo.mode);
+        out << YAML::Key << "Gizmo operation" << YAML::Value << static_cast<uint16>(data.viewport.GetGizmo().operation);
+        out << YAML::Key << "Gizmo global mode" << YAML::Value << data.viewport.GetGizmo().globalMode;
 
         out << YAML::EndMap; //End
 
@@ -243,9 +209,9 @@ namespace Editor {
 
         }
 
-        gizmo.operation = static_cast<ImGuizmo::OPERATION>(main["Gizmo operation"].as<uint32>());
-        gizmo.mode = static_cast<ImGuizmo::MODE>(main["Gizmo mode"].as<uint32>());
-    
+        data.viewport.SetGizmoOperation(static_cast<Viewport::Gizmo::Operation>(main["Gizmo operation"].as<uint16>()));
+        data.viewport.SetGizmoGlobalMode(main["Gizmo global mode"].as<bool>());
+
         if (!Args::ProjectPath().empty()) {
 
             data.project.Open(Args::Get(0));
@@ -277,32 +243,7 @@ namespace Editor {
 
         FileWatcher::PollChanges();
 
-        if (data.viewportFBO.GetSize() != data.viewportSize) {
-            
-            data.viewportFBO.Resize(data.viewportSize);
-            data.sceneCam.Resize(data.viewportSize);
-
-        }
-
-        data.viewportFBO.Bind();
-        
-        RendererAPI::ClearColor(Color(0.18f, 0.18f, 0.18f));
-        data.viewportFBO.ClearAttachment(1, INVALID_ENTITY_ID);
-
-        data.sceneCam.Update();
-        if (data.scene)
-            data.scene->Render(&data.sceneCam);
-
-        if (data.viewportMousePos.x > -1 && data.viewportMousePos.y > -1 && data.viewportMousePos.x < data.viewportSize.x && data.viewportMousePos.y < data.viewportSize.y &&
-            Input::GetKeyState(KeyCode::Mouse0) == KeyState::Pressed && !ImGuizmo::IsOver()) {
-
-            uint32 id = data.viewportFBO.ReadPixel(1, data.viewportMousePos.x, data.viewportMousePos.y);
-            if (id != INVALID_ENTITY_ID)
-                Properties::SetSelectedEntity(Entity(GetEntityFromID(id)));
-
-        }
-
-        data.viewportFBO.Unbind();
+        data.viewport.Update();
 
         QueuedTasks();
 
@@ -320,9 +261,11 @@ namespace Editor {
         data.fileBrowser.UIRender();
         data.properties.UIRender();
         data.sceneHierarchy.UIRender();
-        if (data.themeEditorOpen) data.themeEditor.UIRender();
+        data.viewport.UIRender();
         RenderGamePanel();
-        RenderViewport();
+
+        if (data.themeEditorOpen)
+            data.themeEditor.UIRender();
 
         ProjectSettings::UIRender();
         Profiler::UIRender();
@@ -422,9 +365,6 @@ namespace Editor {
         CUP_FUNCTION();
         CUP_START_FRAME("Game Panel");
 
-        //Imgui::Begin returns a bool based on if the Window is visible/open
-        //So, we store that and then Render the scene and window Only if it's visible
-        //to save some performance
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2 {0, 0});
         bool open = ImGui::Begin("Game");
 
@@ -462,7 +402,7 @@ namespace Editor {
 
             data.gameAcceptingInput = true;
 
-            Input::SetCursorPosition((float) data.viewportCentre.x, (float) data.viewportCentre.y);
+            //Input::SetCursorPosition((float) data.viewportCentre.x, (float) data.viewportCentre.y);
             Input::SetCursorLocked(true);
             Input::SetCursorVisible(false);
 
@@ -474,173 +414,7 @@ namespace Editor {
         CUP_END_FRAME();
 
     }
-    void RenderViewport() {
-
-        CUP_FUNCTION();
-        CUP_START_FRAME("Viewport");
-
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
-        bool open = ImGui::Begin("Viewport");
-        ImGui::PopStyleVar();
-        if (!open) {
-
-            ImGui::End();
-
-            CUP_END_FRAME();
-
-            return;
-
-        }
-
-
-        //TODO: Either Change ImGui To use UVector2I or edit Copper Code to use ImVec2
-        //      so that we don't have to allocate memory for the UVector2I
-        float tabBarHeight = ImGui::GetCursorPos().y;
-        ImVec2 windowPos = ImGui::GetWindowPos();
-
-        if (!data.viewportFirstFrame) {
-
-            ImVec2 windowSize = ImGui::GetContentRegionAvail();
-            if (data.viewportSize.x != windowSize.x || data.viewportSize.y != windowSize.y)
-                data.viewportSize = UVector2I(static_cast<uint32>(windowSize.x), static_cast<uint32>(windowSize.y));
-
-        }
-
-        data.viewportFirstFrame = false;
-
-        data.viewportCentre = data.viewportSize / 2;
-        data.viewportCentre.x += (uint32) windowPos.x;
-        data.viewportCentre.y += (uint32) windowPos.y;
-
-        ImVec2 mousePos = ImGui::GetMousePos();
-        data.viewportMousePos.x = static_cast<int32>(mousePos.x - windowPos.x);
-        data.viewportMousePos.y = static_cast<int32>(mousePos.y - windowPos.y - tabBarHeight);
-        data.viewportMousePos.y = data.viewportSize.y - data.viewportMousePos.y;
-
-        ImGui::Image(static_cast<ImTextureID>((uint64) data.viewportFBO.GetColorAttachmentID(0)), { static_cast<float>(data.viewportSize.x), static_cast<float>(data.viewportSize.y) }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
-
-        //Gizmos that I stol... I mean, taken inspiration from The Chernos Game Engine series
-        //Yeah, I definitely didn't copy this entire chunk of code that I don't understand but
-        //magically works, naaah.
-        if (Properties::GetSelectedData().type == SelectedData::Type::Entity) {
-
-            InternalEntity* selectedEntity = Properties::GetSelectedData().entity;
-            CU_ASSERT(selectedEntity, "Selected entity is invalid");
-
-            ImGuizmo::SetOrthographic(false);
-            ImGuizmo::SetDrawlist();
-            ImGuizmo::SetRect(windowPos.x, windowPos.y, static_cast<float>(data.viewportSize.x), data.viewportSize.y + tabBarHeight);
-
-            Matrix4 projection = data.sceneCam.CreateProjectionMatrix();
-            Matrix4 view = data.sceneCam.CreateViewMatrix();
-            Matrix4 transform = selectedEntity->GetTransform()->TransformMatrix();
-
-            bool snap = Input::GetKeyState(KeyCode::LeftControl) == KeyState::Down;
-            float snapValues[3] = { 0.5f, 0.5f, 0.5f };
-
-            ImGuizmo::Manipulate(&view.cols[0].x, &projection.cols[0].x, gizmo.operation, gizmo.mode, &transform.cols[0].x, nullptr, snap ? snapValues : nullptr);
-
-            if (ImGuizmo::IsUsing()) {
-
-                if (!gizmo.active) {
-
-                    gizmo.active = true;
-
-                    gizmo.savedPosition = selectedEntity->GetTransform()->Position();
-                    gizmo.savedRotation = selectedEntity->GetTransform()->Rotation();
-                    gizmo.savedScale = selectedEntity->GetTransform()->Scale();
-
-                }
-
-                Vector3 position, rotation, scale;
-                ImGuizmo::DecomposeMatrixToComponents(&transform.cols[0].x, &position.x, &rotation.x, &scale.x);
-
-                selectedEntity->GetTransform()->SetPosition(position);
-                selectedEntity->GetTransform()->SetRotation(rotation);
-                selectedEntity->GetTransform()->SetScale(scale);
-
-                if (RigidBody* rb = selectedEntity->GetComponent<RigidBody>()) {
-
-                    rb->SetPosition(position);
-                    rb->SetRotation(rotation);
-
-                }
-
-            } else if (gizmo.active) {
-
-                gizmo.active = false;
-
-                if (gizmo.savedPosition != selectedEntity->GetTransform()->Position()) {
-
-                    Change& change = AddChange(Change::Type::EntityMoved);
-                    change << selectedEntity->ID() << gizmo.savedPosition << selectedEntity->GetTransform()->Position();
-
-                } else if (gizmo.savedRotation != selectedEntity->GetTransform()->Rotation()) {
-
-                    Change& change = AddChange(Change::Type::EntityRotated);
-                    change << selectedEntity->ID() << gizmo.savedRotation << selectedEntity->GetTransform()->Rotation();
-
-                } else if (gizmo.savedScale != selectedEntity->GetTransform()->Scale()) {
-
-                    Change& change = AddChange(Change::Type::EntityMoved);
-                    change << selectedEntity->ID() << gizmo.savedScale << selectedEntity->GetTransform()->Scale();
-
-                }
-
-            }
-
-            if (ImGui::IsWindowFocused() && Input::GetKeyState(KeyCode::Delete) == KeyState::Pressed) {
-
-                RemoveEntity(selectedEntity);
-                Properties::ClearSelectedData();
-
-                SetChanges();
-
-            }
-
-        }
-
-        data.canLookViewport = ImGui::IsItemHovered();
-        data.sceneCam.SetCanLook(data.canLookViewport);
-
-        data.viewportFocused = ImGui::IsWindowFocused();
-
-        // Gizmo controls
-        // TODO: Add icons instead of text
-
-        //static const float buttonSize = 20.f;
-        const float buttonSize = ImGui::CalcTextSize("W").x + ImGui::GetStyle().FramePadding.x * 2.5f;
-
-        ImGui::SetCursorPos({ ImGui::GetStyle().WindowPadding.x, ImGui::GetStyle().WindowPadding.y + tabBarHeight });
-        if (ImGui::Button("P", { buttonSize, buttonSize }))
-            gizmo.operation = ImGuizmo::TRANSLATE;
-
-        ImGui::SameLine();
-        if (ImGui::Button("R", { buttonSize, buttonSize }))
-           gizmo.operation = ImGuizmo::ROTATE; 
-
-        ImGui::SameLine();
-        if (ImGui::Button("S", { buttonSize, buttonSize }))
-           gizmo.operation = ImGuizmo::SCALE; 
-
-        ImGui::PushStyleVarX(ImGuiStyleVar_ItemSpacing, ImGui::GetStyle().ItemSpacing.x * 2);
-
-        ImGui::SameLine();
-        if (ImGui::Button("W", { buttonSize, buttonSize }))
-           gizmo.mode = ImGuizmo::WORLD;
-
-        ImGui::PopStyleVar();
-
-        ImGui::SameLine();
-        if (ImGui::Button("L", { buttonSize, buttonSize }))
-           gizmo.mode = ImGuizmo::LOCAL;
-
-        
-        ImGui::End();
-
-        CUP_END_FRAME();
-
-    }
+    
     void RenderToolbar() {
 
         CUP_FUNCTION();
@@ -783,9 +557,9 @@ namespace Editor {
 
             if(ImGui::BeginMenu("Camera")) {
 
-                if (ImGui::DragFloat("Speed", &data.sceneCam.speed, 0.01f, 0.001f, 50.0f, "%.4f"))
+                if (ImGui::DragFloat("Speed", &data.viewport.GetSceneCamera().speed, 0.01f, 0.001f, 50.0f, "%.4f"))
                     SetChanges();
-                if (ImGui::DragFloat("Sensitivity", &data.sceneCam.sensitivity, 0.1f, 1.0f, 1000.0f))
+                if (ImGui::DragFloat("Sensitivity", &data.viewport.GetSceneCamera().sensitivity, 0.1f, 1.0f, 1000.0f))
                     SetChanges();
 
                 ImGui::EndMenu();
@@ -1096,34 +870,34 @@ namespace Editor {
             }
             case KeyCode::Q: {
 
-                if (!data.viewportFocused || data.state == EditorState::Play || rightClick) break;
+                if (!data.viewport.IsFocused() || data.state == EditorState::Play || rightClick) break;
 
-                gizmo.operation = ImGuizmo::TRANSLATE;
+                data.viewport.SetGizmoOperation(Viewport::Gizmo::Translate);
 
                 break;
 
             }
             case KeyCode::W: {
 
-                if (!data.viewportFocused || data.state == EditorState::Play || rightClick) break;
+                if (!data.viewport.IsFocused() || data.state == EditorState::Play || rightClick) break;
 
-                gizmo.operation = ImGuizmo::ROTATE;
+                data.viewport.SetGizmoOperation(Viewport::Gizmo::Rotate);
 
                 break;
 
             }
             case KeyCode::E: {
 
-                if (!data.viewportFocused || data.state == EditorState::Play || rightClick) break;
+                if (!data.viewport.IsFocused() || data.state == EditorState::Play || rightClick) break;
 
-                gizmo.operation = ImGuizmo::SCALE;
+                data.viewport.SetGizmoOperation(Viewport::Gizmo::Scale);
 
                 break;
 
             }
             case KeyCode::C: {
 
-                if (control && Properties::GetSelectedData().type == SelectedData::Type::Entity && (data.sceneHierarchy.IsFocused() || data.viewportFocused))
+                if (control && Properties::GetSelectedData().type == SelectedData::Type::Entity && (data.sceneHierarchy.IsFocused() || data.viewport.IsFocused()))
                     CopyToClipboard(Properties::GetSelectedData().entity);
 
                 break;
@@ -1131,7 +905,7 @@ namespace Editor {
             }
             case KeyCode::V: {
 
-                if (control && !ClipboardEmpty() && (data.sceneHierarchy.IsFocused() || data.viewportFocused)) {
+                if (control && !ClipboardEmpty() && (data.sceneHierarchy.IsFocused() || data.viewport.IsFocused())) {
 
                     Properties::SetSelectedEntity(PasteFromClipboard());
                     SetChanges();
@@ -1230,9 +1004,7 @@ namespace Editor {
     }
     
     const Project& GetProject() { return data.project; }
-    SceneCamera& GetSceneCam() { return data.sceneCam; }
-
-    UVector2I GetViewportSize() { return data.viewportSize; }
+    SceneCamera& GetSceneCam() { return data.viewport.GetSceneCamera(); }
 
     bool IsRuntimeRunning() { return data.state == EditorState::Play; }
 
@@ -1259,6 +1031,6 @@ void AppEntryPoint() {
 #pragma endregion 
 
 Window* GetEditorWindow() { return &Editor::data.window; }
-UVector2I GetViewportCentre() { return Editor::data.viewportCentre; }
+UVector2I GetViewportCentre() { return Editor::data.viewport.GetCentre(); }
 
 bool IsGameAcceptingInput() { return Editor::data.gameAcceptingInput; }

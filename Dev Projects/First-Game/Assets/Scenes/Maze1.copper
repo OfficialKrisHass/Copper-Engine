@@ -295,8 +295,39 @@ Entities:
     Mesh Renderer:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: e4427019-9f8e-4425-8930-166fdedc0817
+  22:
+    Name: TexturedCube
+    Transform:
+      Position: [0, 12.683341, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent: 4294967295
+      Children:
+        - 23
+        - 24
+  23:
+    Name: Cube
+    Transform:
+      Position: [0, 0, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent: 22
+      Children:
+        []
+    Mesh Renderer:
+      Mesh: 424e963c-4b86-4d74-9ffc-76b7755ef481
+      Material: 0956d6c6-7711-4df1-83eb-9f973cdcd453
+  24:
+    Name: Point
+    Transform:
+      Position: [0, 0, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent: 22
+      Children:
+        []
 Scene Camera:
-  Position: [-12.8099966, 18.7596684, 0.100244291]
-  Rotation: [-0.706890464, 0.251618266, 0.622778296, 0.221678466]
+  Position: [2.93125606, 14.2536049, -0.53396821]
+  Rotation: [-0.59639883, 0.0694996789, -0.794298768, -0.0925614014]
   Speed: 0.100000001
   Sensitivity: 100

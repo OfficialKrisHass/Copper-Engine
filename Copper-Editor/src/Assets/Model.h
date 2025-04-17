@@ -37,6 +37,7 @@ namespace Editor {
 
         std::vector<std::pair<MeshAsset, std::string>> m_meshes;
         std::vector<std::pair<MaterialAsset, std::string>> m_materials;
+        std::vector<std::pair<TextureAsset, std::string>> m_textures;
 
         Node m_rootNode;
 

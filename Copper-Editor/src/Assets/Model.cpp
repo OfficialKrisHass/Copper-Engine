@@ -81,7 +81,36 @@ namespace Editor {
             m_materials.push_back({ material, name });
 
             if (modelMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, *reinterpret_cast<aiColor4D*>(&material->albedo)) != AI_SUCCESS)
-                LogError("Could not get albedo color from material {}", name);
+                LogError("Could not get albedo color from material {} of model {}", name, m_path);
+
+            // Texture
+
+            aiString tmp;
+            if (modelMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &tmp) != AI_SUCCESS) continue;
+
+            fs::path fullPath = tmp.C_Str();
+            fs::path texturePath = m_path.parent_path() / fullPath.filename();
+
+            if (!fs::exists(GetProject().GetAssetsPath() / texturePath)) {
+
+                LogError("Missing texture {} for material {} of model {}, model has path {}", texturePath, name, m_path, fullPath);
+                continue;
+
+            }
+
+            UUID textureUUID = ProjectAssetDatabase::GetAssetFromPath(texturePath);
+            if (uuid == UUID::GetInvalid()) {
+
+                LogWarn("UUID for texture {} of model material {} of model {} does not exist, creating new one", texturePath.filename(), name, m_path);
+
+                UUID::Generate(uuid);
+                ProjectAssetDatabase::AddAsset(textureUUID, texturePath);
+
+            }
+
+            m_textures.push_back({ textureUUID, texturePath.filename() });
+
+            material->texture = textureUUID;
 
         }
 
@@ -237,8 +266,11 @@ namespace Editor {
         for (const std::pair<MeshAsset, std::string>& mesh : m_meshes)
             out << YAML::Key << mesh.second << YAML::Value << mesh.first;
 
-        for (const std::pair<MaterialAsset, std::string>& material : m_materials)
+        for (const std::pair<MaterialAsset, std::string>& material : m_materials) 
             out << YAML::Key << material.second << YAML::Value << material.first;
+
+        for (const std::pair<TextureAsset, std::string>& texture : m_textures)
+            out << YAML::Key << texture.second << YAML::Value << texture.first;
 
     }
 

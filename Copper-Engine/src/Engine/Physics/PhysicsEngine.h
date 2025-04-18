@@ -2,7 +2,15 @@
 
 #include "Engine/Core/Core.h"
 
-namespace physx { class PxVec3; class PxQuat; }
+namespace physx {
+
+    template <typename T> class PxVec3T;
+    template <typename T> class PxQuatT;
+
+    typedef PxVec3T<float> PxVec3;
+    typedef PxQuatT<float> PxQuat;
+
+}
 
 namespace Copper::PhysicsEngine {
 

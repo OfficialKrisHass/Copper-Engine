@@ -177,13 +177,8 @@ project "Copper-Editor"
         "yaml-cpp",
         "assimp",
 
-        "Copper-Engine/lib/mono/lib/%{cfg.buildcfg}/mono-2.0-sgen.lib",
-        "Copper-Engine/lib//PhysX/lib/%{cfg.buildcfg}/PhysX_64.lib",
-        "Copper-Engine/lib//PhysX/lib/%{cfg.buildcfg}/PhysXCommon_64.lib",
-        "Copper-Engine/lib//PhysX/lib/%{cfg.buildcfg}/PhysXFoundation_64.lib",
-        "Copper-Engine/lib//PhysX/lib/%{cfg.buildcfg}/PhysXExtensions_static_64.lib",
-
     }
+
 
     defines {
 
@@ -214,6 +209,17 @@ project "Copper-Editor"
         optimize "on"
 
         postbuildcommands "%{os.getcwd()}/scripts/windows/CopyEditorFiles.bat Release"
+
+    filter "system:windows"
+        link {
+
+            "Copper-Engine/lib/mono/lib/%{cfg.buildcfg}/mono-2.0-sgen.lib",
+            "Copper-Engine/lib/PhysX/lib/%{cfg.buildcfg}/PhysX_64.lib",
+            "Copper-Engine/lib/PhysX/lib/%{cfg.buildcfg}/PhysXCommon_64.lib",
+            "Copper-Engine/lib/PhysX/lib/%{cfg.buildcfg}/PhysXFoundation_64.lib",
+            "Copper-Engine/lib/PhysX/lib/%{cfg.buildcfg}/PhysXExtensions_static_64.lib",
+
+        }
 
 project "Copper-APIBinder"
     location "Copper-APIBinder"

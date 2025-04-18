@@ -1,4 +1,3 @@
-//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
@@ -23,7 +22,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2025 NVIDIA Corporation. All rights reserved.
 
 #ifndef PX_GPU_H
 #define PX_GPU_H
@@ -34,11 +33,9 @@
 #if PX_SUPPORT_GPU_PHYSX
 
 #include "cudamanager/PxCudaContextManager.h"
-#include "cudamanager/PxCudaMemoryManager.h"
-#include "foundation/Px.h"
 #include "foundation/PxPreprocessor.h"
+#include "foundation/PxFoundation.h"
 #include "common/PxPhysXCommonConfig.h"
-#include "PxFoundation.h"
 
 /**
 \brief PxGpuLoadHook
@@ -49,7 +46,7 @@ PxGpuLoadHook can be sub-classed to provide the custom filenames.
 
 Once the names are set, the instance must be set for use by PhysX.dll using PxSetPhysXGpuLoadHook(), 
 
-@see PxSetPhysXGpuLoadHook()
+\see PxSetPhysXGpuLoadHook()
 */
 class PxGpuLoadHook
 {
@@ -68,7 +65,7 @@ private:
 
 \param[in] hook GPU load hook.
 
-@see PxGpuLoadHook
+\see PxGpuLoadHook
 */
 PX_C_EXPORT PX_PHYSX_CORE_API void PX_CALL_CONV PxSetPhysXGpuLoadHook(const PxGpuLoadHook* hook);
 
@@ -86,11 +83,67 @@ PX_C_EXPORT PX_PHYSX_CORE_API int PX_CALL_CONV PxGetSuggestedCudaDeviceOrdinal(p
  \param[in] foundation PhysXFoundation instance.
  \param[in] desc Cuda context manager desc.
  \param[in] profilerCallback PhysX profiler callback instance.
+ \param[in] launchSynchronous Set launchSynchronous to true for CUDA to report the actual point of failure.
 
- @see PxGetProfilerCallback()
+ \see PxGetProfilerCallback()
  */
-PX_C_EXPORT PX_PHYSX_CORE_API physx::PxCudaContextManager* PX_CALL_CONV PxCreateCudaContextManager(physx::PxFoundation& foundation, const physx::PxCudaContextManagerDesc& desc, physx::PxProfilerCallback* profilerCallback = NULL);
+PX_C_EXPORT PX_PHYSX_CORE_API physx::PxCudaContextManager* PX_CALL_CONV PxCreateCudaContextManager(physx::PxFoundation& foundation, const physx::PxCudaContextManagerDesc& desc, physx::PxProfilerCallback* profilerCallback = NULL, bool launchSynchronous = false);
+
+/**
+ * \brief Sets profiler callback to PhysX GPU
+ \param[in] profilerCallback PhysX profiler callback instance.
+
+ \see PxGetProfilerCallback()
+ */
+PX_C_EXPORT PX_PHYSX_CORE_API void PX_CALL_CONV PxSetPhysXGpuProfilerCallback(physx::PxProfilerCallback* profilerCallback);
+
+/**
+ * \brief Sets PhysXFoundation instance
+ \param[in] foundation PhysXFoundation instance.
+
+ \see PxGetFoundation()
+ */
+PX_C_EXPORT PX_PHYSX_CORE_API void PX_CALL_CONV PxSetPhysXGpuFoundationInstance(physx::PxFoundation& foundation);
+
+/**
+\brief Internally used callback to register function names of cuda kernels
+*/
+PX_C_EXPORT PX_PHYSX_CORE_API void PX_CALL_CONV PxCudaRegisterFunction(int moduleIndex, const char* functionName);
+
+/**
+\brief Internally used callback to register cuda modules at load time
+*/
+PX_C_EXPORT PX_PHYSX_CORE_API void** PX_CALL_CONV PxCudaRegisterFatBinary(void*);
+
+/**
+\brief Access to the registered cuda modules
+*/
+PX_C_EXPORT PX_PHYSX_CORE_API void** PX_CALL_CONV PxGetCudaModuleTable();
+
+/**
+\brief Number of registered cuda modules
+*/
+PX_C_EXPORT PX_PHYSX_CORE_API physx::PxU32 PX_CALL_CONV PxGetCudaModuleTableSize();
+
+/**
+\brief Access to the loaded cuda functions (kernels)
+*/
+PX_C_EXPORT PX_PHYSX_CORE_API physx::PxKernelIndex* PX_CALL_CONV PxGetCudaFunctionTable();
+
+/**
+\brief Number of loaded cuda functions (kernels)
+*/
+PX_C_EXPORT PX_PHYSX_CORE_API physx::PxU32 PX_CALL_CONV  PxGetCudaFunctionTableSize();
+
+
+namespace physx
+{
+	class PxPhysicsGpu;
+}
+
+PX_C_EXPORT PX_PHYSX_CORE_API physx::PxPhysicsGpu* PX_CALL_CONV  PxGetPhysicsGpu();
+
 
 #endif // PX_SUPPORT_GPU_PHYSX
 
-#endif // PX_GPU_H
+#endif

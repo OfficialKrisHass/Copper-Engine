@@ -1,4 +1,3 @@
-//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
@@ -23,13 +22,13 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2025 NVIDIA Corporation. All rights reserved.
 
-#ifndef PXFOUNDATION_PXPROFILEZONE_H
-#define PXFOUNDATION_PXPROFILEZONE_H
+#ifndef PX_PROFILE_ZONE_H
+#define PX_PROFILE_ZONE_H
 
 #include "foundation/PxProfiler.h"
-#include "PxFoundation.h"
+#include "foundation/PxFoundation.h"
 
 #if PX_DEBUG || PX_CHECKED || PX_PROFILE
 	#define PX_PROFILE_ZONE(x, y)										\
@@ -40,12 +39,18 @@
 	#define PX_PROFILE_STOP_CROSSTHREAD(x, y)							\
 		if(PxGetProfilerCallback())										\
 			PxGetProfilerCallback()->zoneEnd(NULL, x, true, y)
+	#define PX_PROFILE_VALUE(x, y, z)									\
+		if(PxGetProfilerCallback())										\
+			PxGetProfilerCallback()->recordData(x, y, z)
+	#define PX_PROFILE_FRAME(x, y)                                                                                                         \
+		if(PxGetProfilerCallback())                                                                                                        \
+			PxGetProfilerCallback()->recordFrame(x, y)
 #else
 	#define PX_PROFILE_ZONE(x, y)
 	#define PX_PROFILE_START_CROSSTHREAD(x, y)
 	#define PX_PROFILE_STOP_CROSSTHREAD(x, y)
+	#define PX_PROFILE_VALUE(x, y, z)
+	#define PX_PROFILE_FRAME(x, y)
 #endif
 
-#define PX_PROFILE_POINTER_TO_U64(pointer) static_cast<uint64_t>(reinterpret_cast<size_t>(pointer))
-
-#endif // PXFOUNDATION_PXPROFILEZONE_H
+#endif

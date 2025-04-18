@@ -1,4 +1,3 @@
-//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
@@ -23,36 +22,29 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2025 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
-
-#ifndef PX_PHYSICS_PX_PHYSICS_SERIALIZATION
-#define PX_PHYSICS_PX_PHYSICS_SERIALIZATION
+#ifndef PX_PHYSICS_SERIALIZATION_H
+#define PX_PHYSICS_SERIALIZATION_H
 
 #include "common/PxSerialFramework.h"
 #include "PxPhysXConfig.h"
 
 #if !PX_DOXYGEN
-/**
-\brief Retrieves the PhysX SDK metadata.
-This function is used to implement PxSerialization.dumpBinaryMetaData() and is not intended to be needed otherwise.
-@see PxSerialization.dumpBinaryMetaData()
-*/
-PX_C_EXPORT PX_PHYSX_CORE_API void PX_CALL_CONV PxGetPhysicsBinaryMetaData(physx::PxOutputStream& stream);
 
 /**
 \brief Registers physics classes for serialization.
 This function is used to implement PxSerialization.createSerializationRegistry() and is not intended to be needed otherwise.
-@see PxSerializationRegistry
+\see PxSerializationRegistry
 */
 PX_C_EXPORT PX_PHYSX_CORE_API void PX_CALL_CONV PxRegisterPhysicsSerializers(physx::PxSerializationRegistry& sr);
 
 /**
 \brief Unregisters physics classes for serialization.
 This function is used in the release implementation of PxSerializationRegistry and in not intended to be used otherwise.
-@see PxSerializationRegistry
+\see PxSerializationRegistry
 */
 PX_C_EXPORT PX_PHYSX_CORE_API void PX_CALL_CONV PxUnregisterPhysicsSerializers(physx::PxSerializationRegistry& sr);
 
@@ -65,10 +57,11 @@ the collection, to populate the physics with inplace deserialized objects. This 
 PxSerialization.createCollectionFromBinary and is not intended to be needed otherwise.
 \param[in] collection Objects to add to the PxPhysics instance.
 
-@see PxCollection, PxSerialization.createCollectionFromBinary
+\see PxCollection, PxSerialization.createCollectionFromBinary
 */
 PX_C_EXPORT PX_PHYSX_CORE_API void PX_CALL_CONV PxAddCollectionToPhysics(const physx::PxCollection& collection);
 
 #endif // !PX_DOXYGEN
 
-#endif // PX_PHYSICS_PX_PHYSICS_SERIALIZATION
+#endif
+

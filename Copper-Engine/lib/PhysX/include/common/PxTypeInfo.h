@@ -1,4 +1,3 @@
-//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
@@ -23,16 +22,13 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2025 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
-#ifndef PX_PHYSICS_COMMON_PX_TYPEINFO
-#define PX_PHYSICS_COMMON_PX_TYPEINFO
+#ifndef PX_TYPE_INFO_H
+#define PX_TYPE_INFO_H
 
-/** \addtogroup common
-@{
-*/
 
 #include "common/PxPhysXCommonConfig.h"
 
@@ -47,7 +43,7 @@ namespace physx
 Enumeration space is reserved for future PhysX core types, PhysXExtensions, 
 PhysXVehicle and Custom application types.
 
-@see PxBase, PxTypeInfo
+\see PxBase, PxTypeInfo
 */
 
 struct PxConcreteType
@@ -58,22 +54,44 @@ struct PxConcreteType
 
 		eHEIGHTFIELD,
 		eCONVEX_MESH,
-		eTRIANGLE_MESH_BVH33,
+		eTRIANGLE_MESH_BVH33 PX_DEPRECATED,	//!< \deprecated Will be removed together with deprecated BVH33.
 		eTRIANGLE_MESH_BVH34,
+		eTETRAHEDRON_MESH,
+		eDEFORMABLE_VOLUME_MESH,
+		eSOFTBODY_MESH PX_DEPRECATED = eDEFORMABLE_VOLUME_MESH, //!< \deprecated
 
 		eRIGID_DYNAMIC,
 		eRIGID_STATIC,
 		eSHAPE,
 		eMATERIAL,
+		eDEFORMABLE_SURFACE_MATERIAL,
+		eDEFORMABLE_VOLUME_MATERIAL,
+		eSOFTBODY_MATERIAL PX_DEPRECATED = eDEFORMABLE_VOLUME_MATERIAL, //!< \deprecated
+		ePBD_MATERIAL,
 		eCONSTRAINT,
 		eAGGREGATE,
-		eARTICULATION,
 		eARTICULATION_REDUCED_COORDINATE,
 		eARTICULATION_LINK,
-		eARTICULATION_JOINT,
 		eARTICULATION_JOINT_REDUCED_COORDINATE,
+		eARTICULATION_SPATIAL_TENDON,
+		eARTICULATION_FIXED_TENDON,
+		eARTICULATION_ATTACHMENT,
+		eARTICULATION_TENDON_JOINT,
+		eARTICULATION_MIMIC_JOINT,
 		ePRUNING_STRUCTURE,
-		eBVH_STRUCTURE,
+		eBVH,
+		eDEFORMABLE_VOLUME,
+		eSOFT_BODY PX_DEPRECATED = eDEFORMABLE_VOLUME, //!< \deprecated
+		eDEFORMABLE_VOLUME_STATE,
+		eSOFT_BODY_STATE PX_DEPRECATED = eDEFORMABLE_VOLUME_STATE, //!< \deprecated
+		ePBD_PARTICLESYSTEM,
+		eDEFORMABLE_SURFACE,
+		eDEFORMABLE_ATTACHMENT,
+		eDEFORMABLE_ELEMENT_FILTER,
+		ePARTICLE_BUFFER,
+		ePARTICLE_DIFFUSE_BUFFER,
+		ePARTICLE_CLOTH_BUFFER,
+		ePARTICLE_RIGID_BUFFER,
 		
 		ePHYSX_CORE_COUNT,
         eFIRST_PHYSX_EXTENSION = 256,
@@ -85,7 +103,7 @@ struct PxConcreteType
 /** 
 \brief a structure containing per-type information for types inheriting from PxBase
 
-@see PxBase, PxConcreteType
+\see PxBase, PxConcreteType
 */
 
 template<typename T> struct PxTypeInfo {};
@@ -100,10 +118,14 @@ template<typename T> struct PxTypeInfo {};
 
 PX_DEFINE_TYPEINFO(PxBase,									PxConcreteType::eUNDEFINED)
 PX_DEFINE_TYPEINFO(PxMaterial,								PxConcreteType::eMATERIAL)
+PX_DEFINE_TYPEINFO(PxDeformableSurfaceMaterial,				PxConcreteType::eDEFORMABLE_SURFACE_MATERIAL)
+PX_DEFINE_TYPEINFO(PxDeformableVolumeMaterial,				PxConcreteType::eDEFORMABLE_VOLUME_MATERIAL)
+PX_DEFINE_TYPEINFO(PxPBDMaterial,							PxConcreteType::ePBD_MATERIAL)
 PX_DEFINE_TYPEINFO(PxConvexMesh,							PxConcreteType::eCONVEX_MESH)
 PX_DEFINE_TYPEINFO(PxTriangleMesh,							PxConcreteType::eUNDEFINED)
 PX_DEFINE_TYPEINFO(PxBVH33TriangleMesh,						PxConcreteType::eTRIANGLE_MESH_BVH33)
 PX_DEFINE_TYPEINFO(PxBVH34TriangleMesh,						PxConcreteType::eTRIANGLE_MESH_BVH34)
+PX_DEFINE_TYPEINFO(PxTetrahedronMesh,						PxConcreteType::eTETRAHEDRON_MESH)
 PX_DEFINE_TYPEINFO(PxHeightField,							PxConcreteType::eHEIGHTFIELD)
 PX_DEFINE_TYPEINFO(PxActor,									PxConcreteType::eUNDEFINED)
 PX_DEFINE_TYPEINFO(PxRigidActor,							PxConcreteType::eUNDEFINED)
@@ -111,18 +133,24 @@ PX_DEFINE_TYPEINFO(PxRigidBody,								PxConcreteType::eUNDEFINED)
 PX_DEFINE_TYPEINFO(PxRigidDynamic,							PxConcreteType::eRIGID_DYNAMIC)
 PX_DEFINE_TYPEINFO(PxRigidStatic,							PxConcreteType::eRIGID_STATIC)
 PX_DEFINE_TYPEINFO(PxArticulationLink,						PxConcreteType::eARTICULATION_LINK)
-PX_DEFINE_TYPEINFO(PxArticulationJoint,						PxConcreteType::eARTICULATION_JOINT)
 PX_DEFINE_TYPEINFO(PxArticulationJointReducedCoordinate,	PxConcreteType::eARTICULATION_JOINT_REDUCED_COORDINATE)
-PX_DEFINE_TYPEINFO(PxArticulation,							PxConcreteType::eARTICULATION)
 PX_DEFINE_TYPEINFO(PxArticulationReducedCoordinate,			PxConcreteType::eARTICULATION_REDUCED_COORDINATE)
 PX_DEFINE_TYPEINFO(PxAggregate,								PxConcreteType::eAGGREGATE)
 PX_DEFINE_TYPEINFO(PxConstraint,							PxConcreteType::eCONSTRAINT)
 PX_DEFINE_TYPEINFO(PxShape,									PxConcreteType::eSHAPE)
 PX_DEFINE_TYPEINFO(PxPruningStructure,						PxConcreteType::ePRUNING_STRUCTURE)
+PX_DEFINE_TYPEINFO(PxPBDParticleSystem,						PxConcreteType::ePBD_PARTICLESYSTEM)
+PX_DEFINE_TYPEINFO(PxDeformableSurface,						PxConcreteType::eDEFORMABLE_SURFACE)
+PX_DEFINE_TYPEINFO(PxDeformableVolume,						PxConcreteType::eDEFORMABLE_VOLUME)
+PX_DEFINE_TYPEINFO(PxDeformableAttachment,					PxConcreteType::eDEFORMABLE_ATTACHMENT)
+PX_DEFINE_TYPEINFO(PxDeformableElementFilter,				PxConcreteType::eDEFORMABLE_ELEMENT_FILTER)
+PX_DEFINE_TYPEINFO(PxParticleBuffer,						PxConcreteType::ePARTICLE_BUFFER)
+PX_DEFINE_TYPEINFO(PxParticleAndDiffuseBuffer,				PxConcreteType::ePARTICLE_DIFFUSE_BUFFER)
+PX_DEFINE_TYPEINFO(PxParticleClothBuffer,					PxConcreteType::ePARTICLE_CLOTH_BUFFER)
+PX_DEFINE_TYPEINFO(PxParticleRigidBuffer,					PxConcreteType::ePARTICLE_RIGID_BUFFER)
 
 #if !PX_DOXYGEN
 } // namespace physx
 #endif
 
-/** @} */
 #endif

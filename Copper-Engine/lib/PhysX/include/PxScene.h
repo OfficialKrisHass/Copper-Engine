@@ -1,4 +1,3 @@
-//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
@@ -23,24 +22,28 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2025 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
+#ifndef PX_SCENE_H
+#define PX_SCENE_H
 
-#ifndef PX_PHYSICS_NX_SCENE
-#define PX_PHYSICS_NX_SCENE
-/** \addtogroup physics
-@{
-*/
-
-#include "PxVisualizationParameter.h"
+#include "PxActor.h"
+#include "PxDirectGPUAPI.h"
+#include "PxSceneQuerySystem.h"
 #include "PxSceneDesc.h"
+#include "PxVisualizationParameter.h"
 #include "PxSimulationStatistics.h"
-#include "PxQueryReport.h"
-#include "PxQueryFiltering.h"
 #include "PxClient.h"
 #include "task/PxTask.h"
+#include "PxArticulationFlag.h"
+#include "PxSoftBodyFlag.h" // deprecated
+#include "PxParticleSystemFlag.h"
+#include "PxParticleSolverType.h"
+#include "PxResidual.h"
+
+#include "cudamanager/PxCudaTypes.h"
 
 #include "pvd/PxPvdSceneClient.h"
 
@@ -49,28 +52,21 @@ namespace physx
 {
 #endif
 
-class PxRigidStatic;
-class PxRigidDynamic;
+class PxCollection;
 class PxConstraint;
-class PxMaterial;
 class PxSimulationEventCallback;
 class PxPhysics;
-class PxBatchQueryDesc;
-class PxBatchQuery;
 class PxAggregate;
 class PxRenderBuffer;
+class PxArticulationReducedCoordinate;
 
-class PxSphereGeometry;
-class PxBoxGeometry;
-class PxCapsuleGeometry;
-
-class PxPruningStructure;
-class PxBVHStructure;
 struct PxContactPairHeader;
 
-typedef PxU8 PxDominanceGroup;
-
 class PxPvdSceneClient;
+
+class PxDeformableSurface;
+class PxDeformableVolume;
+class PxPBDParticleSystem;
 
 /**
 \brief Expresses the dominance relationship of a contact.
@@ -78,7 +74,7 @@ For the time being only three settings are permitted:
 
 (1, 1), (0, 1), and (1, 0).
 
-@see getDominanceGroup() PxDominanceGroup PxScene::setDominanceGroupPair()
+\see getDominanceGroup() PxDominanceGroup PxScene::setDominanceGroupPair()
 */	
 struct PxDominanceGroupPair
 {
@@ -88,13 +84,12 @@ struct PxDominanceGroupPair
 	PxU8 dominance1;
 };
 
-
 /**
 \brief Identifies each type of actor for retrieving actors from a scene.
 
-\note #PxArticulationLink objects are not supported. Use the #PxArticulation object to retrieve all its links.
+\note #PxArticulationLink objects are not supported. Use the #PxArticulationReducedCoordinate object to retrieve all its links.
 
-@see PxScene::getActors(), PxScene::getNbActors()
+\see PxScene::getActors(), PxScene::getNbActors()
 */
 struct PxActorTypeFlag
 {
@@ -102,13 +97,13 @@ struct PxActorTypeFlag
 	{
 		/**
 		\brief A static rigid body
-		@see PxRigidStatic
+		\see PxRigidStatic
 		*/
 		eRIGID_STATIC		= (1 << 0),
 
 		/**
 		\brief A dynamic rigid body
-		@see PxRigidDynamic
+		\see PxRigidDynamic
 		*/
 		eRIGID_DYNAMIC		= (1 << 1)
 	};
@@ -117,44 +112,68 @@ struct PxActorTypeFlag
 /**
 \brief Collection of set bits defined in PxActorTypeFlag.
 
-@see PxActorTypeFlag
+\see PxActorTypeFlag
 */
 typedef PxFlags<PxActorTypeFlag::Enum,PxU16> PxActorTypeFlags;
 PX_FLAGS_OPERATORS(PxActorTypeFlag::Enum,PxU16)
 
+class PxActor;
+
 /**
-\brief single hit cache for scene queries.
+\brief Broad-phase callback to receive broad-phase related events.
 
-If a cache object is supplied to a scene query, the cached actor/shape pair is checked for intersection first.
-\note Filters are not executed for the cached shape.
-\note If intersection is found, the hit is treated as blocking.
-\note Typically actor and shape from the last PxHitCallback.block query result is used as a cached actor/shape pair.
-\note Using past touching hits as cache will produce incorrect behavior since the cached hit will always be treated as blocking.
-\note Cache is only used if no touch buffer was provided, for single nearest blocking hit queries and queries using eANY_HIT flag.
-\note if non-zero touch buffer was provided, cache will be ignored
+Each broadphase callback object is associated with a PxClientID. It is possible to register different
+callbacks for different clients. The callback functions are called this way:
+- for shapes/actors, the callback assigned to the actors' clients are used
+- for aggregates, the callbacks assigned to clients from aggregated actors  are used
 
-\note It is the user's responsibility to ensure that the shape and actor are valid, so care must be taken
-when deleting shapes to invalidate cached references.
+\note SDK state should not be modified from within the callbacks. In particular objects should not
+be created or destroyed. If state modification is needed then the changes should be stored to a buffer
+and performed after the simulation step.
 
-The faceIndex field is an additional hint for a mesh or height field which is not currently used.
+<b>Threading:</b> It is not necessary to make this class thread safe as it will only be called in the context of the
+user thread.
 
-@see PxScene.raycast
+\see PxSceneDesc PxScene.setBroadPhaseCallback() PxScene.getBroadPhaseCallback()
 */
-struct PxQueryCache
+class PxBroadPhaseCallback
 {
-	/**
-	\brief constructor sets to default 
-	*/
-	PX_INLINE PxQueryCache() : shape(NULL), actor(NULL), faceIndex(0xffffffff) {}
+	public:
+	virtual				~PxBroadPhaseCallback()	{}
 
 	/**
-	\brief constructor to set properties
-	*/
-	PX_INLINE PxQueryCache(PxShape* s, PxU32 findex) : shape(s), actor(NULL), faceIndex(findex) {}
+	\brief Out-of-bounds notification.
+		
+	This function is called when an object leaves the broad-phase.
 
-	PxShape*		shape;			//!< Shape to test for intersection first
-	PxRigidActor*	actor;			//!< Actor to which the shape belongs
-	PxU32			faceIndex;		//!< Triangle index to test first - NOT CURRENTLY SUPPORTED
+	\param[in] shape	Shape that left the broad-phase bounds
+	\param[in] actor	Owner actor
+	*/
+	virtual		void	onObjectOutOfBounds(PxShape& shape, PxActor& actor) = 0;
+
+	/**
+	\brief Out-of-bounds notification.
+		
+	This function is called when an aggregate leaves the broad-phase.
+
+	\param[in] aggregate	Aggregate that left the broad-phase bounds
+	*/
+	virtual		void	onObjectOutOfBounds(PxAggregate& aggregate) = 0;
+};
+
+/**
+\brief Abstract base class for post-solve callback functionality.
+*/
+class PxPostSolveCallback
+{
+public:
+	/**
+	\brief Callback function called after a solve event.
+	\param startEvent CUDA event that should be waited for on the user stream. Once the event happened, the user can safely read the solver's results.
+	*/
+	virtual void onPostSolve(CUevent startEvent) = 0;
+
+	virtual ~PxPostSolveCallback() {}
 };
 
 /** 
@@ -164,20 +183,20 @@ struct PxQueryCache
  at the same time, but each body or constraint is specific to a scene 
  -- they may not be shared.
 
- @see PxSceneDesc PxPhysics.createScene() release()
+ \see PxSceneDesc PxPhysics.createScene() release()
 */
-class PxScene
+class PxScene : public PxSceneSQSystem
 {
 	protected:
 	
 	/************************************************************************************************/
 
-	/** @name Basics
+	/** \name Basics
 	*/
-	//@{
+	//\{
 	
-								PxScene(): userData(0)	{}
-	virtual						~PxScene()	{}
+								PxScene() : userData(NULL)	{}
+	virtual						~PxScene()					{}
 
 	public:
 
@@ -190,7 +209,7 @@ class PxScene
 	Be sure	to not keep a reference to this object after calling release.
 	Avoid release calls while the scene is simulating (in between simulate() and fetchResults() calls).
 	
-	@see PxPhysics.createScene() 
+	\see PxPhysics.createScene() 
 	*/
 	virtual		void			release() = 0;
 
@@ -199,7 +218,7 @@ class PxScene
 
 	\note Not all flags are mutable and changing some will result in an error. Please check #PxSceneFlag to see which flags can be changed.
 
-	@see PxSceneFlag
+	\see PxSceneFlag
 	*/
 	virtual		void			setFlag(PxSceneFlag::Enum flag, bool value) = 0;
 
@@ -208,10 +227,9 @@ class PxScene
 
 	\return The scene flags. See #PxSceneFlag
 
-	@see PxSceneFlag
+	\see PxSceneFlag
 	*/
 	virtual		PxSceneFlags	getFlags() const = 0;
-
 
 	/**
 	\brief Set new scene limits. 
@@ -221,24 +239,23 @@ class PxScene
 	are for preallocation and do not represent hard limits.
 
 	\param[in] limits Scene limits.
-	@see PxSceneLimits
+	\see PxSceneLimits
 	*/
 	virtual void				setLimits(const PxSceneLimits& limits) = 0;
 
 	/**
 	\brief Get current scene limits.
 	\return Current scene limits.
-	@see PxSceneLimits
+	\see PxSceneLimits
 	*/
 	virtual PxSceneLimits		getLimits() const = 0;
-
 
 	/**
 	\brief Call this method to retrieve the Physics SDK.
 
 	\return The physics SDK this scene is associated with.
 
-	@see PxPhysics
+	\see PxPhysics
 	*/
 	virtual	PxPhysics&			getPhysics() = 0;
 
@@ -249,43 +266,68 @@ class PxScene
 	*/
 	virtual	PxU32				getTimestamp()	const	= 0;
 
-	
-	//@}
+	/**
+	\brief Sets a name string for the Scene that can be retrieved with getName().
+
+	This is for debugging and is not used by the SDK. The string is not copied by the SDK,
+	only the pointer is stored.
+
+	\param[in] name String to set the objects name to.
+
+	<b>Default:</b> NULL
+
+	\see getName()
+	*/
+	virtual		void			setName(const char* name) = 0;
+
+	/**
+	\brief Retrieves the name string set with setName().
+
+	\return Name string associated with the Scene.
+
+	\see setName()
+	*/
+	virtual		const char*		getName()			const = 0;
+
+	//\}
 	/************************************************************************************************/
 
-	/** @name Add/Remove Contained Objects
+	/** \name Add/Remove Articulations
 	*/
-	//@{
+	//\{
 	/**
 	\brief Adds an articulation to this scene.
 
-	\note If the articulation is already assigned to a scene (see #PxArticulation::getScene), the call is ignored and an error is issued.
+	\note If the articulation is already assigned to a scene (see #PxArticulationReducedCoordinate::getScene), the call is ignored and an error is issued.
 
-	\param[in] articulation Articulation to add to scene. See #PxArticulation
+	\param[in] articulation The articulation to add to the scene.
+	\return True if success
 
-	@see PxArticulation
+	\see PxArticulationReducedCoordinate
 	*/
-	virtual	void				addArticulation(PxArticulationBase& articulation) = 0;
+	virtual	bool				addArticulation(PxArticulationReducedCoordinate& articulation) = 0;
 
 	/**
 	\brief Removes an articulation from this scene.
 
-	\note If the articulation is not part of this scene (see #PxArticulation::getScene), the call is ignored and an error is issued. 
+	\note If the articulation is not part of this scene (see #PxArticulationReducedCoordinate::getScene), the call is ignored and an error is issued. 
 	
 	\note If the articulation is in an aggregate it will be removed from the aggregate.
 
-	\param[in] articulation Articulation to remove from scene. See #PxArticulation
-	\param[in] wakeOnLostTouch Specifies whether touching objects from the previous frame should get woken up in the next frame. Only applies to PxArticulation and PxRigidActor types.
+	\param[in] articulation The articulation to remove from the scene.
+	\param[in] wakeOnLostTouch Specifies whether touching objects from the previous frame should get woken up in the next frame.
+	Only applies to PxArticulationReducedCoordinate and PxRigidActor types.
 
-	@see PxArticulation, PxAggregate
+	\see PxArticulationReducedCoordinate, PxAggregate
 	*/
-	virtual	void				removeArticulation(PxArticulationBase& articulation, bool wakeOnLostTouch = true) = 0;
+	virtual	void				removeArticulation(PxArticulationReducedCoordinate& articulation, bool wakeOnLostTouch = true) = 0;
 
-
-	//@}
+	//\}
 	/************************************************************************************************/
 
-
+	/** \name Add/Remove Actors
+	*/
+	//\{
 	/**
 	\brief Adds an actor to this scene.
 	
@@ -297,47 +339,52 @@ class PxScene
 	\note If the actor is a PxRigidActor then each assigned PxConstraint object will get added to the scene automatically if
 	it connects to another actor that is part of the scene already. 
 
-	\note When BVHStructure is provided the actor shapes are grouped together. 
+	\note When a BVH is provided the actor shapes are grouped together. 
 	The scene query pruning structure inside PhysX SDK will store/update one
 	bound per actor. The scene queries against such an actor will query actor
-	bounds and then make a local space query against the provided BVH structure, which is in
-	actor's local space.
+	bounds and then make a local space query against the provided BVH, which is in actor's local space.
 
-	\param[in] actor Actor to add to scene.
-	\param[in] bvhStructure BVHStructure for actor shapes.
+	\param[in] actor	Actor to add to scene.
+	\param[in] bvh		BVH for actor shapes.
+	\return True if success
 
-	@see PxActor, PxConstraint::isValid(), PxBVHStructure
+	\see PxActor, PxConstraint::isValid(), PxBVH
 	*/
-	virtual	void				addActor(PxActor& actor, const PxBVHStructure* bvhStructure = NULL) = 0;
+	virtual	bool				addActor(PxActor& actor, const PxBVH* bvh = NULL) = 0;
 
 	/**
-	\brief Adds actors to this scene.	
+	\brief Adds actors to this scene. Only supports actors of type PxRigidStatic and PxRigidDynamic.
+
+	\note This method only supports actors of type PxRigidStatic and PxRigidDynamic. For other actors, use addActor() instead.
+	For articulation links, use addArticulation().
 
 	\note If one of the actors is already assigned to a scene (see #PxActor::getScene), the call is ignored and an error is issued.
-
-	\note You can not add individual articulation links (see #PxArticulationLink) to the scene. Use #addArticulation() instead.
 
 	\note If an actor in the array contains an invalid constraint, in checked builds the call is ignored and an error is issued.
 	\note If an actor in the array is a PxRigidActor then each assigned PxConstraint object will get added to the scene automatically if
 	it connects to another actor that is part of the scene already.
 
-	\note this method is optimized for high performance, and does not support buffering. It may not be called during simulation.
+	\note this method is optimized for high performance. 
 
 	\param[in] actors Array of actors to add to scene.
 	\param[in] nbActors Number of actors in the array.
+	\return True if success
 
-	@see PxActor, PxConstraint::isValid()
+	\see PxActor, PxConstraint::isValid()
 	*/
-	virtual	void				addActors(PxActor*const* actors, PxU32 nbActors) = 0;
+	virtual	bool				addActors(PxActor*const* actors, PxU32 nbActors) = 0;
 
 	/**
-	\brief Adds a pruning structure together with its actors to this scene.	
+	\brief Adds a pruning structure together with its actors to this scene. Only supports actors of type PxRigidStatic and PxRigidDynamic.
+
+	\note This method only supports actors of type PxRigidStatic and PxRigidDynamic. For other actors, use addActor() instead.
+	For articulation links, use addArticulation().
 
 	\note If an actor in the pruning structure contains an invalid constraint, in checked builds the call is ignored and an error is issued.
 	\note For all actors in the pruning structure each assigned PxConstraint object will get added to the scene automatically if
 	it connects to another actor that is part of the scene already.
 
-	\note This method is optimized for high performance, and does not support buffering. It may not be called during simulation.
+	\note This method is optimized for high performance.
 
 	\note Merging a PxPruningStructure into an active scene query optimization AABB tree might unbalance the tree. A typical use case for 
 	PxPruningStructure is a large world scenario where blocks of closely positioned actors get streamed in. The merge process finds the 
@@ -345,10 +392,11 @@ class PxScene
 	for actors scattered throughout the world will result in an unbalanced tree.
 
 	\param[in] pruningStructure Pruning structure for a set of actors.
+	\return True if success
 
-	@see PxPhysics::createPruningStructure, PxPruningStructure
+	\see PxPhysics::createPruningStructure, PxPruningStructure
 	*/
-	virtual	void				addActors(const PxPruningStructure& pruningStructure) = 0;
+	virtual	bool				addActors(const PxPruningStructure& pruningStructure) = 0;
 
 	/**
 	\brief Removes an actor from this scene.
@@ -362,14 +410,17 @@ class PxScene
 	\note If the actor is in an aggregate it will be removed from the aggregate.
 
 	\param[in] actor Actor to remove from scene.
-	\param[in] wakeOnLostTouch Specifies whether touching objects from the previous frame should get woken up in the next frame. Only applies to PxArticulation and PxRigidActor types.
+	\param[in] wakeOnLostTouch Specifies whether touching objects from the previous frame should get woken up in the next frame. Only applies to PxArticulationReducedCoordinate and PxRigidActor types.
 
-	@see PxActor, PxAggregate
+	\see PxActor, PxAggregate
 	*/
 	virtual	void				removeActor(PxActor& actor, bool wakeOnLostTouch = true) = 0;
 
 	/**
-	\brief Removes actors from this scene.
+	\brief Removes actors from this scene. Only supports actors of type PxRigidStatic and PxRigidDynamic.
+
+	\note This method only supports actors of type PxRigidStatic and PxRigidDynamic. For other actors, use removeActor() instead.
+	For articulation links, use removeArticulation().
 
 	\note If some actor is not part of this scene (see #PxActor::getScene), the actor remove is ignored and an error is issued.
 
@@ -379,9 +430,9 @@ class PxScene
 
 	\param[in] actors Array of actors to add to scene.
 	\param[in] nbActors Number of actors in the array.
-	\param[in] wakeOnLostTouch Specifies whether touching objects from the previous frame should get woken up in the next frame. Only applies to PxArticulation and PxRigidActor types.
+	\param[in] wakeOnLostTouch Specifies whether touching objects from the previous frame should get woken up in the next frame. Only applies to PxArticulationReducedCooridnate and PxRigidActor types.
 
-	@see PxActor
+	\see PxActor
 	*/
 	virtual	void				removeActors(PxActor*const* actors, PxU32 nbActors, bool wakeOnLostTouch = true) = 0;
 
@@ -394,10 +445,11 @@ class PxScene
 	\note If the aggregate already contains actors, those actors are added to the scene as well.
 
 	\param[in] aggregate Aggregate to add to scene.
+	\return True if success
 	
-	@see PxAggregate, PxConstraint::isValid()
+	\see PxAggregate, PxConstraint::isValid()
 	*/
-    virtual	void				addAggregate(PxAggregate& aggregate)	= 0;
+    virtual	bool				addAggregate(PxAggregate& aggregate)	= 0;
 
 	/**
 	\brief Removes an aggregate from this scene.
@@ -407,44 +459,45 @@ class PxScene
 	\note If the aggregate contains actors, those actors are removed from the scene as well.
 
 	\param[in] aggregate Aggregate to remove from scene.
-	\param[in] wakeOnLostTouch Specifies whether touching objects from the previous frame should get woken up in the next frame. Only applies to PxArticulation and PxRigidActor types.
+	\param[in] wakeOnLostTouch Specifies whether touching objects from the previous frame should get woken up in the next frame. Only applies to PxArticulationReducedCoordinate and PxRigidActor types.
 
-	@see PxAggregate
+	\see PxAggregate
 	*/
 	virtual	void				removeAggregate(PxAggregate& aggregate, bool wakeOnLostTouch = true)	= 0;
 
 	/**
 	\brief Adds objects in the collection to this scene.
 
-	This function adds the following types of objects to this scene: PxActor, PxAggregate, PxArticulation. 
+	This function adds the following types of objects to this scene: PxRigidActor (except PxArticulationLink), PxAggregate, PxArticulationReducedCoordinate. 
 	This method is typically used after deserializing the collection in order to populate the scene with deserialized objects.
 
 	\note If the collection contains an actor with an invalid constraint, in checked builds the call is ignored and an error is issued.
 
 	\param[in] collection Objects to add to this scene. See #PxCollection
+	\return True if success
 
-	@see PxCollection, PxConstraint::isValid()
+	\see PxCollection, PxConstraint::isValid()
 	*/
-	virtual	void				addCollection(const PxCollection& collection) = 0;
-	//@}
+	virtual	bool				addCollection(const PxCollection& collection) = 0;
+	//\}
 	/************************************************************************************************/
 
-	/** @name Contained Object Retrieval
+	/** \name Contained Object Retrieval
 	*/
-	//@{
+	//\{
 
 	/**
-	\brief Retrieve the number of actors of certain types in the scene.
+	\brief Retrieve the number of actors of certain types in the scene. For supported types, see PxActorTypeFlags.
 
 	\param[in] types Combination of actor types.
 	\return the number of actors.
 
-	@see getActors()
+	\see getActors()
 	*/
 	virtual	PxU32				getNbActors(PxActorTypeFlags types) const = 0;
 
 	/**
-	\brief Retrieve an array of all the actors of certain types in the scene.
+	\brief Retrieve an array of all the actors of certain types in the scene. For supported types, see PxActorTypeFlags.
 
 	\param[in] types Combination of actor types to retrieve.
 	\param[out] userBuffer The buffer to receive actor pointers.
@@ -452,32 +505,139 @@ class PxScene
 	\param[in] startIndex Index of first actor pointer to be retrieved
 	\return Number of actors written to the buffer.
 
-	@see getNbActors()
+	\see getNbActors()
 	*/
 	virtual	PxU32				getActors(PxActorTypeFlags types, PxActor** userBuffer, PxU32 bufferSize, PxU32 startIndex=0) const	= 0;
 
 	/**
 	\brief Queries the PxScene for a list of the PxActors whose transforms have been 
-	updated during the previous simulation step
+	updated during the previous simulation step. Only includes actors of type PxRigidDynamic and PxArticulationLink.
 
 	\note PxSceneFlag::eENABLE_ACTIVE_ACTORS must be set.
 
 	\note Do not use this method while the simulation is running. Calls to this method while the simulation is running will be ignored and NULL will be returned.
 
+	\note This list may contain actors that have been released after fetchResults() of the previous simulation step. It is the user's
+	      responsibility to track such actors and avoid dereferencing the corresponding pointers.
+
 	\param[out] nbActorsOut The number of actors returned.
 
 	\return A pointer to the list of active PxActors generated during the last call to fetchResults().
 
-	@see PxActor
+	\see PxActor
 	*/
 	virtual PxActor**		getActiveActors(PxU32& nbActorsOut) = 0;
+
+	/**
+	\brief Retrieve the number of deformable surfaces in the scene.
+
+	\return the number of deformable surfaces.
+
+	See getDeformableSurfaces()
+	*/
+	virtual PxU32				getNbDeformableSurfaces() const = 0;
+
+	/**
+	\brief Retrieve an array of all the deformable surfaces in the scene.
+
+	\param[out] userBuffer The buffer to write the deformable surface pointers to
+	\param[in] bufferSize Size of the provided user buffer
+	\param[in] startIndex Index of first deformable surface pointer to be retrieved
+	\return Number of deformable surfaces written to the buffer
+	*/
+	virtual PxU32				getDeformableSurfaces(PxDeformableSurface** userBuffer, PxU32 bufferSize, PxU32 startIndex = 0) const = 0;
+
+	/**
+	\brief Retrieve the number of deformable volumes in the scene.
+
+	\return the number of deformable volumes.
+
+	\see getActors()
+	*/
+	virtual	PxU32				getNbDeformableVolumes() const = 0;
+
+	/**
+	\brief Deprecated
+	\see getNbDeformableVolumes
+	*/
+	PX_DEPRECATED PX_FORCE_INLINE PxU32 getNbSoftBodies() const
+	{
+		return getNbDeformableVolumes();
+	}
+
+	/**
+	\brief Retrieve an array of all the deformable volumes in the scene.
+
+	\param[out] userBuffer The buffer to receive actor pointers.
+	\param[in] bufferSize Size of provided user buffer.
+	\param[in] startIndex Index of first actor pointer to be retrieved
+	\return Number of actors written to the buffer.
+
+	\see getNbActors()
+	*/
+	virtual	PxU32				getDeformableVolumes(PxDeformableVolume** userBuffer, PxU32 bufferSize, PxU32 startIndex = 0) const = 0;
+
+	/**
+	\brief Deprecated
+	\see getDeformableVolumes
+	*/
+	PX_DEPRECATED PX_FORCE_INLINE PxU32 getSoftBodies(PxDeformableVolume** userBuffer, PxU32 bufferSize, PxU32 startIndex = 0) const
+	{
+		return getDeformableVolumes(userBuffer, bufferSize, startIndex);
+	}
+
+	/**
+	\deprecated Use getNbPBDParticleSystems() instead.
+	\brief Retrieve the number of particle systems of the requested type in the scene.
+
+	\param[in] type The particle system type. See PxParticleSolverType. Only one type can be requested per function call.
+	\return the number particle systems.
+
+	See getPBDParticleSystems(), PxParticleSolverType
+	*/
+	PX_DEPRECATED virtual PxU32	getNbParticleSystems(PxParticleSolverType::Enum type) const = 0;
+
+	/**
+	\deprecated Use getPBDParticleSystems() instead.
+	\brief Retrieve an array of all the particle systems of the requested type in the scene.
+
+	\param[in] type The particle system type. See PxParticleSolverType. Only one type can be requested per function call.
+	\param[out] userBuffer The buffer to receive particle system pointers.
+	\param[in] bufferSize Size of provided user buffer.
+	\param[in] startIndex Index of first particle system pointer to be retrieved
+	\return Number of particle systems written to the buffer.
+
+	See getNbPBDParticleSystems(), PxParticleSolverType
+	*/
+	PX_DEPRECATED virtual PxU32	getParticleSystems(PxParticleSolverType::Enum type, class PxPBDParticleSystem** userBuffer, PxU32 bufferSize, PxU32 startIndex = 0) const = 0;
+
+	/**
+	\brief Retrieve the number of particle systems of the requested type in the scene.
+
+	\return the number particle systems.
+
+	\see getPBDParticleSystems()
+	*/
+	virtual PxU32				getNbPBDParticleSystems() const = 0;
+
+	/**
+	\brief Retrieve an array of all the particle systems of the requested type in the scene.
+
+	\param[out] userBuffer The buffer to receive particle system pointers.
+	\param[in] bufferSize Size of provided user buffer.
+	\param[in] startIndex Index of first particle system pointer to be retrieved
+	\return Number of particle systems written to the buffer.
+
+	\see getNbPBDParticleSystems()
+	*/
+	virtual PxU32				getPBDParticleSystems(class PxPBDParticleSystem** userBuffer, PxU32 bufferSize, PxU32 startIndex = 0) const = 0;
 
 	/**
 	\brief Returns the number of articulations in the scene.
 
 	\return the number of articulations in this scene.
 
-	@see getArticulations()
+	\see getArticulations()
 	*/
 	virtual PxU32				getNbArticulations() const = 0;
 
@@ -489,16 +649,16 @@ class PxScene
 	\param[in] startIndex Index of first articulations pointer to be retrieved
 	\return Number of articulations written to the buffer.
 
-	@see getNbArticulations()
+	\see getNbArticulations()
 	*/
-	virtual	PxU32				getArticulations(PxArticulationBase** userBuffer, PxU32 bufferSize, PxU32 startIndex=0) const = 0;
+	virtual	PxU32				getArticulations(PxArticulationReducedCoordinate** userBuffer, PxU32 bufferSize, PxU32 startIndex=0) const = 0;
 
 	/**
 	\brief Returns the number of constraint shaders in the scene.
 
 	\return the number of constraint shaders in this scene.
 
-	@see getConstraints()
+	\see getConstraints()
 	*/
 	virtual PxU32				getNbConstraints()	const	= 0;
 
@@ -510,17 +670,16 @@ class PxScene
 	\param[in] startIndex Index of first constraint pointer to be retrieved
 	\return Number of constraint shaders written to the buffer.
 
-	@see getNbConstraints()
+	\see getNbConstraints()
 	*/
 	virtual	PxU32				getConstraints(PxConstraint** userBuffer, PxU32 bufferSize, PxU32 startIndex=0) const = 0;
-
 
 	/**
 	\brief Returns the number of aggregates in the scene.
 
 	\return the number of aggregates in this scene.
 
-	@see getAggregates()
+	\see getAggregates()
 	*/
 	virtual			PxU32		getNbAggregates()	const	= 0;
 
@@ -532,16 +691,16 @@ class PxScene
 	\param[in] startIndex Index of first aggregate pointer to be retrieved
 	\return Number of aggregates written to the buffer.
 
-	@see getNbAggregates()
+	\see getNbAggregates()
 	*/
 	virtual			PxU32		getAggregates(PxAggregate** userBuffer, PxU32 bufferSize, PxU32 startIndex=0)	const	= 0;
 
-	//@}
+	//\}
 	/************************************************************************************************/
 
-	/** @name Dominance
+	/** \name Dominance
 	*/
-	//@{
+	//\{
 
 	/**
 	\brief Specifies the dominance behavior of contacts between two actors with two certain dominance groups.
@@ -591,29 +750,28 @@ class PxScene
 		
 	<b>Sleeping:</b> Does <b>NOT</b> wake actors up automatically.
 
-	@see getDominanceGroupPair() PxDominanceGroup PxDominanceGroupPair PxActor::setDominanceGroup() PxActor::getDominanceGroup()
+	\see getDominanceGroupPair() PxDominanceGroup PxDominanceGroupPair PxActor::setDominanceGroup() PxActor::getDominanceGroup()
 	*/
-	virtual void				setDominanceGroupPair(
-									PxDominanceGroup group1, PxDominanceGroup group2, const PxDominanceGroupPair& dominance) = 0;
+	virtual void				setDominanceGroupPair(PxDominanceGroup group1, PxDominanceGroup group2, const PxDominanceGroupPair& dominance) = 0;
 
 	/**
 	\brief Samples the dominance matrix.
 
-	@see setDominanceGroupPair() PxDominanceGroup PxDominanceGroupPair PxActor::setDominanceGroup() PxActor::getDominanceGroup()
+	\see setDominanceGroupPair() PxDominanceGroup PxDominanceGroupPair PxActor::setDominanceGroup() PxActor::getDominanceGroup()
 	*/
 	virtual PxDominanceGroupPair getDominanceGroupPair(PxDominanceGroup group1, PxDominanceGroup group2) const = 0;
 
-	//@}
+	//\}
 	/************************************************************************************************/
 
-	/** @name Dispatcher
+	/** \name Dispatcher
 	*/
-	//@{
+	//\{
 
 	/**
 	\brief Return the cpu dispatcher that was set in PxSceneDesc::cpuDispatcher when creating the scene with PxPhysics::createScene
 
-	@see PxSceneDesc::cpuDispatcher, PxPhysics::createScene
+	\see PxSceneDesc::cpuDispatcher, PxPhysics::createScene
 	*/
 	virtual PxCpuDispatcher* getCpuDispatcher() const = 0;
 
@@ -622,15 +780,15 @@ class PxScene
 
 	<b>Platform specific:</b> Applies to PC GPU only.
 
-	@see PxSceneDesc::cudaContextManager, PxPhysics::createScene
+	\see PxSceneDesc::cudaContextManager, PxPhysics::createScene
 	*/
 	virtual PxCudaContextManager* getCudaContextManager() const = 0;
 
-	//@}
+	//\}
 	/************************************************************************************************/
-	/** @name Multiclient
+	/** \name Multiclient
 	*/
-	//@{
+	//\{
 	/**
 	\brief Reserves a new client ID.
 	
@@ -638,17 +796,17 @@ class PxScene
 	Additional clients are returned by this function. Clients cannot be released once created. 
 	An error is reported when more than a supported number of clients (currently 128) are created. 
 
-	@see PxClientID
+	\see PxClientID
 	*/
 	virtual PxClientID			createClient() = 0;
 
-	//@}
+	//\}
 
 	/************************************************************************************************/
 
-	/** @name Callbacks
+	/** \name Callbacks
 	*/
-	//@{
+	//\{
 
 	/**
 	\brief Sets a user notify object which receives special simulation events when they occur.
@@ -657,7 +815,7 @@ class PxScene
 
 	\param[in] callback User notification callback. See #PxSimulationEventCallback.
 
-	@see PxSimulationEventCallback getSimulationEventCallback
+	\see PxSimulationEventCallback getSimulationEventCallback
 	*/
 	virtual void				setSimulationEventCallback(PxSimulationEventCallback* callback) = 0;
 
@@ -666,7 +824,7 @@ class PxScene
 
 	\return The current user notify pointer. See #PxSimulationEventCallback.
 
-	@see PxSimulationEventCallback setSimulationEventCallback()
+	\see PxSimulationEventCallback setSimulationEventCallback()
 	*/
 	virtual PxSimulationEventCallback*	getSimulationEventCallback() const = 0;
 
@@ -693,7 +851,7 @@ class PxScene
 
 	\return The current user contact modify callback pointer. See #PxContactModifyCallback.
 
-	@see PxContactModifyCallback setContactModifyCallback()
+	\see PxContactModifyCallback setContactModifyCallback()
 	*/
 	virtual PxContactModifyCallback*	getContactModifyCallback() const = 0;
 
@@ -702,7 +860,7 @@ class PxScene
 
 	\return The current user contact modify callback pointer. See #PxContactModifyCallback.
 
-	@see PxContactModifyCallback setContactModifyCallback()
+	\see PxContactModifyCallback setContactModifyCallback()
 	*/
 	virtual PxCCDContactModifyCallback*	getCCDContactModifyCallback() const = 0;
 
@@ -720,16 +878,16 @@ class PxScene
 
 	\return The current broad-phase callback pointer. See #PxBroadPhaseCallback.
 
-	@see PxBroadPhaseCallback setBroadPhaseCallback()
+	\see PxBroadPhaseCallback setBroadPhaseCallback()
 	*/
 	virtual PxBroadPhaseCallback* getBroadPhaseCallback()	const = 0;
 
-	//@}
+	//\}
 	/************************************************************************************************/
 
-	/** @name Collision Filtering
+	/** \name Collision Filtering
 	*/
-	//@{
+	//\{
 
 	/**
 	\brief Sets the shared global filter data which will get passed into the filter shader.
@@ -745,7 +903,7 @@ class PxScene
 	\param[in] data The shared global filter shader data.
 	\param[in] dataSize Size of the shared global filter shader data (in bytes).
 
-	@see getFilterShaderData() PxSceneDesc.filterShaderData PxSimulationFilterShader
+	\see getFilterShaderData() PxSceneDesc.filterShaderData PxSimulationFilterShader
 	*/
 	virtual void				setFilterShaderData(const void* data, PxU32 dataSize) = 0;
 
@@ -756,7 +914,7 @@ class PxScene
 
 	\return Shared filter data for filter shader.
 
-	@see getFilterShaderDataSize() setFilterShaderData() PxSceneDesc.filterShaderData PxSimulationFilterShader
+	\see getFilterShaderDataSize() setFilterShaderData() PxSceneDesc.filterShaderData PxSimulationFilterShader
 	*/
 	virtual	const void*			getFilterShaderData() const = 0;
 
@@ -765,7 +923,7 @@ class PxScene
 
 	\return Size of shared filter data [bytes].
 
-	@see getFilterShaderData() PxSceneDesc.filterShaderDataSize PxSimulationFilterShader
+	\see getFilterShaderData() PxSceneDesc.filterShaderDataSize PxSimulationFilterShader
 	*/
 	virtual	PxU32				getFilterShaderDataSize() const = 0;
 
@@ -774,7 +932,7 @@ class PxScene
 
 	\return Filter shader class that defines the collision pair filtering.
 
-	@see PxSceneDesc.filterShader PxSimulationFilterShader
+	\see PxSceneDesc.filterShader PxSimulationFilterShader
 	*/
 	virtual	PxSimulationFilterShader	getFilterShader() const = 0;
 
@@ -783,7 +941,7 @@ class PxScene
 
 	\return Filter callback class that defines the collision pair filtering.
 
-	@see PxSceneDesc.filterCallback PxSimulationFilterCallback
+	\see PxSceneDesc.filterCallback PxSimulationFilterCallback
 	*/
 	virtual	PxSimulationFilterCallback*	getFilterCallback() const = 0;
 
@@ -810,13 +968,16 @@ class PxScene
 
 	\note It is invalid to use this method if PxActorFlag::eDISABLE_SIMULATION is set.
 
+	\note Do not use this method while the simulation is running.
+
 	<b>Sleeping:</b> Does wake up the actor.
 
 	\param[in] actor The actor for which to re-evaluate interactions.
+	\return True if success
 
-	@see PxSimulationFilterShader PxSimulationFilterCallback
+	\see PxSimulationFilterShader PxSimulationFilterCallback
 	*/
-	virtual void				resetFiltering(PxActor& actor) = 0;
+	virtual bool				resetFiltering(PxActor& actor) = 0;
 
 	/**
 	\brief Marks the object to reset interactions and re-run collision filters for specified shapes in the next simulation step.
@@ -824,22 +985,24 @@ class PxScene
 	This is a specialization of the resetFiltering(PxActor& actor) method and allows to reset interactions for specific shapes of
 	a PxRigidActor.
 
+	\note Do not use this method while the simulation is running.
+
 	<b>Sleeping:</b> Does wake up the actor.
 
 	\param[in] actor The actor for which to re-evaluate interactions.
 	\param[in] shapes The shapes for which to re-evaluate interactions.
 	\param[in] shapeCount Number of shapes in the list.
 
-	@see PxSimulationFilterShader PxSimulationFilterCallback
+	\see PxSimulationFilterShader PxSimulationFilterCallback
 	*/
-	virtual void				resetFiltering(PxRigidActor& actor, PxShape*const* shapes, PxU32 shapeCount) = 0;
+	virtual bool				resetFiltering(PxRigidActor& actor, PxShape*const* shapes, PxU32 shapeCount) = 0;
 
 	/**
 	\brief Gets the pair filtering mode for kinematic-kinematic pairs.
 
 	\return Filtering mode for kinematic-kinematic pairs.
 
-	@see PxPairFilteringMode PxSceneDesc
+	\see PxPairFilteringMode PxSceneDesc
 	*/
 	virtual	PxPairFilteringMode::Enum	getKinematicKinematicFilteringMode()	const	= 0;
 
@@ -848,16 +1011,16 @@ class PxScene
 
 	\return Filtering mode for static-kinematic pairs.
 
-	@see PxPairFilteringMode PxSceneDesc
+	\see PxPairFilteringMode PxSceneDesc
 	*/
 	virtual	PxPairFilteringMode::Enum	getStaticKinematicFilteringMode()		const	= 0;
 
-	//@}
+	//\}
 	/************************************************************************************************/
 
-	/** @name Simulation
+	/** \name Simulation
 	*/
-	//@{
+	//\{
 	/**
  	\brief Advances the simulation by an elapsedTime time.
 	
@@ -886,12 +1049,12 @@ class PxScene
 	\param[in] scratchMemBlockSize the size of the scratch memory block. Must be a multiple of 16K.
 	\param[in] controlSimulation if true, the scene controls its PxTaskManager simulation state. Leave
     true unless the application is calling the PxTaskManager start/stopSimulation() methods itself.
+	\return True if success
 
-	@see fetchResults() checkResults()
+	\see fetchResults() checkResults()
 	*/
-	virtual	void				simulate(PxReal elapsedTime, physx::PxBaseTask* completionTask = NULL,
+	virtual	bool				simulate(PxReal elapsedTime, physx::PxBaseTask* completionTask = NULL,
 									void* scratchMemBlock = 0, PxU32 scratchMemBlockSize = 0, bool controlSimulation = true) = 0;
-
 
 	/**
  	\brief Performs dynamics phase of the simulation pipeline.
@@ -901,9 +1064,9 @@ class PxScene
 	\param[in] completionTask if non-NULL, this task will have its refcount incremented in advance(), then
 	decremented when the scene is ready to have fetchResults called. So the task will not run until the
 	application also calls removeReference().
-
+	\return True if success
 	*/
-	virtual	void				advance(physx::PxBaseTask* completionTask = 0) = 0;
+	virtual	bool				advance(physx::PxBaseTask* completionTask = 0) = 0;
 
 	/**
 	\brief Performs collision detection for the scene over elapsedTime
@@ -920,9 +1083,9 @@ class PxScene
 	\param[in] scratchMemBlockSize the size of the scratch memory block. Must be a multiple of 16K.
 	\param[in] controlSimulation if true, the scene controls its PxTaskManager simulation state. Leave
     true unless the application is calling the PxTaskManager start/stopSimulation() methods itself.
-
+	\return True if success
 	*/
-	virtual	void				collide(PxReal elapsedTime, physx::PxBaseTask* completionTask = 0, void* scratchMemBlock = 0,
+	virtual	bool				collide(PxReal elapsedTime, physx::PxBaseTask* completionTask = 0, void* scratchMemBlock = 0,
 									PxU32 scratchMemBlockSize = 0, bool controlSimulation = true) = 0;  
 	
 	/**
@@ -934,7 +1097,7 @@ class PxScene
 	\param[in] block When set to true will block until the condition is met.
 	\return True if the results are available.
 
-	@see simulate() fetchResults()
+	\see simulate() fetchResults()
 	*/
 	virtual	bool				checkResults(bool block = false) = 0;
 
@@ -944,7 +1107,6 @@ class PxScene
 
 	\param[in] block When set to true will block until the condition is met, which is collision must finish running.
 	*/
-
 	virtual	bool				fetchCollision(bool block = false)	= 0;			
 
 	/**
@@ -966,14 +1128,12 @@ class PxScene
 	\param[out] errorState Used to retrieve hardware error codes. A non zero value indicates an error.
 	\return True if the results have been fetched.
 
-	@see simulate() checkResults()
+	\see simulate() checkResults()
 	*/
 	virtual	bool				fetchResults(bool block = false, PxU32* errorState = 0)	= 0;
 
-
 	/**
-	This call performs the first section of fetchResults (callbacks fired before swapBuffers), and returns a pointer to a 
-	to the contact streams output by the simulation. It can be used to process contact pairs in parallel, which is often a limiting factor
+	This call performs the first section of fetchResults, and returns a pointer to the contact streams output by the simulation. It can be used to process contact pairs in parallel, which is often a limiting factor
 	for fetchResults() performance. 
 
 	After calling this function and processing the contact streams, call fetchResultsFinish(). Note that writes to the simulation are not
@@ -984,10 +1144,9 @@ class PxScene
 	\param[out] nbContactPairs the number of contact pairs
 	\return True if the results have been fetched.
 
-	@see simulate() checkResults() fetchResults() fetchResultsFinish()
+	\see simulate() checkResults() fetchResults() fetchResultsFinish()
 	*/
 	virtual	bool				fetchResultsStart(const PxContactPairHeader*& contactPairs, PxU32& nbContactPairs, bool block = false) = 0;
-
 
 	/**
 	This call processes all event callbacks in parallel. It takes a continuation task, which will be executed once all callbacks have been processed.
@@ -999,9 +1158,8 @@ class PxScene
 	*/
 	virtual void				processCallbacks(physx::PxBaseTask* continuation) = 0;
 
-
 	/**
-	This call performs the second section of fetchResults: the buffer swap and subsequent callbacks.
+	This call performs the second section of fetchResults.
 
 	It must be called after fetchResultsStart() returns and contact reports have been processed.
 
@@ -1009,10 +1167,14 @@ class PxScene
 
 	\param[out] errorState Used to retrieve hardware error codes. A non zero value indicates an error.
 
-	@see simulate() checkResults() fetchResults() fetchResultsStart()
+	\see simulate() checkResults() fetchResults() fetchResultsStart()
 	*/
 	virtual	void				fetchResultsFinish(PxU32* errorState = 0) = 0;
 
+	/**
+	This call performs the synchronization of particle system data copies.
+	 */
+	virtual void				fetchResultsParticleSystem() = 0;
 
 	/**
 	\brief Clear internal buffers and free memory.
@@ -1029,11 +1191,13 @@ class PxScene
 	/**
 	\brief Sets a constant gravity for the entire scene.
 
+	\note Do not use this method while the simulation is running.
+
 	<b>Sleeping:</b> Does <b>NOT</b> wake the actor up automatically.
 
 	\param[in] vec A new gravity vector(e.g. PxVec3(0.0f,-9.8f,0.0f) ) <b>Range:</b> force vector
 
-	@see PxSceneDesc.gravity getGravity()
+	\see PxSceneDesc.gravity getGravity()
 	*/
 	virtual void				setGravity(const PxVec3& vec) = 0;
 
@@ -1042,32 +1206,34 @@ class PxScene
 
 	\return The current gravity for the scene.
 
-	@see setGravity() PxSceneDesc.gravity
+	\see setGravity() PxSceneDesc.gravity
 	*/
 	virtual PxVec3				getGravity() const = 0;
 
 	/**
 	\brief Set the bounce threshold velocity.  Collision speeds below this threshold will not cause a bounce.
 
-	@see PxSceneDesc::bounceThresholdVelocity, getBounceThresholdVelocity
+	\note Do not use this method while the simulation is running.
+
+	\see PxSceneDesc::bounceThresholdVelocity, getBounceThresholdVelocity
 	*/
 	virtual void				setBounceThresholdVelocity(const PxReal t) = 0;
 
 	/**
 	\brief Return the bounce threshold velocity.
 
-	@see PxSceneDesc.bounceThresholdVelocity, setBounceThresholdVelocity
+	\see PxSceneDesc.bounceThresholdVelocity, setBounceThresholdVelocity
 	*/
 	virtual PxReal				getBounceThresholdVelocity() const = 0;
-
 
 	/**
 	\brief Sets the maximum number of CCD passes
 
+	\note Do not use this method while the simulation is running.
+
 	\param[in] ccdMaxPasses Maximum number of CCD passes
 
-	@see PxSceneDesc.ccdMaxPasses getCCDMaxPasses()
-
+	\see PxSceneDesc.ccdMaxPasses getCCDMaxPasses()
 	*/
 	virtual void				setCCDMaxPasses(PxU32 ccdMaxPasses) = 0;
 
@@ -1076,49 +1242,129 @@ class PxScene
 
 	\return The maximum number of CCD passes.
 
-	@see PxSceneDesc::ccdMaxPasses setCCDMaxPasses()
-
+	\see PxSceneDesc::ccdMaxPasses setCCDMaxPasses()
 	*/
 	virtual PxU32				getCCDMaxPasses() const = 0;	
 
 	/**
-	\brief Return the value of frictionOffsetThreshold that was set in PxSceneDesc when creating the scene with PxPhysics::createScene
+	\brief Set the maximum CCD separation.
 
-	@see PxSceneDesc::frictionOffsetThreshold,  PxPhysics::createScene
+	\note Do not use this method while the simulation is running.
+
+	\see PxSceneDesc::ccdMaxSeparation, getCCDMaxSeparation
+	*/
+	virtual void				setCCDMaxSeparation(const PxReal t) = 0;
+
+	/**
+	\brief Gets the maximum CCD separation.
+
+	\return The maximum CCD separation.
+
+	\see PxSceneDesc::ccdMaxSeparation setCCDMaxSeparation()
+	*/
+	virtual PxReal				getCCDMaxSeparation() const = 0;
+
+	/**
+	\brief Set the CCD threshold.
+
+	\note Do not use this method while the simulation is running.
+
+	\see PxSceneDesc::ccdThreshold, getCCDThreshold
+	*/
+	virtual void				setCCDThreshold(const PxReal t) = 0;
+
+	/**
+	\brief Gets the CCD threshold.
+
+	\return The CCD threshold.
+
+	\see PxSceneDesc::ccdThreshold setCCDThreshold()
+	*/
+	virtual PxReal				getCCDThreshold() const = 0;
+
+	/**
+	\brief Set the max bias coefficient.
+
+	\note Do not use this method while the simulation is running.
+
+	\see PxSceneDesc::maxBiasCoefficient, getMaxBiasCoefficient
+	*/
+	virtual void				setMaxBiasCoefficient(const PxReal t) = 0;
+
+	/**
+	\brief Gets the max bias coefficient.
+
+	\return The max bias coefficient.
+
+	\see PxSceneDesc::maxBiasCoefficient setMaxBiasCoefficient()
+	*/
+	virtual PxReal				getMaxBiasCoefficient() const = 0;
+
+	/**
+	\brief Set the friction offset threshold.
+
+	\note Do not use this method while the simulation is running.
+
+	\see PxSceneDesc::frictionOffsetThreshold, getFrictionOffsetThreshold
+	*/
+	virtual void				setFrictionOffsetThreshold(const PxReal t) = 0;
+
+	/**
+	\brief Gets the friction offset threshold.
+
+	\see PxSceneDesc::frictionOffsetThreshold, setFrictionOffsetThreshold
 	*/
 	virtual PxReal				getFrictionOffsetThreshold() const = 0;
 
 	/**
-	\brief Set the friction model.
+	\brief Set the friction correlation distance.
 
-	\deprecated The friction type cannot be changed after the first simulate call so this function is deprecated. Set the friction type at scene creation time in PxSceneDesc.
+	\note Do not use this method while the simulation is running.
 
-	@see PxFrictionType, PxSceneDesc::frictionType
+	\see PxSceneDesc::frictionCorrelationDistance, getFrictionCorrelationDistance
 	*/
-	PX_DEPRECATED	virtual void setFrictionType(PxFrictionType::Enum frictionType) = 0;
+	virtual void				setFrictionCorrelationDistance(const PxReal t) = 0;
+
+	/**
+	\brief Gets the friction correlation distance.
+
+	\see PxSceneDesc::frictionCorrelationDistance, setFrictionCorrelationDistance
+	*/
+	virtual PxReal				getFrictionCorrelationDistance() const = 0;
 
 	/**
 	\brief Return the friction model.
-	@see PxFrictionType, PxSceneDesc::frictionType
-	*/
-	virtual PxFrictionType::Enum getFrictionType() const = 0;
 
-	//@}
+	\deprecated Since only the patch friction model is supported now, the friction type option is obsolete.
+
+	\see PxFrictionType, PxSceneDesc::frictionType
+	*/
+	PX_DEPRECATED virtual PxFrictionType::Enum	getFrictionType() const = 0;
+
+	/**
+	\brief Return the solver model.
+	\see PxSolverType, PxSceneDesc::solverType
+	*/
+	virtual PxSolverType::Enum	getSolverType()	const = 0;
+
+	//\}
 	/************************************************************************************************/
 
-	/** @name Visualization and Statistics
+	/** \name Visualization and Statistics
 	*/
-	//@{
+	//\{
 	/**
 	\brief Function that lets you set debug visualization parameters.
 
 	Returns false if the value passed is out of range for usage specified by the enum.
 
+	\note Do not use this method while the simulation is running.
+
 	\param[in] param	Parameter to set. See #PxVisualizationParameter
 	\param[in] value	The value to set, see #PxVisualizationParameter for allowable values. Setting to zero disables visualization for the specified property, setting to a positive value usually enables visualization and defines the scale factor.
 	\return False if the parameter is out of range.
 
-	@see getVisualizationParameter PxVisualizationParameter getRenderBuffer()
+	\see getVisualizationParameter PxVisualizationParameter getRenderBuffer()
 	*/
 	virtual bool				setVisualizationParameter(PxVisualizationParameter::Enum param, PxReal value) = 0;
 
@@ -1128,16 +1374,17 @@ class PxScene
 	\param[in] paramEnum The Parameter to retrieve.
 	\return The value of the parameter.
 
-	@see setVisualizationParameter PxVisualizationParameter
+	\see setVisualizationParameter PxVisualizationParameter
 	*/
 	virtual PxReal				getVisualizationParameter(PxVisualizationParameter::Enum paramEnum) const = 0;
 
-
 	/**
 	\brief Defines a box in world space to which visualization geometry will be (conservatively) culled. Use a non-empty culling box to enable the feature, and an empty culling box to disable it.
+
+	\note Do not use this method while the simulation is running.
 	
 	\param[in] box the box to which the geometry will be culled. Empty box to disable the feature.
-	@see setVisualizationParameter getVisualizationCullingBox getRenderBuffer()
+	\see setVisualizationParameter getVisualizationCullingBox getRenderBuffer()
 	*/
 	virtual void				setVisualizationCullingBox(const PxBounds3& box) = 0;
 
@@ -1145,7 +1392,7 @@ class PxScene
 	\brief Retrieves the visualization culling box.
 
 	\return the box to which the geometry will be culled.
-	@see setVisualizationParameter setVisualizationCullingBox 
+	\see setVisualizationParameter setVisualizationCullingBox 
 	*/
 	virtual PxBounds3			getVisualizationCullingBox() const = 0;
 	
@@ -1154,11 +1401,11 @@ class PxScene
 	
 	This will contain the results of any active visualization for this scene.
 
-	\note Do not use this method while the simulation is running. Calls to this method while result in undefined behaviour.
+	\note Do not use this method while the simulation is running. Calls to this method while the simulation is running will result in undefined behaviour.
 
 	\return The render buffer.
 
-	@see PxRenderBuffer
+	\see PxRenderBuffer
 	*/
 	virtual const PxRenderBuffer& getRenderBuffer() = 0;
 	
@@ -1169,248 +1416,16 @@ class PxScene
 
 	\param[out] stats Used to retrieve statistics for the current simulation step.
 
-	@see PxSimulationStatistics
+	\see PxSimulationStatistics
 	*/
 	virtual	void				getSimulationStatistics(PxSimulationStatistics& stats) const = 0;
 	
-	
-	//@}
-	/************************************************************************************************/
-
-	/** @name Scene Query
-	*/
-	//@{
-
-	/**
-	\brief Return the value of PxSceneDesc::staticStructure that was set when creating the scene with PxPhysics::createScene
-
-	@see PxSceneDesc::staticStructure, PxPhysics::createScene
-	*/
-	virtual	PxPruningStructureType::Enum getStaticStructure() const = 0;
-
-	/**
-	\brief Return the value of PxSceneDesc::dynamicStructure that was set when creating the scene with PxPhysics::createScene
-
-	@see PxSceneDesc::dynamicStructure, PxPhysics::createScene
-	*/
-	virtual PxPruningStructureType::Enum getDynamicStructure() const = 0;
-
-	/**
-	\brief Flushes any changes to the scene query representation.
-
-	This method updates the state of the scene query representation to match changes in the scene state.
-
-	By default, these changes are buffered until the next query is submitted. Calling this function will not change
-	the results from scene queries, but can be used to ensure that a query will not perform update work in the course of 
-	its execution.
-	
-	A thread performing updates will hold a write lock on the query structure, and thus stall other querying threads. In multithread
-	scenarios it can be useful to explicitly schedule the period where this lock may be held for a significant period, so that
-	subsequent queries issued from multiple threads will not block.
-	
-	*/
-	virtual	void				flushQueryUpdates() = 0;
-
-	/**
-	\brief Creates a BatchQuery object. 
-
-	Scene queries like raycasts, overlap tests and sweeps are batched in this object and are then executed at once. See #PxBatchQuery.
-
-	\deprecated The batched query feature has been deprecated in PhysX version 3.4
-
-	\param[in] desc The descriptor of scene query. Scene Queries need to register a callback. See #PxBatchQueryDesc.
-
-	@see PxBatchQuery PxBatchQueryDesc
-	*/
-	PX_DEPRECATED virtual	PxBatchQuery*		createBatchQuery(const PxBatchQueryDesc& desc) = 0;
-
-	/**
-	\brief Sets the rebuild rate of the dynamic tree pruning structures.
-
-	\param[in] dynamicTreeRebuildRateHint Rebuild rate of the dynamic tree pruning structures.
-
-	@see PxSceneDesc.dynamicTreeRebuildRateHint getDynamicTreeRebuildRateHint() forceDynamicTreeRebuild()
-	*/
-	virtual	void				setDynamicTreeRebuildRateHint(PxU32 dynamicTreeRebuildRateHint) = 0;
-
-	/**
-	\brief Retrieves the rebuild rate of the dynamic tree pruning structures.
-
-	\return The rebuild rate of the dynamic tree pruning structures.
-
-	@see PxSceneDesc.dynamicTreeRebuildRateHint setDynamicTreeRebuildRateHint() forceDynamicTreeRebuild()
-	*/
-	virtual PxU32				getDynamicTreeRebuildRateHint() const = 0;
-
-	/**
-	\brief Forces dynamic trees to be immediately rebuilt.
-
-	\param[in] rebuildStaticStructure	True to rebuild the dynamic tree containing static objects
-	\param[in] rebuildDynamicStructure	True to rebuild the dynamic tree containing dynamic objects
-
-	@see PxSceneDesc.dynamicTreeRebuildRateHint setDynamicTreeRebuildRateHint() getDynamicTreeRebuildRateHint()
-	*/
-	virtual void				forceDynamicTreeRebuild(bool rebuildStaticStructure, bool rebuildDynamicStructure)	= 0;
-
-	/**
-	\brief Sets scene query update mode	
-
-	\param[in] updateMode	Scene query update mode.
-
-	@see PxSceneQueryUpdateMode::Enum
-	*/
-	virtual void				setSceneQueryUpdateMode(PxSceneQueryUpdateMode::Enum updateMode) = 0;
-
-	/**
-	\brief Gets scene query update mode	
-
-	\return Current scene query update mode.
-
-	@see PxSceneQueryUpdateMode::Enum
-	*/
-	virtual PxSceneQueryUpdateMode::Enum getSceneQueryUpdateMode() const = 0;
-
-	/**
-	\brief Executes scene queries update tasks.
-	This function will refit dirty shapes within the pruner and will execute a task to build a new AABB tree, which is
-	build on a different thread. The new AABB tree is built based on the dynamic tree rebuild hint rate. Once
-	the new tree is ready it will be commited in next fetchQueries call, which must be called after.
-
-	\note If PxSceneQueryUpdateMode::eBUILD_DISABLED_COMMIT_DISABLED is used, it is required to update the scene queries
-	using this function.
-
-	\param[in] completionTask if non-NULL, this task will have its refcount incremented in sceneQueryUpdate(), then
-	decremented when the scene is ready to have fetchQueries called. So the task will not run until the
-	application also calls removeReference().
-	\param[in] controlSimulation if true, the scene controls its PxTaskManager simulation state. Leave
-    true unless the application is calling the PxTaskManager start/stopSimulation() methods itself.
-
-	@see PxSceneQueryUpdateMode::eBUILD_DISABLED_COMMIT_DISABLED
-	*/
-	virtual void				sceneQueriesUpdate(physx::PxBaseTask* completionTask = NULL, bool controlSimulation = true)	= 0;
-
-	/**
-	\brief This checks to see if the scene queries update has completed.
-
-	This does not cause the data available for reading to be updated with the results of the scene queries update, it is simply a status check.
-	The bool will allow it to either return immediately or block waiting for the condition to be met so that it can return true
-	
-	\param[in] block When set to true will block until the condition is met.
-	\return True if the results are available.
-
-	@see sceneQueriesUpdate() fetchResults()
-	*/
-	virtual	bool				checkQueries(bool block = false) = 0;
-
-	/**
-	This method must be called after sceneQueriesUpdate. It will wait for the scene queries update to finish. If the user makes an illegal scene queries update call, 
-	the SDK will issue an error	message.
-
-	If a new AABB tree build finished, then during fetchQueries the current tree within the pruning structure is swapped with the new tree. 
-
-	\param[in] block When set to true will block until the condition is met, which is tree built task must finish running.
-	*/
-
-	virtual	bool				fetchQueries(bool block = false)	= 0;	
-
-	/**
-	\brief Performs a raycast against objects in the scene, returns results in a PxRaycastBuffer object
-	or via a custom user callback implementation inheriting from PxRaycastCallback.
-
-	\note	Touching hits are not ordered.
-	\note	Shooting a ray from within an object leads to different results depending on the shape type. Please check the details in user guide article SceneQuery. User can ignore such objects by employing one of the provided filter mechanisms.
-
-	\param[in] origin		Origin of the ray.
-	\param[in] unitDir		Normalized direction of the ray.
-	\param[in] distance		Length of the ray. Has to be in the [0, inf) range.
-	\param[out] hitCall		Raycast hit buffer or callback object used to report raycast hits.
-	\param[in] hitFlags		Specifies which properties per hit should be computed and returned via the hit callback.
-	\param[in] filterData	Filtering data passed to the filter shader. See #PxQueryFilterData #PxBatchQueryPreFilterShader, #PxBatchQueryPostFilterShader
-	\param[in] filterCall	Custom filtering logic (optional). Only used if the corresponding #PxQueryFlag flags are set. If NULL, all hits are assumed to be blocking.
-	\param[in] cache		Cached hit shape (optional). Ray is tested against cached shape first. If no hit is found the ray gets queried against the scene.
-							Note: Filtering is not executed for a cached shape if supplied; instead, if a hit is found, it is assumed to be a blocking hit.
-							Note: Using past touching hits as cache will produce incorrect behavior since the cached hit will always be treated as blocking.
-
-	\return True if any touching or blocking hits were found or any hit was found in case PxQueryFlag::eANY_HIT was specified.
-
-	@see PxRaycastCallback PxRaycastBuffer PxQueryFilterData PxQueryFilterCallback PxQueryCache PxRaycastHit PxQueryFlag PxQueryFlag::eANY_HIT
-	*/
-	virtual bool				raycast(
-									const PxVec3& origin, const PxVec3& unitDir, const PxReal distance,
-									PxRaycastCallback& hitCall, PxHitFlags hitFlags = PxHitFlags(PxHitFlag::eDEFAULT),
-									const PxQueryFilterData& filterData = PxQueryFilterData(), PxQueryFilterCallback* filterCall = NULL,
-									const PxQueryCache* cache = NULL) const = 0;
-
-	/**
-	\brief Performs a sweep test against objects in the scene, returns results in a PxSweepBuffer object
-	or via a custom user callback implementation inheriting from PxSweepCallback.
-	
-	\note	Touching hits are not ordered.
-	\note	If a shape from the scene is already overlapping with the query shape in its starting position,
-			the hit is returned unless eASSUME_NO_INITIAL_OVERLAP was specified.
-
-	\param[in] geometry		Geometry of object to sweep (supported types are: box, sphere, capsule, convex).
-	\param[in] pose			Pose of the sweep object.
-	\param[in] unitDir		Normalized direction of the sweep.
-	\param[in] distance		Sweep distance. Needs to be in [0, inf) range and >0 if eASSUME_NO_INITIAL_OVERLAP was specified. Will be clamped to PX_MAX_SWEEP_DISTANCE.
-	\param[out] hitCall		Sweep hit buffer or callback object used to report sweep hits.
-	\param[in] hitFlags		Specifies which properties per hit should be computed and returned via the hit callback.
-	\param[in] filterData	Filtering data and simple logic.
-	\param[in] filterCall	Custom filtering logic (optional). Only used if the corresponding #PxQueryFlag flags are set. If NULL, all hits are assumed to be blocking.
-	\param[in] cache		Cached hit shape (optional). Sweep is performed against cached shape first. If no hit is found the sweep gets queried against the scene.
-							Note: Filtering is not executed for a cached shape if supplied; instead, if a hit is found, it is assumed to be a blocking hit.
-							Note: Using past touching hits as cache will produce incorrect behavior since the cached hit will always be treated as blocking.
-	\param[in] inflation	This parameter creates a skin around the swept geometry which increases its extents for sweeping. The sweep will register a hit as soon as the skin touches a shape, and will return the corresponding distance and normal.
-							Note: ePRECISE_SWEEP doesn't support inflation. Therefore the sweep will be performed with zero inflation.	
-	
-	\return True if any touching or blocking hits were found or any hit was found in case PxQueryFlag::eANY_HIT was specified.
-							
-
-	@see PxSweepCallback PxSweepBuffer PxQueryFilterData PxQueryFilterCallback PxSweepHit PxQueryCache
-	*/
-	virtual bool				sweep(const PxGeometry& geometry, const PxTransform& pose, const PxVec3& unitDir, const PxReal distance,
-									PxSweepCallback& hitCall, PxHitFlags hitFlags = PxHitFlags(PxHitFlag::eDEFAULT),
-									const PxQueryFilterData& filterData = PxQueryFilterData(), PxQueryFilterCallback* filterCall = NULL,
-									const PxQueryCache* cache = NULL, const PxReal inflation = 0.f) const = 0;
-
-
-	/**
-	\brief Performs an overlap test of a given geometry against objects in the scene, returns results in a PxOverlapBuffer object
-	or via a custom user callback implementation inheriting from PxOverlapCallback.
-	
-	\note Filtering: returning eBLOCK from user filter for overlap queries will cause a warning (see #PxQueryHitType).
-
-	\param[in] geometry		Geometry of object to check for overlap (supported types are: box, sphere, capsule, convex).
-	\param[in] pose			Pose of the object.
-	\param[out] hitCall		Overlap hit buffer or callback object used to report overlap hits.
-	\param[in] filterData	Filtering data and simple logic. See #PxQueryFilterData #PxQueryFilterCallback
-	\param[in] filterCall	Custom filtering logic (optional). Only used if the corresponding #PxQueryFlag flags are set. If NULL, all hits are assumed to overlap.
-
-	\return True if any touching or blocking hits were found or any hit was found in case PxQueryFlag::eANY_HIT was specified.
-
-	\note eBLOCK should not be returned from user filters for overlap(). Doing so will result in undefined behavior, and a warning will be issued.
-	\note If the PxQueryFlag::eNO_BLOCK flag is set, the eBLOCK will instead be automatically converted to an eTOUCH and the warning suppressed.
-
-	@see PxOverlapCallback PxOverlapBuffer PxHitFlags PxQueryFilterData PxQueryFilterCallback
-	*/
-	virtual bool				overlap(const PxGeometry& geometry, const PxTransform& pose, PxOverlapCallback& hitCall,
-									const PxQueryFilterData& filterData = PxQueryFilterData(), PxQueryFilterCallback* filterCall = NULL
-									) const = 0;
-
-
-	/**
-	\brief Retrieves the scene's internal scene query timestamp, increased each time a change to the
-	static scene query structure is performed.
-
-	\return scene query static timestamp
-	*/
-	virtual	PxU32	getSceneQueryStaticTimestamp()	const	= 0;
-	//@}
+	//\}
 	
 	/************************************************************************************************/
-	/** @name Broad-phase
+	/** \name Broad-phase
 	*/
-	//@{
+	//\{
 
 	/**
 	\brief Returns broad-phase type.
@@ -1447,6 +1462,8 @@ class PxScene
 	/**
 	\brief Adds a new broad-phase region.
 
+	The bounds for the new region must be non-empty, otherwise an error occurs and the call is ignored.
+
 	Note that by default, objects already existing in the SDK that might touch this region will not be automatically
 	added to the region. In other words the newly created region will be empty, and will only be populated with new
 	objects when they are added to the simulation, or with already existing objects when they are updated.
@@ -1456,9 +1473,20 @@ class PxScene
 	when the game can not guarantee that all objects within the new region will be added to the simulation after the
 	region itself.
 
+	Objects automatically move from one region to another during their lifetime. The system keeps tracks of what
+	regions a given object is in. It is legal for an object to be in an arbitrary number of regions. However if an
+	object leaves all regions, or is created outside of all regions, several things happen:
+		- collisions get disabled for this object
+		- if a PxBroadPhaseCallback object is provided, an "out-of-bounds" event is generated via that callback
+		- if a PxBroadPhaseCallback object is not provided, a warning/error message is sent to the error stream
+
+	If an object goes out-of-bounds and user deletes it during the same frame, neither the out-of-bounds event nor the
+	error message is generated.
+
 	\param[in]	region			User-provided region data
 	\param[in]	populateRegion	Automatically populate new region with already existing objects overlapping it
 	\return Handle for newly created region, or 0xffffffff in case of failure.
+	\see	PxBroadPhaseRegion PxBroadPhaseCallback
 	*/
 	virtual	PxU32					addBroadPhaseRegion(const PxBroadPhaseRegion& region, bool populateRegion=false)		= 0;
 
@@ -1477,13 +1505,13 @@ class PxScene
 	*/
 	virtual	bool					removeBroadPhaseRegion(PxU32 handle)				= 0;
 
-	//@}
+	//\}
 
 	/************************************************************************************************/
 
-	/** @name Threads and Memory
+	/** \name Threads and Memory
 	*/
-	//@{
+	//\{
 
 	/**
 	\brief Get the task manager associated with this scene
@@ -1491,7 +1519,6 @@ class PxScene
 	\return the task manager associated with the scene
 	*/
 	virtual PxTaskManager*			getTaskManager() const = 0;
-
 
 	/**
 	\brief Lock the scene for reading from the calling thread.
@@ -1554,7 +1581,6 @@ class PxScene
 	*/
 	virtual void unlockWrite() = 0;
 	
-
 	/**
 	\brief set the cache blocks that can be used during simulate(). 
 	
@@ -1564,12 +1590,13 @@ class PxScene
 	This call will force allocation of cache blocks if the numBlocks parameter is greater than the currently allocated number
 	of blocks, and less than the max16KContactDataBlocks parameter specified at scene creation time.
 
+	\note Do not use this method while the simulation is running.
+
 	\param[in] numBlocks The number of blocks to allocate.	
 
-	@see PxSceneDesc.nbContactDataBlocks PxSceneDesc.maxNbContactDataBlocks flushSimulation() getNbContactDataBlocksUsed getMaxNbContactDataBlocksUsed
+	\see PxSceneDesc.nbContactDataBlocks PxSceneDesc.maxNbContactDataBlocks flushSimulation() getNbContactDataBlocksUsed getMaxNbContactDataBlocksUsed
 	*/
 	virtual         void				setNbContactDataBlocks(PxU32 numBlocks) = 0;
-	
 
 	/**
 	\brief get the number of cache blocks currently used by the scene 
@@ -1578,7 +1605,7 @@ class PxScene
 
 	\return the number of cache blocks currently used by the scene
 
-	@see PxSceneDesc.nbContactDataBlocks PxSceneDesc.maxNbContactDataBlocks flushSimulation() setNbContactDataBlocks() getMaxNbContactDataBlocksUsed()
+	\see PxSceneDesc.nbContactDataBlocks PxSceneDesc.maxNbContactDataBlocks flushSimulation() setNbContactDataBlocks() getMaxNbContactDataBlocksUsed()
 	*/
 	virtual         PxU32				getNbContactDataBlocksUsed() const = 0;
 
@@ -1589,25 +1616,25 @@ class PxScene
 
 	\return the maximum number of cache blocks everused by the scene
 
-	@see PxSceneDesc.nbContactDataBlocks PxSceneDesc.maxNbContactDataBlocks flushSimulation() setNbContactDataBlocks() getNbContactDataBlocksUsed()
+	\see PxSceneDesc.nbContactDataBlocks PxSceneDesc.maxNbContactDataBlocks flushSimulation() setNbContactDataBlocks() getNbContactDataBlocksUsed()
 	*/
 	virtual         PxU32				getMaxNbContactDataBlocksUsed() const = 0;
-
 
 	/**
 	\brief Return the value of PxSceneDesc::contactReportStreamBufferSize that was set when creating the scene with PxPhysics::createScene
 
-	@see PxSceneDesc::contactReportStreamBufferSize, PxPhysics::createScene
+	\see PxSceneDesc::contactReportStreamBufferSize, PxPhysics::createScene
 	*/
-	virtual PxU32 getContactReportStreamBufferSize() const = 0;
+	virtual			PxU32				getContactReportStreamBufferSize() const = 0;
 
-	
 	/**
 	\brief Sets the number of actors required to spawn a separate rigid body solver thread.
 
+	\note Do not use this method while the simulation is running.
+
 	\param[in] solverBatchSize Number of actors required to spawn a separate rigid body solver thread.
 
-	@see PxSceneDesc.solverBatchSize getSolverBatchSize()
+	\see PxSceneDesc.solverBatchSize getSolverBatchSize()
 	*/
 	virtual	void						setSolverBatchSize(PxU32 solverBatchSize) = 0;
 
@@ -1616,16 +1643,18 @@ class PxScene
 
 	\return Current number of actors required to spawn a separate rigid body solver thread.
 
-	@see PxSceneDesc.solverBatchSize setSolverBatchSize()
+	\see PxSceneDesc.solverBatchSize setSolverBatchSize()
 	*/
 	virtual PxU32						getSolverBatchSize() const = 0;
 
 	/**
 	\brief Sets the number of articulations required to spawn a separate rigid body solver thread.
 
+	\note Do not use this method while the simulation is running.
+
 	\param[in] solverBatchSize Number of articulations required to spawn a separate rigid body solver thread.
 
-	@see PxSceneDesc.solverBatchSize getSolverArticulationBatchSize()
+	\see PxSceneDesc.solverBatchSize getSolverArticulationBatchSize()
 	*/
 	virtual	void						setSolverArticulationBatchSize(PxU32 solverBatchSize) = 0;
 
@@ -1634,19 +1663,18 @@ class PxScene
 
 	\return Current number of articulations required to spawn a separate rigid body solver thread.
 
-	@see PxSceneDesc.solverBatchSize setSolverArticulationBatchSize()
+	\see PxSceneDesc.solverBatchSize setSolverArticulationBatchSize()
 	*/
 	virtual PxU32						getSolverArticulationBatchSize() const = 0;
 	
-
-	//@}
+	//\}
 
 	/**
 	\brief Returns the wake counter reset value.
 
 	\return Wake counter reset value
 
-	@see PxSceneDesc.wakeCounterResetValue
+	\see PxSceneDesc.wakeCounterResetValue
 	*/
 	virtual	PxReal						getWakeCounterResetValue() const = 0;
 
@@ -1674,12 +1702,101 @@ class PxScene
 	*/
 	virtual PxPvdSceneClient*		getScenePvdClient() = 0;
 
+	/**
+	\brief Get the PxGpuDynamicsMemoryConfig that was passed into PxPhysics::createScene() as part of PxSceneDesc.
+
+	\note This will return the values passed as initial configuration, for the actual minimal configuration that would be needed
+	for a specific simulation of a scene, see PxSimulationStatistics::gpuDynamicsMemoryConfigStatistics.
+
+	\return The PxGpuDynamicsMemoryConfig used during scene creation.
+
+	\see PxSceneDesc::gpuDynamicsConfig, PxSimulationStatistics::gpuDynamicsMemoryConfigStatistics
+	*/
+	virtual		PxGpuDynamicsMemoryConfig getGpuDynamicsConfig() const = 0;
+
+	/**
+	\brief Get the direct-GPU API instance for this scene.
+
+	\see PxDirectGPUAPI for the supported direct-GPU operations.
+
+	Each object of PxDirectGPUAPI is directly associated with a PxScene, and there is only one PxDirectGPUAPI object per scene.
+	*/
+	virtual 	PxDirectGPUAPI&	  getDirectGPUAPI() = 0;
+	
+	/**
+	\brief Provides a metric that describes how well the solver converged. The smaller the returned error, the more accurate the solution.
+
+	\note The scene flag eENABLE_SOLVER_RESIDUAL_REPORTING must be set, otherwise the residual will not be computed and the function will return zero.
+
+	\return The residual as a root mean squared or max value of the all corrections applied by the solver in the last position and in the last velocity iteration.
+	*/
+	virtual		PxSceneResidual		getSolverResidual() const = 0;
+
+	/**
+	\brief Sets the post-solve callback for deformable surface GPU computations. Allows to schedule custom work to be done by the GPU as soon as possible after the deformable surface solver finishes.
+	\param postSolveCallback Pointer to the callback implementation.
+	*/
+	virtual void setDeformableSurfaceGpuPostSolveCallback(PxPostSolveCallback* postSolveCallback) = 0;
+
+	/**
+	\brief Sets the post-solve callback for deformable volume GPU computations. Allows to schedule custom work to be done by the GPU as soon as possible after the deformable volume solver finishes.
+	\param postSolveCallback Pointer to the callback implementation.
+	*/
+	virtual void setDeformableVolumeGpuPostSolveCallback(PxPostSolveCallback* postSolveCallback) = 0;
+
 	void*	userData;	//!< user can assign this to whatever, usually to create a 1:1 relationship with a user object.
+
+	/**
+	\brief Copy GPU deformable volume data from the internal GPU buffer to a user-provided device buffer.
+	\param[in] data User-provided gpu buffer containing a pointer to another gpu buffer for every deformable volume to process
+	\param[in] dataSizes The size of every buffer in bytes
+	\param[in] deformableVolumeIndices User provided gpu index buffer. This buffer stores the deformable volume index which the user want to copy.
+	\param[in] maxSize The largest size stored in dataSizes. Used internally to decide how many threads to launch for the copy process.
+	\param[in] flag Flag defining which data the user wants to read back from the deformable volume system
+	\param[in] nbCopyDeformableVolumes The number of deformable volumes to be copied.
+	\param[in] copyEvent User-provided event for the user to sync data. Defaults to NULL which means the function will wait for the copy to finish before returning.
+	
+	\deprecated There is no direct replacement. Most of the data is exposed in the PxDeformableVolume interface.
+	*/
+	PX_DEPRECATED	virtual	void	copySoftBodyData(void** data, void* dataSizes, void* deformableVolumeIndices, PxSoftBodyGpuDataFlag::Enum flag, const PxU32 nbCopyDeformableVolumes, const PxU32 maxSize, CUevent copyEvent = NULL) = 0;
+
+	/**
+	\brief Apply user-provided data to the internal deformable volume system.
+	\param[in] data User-provided gpu buffer containing a pointer to another gpu buffer for every deformable volume to process
+	\param[in] dataSizes The size of every buffer in bytes	
+	\param[in] deformableVolumeIndices User provided gpu index buffer. This buffer stores the updated deformable volume index.
+	\param[in] flag Flag defining which data the user wants to write to the deformable volume system
+	\param[in] maxSize The largest size stored in dataSizes. Used internally to decide how many threads to launch for the copy process. 
+	\param[in] nbUpdatedDeformableVolumes The number of updated deformable volumes
+	\param[in] applyEvent User-provided event for the deformable volume stream to wait for data.
+	\param[in] signalEvent User-provided event for the deformable volume stream to signal when the read from the user buffer has completed. Defaults to NULL which means the function will wait for the copy to finish before returning.
+	
+	\deprecated There is no direct replacement. Most of the data is exposed in the PxDeformableVolume interface.
+	*/
+	PX_DEPRECATED	virtual	void	applySoftBodyData(void** data, void* dataSizes, void* deformableVolumeIndices, PxSoftBodyGpuDataFlag::Enum flag, const PxU32 nbUpdatedDeformableVolumes, const PxU32 maxSize, CUevent applyEvent = NULL, CUevent signalEvent = NULL) = 0;
+
+    /**
+	\brief Apply user-provided data to particle buffers.
+
+	This function should be used if the particle buffer flags are already on the device. Otherwise, use PxParticleBuffer::raiseFlags()
+	from the CPU.
+
+	This assumes the data has been changed directly in the PxParticleBuffer.
+
+	\param[in] indices User-provided index buffer that indexes into the BufferIndexPair and flags list.
+	\param[in] bufferIndexPair User-provided index pair buffer specifying the unique id and GPU particle system for each PxParticleBuffer. See PxGpuParticleBufferIndexPair.
+	\param[in] flags Flags to mark what data needs to be updated. See PxParticleBufferFlags. 
+	\param[in] nbUpdatedBuffers The number of particle buffers to update.
+	\param[in] waitEvent User-provided event for the particle stream to wait for data. Defaults to NULL which means the operation will start immediately.
+	\param[in] signalEvent User-provided event for the particle stream to signal when the data read from the user buffer has completed. Defaults to NULL which means the function will wait for copy to finish before returning.
+	
+	\deprecated There is no direct replacement. The data is exposed in the PxParticleBuffer/PxParticleSystem interface.
+	*/
+	PX_DEPRECATED	virtual		void				applyParticleBufferData(const PxU32* indices, const PxGpuParticleBufferIndexPair* bufferIndexPair, const PxParticleBufferFlags* flags, PxU32 nbUpdatedBuffers, CUevent waitEvent = NULL, CUevent signalEvent = NULL) = 0;
 };
 
 #if !PX_DOXYGEN
 } // namespace physx
 #endif
 
-/** @} */
 #endif

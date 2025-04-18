@@ -1,4 +1,3 @@
-//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
@@ -23,16 +22,12 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2025 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
-
-#ifndef PX_COLLISION_NXHEIGHTFIELDFLAG
-#define PX_COLLISION_NXHEIGHTFIELDFLAG
-/** \addtogroup geomutils
-@{
-*/
+#ifndef PX_HEIGHT_FIELD_FLAG_H
+#define PX_HEIGHT_FIELD_FLAG_H
 
 #include "foundation/PxFlags.h"
 
@@ -43,7 +38,7 @@ namespace physx
 
 /**
 \brief Describes the format of height field samples.
-@see PxHeightFieldDesc.format PxHeightFieldDesc.samples
+\see PxHeightFieldDesc.format PxHeightFieldDesc.samples
 */
 struct PxHeightFieldFormat
 {
@@ -67,7 +62,7 @@ struct PxHeightFieldFormat
 
 		This is the only format supported at the moment.
 
-		@see PxHeightFieldDesc.format PxHeightFieldDesc.samples
+		\see PxHeightFieldDesc.format PxHeightFieldDesc.samples
 		*/
 		eS16_TM = (1 << 0)
 	};
@@ -75,7 +70,7 @@ struct PxHeightFieldFormat
 
 /** 
 \brief Determines the tessellation of height field cells.
-@see PxHeightFieldDesc.format PxHeightFieldDesc.samples
+\see PxHeightFieldDesc.format PxHeightFieldDesc.samples
 */
 struct PxHeightFieldTessFlag
 {
@@ -118,7 +113,7 @@ struct PxHeightFieldTessFlag
 		V row
 		</pre>
 		
-		@see PxHeightFieldDesc.format PxHeightFieldDesc.samples
+		\see PxHeightFieldDesc.format PxHeightFieldDesc.samples
 		*/
 		e0TH_VERTEX_SHARED = (1 << 0)
 	};
@@ -140,7 +135,7 @@ struct PxHeightFieldFlag
 
 		This flag is ignored in contact generation with sphere and capsule shapes.
 
-		@see PxHeightFieldDesc.flags
+		\see PxHeightFieldDesc.flags
 		*/
 		eNO_BOUNDARY_EDGES = (1 << 0)
 	};
@@ -149,7 +144,7 @@ struct PxHeightFieldFlag
 /**
 \brief collection of set bits defined in PxHeightFieldFlag.
 
-@see PxHeightFieldFlag
+\see PxHeightFieldFlag
 */
 typedef PxFlags<PxHeightFieldFlag::Enum,PxU16> PxHeightFieldFlags;
 PX_FLAGS_OPERATORS(PxHeightFieldFlag::Enum,PxU16)
@@ -158,5 +153,4 @@ PX_FLAGS_OPERATORS(PxHeightFieldFlag::Enum,PxU16)
 } // namespace physx
 #endif
 
-/** @} */
 #endif

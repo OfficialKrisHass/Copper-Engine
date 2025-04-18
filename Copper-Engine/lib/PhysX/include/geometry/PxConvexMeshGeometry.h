@@ -1,4 +1,3 @@
-//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
@@ -23,16 +22,12 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2025 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
-
-#ifndef PX_PHYSICS_NX_CONVEXMESH_GEOMETRY
-#define PX_PHYSICS_NX_CONVEXMESH_GEOMETRY
-/** \addtogroup geomutils
-@{
-*/
+#ifndef PX_CONVEX_MESH_GEOMETRY_H
+#define PX_CONVEX_MESH_GEOMETRY_H
 #include "geometry/PxGeometry.h"
 #include "geometry/PxMeshScale.h"
 #include "common/PxCoreUtilityTypes.h"
@@ -61,7 +56,7 @@ struct PxConvexMeshGeometryFlag
 /**
 \brief collection of set bits defined in PxConvexMeshGeometryFlag.
 
-@see PxConvexMeshGeometryFlag
+\see PxConvexMeshGeometryFlag
 */
 typedef PxFlags<PxConvexMeshGeometryFlag::Enum,PxU8> PxConvexMeshGeometryFlags;
 PX_FLAGS_OPERATORS(PxConvexMeshGeometryFlag::Enum,PxU8)
@@ -81,25 +76,14 @@ class PxConvexMeshGeometry : public PxGeometry
 {
 public:
 	/**
-	\brief Default constructor.
+	\brief Constructor. By default creates an empty object with a NULL mesh and identity scale.
 
-	Creates an empty object with a NULL mesh and identity scale.
-	*/
-	PX_INLINE PxConvexMeshGeometry() :
-		PxGeometry	(PxGeometryType::eCONVEXMESH),
-		scale		(PxMeshScale(1.0f)),
-		convexMesh	(NULL),
-		meshFlags	(PxConvexMeshGeometryFlag::eTIGHT_BOUNDS)
-	{}
-
-	/**
-	\brief Constructor.
 	\param[in] mesh		Mesh pointer. May be NULL, though this will not make the object valid for shape construction.
 	\param[in] scaling	Scale factor.
 	\param[in] flags	Mesh flags.
 	\
 	*/
-	PX_INLINE PxConvexMeshGeometry(	PxConvexMesh* mesh, 
+	PX_INLINE PxConvexMeshGeometry(	PxConvexMesh* mesh = NULL,
 									const PxMeshScale& scaling = PxMeshScale(),
 									PxConvexMeshGeometryFlags flags = PxConvexMeshGeometryFlag::eTIGHT_BOUNDS) :
 		PxGeometry	(PxGeometryType::eCONVEXMESH),
@@ -110,14 +94,38 @@ public:
 	}
 
 	/**
+	\brief Copy constructor.
+
+	\param[in] that		Other object
+	*/
+	PX_INLINE PxConvexMeshGeometry(const PxConvexMeshGeometry& that) :
+		PxGeometry	(that),
+		scale		(that.scale),
+		convexMesh	(that.convexMesh),
+		meshFlags	(that.meshFlags)
+	{
+	}
+
+	/**
+	\brief Assignment operator
+	*/
+	PX_INLINE void operator=(const PxConvexMeshGeometry& that)
+	{
+		mType = that.mType;
+		scale = that.scale;
+		convexMesh = that.convexMesh;
+		meshFlags = that.meshFlags;
+	}
+
+	/**
 	\brief Returns true if the geometry is valid.
 
 	\return True if the current settings are valid for shape creation.
 
 	\note A valid convex mesh has a positive scale value in each direction (scale.x > 0, scale.y > 0, scale.z > 0).
-	It is illegal to call PxRigidActor::createShape and PxPhysics::createShape with a convex that has zero extent in any direction.
+	It is illegal to call PxPhysics::createShape with a convex that has zero extent in any direction.
 
-	@see PxRigidActor::createShape, PxPhysics::createShape
+	\see PxPhysics::createShape
 	*/
 	PX_INLINE bool isValid() const;
 
@@ -147,5 +155,4 @@ PX_INLINE bool PxConvexMeshGeometry::isValid() const
 } // namespace physx
 #endif
 
-/** @} */
 #endif

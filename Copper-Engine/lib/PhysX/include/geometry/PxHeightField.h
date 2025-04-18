@@ -1,4 +1,3 @@
-//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
@@ -23,17 +22,14 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2025 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.
 
+#ifndef PX_HEIGHTFIELD_H
+#define PX_HEIGHTFIELD_H
 
-#ifndef PX_PHYSICS_GEOMUTILS_NX_HEIGHTFIELD
-#define PX_PHYSICS_GEOMUTILS_NX_HEIGHTFIELD
-/** \addtogroup geomutils
-  @{
-*/
-
+#include "foundation/PxVec3.h"
 #include "geometry/PxHeightFieldFlag.h"
 #include "geometry/PxHeightFieldSample.h"
 #include "common/PxBase.h"
@@ -68,7 +64,7 @@ via the PxHeightFieldGeometry and PxShape classes.
 <h3>Creation</h3>
 
 To create an instance of this class call PxPhysics::createHeightField() or
-PxCooking::createHeightField(const PxHeightFieldDesc&, PxPhysicsInsertionCallback&).
+PxCooking::createHeightField(const PxHeightFieldDesc&, PxInsertionCallback&).
 To delete it call release(). This is only possible
 once you have released all of its PxHeightFiedShape instances.
 
@@ -79,18 +75,18 @@ once you have released all of its PxHeightFiedShape instances.
 \li #PxVisualizationParameter::eCOLLISION_FNORMALS
 \li #PxVisualizationParameter::eCOLLISION_EDGES
 
-@see PxHeightFieldDesc PxHeightFieldGeometry PxShape PxPhysics.createHeightField() PxCooking.createHeightField()
+\see PxHeightFieldDesc PxHeightFieldGeometry PxShape PxPhysics.createHeightField() PxCooking.createHeightField()
 */
 
-class PxHeightField	: public PxBase
+class PxHeightField : public PxRefCounted
 {
 	public:
 	/**
 	\brief Decrements the reference count of a height field and releases it if the new reference count is zero.
 
-	@see PxPhysics.createHeightField() PxHeightFieldDesc PxHeightFieldGeometry PxShape
+	\see PxPhysics.createHeightField() PxHeightFieldDesc PxHeightFieldGeometry PxShape
 	*/
-	PX_PHYSX_COMMON_API virtual		void						release() = 0;
+	virtual		void	release() = 0;
 
 	/**
     \brief Writes out the sample data array.
@@ -102,9 +98,9 @@ class PxHeightField	: public PxBase
 	\param[in] destBufferSize The size of the destination buffer.
 	\return The number of bytes written.
 
-	@see PxHeightFieldDesc.samples
+	\see PxHeightFieldDesc.samples
 	*/
-    PX_PHYSX_COMMON_API virtual		PxU32						saveCells(void* destBuffer, PxU32 destBufferSize) const = 0;
+    virtual		PxU32	saveCells(void* destBuffer, PxU32 destBufferSize) const = 0;
 
 	/**
     \brief Replaces a rectangular subfield in the sample data array.
@@ -124,87 +120,70 @@ class PxHeightField	: public PxBase
 	Call PxShape::setGeometry on each shape which references the height field, to ensure that internal data structures are updated to reflect the new geometry.
 	Please note that PxShape::setGeometry does not guarantee correct/continuous behavior when objects are resting on top of old or new geometry.
 
-	@see PxHeightFieldDesc.samples PxShape.setGeometry
+	\see PxHeightFieldDesc.samples PxShape.setGeometry
 	*/
-	PX_PHYSX_COMMON_API virtual		bool						modifySamples(PxI32 startCol, PxI32 startRow, const PxHeightFieldDesc& subfieldDesc, bool shrinkBounds = false) = 0;
+	virtual		bool	modifySamples(PxI32 startCol, PxI32 startRow, const PxHeightFieldDesc& subfieldDesc, bool shrinkBounds = false) = 0;
 
 	/**
 	\brief Retrieves the number of sample rows in the samples array.
 
 	\return The number of sample rows in the samples array.
 
-	@see PxHeightFieldDesc.nbRows
+	\see PxHeightFieldDesc.nbRows
 	*/
-	PX_PHYSX_COMMON_API virtual		PxU32						getNbRows()					const = 0;
+	virtual		PxU32	getNbRows()	const = 0;
 
 	/**
 	\brief Retrieves the number of sample columns in the samples array.
 
 	\return The number of sample columns in the samples array.
 
-	@see PxHeightFieldDesc.nbColumns
+	\see PxHeightFieldDesc.nbColumns
 	*/
-	PX_PHYSX_COMMON_API virtual		PxU32						getNbColumns()				const = 0;
+	virtual		PxU32	getNbColumns()	const = 0;
 
 	/**
 	\brief Retrieves the format of the sample data.
 
 	\return The format of the sample data.
 
-	@see PxHeightFieldDesc.format PxHeightFieldFormat
+	\see PxHeightFieldDesc.format PxHeightFieldFormat
 	*/
-	PX_PHYSX_COMMON_API virtual		PxHeightFieldFormat::Enum	getFormat()					const = 0;
+	virtual		PxHeightFieldFormat::Enum	getFormat()	const = 0;
 
 	/**
 	\brief Retrieves the offset in bytes between consecutive samples in the array.
 
 	\return The offset in bytes between consecutive samples in the array.
 
-	@see PxHeightFieldDesc.sampleStride
+	\see PxHeightFieldDesc.sampleStride
 	*/
-	PX_PHYSX_COMMON_API virtual		PxU32						getSampleStride()			const = 0;
+	virtual		PxU32	getSampleStride()	const = 0;
 
 	/**
 	\brief Retrieves the convex edge threshold.
 
 	\return The convex edge threshold.
 
-	@see PxHeightFieldDesc.convexEdgeThreshold
+	\see PxHeightFieldDesc.convexEdgeThreshold
 	*/
-	PX_PHYSX_COMMON_API virtual		PxReal						getConvexEdgeThreshold()	const = 0;
+	virtual		PxReal	getConvexEdgeThreshold()	const = 0;
 
 	/**
 	\brief Retrieves the flags bits, combined from values of the enum ::PxHeightFieldFlag.
 
 	\return The flags bits, combined from values of the enum ::PxHeightFieldFlag.
 
-	@see PxHeightFieldDesc.flags PxHeightFieldFlag
+	\see PxHeightFieldDesc.flags PxHeightFieldFlag
 	*/
-	PX_PHYSX_COMMON_API virtual		PxHeightFieldFlags			getFlags()					const = 0;
+	virtual		PxHeightFieldFlags	getFlags()	const = 0;
 
 	/**
 	\brief Retrieves the height at the given coordinates in grid space.
 
 	\return The height at the given coordinates or 0 if the coordinates are out of range.
 	*/
-	PX_PHYSX_COMMON_API virtual		PxReal						getHeight(PxReal x, PxReal z) const = 0;
-
-	/**
-	\brief Returns the reference count for shared heightfields.
-
-	At creation, the reference count of the heightfield is 1. Every shape referencing this heightfield increments the
-	count by 1.	When the reference count reaches 0, and only then, the heightfield gets destroyed automatically.
-
-	\return the current reference count.
-	*/
-	PX_PHYSX_COMMON_API virtual		PxU32						getReferenceCount()			const	= 0;
-
-	/**
-	\brief Acquires a counted reference to a heightfield.
-
-	This method increases the reference count of the heightfield by 1. Decrement the reference count by calling release()
-	*/
-	PX_PHYSX_COMMON_API virtual void							acquireReference()					= 0;
+	virtual		PxReal	getHeight(PxReal x, PxReal z) const = 0;
 
 	/**
 	\brief Returns material table index of given triangle
@@ -214,7 +193,7 @@ class PxHeightField	: public PxBase
 	\param[in] triangleIndex (internal) index of desired triangle
 	\return Material table index, or 0xffff if no per-triangle materials are used
 	*/
-	PX_PHYSX_COMMON_API virtual	PxMaterialTableIndex	getTriangleMaterialIndex(PxTriangleID triangleIndex) const = 0;
+	virtual	PxMaterialTableIndex	getTriangleMaterialIndex(PxTriangleID triangleIndex) const = 0;
 
 	/**
 	\brief Returns a triangle face normal for a given triangle index
@@ -224,7 +203,7 @@ class PxHeightField	: public PxBase
 	\param[in] triangleIndex (internal) index of desired triangle
 	\return Triangle normal for a given triangle index
 	*/
-	PX_PHYSX_COMMON_API virtual	PxVec3					getTriangleNormal(PxTriangleID triangleIndex) const = 0;
+	virtual	PxVec3	getTriangleNormal(PxTriangleID triangleIndex) const = 0;
 
 	/**
 	\brief Returns heightfield sample of given row and column	
@@ -233,7 +212,7 @@ class PxHeightField	: public PxBase
 	\param[in] column Given heightfield column
 	\return Heightfield sample
 	*/
-	PX_PHYSX_COMMON_API virtual	const PxHeightFieldSample&	getSample(PxU32 row, PxU32 column) const = 0;
+	virtual	const PxHeightFieldSample&	getSample(PxU32 row, PxU32 column) const = 0;
 
 	/**
 	\brief Returns the number of times the heightfield data has been modified
@@ -243,20 +222,19 @@ class PxHeightField	: public PxBase
 	
 	\return the number of times the heightfield sample data has been modified.
 	*/
-	PX_PHYSX_COMMON_API virtual		PxU32						getTimestamp()			const	= 0;
+	virtual		PxU32	getTimestamp()	const	= 0;
 
-	PX_PHYSX_COMMON_API virtual	const char*				getConcreteTypeName() const { return "PxHeightField"; }
+	virtual	const char*	getConcreteTypeName() const	PX_OVERRIDE	PX_FINAL	{ return "PxHeightField"; }
 
 protected:
-						PX_INLINE						PxHeightField(PxType concreteType, PxBaseFlags baseFlags) : PxBase(concreteType, baseFlags) {}
-						PX_INLINE						PxHeightField(PxBaseFlags baseFlags) : PxBase(baseFlags) {}
-	PX_PHYSX_COMMON_API virtual							~PxHeightField() {}
-	PX_PHYSX_COMMON_API virtual	bool					isKindOf(const char* name) const { return !::strcmp("PxHeightField", name) || PxBase::isKindOf(name); }
+	PX_INLINE			PxHeightField(PxType concreteType, PxBaseFlags baseFlags) : PxRefCounted(concreteType, baseFlags) {}
+	PX_INLINE			PxHeightField(PxBaseFlags baseFlags) : PxRefCounted(baseFlags) {}
+	virtual				~PxHeightField() {}
+	virtual	bool		isKindOf(const char* name) const { PX_IS_KIND_OF(name, "PxHeightField", PxRefCounted); }
 };
 
 #if !PX_DOXYGEN
 } // namespace physx
 #endif
 
-/** @} */
 #endif

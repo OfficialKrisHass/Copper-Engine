@@ -1,4 +1,3 @@
-//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
@@ -23,18 +22,15 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2025 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.
 
-#ifndef PXFOUNDATION_PXUNIONCAST_H
-#define PXFOUNDATION_PXUNIONCAST_H
+#ifndef PX_UNION_CAST_H
+#define PX_UNION_CAST_H
 
-#include "foundation/Px.h"
+#include "foundation/PxPreprocessor.h"
 
-/** \addtogroup foundation
-@{
-*/
 
 #if !PX_DOXYGEN
 namespace physx
@@ -68,6 +64,6 @@ PX_FORCE_INLINE A PxUnionCast(B b)
 } // namespace physx
 #endif
 
-/** @} */
 
-#endif // PXFOUNDATION_PXUNIONCAST_H
+#endif
+

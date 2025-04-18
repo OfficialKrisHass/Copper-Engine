@@ -1,4 +1,3 @@
-//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
@@ -23,15 +22,12 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2025 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
-#ifndef PX_REVOLUTEJOINT_H
-#define PX_REVOLUTEJOINT_H
-/** \addtogroup extensions
-  @{
-*/
+#ifndef PX_REVOLUTE_JOINT_H
+#define PX_REVOLUTE_JOINT_H
 
 #include "extensions/PxJoint.h"
 #include "extensions/PxJointLimit.h"
@@ -52,14 +48,14 @@ class PxRevoluteJoint;
  \param[in] actor1		An actor to which the joint is attached. NULL may be used to attach the joint to a specific point in the world frame
  \param[in] localFrame1	The position and orientation of the joint relative to actor1 
 
-@see PxRevoluteJoint
+\see PxRevoluteJoint
 */
 PxRevoluteJoint*	PxRevoluteJointCreate(PxPhysics& physics, PxRigidActor* actor0, const PxTransform& localFrame0, PxRigidActor* actor1, const PxTransform& localFrame1);
 
 /**
 \brief Flags specific to the Revolute Joint.
 
-@see PxRevoluteJoint
+\see PxRevoluteJoint
 */
 struct PxRevoluteJointFlag
 {
@@ -88,13 +84,11 @@ PX_FLAGS_OPERATORS(PxRevoluteJointFlag::Enum, PxU16)
  \image html revoluteJoint.png
 
  A revolute joint can be given a motor, so that it can apply a force to rotate the attached actors.
- It may also be given a limit, to restrict the revolute motion to within a certain range. In
- addition, the bodies may be projected together if the distance or angle between them exceeds
- a given threshold.
+ It may also be given a limit, to restrict the revolute motion to within a certain range.
  
- Projection, drive and limits are activated by setting the appropriate flags on the joint.
+ Drive and limits are activated by setting the appropriate flags on the joint.
 
- @see PxRevoluteJointCreate() PxJoint
+ \see PxRevoluteJointCreate() PxJoint
 */
 class PxRevoluteJoint : public PxJoint
 {
@@ -119,7 +113,7 @@ public:
 
 	\param[in] limits The joint limit parameters. 
 
-	@see PxJointAngularLimitPair getLimit()
+	\see PxJointAngularLimitPair getLimit()
 	*/
 	virtual void			setLimit(const PxJointAngularLimitPair& limits)	= 0;
 
@@ -128,7 +122,7 @@ public:
 
 	\return the joint limit parameters
 
-	@see PxJointAngularLimitPair setLimit()
+	\see PxJointAngularLimitPair setLimit()
 	*/
 	virtual PxJointAngularLimitPair getLimit()	const	= 0;
 
@@ -139,17 +133,17 @@ public:
 	If the joint is spinning faster than this velocity, the motor will actually try to brake
 	(see PxRevoluteJointFlag::eDRIVE_FREESPIN.)
 
-	If you set this to infinity then the motor will keep speeding up, unless there is some sort 
-	of resistance on the attached bodies. The sign of this variable determines the rotation direction,
-	with positive values going the same way as positive joint angles.
+	The sign of this variable determines the rotation direction, with positive values going
+	the same way as positive joint angles. Setting a very large target velocity may cause
+	undesirable results.
 
 	\param[in] velocity the drive target velocity
-	\param[in] autowake Whether to wake the joint rigids up if it is asleep.
+	\param[in] autowake Whether to wake up the joint rigids if they are asleep.
 
-	<b>Range:</b> [0, PX_MAX_F32)<br>
+	<b>Range:</b> (-PX_MAX_F32, PX_MAX_F32)<br>
 	<b>Default:</b> 0.0
 
-	@see PxRevoluteFlags::eDRIVE_FREESPIN
+	\see PxRevoluteFlags::eDRIVE_FREESPIN
 	*/
 	virtual void			setDriveVelocity(PxReal velocity, bool autowake = true)	= 0;
 
@@ -158,21 +152,19 @@ public:
 
 	\return the drive target velocity
 
-	@see setDriveVelocity()
+	\see setDriveVelocity()
 	*/
 	virtual PxReal			getDriveVelocity()	const	= 0;
 
 	/**
 	\brief sets the maximum torque the drive can exert.
 	
-	Setting this to a very large value if velTarget is also very large may cause unexpected results.
-
 	The value set here may be used either as an impulse limit or a force limit, depending on the flag PxConstraintFlag::eDRIVE_LIMITS_ARE_FORCES
 
 	<b>Range:</b> [0, PX_MAX_F32)<br>
 	<b>Default:</b> PX_MAX_F32
 
-	@see setDriveVelocity()
+	\see setDriveVelocity()
 	*/
 	virtual void			setDriveForceLimit(PxReal limit)	= 0;
 
@@ -181,7 +173,7 @@ public:
 	
 	\return the torque limit
 
-	@see setDriveVelocity()
+	\see setDriveVelocity()
 	*/
 	virtual PxReal			getDriveForceLimit()	const	= 0;
 
@@ -196,7 +188,7 @@ public:
 
 	\param[in] ratio the drive gear ratio
 
-	@see getDriveGearRatio()
+	\see getDriveGearRatio()
 	*/
 	virtual void			setDriveGearRatio(PxReal ratio)	= 0;
 
@@ -205,7 +197,7 @@ public:
 	
 	\return the drive gear ratio
 
-	@see setDriveGearRatio()
+	\see setDriveGearRatio()
 	*/
 	virtual PxReal			getDriveGearRatio()		const	= 0;
 
@@ -216,7 +208,7 @@ public:
 
 	\param[in] flags The joint flags.
 
-	@see PxRevoluteJointFlag setFlag() getFlags()
+	\see PxRevoluteJointFlag setFlag() getFlags()
 	*/
 	virtual void			setRevoluteJointFlags(PxRevoluteJointFlags flags) = 0;
 
@@ -226,7 +218,7 @@ public:
 	\param[in] flag The flag to set or clear.
 	\param[in] value the value to which to set the flag
 
-	@see PxRevoluteJointFlag, getFlags() setFlags()
+	\see PxRevoluteJointFlag, getFlags() setFlags()
 	*/
 	virtual void			setRevoluteJointFlag(PxRevoluteJointFlag::Enum flag, bool value) = 0;
 
@@ -235,72 +227,14 @@ public:
 
 	\return the joint flags
 
-	@see PxRevoluteJoint::flags, PxRevoluteJointFlag setFlag() setFlags()
+	\see PxRevoluteJoint::flags, PxRevoluteJointFlag setFlag() setFlags()
 	*/
 	virtual PxRevoluteJointFlags	getRevoluteJointFlags()	const	= 0;
 
 	/**
-	\brief Set the linear tolerance threshold for projection. Projection is enabled if PxConstraintFlag::ePROJECTION
-	is set for the joint.
-
-	If the joint separates by more than this distance along its locked degrees of freedom, the solver 
-	will move the bodies to close the distance.
-
-	Setting a very small tolerance may result in simulation jitter or other artifacts.
-
-	Sometimes it is not possible to project (for example when the joints form a cycle).
-
-	<b>Range:</b> [0, PX_MAX_F32)<br>
-	<b>Default:</b> 1e10f
-
-	\param[in] tolerance the linear tolerance threshold
-
-	@see getProjectionLinearTolerance() PxJoint::setConstraintFlags() PxConstraintFlag::ePROJECTION
-	*/
-	virtual void				setProjectionLinearTolerance(PxReal tolerance)	= 0;
-
-	/**
-	\brief Get the linear tolerance threshold for projection.
-
-	\return the linear tolerance threshold
-
-	@see setProjectionLinearTolerance()
-	*/
-	virtual PxReal				getProjectionLinearTolerance()	const	= 0;
-
-	/**
-	\brief Set the angular tolerance threshold for projection. Projection is enabled if 
-	PxConstraintFlag::ePROJECTION is set for the joint.
-
-	If the joint deviates by more than this angle around its locked angular degrees of freedom, 
-	the solver will move the bodies to close the angle.
-	
-	Setting a very small tolerance may result in simulation jitter or other artifacts.
-
-	Sometimes it is not possible to project (for example when the joints form a cycle).
-
-	<b>Range:</b> [0,Pi] <br>
-	<b>Default:</b> Pi
-
-	\param[in] tolerance the angular tolerance threshold in radians
-
-	@see getProjectionAngularTolerance() PxJoint::setConstraintFlag() PxConstraintFlag::ePROJECTION
-	*/
-	virtual void				setProjectionAngularTolerance(PxReal tolerance)	= 0;
-
-	/**
-	\brief gets the angular tolerance threshold for projection.
-
-	\return the angular tolerance threshold in radians
-
-	@see setProjectionAngularTolerance()
-	*/
-	virtual PxReal				getProjectionAngularTolerance()	const	= 0;
-
-	/**
 	\brief Returns string name of PxRevoluteJoint, used for serialization
 	*/
-	virtual	const char*			getConcreteTypeName() const { return "PxRevoluteJoint"; }
+	virtual	const char*			getConcreteTypeName() const	PX_OVERRIDE	{ return "PxRevoluteJoint"; }
 
 protected:
 
@@ -319,7 +253,7 @@ protected:
 	/**
 	\brief Returns whether a given type name matches with the type of this instance
 	*/
-	virtual	bool				isKindOf(const char* name) const { return !::strcmp("PxRevoluteJoint", name) || PxJoint::isKindOf(name); }
+	virtual	bool				isKindOf(const char* name) const { PX_IS_KIND_OF(name, "PxRevoluteJoint", PxJoint); }
 	
 	//~serialization
 };
@@ -328,5 +262,4 @@ protected:
 } // namespace physx
 #endif
 
-/** @} */
 #endif

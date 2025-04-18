@@ -1,4 +1,3 @@
-//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
@@ -23,16 +22,12 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2025 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
-
-#ifndef PX_PHYSICS_NX_RIGIDACTOR
-#define PX_PHYSICS_NX_RIGIDACTOR
-/** \addtogroup physics
-@{
-*/
+#ifndef PX_RIGID_ACTOR_H
+#define PX_RIGID_ACTOR_H
 
 #include "PxActor.h"
 #include "PxShape.h"
@@ -43,24 +38,20 @@ namespace physx
 #endif
 
 class PxConstraint;
-class PxMaterial;
-class PxGeometry;
-class PxBVHStructure;
 
 /**
 \brief PxRigidActor represents a base class shared between dynamic and static rigid bodies in the physics SDK.
 
 PxRigidActor objects specify the geometry of the object by defining a set of attached shapes (see #PxShape).
 
-@see PxActor
+\see PxActor
 */
-
 class PxRigidActor : public PxActor
 {
 public:
 	/**
 	\brief Deletes the rigid actor object.
-	
+
 	Also releases any shapes associated with the actor.
 
 	Releasing an actor will affect any objects that are connected to the actor (constraint shaders like joints etc.).
@@ -72,13 +63,21 @@ public:
 
 	Calls #PxActor::release() so you might want to check the documentation of that method as well.
 
-	@see PxActor::release()
+	\see PxActor::release()
 	*/
 	virtual		void			release() = 0;
 
+	/**
+	\brief Returns the internal actor index.
+
+	\warning	This is only defined for actors that have been added to a scene.
+
+	\return		The internal actor index, or 0xffffffff if the actor is not part of a scene.
+	*/
+	virtual PxU32				getInternalActorIndex() const = 0;
 
 /************************************************************************************************/
-/** @name Global Pose Manipulation
+/** \name Global Pose Manipulation
 */
 
 	/**
@@ -86,45 +85,51 @@ public:
 
 	The getGlobalPose() method retrieves the actor's current actor space to world space transformation.
 
+	\note It is not allowed to use this method while the simulation is running (except during PxScene::collide(),
+	in PxContactModifyCallback or in contact report callbacks).
+
 	\return Global pose of object.
 
-	@see PxRigidDynamic.setGlobalPose() PxRigidStatic.setGlobalPose()
+	\see PxRigidDynamic.setGlobalPose() PxRigidStatic.setGlobalPose()
 	*/
 	virtual		PxTransform 	getGlobalPose()		const = 0;
 
 	/**
 	\brief Method for setting an actor's pose in the world.
 
-	This method instantaneously changes the actor space to world space transformation. 
+	This method instantaneously changes the actor space to world space transformation.
 
-	This method is mainly for dynamic rigid bodies (see #PxRigidDynamic). Calling this method on static actors is 
-	likely to result in a performance penalty, since internal optimization structures for static actors may need to be 
-	recomputed. In addition, moving static actors will not interact correctly with dynamic actors or joints. 
-	
-	To directly control an actor's position and have it correctly interact with dynamic bodies and joints, create a dynamic 
+	This method is mainly for dynamic rigid bodies (see #PxRigidDynamic). Calling this method on static actors is
+	likely to result in a performance penalty, since internal optimization structures for static actors may need to be
+	recomputed. In addition, moving static actors will not interact correctly with dynamic actors or joints.
+
+	To directly control an actor's position and have it correctly interact with dynamic bodies and joints, create a dynamic
 	body with the PxRigidBodyFlag::eKINEMATIC flag, then use the setKinematicTarget() commands to define its path.
 
 	Even when moving dynamic actors, exercise restraint in making use of this method. Where possible, avoid:
-	
+
 	\li moving actors into other actors, thus causing overlap (an invalid physical state)
-	
+
 	\li moving an actor that is connected by a joint to another away from the other (thus causing joint error)
+
+	\note It is not allowed to use this method if the actor is part of a #PxPruningStructure that has not been
+	added to a scene yet.
 
 	<b>Sleeping:</b> This call wakes dynamic actors if they are sleeping and the autowake parameter is true (default).
 
 	\param[in] pose Transformation from the actors local frame to the global frame. <b>Range:</b> rigid body transform.
 	\param[in] autowake whether to wake the object if it is dynamic. This parameter has no effect for static or kinematic actors. If true and the current wake counter value is smaller than #PxSceneDesc::wakeCounterResetValue it will get increased to the reset value.
 
-	@see getGlobalPose()
+	\see getGlobalPose()
 	*/
 	virtual		void			setGlobalPose(const PxTransform& pose, bool autowake = true) = 0;
 
-
 /************************************************************************************************/
-/** @name Shapes
+/** \name Shapes
 */
 
-	/** attach a shared shape to an actor 
+	/**
+	\brief Attach a shape to an actor 
 
 	This call will increment the reference count of the shape.
 
@@ -135,7 +140,6 @@ public:
 	Attaching a triangle mesh, heightfield or plane geometry shape configured as eSIMULATION_SHAPE is not supported for 
 	non-kinematic PxRigidDynamic instances.
 
-
 	<b>Sleeping:</b> Does <b>NOT</b> wake the actor up automatically.
 
 	\param[in] shape	the shape to attach.
@@ -144,19 +148,17 @@ public:
 	*/
 	virtual bool				attachShape(PxShape& shape) = 0;
 
-
-	/** detach a shape from an actor. 
+	/**
+	\brief Detach a shape from an actor. 
 	
 	This will also decrement the reference count of the PxShape, and if the reference count is zero, will cause it to be deleted.
 
 	<b>Sleeping:</b> Does <b>NOT</b> wake the actor up automatically.
 
 	\param[in] shape	the shape to detach.
-	\param[in] wakeOnLostTouch Specifies whether touching objects from the previous frame should get woken up in the next frame. Only applies to PxArticulation and PxRigidActor types.
-
+	\param[in] wakeOnLostTouch Specifies whether touching objects from the previous frame should get woken up in the next frame. Only applies to PxArticulationReducedCoordinate and PxRigidActor types.
 	*/
 	virtual void				detachShape(PxShape& shape, bool wakeOnLostTouch = true) = 0;
-
 
 	/**
 	\brief Returns the number of shapes assigned to the actor.
@@ -165,10 +167,9 @@ public:
 
 	\return Number of shapes associated with this actor.
 
-	@see PxShape getShapes()
+	\see PxShape getShapes()
 	*/
 	virtual		PxU32			getNbShapes()		const	= 0;
-
 
 	/**
 	\brief Retrieve all the shape pointers belonging to the actor.
@@ -184,13 +185,12 @@ public:
 	\param[in] startIndex Index of first shape pointer to be retrieved
 	\return Number of shape pointers written to the buffer.
 
-	@see PxShape getNbShapes() PxShape::release()
+	\see PxShape getNbShapes() PxShape::release()
 	*/
 	virtual		PxU32			getShapes(PxShape** userBuffer, PxU32 bufferSize, PxU32 startIndex=0)			const	= 0;
 
-
 /************************************************************************************************/
-/** @name Constraints
+/** \name Constraints
 */
 
 	/**
@@ -200,10 +200,9 @@ public:
 
 	\return Number of constraint shaders attached to this actor.
 
-	@see PxConstraint getConstraints()
+	\see PxConstraint getConstraints()
 	*/
 	virtual		PxU32			getNbConstraints()		const	= 0;
-
 
 	/**
 	\brief Retrieve all the constraint shader pointers belonging to the actor.
@@ -217,7 +216,7 @@ public:
 	\param[in] startIndex Index of first constraint pointer to be retrieved
 	\return Number of constraint shader pointers written to the buffer.
 
-	@see PxConstraint getNbConstraints() PxConstraint::release()
+	\see PxConstraint getNbConstraints() PxConstraint::release()
 	*/
 	virtual		PxU32			getConstraints(PxConstraint** userBuffer, PxU32 bufferSize, PxU32 startIndex=0)		const	= 0;
 
@@ -225,13 +224,11 @@ protected:
 	PX_INLINE					PxRigidActor(PxType concreteType, PxBaseFlags baseFlags) : PxActor(concreteType, baseFlags) {}
 	PX_INLINE					PxRigidActor(PxBaseFlags baseFlags) : PxActor(baseFlags) {}
 	virtual						~PxRigidActor()	{}
-	virtual		bool			isKindOf(const char* name)	const	{	return !::strcmp("PxRigidActor", name) || PxActor::isKindOf(name); }
+	virtual		bool			isKindOf(const char* name)	const	{	PX_IS_KIND_OF(name, "PxRigidActor", PxActor); }
 };
-
 
 #if !PX_DOXYGEN
 } // namespace physx
 #endif
 
-/** @} */
 #endif

@@ -1,4 +1,3 @@
-//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
@@ -23,19 +22,17 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2025 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
-
-#ifndef PX_PHYSICS_EXTENSIONS_TRIANGLE_MESH_H
-#define PX_PHYSICS_EXTENSIONS_TRIANGLE_MESH_H
-/** \addtogroup extensions
-  @{
-*/
+#ifndef PX_TRIANGLE_MESH_EXT_H
+#define PX_TRIANGLE_MESH_EXT_H
 
 #include "PxPhysXConfig.h"
 #include "common/PxPhysXCommonConfig.h"
+#include "foundation/PxArray.h"
+#include "foundation/PxTransform.h"
 
 #if !PX_DOXYGEN
 namespace physx
@@ -43,6 +40,7 @@ namespace physx
 #endif
 
 class PxGeometry;
+class PxTriangleMesh;
 class PxTriangleMeshGeometry;
 class PxHeightFieldGeometry;
 
@@ -72,7 +70,7 @@ class PxHeightFieldGeometry;
 	\param[in] meshPose Pose of the triangle mesh
 	\return Number of overlaps found. Triangle indices can then be accessed through the #getResults() function.
 
-	@see PxGeometry PxTransform PxTriangleMeshGeometry PxMeshQuery::findOverlapTriangleMesh
+	\see PxGeometry PxTransform PxTriangleMeshGeometry PxMeshQuery::findOverlapTriangleMesh
 	*/
 						PxU32			findOverlap(const PxGeometry& geom, const PxTransform& geomPose, const PxTriangleMeshGeometry& meshGeom, const PxTransform& meshPose);
 
@@ -85,7 +83,7 @@ class PxHeightFieldGeometry;
 	\param[in] hfPose Pose of the height field
 	\return Number of overlaps found. Triangle indices can then be accessed through the #getResults() function.
 
-	@see PxGeometry PxTransform PxHeightFieldGeometry PxMeshQuery::findOverlapHeightField
+	\see PxGeometry PxTransform PxHeightFieldGeometry PxMeshQuery::findOverlapHeightField
 	*/
 						PxU32			findOverlap(const PxGeometry& geom, const PxTransform& geomPose, const PxHeightFieldGeometry& hfGeom, const PxTransform& hfPose);
 
@@ -133,7 +131,7 @@ class PxHeightFieldGeometry;
 
 	\return True if the MTD has successfully been computed, i.e. if objects do overlap.
 
-	@see PxGeometry PxTransform PxTriangleMeshGeometry
+	\see PxGeometry PxTransform PxTriangleMeshGeometry
 	*/
 	bool PxComputeTriangleMeshPenetration(PxVec3& direction, 
 										  PxReal& depth,
@@ -169,7 +167,7 @@ class PxHeightFieldGeometry;
 
 	\return True if the MTD has successfully been computed, i.e. if objects do overlap.
 
-	@see PxGeometry PxTransform PxHeightFieldGeometry
+	\see PxGeometry PxTransform PxHeightFieldGeometry
 	*/
 	bool PxComputeHeightFieldPenetration(PxVec3& direction, 
 										 PxReal& depth,
@@ -180,9 +178,17 @@ class PxHeightFieldGeometry;
 										 PxU32 maxIter, 
 										 PxU32* usedIter = NULL);
 
+	/**
+	\brief Extracts an isosurface from the SDF of a mesh if it the SDF is available.
+
+	\param[in] triangleMesh The triangle mesh
+	\param[out] isosurfaceVertices The vertices of the extracted isosurface
+	\param[out] isosurfaceTriangleIndices The triangles of the extracted isosurface
+	*/
+	bool PxExtractIsosurfaceFromSDF(const PxTriangleMesh& triangleMesh, PxArray<PxVec3>& isosurfaceVertices, PxArray<PxU32>& isosurfaceTriangleIndices);
+
 #if !PX_DOXYGEN
 } // namespace physx
 #endif
 
-/** @} */
 #endif

@@ -1,4 +1,3 @@
-//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
@@ -23,16 +22,12 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2025 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
-
-#ifndef PX_PHYSICS_EXTENSIONS_RIGIDBODY_H
-#define PX_PHYSICS_EXTENSIONS_RIGIDBODY_H
-/** \addtogroup extensions
-  @{
-*/
+#ifndef PX_RIGID_BODY_EXT_H
+#define PX_RIGID_BODY_EXT_H
 
 #include "PxPhysXConfig.h"
 #include "PxRigidBody.h"
@@ -52,7 +47,7 @@ class PxShape;
 /**
 \brief utility functions for use with PxRigidBody and subclasses
 
-@see PxRigidBody PxRigidDynamic PxArticulationLink
+\see PxRigidBody PxRigidDynamic PxArticulationLink
 */
 
 class PxRigidBodyExt
@@ -89,10 +84,9 @@ public:
 	\param[in] includeNonSimShapes True if all kind of shapes (PxShapeFlag::eSCENE_QUERY_SHAPE, PxShapeFlag::eTRIGGER_SHAPE) should be taken into account.
 	\return Boolean. True on success else false.
 
-	@see PxRigidBody::setMassLocalPose PxRigidBody::setMassSpaceInertiaTensor PxRigidBody::setMass
+	\see PxRigidBody::setMassLocalPose PxRigidBody::setMassSpaceInertiaTensor PxRigidBody::setMass
 	*/
 	static		bool			updateMassAndInertia(PxRigidBody& body, const PxReal* shapeDensities, PxU32 shapeDensityCount, const PxVec3* massLocalPose = NULL, bool includeNonSimShapes = false);
-
 
 	/**
 	\brief Computation of mass properties for a rigid body actor
@@ -105,11 +99,10 @@ public:
 	\param[in] includeNonSimShapes True if all kind of shapes (PxShapeFlag::eSCENE_QUERY_SHAPE, PxShapeFlag::eTRIGGER_SHAPE) should be taken into account.
 	\return Boolean. True on success else false.
 
-	@see PxRigidBody::setMassLocalPose PxRigidBody::setMassSpaceInertiaTensor PxRigidBody::setMass
+	\see PxRigidBody::setMassLocalPose PxRigidBody::setMassSpaceInertiaTensor PxRigidBody::setMass
 	*/
 	static		bool			updateMassAndInertia(PxRigidBody& body, PxReal density, const PxVec3* massLocalPose = NULL, bool includeNonSimShapes = false);
 	
-
 	/**
 	\brief Computation of mass properties for a rigid body actor
 
@@ -120,7 +113,7 @@ public:
 
 	\note If a single mass value should be used for the actor as a whole then the overloaded method setMassAndUpdateInertia() with a single mass parameter can be used instead.
 
-	@see updateMassAndInertia for more details.
+	\see updateMassAndInertia for more details.
 
 	\param[in,out] body The rigid body for which to set the mass and centre of mass local pose properties.
 	\param[in] shapeMasses The per shape mass values. There must be one entry for each shape which has the PxShapeFlag::eSIMULATION_SHAPE set. Other shapes are ignored. The mass values must be greater than 0.
@@ -129,10 +122,9 @@ public:
 	\param[in] includeNonSimShapes True if all kind of shapes (PxShapeFlag::eSCENE_QUERY_SHAPE, PxShapeFlag::eTRIGGER_SHAPE) should be taken into account.
 	\return Boolean. True on success else false.
 
-	@see PxRigidBody::setCMassLocalPose PxRigidBody::setMassSpaceInertiaTensor PxRigidBody::setMass
+	\see PxRigidBody::setCMassLocalPose PxRigidBody::setMassSpaceInertiaTensor PxRigidBody::setMass
 	*/
 	static		bool			setMassAndUpdateInertia(PxRigidBody& body, const PxReal* shapeMasses, PxU32 shapeMassCount, const PxVec3* massLocalPose = NULL, bool includeNonSimShapes = false);
-
 
 	/**
 	\brief Computation of mass properties for a rigid body actor
@@ -142,7 +134,7 @@ public:
 
 	If no collision shapes are found, the inertia tensor is set to (1,1,1)
 
-	@see updateMassAndInertia for more details.
+	\see updateMassAndInertia for more details.
 
 	\param[in,out] body The rigid body for which to set the mass and centre of mass local pose properties.
 	\param[in] mass The mass of the body. Must be greater than 0.
@@ -150,10 +142,9 @@ public:
 	\param[in] includeNonSimShapes True if all kind of shapes (PxShapeFlag::eSCENE_QUERY_SHAPE, PxShapeFlag::eTRIGGER_SHAPE) should be taken into account.
 	\return Boolean. True on success else false.
 
-	@see PxRigidBody::setCMassLocalPose PxRigidBody::setMassSpaceInertiaTensor PxRigidBody::setMass
+	\see PxRigidBody::setCMassLocalPose PxRigidBody::setMassSpaceInertiaTensor PxRigidBody::setMass
 	*/
 	static		bool			setMassAndUpdateInertia(PxRigidBody& body, PxReal mass, const PxVec3* massLocalPose = NULL, bool includeNonSimShapes = false);
-
 
 	/**
 	\brief Compute the mass, inertia tensor and center of mass from a list of shapes.
@@ -162,11 +153,10 @@ public:
 	\param[in] shapeCount The number of provided shapes.
 	\return The mass properties from the combined shapes.
 
-	@see PxRigidBody::setCMassLocalPose PxRigidBody::setMassSpaceInertiaTensor PxRigidBody::setMass
+	\see PxRigidBody::setCMassLocalPose PxRigidBody::setMassSpaceInertiaTensor PxRigidBody::setMass
 	*/
 	static		PxMassProperties	computeMassPropertiesFromShapes(const PxShape* const* shapes, PxU32 shapeCount);
 	
-
 	/**
 	\brief Applies a force (or impulse) defined in the global coordinate frame, acting at a particular 
 	point in global coordinates, to the actor. 
@@ -190,8 +180,8 @@ public:
 	\param[in] mode The mode to use when applying the force/impulse(see #PxForceMode). 
 	\param[in] wakeup Specify if the call should wake up the actor.
 
-	@see PxForceMode 
-	@see addForceAtLocalPos() addLocalForceAtPos() addLocalForceAtLocalPos()
+	\see PxForceMode 
+	\see addForceAtLocalPos() addLocalForceAtPos() addLocalForceAtLocalPos()
 	*/
 	static		void			addForceAtPos(PxRigidBody& body, const PxVec3& force, const PxVec3& pos, PxForceMode::Enum mode = PxForceMode::eFORCE, bool wakeup = true);
 
@@ -218,8 +208,8 @@ public:
 	\param[in] mode The mode to use when applying the force/impulse(see #PxForceMode). 
 	\param[in] wakeup Specify if the call should wake up the actor.
 
-	@see PxForceMode 
-	@see addForceAtPos() addLocalForceAtPos() addLocalForceAtLocalPos()
+	\see PxForceMode 
+	\see addForceAtPos() addLocalForceAtPos() addLocalForceAtLocalPos()
 	*/
 	static		void			addForceAtLocalPos(PxRigidBody& body, const PxVec3& force, const PxVec3& pos, PxForceMode::Enum mode = PxForceMode::eFORCE, bool wakeup = true);
 
@@ -246,8 +236,8 @@ public:
 	\param[in] mode The mode to use when applying the force/impulse(see #PxForceMode). 
 	\param[in] wakeup Specify if the call should wake up the actor.
 
-	@see PxForceMode 
-	@see addForceAtPos() addForceAtLocalPos() addLocalForceAtLocalPos()
+	\see PxForceMode 
+	\see addForceAtPos() addForceAtLocalPos() addLocalForceAtLocalPos()
 	*/
 	static		void			addLocalForceAtPos(PxRigidBody& body, const PxVec3& force, const PxVec3& pos, PxForceMode::Enum mode = PxForceMode::eFORCE, bool wakeup = true);
 
@@ -274,8 +264,8 @@ public:
 	\param[in] mode The mode to use when applying the force/impulse(see #PxForceMode). 
 	\param[in] wakeup Specify if the call should wake up the actor.
 
-	@see PxForceMode 
-	@see addForceAtPos() addForceAtLocalPos() addLocalForceAtPos()
+	\see PxForceMode 
+	\see addForceAtPos() addForceAtLocalPos() addLocalForceAtPos()
 	*/
 	static		void			addLocalForceAtLocalPos(PxRigidBody& body, const PxVec3& force, const PxVec3& pos, PxForceMode::Enum mode = PxForceMode::eFORCE, bool wakeup = true);
 
@@ -287,7 +277,7 @@ public:
 	\param[in] pos Position we wish to determine the velocity for, defined in the global frame. <b>Range:</b> position vector
 	\return The velocity of point in the global frame.
 
-	@see getLocalPointVelocity()
+	\see getLocalPointVelocity()
 	*/
 	static		PxVec3			getVelocityAtPos(const PxRigidBody& body, const PxVec3& pos);
 
@@ -299,7 +289,7 @@ public:
 	\param[in] pos Position we wish to determine the velocity for, defined in the local frame. <b>Range:</b> position vector
 	\return The velocity of point in the local frame.
 
-	@see getLocalPointVelocity()
+	\see getLocalPointVelocity()
 	*/
 	static		PxVec3			getLocalVelocityAtLocalPos(const PxRigidBody& body, const PxVec3& pos);
 
@@ -311,10 +301,62 @@ public:
 	\param[in] pos Position (offset from the origin of the body) we wish to determine the velocity for, defined in the global frame. <b>Range:</b> position vector
 	\return The velocity of point (offset from the origin of the body) in the global frame.
 
-	@see getLocalPointVelocity()
+	\see getLocalPointVelocity()
 	*/
 	static		PxVec3			getVelocityAtOffset(const PxRigidBody& body, const PxVec3& pos);
 
+	/**
+	\brief Compute the change to linear and angular velocity that would occur if an impulsive force and torque were to be applied to a specified rigid body. 
+	
+	The rigid body is left unaffected unless a subsequent independent call is executed that actually applies the computed changes to velocity and angular velocity.
+
+	\note if this call is used to determine the velocity delta for an articulation link, only the mass properties of the link are taken into account.
+
+	\see PxRigidBody::getLinearVelocity, PxRigidBody::setLinearVelocity, PxRigidBody::getAngularVelocity, PxRigidBody::setAngularVelocity 
+
+	\param[in] body The body under consideration.
+	\param[in] impulsiveForce The impulsive force that would be applied to the specified rigid body.
+	\param[in] impulsiveTorque The impulsive torque that would be applied to the specified rigid body.
+	\param[out] deltaLinearVelocity The change in linear velocity that would arise if impulsiveForce was to be applied to the specified rigid body.
+	\param[out] deltaAngularVelocity The change in angular velocity that would arise if impulsiveTorque was to be applied to the specified rigid body.
+	*/
+	static		void			computeVelocityDeltaFromImpulse(const PxRigidBody& body, const PxVec3& impulsiveForce, const PxVec3& impulsiveTorque, PxVec3& deltaLinearVelocity, PxVec3& deltaAngularVelocity);
+
+	/**
+	\brief Computes the linear and angular velocity change vectors for a given impulse at a world space position taking a mass and inertia scale into account
+
+	This function is useful for extracting the respective linear and angular velocity changes from a contact or joint when the mass/inertia ratios have been adjusted.
+
+	\note if this call is used to determine the velocity delta for an articulation link, only the mass properties of the link are taken into account.
+
+	\param[in] body The rigid body
+	\param[in] globalPose The body's world space transform
+	\param[in] point The point in world space where the impulse is applied
+	\param[in] impulse The impulse vector in world space
+	\param[in] invMassScale The inverse mass scale
+	\param[in] invInertiaScale The inverse inertia scale
+	\param[out] deltaLinearVelocity The linear velocity change
+	\param[out] deltaAngularVelocity The angular velocity change
+	*/
+	static void					computeVelocityDeltaFromImpulse(const PxRigidBody& body, const PxTransform& globalPose, const PxVec3& point, const PxVec3& impulse, const PxReal invMassScale, 
+														const PxReal invInertiaScale, PxVec3& deltaLinearVelocity, PxVec3& deltaAngularVelocity);
+
+	/**
+	\brief Computes the linear and angular impulse vectors for a given impulse at a world space position taking a mass and inertia scale into account
+
+	This function is useful for extracting the respective linear and angular impulses from a contact or joint when the mass/inertia ratios have been adjusted.
+
+	\param[in] body The rigid body
+	\param[in] globalPose The body's world space transform
+	\param[in] point The point in world space where the impulse is applied
+	\param[in] impulse The impulse vector in world space
+	\param[in] invMassScale The inverse mass scale
+	\param[in] invInertiaScale The inverse inertia scale
+	\param[out] linearImpulse The linear impulse
+	\param[out] angularImpulse The angular impulse
+	*/
+	static void					computeLinearAngularImpulse(const PxRigidBody& body, const PxTransform& globalPose, const PxVec3& point, const PxVec3& impulse, const PxReal invMassScale, 
+														const PxReal invInertiaScale, PxVec3& linearImpulse, PxVec3& angularImpulse);
 
 	/**
 	\brief Performs a linear sweep through space with the body's geometry objects.
@@ -342,7 +384,7 @@ public:
 
 	\return True if a blocking hit was found.
 
-	@see PxScene PxQueryFlags PxFilterData PxBatchQueryPreFilterShader PxBatchQueryPostFilterShader PxSweepHit
+	\see PxScene PxQueryFlags PxFilterData PxSweepHit
 	*/
 	static		bool			linearSweepSingle(
 									PxRigidBody& body, PxScene& scene, const PxVec3& unitDir, const PxReal distance,
@@ -383,7 +425,7 @@ public:
 
 	\return the number of touching hits. If overflow is set to true, the results are incomplete. In case of overflow there are also no guarantees that all touching hits returned are closer than the blocking hit.
 
-	@see PxScene PxQueryFlags PxFilterData PxBatchQueryPreFilterShader PxBatchQueryPostFilterShader PxSweepHit
+	\see PxScene PxQueryFlags PxFilterData PxSweepHit
 	*/
 	static		PxU32			linearSweepMultiple(
 									PxRigidBody& body, PxScene& scene, const PxVec3& unitDir, const PxReal distance,
@@ -393,68 +435,10 @@ public:
 									const PxQueryFilterData& filterData = PxQueryFilterData(),
 									PxQueryFilterCallback* filterCall = NULL,
 									const PxQueryCache* cache = NULL, const PxReal inflation = 0.0f);
-
-
-	/**
-	\brief Compute the change to linear and angular velocity that would occur if an impulsive force and torque were to be applied to a specified rigid body. 
-	
-	The rigid body is left unaffected unless a subsequent independent call is executed that actually applies the computed changes to velocity and angular velocity.
-
-	\note if this call is used to determine the velocity delta for an articulation link, only the mass properties of the link are taken into account.
-
-	@see PxRigidBody::getLinearVelocity, PxRigidBody::setLinearVelocity,  PxRigidBody::getAngularVelocity, PxRigidBody::setAngularVelocity 
-
-	\param[in] body The body under consideration.
-	\param[in] impulsiveForce The impulsive force that would be applied to the specified rigid body.
-	\param[in] impulsiveTorque The impulsive torque that would be applied to the specified rigid body.
-	\param[out] deltaLinearVelocity The change in linear velocity that would arise if impulsiveForce was to be applied to the specified rigid body.
-	\param[out] deltaAngularVelocity The change in angular velocity that would arise if impulsiveTorque was to be applied to the specified rigid body.
-	*/
-	static		void			computeVelocityDeltaFromImpulse(const PxRigidBody& body, const PxVec3& impulsiveForce, const PxVec3& impulsiveTorque, PxVec3& deltaLinearVelocity, PxVec3& deltaAngularVelocity);
-
-	/**
-	\brief Computes the linear and angular velocity change vectors for a given impulse at a world space position taking a mass and inertia scale into account
-
-	This function is useful for extracting the respective linear and angular velocity changes from a contact or joint when the mass/inertia ratios have been adjusted.
-
-	\note if this call is used to determine the velocity delta for an articulation link, only the mass properties of the link are taken into account.
-
-	\param[in] body The rigid body
-	\param[in] globalPose The body's world space transform
-	\param[in] point The point in world space where the impulse is applied
-	\param[in] impulse The impulse vector in world space
-	\param[in] invMassScale The inverse mass scale
-	\param[in] invInertiaScale The inverse inertia scale
-	\param[out] deltaLinearVelocity The linear velocity change
-	\param[out] deltaAngularVelocity The angular velocity change
-	*/
-
-	static void					computeVelocityDeltaFromImpulse(const PxRigidBody& body, const PxTransform& globalPose, const PxVec3& point, const PxVec3& impulse, const PxReal invMassScale, 
-														const PxReal invInertiaScale, PxVec3& deltaLinearVelocity, PxVec3& deltaAngularVelocity);
-
-	/**
-	\brief Computes the linear and angular impulse vectors for a given impulse at a world space position taking a mass and inertia scale into account
-
-	This function is useful for extracting the respective linear and angular impulses from a contact or joint when the mass/inertia ratios have been adjusted.
-
-	\param[in] body The rigid body
-	\param[in] globalPose The body's world space transform
-	\param[in] point The point in world space where the impulse is applied
-	\param[in] impulse The impulse vector in world space
-	\param[in] invMassScale The inverse mass scale
-	\param[in] invInertiaScale The inverse inertia scale
-	\param[out] linearImpulse The linear impulse
-	\param[out] angularImpulse The angular impulse
-	*/
-	static void					computeLinearAngularImpulse(const PxRigidBody& body, const PxTransform& globalPose, const PxVec3& point, const PxVec3& impulse, const PxReal invMassScale, 
-														const PxReal invInertiaScale, PxVec3& linearImpulse, PxVec3& angularImpulse);
-
-
 };
 
 #if !PX_DOXYGEN
 } // namespace physx
 #endif
 
-/** @} */
 #endif

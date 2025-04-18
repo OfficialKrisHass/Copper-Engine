@@ -1,4 +1,3 @@
-//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
@@ -23,19 +22,15 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2025 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
-
-#ifndef PX_PHYSICS_PX_COLLECTION
-#define PX_PHYSICS_PX_COLLECTION
+#ifndef PX_COLLECTION_H
+#define PX_COLLECTION_H
 
 #include "common/PxSerialFramework.h"
 
-/** \addtogroup common
-@{
-*/
 
 #if !PX_DOXYGEN
 namespace physx
@@ -100,7 +95,7 @@ For example the code may look like this:
 	registry->release();																			// step 6)
 \endcode
 
-@see PxBase, PxCreateCollection()
+\see PxBase, PxCreateCollection()
 */
 class PxCollection
 {
@@ -247,7 +242,7 @@ public:
 	This function only deletes the collection object, i.e. the container class. It doesn't delete objects
 	that are part of the collection.
 
-	@see PxCreateCollection() 
+	\see PxCreateCollection() 
 	*/
 
 	virtual void						release() = 0;
@@ -270,10 +265,9 @@ For deserialization, the system gives back a collection of deserialized objects 
 
 \return The new collection object.
 
-@see PxCollection, PxCollection::release()
+\see PxCollection, PxCollection::release()
 */
-PX_PHYSX_COMMON_API physx::PxCollection* PX_CALL_CONV PxCreateCollection();
+PX_C_EXPORT PX_PHYSX_COMMON_API physx::PxCollection* PX_CALL_CONV PxCreateCollection();
 
 
-/** @} */
 #endif

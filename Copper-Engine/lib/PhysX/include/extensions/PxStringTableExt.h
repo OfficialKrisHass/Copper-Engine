@@ -1,4 +1,3 @@
-//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
@@ -23,14 +22,14 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2025 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
-
 #ifndef PX_STRING_TABLE_EXT_H
 #define PX_STRING_TABLE_EXT_H
-#include "foundation/Px.h"
+
+#include "foundation/PxAllocatorCallback.h"
 #include "common/PxStringTable.h"
 
 #if !PX_DOXYGEN
@@ -41,7 +40,7 @@ namespace physx
 /**
 \brief a factory class for creating PxStringTable with a specific allocator.
 
-@see PxStringTable 
+\see PxStringTable 
 */
 
 class PxStringTableExt

@@ -1,4 +1,3 @@
-//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
@@ -23,20 +22,16 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2025 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.
 
-
-#ifndef PX_PHYSICS_DELAY_LOAD_HOOK
-#define PX_PHYSICS_DELAY_LOAD_HOOK
+#ifndef PX_WINDOWS_DELAY_LOAD_HOOK_H
+#define PX_WINDOWS_DELAY_LOAD_HOOK_H
 
 #include "foundation/PxPreprocessor.h"
 #include "common/PxPhysXCommonConfig.h"
 
-/** \addtogroup foundation
-@{
-*/
 
 #if !PX_DOXYGEN
 namespace physx
@@ -52,7 +47,7 @@ namespace physx
 	Once the names are set, the instance must be set for use by PhysX.dll using PxSetPhysXDelayLoadHook(), 
 	PhysXCooking.dll using PxSetPhysXCookingDelayLoadHook()	or by PhysXCommon.dll using PxSetPhysXCommonDelayLoadHook().
 
-	@see PxSetPhysXDelayLoadHook(), PxSetPhysXCookingDelayLoadHook(), PxSetPhysXCommonDelayLoadHook()
+	\see PxSetPhysXDelayLoadHook(), PxSetPhysXCookingDelayLoadHook(), PxSetPhysXCommonDelayLoadHook()
  	*/
 	class PxDelayLoadHook
 	{
@@ -73,7 +68,7 @@ namespace physx
 
 	\param[in] hook Delay load hook.
 
-	@see PxDelayLoadHook
+	\see PxDelayLoadHook
 	*/
 	PX_C_EXPORT PX_PHYSX_CORE_API void PX_CALL_CONV PxSetPhysXDelayLoadHook(const physx::PxDelayLoadHook* hook);
 
@@ -82,7 +77,7 @@ namespace physx
 
 	\param[in] hook Delay load hook.
 
-	@see PxDelayLoadHook
+	\see PxDelayLoadHook
 	*/
 	PX_C_EXPORT PX_PHYSX_CORE_API void PX_CALL_CONV PxSetPhysXCookingDelayLoadHook(const physx::PxDelayLoadHook* hook);
 
@@ -91,12 +86,11 @@ namespace physx
 
 	\param[in] hook Delay load hook.
 
-	@see PxDelayLoadHook
+	\see PxDelayLoadHook
 	*/
 	PX_C_EXPORT PX_PHYSX_COMMON_API void PX_CALL_CONV PxSetPhysXCommonDelayLoadHook(const physx::PxDelayLoadHook* hook);
 
 #if !PX_DOXYGEN
 } // namespace physx
 #endif
-/** @} */
 #endif

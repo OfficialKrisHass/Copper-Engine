@@ -1,4 +1,3 @@
-//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
@@ -23,16 +22,17 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2025 NVIDIA Corporation. All rights reserved.
 
-#ifndef PXTASK_PXCPUDISPATCHER_H
-#define PXTASK_PXCPUDISPATCHER_H
+#ifndef PX_CPU_DISPATCHER_H
+#define PX_CPU_DISPATCHER_H
 
-#include "task/PxTaskDefine.h"
 #include "foundation/PxSimpleTypes.h"
 
+#if !PX_DOXYGEN
 namespace physx
 {
+#endif
 
 class PxBaseTask;
 
@@ -42,9 +42,9 @@ class PxBaseTask;
  A typical implementation would for example use a thread pool with the dispatcher
  pushing tasks onto worker thread queues or a global queue.
 
- @see PxBaseTask
- @see PxTask
- @see PxTaskManager
+ \see PxBaseTask
+ \see PxTask
+ \see PxTaskManager
 */
 class PxCpuDispatcher
 {
@@ -52,15 +52,15 @@ public:
 	/**
 	\brief Called by the TaskManager when a task is to be queued for execution.
 	
-	Upon receiving a task, the dispatcher should schedule the task
-	to run when resource is available.  After the task has been run,
-	it should call the release() method and discard it's pointer.
+	Upon receiving a task, the dispatcher should schedule the task to run.
+	After the task has been run, it should call the release() method and 
+	discard its pointer.
 
 	\param[in] task The task to be run.
 
-	@see PxBaseTask
+	\see PxBaseTask
 	*/
-    virtual void submitTask( PxBaseTask& task ) = 0;
+    virtual void submitTask(PxBaseTask& task) = 0;
 
 	/**
 	\brief Returns the number of available worker threads for this dispatcher.
@@ -74,6 +74,9 @@ public:
 	virtual ~PxCpuDispatcher() {}
 };
 
-} // end physx namespace
+#if !PX_DOXYGEN
+} // namespace physx
+#endif
 
-#endif // PXTASK_PXCPUDISPATCHER_H
+#endif
+

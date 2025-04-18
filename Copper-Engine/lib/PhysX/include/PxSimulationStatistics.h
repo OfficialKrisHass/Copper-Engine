@@ -1,4 +1,3 @@
-//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
@@ -23,19 +22,16 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2025 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
-
-#ifndef PX_SIMULATION_STATISTICS
-#define PX_SIMULATION_STATISTICS
-/** \addtogroup physics
-@{
-*/
+#ifndef PX_SIMULATION_STATISTICS_H
+#define PX_SIMULATION_STATISTICS_H
 
 #include "foundation/PxAssert.h"
 #include "PxPhysXConfig.h"
+#include "foundation/PxSimpleTypes.h"
 #include "geometry/PxGeometry.h"
 
 #if !PX_DOXYGEN
@@ -44,9 +40,45 @@ namespace physx
 #endif
 
 /**
+\brief Structure used to retrieve actual sizes/counts for the configuration parameters provided in PxGpuDynamicsMemoryConfig.
+
+\note All the values in this structure are reported as the maximum over the lifetime of a PxScene.
+
+\see PxScene::getSimulationStatistics(), PxSimulationStatistics, PxSceneDesc::PxGpuDynamicsMemoryConfig
+*/
+struct PxGpuDynamicsMemoryConfigStatistics
+{
+	PxU64 	tempBufferCapacity; 		//!< actual size needed (bytes) for PxGpuDynamicsMemoryConfig::tempBufferCapacity.
+	PxU32	rigidContactCount;			//!< actual number of rigid contacts needed - see PxGpuDynamicsMemoryConfig::maxRigidContactCount.
+	PxU32	rigidPatchCount;			//!< actual number of rigid contact patches needed - see PxGpuDynamicsMemoryConfig::maxRigidPatchCount.
+	PxU32	foundLostPairs;				//!< actual number of lost/found pairs needed - see PxGpuDynamicsMemoryConfig::foundLostPairsCapacity.
+	PxU32	foundLostAggregatePairs;	//!< actual number of lost/found aggregate pairs needed - see PxGpuDynamicsMemoryConfig::foundLostAggregatePairsCapacity.
+	PxU32	totalAggregatePairs;		//!< actual number of aggregate pairs needed - see PxGpuDynamicsMemoryConfig::totalAggregatePairsCapacity.
+	PxU32	deformableSurfaceContacts;	//!< actual number of  deformable surface contacts needed - see PxGpuDynamicsMemoryConfig::maxDeformableSurfaceContacts.
+	PxU32	deformableVolumeContacts;	//!< actual number of deformable volume contact needed - see PxGpuDynamicsMemoryConfig::maxDeformableVolumeContacts.
+	PxU32	softbodyContacts;			//!< deprecated, use deformableVolumeContacts.
+	PxU32	particleContacts;			//!< actual number of particle contacts needed - see PxGpuDynamicsMemoryConfig::maxParticleContacts.
+	PxU32	collisionStackSize;			//!< actual size (bytes) needed for the collision stack - see PxGpuDynamicsMemoryConfig::collisionStackSize.
+
+	PxGpuDynamicsMemoryConfigStatistics() :
+		tempBufferCapacity			(0),
+		rigidContactCount			(0),
+		rigidPatchCount				(0),
+		foundLostPairs				(0),
+		foundLostAggregatePairs		(0),
+		totalAggregatePairs			(0),
+		deformableSurfaceContacts	(0),
+		deformableVolumeContacts	(0),
+		softbodyContacts			(0), // deprecated
+		particleContacts			(0),
+		collisionStackSize			(0)
+	{ }
+};
+
+/**
 \brief Class used to retrieve statistics for a simulation step.
 
-@see PxScene::getSimulationStatistics()
+\see PxScene::getSimulationStatistics()
 */
 class PxSimulationStatistics
 {
@@ -54,7 +86,7 @@ public:
 
 	/**
 	\brief Different types of rigid body collision pair statistics.
-	@see getRbPairStats
+	\see getRbPairStats
 	*/
 	enum RbPairStatsType
 	{
@@ -69,21 +101,21 @@ public:
 		\note Counts the pairs for which special CCD (continuous collision detection) work was actually done and NOT the number of pairs which were configured for CCD. 
 		Furthermore, there can be multiple CCD passes and all processed pairs of all passes are summed up, hence the number can be larger than the amount of pairs which have been configured for CCD.
 
-		@see PxPairFlag::eDETECT_CCD_CONTACT,
+		\see PxPairFlag::eDETECT_CCD_CONTACT,
 		*/
 		eCCD_PAIRS,
 
 		/**
 		\brief Shape pairs processed with user contact modification enabled for the current simulation step.
 
-		@see PxContactModifyCallback
+		\see PxContactModifyCallback
 		*/
 		eMODIFIED_CONTACT_PAIRS,
 
 		/**
 		\brief Trigger shape pairs processed for the current simulation step.
 
-		@see PxShapeFlag::eTRIGGER_SHAPE
+		\see PxShapeFlag::eTRIGGER_SHAPE
 		*/
 		eTRIGGER_PAIRS
 	};
@@ -274,27 +306,156 @@ public:
 	*/
 	PxU32	nbPartitions;
 
+	/**
+	\brief GPU device memory in bytes allocated for particle state accessible through API
+	*/
+	PxU64	gpuMemParticles;
+
+	/**
+	\brief GPU device memory in bytes allocated for deformable surface state accessible through API
+	*/
+	PxU64	gpuMemDeformableSurfaces;
+
+	/**
+	\brief GPU device memory in bytes allocated for deformable volume state accessible through API
+	*/
+	PxU64	gpuMemDeformableVolumes;
+
+	/**
+	\brief Deprecated
+	\see gpuMemDeformableVolumes
+	*/
+	PX_DEPRECATED PxU64	gpuMemSoftBodies;
+
+	/**
+	\brief GPU device memory in bytes allocated for internal heap allocation
+	*/
+	PxU64	gpuMemHeap;
+
+	/**
+	\brief GPU device heap memory used for broad phase in bytes
+	*/
+	PxU64	gpuMemHeapBroadPhase;
+
+	/**
+	\brief GPU device heap memory used for narrow phase in bytes
+	*/
+	PxU64	gpuMemHeapNarrowPhase;
+
+	/**
+	\brief GPU device heap memory used for solver in bytes
+	*/
+	PxU64	gpuMemHeapSolver;
+
+	/**
+	\brief GPU device heap memory used for articulations in bytes
+	*/
+	PxU64	gpuMemHeapArticulation;
+
+	/**
+	\brief GPU device heap memory used for simulation pipeline in bytes
+	*/
+	PxU64	gpuMemHeapSimulation;
+
+	/**
+	\brief GPU device heap memory used for articulations in the simulation pipeline in bytes
+	*/
+	PxU64	gpuMemHeapSimulationArticulation;
+
+	/**
+	\brief GPU device heap memory used for particles in the simulation pipeline in bytes
+	*/
+	PxU64	gpuMemHeapSimulationParticles;
+
+	/**
+	\brief GPU device heap memory used for deformable surfaces in the simulation pipeline in bytes
+	*/
+	PxU64	gpuMemHeapSimulationDeformableSurface;
+
+	/**
+	\brief GPU device heap memory used for deformable volumes in the simulation pipeline in bytes
+	*/
+	PxU64	gpuMemHeapSimulationDeformableVolume;
+
+	/**
+	\brief Deprecated
+	\see gpuMemHeapSimulationDeformableVolume
+	*/
+	PX_DEPRECATED PxU64	gpuMemHeapSimulationSoftBody;
+
+	/**
+	\brief GPU device heap memory used for shared buffers in the particles pipeline in bytes
+	*/
+	PxU64	gpuMemHeapParticles;
+
+	/**
+	\brief GPU device heap memory used for shared buffers in the deformable surface pipeline in bytes
+	*/
+	PxU64	gpuMemHeapDeformableSurfaces;
+
+	/**
+	\brief GPU device heap memory used for shared buffers in the deformable volume pipeline in bytes
+	*/
+	PxU64	gpuMemHeapDeformableVolumes;
+
+	/**
+	\brief Deprecated
+	\see gpuMemHeapDeformableVolumes
+	*/
+	PX_DEPRECATED PxU64	gpuMemHeapSoftBodies;
+
+	/**
+	\brief GPU device heap memory not covered by other stats in bytes
+	*/
+	PxU64	gpuMemHeapOther;
+
+	/**
+	\brief Structure containing statistics about actual count/sizes used for the configuration parameters in PxGpuDynamicsMemoryConfig
+	*/
+	PxGpuDynamicsMemoryConfigStatistics gpuDynamicsMemoryConfigStatistics;
+
+
 	PxSimulationStatistics() :
-		nbActiveConstraints					(0),
-		nbActiveDynamicBodies				(0),
-		nbActiveKinematicBodies				(0),
-		nbStaticBodies						(0),
-		nbDynamicBodies						(0),
-		nbKinematicBodies					(0),
-		nbAggregates						(0),
-		nbArticulations						(0),
-		nbAxisSolverConstraints				(0),
-		compressedContactSize				(0),
-		requiredContactConstraintMemory		(0),
-		peakConstraintMemory				(0),
-		nbDiscreteContactPairsTotal			(0),
-		nbDiscreteContactPairsWithCacheHits	(0),
-		nbDiscreteContactPairsWithContacts	(0),
-		nbNewPairs							(0),
-		nbLostPairs							(0),
-		nbNewTouches						(0),
-		nbLostTouches						(0),
-		nbPartitions						(0)
+		nbActiveConstraints						(0),
+		nbActiveDynamicBodies					(0),
+		nbActiveKinematicBodies					(0),
+		nbStaticBodies							(0),
+		nbDynamicBodies							(0),
+		nbKinematicBodies						(0),
+		nbAggregates							(0),
+		nbArticulations							(0),
+		nbAxisSolverConstraints					(0),
+		compressedContactSize					(0),
+		requiredContactConstraintMemory			(0),
+		peakConstraintMemory					(0),
+		nbDiscreteContactPairsTotal				(0),
+		nbDiscreteContactPairsWithCacheHits		(0),
+		nbDiscreteContactPairsWithContacts		(0),
+		nbNewPairs								(0),
+		nbLostPairs								(0),
+		nbNewTouches							(0),
+		nbLostTouches							(0),
+		nbPartitions							(0),
+		gpuMemParticles							(0),
+		gpuMemDeformableSurfaces				(0),
+		gpuMemDeformableVolumes					(0),
+		gpuMemSoftBodies						(0), // deprecated
+		gpuMemHeap								(0),
+		gpuMemHeapBroadPhase					(0),
+		gpuMemHeapNarrowPhase					(0),
+		gpuMemHeapSolver						(0),
+		gpuMemHeapArticulation					(0),
+		gpuMemHeapSimulation					(0),
+		gpuMemHeapSimulationArticulation		(0),
+		gpuMemHeapSimulationParticles			(0),
+		gpuMemHeapSimulationDeformableSurface	(0),
+		gpuMemHeapSimulationDeformableVolume	(0),
+		gpuMemHeapSimulationSoftBody			(0), // deprecated
+		gpuMemHeapParticles						(0),
+		gpuMemHeapDeformableSurfaces			(0), 
+		gpuMemHeapDeformableVolumes				(0),
+		gpuMemHeapSoftBodies					(0), // deprecated
+		gpuMemHeapOther							(0)
 	{
 		nbBroadPhaseAdds = 0;
 		nbBroadPhaseRemoves = 0;
@@ -335,5 +496,4 @@ public:
 } // namespace physx
 #endif
 
-/** @} */
 #endif

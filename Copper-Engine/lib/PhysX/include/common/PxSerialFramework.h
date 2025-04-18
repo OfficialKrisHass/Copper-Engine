@@ -1,4 +1,3 @@
-//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
@@ -23,17 +22,13 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2025 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
+#ifndef PX_SERIAL_FRAMEWORK_H
+#define PX_SERIAL_FRAMEWORK_H
 
-#ifndef PX_PHYSICS_COMMON_NX_SERIAL_FRAMEWORK
-#define PX_PHYSICS_COMMON_NX_SERIAL_FRAMEWORK
-
-/** \addtogroup common
-@{
-*/
 
 #include "common/PxPhysXCommonConfig.h"
 
@@ -42,12 +37,17 @@ namespace physx
 {
 #endif
 
+#if !PX_DOXYGEN  // need to exclude, confuses api doc build about duplicate declaration
 typedef PxU16 PxType;
+#endif
+
 class PxBase;
 class PxSerializationContext;
 class PxRepXSerializer;
 class PxSerializer;
 class PxPhysics;
+class PxCollection;
+class PxOutputStream;
 
 //! Default serialization alignment
 #define PX_SERIAL_ALIGN	16
@@ -61,7 +61,7 @@ class PxPhysics;
 //! ID type for PxBase objects in a PxCollection
 typedef PxU64 PxSerialObjectId;
 
-//! Bit to mark pointer type references, @see PxDeserializationContext
+//! Bit to mark pointer type references, \see PxDeserializationContext
 #define PX_SERIAL_REF_KIND_PTR_TYPE_BIT (1u<<31)
 
 //! Reference kind value for PxBase objects
@@ -76,7 +76,7 @@ typedef PxU64 PxSerialObjectId;
 /**
 \brief Callback class used to process PxBase objects.
 
-@see PxSerializer::requires
+\see PxSerializer::requires
 */
 class PxProcessPxBaseCallback
 {
@@ -94,7 +94,7 @@ and object extra data during serialization.
 It is mainly used by the serialization framework. Except for custom 
 serializable types, users should not have to worry about it.
 
-@see PxDeserializationContext 
+\see PxDeserializationContext 
 */
 class PxSerializationContext
 {
@@ -119,7 +119,7 @@ public:
     \param[in]  kind		What kind of reference this is (PX_SERIAL_REF_KIND_PXBASE, PX_SERIAL_REF_KIND_MATERIAL_IDX or custom kind)
     \param[in]  reference	Value of reference
 
-	@see PxDeserializationContext::resolveReference, PX_SERIAL_REF_KIND_PXBASE, PX_SERIAL_REF_KIND_MATERIAL_IDX, PxSerializer::registerReferences
+	\see PxDeserializationContext::resolveReference, PX_SERIAL_REF_KIND_PXBASE, PX_SERIAL_REF_KIND_MATERIAL_IDX, PxSerializer::registerReferences
     */
 	virtual	void				registerReference(PxBase& base, PxU32 kind, size_t reference)		= 0;
 
@@ -133,7 +133,7 @@ public:
 	
 	This function is assumed to be called within the implementation of PxSerializer::exportData and PxSerializer::exportExtraData.
 
-	@see PxSerializer::exportData, PxSerializer::exportExtraData, PxSerializer::createObject, PxDeserializationContext::readExtraData
+	\see PxSerializer::exportData, PxSerializer::exportExtraData, PxSerializer::createObject, PxDeserializationContext::readExtraData
 	*/
 	virtual	void				writeData(const void* data, PxU32 size)								= 0;
 
@@ -142,7 +142,7 @@ public:
 	
 	This function is assumed to be called within the implementation of PxSerializer::exportData and PxSerializer::exportExtraData.
 
-	@see PxSerializer::exportData, PxSerializer::exportExtraData, PxDeserializationContext::alignExtraData
+	\see PxSerializer::exportData, PxSerializer::exportExtraData, PxDeserializationContext::alignExtraData
 	*/
 	virtual	void				alignData(PxU32 alignment = PX_SERIAL_ALIGN)						= 0;
 
@@ -151,7 +151,7 @@ public:
 
 	This function is assumed to be called within the implementation of PxSerializer::exportExtraData.
 
-	@see PxSerialization::serializeCollectionToBinary, PxDeserializationContext::readName
+	\see PxSerialization::serializeCollectionToBinary, PxDeserializationContext::readName
 	*/
 	virtual	void				writeName(const char* name)											= 0;
 
@@ -169,7 +169,7 @@ This class is used to resolve references and access extra data during deserializ
 It is mainly used by the serialization framework. Except for custom 
 serializable types, users should not have to worry about it.
 
-@see PxSerializationContext 
+\see PxSerializationContext 
 */
 class PxDeserializationContext
 {
@@ -191,14 +191,14 @@ public:
     \param[in] reference	Deserialized reference value
     \return					PxBase object associated with the reference value
 
-	@see PxSerializationContext::registerReference, PX_SERIAL_REF_KIND_PXBASE, PX_SERIAL_REF_KIND_MATERIAL_IDX, translatePxBase
+	\see PxSerializationContext::registerReference, PX_SERIAL_REF_KIND_PXBASE, PX_SERIAL_REF_KIND_MATERIAL_IDX, translatePxBase
     */
 	virtual		PxBase*			resolveReference(PxU32 kind, size_t reference) const = 0;
 
 	/**
 	\brief Helper function to update PxBase pointer on deserialization
 
-	@see resolveReference, PX_SERIAL_REF_KIND_PXBASE
+	\see resolveReference, PX_SERIAL_REF_KIND_PXBASE
 	*/
 	template<typename T>
 				void			translatePxBase(T*& base) { if (base) { base = static_cast<T*>(resolveReference(PX_SERIAL_REF_KIND_PXBASE, size_t(base))); } }
@@ -208,7 +208,7 @@ public:
 
 	This function is assumed to be called within the implementation of PxSerializer::createObject.
 
-	@see PxSerializationContext::writeName
+	\see PxSerializationContext::writeName
 	*/
 	PX_INLINE	void			readName(const char*& name)
 	{
@@ -223,7 +223,7 @@ public:
 	
 	This function is assumed to be called within the implementation of PxSerializer::createObject.
 
-	@see PxSerializationContext::writeData, PxSerializer::createObject
+	\see PxSerializationContext::writeData, PxSerializer::createObject
 	*/
 	template<typename T>
 	PX_INLINE	T*				readExtraData(PxU32 count=1)
@@ -238,7 +238,7 @@ public:
 	
 	This function is assumed to be called within the implementation of PxSerializer::createObject.
 
-	@see PxSerializationContext::writeData, PxDeserializationContext::alignExtraData, PxSerializer::createObject
+	\see PxSerializationContext::writeData, PxDeserializationContext::alignExtraData, PxSerializer::createObject
 	*/
 	template<typename T, PxU32 alignment>
 	PX_INLINE	T*				readExtraData(PxU32 count=1)
@@ -252,11 +252,11 @@ public:
 
 	This function is assumed to be called within the implementation of PxSerializer::createObject.
 
-	@see PxSerializationContext::alignData, PxSerializer::createObject
+	\see PxSerializationContext::alignData, PxSerializer::createObject
 	*/
 	PX_INLINE	void			alignExtraData(PxU32 alignment = PX_SERIAL_ALIGN)
 	{
-		size_t addr = reinterpret_cast<size_t>(mExtraDataAddress);
+		size_t addr = size_t(mExtraDataAddress);
 		addr = (addr+alignment-1)&~size_t(alignment-1);
 		mExtraDataAddress = reinterpret_cast<PxU8*>(addr);
 	}
@@ -270,14 +270,6 @@ protected:
 };
 
 /**
-\brief Callback type for exporting binary meta data for a serializable type.
-@see PxSerializationRegistry::registerBinaryMetaDataCallback
-
-\param stream	Stream to store binary meta data. 
-*/
-typedef void (*PxBinaryMetaDataCallback)(PxOutputStream& stream);
-
-/**
 \brief Class serving as a registry for XML (RepX) and binary serializable types.
 
 In order to serialize and deserialize objects the application needs
@@ -285,16 +277,16 @@ to maintain an instance of this class. It can be created with
 PxSerialization::createSerializationRegistry() and released with
 PxSerializationRegistry::release().
 
-@see PxSerialization::createSerializationRegistry
+\see PxSerialization::createSerializationRegistry
 */
 class PxSerializationRegistry
 {
 public:
 	/************************************************************************************************/
 
-	/** @name Binary Serialization Functionality
+	/** \name Binary Serialization Functionality
 	*/
-	//@{
+	//\{
 
 	/**
 	\brief Register a serializer for a concrete type 
@@ -302,7 +294,7 @@ public:
 	\param	type PxConcreteType corresponding to the serializer
 	\param	serializer The PxSerializer to be registered
 
-	@see PxConcreteType, PxSerializer, PxSerializationRegistry::unregisterSerializer
+	\see PxConcreteType, PxSerializer, PxSerializationRegistry::unregisterSerializer
 	*/
 	virtual void						registerSerializer(PxType type, PxSerializer& serializer) = 0;
 
@@ -312,69 +304,64 @@ public:
 	\param	type PxConcreteType for which the serializer should be unregistered
 	\return	Unregistered serializer corresponding to type, NULL for types for which no serializer has been registered.
 
-	@see PxConcreteType, PxSerializationRegistry::registerSerializer, PxSerializationRegistry::release
+	\see PxConcreteType, PxSerializationRegistry::registerSerializer, PxSerializationRegistry::release
 	*/
 	virtual PxSerializer*               unregisterSerializer(PxType type) = 0;
 
-	/**
-	\brief Register binary meta data callback
-
-	The callback is executed when calling PxSerialization::dumpBinaryMetaData.
-
-	\param	callback PxBinaryMetaDataCallback to be registered.
-
-	@see PxBinaryMetaDataCallback, PxSerialization::dumpBinaryMetaData
-	*/
-	virtual void						registerBinaryMetaDataCallback(PxBinaryMetaDataCallback callback) = 0;
-	
 	/**
 	\brief Returns PxSerializer corresponding to type
 
 	\param	type PxConcreteType of the serializer requested.
 	\return	Registered PxSerializer object corresponding to type
 
-	@see PxConcreteType
+	\see PxConcreteType
 	*/
 	virtual const PxSerializer*			getSerializer(PxType type) const = 0;  
 
-	//@}
+	//\}
 	/************************************************************************************************/
 
-	/** @name RepX (XML) Serialization Functionality
+	/** \name RepX (XML) Serialization Functionality
 	*/
-	//@{
+	//\{
 
 	/**
 	\brief Register a RepX serializer for a concrete type
 
+	\deprecated Xml serialization is deprecated. An alternative serialization system is provided through USD Physics.
+
 	\param	type PxConcreteType corresponding to the RepX serializer
 	\param	serializer The PxRepXSerializer to be registered
 	
-	@see PxConcreteType, PxRepXSerializer
+	\see PxConcreteType, PxRepXSerializer
 	*/
-	virtual void						registerRepXSerializer(PxType type, PxRepXSerializer& serializer) = 0;
+	PX_DEPRECATED virtual void registerRepXSerializer(PxType type, PxRepXSerializer& serializer) = 0;
 
 	/**
 	\brief Unregister a RepX serializer for a concrete type, and retrieves the corresponding serializer object.
 
+	\deprecated Xml serialization is deprecated. An alternative serialization system is provided through USD Physics.
+
 	\param	type PxConcreteType for which the RepX serializer should be unregistered
 	\return	Unregistered PxRepxSerializer corresponding to type, NULL for types for which no RepX serializer has been registered.
 	
-	@see PxConcreteType, PxSerializationRegistry::registerRepXSerializer, PxSerializationRegistry::release
+	\see PxConcreteType, PxSerializationRegistry::registerRepXSerializer, PxSerializationRegistry::release
 	*/
-	virtual PxRepXSerializer*			unregisterRepXSerializer(PxType type) = 0;
+	PX_DEPRECATED virtual PxRepXSerializer* unregisterRepXSerializer(PxType type) = 0;
 
 	/**
 	\brief Returns RepX serializer given the corresponding type name
 
+	\deprecated Xml serialization is deprecated. An alternative serialization system is provided through USD Physics.
+
 	\param	typeName Name of the type
 	\return	Registered PxRepXSerializer object corresponding to type name
 
-	@see PxRepXSerializer, PxTypeInfo, PX_DEFINE_TYPEINFO
+	\see PxRepXSerializer, PxTypeInfo, PX_DEFINE_TYPEINFO
 	*/
-	virtual PxRepXSerializer*			getRepXSerializer(const char* typeName) const = 0;  
+	PX_DEPRECATED virtual PxRepXSerializer*	getRepXSerializer(const char* typeName) const = 0;  
 	
-	//@}
+	//\}
 	/************************************************************************************************/
 
 	/**
@@ -383,7 +370,7 @@ public:
 	This unregisters all PhysX and PhysXExtension serializers. Make sure to unregister all custom type
 	serializers before releasing the PxSerializationRegistry.
 
-	@see PxSerializationRegistry::unregisterSerializer, PxSerializationRegistry::unregisterRepXSerializer
+	\see PxSerializationRegistry::unregisterSerializer, PxSerializationRegistry::unregisterRepXSerializer
 	*/
 	virtual void release() = 0;
 
@@ -395,5 +382,4 @@ protected:
 } // namespace physx
 #endif
 
-/** @} */
 #endif

@@ -1,4 +1,3 @@
-//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
@@ -23,16 +22,13 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2025 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.
 
-#ifndef PXFOUNDATION_PXSIMPLETYPES_H
-#define PXFOUNDATION_PXSIMPLETYPES_H
+#ifndef PX_SIMPLE_TYPES_H
+#define PX_SIMPLE_TYPES_H
 
-/** \addtogroup foundation
-  @{
-*/
 
 // Platform specific types:
 // Design note: Its OK to use int for general loop variables and temps.
@@ -44,10 +40,6 @@
 // header
 #endif
 
-#if PX_LINUX
-#define __STDC_LIMIT_MACROS
-#endif
-
 #include <stdint.h>
 #if PX_VC
 #pragma warning(pop)
@@ -56,15 +48,14 @@
 #if PX_VC // we could use inttypes.h starting with VC12
 #define PX_PRIu64 "I64u"
 #else
-#if !PX_PS4 && !PX_APPLE_FAMILY
-#define __STDC_FORMAT_MACROS
-#endif
 #include <inttypes.h>
 #define PX_PRIu64 PRIu64
 #endif
 
+#if !PX_DOXYGEN
 namespace physx
 {
+#endif
 typedef int64_t PxI64;
 typedef uint64_t PxU64;
 typedef int32_t PxI32;
@@ -76,12 +67,29 @@ typedef uint8_t PxU8;
 typedef float PxF32;
 typedef double PxF64;
 typedef float PxReal;
-}
+// Int-as-bool type - has some uses for efficiency and with SIMD
+typedef PxI32 PxIntBool;
+static const PxIntBool PxIntFalse = 0;
+static const PxIntBool PxIntTrue = 1;
+
+// types for direct-GPU API
+typedef PxU32 PxArticulationGPUIndex;
+typedef PxU32 PxRigidDynamicGPUIndex;
+typedef PxU32 PxShapeGPUIndex;
+
+typedef PxU32 PxConstraintGPUIndex;
+#define PX_INVALID_CONSTRAINT_GPU_INDEX 0xffffFFFF
+
+typedef PxConstraintGPUIndex PxD6JointGPUIndex;
+#define PX_INVALID_D6_JOINT_GPU_INDEX PX_INVALID_CONSTRAINT_GPU_INDEX
+
+#if !PX_DOXYGEN
+} // namespace physx
+#endif
+
+#define PX_SIGN_BITMASK 0x80000000
 
 // Type ranges
-
-// These are here because we sometimes have non-IEEE compliant platforms to deal with.
-// Removal is under consideration (issue GWSD-34)
 
 #define PX_MAX_F32 3.4028234663852885981170418348452e+38F
 // maximum possible float value
@@ -108,5 +116,5 @@ typedef float PxReal;
 #define PX_MAX_U32 UINT32_MAX
 #define PX_MIN_U32 UINT32_MIN
 
-/** @} */
-#endif // #ifndef PXFOUNDATION_PXSIMPLETYPES_H
+#endif
+

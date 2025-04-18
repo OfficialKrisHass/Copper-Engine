@@ -1,4 +1,3 @@
-//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
@@ -23,17 +22,14 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2025 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
+#ifndef PX_SMOOTH_NORMALS_H
+#define PX_SMOOTH_NORMALS_H
 
-#ifndef PX_PHYSICS_EXTENSIONS_SMOOTH_NORMALS_H
-#define PX_PHYSICS_EXTENSIONS_SMOOTH_NORMALS_H
-/** \addtogroup extensions
-  @{
-*/
-
+#include "foundation/PxVec3.h"
 #include "common/PxPhysXCommonConfig.h"
 
 /**
@@ -57,5 +53,4 @@ wFaces and set dFaces to zero.
 PX_C_EXPORT bool PX_CALL_CONV PxBuildSmoothNormals(physx::PxU32 nbTris, physx::PxU32 nbVerts, const physx::PxVec3* verts,
 												   const physx::PxU32* dFaces, const physx::PxU16* wFaces, physx::PxVec3* normals, bool flip);
 
-/** @} */
 #endif

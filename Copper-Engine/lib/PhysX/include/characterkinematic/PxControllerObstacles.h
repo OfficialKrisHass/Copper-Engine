@@ -1,4 +1,3 @@
-//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
@@ -23,15 +22,12 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2025 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
-#ifndef PX_PHYSICS_CCT_OBSTACLES
-#define PX_PHYSICS_CCT_OBSTACLES
-/** \addtogroup character
-  @{
-*/
+#ifndef PX_CONTROLLER_OBSTACLES_H
+#define PX_CONTROLLER_OBSTACLES_H
 
 #include "characterkinematic/PxExtended.h"
 #include "geometry/PxGeometry.h"
@@ -43,12 +39,12 @@ namespace physx
 
 	class PxControllerManager;
 
-	#define INVALID_OBSTACLE_HANDLE	0xffffffff
+	#define PX_INVALID_OBSTACLE_HANDLE	0xffffffff
 
 	/**
 	\brief Base class for obstacles.
 
-	@see PxBoxObstacle PxCapsuleObstacle PxObstacleContext
+	\see PxBoxObstacle PxCapsuleObstacle PxObstacleContext
 	*/
 	class PxObstacle
 	{
@@ -73,7 +69,7 @@ namespace physx
 	/**
 	\brief A box obstacle.
 
-	@see PxObstacle PxCapsuleObstacle PxObstacleContext
+	\see PxObstacle PxCapsuleObstacle PxObstacleContext
 	*/
 	class PxBoxObstacle : public PxObstacle
 	{
@@ -88,7 +84,7 @@ namespace physx
 	/**
 	\brief A capsule obstacle.
 
-	@see PxBoxObstacle PxObstacle PxObstacleContext
+	\see PxBoxObstacle PxObstacle PxObstacleContext
 	*/
 	class PxCapsuleObstacle : public PxObstacle
 	{
@@ -102,14 +98,14 @@ namespace physx
 						PxReal					mRadius;
 	};
 
-	typedef PxU32	ObstacleHandle;
+	typedef PxU32	PxObstacleHandle;
 
 	/**
 	\brief Context class for obstacles.
 
 	An obstacle context class contains and manages a set of user-defined obstacles.
 
-	@see PxBoxObstacle PxCapsuleObstacle PxObstacle
+	\see PxBoxObstacle PxCapsuleObstacle PxObstacle
 	*/
 	class PxObstacleContext
 	{
@@ -136,7 +132,7 @@ namespace physx
 
 		\return Handle for newly-added obstacle
 		*/
-		virtual	ObstacleHandle		addObstacle(const PxObstacle& obstacle)								= 0;
+		virtual	PxObstacleHandle	addObstacle(const PxObstacle& obstacle)								= 0;
 
 		/**
 		\brief Removes an obstacle from the context.
@@ -145,7 +141,7 @@ namespace physx
 
 		\return True if success
 		*/
-		virtual	bool				removeObstacle(ObstacleHandle handle)								= 0;
+		virtual	bool				removeObstacle(PxObstacleHandle handle)								= 0;
 
 		/**
 		\brief Updates data for an existing obstacle.
@@ -155,7 +151,7 @@ namespace physx
 
 		\return True if success
 		*/
-		virtual	bool				updateObstacle(ObstacleHandle handle, const PxObstacle& obstacle)	= 0;
+		virtual	bool				updateObstacle(PxObstacleHandle handle, const PxObstacle& obstacle)	= 0;
 
 		/**
 		\brief Retrieves number of obstacles in the context.
@@ -180,12 +176,11 @@ namespace physx
 
 		\return Desired obstacle
 		*/
-		virtual	const PxObstacle*	getObstacleByHandle(ObstacleHandle handle)					const	= 0;
+		virtual	const PxObstacle*	getObstacleByHandle(PxObstacleHandle handle)				const	= 0;
 	};
 
 #if !PX_DOXYGEN
 }
 #endif
 
-/** @} */
 #endif

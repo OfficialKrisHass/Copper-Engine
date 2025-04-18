@@ -1,4 +1,3 @@
-//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
@@ -23,21 +22,15 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2025 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
-
-#ifndef PX_PHYSICS_NX_AGGREGATE
-#define PX_PHYSICS_NX_AGGREGATE
-
-/** \addtogroup physics
-@{
-*/
+#ifndef PX_AGGREGATE_H
+#define PX_AGGREGATE_H
 
 #include "PxPhysXConfig.h"
 #include "common/PxBase.h"
-
 
 #if !PX_DOXYGEN
 namespace physx
@@ -45,7 +38,38 @@ namespace physx
 #endif
 
 class PxActor;
-class PxBVHStructure;
+class PxBVH;
+class PxScene;
+
+	struct PxAggregateType
+	{
+		enum Enum
+		{
+			eGENERIC	= 0,	//!< Aggregate will contain various actors of unspecified types
+			eSTATIC		= 1,	//!< Aggregate will only contain static actors
+			eKINEMATIC	= 2		//!< Aggregate will only contain kinematic actors
+		};
+	};
+
+	// PxAggregateFilterHint is used for more efficient filtering of aggregates outside of the broadphase.
+	// It is a combination of a PxAggregateType and a self-collision bit.
+	typedef PxU32	PxAggregateFilterHint;
+
+	PX_CUDA_CALLABLE PX_FORCE_INLINE	PxAggregateFilterHint	PxGetAggregateFilterHint(PxAggregateType::Enum type, bool enableSelfCollision)
+	{
+		const PxU32 selfCollisionBit = enableSelfCollision ? 1 : 0;
+		return PxAggregateFilterHint((PxU32(type)<<1)|selfCollisionBit);
+	}
+
+	PX_CUDA_CALLABLE PX_FORCE_INLINE	PxU32					PxGetAggregateSelfCollisionBit(PxAggregateFilterHint hint)
+	{
+		return hint & 1;
+	}
+
+	PX_CUDA_CALLABLE PX_FORCE_INLINE	PxAggregateType::Enum	PxGetAggregateType(PxAggregateFilterHint hint)
+	{
+		return PxAggregateType::Enum(hint>>1);
+	}
 
 /**
 \brief Class to aggregate actors into a single broad-phase entry.
@@ -64,9 +88,8 @@ large number of attached shapes).
    filtering once and for all, for the aggregate containing the ragdoll, rather than filtering
    out each bone-bone collision in the filter shader.
 
-@see PxActor, PxPhysics.createAggregate
+\see PxActor, PxPhysics.createAggregate
 */
-
 class PxAggregate : public PxBase
 {
 public:
@@ -79,7 +102,7 @@ public:
 	to delete both the PxAggregate and its actors, it is best to release the actors first, then release
 	the PxAggregate when it is empty.
 	*/
-	virtual	void		release()				= 0;
+	virtual	void	release()	= 0;
 
 	/**
 	\brief Adds an actor to the aggregate object.
@@ -92,17 +115,16 @@ public:
 	If the actor already belongs to a scene, a warning is output and the call is ignored. You need to remove
 	the actor from the scene first, before adding it to the aggregate.
 
-	\note When BVHStructure is provided the actor shapes are grouped together. 
+	\note When a BVH is provided the actor shapes are grouped together. 
 	The scene query pruning structure inside PhysX SDK will store/update one
 	bound per actor. The scene queries against such an actor will query actor
-	bounds and then make a local space query against the provided BVH structure, which is in
-	actor's local space.
+	bounds and then make a local space query against the provided BVH, which is in actor's local space.
 
-	\param	[in] actor The actor that should be added to the aggregate
-	\param	[in] bvhStructure BVHStructure for actor shapes.
+	\param	[in] actor	The actor that should be added to the aggregate
+	\param	[in] bvh	BVH for actor shapes.
 	return	true if success
 	*/
-	virtual	bool		addActor(PxActor& actor, const PxBVHStructure* bvhStructure = NULL)		= 0;
+	virtual	bool	addActor(PxActor& actor, const PxBVH* bvh = NULL)	= 0;
 
 	/**
 	\brief Removes an actor from the aggregate object.
@@ -115,7 +137,7 @@ public:
 	\param	[in] actor The actor that should be removed from the aggregate
 	return	true if success
 	*/
-	virtual	bool		removeActor(PxActor& actor)		= 0;
+	virtual	bool	removeActor(PxActor& actor)		= 0;
 
 	/**
 	\brief Adds an articulation to the aggregate object.
@@ -131,20 +153,20 @@ public:
 	\param	[in] articulation The articulation that should be added to the aggregate
 	return	true if success
 	*/
-	virtual	bool		addArticulation(PxArticulationBase& articulation) = 0;
+	virtual	bool	addArticulation(PxArticulationReducedCoordinate& articulation) = 0;
 
 	/**
 	\brief Removes an articulation from the aggregate object.
 
 	A warning is output if the incoming articulation does not belong to the aggregate. Otherwise the articulation is
 	removed from the aggregate. If the aggregate belongs to a scene, the articulation is reinserted in that
-	scene. If you intend to delete the articulation, it is best to call #PxArticulation::release() directly. That way
+	scene. If you intend to delete the articulation, it is best to call #PxArticulationReducedCoordinate::release() directly. That way
 	the articulation will be automatically removed from its aggregate (if any) and not reinserted in a scene.
 
 	\param	[in] articulation The articulation that should be removed from the aggregate
 	return	true if success
 	*/
-	virtual	bool		removeArticulation(PxArticulationBase& articulation) = 0;
+	virtual	bool	removeArticulation(PxArticulationReducedCoordinate& articulation) = 0;
 
 	/**
 	\brief Returns the number of actors contained in the aggregate.
@@ -153,18 +175,27 @@ public:
 
 	\return Number of actors contained in the aggregate.
 
-	@see PxActor getActors()
+	\see PxActor getActors()
 	*/
-	virtual PxU32		getNbActors() const = 0;
+	virtual PxU32	getNbActors() const = 0;
 
 	/**
 	\brief Retrieves max amount of actors that can be contained in the aggregate.
 
-	\return Max aggregate size. 
+	\return Max actor size. 
 
-	@see PxPhysics::createAggregate()
+	\see PxPhysics::createAggregate()
 	*/
-	virtual	PxU32		getMaxNbActors() const = 0;
+	virtual	PxU32	getMaxNbActors() const = 0;
+
+	/**
+	\brief Retrieves max amount of shapes that can be contained in the aggregate.
+
+	\return Max shape size.
+
+	\see PxPhysics::createAggregate()
+	*/
+	virtual	PxU32	getMaxNbShapes() const = 0;
 
 	/**
 	\brief Retrieve all actors contained in the aggregate.
@@ -176,16 +207,16 @@ public:
 	\param[in] startIndex Index of first actor pointer to be retrieved
 	\return Number of actor pointers written to the buffer.
 
-	@see PxShape getNbShapes()
+	\see PxShape getNbShapes()
 	*/
-	virtual PxU32		getActors(PxActor** userBuffer, PxU32 bufferSize, PxU32 startIndex=0) const = 0;
+	virtual PxU32	getActors(PxActor** userBuffer, PxU32 bufferSize, PxU32 startIndex=0) const = 0;
 
 	/**
 	\brief Retrieves the scene which this aggregate belongs to.
 
 	\return Owner Scene. NULL if not part of a scene.
 
-	@see PxScene
+	\see PxScene
 	*/
 	virtual	PxScene*	getScene()	= 0;
 
@@ -196,18 +227,55 @@ public:
 	*/
 	virtual	bool		getSelfCollision()	const	= 0;
 
-	virtual	const char*	getConcreteTypeName() const	{ return "PxAggregate"; }
+	/**
+	\brief Sets the environment ID for this aggregate.
+
+	The environment ID is an extra built-in filter group for the GPU broadphase. Aggregates will only collide with actors or aggregates that
+	have the same environment ID.
+	
+	The default value is PX_INVALID_U32. Aggregates with this ID will collide with other actors or aggregates, regardless of which environment
+	they are a part of.
+
+	The environment ID must be set before adding the aggregate to a scene, and cannot change while the aggregate is in the scene.
+
+	If it is not PX_INVALID_U32, the environment ID must be smaller than 1<<24, i.e. the system does not support more than 1<<24 environments.
+
+	Aggregated actors must have a default environment ID (PX_INVALID_U32). The environment ID of the aggregate is used in the broadphase, not
+	the environment IDs from aggregated actors.
+
+	<b>Default:</b> PX_INVALID_U32
+
+	\note	This is not available for CPU broadphases.
+
+	\param[in]	envID	 Environment ID for this aggregate.
+	\return True if success.
+
+	\see getEnvironmentID()
+	*/
+	virtual	bool	setEnvironmentID(PxU32 envID)	= 0;
+
+	/**
+	\brief Returns the environment ID for this aggregate.
+
+	\return Environment ID for this aggregate.
+
+	\see setEnvironmentID()
+	*/
+	virtual	PxU32	getEnvironmentID()		const	= 0;
+
+	virtual	const char*	getConcreteTypeName() const	PX_OVERRIDE	PX_FINAL	{ return "PxAggregate"; }
+
+			void*		userData;	//!< user can assign this to whatever, usually to create a 1:1 relationship with a user object.
 
 protected:
-	PX_INLINE			PxAggregate(PxType concreteType, PxBaseFlags baseFlags) : PxBase(concreteType, baseFlags) {}
+	PX_INLINE			PxAggregate(PxType concreteType, PxBaseFlags baseFlags) : PxBase(concreteType, baseFlags), userData(NULL)  {}
 	PX_INLINE			PxAggregate(PxBaseFlags baseFlags) : PxBase(baseFlags) {}
 	virtual				~PxAggregate() {}
-	virtual	bool		isKindOf(const char* name) const { return !::strcmp("PxAggregate", name) || PxBase::isKindOf(name); }
+	virtual	bool		isKindOf(const char* name) const { PX_IS_KIND_OF(name, "PxAggregate", PxBase); }
 };
 
 #if !PX_DOXYGEN
 } // namespace physx
 #endif
 
-/** @} */
 #endif

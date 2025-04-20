@@ -28,6 +28,8 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+        IN_NOT_RUNTIME(return);
+
         // First remove if already existing
 
         if (m_actor != nullptr)
@@ -81,6 +83,8 @@ namespace Copper {
         PxQuat rotation = CopperToPhysX(GetTransform()->Rotation());
         m_actor = PxCreateStatic(*physics, PxTransform(position, rotation), *shape);
 
+        CU_ASSERT(m_actor != nullptr, "Failed to create RigidStatic actor on entity {}", *GetEntity());
+
     }
     void RigidBody::InitializeDynamic(physx::PxShape* shape) {
 
@@ -89,6 +93,8 @@ namespace Copper {
         PxVec3 position = CopperToPhysX(GetTransform()->Position() - m_collider->m_center);
         PxQuat rotation = CopperToPhysX(GetTransform()->Rotation());
         m_actor = PxCreateDynamic(*physics, PxTransform(position, rotation), *shape, 1.0f);
+
+        CU_ASSERT(m_actor != nullptr, "Failed to create RigidDynamic actor on entity {}", *GetEntity());
 
         DynamicBody->setMass(m_mass);
         if (!m_gravity)
@@ -123,7 +129,7 @@ namespace Copper {
 
         }
 
-        DynamicBody->addForce(CopperToPhysX(force), (PxForceMode::Enum) mode);
+        IN_RUNTIME(DynamicBody->addForce(CopperToPhysX(force), (PxForceMode::Enum) mode));
 
     }
     void RigidBody::AddTorque(const Vector3& torque, const ForceMode mode) {
@@ -137,7 +143,7 @@ namespace Copper {
 
         }
 
-        DynamicBody->addTorque(CopperToPhysX(torque), (PxForceMode::Enum) mode);
+        IN_RUNTIME(DynamicBody->addTorque(CopperToPhysX(torque), (PxForceMode::Enum) mode));
 
     }
 
@@ -187,6 +193,8 @@ namespace Copper {
 
     void RigidBody::SetPosition(const Vector3& position) {
 
+        IN_NOT_RUNTIME(return);
+
         if (m_actor == nullptr || m_static) return;
 
         PxTransform pose = m_actor->getGlobalPose();
@@ -195,6 +203,8 @@ namespace Copper {
 
     }
     void RigidBody::SetRotation(const Quaternion& rotation) {
+
+        IN_NOT_RUNTIME(return);
 
         if (m_actor == nullptr || m_static) return;
 

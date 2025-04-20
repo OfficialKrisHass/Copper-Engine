@@ -1,0 +1,70 @@
+Version: 0
+Entities:
+  0:
+    Name: Ground
+    Transform:
+      Position: [0, 0, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [10, 1, 10]
+      Parent: 4294967295
+      Children:
+        []
+    Mesh Renderer:
+      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
+      Material: 00000000-0000-0000-0000-000000000000
+    Rigid Body:
+      Mass: 1
+      Static: true
+      Gravity: false
+      Lock Mask: 0
+    Box Collider:
+      Trigger: false
+      Center: [0, 0, 0]
+      Size: [1, 1, 1]
+  1:
+    Name: Cube
+    Transform:
+      Position: [0, 5, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent: 4294967295
+      Children:
+        []
+    Mesh Renderer:
+      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
+      Material: 00000000-0000-0000-0000-000000000000
+    Rigid Body:
+      Mass: 1
+      Static: false
+      Gravity: true
+      Lock Mask: 0
+    Box Collider:
+      Trigger: false
+      Center: [0, 0, 0]
+      Size: [1, 1, 1]
+  2:
+    Name: Cube
+    Transform:
+      Position: [-1.67582762, 5, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent: 4294967295
+      Children:
+        []
+    Mesh Renderer:
+      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
+      Material: 00000000-0000-0000-0000-000000000000
+    Rigid Body:
+      Mass: 20
+      Static: false
+      Gravity: true
+      Lock Mask: 0
+    Box Collider:
+      Trigger: false
+      Center: [0, 0, 0]
+      Size: [1, 2.13000011, 1]
+Scene Camera:
+  Position: [-0.602051198, 4.23804426, -4.92329979]
+  Rotation: [0.04975399, -0.00470906543, -0.994306803, -0.094108142]
+  Speed: 0.100000001
+  Sensitivity: 100

@@ -19,7 +19,7 @@ Entities:
       Lock Mask: 0
     Box Collider:
       Trigger: false
-      Center: [0, -0.5, 0]
+      Center: [0, 0.5, 0]
       Size: [1, 1, 1]
   1:
     Name: Light
@@ -305,12 +305,21 @@ Entities:
       Children:
         - 23
         - 24
+    Rigid Body:
+      Mass: 1
+      Static: false
+      Gravity: true
+      Lock Mask: 0
+    Box Collider:
+      Trigger: false
+      Center: [0, 0, 0]
+      Size: [0.5, 0.5, 0.5]
   23:
     Name: Cube
     Transform:
       Position: [0, 0, 0]
       Rotation: [1, 0, 0, 0]
-      Scale: [1, 1, 1]
+      Scale: [0.5, 0.5, 0.5]
       Parent: 22
       Children:
         []
@@ -327,7 +336,7 @@ Entities:
       Children:
         []
 Scene Camera:
-  Position: [2.93125606, 14.2536049, -0.53396821]
-  Rotation: [-0.59639883, 0.0694996789, -0.794298768, -0.0925614014]
+  Position: [-4.64636374, 11.9913063, -3.6192503]
+  Rotation: [0.477988452, -0.0930146351, -0.857345402, -0.166835964]
   Speed: 0.100000001
   Sensitivity: 100

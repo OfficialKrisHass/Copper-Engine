@@ -65,26 +65,23 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        if (initialized) return;
+        if (m_initialized) return;
 
         InitializePhysics();
 
-        for (RigidBody* rb : ComponentView<RigidBody>(this))
-            rb->Initialize();
-
-        initialized = true;
+        m_initialized = true;
 
     }
-    void Scene::Cleanup() {
+    void Scene::Deinitialize() {
 
         CUP_FUNCTION();
 
-        if (!initialized) return;
+        if (!m_initialized) return;
 
         m_registry.Cleanup();
-        ShutdownPhysics();
+        DeinitializePhysics();
 
-        initialized = false;
+        m_initialized = false;
         m_cam = nullptr;
 
     }

@@ -1,5 +1,3 @@
-#pragma once
-
 #include "cupch.h"
 
 #include "Engine/Scene/Scene.h"

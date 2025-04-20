@@ -1,6 +1,8 @@
 #include "cupch.h"
 #include "Engine/Scene/CopperECS.h"
 
+#include "Engine/Components/RigidBody.h"
+
 #include "Engine/Physics/PhysicsEngine.h"
 #include "Engine/Physics/CollisionNotifier.cpp"
 
@@ -32,8 +34,6 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        m_physicsInitialized = true;
-
         PxSceneDesc sceneDesc(physics->getTolerancesScale());
         sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
         sceneDesc.cpuDispatcher = dispatcher;
@@ -47,6 +47,9 @@ namespace Copper {
 
         m_physicsScene->setSimulationEventCallback(&collisionNotifier);
 
+        for (RigidBody* rb : ComponentView<RigidBody>(this))
+            rb->Initialize();
+
     }
     void Scene::UpdatePhysics(float deltaTime) {
 
@@ -59,14 +62,12 @@ namespace Copper {
         CUP_END_FRAME();
 
     }
-    void Scene::ShutdownPhysics() {
+    void Scene::DeinitializePhysics() {
 
         CUP_FUNCTION();
 
         m_physicsScene->release();
-
         m_physicsScene = nullptr;
-        m_physicsInitialized = false;
 
     }
 

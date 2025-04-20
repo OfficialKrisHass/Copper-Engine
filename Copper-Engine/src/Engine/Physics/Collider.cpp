@@ -30,7 +30,7 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        IN_RUNTIME_BEGIN;
+        IN_NOT_RUNTIME(return);
 
         // Remove current shape
 
@@ -54,8 +54,6 @@ namespace Copper {
 
         m_rb->m_actor->attachShape(*shape);
         shape->release();
-
-        IN_RUNTIME_END;
 
     }
 

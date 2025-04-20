@@ -26,6 +26,7 @@ namespace Editor {
 }
 
 #define IN_RUNTIME(action) if (Editor::IsRuntimeRunning()) { action; }
+#define IN_NOT_RUNTIME(action) if (!Editor::IsRuntimeRunning()) { action; }
 #define IN_RUNTIME_BEGIN if (Editor::IsRuntimeRunning()) {
 #define IN_RUNTIME_END }
 #else

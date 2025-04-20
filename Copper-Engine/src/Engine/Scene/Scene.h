@@ -44,7 +44,10 @@ namespace Copper {
         ~Scene();
 
         void Initialize();
-        void Cleanup();
+        void Deinitialize();
+
+        void InitializePhysics();
+        void DeinitializePhysics();
 
         InternalEntity* CreateEntity(const Vector3& position = Vector3::zero, const Quaternion& rotation = Quaternion::identity, const Vector3& scale = Vector3::one, const std::string& name = "Entity") {
 
@@ -82,7 +85,7 @@ namespace Copper {
 
         void Render(class Camera* cam, bool gizmos = true);
 
-        inline bool IsInitialized() const { return initialized; }
+        inline bool IsInitialized() const { return m_initialized; }
 
         inline Camera* GetMainCamera() const { return m_cam; }
 
@@ -90,13 +93,12 @@ namespace Copper {
         uint32 GetNumOfEntities() const { return (uint32) m_registry.m_entities.size(); }
 
     private:
-        bool initialized = false;
+        bool m_initialized = false;
 
         Registry m_registry;
         Camera* m_cam = nullptr;
 
         physx::PxScene* m_physicsScene = nullptr;
-        bool m_physicsInitialized = false;
 
         bool EntityCreated(const Event& e);
         bool EntityRemoved(const Event& e);
@@ -110,9 +112,7 @@ namespace Copper {
 
         // Defined in PhysicsEngine.cpp so that we dont have physx includes in Scene.cpp
 
-        void InitializePhysics();
         void UpdatePhysics(float deltaTime);
-        void ShutdownPhysics();
 
         void AddPhysicsBody(physx::PxRigidActor* body);
         void RemovePhysicsBody(physx::PxRigidActor* body);

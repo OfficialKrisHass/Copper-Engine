@@ -597,6 +597,9 @@ namespace Editor {
         SceneSerializer::Serialize(data.scene, ExecutableFolder() / "assets/Temp/scene_lock.copper");
         Renderer::Restart();
 
+        data.scene->DeinitializePhysics();
+        data.scene->InitializePhysics();
+
     }
     void StopEditorRuntime() {
 
@@ -604,7 +607,7 @@ namespace Editor {
 
         data.state = EditorState::Edit;
 
-        data.scene->Cleanup();
+        data.scene->Deinitialize();
         SceneSerializer::Deserialize(data.scene, ExecutableFolder() / "assets/Temp/scene_lock.copper");
         data.scene->Initialize();
 
@@ -649,7 +652,7 @@ namespace Editor {
         data.project.BuildScripts();
         Scripting::Load(data.project.GetPath() / "Binaries" / (data.project.GetName() + ".dll"));
 
-        data.scene->Cleanup();
+        data.scene->Deinitialize();
         SceneSerializer::Deserialize(data.scene, path / "Assets" / data.project.GetLastOpenedScenePath());
         data.scene->Initialize();
 
@@ -706,7 +709,7 @@ namespace Editor {
 
         data.scenePath = path;
 
-        data.scene->Cleanup();
+        data.scene->Deinitialize();
         SceneSerializer::Deserialize(data.scene, path);
         data.scene->Initialize(); 
 
@@ -715,10 +718,10 @@ namespace Editor {
 
         ClearChanges();
 
+        data.project.SetLastOpenedScenePath(fs::relative(path, data.project.GetAssetsPath()));
+
         data.title = "Copper Editor - " + data.project.GetName() + ": " + data.project.GetLastOpenedSceneName();
         Input::SetWindowTitle(data.title);
-
-        data.project.SetLastOpenedScenePath(fs::relative(path, data.project.GetAssetsPath()));
 
     }
     void OpenScene() {

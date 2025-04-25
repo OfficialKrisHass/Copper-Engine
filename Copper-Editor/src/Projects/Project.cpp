@@ -10,9 +10,12 @@
 
 #include "Panels/FileBrowser.h"
 
-#include "Engine/Scripting/ScriptingEngine.h"
+#include <Engine/Scripting/ScriptingEngine.h>
 
-#include "Engine/YAMLOverloads/Everything.h"
+#include <Engine/Input/Input.h>
+#include <Engine/Input/Popup.h>
+
+#include <Engine/Utilities/FileUtils.h>
 
 #include <cstdlib>
 #include <yaml-cpp/yaml.h>

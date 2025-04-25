@@ -2,6 +2,8 @@
 
 #include <Copper.h>
 
+namespace Editor { class Project; }
+
 namespace Editor::ProjectChecker {
 
     enum ProjectIssue : Copper::uint16 {

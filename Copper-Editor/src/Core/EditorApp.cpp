@@ -1,20 +1,5 @@
 #include "EditorApp.h"
 
-#include "Engine/Core/Args.h"
-#include "Engine/Core/Core.h"
-
-#include "Engine/Core/Log.h"
-#include "Engine/Utilities/Math.h"
-
-#include "Engine/Renderer/FrameBuffer.h"
-#include "Engine/Renderer/Renderer.h"
-
-#include "Engine/Physics/Raycast.h"
-
-#include "Engine/UI/ImGui.h"
-
-#include "Engine/Scripting/ScriptingEngine.h"
-
 #include "Core/FileWatcher.h"
 #include "Core/SceneSerializer.h"
 #include "Core/ChangeHandler.h"
@@ -36,6 +21,25 @@
 
 #include "Viewport/SceneCamera.h"
 
+#include <Engine/Core/Args.h>
+#include <Engine/Core/Core.h>
+
+#include <Engine/Core/Log.h>
+
+#include <Engine/Renderer/FrameBuffer.h>
+#include <Engine/Renderer/Renderer.h>
+
+#include <Engine/Scripting/ScriptingEngine.h>
+
+#include <Engine/Input/Input.h>
+#include <Engine/Input/Popup.h>
+
+#include <Engine/UI/ImGui.h>
+
+#include <Engine/Utilities/FileUtils.h>
+
+#include <CMath/CMath.h>
+
 #include <GLM/gtc/type_ptr.hpp>
 
 #include <ImGui/imgui.h>
@@ -43,8 +47,6 @@
 #include <ImGuizmo/ImGuizmo.h>
 
 #include <yaml-cpp/yaml.h>
-
-#include <CMath/CMath.h>
 
 #include <fstream>
 

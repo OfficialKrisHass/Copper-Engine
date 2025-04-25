@@ -10,7 +10,17 @@
 
 #include "UI/TypeWidgets.h"
 
-#include "Engine/Scripting/ScriptingEngine.h"
+#include <Engine/Components/BoxCollider.h>
+#include <Engine/Components/Camera.h>
+#include <Engine/Components/CapsuleCollider.h>
+#include <Engine/Components/Light.h>
+#include <Engine/Components/MeshRenderer.h>
+#include <Engine/Components/RigidBody.h>
+#include <Engine/Components/ScriptComponent.h>
+#include <Engine/Components/SphereCollider.h>
+
+#include <Engine/Scripting/Script.h>
+#include <Engine/Scripting/ScriptingEngine.h>
 
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_internal.h>

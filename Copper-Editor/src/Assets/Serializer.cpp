@@ -1,7 +1,8 @@
 #include "Serializer.h"
 
-#include <Engine/AssetStorage/AssetMap.h>
 #include <Engine/AssetStorage/AssetStorage.h>
+
+#include <Engine/Renderer/Material.h>
 
 #include <yaml-cpp/yaml.h>
 #include <fstream>

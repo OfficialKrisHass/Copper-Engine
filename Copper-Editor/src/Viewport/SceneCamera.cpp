@@ -1,7 +1,9 @@
 #include "SceneCamera.h"
 
-#include "Engine/Core/Engine.h"
-#include "Engine/Core/Window.h"
+#include <Engine/Core/Window.h>
+
+#include <Engine/Input/Input.h>
+#include <Engine/Input/AxisManager.h>
 
 #include <GLM/glm.hpp>
 #include <GLM/gtx/rotate_vector.hpp>

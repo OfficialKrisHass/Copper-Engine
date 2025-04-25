@@ -2,8 +2,7 @@
 
 #include "Core/SceneSerializer.h"
 
-#include "Engine/Scene/Entity.h"
-#include "Engine/Scene/InternalEntity.h"
+#include <Engine/Scene/InternalEntity.h>
 
 #include <yaml-cpp/yaml.h>
 

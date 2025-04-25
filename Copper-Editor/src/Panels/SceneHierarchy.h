@@ -1,8 +1,6 @@
 #pragma once
 
-#include "Copper.h"
-
-#include "Core/EditorApp.h"
+#include <Copper.h>
 
 #include "Panels/Panel.h"
 

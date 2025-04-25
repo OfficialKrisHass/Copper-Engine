@@ -5,7 +5,11 @@
 
 #include "Panels/Properties.h"
 
+#include <Engine/Components/RigidBody.h>
+
 #include <Engine/Renderer/Renderer.h>
+
+#include <Engine/Input/Input.h>
 
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_internal.h>

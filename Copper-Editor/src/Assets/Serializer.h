@@ -2,6 +2,8 @@
 
 #include <Copper.h>
 
+#include <Engine/AssetStorage/AssetPtr.h>
+
 namespace Editor::AssetFile {
 
     void SerializeMaterial(const Copper::fs::path& path, const Copper::MaterialAsset& material);

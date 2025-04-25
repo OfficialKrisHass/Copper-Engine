@@ -2,6 +2,8 @@
 
 #include "Engine/Core/Core.h"
 
+#include "Engine/Input/KeyCodes.h"
+
 extern "C" {
 
     typedef struct _MonoString MonoString;

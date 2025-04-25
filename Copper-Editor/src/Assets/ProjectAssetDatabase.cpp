@@ -9,8 +9,10 @@
 #include "Assets/Serializer.h"
 #include "Assets/Model.h"
 
-#include "Engine/AssetStorage/AssetMap.h"
-#include "Engine/AssetStorage/AssetStorage.h"
+#include <Engine/AssetStorage/AssetStorage.h>
+
+#include <Engine/Renderer/Texture.h>
+#include <Engine/Renderer/Material.h>
 
 #include <yaml-cpp/yaml.h>
 

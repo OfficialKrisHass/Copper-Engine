@@ -1,8 +1,5 @@
 #pragma once
 
-#include <filesystem>
-#include <string>
-
 #ifdef CU_CMAKE
 #include <Config.h>
 #endif
@@ -15,6 +12,8 @@
 #define CMATH_PARENT_NAMESPACE Copper
 #include <CMath/CMath.h>
 #include "Engine/Renderer/Color.h"
+
+#include <filesystem> // Replace with our filesystem implementation
 
 #define FLAG(bit) (1 << bit)
 

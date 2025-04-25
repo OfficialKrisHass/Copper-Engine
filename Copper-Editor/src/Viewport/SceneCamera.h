@@ -2,6 +2,8 @@
 
 #include <Copper.h>
 
+#include <Engine/Components/Camera.h>
+
 namespace Editor {
 
     class SceneCamera : public Copper::Camera {

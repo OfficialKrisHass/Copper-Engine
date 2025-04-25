@@ -2,8 +2,11 @@
 
 #include "Assets/ProjectAssetDatabase.h"
 
-#include "Engine/AssetStorage/AssetMap.h"
-#include "Engine/AssetStorage/AssetStorage.h"
+#include <Engine/AssetStorage/AssetMap.h>
+#include <Engine/AssetStorage/AssetStorage.h>
+
+#include <Engine/Renderer/Texture.h>
+#include <Engine/Renderer/Material.h>
 
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_internal.h>

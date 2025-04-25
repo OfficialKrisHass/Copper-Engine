@@ -1,10 +1,22 @@
 #pragma once
 
-#include "Copper.h"
+#include <Copper.h>
 
 #include "Core/SelectedData.h"
 
 #include "Panels/Panel.h"
+
+namespace Copper {
+
+    class Light;
+    class MeshRenderer;
+
+    class BoxCollider;
+    class CapsuleCollider;
+    class SphereCollider;
+    class RigidBody;
+
+}
 
 namespace Editor {
 

@@ -6,6 +6,16 @@
 
 #include "Assets/ProjectAssetDatabase.h"
 
+#include <Engine/AssetStorage/AssetMap.h>
+#include <Engine/AssetStorage/AssetStorage.h>
+
+#include <Engine/Renderer/Material.h>
+#include <Engine/Renderer/Mesh.h>
+
+#include <Engine/Components/MeshRenderer.h>
+
+#include <yaml-cpp/yaml.h>
+
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>

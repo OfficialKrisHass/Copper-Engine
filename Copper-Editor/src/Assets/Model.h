@@ -2,6 +2,8 @@
 
 #include <Copper.h>
 
+#include <Engine/AssetStorage/AssetPtr.h>
+
 struct aiScene;
 struct aiNode;
 

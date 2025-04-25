@@ -1,11 +1,12 @@
 #pragma once
 
+#include <Copper.h>
+
+#include <Engine/Renderer/FrameBuffer.h>
+
 #include "Panels/Panel.h"
 
 #include "Viewport/SceneCamera.h"
-
-#include <Copper.h>
-#include <Engine/Renderer/FrameBuffer.h>
 
 namespace Editor {
 

@@ -1,6 +1,5 @@
 #include "SceneHierarchy.h"
 
-#include "Core/EditorApp.h"
 #include "Core/ChangeHandler.h"
 #include "Core/Clipboard.h"
 
@@ -8,7 +7,13 @@
 
 #include "Panels/Properties.h"
 
-#include "Engine/Renderer/Primitives.h"
+#include <Engine/Components/MeshRenderer.h>
+#include <Engine/Components/Light.h>
+#include <Engine/Components/Camera.h>
+
+#include <Engine/Renderer/Primitives.h>
+
+#include <Engine/Input/Input.h>
 
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_internal.h>

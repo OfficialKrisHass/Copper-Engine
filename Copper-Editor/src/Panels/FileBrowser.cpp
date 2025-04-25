@@ -11,6 +11,10 @@
 
 #include "UI/NewModal.h"
 
+#include <Engine/Renderer/Texture.h>
+
+#include <Engine/Input/Input.h>
+
 #include <ImGui/imgui.h>
 
 #include <fstream>

@@ -4,12 +4,18 @@
 
 #include "Viewport/SceneCamera.h"
 
-#include "Engine/Scripting/Script.h"
-#include "Engine/Scripting/ScriptingEngine.h"
+#include <Engine/Components/BoxCollider.h>
+#include <Engine/Components/CapsuleCollider.h>
+#include <Engine/Components/Light.h>
+#include <Engine/Components/MeshRenderer.h>
+#include <Engine/Components/RigidBody.h>
+#include <Engine/Components/ScriptComponent.h>
+#include <Engine/Components/SphereCollider.h>
 
-#ifdef CU_CMAKE
-#include <Config.h>
-#endif
+#include <Engine/Scripting/Script.h>
+#include <Engine/Scripting/ScriptingEngine.h>
+
+#include <Engine/YAMLOverloads/Everything.h>
 
 #include <yaml-cpp/yaml.h>
 

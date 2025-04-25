@@ -1,9 +1,8 @@
 ﻿#pragma once
 
-#include "Copper.h"
-#include "Panels/Panel.h"
+#include <Copper.h>
 
-#include "Engine/Core/Core.h"
+#include "Panels/Panel.h"
 
 namespace Editor {
 

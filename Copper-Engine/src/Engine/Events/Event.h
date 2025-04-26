@@ -11,11 +11,20 @@ namespace Copper {
     public:
         Event() = default;
 
-        inline void Call() { (*this)(); }
+        inline void Call() const { (*this)(); }
         inline void Clear() { m_callbacks.clear(); }
 
-        inline Event& operator+=(std::function<bool(const Event&)> func) { m_callbacks.push_back(func); return *this; }
-        inline bool operator()() {
+        inline Event& operator+=(std::function<bool(const Event&)> func) {
+
+            CUP_FUNCTION();
+
+            m_callbacks.push_back(func);
+            return *this;
+
+        }
+        inline bool operator()() const {
+
+            CUP_FUNCTION();
 
             for (int i = 0; i < m_callbacks.size(); i++) {
 
@@ -36,14 +45,23 @@ namespace Copper {
     class SimpleEvent {
 
     public:
-        inline SimpleEvent& operator+=(std::function<void()> func) { m_callbacks.push_back(func); return *this; }
-        inline void operator()() {
+        inline void Call() const { (*this)(); }
+        inline void Clear() { m_callbacks.clear(); }
 
-            for (size_t i = 0; i < m_callbacks.size(); i++) {
+        inline SimpleEvent& operator+=(std::function<void()> func) {
 
+            CUP_FUNCTION();
+
+            m_callbacks.push_back(func);
+            return *this;
+
+        }
+        inline void operator()() const {
+
+            CUP_FUNCTION();
+
+            for (size_t i = 0; i < m_callbacks.size(); i++)
                 m_callbacks[i]();
-
-            }
 
         }
 

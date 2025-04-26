@@ -44,15 +44,15 @@ namespace Copper::Input {
 
         CUP_FUNCTION();
 
-        VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize Input");
+        VERIFY_STATE(EngineState::Initialization, "Initialize Input");
         window = win;
 
-        window->AddKeyPressedEventFunc(OnKeyPressed);
-        window->AddKeyReleasedEventFunc(OnKeyReleased);
+        window->GetKeyPressedEvent() += OnKeyPressed;
+        window->GetKeyReleasedEvent() += OnKeyReleased;
 
-        window->AddMouseButtonPressedEventFunc(OnButtonPressed);
-        window->AddMouseButtonReleasedEventFunc(OnButtonReleased);
-        window->AddMouseMoveEventFunc(OnMouseMove);
+        window->GetMouseButtonPressedEvent() += OnButtonPressed;
+        window->GetMouseButtonReleasedEvent() += OnButtonReleased;
+        window->GetMouseMoveEvent() += OnMouseMove; 
 
         if (!pfd::settings::available())
 #ifdef CU_LINUX

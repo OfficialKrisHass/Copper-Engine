@@ -13,7 +13,9 @@ namespace Copper::Args {
     static std::vector<std::string> arguments;
 
     static fs::path execFolder;
+#ifdef CU_EDITOR
     static fs::path projectPath;
+#endif
 
     void Setup(uint32 argc, char* argv[]) {
 
@@ -50,10 +52,12 @@ namespace Copper::Args {
 
         }
 
+#ifdef CU_EDITOR
         // If there's at least 1 argument (1st is execPath) and the first arguments
         // isn't the assets folder option, then the first argument is a projectPath
         if (argc > 1 && arguments[0] != "-a")
             projectPath = arguments[0];
+#endif
 
         if (!execFolder.empty()) return;
 
@@ -87,7 +91,9 @@ namespace Copper::Args {
 
     }
 
+#ifdef CU_EDITOR
     const fs::path& ProjectPath() { return projectPath; }
+#endif
 
 }
 

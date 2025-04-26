@@ -22,11 +22,7 @@
 extern Copper::Window* GetEditorWindow();
 #endif
 
-#define VERIFY_STATE_INTERNAL(state, task) CHECK(data.engineState == state, "Cannot {} because of invalid Engine State.\\nExpected State: {}\\nCurrent State: {}", task, EngineStateToString(state), EngineStateToString(data.engineState))
-
 namespace Copper {
-
-    using namespace EngineCore;
 
     namespace Renderer { void EndFrame(); }
 
@@ -80,15 +76,11 @@ namespace Copper {
     bool OnWindowClose(const Event& e);
     bool OnWindowResize(const Event& e);
 
-    void Run();
-    void Shutdown();
-
-#pragma region EngineCore
-    void EngineCore::Initialize() {
+    void EngineInitialize() {
 
         CUP_FUNCTION();
 
-        VERIFY_STATE_INTERNAL(EngineState::Entry, "Initialize the Engine");
+        VERIFY_STATE(EngineState::Entry, "Initialize the Engine");
         data.engineState = EngineState::Initialization;
 
         Log("Running Copper Engine Version {}.{}.{}.{}", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_TWEAK);
@@ -106,8 +98,9 @@ namespace Copper {
 #else
         data.window = Window("Copper Engine", 1280, 720);
 #endif
-        data.GetWindow().AddWindowCloseEventFunc(OnWindowClose);
-        data.GetWindow().AddWindowResizeEventFunc(OnWindowResize);
+
+        data.GetWindow().GetWindowCloseEvent() += OnWindowClose;
+        data.GetWindow().GetWindowResizeEvent() += OnWindowResize;
 
         Renderer::Initialize();
         Renderer::SetShaderPath(ExecutableFolder() / "assets/Shaders/vertexDefault.glsl", ExecutableFolder() / "assets/Shaders/fragmentDefault.glsl");
@@ -125,21 +118,20 @@ namespace Copper {
         PhysicsEngine::Initialize();
         Scripting::Initialize();
 
+        data.scene.Initialize();
+
         // Finalization
 
         data.engineState = EngineState::PostInitialization;
         data.postInitEvent();
 
-        // Call it from here so that it doesn't have to be an exposed function
-        Run();
-
     }
-    void Run() {
+    void EngineRun() {
 
         CUP_FUNCTION();
-        data.engineState = EngineState::Running;
 
-        data.scene.Initialize();
+        VERIFY_STATE(EngineState::PostInitialization, "Run the Engine");
+        data.engineState = EngineState::Running;
 
         while (data.engineState == EngineState::Running) {
 
@@ -188,14 +180,12 @@ namespace Copper {
 
         }
 
-        // Again call this from here so it doesn't have to be exposed
-
-        Shutdown();
-
     }
-    void Shutdown() {
+    void EngineShutdown() {
 
         CUP_FUNCTION();
+
+        VERIFY_STATE(EngineState::Shutdown, "Shutdown the Engine");
 
         data.mainUIContext.Shutdown();
         data.GetWindow().Shutdown();
@@ -207,8 +197,8 @@ namespace Copper {
 
     }
 
-    EngineState EngineCore::GetEngineState() { return data.engineState; }
-    std::string EngineCore::EngineStateToString(EngineState state) {
+    EngineState GetEngineState() { return data.engineState; }
+    const char* EngineStateToString(EngineState state) {
 
         switch (state) {
 
@@ -220,11 +210,10 @@ namespace Copper {
 
         }
 
+        LogError("Invalid engine state: {}", static_cast<uint8>(state));
         return "Invalid Engine State!";
 
     }
-
-#pragma endregion
 
     bool OnWindowClose(const Event& e) {
 
@@ -253,13 +242,13 @@ namespace Copper {
 
     // Engine Events
 
-    void AddPostInitEventFunc(std::function<void()> func) { data.postInitEvent += func; }
+    SimpleEvent& GetPostInitEvent() { return data.postInitEvent; }
 
-    void AddUpdateEventFunc(std::function<void()> func) { data.updateEvent += func; }
-    void AddUIUpdateEventFunc(std::function<void()> func) { data.uiUpdateEvent += func; }
+    SimpleEvent& GetUpdateEvent() { return data.updateEvent; }
+    SimpleEvent& GetUIUpdateEvent() { return data.uiUpdateEvent; }
 
-    void AddPreShutdownEventFunc(std::function<bool(const Event&)> func) { data.preShutdownEvent += func; }
-    void AddPostShutdownEventFunc(std::function<void()> func) { data.postShutdownEvent += func; }
+    Event& GetPreShutdownEvent() { return data.preShutdownEvent; }
+    SimpleEvent& GetPostShutdownEvent() { return data.postShutdownEvent; }
 
     // Game
 

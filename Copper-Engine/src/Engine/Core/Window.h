@@ -33,8 +33,9 @@ namespace Copper {
 
     public:
         Window() = default;
-        Window(const std::string& title, uint32 width, uint32 height, bool maximize = true);
+        Window(const std::string& title, uint32 width, uint32 height, bool maximize = true) { Initialize(title, width, height, maximize); }
 
+        void Initialize(const std::string& title, uint32 width, uint32 height, bool maximize = true);
         void Update();
         void Shutdown();
 
@@ -57,17 +58,17 @@ namespace Copper {
 
         // Events
 
-        void AddWindowCloseEventFunc(std::function<bool(const Event&)> func);
-        void AddWindowFocusedEventFunc(std::function<bool(const Event&)> func);
-        void AddWindowResizeEventFunc(std::function<bool(const Event&)> func);
+        inline WindowCloseEvent& GetWindowCloseEvent() { return data.windowCloseEvent; };
+        inline WindowFocusedEvent& GetWindowFocusedEvent() { return data.windowFocusedEvent; };
+        inline WindowResizeEvent& GetWindowResizeEvent() { return data.windowResizeEvent; };
 
-        void AddKeyPressedEventFunc(std::function<bool(const Event&)> func);
-        void AddKeyRepeatEventFunc(std::function<bool(const Event&)> func);
-        void AddKeyReleasedEventFunc(std::function<bool(const Event&)> func);
+        inline KeyEvent& GetKeyPressedEvent() { return data.keyPressedEvent; }
+        inline KeyEvent& GetKeyRepeatEvent() { return data.keyRepeatEvent; }
+        inline KeyEvent& GetKeyReleasedEvent() { return data.keyReleasedEvent; }
 
-        void AddMouseMoveEventFunc(std::function<bool(const Event&)> func);
-        void AddMouseButtonPressedEventFunc(std::function<bool(const Event&)> func);
-        void AddMouseButtonReleasedEventFunc(std::function<bool(const Event&)> func);
+        inline MouseEvent& GetMouseMoveEvent() { return data.mouseMoveEvent; }
+        inline MouseEvent& GetMouseButtonPressedEvent() { return data.mouseButtonPressedEvent; }
+        inline MouseEvent& GetMouseButtonReleasedEvent() { return data.mouseButtonReleasedEvent; }
 
     private:
         WindowData data;

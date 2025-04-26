@@ -138,8 +138,8 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        GetWindow().AddKeyPressedEventFunc(Editor::OnKeyPressed);
-        GetWindow().AddWindowFocusedEventFunc(Editor::OnWindowFocused);
+        data.window.GetKeyPressedEvent() += Editor::OnKeyPressed;
+        data.window.GetWindowFocusedEvent() += Editor::OnWindowFocused;
 
         MainUIContext().LoadFont(ExecutableFolder() / "assets/Fonts/open-sans.regular.ttf");
 
@@ -1024,13 +1024,15 @@ void AppEntryPoint() {
 
     // In the editor case, we have our own window that is bigger then the engine region
     // so we have to create and store it ourselves
-    Editor::data.window = Window("Copper Editor", 1280, 720);
+    Editor::data.window.Initialize("Copper Editor", 1280, 720);
 
-    AddPostInitEventFunc(Editor::Initialize);
-    AddUpdateEventFunc(Editor::Update);
-    AddUIUpdateEventFunc(Editor::UIUpdate);
-    AddPreShutdownEventFunc(Editor::OnWindowClose);
-    AddPostShutdownEventFunc(Editor::Shutdown);
+    GetPostInitEvent() += Editor::Initialize;
+
+    GetUpdateEvent() += Editor::Update;
+    GetUIUpdateEvent() += Editor::UIUpdate;
+
+    GetPreShutdownEvent() += Editor::OnWindowClose;
+    GetPostShutdownEvent() += Editor::Shutdown;
 
 }
 #pragma endregion 

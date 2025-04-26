@@ -106,7 +106,7 @@ namespace Copper::Renderer {
     void Initialize() {
 
         CUP_FUNCTION();
-        VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the Renderer");
+        VERIFY_STATE(EngineState::Initialization, "Initialize the Renderer");
 
         RendererAPI::Initialize();
 

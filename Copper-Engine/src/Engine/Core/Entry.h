@@ -21,7 +21,10 @@ int main(int argc, char* argv[]) {
     Args::Setup(argc, argv);
     
     AppEntryPoint();
-    EngineCore::Initialize();
+
+    EngineInitialize();
+    EngineRun();
+    EngineShutdown();
 
     return 0;
 

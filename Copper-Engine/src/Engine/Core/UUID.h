@@ -11,7 +11,7 @@ namespace Copper {
     struct UUID {
 
     public:
-        // Generates an invalid UUID
+        // Creates a new random UUID
         UUID() = default;
 
         UUID(const UUID& other);

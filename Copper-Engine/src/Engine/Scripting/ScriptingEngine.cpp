@@ -48,7 +48,7 @@ namespace Copper::Scripting {
     void Initialize() {
 
         CUP_FUNCTION();
-        VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the Scripting Engine");
+        VERIFY_STATE(EngineState::Initialization, "Initialize the Scripting Engine");
 
 #ifdef CU_LINUX
         mono_set_assemblies_path((ExecutableFolder() / "lib/mono/lib/linux").string().c_str());
@@ -72,7 +72,7 @@ namespace Copper::Scripting {
     void Shutdown() {
 
         CUP_FUNCTION();
-        VERIFY_STATE(EngineCore::EngineState::Shutdown, "Shutdown the Scripting Engine");
+        VERIFY_STATE(EngineState::Shutdown, "Shutdown the Scripting Engine");
 
         mono_jit_cleanup(data.rootDomain);
 

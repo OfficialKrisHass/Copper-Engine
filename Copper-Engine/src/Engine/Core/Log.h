@@ -27,11 +27,10 @@ namespace Copper {
 
     // TODO: maybe remove in favour of a custom console in Editor ?
 
-    // Internal class aka DO NOT USE THIS
     class Logger {
 
     public:
-        static void Initialize();
+        static void Initialize(); // Internal, aka DO NOT USE
 
         inline static std::shared_ptr<spdlog::logger> GetLogger() { return m_logger; }
         inline static std::vector<std::string> GetLastLogMessages() { return m_ringbufferSink->last_formatted(); }

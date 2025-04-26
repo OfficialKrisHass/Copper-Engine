@@ -30,7 +30,7 @@ namespace Copper {
         
         if(uiCount == 0) {
             
-            VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the main UI");
+            VERIFY_STATE(EngineState::Initialization, "Initialize the main UI");
             IMGUI_CHECKVERSION();
 
         }

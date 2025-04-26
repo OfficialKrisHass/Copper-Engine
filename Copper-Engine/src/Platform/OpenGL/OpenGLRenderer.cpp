@@ -44,7 +44,7 @@ namespace Copper::RendererAPI {
     void Initialize() {
 
         CUP_FUNCTION();
-        VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the OpenGL Renderer API");
+        VERIFY_STATE(EngineState::Initialization, "Initialize the OpenGL Renderer API");
 
         if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
 

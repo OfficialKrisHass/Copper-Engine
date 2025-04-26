@@ -16,16 +16,23 @@ namespace Copper {
 
     uint32 windowCount = 0;
 
-    Window::Window(const std::string& title, uint32 width, uint32 height, bool maximize) {
+    void Window::Initialize(const std::string& title, uint32 width, uint32 height, bool maximize) {
 
         CUP_FUNCTION();
+
+        if (windowPtr != nullptr) {
+
+            LogError("Window {} is already initialized, please call Shutdown() first", title);
+            return;
+
+        }
 
         data.title = title;
 
         if (windowCount == 0) {
 
 #ifndef CU_EDITOR
-            VERIFY_STATE(EngineCore::EngineState::Initialization, "Initialize the main Window"); 
+            VERIFY_STATE(EngineState::Initialization, "Initialize the main Window"); 
 #endif
             if (!glfwInit()) {
 
@@ -210,63 +217,6 @@ namespace Copper {
         glfwSetWindowSize(WINDOW, size.x, size.y);
         data.size.x = size.x;
         data.size.y = size.y;
-
-    }
-
-    void Window::AddWindowCloseEventFunc(std::function<bool(const Event& e)> func) {
-
-        data.windowCloseEvent += func;
-        glfwSetWindowUserPointer(WINDOW, &data);
-
-    }
-    void Window::AddWindowFocusedEventFunc(std::function<bool(const Event& e)> func) {
-
-        data.windowFocusedEvent += func;
-        glfwSetWindowUserPointer(WINDOW, &data);
-
-    }
-    void Window::AddWindowResizeEventFunc(std::function<bool(const Event& e)> func) {
-
-        data.windowResizeEvent += func;
-        glfwSetWindowUserPointer(WINDOW, &data);
-
-    }
-
-    void Window::AddKeyPressedEventFunc(std::function<bool(const Event&)> func) {
-
-        data.keyPressedEvent += func;
-        glfwSetWindowUserPointer(WINDOW, &data);
-
-    }
-    void Window::AddKeyRepeatEventFunc(std::function<bool(const Event&)> func) {
-
-        data.keyRepeatEvent += func;
-        glfwSetWindowUserPointer(WINDOW, &data);
-
-    }
-    void Window::AddKeyReleasedEventFunc(std::function<bool(const Event&)> func) {
-
-        data.keyReleasedEvent += func;
-        glfwSetWindowUserPointer(WINDOW, &data);
-
-    }
-
-    void Window::AddMouseMoveEventFunc(std::function<bool(const Event&)> func) {
-
-        data.mouseMoveEvent += func;
-        glfwSetWindowUserPointer(WINDOW, &data);
-
-    }
-    void Window::AddMouseButtonPressedEventFunc(std::function<bool(const Event&)> func) {
-
-        data.mouseButtonPressedEvent += func;
-        glfwSetWindowUserPointer(WINDOW, &data);
-
-    }
-    void Window::AddMouseButtonReleasedEventFunc(std::function<bool(const Event&)> func) {
-
-        data.mouseButtonReleasedEvent += func;
-        glfwSetWindowUserPointer(WINDOW, &data);
 
     }
 

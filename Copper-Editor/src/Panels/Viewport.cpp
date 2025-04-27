@@ -28,7 +28,7 @@ namespace Editor {
         m_size = UVector2I(size.x, size.y - static_cast<uint32>(tabBarHeight));
 
         m_fbo = FrameBuffer(m_size, { FrameBuffer::Attachment::Format::RGB8, FrameBuffer::Attachment::Format::RedInteger });
-        m_sceneCam = SceneCamera(m_size);
+        m_sceneCam = SceneCamera(m_size, this);
 
     }
 

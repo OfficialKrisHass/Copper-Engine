@@ -549,6 +549,8 @@ namespace Editor::SceneSerializer {
         sceneCam.speed = data["Speed"].as<float>();
         sceneCam.sensitivity = data["Sensitivity"].as<float>();
 
+        sceneCam.UpdateRotation();
+
     }
 
     template<typename T> void SerializeField(YAML::Emitter& out, ScriptComponent* instance, const Scripting::Field& field) {

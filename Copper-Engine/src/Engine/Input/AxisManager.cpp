@@ -54,7 +54,7 @@ namespace Copper::Input {
         float ret = 0.0f;
         const MouseAxis& axis = mouseAxises[name];
 
-        ret += axis.isX ? Input::GetCursorPosDifferenceX() : Input::GetCursorPosDifferenceY();
+        ret += axis.isX ? Input::GetCursorPosChange().x : Input::GetCursorPosChange().y;
         return ret;
 
     }

@@ -1009,6 +1009,7 @@ namespace Editor {
     }
     
     const Project& GetProject() { return data.project; }
+
     SceneCamera& GetSceneCam() { return data.viewport.GetSceneCamera(); }
 
     bool IsRuntimeRunning() { return data.state == EditorState::Play; }
@@ -1038,6 +1039,5 @@ void AppEntryPoint() {
 #pragma endregion 
 
 Window* GetEditorWindow() { return &Editor::data.window; }
-UVector2I GetViewportCentre() { return Editor::data.viewport.GetCentre(); }
 
 bool IsGameAcceptingInput() { return Editor::data.gameAcceptingInput; }

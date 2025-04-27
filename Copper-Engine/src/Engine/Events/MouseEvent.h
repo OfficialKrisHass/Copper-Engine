@@ -10,9 +10,9 @@ namespace Copper {
 
     public:
         MouseEvent() = default;
-        MouseEvent(UVector2I mouseCoords) : mouseCoords(mouseCoords) {}
+        MouseEvent(Vector2I mouseCoords) : mouseCoords(mouseCoords) {}
 
-        UVector2I mouseCoords = UVector2I::zero;
+        Vector2I mouseCoords = Vector2I::zero;
         KeyCode button = KeyCode::None;
 
     };

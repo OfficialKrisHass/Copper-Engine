@@ -45,18 +45,12 @@ namespace Copper {
 
         // Getters
 
+        float GetTime() const;
+
         inline uint32 GetWidth() const { return data.size.x; }
         inline uint32 GetHeight() const { return data.size.y; }
         inline const UVector2I& GetSize() const { return data.size; }
         inline float GetAspectRatio() const { return static_cast<float>(data.size.x) / data.size.y; }
-
-        float GetTime() const;
-
-        // Setters
-
-        void SetSize(const UVector2I& size);
-
-        // Events
 
         inline WindowCloseEvent& GetWindowCloseEvent() { return data.windowCloseEvent; };
         inline WindowFocusedEvent& GetWindowFocusedEvent() { return data.windowFocusedEvent; };
@@ -69,6 +63,10 @@ namespace Copper {
         inline MouseEvent& GetMouseMoveEvent() { return data.mouseMoveEvent; }
         inline MouseEvent& GetMouseButtonPressedEvent() { return data.mouseButtonPressedEvent; }
         inline MouseEvent& GetMouseButtonReleasedEvent() { return data.mouseButtonReleasedEvent; }
+
+        // Setters
+
+        void SetSize(const UVector2I& size);
 
     private:
         WindowData data;

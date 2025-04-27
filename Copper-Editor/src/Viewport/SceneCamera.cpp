@@ -1,5 +1,7 @@
 #include "SceneCamera.h"
 
+#include "Panels/Viewport.h"
+
 #include <Engine/Core/Window.h>
 
 #include <Engine/Input/Input.h>
@@ -13,10 +15,7 @@ using namespace Copper;
 
 namespace Editor {
 
-    float rotX;
-    float rotY;
-
-    SceneCamera::SceneCamera(UVector2I size) : Camera(size) {
+    SceneCamera::SceneCamera(UVector2I size, Viewport* viewport) : Camera(size), m_viewport(viewport) {
 
         m_transform = new Transform(Vector3::zero, Quaternion::identity, Vector3::one);
 
@@ -28,45 +27,59 @@ namespace Editor {
 
         if(!m_canLook) return;
 
-        if (Input::GetKeyState(KeyCode::Mouse1) == KeyState::Down) {
+        CU_ASSERT(m_viewport != nullptr, "SceneCamera was not assigned a viewport!");
 
-            float horizontal = Input::GetAxis("Keys_WS") * speed;
-            float vertical = Input::GetAxis("Keys_DA") * speed;
+        switch (Input::GetKeyState(KeyCode::Mouse1)) {
 
-            m_transform->AddPosition(m_transform->Forward() * horizontal + m_transform->Right() * vertical);
+            case KeyState::None: return;
+            case KeyState::Pressed: {
 
-            if (Input::GetKeyState(KeyCode::Space) == KeyState::Down)
-                m_transform->AddPosition( m_transform->Up() * speed);
-            if (Input::GetKeyState(KeyCode::LeftControl) == KeyState::Down)
-                m_transform->AddPosition(-m_transform->Up() * speed);
+                Input::SetCursorVisible(false);
+                Input::SetCursorLocked(true);
 
-            Input::SetCursorVisible(false);
-
-            if (m_firstClick) {
-
-                Input::SetCursorPosition((float) GetWindow().GetWidth() / 2, (float) GetWindow().GetHeight() / 2);
-
-                m_firstClick = false;
+                return;
 
             }
+            case KeyState::Down: break;
+            case KeyState::Released: {
 
-            double mouseX;
-            double mouseY;
+                Input::SetCursorVisible(true);
+                Input::SetCursorLocked(false);
 
-            Input::GetCursorPosition(&mouseX, &mouseY);
+                return;
 
-            rotX -= sensitivity * (float) (mouseY - (GetWindow().GetHeight() / 2)) / GetWindow().GetHeight();
-            rotY -= sensitivity * (float) (mouseX - (GetWindow().GetWidth() / 2)) / GetWindow().GetWidth();
-            m_transform->SetRotation(Quaternion(rotX, rotY, 0.0f));
-
-            Input::SetCursorPosition((float) GetWindow().GetWidth() / 2, (float) GetWindow().GetHeight() / 2);
-
-        } else {
-
-            Input::SetCursorVisible(true);
-            m_firstClick = true;
+            }
+            default: return;
 
         }
+
+        // Movement
+
+        float horizontal = Input::GetAxis("Keys_WS") * speed * GetDeltaTime();
+        float vertical = Input::GetAxis("Keys_DA") * speed * GetDeltaTime();
+
+        m_transform->AddPosition(m_transform->Forward() * horizontal + m_transform->Right() * vertical);
+
+        if (Input::GetKeyState(KeyCode::Space) == KeyState::Down)
+            m_transform->AddPosition( m_transform->Up() * speed * GetDeltaTime());
+        if (Input::GetKeyState(KeyCode::LeftControl) == KeyState::Down)
+            m_transform->AddPosition(-m_transform->Up() * speed * GetDeltaTime());
+
+        // Look
+
+        m_rotY -= Input::GetAxis("Mouse X") / GetWindow().GetWidth() * sensitivity * GetDeltaTime();
+        m_rotX -= Input::GetAxis("Mouse Y") / GetWindow().GetHeight() * sensitivity * GetDeltaTime();
+        m_transform->SetRotation(Quaternion(m_rotX, m_rotY, 0.0f));
+
+    }
+
+    void SceneCamera::UpdateRotation() {
+
+        CUP_FUNCTION();
+
+        Vector3 euler = m_transform->Rotation().EulerAngles();
+        m_rotX = -euler.x;
+        m_rotY = euler.y;
 
     }
 

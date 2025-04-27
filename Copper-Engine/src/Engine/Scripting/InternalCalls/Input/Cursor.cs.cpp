@@ -7,7 +7,7 @@ namespace Copper::Scripting::Cursor {
     bool IsVisible() {
 
         CUP_FUNCTION();
-        return Input::IsCursorVisible();
+        return Input::GetCursorVisible();
 
     }
     void SetVisible(bool value) {
@@ -20,7 +20,7 @@ namespace Copper::Scripting::Cursor {
     bool IsLocked() {
 
         CUP_FUNCTION();
-        return Input::IsCursorLocked();
+        return Input::GetCursorLocked();
 
     }
     void SetLocked(bool value) {
@@ -34,10 +34,9 @@ namespace Copper::Scripting::Cursor {
 
         CUP_FUNCTION();
 
-        double x, y;
-        Input::GetCursorPosition(&x, &y);
-
-        return Vector2((float) x, (float) y);
+        // TODO: Fix this
+        Vector2I tmp = Input::GetCursorPosition();
+        return Vector2(tmp.x, tmp.y);
 
     }
     void SetPosition(Vector2 value) {

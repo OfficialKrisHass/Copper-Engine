@@ -17,21 +17,22 @@ namespace Copper::Input {
 
     KeyState GetKeyState(KeyCode key);
 
+    // Getters
+
+    bool GetCursorVisible();
+    bool GetCursorLocked();
+    Vector2I GetCursorPosition();
+
+    const Vector2I& GetCursorPosChange();
+
     // Setters
 
     void SetCursorVisible(bool visible);
     void SetCursorLocked(bool locked);
-    void SetCursorPosition(float x, float y);
+    void SetCursorPosition(int32 x, int32 y);
 
     void SetWindowTitle(const std::string& title);
 
-    // Getters
-
-    void GetCursorPosition(double* x, double* y);
-    float GetCursorPosDifferenceX();
-    float GetCursorPosDifferenceY();
-
-    bool IsCursorLocked();
-    bool IsCursorVisible();
+    inline void SetCursorPosition(const Vector2I& pos) { SetCursorPosition(pos.x, pos.y); }
 
 }

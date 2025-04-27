@@ -194,8 +194,8 @@ namespace Copper {
 
             WindowData& data = GETWINDATA;
 
-            data.mouseMoveEvent.mouseCoords.x = (uint32) x;
-            data.mouseMoveEvent.mouseCoords.y = (uint32) y;
+            data.mouseMoveEvent.mouseCoords.x = (int32) x;
+            data.mouseMoveEvent.mouseCoords.y = (int32) y;
             data.mouseMoveEvent();
 
         });

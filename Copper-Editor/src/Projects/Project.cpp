@@ -89,7 +89,7 @@ namespace Editor {
 
         if (m_lastOpenedScenePath.empty()) return;
 
-        Input::SetWindowTitle("Copper Editor - " + m_name + ": " + m_lastOpenedScenePath.filename().string());
+        SetWindowTitle("Copper Editor - " + m_name + ": " + m_lastOpenedScenePath.filename().string());
 
         OpenScene(GetAssetsPath() / m_lastOpenedScenePath);
 

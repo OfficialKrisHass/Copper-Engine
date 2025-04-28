@@ -52,6 +52,8 @@ namespace Copper {
         inline const UVector2I& GetSize() const { return data.size; }
         inline float GetAspectRatio() const { return static_cast<float>(data.size.x) / data.size.y; }
 
+        inline const std::string& GetTitle() const { return data.title; }
+
         inline WindowCloseEvent& GetWindowCloseEvent() { return data.windowCloseEvent; };
         inline WindowFocusedEvent& GetWindowFocusedEvent() { return data.windowFocusedEvent; };
         inline WindowResizeEvent& GetWindowResizeEvent() { return data.windowResizeEvent; };
@@ -67,6 +69,8 @@ namespace Copper {
         // Setters
 
         void SetSize(const UVector2I& size);
+
+        void SetTitle(const std::string& title);
 
     private:
         WindowData data;

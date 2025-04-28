@@ -220,4 +220,13 @@ namespace Copper {
 
     }
 
+    void Window::SetTitle(const std::string& title) {
+
+        CUP_FUNCTION();
+
+        glfwSetWindowTitle(WINDOW, title.c_str());
+        data.title = title;
+
+    }
+
 }

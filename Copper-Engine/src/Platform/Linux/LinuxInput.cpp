@@ -46,12 +46,4 @@ namespace Copper::Input {
 
     }
 
-    void SetWindowTitle(const std::string& title) {
-
-        CUP_FUNCTION();
-
-        glfwSetWindowTitle(GLFW_WINDOW(GetWindow()), title.c_str());
-
-    }
-
 }

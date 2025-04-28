@@ -31,8 +31,6 @@ namespace Copper::Input {
     void SetCursorLocked(bool locked);
     void SetCursorPosition(int32 x, int32 y);
 
-    void SetWindowTitle(const std::string& title);
-
     inline void SetCursorPosition(const Vector2I& pos) { SetCursorPosition(pos.x, pos.y); }
 
 }

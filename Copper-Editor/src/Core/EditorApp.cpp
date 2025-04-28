@@ -664,7 +664,7 @@ namespace Editor {
         ClearChanges();
 
         data.title = "Copper Editor - " + data.project.GetName() + ": Main.copper";
-        Input::SetWindowTitle(data.title);
+        data.window.SetTitle(data.title);
 
     }
 
@@ -723,7 +723,7 @@ namespace Editor {
         data.project.SetLastOpenedScenePath(fs::relative(path, data.project.GetAssetsPath()));
 
         data.title = "Copper Editor - " + data.project.GetName() + ": " + data.project.GetLastOpenedSceneName();
-        Input::SetWindowTitle(data.title);
+        data.window.SetTitle(data.title); 
 
     }
     void OpenScene() {
@@ -767,7 +767,7 @@ namespace Editor {
         ResetUnsavedChanges();
 
         data.title = "Copper Editor - " + data.project.GetName() + ": " + data.project.GetLastOpenedSceneName();
-        Input::SetWindowTitle(data.title);
+        data.window.SetTitle(data.title);
 
     }
     void SaveSceneAs() {
@@ -794,7 +794,7 @@ namespace Editor {
         ResetUnsavedChanges();
 
         data.title = "Copper Editor - " + data.project.GetName() + ": " + data.project.GetLastOpenedSceneName(); 
-        Input::SetWindowTitle(data.title);
+        data.window.SetTitle(data.title);
         
     }
 
@@ -1004,7 +1004,7 @@ namespace Editor {
         if (data.title == value) return;
 
         data.title = value;
-        Input::SetWindowTitle(data.title);
+        data.window.SetTitle(data.title);
 
     }
     

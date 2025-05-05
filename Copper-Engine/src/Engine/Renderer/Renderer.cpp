@@ -112,9 +112,9 @@ namespace Copper::Renderer {
 
         // 3D Geometry
 
-        data.vao = VertexArray(nullptr);
+        data.vao.Create(nullptr);
         
-        data.vbo = VertexBuffer(nullptr, MaxVertices * sizeof(Vertex), {
+        data.vbo.Create(nullptr, MaxVertices * sizeof(Vertex), {
 
             ElementType::Vec3, // Position
             ElementType::Vec3, // Color
@@ -128,7 +128,7 @@ namespace Copper::Renderer {
 #endif
 
         });
-        data.ibo = IndexBuffer(nullptr, MaxIndices * sizeof(uint32));
+        data.ibo.Create(nullptr, MaxIndices * sizeof(uint32));
 
         data.vao.SetVertexBuffer(&data.vbo);
         data.vao.SetIndexBuffer(&data.ibo);
@@ -138,9 +138,9 @@ namespace Copper::Renderer {
 
         // Lines
 
-        data.lineVao = VertexArray(nullptr);
+        data.lineVao.Create(nullptr);
 
-        data.lineVbo = VertexBuffer(nullptr, MaxLineVertices * sizeof(LineVertex), {
+        data.lineVbo.Create(nullptr, MaxLineVertices * sizeof(LineVertex), {
 
             ElementType::Vec3, // Position
             ElementType::Vec3, // Color
@@ -211,7 +211,7 @@ namespace Copper::Renderer {
 
         if (data.verticesCount == 0 || data.indicesCount == 0) return;
 
-        data.vbo.SetData((void*) data.vertices, data.verticesCount * sizeof(Vertex));
+        data.vbo.SetData((float*) data.vertices, data.verticesCount * sizeof(Vertex));
         data.ibo.SetData(data.indices, data.indicesCount);
 
     }

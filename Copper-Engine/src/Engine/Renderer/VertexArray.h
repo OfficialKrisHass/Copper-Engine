@@ -12,7 +12,9 @@ namespace Copper {
 
     public:
         VertexArray() = default;
-        VertexArray(IndexBuffer* ibo);
+        VertexArray(IndexBuffer* ibo) { Create(ibo); }
+
+        void Create(IndexBuffer* ibo);
 
         // Using
 

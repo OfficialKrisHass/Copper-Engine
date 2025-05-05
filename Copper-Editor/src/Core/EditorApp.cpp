@@ -28,6 +28,7 @@
 
 #include <Engine/Renderer/FrameBuffer.h>
 #include <Engine/Renderer/Renderer.h>
+#include <Engine/Renderer/Texture.h>
 
 #include <Engine/Scripting/ScriptingEngine.h>
 
@@ -1025,7 +1026,7 @@ void AppEntryPoint() {
 
     // In the editor case, we have our own window that is bigger then the engine region
     // so we have to create and store it ourselves
-    Editor::data.window.Initialize("Copper Editor", 1280, 720);
+    Editor::data.window.Create("Copper Editor", 1280, 720);
 
     GetPostInitEvent() += Editor::Initialize;
 

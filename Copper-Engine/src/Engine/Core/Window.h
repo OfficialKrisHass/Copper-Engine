@@ -13,7 +13,7 @@ namespace Copper {
         UVector2I size;
         std::string title;
 
-        WindowCloseEvent windowCloseEvent;
+        Event windowCloseEvent;
         WindowFocusedEvent windowFocusedEvent;
         WindowResizeEvent windowResizeEvent;
 
@@ -33,9 +33,9 @@ namespace Copper {
 
     public:
         Window() = default;
-        Window(const std::string& title, uint32 width, uint32 height, bool maximize = true) { Initialize(title, width, height, maximize); }
+        Window(const std::string& title, uint32 width, uint32 height, bool maximize = true) { Create(title, width, height, maximize); }
 
-        void Initialize(const std::string& title, uint32 width, uint32 height, bool maximize = true);
+        void Create(const std::string& title, uint32 width, uint32 height, bool maximize = true);
         void Update();
         void Shutdown();
 
@@ -54,7 +54,17 @@ namespace Copper {
 
         inline const std::string& GetTitle() const { return data.title; }
 
-        inline WindowCloseEvent& GetWindowCloseEvent() { return data.windowCloseEvent; };
+        // Setters
+
+        void SetWidth(uint32 value);
+        void SetHeight(uint32 value);
+        void SetSize(const UVector2I& size);
+
+        void SetTitle(const std::string& title);
+
+        // Events
+
+        inline Event& GetWindowCloseEvent() { return data.windowCloseEvent; };
         inline WindowFocusedEvent& GetWindowFocusedEvent() { return data.windowFocusedEvent; };
         inline WindowResizeEvent& GetWindowResizeEvent() { return data.windowResizeEvent; };
 
@@ -65,12 +75,6 @@ namespace Copper {
         inline MouseEvent& GetMouseMoveEvent() { return data.mouseMoveEvent; }
         inline MouseEvent& GetMouseButtonPressedEvent() { return data.mouseButtonPressedEvent; }
         inline MouseEvent& GetMouseButtonReleasedEvent() { return data.mouseButtonReleasedEvent; }
-
-        // Setters
-
-        void SetSize(const UVector2I& size);
-
-        void SetTitle(const std::string& title);
 
     private:
         WindowData data;

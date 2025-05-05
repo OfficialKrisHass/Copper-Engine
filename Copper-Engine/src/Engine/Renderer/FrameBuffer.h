@@ -31,8 +31,9 @@ namespace Copper {
         };
 
         FrameBuffer() = default;
-        FrameBuffer(const UVector2I& size, std::initializer_list<Attachment::Format> attachmentFormats);
+        FrameBuffer(const UVector2I& size, std::initializer_list<Attachment::Format> attachmentFormats) { Create(size, attachmentFormats); }
 
+        void Create(const UVector2I& size, std::initializer_list<Attachment::Format> attachmentFormats);
         void Recreate();
         void Delete();
 
@@ -77,6 +78,8 @@ namespace Copper {
         uint32 m_depthAttachment = 0;
 
         UVector2I m_size = UVector2I::zero;
+
+        void Create();
 
         void CreateTexture(int internalFormat, int format);
 

@@ -5,9 +5,11 @@
 
 namespace Copper {
 
-    FrameBuffer::FrameBuffer(const UVector2I& size, std::initializer_list<Attachment::Format> attachmentFormats) : m_size(size) {
+    void FrameBuffer::Create(const UVector2I& size, std::initializer_list<Attachment::Format> attachmentFormats) {
 
         CUP_FUNCTION();
+
+        m_size = size;
 
         CU_ASSERT(attachmentFormats.size() < 5, "A max of 4 color attachments are allowed on a FrameBuffer");
 
@@ -15,22 +17,16 @@ namespace Copper {
         for(Attachment::Format format : attachmentFormats)
             m_attachments.push_back(format);
 
-        Recreate();
+        Create();
 
     }
 
-    void FrameBuffer::Recreate() {
+    void FrameBuffer::Create() {
 
         CUP_FUNCTION();
 
-
-        if (m_id != 0)
-            Delete();
-
         glGenFramebuffers(1, &m_id);
         glBindFramebuffer(GL_FRAMEBUFFER, m_id);
-
-        Log("Recreate called for fbo {}", m_id);
 
         // Color attachments
 
@@ -81,9 +77,23 @@ namespace Copper {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     }
+
+    void FrameBuffer::Recreate() {
+
+        CUP_FUNCTION();
+
+        CU_ASSERT(m_id != 0, "Can't delete the default framebuffer (with id 0)");
+        CU_ASSERT(m_attachments.size() > 0, "Can't Recreate a frame buffer with no attachments. FrameBuffer id: {}", m_id);
+
+        Delete();
+        Create();
+
+    }
     void FrameBuffer::Delete() {
 
         CUP_FUNCTION();
+
+        CU_ASSERT(m_id != 0, "Can't delete the default framebuffer (with id 0)");
 
         glDeleteFramebuffers(1, &m_id);
         glDeleteTextures(1, &m_depthAttachment);

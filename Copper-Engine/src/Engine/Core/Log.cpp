@@ -21,7 +21,12 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        if (initialized) return;
+        if (initialized) {
+
+            LogError("Can not initialize the logger as it has already been initialized.");
+            return;
+
+        }
         initialized = true;
 
         colorSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();

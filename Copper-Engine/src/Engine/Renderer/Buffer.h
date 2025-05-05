@@ -12,11 +12,13 @@ namespace Copper {
 
     public:
         VertexBuffer() = default;
-        VertexBuffer(float* vertices, uint32 size, const std::initializer_list<ElementType>& layout);
+        VertexBuffer(float* vertices, uint32 size, const std::initializer_list<ElementType>& layout) { Create(vertices, size, layout); }
+
+        void Create(float* vertices, uint32 size, const std::initializer_list<ElementType>& layout);
 
         // Modification
 
-        void SetData(void* vertices, uint32 size);
+        void SetData(float* vertices, uint32 size);
 
         // Using
 
@@ -63,7 +65,9 @@ namespace Copper {
 
     public:
         IndexBuffer() = default;
-        IndexBuffer(uint32* indices, uint32 size);
+        IndexBuffer(uint32* indices, uint32 size) { Create(indices, size); }
+
+        void Create(uint32* indices, uint32 size);
 
         // Modification
 

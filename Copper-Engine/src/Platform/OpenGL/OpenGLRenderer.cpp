@@ -3,9 +3,11 @@
 
 #include "Engine/Core/Engine.h"
 
+#include "Engine/Input/Popup.h"
+
 #include "Engine/Renderer/VertexArray.h"
 #include "Engine/Renderer/Shader.h"
-#include "Engine/Renderer/Texture.h"
+#include "Engine/Renderer/Material.h"
 
 #include "Engine/Components/Transform.h"
 #include "Engine/Components/Camera.h"
@@ -48,7 +50,7 @@ namespace Copper::RendererAPI {
 
         if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
 
-            LogError("Failed to load GLAD");
+            Input::ErrorPopup("GLAD error", "Failed to load glad during Renderer API Initialization");
             exit(-1);
 
         }
@@ -229,7 +231,7 @@ namespace Copper::RendererAPI {
 
         CUP_FUNCTION();
 
-        shader = Shader(vertexPath, fragmentPath);
+        shader.Create(vertexPath, fragmentPath);
 
     }
 

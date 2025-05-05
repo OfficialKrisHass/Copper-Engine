@@ -23,7 +23,7 @@ namespace Copper::Args {
 
         if (initialized) {
 
-            LogError("Args::Setup has already been run");
+            LogError("Can't initialize Args as it has already been initialized.");
             return;
 
         }

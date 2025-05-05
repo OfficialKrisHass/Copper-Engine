@@ -94,9 +94,9 @@ namespace Copper {
 
 #ifdef CU_EDITOR
         data.window = GetEditorWindow();
-        CU_ASSERT(data.window, "Editor Window returned nullptr! Check if you have created a window in AppEntryPoint and provided a GetEditorWindow function!");
+        CU_ASSERT(data.window != nullptr, "Editor Window returned nullptr! Check if you have created a window in AppEntryPoint and provided a GetEditorWindow function!");
 #else
-        data.window = Window("Copper Engine", 1280, 720);
+        data.window.Initialize("Copper Engine", 1280, 720);
 #endif
 
         data.GetWindow().GetWindowCloseEvent() += OnWindowClose;
@@ -104,7 +104,7 @@ namespace Copper {
 
         Renderer::Initialize();
         Renderer::SetShaderPath(ExecutableFolder() / "assets/Shaders/vertexDefault.glsl", ExecutableFolder() / "assets/Shaders/fragmentDefault.glsl");
-        data.fbo = FrameBuffer(UVector2I(1280, 720), { FrameBuffer::Attachment::Format::RGB8 }); // TODO: Find a solution to this (maybe store the resolution somewhere ?)
+        data.fbo.Create(UVector2I(1280, 720), { FrameBuffer::Attachment::Format::RGB8 }); // TODO: Find a solution to this (maybe store the resolution somewhere ?)
 
         data.mainUIContext.Initialize(data.GetWindow(), true);
 

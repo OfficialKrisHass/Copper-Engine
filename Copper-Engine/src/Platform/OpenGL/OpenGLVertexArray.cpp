@@ -7,11 +7,11 @@
 
 namespace Copper {
 
-    VertexArray::VertexArray(IndexBuffer* ibo) {
+    void VertexArray::Create(IndexBuffer* ibo) {
 
         CUP_FUNCTION();
 
-        this->m_ibo = ibo;
+        m_ibo = ibo;
 
         glGenVertexArrays(1, &m_id);
         glBindVertexArray(m_id);

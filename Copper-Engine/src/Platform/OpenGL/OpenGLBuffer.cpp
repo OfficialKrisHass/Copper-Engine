@@ -11,7 +11,7 @@ namespace Copper {
     // Vertex Buffer
     //--------------
 
-    VertexBuffer::VertexBuffer(float* vertices, uint32 size, const std::initializer_list<ElementType>& layout) {
+    void VertexBuffer::Create(float* vertices, uint32 size, const std::initializer_list<ElementType>& layout) {
 
         CUP_FUNCTION();
 
@@ -24,7 +24,7 @@ namespace Copper {
 
     }
 
-    void VertexBuffer::SetData(void* vertices, uint32 size) {
+    void VertexBuffer::SetData(float* vertices, uint32 size) {
 
         CUP_FUNCTION();
 
@@ -52,7 +52,7 @@ namespace Copper {
     // Index Buffer
     //-------------
 
-    IndexBuffer::IndexBuffer(uint32* indices, uint32 size) {
+    void IndexBuffer::Create(uint32* indices, uint32 size) {
 
         CUP_FUNCTION();
 

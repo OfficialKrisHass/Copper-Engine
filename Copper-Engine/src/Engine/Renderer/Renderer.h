@@ -2,7 +2,7 @@
 
 #include "Engine/Core/Core.h"
 
-#include "Engine/Renderer/Material.h"
+#include "Engine/AssetStorage/AssetPtr.h"
 
 namespace Copper {
 
@@ -10,8 +10,7 @@ namespace Copper {
 
     class Transform;
     class Camera;
-    class Light; 
-    class Mesh;
+    class Light;
 
     namespace Renderer {
 

@@ -10,7 +10,9 @@ namespace Copper {
 
     public:
         Shader() = default;
-        Shader(const fs::path& vertexPath, const fs::path& fragmentPath);
+        Shader(const fs::path& vertexPath, const fs::path& fragmentPath) { Create(vertexPath, fragmentPath); }
+
+        void Create(const fs::path& vertexPath, const fs::path& fragmentPath);
 
         // Using
 

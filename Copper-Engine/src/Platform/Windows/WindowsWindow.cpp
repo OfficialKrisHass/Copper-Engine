@@ -2,7 +2,6 @@
 #include "Engine/Core/Window.h"
 
 #include "Engine/Core/Engine.h"
-#include "Engine/Renderer/Renderer.h"
 
 #include "Engine/Input/KeyCodes.h"
 #include "Engine/Input/Input.h"
@@ -10,29 +9,26 @@
 #include <GLFW/glfw3.h>
 
 #define WINDOW (GLFWwindow*) windowPtr
-#define GETWINDATA *(WindowData*) glfwGetWindowUserPointer(window)
+#define GETWINDATA (WindowData*) glfwGetWindowUserPointer(window)
 
 namespace Copper {
 
     uint32 windowCount = 0;
 
-    void Window::Initialize(const std::string& title, uint32 width, uint32 height, bool maximize) {
+    void Window::Create(const std::string& title, uint32 width, uint32 height, bool maximize) {
 
         CUP_FUNCTION();
 
         if (windowPtr != nullptr) {
 
-            LogError("Window {} is already initialized, please call Shutdown() first", title);
+            LogError("Window {} was already created, please call Shutdown() first", title);
             return;
 
         }
-
-        data.title = title;
-
         if (windowCount == 0) {
 
 #ifndef CU_EDITOR
-            VERIFY_STATE(EngineState::Initialization, "Initialize the main Window");
+            VERIFY_STATE(EngineState::Initialization, "Initialize the main Window"); 
 #endif
             if (!glfwInit()) {
 
@@ -42,22 +38,23 @@ namespace Copper {
             }
 
         }
-
         windowCount++;
+
+        data.title = title;
 
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-        windowPtr = (void*)glfwCreateWindow(width, height, data.title.c_str(), NULL, NULL);
-        CU_ASSERT(windowPtr, "Could not create GLFW window");
+        windowPtr = (void*) glfwCreateWindow(width, height, data.title.c_str(), NULL, NULL);
+        CU_ASSERT(windowPtr != nullptr, "Could not create the GLFW window for window {}", data.title);
 
         glfwMakeContextCurrent(WINDOW);
         glfwSetWindowUserPointer(WINDOW, &data);
         if (maximize)
             glfwMaximizeWindow(WINDOW);
 
-        glfwGetWindowSize(WINDOW, (int32*)&data.size.x, (int32*)&data.size.y);
+        glfwGetWindowSize(WINDOW, (int32*) &data.size.x, (int32*) &data.size.y);
 
         SetupEvents();
 
@@ -96,44 +93,44 @@ namespace Copper {
 
         glfwSetWindowCloseCallback(WINDOW, [](GLFWwindow* window) {
 
-            WindowData& data = GETWINDATA;
+            WindowData* data = GETWINDATA;
 
-            data.windowCloseEvent();
+            data->windowCloseEvent();
 
-            });
+        });
         glfwSetWindowFocusCallback(WINDOW, [](GLFWwindow* window, int32 focused) {
 
-            WindowData& data = GETWINDATA;
+            WindowData* data = GETWINDATA;
 
-            data.windowFocusedEvent.focused = focused;
-            data.windowFocusedEvent();
+            data->windowFocusedEvent.focused = focused;
+            data->windowFocusedEvent();
 
-            });
+        });
         glfwSetWindowSizeCallback(WINDOW, [](GLFWwindow* window, int32 width, int32 height) {
 
-            WindowData& data = GETWINDATA;
+            WindowData* data = GETWINDATA;
 
-            data.size.x = width;
-            data.size.y = height;
+            data->size.x = width;
+            data->size.y = height;
 
-            data.windowResizeEvent.width = width;
-            data.windowResizeEvent.height = height;
+            data->windowResizeEvent.width = width;
+            data->windowResizeEvent.height = height;
 
-            data.windowResizeEvent();
+            data->windowResizeEvent();
 
-            });
+        });
 
         glfwSetKeyCallback(WINDOW, [](GLFWwindow* window, int32 key, int32 scancode, int32 action, int32 mods) {
 
-            WindowData& data = GETWINDATA;
+            WindowData* data = GETWINDATA;
 
             switch (action) {
 
             case GLFW_PRESS:
             {
 
-                data.keyPressedEvent.key = (KeyCode)key;
-                data.keyPressedEvent();
+                data->keyPressedEvent.key = (KeyCode) key;
+                data->keyPressedEvent();
 
                 break;
 
@@ -141,8 +138,8 @@ namespace Copper {
             case GLFW_REPEAT:
             {
 
-                data.keyRepeatEvent.key = (KeyCode)key;
-                data.keyRepeatEvent();
+                data->keyRepeatEvent.key = (KeyCode) key;
+                data->keyRepeatEvent();
 
                 break;
 
@@ -150,8 +147,8 @@ namespace Copper {
             case GLFW_RELEASE:
             {
 
-                data.keyReleasedEvent.key = (KeyCode)key;
-                data.keyReleasedEvent();
+                data->keyReleasedEvent.key = (KeyCode) key;
+                data->keyReleasedEvent();
 
                 break;
 
@@ -159,27 +156,27 @@ namespace Copper {
 
             }
 
-            });
-
+        });
         glfwSetMouseButtonCallback(WINDOW, [](GLFWwindow* window, int32 button, int32 action, int32 mods) {
 
-            WindowData& data = GETWINDATA;
+            WindowData* data = GETWINDATA;
+
             uint16 keycode = static_cast<uint16>(KeyCode::Mouse0) + button;
 
             switch (action) {
 
             case GLFW_PRESS: {
 
-                data.mouseButtonPressedEvent.button = static_cast<KeyCode>(keycode);
-                data.mouseButtonPressedEvent();
+                data->mouseButtonPressedEvent.button = static_cast<KeyCode>(keycode);
+                data->mouseButtonPressedEvent();
 
                 break;
 
             }
             case GLFW_RELEASE: {
- 
-                data.mouseButtonReleasedEvent.button = static_cast<KeyCode>(keycode);
-                data.mouseButtonReleasedEvent();
+
+                data->mouseButtonReleasedEvent.button = static_cast<KeyCode>(keycode);
+                data->mouseButtonReleasedEvent();
 
                 break;
 
@@ -188,17 +185,17 @@ namespace Copper {
 
             }
 
-            });
+        });
 
         glfwSetCursorPosCallback(WINDOW, [](GLFWwindow* window, double x, double y) {
 
-            WindowData& data = GETWINDATA;
+            WindowData* data = GETWINDATA;
 
-            data.mouseMoveEvent.mouseCoords.x = (int32)x;
-            data.mouseMoveEvent.mouseCoords.y = (int32)y;
-            data.mouseMoveEvent();
+            data->mouseMoveEvent.mouseCoords.x = (int32) x;
+            data->mouseMoveEvent.mouseCoords.y = (int32) y;
+            data->mouseMoveEvent();
 
-            });
+        });
 
     }
 
@@ -206,10 +203,26 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        return (float)glfwGetTime();
+        return (float) glfwGetTime();
 
     }
 
+    void Window::SetWidth(uint32 value) {
+
+        CUP_FUNCTION();
+
+        glfwSetWindowSize(WINDOW, value, data.size.y);
+        data.size.x = value;
+
+    }
+    void Window::SetHeight(uint32 value) {
+
+        CUP_FUNCTION();
+
+        glfwSetWindowSize(WINDOW, data.size.x, value);
+        data.size.y = value;
+
+    }
     void Window::SetSize(const UVector2I& size) {
 
         CUP_FUNCTION();

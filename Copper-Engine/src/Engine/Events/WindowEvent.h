@@ -4,11 +4,6 @@
 
 namespace Copper {
 
-    class WindowCloseEvent : public Event {
-
-
-    };
-
     class WindowFocusedEvent : public Event {
 
     public:

@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
 
     //TODO: Start being consistent with function naming and stop eeny miny moe-ing between 'Initialize' and 'Setup' for gods sake
     Logger::Initialize();
-    Args::Setup(argc, argv);
+    Args::Initialize(argc, argv);
     
     AppEntryPoint();
 

@@ -214,9 +214,9 @@ namespace Editor {
         data.viewport.SetGizmoOperation(static_cast<Viewport::Gizmo::Operation>(main["Gizmo operation"].as<uint16>()));
         data.viewport.SetGizmoGlobalMode(main["Gizmo global mode"].as<bool>());
 
-        if (!Args::ProjectPath().empty()) {
+        if (!Args::GetProjectToOpenPath().empty()) {
 
-            data.project.Open(Args::Get(0));
+            data.project.Open(Args::GetProjectToOpenPath());
             return;
 
         }

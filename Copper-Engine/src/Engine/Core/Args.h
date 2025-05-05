@@ -2,17 +2,17 @@
 
 #include "Engine/Core/Core.h"
 
-// Safe wrapper for the command line arguments, shouldn't include executable name
+// Wrapper for the command line arguments.
 namespace Copper::Args {
 
     // Internal function aka DO NOT CALL THIS
-    void Setup(uint32 argc, char* argv[]);
+    void Initialize(uint32 argc, char* argv[]);
 
-    uint32 Count();
-    const std::string& Get(uint32 index);
+    uint64 Count();
+    const std::string& GetArgument(uint32 index);
 
 #ifdef CU_EDITOR
-    const fs::path& ProjectPath();
+    const fs::path& GetProjectToOpenPath();
 #endif
 
 }

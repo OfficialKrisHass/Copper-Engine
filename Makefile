@@ -43,7 +43,7 @@ endif
 
 run-editor:
 ifeq ($(CONFIGURATION), Debug)
-	@./$(BUILD_DIR)/Copper-Editor/Copper-Editor -a $(CURDIR)/Copper-Editor/
+	@./$(BUILD_DIR)/Copper-Editor/Copper-Editor -e $(CURDIR)/Copper-Editor/
 else
 	@./$(BUILD_DIR)/Copper-Editor/Copper-Editor
 endif

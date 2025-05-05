@@ -24,6 +24,8 @@ elseif(${CMAKE_BUILD_TYPE} STREQUAL Release)
     list(APPEND defines CU_RELEASE)
 endif()
 
+set_source_files_properties(src/UI.cpp PROPERTIES INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/Copper-Engine/lib/ImGui/ImGui)
+
 # Core
 
 add_executable(Copper-Launcher ${sources})

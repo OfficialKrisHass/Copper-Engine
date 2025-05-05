@@ -8,57 +8,52 @@
 
 namespace Copper::Args {
 
-    static bool didRun = false;
+    static bool initialized = false;
 
     static std::vector<std::string> arguments;
 
     static fs::path execFolder;
 #ifdef CU_EDITOR
-    static fs::path projectPath;
+    static fs::path projectToOpenPath;
 #endif
 
-    void Setup(uint32 argc, char* argv[]) {
+    void Initialize(uint32 argc, char* argv[]) {
 
         CUP_FUNCTION();
 
-        if (didRun) {
+        if (initialized) {
 
             LogError("Args::Setup has already been run");
             return;
 
         }
-        if (argc == 0) {
+        initialized = true;
+        arguments.reserve(argc);
+        
+        for (uint32 i = 0; i < argc; i++) {
 
-            LogError("Command line arguments count is 0 (no exec path)");
-            return;
+            arguments.push_back(argv[i]);
 
-        }
-
-        didRun = true;
-        arguments.resize(argc - 1);
-
-        for (uint32 i = 1; i < argc; i++) {
-
-            arguments[i - 1] = argv[i];
+            if (i == argc - 1) break;
 
 #ifdef CU_DEBUG
-            if (i == argc - 1 || arguments[i - 1] != "-a") continue;
+            if (strcmp(argv[i], "-e") == 0) {
 
-            i++;
-            execFolder = argv[i];
-            arguments[i - 1] = argv[i];
+                execFolder = argv[++i];
+                arguments.push_back(execFolder);
 
+            }
 #endif
 
         }
 
+        // The last argument is an optional project to open path.
 #ifdef CU_EDITOR
-        // If there's at least 1 argument (1st is execPath) and the first arguments
-        // isn't the assets folder option, then the first argument is a projectPath
-        if (argc > 1 && arguments[0] != "-a")
-            projectPath = arguments[0];
+        if (argc > 1 && argv[argc - 2][0] != '-')
+            projectToOpenPath = argv[argc - 1];
 #endif
 
+        // We only retrieve the executable folder from the OS if it wasn't passed as an argument.
         if (!execFolder.empty()) return;
 
 #ifdef CU_LINUX
@@ -77,22 +72,18 @@ namespace Copper::Args {
 
     }
 
-    uint32 Count() { return (uint32) arguments.size(); }
-    const std::string& Get(uint32 index) {
+    uint64 Count() { return arguments.size(); }
+    const std::string& GetArgument(uint32 index) {
 
         CUP_FUNCTION();
 
-        if (index < arguments.size()) return arguments[index];
-
-        LogError("Can't get {}-th argument as {} is the amount of arguments", index, arguments.size());
-
-        static const std::string empty = "";
-        return empty;
+        CU_ASSERT(index < arguments.size(), "")
+        return arguments[index];
 
     }
 
 #ifdef CU_EDITOR
-    const fs::path& ProjectPath() { return projectPath; }
+    const fs::path& GetProjectToOpenPath() { return projectToOpenPath; }
 #endif
 
 }

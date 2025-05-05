@@ -13,7 +13,6 @@ namespace Copper {
 
     std::shared_ptr<spdlog::logger> Logger::m_logger;
 
-    std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> Logger::m_ringbufferSink;
     static std::shared_ptr<spdlog::sinks::stdout_color_sink_mt> colorSink;
 
     // TODO: Add a log file like every other fucking app in the world
@@ -25,14 +24,11 @@ namespace Copper {
         if (initialized) return;
         initialized = true;
 
-        m_ringbufferSink = std::make_shared<spdlog::sinks::ringbuffer_sink_mt>(100);
         colorSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
 
-        m_ringbufferSink->set_pattern("%l:%v");
         colorSink->set_pattern("%^[%T] %n: %v%$");
 
         std::vector<spdlog::sink_ptr> sinks;
-        sinks.push_back(m_ringbufferSink);
         sinks.push_back(colorSink);
 
         m_logger = std::make_shared<spdlog::logger>("Logger", sinks.begin(), sinks.end());

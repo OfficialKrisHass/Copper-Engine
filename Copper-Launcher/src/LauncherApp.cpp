@@ -191,11 +191,11 @@ namespace Launcher {
 
             char* args[] = {
                 (char*) PersistentData::EditorPath().c_str(),
-                (char*) projectPath.data(),
 #ifdef CU_DEBUG
-                (char*) "-a",
+                (char*) "-e",
                 (char*) PersistentData::EditorAssetsPath().c_str(),
 #endif
+                (char*) projectPath.data(),
                 nullptr };
 
             execv(PersistentData::EditorPath().c_str(), args);
@@ -205,10 +205,11 @@ namespace Launcher {
 #elif CU_WINDOWS
         std::string editorPath = Utils::ReplaceSpaces(PersistentData::EditorPath().string());
         std::string path = Utils::ReplaceSpaces(projectPath);
-        std::string args = editorPath + " " + path;
+        std::string args = editorPath;
 #ifdef CU_DEBUG
         args += " -a " + PersistentData::EditorAssetsPath().string();
 #endif
+        args += ' ' + projectPath;
 
         STARTUPINFOA si;
         PROCESS_INFORMATION pi;

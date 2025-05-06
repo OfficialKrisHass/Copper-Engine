@@ -108,6 +108,8 @@ namespace Copper::RendererAPI {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 #endif
 
+        Log("\tOpenGL Renderer API initialized.");
+
     }
 
     void ClearColor(const Color& color) {

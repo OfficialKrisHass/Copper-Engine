@@ -156,6 +156,8 @@ namespace Editor {
 
         }
 
+        Log("\tEditor theme '{}' loaded.", path.filename().string());
+
     }
 
 }

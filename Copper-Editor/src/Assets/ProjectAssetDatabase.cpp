@@ -41,6 +41,8 @@ namespace Editor::ProjectAssetDatabase {
         ProjectMetadata::Deserialize(assetFiles);
         Refresh();
 
+        Log("\tProject asset database initialized.");
+
     }
     void Refresh() {
 
@@ -78,6 +80,8 @@ namespace Editor::ProjectAssetDatabase {
         CUP_FUNCTION();
 
         ProjectMetadata::Serialize(assetFiles);
+
+        Log("\tProject asset database saved.");
 
     }
 
@@ -143,6 +147,8 @@ namespace Editor::ProjectAssetDatabase {
             AssetStorage::DeleteAsset<Texture>(uuid);
         else if (extension == ".mat")
             AssetStorage::DeleteAsset<Material>(uuid);
+        else if (extension == ".fbx")
+            AssetStorage::DeleteAsset<Model>(uuid);
 
         assetNames.erase(uuid);
         assetFiles.erase(path);

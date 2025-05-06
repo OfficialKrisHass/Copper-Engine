@@ -23,10 +23,6 @@ namespace Copper {
     void UIContext::Initialize(const Window& window, bool gizmo, bool docking, bool viewports) {
 
         CUP_FUNCTION();
-
-        m_gizmo = gizmo;
-        m_docking = docking;
-        m_viewports = viewports;
         
         if(uiCount == 0) {
             
@@ -35,6 +31,10 @@ namespace Copper {
 
         }
         uiCount++;
+
+        m_gizmo = gizmo;
+        m_docking = docking;
+        m_viewports = viewports;
 
         m_context = ImGui::CreateContext();
         ImGui::SetCurrentContext(m_context);

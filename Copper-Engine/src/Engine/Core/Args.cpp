@@ -70,6 +70,8 @@ namespace Copper::Args {
 
         execFolder = tmp;
 
+        Log("Initialized and parsed {} command line arguments.", argc);
+
     }
 
     uint64 Count() { return arguments.size(); }

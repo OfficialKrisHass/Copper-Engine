@@ -29,6 +29,8 @@ namespace Copper::PhysicsEngine {
 
         dispatcher = PxDefaultCpuDispatcherCreate(1);
 
+        Log("\tPhysics Engine initialized.");
+
     }
 
     void Shutdown() {
@@ -38,6 +40,8 @@ namespace Copper::PhysicsEngine {
         dispatcher->release();
         physics->release();
         foundation->release();
+
+        Log("\tPhysics engine shut down.");
 
     }
 

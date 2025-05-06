@@ -66,6 +66,8 @@ namespace Copper::Scripting {
 
         }
 
+        Log("\tScripting Engine initialized.");
+
         InitializeScriptingAPI();
         
     }
@@ -75,6 +77,8 @@ namespace Copper::Scripting {
         VERIFY_STATE(EngineState::Shutdown, "Shutdown the Scripting Engine");
 
         mono_jit_cleanup(data.rootDomain);
+
+        Log("\tScripting engine shut down.");
 
     }
 
@@ -89,6 +93,8 @@ namespace Copper::Scripting {
         if (!data.game) return false;
 
         InitializeGame();
+
+        Log("\tGame assembly '{}' loaded with {} component scripts.", assemblyPath.filename().string(), data.componentScripts.size());
 
         return true;
 
@@ -106,6 +112,8 @@ namespace Copper::Scripting {
         data.scriptingAPI = Assembly();
 
         data.componentScripts.clear();
+
+        Log("\tGame assembly unloaded.");
 
 
     }
@@ -152,6 +160,8 @@ namespace Copper::Scripting {
 
         data.unmanagedPtrField = mono_class_get_field_from_name(BaseClass(), "m_unmanagedPtr");
 
+        Log("\tScripting API initialized.");
+
     }
     void InitializeGame() {
 
@@ -174,8 +184,6 @@ namespace Copper::Scripting {
 
             if (std::string(name) == "<Module>") continue;
 
-            Log("Found class in C#: {}.{}", nameSpace, name);
-
             // Filter out non component Scripts
 
             MonoClass* klass = mono_class_from_name_case(data.game.GetImage(), nameSpace, name);
@@ -185,8 +193,6 @@ namespace Copper::Scripting {
             data.componentScripts[fullName] = Script(klass);
 
         }
-
-        Log("Game assembly contains {} valid scripts", data.componentScripts.size());
 
     }
 

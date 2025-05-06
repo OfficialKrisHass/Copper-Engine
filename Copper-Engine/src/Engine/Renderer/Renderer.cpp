@@ -128,7 +128,7 @@ namespace Copper::Renderer {
 #endif
 
         });
-        data.ibo.Create(nullptr, MaxIndices * sizeof(uint32));
+        data.ibo.Create(nullptr, MaxIndices);
 
         data.vao.SetVertexBuffer(&data.vbo);
         data.vao.SetIndexBuffer(&data.ibo);
@@ -162,6 +162,8 @@ namespace Copper::Renderer {
         data.materialCount = 1;
 
         InitializePrimitives();
+
+        Log("\tRenderer initialized.");
 
     }
     void Restart() {

@@ -5,6 +5,7 @@
 
 #include "Engine/Input/KeyCodes.h"
 #include "Engine/Input/Input.h"
+#include "Engine/Input/Popup.h"
 
 #include <GLFW/glfw3.h>
 
@@ -32,7 +33,7 @@ namespace Copper {
 #endif
             if (!glfwInit()) {
 
-                LogError("Could not initialize GLFW");
+                Input::ErrorPopup("GLFW error", "Failed to initialize GLFW during window creation");
                 exit(-1);
 
             }
@@ -57,6 +58,8 @@ namespace Copper {
         glfwGetWindowSize(WINDOW, (int32*) &data.size.x, (int32*) &data.size.y);
 
         SetupEvents();
+
+        Log("Created window {}, size: {}.", data.title, data.size);
 
     }
     void Window::Update() {

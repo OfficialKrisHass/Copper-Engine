@@ -24,4 +24,21 @@ namespace Editor::FileWatcher {
 
     void AddCallback(Callback callback);
 
+    constexpr const char* FileChangeToString(FileChangeType type) {
+
+        switch (type) {
+
+            case FileChangeType::Created: return "Created";
+            case FileChangeType::Changed: return "Changed";
+            case FileChangeType::Deleted: return "Deleted";
+            case FileChangeType::RenamedOldName: return "Renamed new";
+            case FileChangeType::RenamedNewName: return "Renamed old";
+
+        }
+
+        LogError("Invalid file change type '{}'", static_cast<Copper::uint8>(type));
+        return nullptr;
+
+    }
+
 }

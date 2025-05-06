@@ -59,16 +59,9 @@ namespace Copper {
         glGenBuffers(1, &m_id);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, indices, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, size * sizeof(uint32), indices, GL_DYNAMIC_DRAW);
 
-        m_count = size / sizeof(uint32);
-
-        // Every now and then, this log will break the code on windows. The app will freeze when this
-        // attempt to get executed, for no reason whatsoever, the only solution is to comment it, and
-        // uncomment it back. I do not remember adding this here, and I do not like how ghostly this acts
-        //
-        // I am scared
-        Log(sizeof(uint32));
+        m_count = size;
 
     }
 

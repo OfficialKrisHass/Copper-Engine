@@ -83,7 +83,7 @@ namespace Copper {
         VERIFY_STATE(EngineState::Entry, "Initialize the Engine");
         data.engineState = EngineState::Initialization;
 
-        Log("Running Copper Engine Version {}.{}.{}.{}", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_TWEAK);
+        Log("Initializing Copper-Engine.");
 
 #ifdef CU_DEBUG
         SignalHandler::RegisterHandler(SignalHandler::Signal::Abort, Profiler::CrashHandler);
@@ -105,13 +105,17 @@ namespace Copper {
         Renderer::Initialize();
         Renderer::SetShaderPath(ExecutableFolder() / "assets/Shaders/vertexDefault.glsl", ExecutableFolder() / "assets/Shaders/fragmentDefault.glsl");
         data.fbo.Create(UVector2I(1280, 720), { FrameBuffer::Attachment::Format::RGB8 }); // TODO: Find a solution to this (maybe store the resolution somewhere ?)
+        Log("\tMain frame buffer created.");
 
         data.mainUIContext.Initialize(data.GetWindow(), true);
+        Log("\tMain UI Context initialized.");
 
         // Input
 
         Input::Initialize(&data.GetWindow());
         Input::InitializeAxisManager();
+
+        Log("\tInput system initialized.");
 
         // Other systems initialization
 
@@ -121,6 +125,8 @@ namespace Copper {
         data.scene.Initialize();
 
         // Finalization
+        
+        Log("Copper-Engine initialized.");
 
         data.engineState = EngineState::PostInitialization;
         data.postInitEvent();
@@ -132,6 +138,8 @@ namespace Copper {
 
         VERIFY_STATE(EngineState::PostInitialization, "Run the Engine");
         data.engineState = EngineState::Running;
+
+        Log("Entering engine run loop.");
 
         while (data.engineState == EngineState::Running) {
 
@@ -180,6 +188,8 @@ namespace Copper {
 
         }
 
+        Log("Engine run loop exited.");
+
     }
     void EngineShutdown() {
 
@@ -187,11 +197,17 @@ namespace Copper {
 
         VERIFY_STATE(EngineState::Shutdown, "Shutdown the Engine");
 
+        Log("Shutting down Copper-Engine.");
+
         data.mainUIContext.Shutdown();
+        Log("\tMain UI context shut down.");
         data.GetWindow().Shutdown();
+        Log("\tMain window shut down.");
 
         Scripting::Shutdown();
         PhysicsEngine::Shutdown();
+
+        Log("Copper-Engine shut down.");
 
         data.postShutdownEvent();
 
@@ -219,8 +235,17 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        if (!data.preShutdownEvent()) return false;
+        Log("Window close event has been triggered.");
+
+        if (!data.preShutdownEvent()) {
+
+            Log("Window close has been blocked.");
+            return false;
+
+        }
         data.engineState = EngineState::Shutdown;
+
+        Log("Window close event was succesfull, requesting shutdown.");
 
         return true;
 

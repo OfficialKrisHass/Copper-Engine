@@ -57,6 +57,8 @@ namespace Editor::FileWatcher {
         }
 #endif
 
+        Log("\tFilewatcher started at directory '{}'", directory);
+
     }
     void Stop() {
 
@@ -101,7 +103,7 @@ namespace Editor::FileWatcher {
             const FileChangeType type = it.second;
 #endif
 
-            Log("Filewatch event {}, name: '{}'", static_cast<uint32>(type), path);
+            Log("Filewatch detected change ({}) at {}", FileChangeToString(type), path);
 
             for (const Callback& callback : data.callbacks)
                 callback(path, type);

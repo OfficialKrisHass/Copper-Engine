@@ -55,6 +55,8 @@ namespace Editor {
 
         CUP_FUNCTION();
 
+        Log("Opening project '{}'.", path.filename().string());
+
         bool opened = false;
         try { opened = LoadFile(path); }
         catch (YAML::Exception e) {
@@ -66,6 +68,8 @@ namespace Editor {
         if (!opened) return;
 
         if (uint16_t issueFlags = ProjectChecker::CheckProject(*this)) {
+
+            Log("\tIssues were found.");
 
             switch (Input::WarningPopup("Corrupted Project", "This project is missing some of the core folders and/or files that are required by the Editor to function properly. If you want to see the list, check the console.\n\nDo you want the editor to try and fix the project ?")) {
 
@@ -124,6 +128,8 @@ namespace Editor {
         out << YAML::EndMap; // Main
         std::ofstream file(m_path / "Project.cu");
         file << out.c_str(); 
+
+        Log("Project saved.");
 
     }
     void Project::SaveAs() {

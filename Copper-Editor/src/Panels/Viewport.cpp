@@ -30,6 +30,8 @@ namespace Editor {
         m_fbo.Create(m_size, { FrameBuffer::Attachment::Format::RGB8, FrameBuffer::Attachment::Format::RedInteger });
         m_sceneCam = SceneCamera(m_size, this);
 
+        Log("\tViewport panel initialized.");
+
     }
 
     void Viewport::Update() {

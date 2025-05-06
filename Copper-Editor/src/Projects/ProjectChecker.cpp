@@ -90,6 +90,8 @@ namespace Editor::ProjectChecker {
         if (GET_FLAG(issueFlags, MissingProjectDLL))
             project.BuildScripts();
 
+        Log("\tIssues fixed.");
+
     }
 
 }

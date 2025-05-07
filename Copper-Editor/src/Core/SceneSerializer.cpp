@@ -89,7 +89,13 @@ namespace Editor::SceneSerializer {
 
         }
 
-        Log("\tScene deserialized with {} entities.", scene->GetNumOfEntities());
+#ifdef CU_LOG_STATUS
+        if (GetEngineState() == EngineState::PostInitialization)
+            LogStatus("\tScene deserialized with {} entities.", scene->GetNumOfEntities());
+        else
+#endif
+            Log("Scene deserialized with {} entities.", scene->GetNumOfEntities());
+
 
     }
 

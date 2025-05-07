@@ -70,7 +70,7 @@ namespace Copper::Args {
 
         execFolder = tmp;
 
-        Log("Initialized and parsed {} command line arguments.", argc);
+        LogStatus("Parsed {} command line arguments.", argc);
 
     }
 

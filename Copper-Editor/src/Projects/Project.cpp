@@ -55,7 +55,12 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        Log("Opening project '{}'.", path.filename().string());
+#ifdef CU_LOG_STATUS
+        if (GetEngineState() == EngineState::PostInitialization)
+            LogStatus("\tOpening project '{}'.", path.filename().string());
+        else
+#endif
+            Log("Opening project '{}'.", path.filename().string());
 
         bool opened = false;
         try { opened = LoadFile(path); }
@@ -69,7 +74,7 @@ namespace Editor {
 
         if (uint16_t issueFlags = ProjectChecker::CheckProject(*this)) {
 
-            Log("\tIssues were found.");
+            LogWarn("Issues were found.");
 
             switch (Input::WarningPopup("Corrupted Project", "This project is missing some of the core folders and/or files that are required by the Editor to function properly. If you want to see the list, check the console.\n\nDo you want the editor to try and fix the project ?")) {
 

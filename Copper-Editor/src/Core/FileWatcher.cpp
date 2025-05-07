@@ -57,7 +57,12 @@ namespace Editor::FileWatcher {
         }
 #endif
 
-        Log("\tFilewatcher started at directory '{}'", directory);
+#ifdef CU_LOG_STATUS
+        if (GetEngineState() == EngineState::PostInitialization)
+            LogStatus("\tFilewatcher started at directory '{}'.", directory.string());
+        else
+#endif
+            Log("Filewatcher started at directory '{}'.", directory.string());
 
     }
     void Stop() {

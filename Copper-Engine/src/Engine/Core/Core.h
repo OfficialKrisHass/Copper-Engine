@@ -17,6 +17,12 @@
 
 #define FLAG(bit) (1 << bit)
 
+#ifdef CU_LOG_STATUS
+#define LogStatus(...) Log(__VA_ARGS__)
+#else
+#define LogStatus(...) 
+#endif
+
 #ifdef CU_EDITOR
 namespace Editor {
 

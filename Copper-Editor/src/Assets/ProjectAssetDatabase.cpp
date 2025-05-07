@@ -41,7 +41,12 @@ namespace Editor::ProjectAssetDatabase {
         ProjectMetadata::Deserialize(assetFiles);
         Refresh();
 
-        Log("\tProject asset database initialized.");
+#ifdef CU_LOG_STATUS
+        if (GetEngineState() == EngineState::PostInitialization)
+            LogStatus("\tProject asset database initialized.");
+        else
+#endif
+            Log("Project asset database initialized.");
 
     }
     void Refresh() {
@@ -66,6 +71,11 @@ namespace Editor::ProjectAssetDatabase {
 
         }
 
+#ifdef CU_DEBUG 
+        if (GetEngineState() != EngineState::PostInitialization)
+            Log("Project asset database refreshed.");
+#endif
+
     }
     void Shutdown() {
 
@@ -81,7 +91,10 @@ namespace Editor::ProjectAssetDatabase {
 
         ProjectMetadata::Serialize(assetFiles);
 
-        Log("\tProject asset database saved.");
+#ifdef CU_LOG_STATUS
+        if (GetEngineState() == EngineState::Shutdown)
+            LogStatus("\tProject asset database saved.");
+#endif
 
     }
 
@@ -105,27 +118,34 @@ namespace Editor::ProjectAssetDatabase {
 
         CUP_FUNCTION();
 
-        UUID assetUUID; 
+        UUID uuid; 
         if (assetFiles.find(path) != assetFiles.end())
-            assetUUID = assetFiles.at(path);
+            uuid = assetFiles.at(path);
         else {
 
             LogWarn("{} was not loaded from ProjectMetadata.cu, creating new UUID", path);
 
-            UUID::Generate(assetUUID);
-            assetFiles[path] = assetUUID;
+            UUID::Generate(uuid);
+            assetFiles[path] = uuid;
 
         }
 
-        CU_ASSERT(assetUUID != UUID::GetInvalid(), "Invalid UUID loaded for asset {}", path);
+        CU_ASSERT(uuid != UUID::GetInvalid(), "Invalid UUID loaded for asset {}", path);
 
         if (extension == ".png" || extension == ".jpg")
-            AssetStorage::InsertAsset<Texture>(assetUUID, GetProject().GetAssetsPath() / path);
-        else if (extension == ".mat" && !AssetFile::DeserializeMaterial(GetProject().GetAssetsPath() / path, assetUUID)) return;
+            AssetStorage::InsertAsset<Texture>(uuid, GetProject().GetAssetsPath() / path);
+        else if (extension == ".mat" && !AssetFile::DeserializeMaterial(GetProject().GetAssetsPath() / path, uuid)) return;
         else if (extension == ".fbx")
-            AssetStorage::InsertAsset<Model>(assetUUID, path);
+            AssetStorage::InsertAsset<Model>(uuid, path);
 
-        assetNames[assetUUID] = path.filename().string();
+        assetNames[uuid] = path.filename().string();
+
+#ifdef CU_LOG_STATUS
+        if (GetEngineState() == EngineState::PostInitialization)
+            LogStatus("\t\tAsset '{}' ({}) loaded.", uuid, path.filename().string());
+        else
+#endif
+            Log("Asset '{}' ({}) loaded.", uuid, path.filename().string());
 
     }
     void RemoveAsset(const fs::path& path, const std::string& extension) {
@@ -152,6 +172,8 @@ namespace Editor::ProjectAssetDatabase {
 
         assetNames.erase(uuid);
         assetFiles.erase(path);
+
+        Log("Asset '{}' ({}) removed.", uuid, path.filename().string());
 
     }
 

@@ -66,9 +66,9 @@ namespace Copper::Scripting {
 
         }
 
-        Log("\tScripting Engine initialized.");
-
         InitializeScriptingAPI();
+
+        LogStatus("\tScripting Engine initialized.");
         
     }
     void Shutdown() {
@@ -78,7 +78,7 @@ namespace Copper::Scripting {
 
         mono_jit_cleanup(data.rootDomain);
 
-        Log("\tScripting engine shut down.");
+        LogStatus("\tScripting engine shut down.");
 
     }
 
@@ -94,7 +94,12 @@ namespace Copper::Scripting {
 
         InitializeGame();
 
-        Log("\tGame assembly '{}' loaded with {} component scripts.", assemblyPath.filename().string(), data.componentScripts.size());
+#ifdef CU_LOG_STATUS
+        if (GetEngineState() == EngineState::PostInitialization)
+            LogStatus("\tGame assembly '{}' loaded with {} component scripts.", assemblyPath.filename().string(), data.componentScripts.size());
+        else
+#endif
+            Log("Game assembly '{}' loaded with {} component scripts.", assemblyPath.filename().string(), data.componentScripts.size());
 
         return true;
 
@@ -113,7 +118,7 @@ namespace Copper::Scripting {
 
         data.componentScripts.clear();
 
-        Log("\tGame assembly unloaded.");
+        Log("Game assembly unloaded.");
 
 
     }
@@ -159,8 +164,6 @@ namespace Copper::Scripting {
         InitializeClasses();
 
         data.unmanagedPtrField = mono_class_get_field_from_name(BaseClass(), "m_unmanagedPtr");
-
-        Log("\tScripting API initialized.");
 
     }
     void InitializeGame() {

@@ -139,7 +139,7 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        Log("Initializing Copper-Editor.");
+        LogStatus("Initializing Copper-Editor.");
 
         data.window.GetKeyPressedEvent() += Editor::OnKeyPressed;
         data.window.GetWindowFocusedEvent() += Editor::OnWindowFocused;
@@ -159,26 +159,25 @@ namespace Editor {
         FileWatcher::AddCallback(FileChangedCallback);
 
         LoadEditorData();
-        Log("\tEditor data loaded.");
 
 #ifdef CU_LINUX
         data.project.RunPremake();
 #endif
 
-        Log("Copper-Editor initialized.");
+        LogStatus("Copper-Editor initialized.");
 
     }
     void Shutdown() {
 
         CUP_FUNCTION();
 
-        Log("Shutting down Copper-Editor.");
+        LogStatus("Shutting down Copper-Editor.");
 
         ProjectAssetDatabase::Shutdown();
 
         SaveEditorData();
 
-        Log("Copper-Editor shut down.");
+        LogStatus("Copper-Editor shut down.");
 
     }
 
@@ -199,8 +198,6 @@ namespace Editor {
 
         std::ofstream file(ExecutableFolder() / "assets/EditorData.cu");
         file << out.c_str();
-
-        Log("\tEditor data saved.");
 
     }
     void LoadEditorData() {
@@ -708,11 +705,16 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        Log("\tOpening scene '{}'", path.filename().string());
+#ifdef CU_LOG_STATUS
+        if (GetEngineState() == EngineState::PostInitialization)
+            LogStatus("\tOpening scene '{}'", path.filename().string());
+        else
+#endif
+            Log("Opening scene '{}'", path.filename().string());
 
         if(UnsavedChanges()) {
 
-            Log("\tUnsaved changes detected.");
+            LogWarn("Unsaved changes detected.");
 
             switch(Input::WarningPopup("Unsaved Changes", "There are unsaved changes made to this scene, do you wish to save before opening a new scene ?")) {
 
@@ -973,7 +975,7 @@ namespace Editor {
 
         if (!UnsavedChanges()) return true;
 
-        Log("\tUnsaved changes detected.");
+        LogStatus("\tUnsaved changes detected.");
 
         switch (Input::WarningPopup("Unsaved Changes", "There are Unsaved Changes in the project, do you wish to save the Project before exiting ?")) {
 
@@ -1037,7 +1039,7 @@ void AppEntryPoint() {
 
     CUP_FUNCTION();
 
-    Log("Entered Copper-Editor entry point.");
+    LogStatus("Copper-Editor entry point.");
 
     // In the editor case, we have our own window that is bigger then the engine region
     // so we have to create and store it ourselves

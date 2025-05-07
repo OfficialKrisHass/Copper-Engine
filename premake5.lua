@@ -99,6 +99,8 @@ project "Copper-Engine"
 
         "CU_PREMAKE",
 
+        "CU_LOG_STATUS",
+
         "YAML_CPP_STATIC_DEFINE",
 
         "INCLUDE_GLM",

@@ -163,7 +163,7 @@ namespace Copper::Renderer {
 
         InitializePrimitives();
 
-        Log("\tRenderer initialized.");
+        LogStatus("\tRenderer initialized.");
 
     }
     void Restart() {

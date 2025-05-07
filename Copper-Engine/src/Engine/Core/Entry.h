@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
     EngineRun();
     EngineShutdown();
 
-    Log("Application exiting.");
+    LogStatus("Application exiting.");
 
     return 0;
 

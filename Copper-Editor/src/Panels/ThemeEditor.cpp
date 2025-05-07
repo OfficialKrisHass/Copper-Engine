@@ -156,7 +156,12 @@ namespace Editor {
 
         }
 
-        Log("\tEditor theme '{}' loaded.", path.filename().string());
+#ifdef CU_LOG_STATUS
+        if (GetEngineState() == EngineState::PostInitialization)
+            LogStatus("\tEditor theme '{}' loaded.", path.filename().string());
+        else
+#endif
+            Log("Editor theme '{}' loaded.", path.filename().string());
 
     }
 

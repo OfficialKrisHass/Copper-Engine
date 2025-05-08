@@ -43,11 +43,13 @@ namespace Copper::Input {
         window->GetMouseButtonReleasedEvent() += OnButtonReleased;
         window->GetMouseMoveEvent() += OnMouseMove;
 
+#ifdef CU_DEBUG
         if (!pfd::settings::available())
 #ifdef CU_LINUX
             LogError("Portable File Dialogs are not available! You might be missing these packages:\n\tKDE: KDialog\n\tGnome: Zenity/Matedialog/Qarma");
 #elif CU_WINDOWS
             LogError("Portable File Dialogs are not available!");
+#endif
 #endif
 
         pfd::settings::verbose(false);

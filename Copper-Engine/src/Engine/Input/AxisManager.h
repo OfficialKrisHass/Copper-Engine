@@ -37,6 +37,7 @@ namespace Copper::Input {
     void InitializeAxisManager();
 
     float GetAxis(const std::string& axisName);
+    float GetMouseAxis(const std::string& axisName);
 
     void AddAxis(const std::string& axisName, KeyCode positive, KeyCode negative, float positiveValue = 1.0f, float negativeValue = -1.0f);
     void AddMouseAxis(const std::string& axisName, bool isX, float positiveValue = 1.0f, float negativeValue = -1.0f);

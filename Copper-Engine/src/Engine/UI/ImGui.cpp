@@ -15,9 +15,6 @@ namespace Copper {
 
     static std::string iniPath = "";
 
-    fs::path mainFontPath;
-    float mainFontSize = 0.0f;
-
     uint32 uiCount = 0;
 
     void UIContext::Initialize(const Window& window, bool gizmo, bool docking, bool viewports) {
@@ -26,8 +23,8 @@ namespace Copper {
         
         if(uiCount == 0) {
             
-            VERIFY_STATE(EngineState::Initialization, "Initialize the main UI");
-            IMGUI_CHECKVERSION();
+            VERIFY_STATE(EngineState::Initialization, "Initialize the main UI context");
+            CU_ASSERT(IMGUI_CHECKVERSION(), "ImGui version check failed.");
 
         }
         uiCount++;
@@ -48,11 +45,8 @@ namespace Copper {
         io.IniFilename = iniPath.c_str();
         ImGui::LoadIniSettingsFromDisk(io.IniFilename);
 
-        if (!mainFontPath.empty())
-            io.FontDefault = io.Fonts->AddFontFromFileTTF(mainFontPath.string().c_str(), mainFontSize);
-
-        ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(window.GetWindowPtr()), true);
-        ImGui_ImplOpenGL3_Init("#version 460");
+        CU_ASSERT(ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(window.GetWindowPtr()), true), "Could not initialize ImGui GLFW backend.");
+        CU_ASSERT(ImGui_ImplOpenGL3_Init("#version 460"), "Could not initialize ImGui OpenGL backend.");
 
     }
     void UIContext::Shutdown() {
@@ -104,13 +98,6 @@ namespace Copper {
         ImGuiIO& io = ImGui::GetIO();
         io.FontDefault = io.Fonts->AddFontFromFileTTF(path.string().c_str(), fontSize);
         
-        if(mainFontPath.empty()) {
-
-            mainFontPath = path;
-            mainFontSize = fontSize;
-
-        }
-
     }
 
     void UIContext::SetAsCurrent() const {

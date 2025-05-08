@@ -94,13 +94,15 @@ namespace Copper {
 
 #ifdef CU_EDITOR
         data.window = GetEditorWindow();
-        CU_ASSERT(data.window != nullptr, "Editor Window returned nullptr! Check if you have created a window in AppEntryPoint and provided a GetEditorWindow function!");
+        CU_ASSERT(data.window != nullptr, "GetEditorWindow() returned nullptr, check if you have created a window in AppEntryPoint.");
 #else
         data.window.Initialize("Copper Engine", 1280, 720);
 #endif
 
         data.GetWindow().GetWindowCloseEvent() += OnWindowClose;
+#ifndef CU_EDITOR
         data.GetWindow().GetWindowResizeEvent() += OnWindowResize;
+#endif
 
         Renderer::Initialize();
         Renderer::SetShaderPath(ExecutableFolder() / "assets/Shaders/vertexDefault.glsl", ExecutableFolder() / "assets/Shaders/fragmentDefault.glsl");
@@ -257,8 +259,8 @@ namespace Copper {
         // Editor handles resizing on its own
 
 #ifndef CU_EDITOR
-        data.fbo.Resize(data.GetWindow().Size());
-        data.scene.cam->Resize(data.GetWindow().Size());
+        data.fbo.Resize(data.GetWindow().GetSize());
+        data.scene.GetMainCamera()->Resize(data.GetWindow().GetSize());
 #endif
 
         return true;

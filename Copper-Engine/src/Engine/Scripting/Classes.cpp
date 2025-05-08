@@ -5,15 +5,17 @@
 
 #include <mono/metadata/class.h>
 
+#define NULL_CLASS_REF "{} class reference is nullptr. Make sure you provided the same name as in SET_CLASS()."
+
 #define SET_CLASS(var, name)    classes.var = mono_class_from_name(ScriptingAPIAssembly().GetImage(), "Copper", name);\
-                                CU_ASSERT(classes.var, "Could not get Copper.{} class", name)
+                                CU_ASSERT(classes.var, "Could not get Copper.{} class.", name)
 
 #define GET_CLASS_FUNC(name, var)   MonoClass* name ## Class() { CUP_FUNCTION();\
-                                    CU_ASSERT(classes.var, "{} Class reference is nullptr. Make Sure you assigned it in InitializeClasses()", #name);\
+                                    CU_ASSERT(classes.var, NULL_CLASS_REF, #name);\
                                     return classes.var; }
 
 #define GET_TMPL_CLASS_FUNC(type, var)  template<> MonoClass* GetMonoClass<type>() { CUP_FUNCTION();\
-                                        CU_ASSERT(classes.var, "{} is nullptr, make sure you assigned it in InitializeClasses()", #var);\
+                                        CU_ASSERT(classes.var, NULL_CLASS_REF, #var);\
                                         return classes.var; }
 
 namespace Copper {

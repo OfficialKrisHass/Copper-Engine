@@ -18,7 +18,6 @@ namespace Copper {
     namespace PhysicsEngine {
 
         extern PxPhysics* physics;
-        extern PxShape* noColliderShape;
 
     }
 

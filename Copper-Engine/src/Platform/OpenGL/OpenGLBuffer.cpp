@@ -16,6 +16,7 @@ namespace Copper {
         CUP_FUNCTION();
 
         glGenBuffers(1, &m_id);
+        CU_ASSERT(m_id != 0, "Could not create Vertex Buffer.");
 
         glBindBuffer(GL_ARRAY_BUFFER, m_id);
         glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_DYNAMIC_DRAW);
@@ -57,6 +58,7 @@ namespace Copper {
         CUP_FUNCTION();
 
         glGenBuffers(1, &m_id);
+        CU_ASSERT(m_id != 0, "Could not create Index Buffer.");
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, size * sizeof(uint32), indices, GL_DYNAMIC_DRAW);

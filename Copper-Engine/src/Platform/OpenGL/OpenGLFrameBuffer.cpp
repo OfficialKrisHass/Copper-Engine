@@ -26,6 +26,7 @@ namespace Copper {
         CUP_FUNCTION();
 
         glGenFramebuffers(1, &m_id);
+        CU_ASSERT(m_id != 0, "Could not generate the Frame Buffer id.");
         glBindFramebuffer(GL_FRAMEBUFFER, m_id);
 
         // Color attachments
@@ -72,7 +73,7 @@ namespace Copper {
         GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
         glDrawBuffers(static_cast<int32>(m_attachments.size()), buffers);
 
-        CU_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Could not create a FrameBuffer");
+        CU_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Could not create Frame Buffer.");
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

@@ -51,8 +51,7 @@ namespace Copper {
 
         // Misc 
 
-        inline operator bool() const { return m_id != 0; }
-        inline bool IsValid() const { return (bool) *this; }
+        inline bool IsValid() const { return m_id != 0; }
 
     private:
         uint32 m_id = 0;

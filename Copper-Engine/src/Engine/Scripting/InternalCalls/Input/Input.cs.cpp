@@ -42,5 +42,17 @@ namespace Copper::Scripting::Input {
         return Input::GetAxis(axisName);
 
     }
+    float GetMouseAxis(MonoString* axis) {
+
+        CUP_FUNCTION();
+
+        CHECK_ACCEPTING_INPUT(0);
+
+        std::string axisName;
+        MonoUtils::MonoStringToString(axis, axisName);
+
+        return Input::GetMouseAxis(axisName);
+
+    }
 
 }

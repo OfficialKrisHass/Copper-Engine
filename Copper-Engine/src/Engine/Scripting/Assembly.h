@@ -18,14 +18,16 @@ namespace Copper::Scripting {
         friend Script;
 
         Assembly() = default;
-        Assembly(const fs::path& path);
+        Assembly(const fs::path& path) { Create(path); }
+
+        void Create(const fs::path& path);
         
         inline const fs::path& Path() const { return m_path; }
 
         inline MonoAssembly* GetAssembly() const { return m_assembly; }
         inline MonoImage* GetImage() const { return m_image; }
 
-        inline operator bool() const { return m_assembly != nullptr; }
+        inline bool IsValid() const { return m_assembly != nullptr; }
 
     private:
         fs::path m_path = "";

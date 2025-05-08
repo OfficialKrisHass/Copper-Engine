@@ -14,6 +14,8 @@ namespace Copper {
         m_ibo = ibo;
 
         glGenVertexArrays(1, &m_id);
+        CU_ASSERT(m_id != 0, "Could not create Vertex Array.");
+
         glBindVertexArray(m_id);
 
     }

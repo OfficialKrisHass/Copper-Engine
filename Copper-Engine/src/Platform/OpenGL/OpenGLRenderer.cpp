@@ -66,10 +66,10 @@ namespace Copper::RendererAPI {
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-        lineShader = Shader(ExecutableFolder() / "assets/Shaders/lineVertex.glsl", ExecutableFolder() / "assets/Shaders/lineFragment.glsl");
+        lineShader.Create(ExecutableFolder() / "assets/Shaders/lineVertex.glsl", ExecutableFolder() / "assets/Shaders/lineFragment.glsl");
 
-    // Copper Engine deafultly renders to the main FBO, meaning every app has to take the texture there and render it to a rect taking up the entire screen
-    // TODO: Maybe we dont have to have or own shaders for this ? since it is just the basic shader, no lightning or MVPs ?
+        // Copper Engine deafultly renders to the main FBO, meaning every app has to take the texture there and render it to a rect taking up the entire screen
+        // TODO: Maybe we dont have to have or own shaders for this ? since it is just the basic shader, no lightning or MVPs ?
 #ifndef CU_EDITOR
         //
         //Setup the Game Rect

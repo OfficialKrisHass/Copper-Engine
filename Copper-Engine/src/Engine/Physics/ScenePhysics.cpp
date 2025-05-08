@@ -18,7 +18,6 @@ namespace Copper {
         extern PxDefaultCpuDispatcher* dispatcher;
 
         PxMaterial* material;
-        PxShape* noColliderShape;
 
         CollisionNotifier collisionNotifier;
 
@@ -40,10 +39,10 @@ namespace Copper {
         sceneDesc.filterShader = DefaultSimulationShader;
 
         m_physicsScene = physics->createScene(sceneDesc);
-        material = physics->createMaterial(0.5f, 0.5f, 0.6f);
+        CU_ASSERT(m_physicsScene != nullptr, "Could not create PhysX physics scene.");
 
-        noColliderShape = physics->createShape(PxSphereGeometry(1.0f), *material, false);
-        noColliderShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
+        material = physics->createMaterial(0.5f, 0.5f, 0.6f);
+        CU_ASSERT(material != nullptr, "Could not create PhysX Physics material.");
 
         m_physicsScene->setSimulationEventCallback(&collisionNotifier);
 

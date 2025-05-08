@@ -15,5 +15,6 @@ namespace Copper::Scripting::Input {
     KeyState GetKeyState(KeyCode key);
 
     float GetAxis(MonoString* axis);
+    float GetMouseAxis(MonoString* axis);
 
 }

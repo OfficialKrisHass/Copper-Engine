@@ -36,6 +36,7 @@ namespace Copper {
         m_fragment = CreateShader(fragmentPath, GL_FRAGMENT_SHADER);
 
         m_id = glCreateProgram();
+        CU_ASSERT(m_id != 0, "Could not create the shader program for shaders {} and {}", vertexPath, fragmentPath);
 
         glAttachShader(m_id, m_vertex);
         glAttachShader(m_id, m_fragment);
@@ -46,6 +47,8 @@ namespace Copper {
 
         glDeleteShader(m_vertex);
         glDeleteShader(m_fragment);
+
+        CU_ASSERT(m_id != 0, "Could not create Shader from {} and {}", vertexPath, fragmentPath);
 
     }
 
@@ -63,6 +66,7 @@ namespace Copper {
         CUP_FUNCTION();
 
         uint32 id = glCreateShader(type);
+        CU_ASSERT(id != 0, "Could not create shader of type {} from path {}", ShaderTypeToString(type), path);
 
         const std::string& source = Utilities::ReadFile(path);
         const char* src = source.c_str();

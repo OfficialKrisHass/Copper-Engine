@@ -67,8 +67,8 @@ namespace Editor {
 
         // Look
 
-        m_rotY -= Input::GetAxis("Mouse X") / GetWindow().GetWidth() * sensitivity * GetDeltaTime();
-        m_rotX -= Input::GetAxis("Mouse Y") / GetWindow().GetHeight() * sensitivity * GetDeltaTime();
+        m_rotY -= Input::GetMouseAxis("Mouse X") / GetWindow().GetWidth() * sensitivity * GetDeltaTime();
+        m_rotX -= Input::GetMouseAxis("Mouse Y") / GetWindow().GetHeight() * sensitivity * GetDeltaTime();
         m_transform->SetRotation(Quaternion(m_rotX, m_rotY, 0.0f));
 
     }

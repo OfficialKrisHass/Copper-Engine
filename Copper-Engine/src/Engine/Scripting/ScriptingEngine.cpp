@@ -59,12 +59,7 @@ namespace Copper::Scripting {
         mono_config_parse((ExecutableFolder() / "lib/mono/config").string().c_str());
 
         data.rootDomain = mono_jit_init("CUSRootDomain");
-        if (!data.rootDomain) {
-
-            Input::ErrorPopup("JIT initialization failed", "Failed to initialize the JIT mono runtime.");
-            exit(1);
-
-        }
+        CU_ASSERT(data.rootDomain != nullptr, "Failed to initialize the mono JIT runtime.");
 
         InitializeScriptingAPI();
 
@@ -86,11 +81,11 @@ namespace Copper::Scripting {
 
         CUP_FUNCTION();
 
-        if (!data.scriptingAPI)
+        if (!data.scriptingAPI.IsValid())
             InitializeScriptingAPI();
 
         data.game = Assembly(assemblyPath);
-        if (!data.game) return false;
+        if (!data.game.IsValid()) return false;
 
         InitializeGame();
 
@@ -126,7 +121,7 @@ namespace Copper::Scripting {
 
         CUP_FUNCTION();
 
-        if (!data.game) {
+        if (!data.game.IsValid()) {
 
             LogError("Can't reload without a loaded game assembly");
             return false;
@@ -154,16 +149,20 @@ namespace Copper::Scripting {
         CUP_FUNCTION();
 
         data.appDomain = mono_domain_create_appdomain(AppDomainName, nullptr);
+        CU_ASSERT(data.appDomain != nullptr, "Could not create mono app domain ({})", AppDomainName);
+
         mono_domain_set(data.appDomain, true);
 
         // I forgot I changed the dir name from ScriptAPI to Script - ING - API only here and didnt change the
         // Scripting api build directory and spent 2 days trying to figure out why the fuck nothing was working
         data.scriptingAPI = Assembly(ExecutableFolder() / "assets/ScriptingAPI/Copper-ScriptingAPI.dll");
+        CU_ASSERT(data.scriptingAPI.IsValid(), "Could not load ScriptingAPI assembly.");
 
         SetupInternalCalls();
         InitializeClasses();
 
         data.unmanagedPtrField = mono_class_get_field_from_name(BaseClass(), "m_unmanagedPtr");
+        CU_ASSERT(data.unmanagedPtrField != nullptr, "Could not get field reference to Base.m_unmanagedPtr.");
 
     }
     void InitializeGame() {

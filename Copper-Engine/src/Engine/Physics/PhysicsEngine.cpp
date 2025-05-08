@@ -19,15 +19,16 @@ namespace Copper::PhysicsEngine {
     void Initialize() {
 
         CUP_FUNCTION();
-        VERIFY_STATE(EngineState::Initialization, "Initialize the Physics Engine");
+        VERIFY_STATE(EngineState::Initialization, "Initialize the Physics Engine.");
 
         foundation = PxCreateFoundation(PX_PHYSICS_VERSION, allocator, errCallback);
-        CU_ASSERT(foundation != nullptr, "Failed to create PhysX Foundation object");
+        CU_ASSERT(foundation != nullptr, "Failed to create PhysX Foundation object.");
 
         physics = PxCreatePhysics(PX_PHYSICS_VERSION, *foundation, PxTolerancesScale());
-        CU_ASSERT(physics != nullptr, "Failed to create PhysX Physics object");
+        CU_ASSERT(physics != nullptr, "Failed to create PhysX Physics object.");
 
         dispatcher = PxDefaultCpuDispatcherCreate(1);
+        CU_ASSERT(dispatcher, "Failed to create CPU dispatcher.");
 
         LogStatus("\tPhysics Engine initialized.");
 

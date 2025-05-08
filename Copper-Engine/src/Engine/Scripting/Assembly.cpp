@@ -7,7 +7,7 @@
 
 namespace Copper::Scripting {
 
-    Assembly::Assembly(const fs::path& path) {
+    void Assembly::Create(const fs::path& path) {
 
         CUP_FUNCTION();
 
@@ -16,8 +16,8 @@ namespace Copper::Scripting {
         OpenImage(path);
         LoadAssembly(path);
 
-        if (!m_assembly) return;
-        m_image = mono_assembly_get_image(m_assembly);
+        if (m_assembly != nullptr)
+            m_image = mono_assembly_get_image(m_assembly);
 
     }
 
@@ -29,38 +29,32 @@ namespace Copper::Scripting {
         char* data = Utilities::ReadFileBinary(path, &dataSize);
         if (!data) {
 
-            LogError("Could not read assembly.\n\tPath: {}", path);
+            LogError("Could not read assembly at {}.", path);
             return;
 
         }
 
         MonoImageOpenStatus status;
         m_image = mono_image_open_from_data_full(data, dataSize, true, &status, false);
-        if (status != MONO_IMAGE_OK) {
-
-            LogError("Failed to open the assembly image.\n\tPath: {}\n\tError message: {}", path, mono_image_strerror(status));
-
-            delete[] data;
-            return;
-
-        }
+        if (status != MONO_IMAGE_OK)
+            LogError("Could not open assembly image at {}. Error: {}.", path, mono_image_strerror(status));
 
         delete[] data;
-
 
     }
     void Assembly::LoadAssembly(const fs::path& path) {
 
         CUP_FUNCTION();
 
-        if (!m_image) return;
+        if (m_image == nullptr) return;
 
         MonoImageOpenStatus status;
         m_assembly = mono_assembly_load_from_full(m_image, path.string().c_str(), &status, false);
-        mono_image_close(m_image);
         
-        if (m_assembly) return;
-        LogError("Failed to load the assembly from image.\n\tPath: {}\n\tError message: {}", path, mono_image_strerror(status));
+        if (m_assembly == nullptr)
+            LogError("Failed to load assembly at {}. Error: {}.", path, mono_image_strerror(status));
+
+        mono_image_close(m_image);
 
     }
 

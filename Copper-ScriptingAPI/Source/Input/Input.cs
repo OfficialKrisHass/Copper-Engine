@@ -14,6 +14,7 @@ namespace Copper {
         // Input axes
 
         public static float GetAxis(string axis) { return Internal_GetAxis(axis); }
+        public static float GetMouseAxis(string axis) { return Internal_GetMouseAxis(axis); }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         [NativeFunction("GetKeyState")]
@@ -22,6 +23,9 @@ namespace Copper {
         [MethodImpl(MethodImplOptions.InternalCall)]
         [NativeFunction("GetAxis")]
         internal extern static float Internal_GetAxis(string axis);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        [NativeFunction("GetMouseAxis")]
+        internal extern static float Internal_GetMouseAxis(string axis);
 
     }
 

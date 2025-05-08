@@ -3,6 +3,10 @@
 
 #include "Engine/Core/Engine.h"
 
+#define MOUSE_AXIS_ERR "Axis '{}' is a mouse axis, use GetMouseAxis()."
+#define NORMAL_AXIS_ERR "Axis '{}' is a normal axis, use GetAxis()."
+#define INVALID_AXIS_ERR "Axis '{}' could not be found, double check the name."
+
 namespace Copper::Input {
 
     std::unordered_map<std::string, Axis> axises;
@@ -27,16 +31,25 @@ namespace Copper::Input {
 
         CUP_FUNCTION();
 
-        bool isMouseAxis = mouseAxises.find(name) != mouseAxises.end();
+#ifdef CU_EDITOR
+#ifdef CU_DEBUG
+        if (mouseAxises.find(name) != mouseAxises.end()) {
 
-        if (isMouseAxis)
-            return GetMouseAxis(name);
-        else if (axises.find(name) == axises.end()) {
-
-            LogWarn("The axis '{}' does not exist, double check if the name you've provided is correct", name);
+            LogError(MOUSE_AXIS_ERR, name);
             return 0.0f;
 
         }
+        if (axises.find(name) == axises.end()) {
+
+            LogError(INVALID_AXIS_ERR, name);
+            return 0.0f;
+
+        }
+#endif
+#else
+        CU_ASSERT(mouseAxises.find(name) == mouseAxises.end(), MOUSE_AXIS_ERR, name);
+        CU_ASSERT(axises.find(name) != axises.end(), INVALID_AXIS_ERR, name);
+#endif
 
         float ret = 0.0f;
         const Axis& axis = axises[name];
@@ -50,6 +63,24 @@ namespace Copper::Input {
     float GetMouseAxis(const std::string& name) {
 
         CUP_FUNCTION();
+
+#if defined(CU_EDITOR) && defined(CU_DEBUG)
+        if (axises.find(name) != axises.end()) {
+
+            LogError(NORMAL_AXIS_ERR, name);
+            return 0.0f;
+
+        }
+        if (mouseAxises.find(name) == mouseAxises.end()) {
+
+            LogError(INVALID_AXIS_ERR, name);
+            return 0.0f;
+
+        }
+#else
+        CU_ASSERT(axises.find(name) == axises.end(), NORMAL_AXIS_ERR, name);
+        CU_ASSERT(mouseAxises.find(name) != mouseAxises.end(), INVALID_AXIS_ERR, name);
+#endif
 
         float ret = 0.0f;
         const MouseAxis& axis = mouseAxises[name];

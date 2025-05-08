@@ -89,7 +89,7 @@ namespace Editor {
         FileBrowser::SetRelativeDir("");
         ProjectAssetDatabase::Initialize();
 
-        if (Scripting::GameAssembly())
+        if (Scripting::GameAssembly().IsValid())
             Scripting::Unload();
 
         Scripting::Load((path / "Binaries/" / (m_name + ".dll")).string());

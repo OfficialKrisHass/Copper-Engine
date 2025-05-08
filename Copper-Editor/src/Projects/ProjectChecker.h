@@ -28,5 +28,7 @@ namespace Editor::ProjectChecker {
 
     Copper::uint16 CheckProject(const Project& project);
     void FixProject(Project& project, const Copper::uint16 issueFlags);
+
+    void PrintIssues(Project& project, Copper::uint16 issueFlags, std::string& out);
     
 }

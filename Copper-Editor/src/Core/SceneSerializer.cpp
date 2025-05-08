@@ -84,7 +84,7 @@ namespace Editor::SceneSerializer {
 
         } catch (YAML::Exception e) {
 
-            LogError("Could not deserialize scene at path {}. Error msg: {}", path.string(), e.what());
+            LogError("Could not deserialize scene at path {}. Error: {}", path, e.what());
             return;
 
         }
@@ -95,7 +95,6 @@ namespace Editor::SceneSerializer {
         else
 #endif
             Log("Scene deserialized with {} entities.", scene->GetNumOfEntities());
-
 
     }
 

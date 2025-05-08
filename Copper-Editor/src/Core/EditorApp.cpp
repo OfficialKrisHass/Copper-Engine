@@ -204,6 +204,8 @@ namespace Editor {
 
         CUP_FUNCTION();
 
+        // Load the file
+
         if (!fs::exists(ExecutableFolder() / "assets/EditorData.cu")) {
 
             LogWarn("EditorData.cu is missing, generating a default one");
@@ -215,14 +217,19 @@ namespace Editor {
         try { main = YAML::LoadFile((ExecutableFolder() / "assets/EditorData.cu").string()); }
         catch (YAML::Exception e) {
 
-            Input::ErrorPopup("EditorData read failed", "Could not read the EditorData.cu file.\n\nIt shuld be located here:\n" + (ExecutableFolder() / "assets/EditorData.cu").string() + "\n\nError message:\n" + e.what());
-            exit(1);
+            Input::ErrorPopup("EditorData.cu read failed", "Could not read the EditorData.cu file.\n\nIt should be located: " + (ExecutableFolder() / "assets/EditorData.cu").string() + "\n\nError message: " + e.what());
+            exit(-1);
 
         }
+
+        // Gizmo
 
         data.viewport.SetGizmoOperation(static_cast<Viewport::Gizmo::Operation>(main["Gizmo operation"].as<uint16>()));
         data.viewport.SetGizmoGlobalMode(main["Gizmo global mode"].as<bool>());
 
+        // Project
+
+        // If a project was passed as an argument, it has priority.
         if (!Args::GetProjectToOpenPath().empty()) {
 
             data.project.Open(Args::GetProjectToOpenPath());
@@ -233,10 +240,10 @@ namespace Editor {
         std::string path = main["Last Project"].as<std::string>();
         if (!std::filesystem::exists(path)) {
 
-            switch (Input::WarningPopup("Last opened project doesn't exist", "The last opened project no longer exists, do you wish to open a project manually, or exit the Editor ?\n\nLast opened project path:\n" + path)) {
+            switch (Input::WarningPopup("Last opened project error", "The last opened project no longer exists, do you wish to open a project manually, or exit the Editor ?\n\nLast opened project: " + path)) {
 
                 case Input::PopupResult::Yes: data.project.Open(); return;
-                case Input::PopupResult::No: exit(1);
+                case Input::PopupResult::No: exit(-1);
                 default: exit(1);
 
             }
@@ -389,7 +396,7 @@ namespace Editor {
             return;
 
         }
-        if (!data.project || !data.scene->GetMainCamera()) {
+        if (!data.project.IsValid() || !data.scene->GetMainCamera()) {
 
             ImGui::Text("No Camera Available!");
 
@@ -449,12 +456,12 @@ namespace Editor {
 
         if (data.state == EditorState::Edit) {
 
-            if (ImGui::ImageButton("##StartButton", static_cast<ImTextureID>((uint64) data.playIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project)
+            if (ImGui::ImageButton("##StartButton", static_cast<ImTextureID>((uint64) data.playIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project.IsValid())
                 StartEditorRuntime();
 
         } else if (data.state == EditorState::Play) {
 
-            if (ImGui::ImageButton("##StopButton", static_cast<ImTextureID>((uint64) data.stopIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project)
+            if (ImGui::ImageButton("##StopButton", static_cast<ImTextureID>((uint64) data.stopIcon.GetID()), buttonSize, {0, 1}, {1, 0}) && data.project.IsValid())
                 StopEditorRuntime();
 
         }
@@ -489,7 +496,7 @@ namespace Editor {
                         data.projectToLoad = path;
 
                 }
-                if (ImGui::MenuItem("Save Project", "Ctrl+Shift+S", false, data.project)) {
+                if (ImGui::MenuItem("Save Project", "Ctrl+Shift+S", false, data.project.IsValid())) {
 
                     SaveScene();
 
@@ -501,12 +508,12 @@ namespace Editor {
 
                 ImGui::Separator();
 
-                if (ImGui::MenuItem("Create Template", 0, false, data.project))
+                if (ImGui::MenuItem("Create Template", 0, false, data.project.IsValid()))
                     CreateTemplateFromProject(data.project);
 
                 ImGui::Separator();
 
-                if (ImGui::MenuItem("Build Scripts", "Ctrl+B", false, data.project)) {
+                if (ImGui::MenuItem("Build Scripts", "Ctrl+B", false, data.project.IsValid())) {
 
                     data.project.BuildScripts();
                     Scripting::Reload();
@@ -520,7 +527,7 @@ namespace Editor {
                 
                 ImGui::Separator();
 
-                if (ImGui::MenuItem("Copy Copper Scripting API", 0, false, data.project))
+                if (ImGui::MenuItem("Copy Copper Scripting API", 0, false, data.project.IsValid()))
                     CopyScriptingAPI();
 
                 ImGui::EndMenu();
@@ -529,13 +536,13 @@ namespace Editor {
 
             if(ImGui::BeginMenu("File")) {
 
-                if(ImGui::MenuItem("New Scene", 0, false, data.project))
+                if(ImGui::MenuItem("New Scene", 0, false, data.project.IsValid()))
                     NewScene();
-                if(ImGui::MenuItem("Open Scene", 0, false, data.project))
+                if(ImGui::MenuItem("Open Scene", 0, false, data.project.IsValid()))
                     OpenSceneNext();
-                if(ImGui::MenuItem("Save Scene", "Ctr+S", false, data.project))
+                if(ImGui::MenuItem("Save Scene", "Ctr+S", false, data.project.IsValid()))
                     SaveScene();
-                if(ImGui::MenuItem("Save Ass", "Ctrl+Alt+S", false, data.project))
+                if(ImGui::MenuItem("Save Ass", "Ctrl+Alt+S", false, data.project.IsValid()))
                     SaveSceneAs();
 
                 ImGui::EndMenu();
@@ -648,7 +655,7 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        fs::path path = Utilities::FolderOpenDialog("New Project", data.project ? data.project.GetPath().parent_path() : ROOT_DIR);
+        fs::path path = Utilities::FolderOpenDialog("New Project", data.project.IsValid() ? data.project.GetPath().parent_path() : ROOT_DIR);
         if (path.empty()) return;
 
         // Create the Project
@@ -705,12 +712,14 @@ namespace Editor {
 
         CUP_FUNCTION();
 
+        CU_ASSERT(fs::exists(path), "Scene at path {} does not exist", path);
+
 #ifdef CU_LOG_STATUS
         if (GetEngineState() == EngineState::PostInitialization)
-            LogStatus("\tOpening scene '{}'", path.filename().string());
+            LogStatus("\tOpening scene at {}", fs::relative(path, data.project.GetAssetsPath()));
         else
 #endif
-            Log("Opening scene '{}'", path.filename().string());
+            Log("Opening scene at {}", fs::relative(path, data.project.GetAssetsPath()));
 
         if(UnsavedChanges()) {
 
@@ -1039,10 +1048,9 @@ void AppEntryPoint() {
 
     CUP_FUNCTION();
 
-    LogStatus("Copper-Editor entry point.");
-
     // In the editor case, we have our own window that is bigger then the engine region
     // so we have to create and store it ourselves
+    Window::InitializeBackend();
     Editor::data.window.Create("Copper Editor", 1280, 720);
 
     GetPostInitEvent() += Editor::Initialize;

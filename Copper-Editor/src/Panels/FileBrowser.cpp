@@ -55,7 +55,7 @@ namespace Editor {
 
         CUP_START_FRAME("File browser");
 
-        if (!GetProject()) {
+        if (!GetProject().IsValid()) {
 
             ImGui::Text("No project is open!");
             return;
@@ -160,7 +160,7 @@ namespace Editor {
 
         if (!ImGui::BeginPopupContextWindow("##File Browser")) return;
 
-        if (ImGui::MenuItem("New", nullptr, false, GetProject()))
+        if (ImGui::MenuItem("New", nullptr, false, GetProject().IsValid()))
             openNewModal = true;
         
         ImGui::EndPopup();

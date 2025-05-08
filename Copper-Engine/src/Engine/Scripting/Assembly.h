@@ -21,22 +21,21 @@ namespace Copper::Scripting {
         Assembly(const fs::path& path) { Create(path); }
 
         void Create(const fs::path& path);
+        void Unload();
         
         inline const fs::path& Path() const { return m_path; }
 
         inline MonoAssembly* GetAssembly() const { return m_assembly; }
         inline MonoImage* GetImage() const { return m_image; }
 
-        inline bool IsValid() const { return m_assembly != nullptr; }
+        inline bool IsValid() const { return m_valid; }
 
     private:
+        bool m_valid = false;
         fs::path m_path = "";
 
         MonoAssembly* m_assembly = nullptr;
         MonoImage* m_image = nullptr;
-
-        void OpenImage(const fs::path& path);
-        void LoadAssembly(const fs::path& path);
 
     };
 

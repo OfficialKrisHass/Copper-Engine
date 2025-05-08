@@ -62,21 +62,25 @@ namespace Editor {
 #endif
             Log("Opening project '{}'.", path.filename().string());
 
-        bool opened = false;
-        try { opened = LoadFile(path); }
-        catch (YAML::Exception e) {
+        try { 
 
-            Input::ErrorPopup("Failed to open project", "Could not open Project.cu file.\n\nPath: " + path.string() + "\n\nError: " + e.msg);
-            exit(-1);
+            if (!LoadFile(path)) return; 
 
         }
-        if (!opened) return;
+        catch (YAML::Exception e) {
+
+            Input::ErrorPopup("Project open error", "Could not open Project.cu file.\n\nPath: " + path.string() + "\n\nError: " + e.msg);
+            return;
+
+        }
 
         if (uint16_t issueFlags = ProjectChecker::CheckProject(*this)) {
 
-            LogWarn("Issues were found.");
+            std::string description = "This project is missing some of the core folders and/or files that are required by the Editor to function properly.\n\n";
+            ProjectChecker::PrintIssues(*this, issueFlags, description);
+            description += "\nDo you want the editor to attempt to fix the project ?";
 
-            switch (Input::WarningPopup("Corrupted Project", "This project is missing some of the core folders and/or files that are required by the Editor to function properly. If you want to see the list, check the console.\n\nDo you want the editor to try and fix the project ?")) {
+            switch (Input::WarningPopup("Corrupted Project", description)) {
 
                 case Input::PopupResult::Yes: ProjectChecker::FixProject(*this, issueFlags); break;
                 case Input::PopupResult::No: return;
@@ -85,6 +89,8 @@ namespace Editor {
             }
 
         }
+
+        m_valid = true;
 
         FileBrowser::SetRelativeDir("");
         ProjectAssetDatabase::Initialize();
@@ -96,11 +102,10 @@ namespace Editor {
 
         FileWatcher::Start(GetAssetsPath());
 
-        if (m_lastOpenedScenePath.empty()) return;
-
-        SetWindowTitle("Copper Editor - " + m_name + ": " + m_lastOpenedScenePath.filename().string());
+        if (m_lastOpenedScenePath.empty() || !fs::exists(GetAssetsPath() / m_lastOpenedScenePath)) return;
 
         OpenScene(GetAssetsPath() / m_lastOpenedScenePath);
+
 
     }
     void Project::Open() {
@@ -160,7 +165,7 @@ namespace Editor {
         }
         if (!fs::exists(path / "Project.cu")) {
 
-            Input::ErrorPopup("Invalid project", "This folder is not a valid project (Project.cu is missing)");
+            Input::ErrorPopup("Invalid project", "This folder is not a valid project (Project.cu could not be found).");
             return false;
 
         }
@@ -170,7 +175,7 @@ namespace Editor {
         YAML::Node main;
         try { main = YAML::LoadFile((path / "Project.cu").string()); } catch (YAML::Exception e) {
 
-            Input::ErrorPopup("Failed to load Project", "Something went wrong during loading the project.\n\nProject Path:\n" + path.string() + "\n\nError Message:\n" + e.what());
+            Input::ErrorPopup("Project open error", "Something went wrong during loading the project file (Project.cu).\n\nProject Path: " + path.string() + "\n\nError: " + e.what());
             return false; 
 
         }
@@ -258,7 +263,7 @@ namespace Editor {
         //system(("cd \"" + data.project.path.string() + "\" ; ./premake/premake5 gmake2").c_str());
 
         // Turns out there is :)
-        system(((ExecutableFolder() / "util/premake/premake5 --file=\"").string() + (m_path / "premake5.lua").string() + "\" gmake2").c_str());
+        system(((ExecutableFolder() / "util/premake/premake5 --file=\"").string() + (m_path / "premake5.lua").string() + "\" gmake2 > /dev/null").c_str());
 
     }
 #endif

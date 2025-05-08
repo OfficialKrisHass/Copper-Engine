@@ -41,9 +41,10 @@ namespace Editor {
 
         // Operators
 
-        inline operator bool() const { return !m_name.empty(); }
+        inline bool IsValid() const { return m_valid; }
 
     private:
+        bool m_valid = false;
         std::string m_name;
 
         Copper::fs::path m_path;

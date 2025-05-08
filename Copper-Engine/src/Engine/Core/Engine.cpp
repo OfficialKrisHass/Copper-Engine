@@ -96,6 +96,7 @@ namespace Copper {
         data.window = GetEditorWindow();
         CU_ASSERT(data.window != nullptr, "GetEditorWindow() returned nullptr, check if you have created a window in AppEntryPoint.");
 #else
+        Window::InitializeBackend();
         data.window.Initialize("Copper Engine", 1280, 720);
 #endif
 
@@ -124,8 +125,6 @@ namespace Copper {
         PhysicsEngine::Initialize();
         Scripting::Initialize();
 
-        data.scene.Initialize();
-
         // Finalization
         
         LogStatus("Copper-Engine initialized.");
@@ -141,7 +140,7 @@ namespace Copper {
         VERIFY_STATE(EngineState::PostInitialization, "Run the Engine");
         data.engineState = EngineState::Running;
 
-        LogStatus("Entering engine run loop.");
+        data.scene.Initialize();
 
         while (data.engineState == EngineState::Running) {
 
@@ -190,8 +189,6 @@ namespace Copper {
 
         }
 
-        LogStatus("Engine run loop exited.");
-
     }
     void EngineShutdown() {
 
@@ -203,8 +200,10 @@ namespace Copper {
 
         data.mainUIContext.Shutdown();
         LogStatus("\tMain UI context shut down.");
+
         data.GetWindow().Shutdown();
         LogStatus("\tMain window shut down.");
+        Window::ShutdownBackend();
 
         Scripting::Shutdown();
         PhysicsEngine::Shutdown();
@@ -246,8 +245,6 @@ namespace Copper {
 
         }
         data.engineState = EngineState::Shutdown;
-
-        LogStatus("Window close event was succesfull, requesting shutdown.");
 
         return true;
 

@@ -97,6 +97,7 @@ namespace Copper {
 
         ImGuiIO& io = ImGui::GetIO();
         io.FontDefault = io.Fonts->AddFontFromFileTTF(path.string().c_str(), fontSize);
+        CU_ASSERT(io.FontDefault != nullptr, "Could not load font at {}", path);
         
     }
 

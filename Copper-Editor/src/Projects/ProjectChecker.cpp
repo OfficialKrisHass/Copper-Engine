@@ -94,4 +94,35 @@ namespace Editor::ProjectChecker {
 
     }
 
+    void PrintIssues(Project& project, uint16 issueFlags, std::string &out) {
+
+        CUP_FUNCTION();
+
+        if (GET_FLAG(issueFlags, MissingAssets))
+            out += "Missing Assets folder\n";
+        if (GET_FLAG(issueFlags, MissingBinaries))
+            out += "Missing Binaries folder\n";
+
+        if (GET_FLAG(issueFlags, MissingProjectFile))
+            out += "Missing project file (Project.cu)\n";
+
+#ifdef CU_WINDOWS
+        if (GET_FLAG(issueFlags, MissingSolution))
+            out += "Missing Visual Studio solution (" + project.GetName() + ".sln)\n";
+        if (GET_FLAG(issueFlags, MissingCSProj))
+            out += "Missing Visual Studio project file (" + project.GetName() + ".csproj)\n";
+#elif CU_LINUX
+        if (GET_FLAG(issueFlags, MissingPremake))
+            out += "Missing premake file (premake5.lua)\n";
+        if (GET_FLAG(issueFlags, MissingMakefile))
+            out += "Missing makefile (Makefile)\n";
+#endif
+        if (GET_FLAG(issueFlags, MissingScriptingDLL))
+            out += "Missing ScriptingAPI dll file (Binaries/Copper-ScriptingAPI.dll)\n";
+
+        if (GET_FLAG(issueFlags, MissingProjectDLL))
+            out += "Missing project dll file (Binaries/" + project.GetName() + ".dll)\n";
+
+    }
+
 }

@@ -47,7 +47,7 @@ namespace Editor::ProjectMetadata {
         try { node = YAML::LoadFile((GetProject().GetPath() / "ProjectMetadata.cu").string()); }
         catch (YAML::Exception e) {
 
-            LogError("Could not load Project metadata.\n\tError: {}\n\tPath: {}", e.what(), GetProject().GetPath() / "ProjectMetadata.cu");
+            LogError("Could not load project metadata (should be at {}). Error: {}.", GetProject().GetPath() / "ProjectMetadata.cu", e.what());
             return;
 
         }

@@ -27,7 +27,7 @@ namespace Editor::ProjectAssetDatabase {
 
     static void FileChangeCallback(const fs::path& path, const FileWatcher::FileChangeType changeType);
 
-    void LoadAsset(const fs::path& path, const std::string& extension);
+    void LoadAsset(const fs::path& path, const std::string& extension, bool newAsset = false);
     void RemoveAsset(const fs::path& path, const std::string& extension);
 
     bool CheckExtension(const std::string& extension);
@@ -52,21 +52,22 @@ namespace Editor::ProjectAssetDatabase {
     void Refresh() {
 
         CUP_FUNCTION();
-        CU_ASSERT(GetProject(), "Current project is invalid, make sure you called AssetFileDatabase::Refresh when there is a valid project");
+        CU_ASSERT(GetProject().IsValid(), "Current project is invalid.");
 
         const fs::path& dir = GetProject().GetAssetsPath();
-        CU_ASSERT(dir != "", "Project has no Assets path");
+        CU_ASSERT(dir != "", "Project has no Assets path.");
+        CU_ASSERT(fs::exists(dir), "Project assets path does not exist. {}", dir);
 
         for (const fs::directory_entry& entry : fs::recursive_directory_iterator(dir)) {
 
             // Filter all entries that aren't an Asset file
 
             if (entry.is_directory()) continue;
-            fs::path path = fs::relative(entry.path(), dir);
 
-            std::string extension = path.extension().string();
+            std::string extension = entry.path().extension().string();
             if (!CheckExtension(extension)) continue;
 
+            fs::path path = fs::relative(entry.path(), dir);
             LoadAsset(path, extension);
 
         }
@@ -104,7 +105,7 @@ namespace Editor::ProjectAssetDatabase {
 
         if (assetFiles.find(path) != assetFiles.end()) {
 
-            LogError("Can't add asset {}, it's already loaded", path);
+            LogError("Asset '{}' ({}) is already loaded.", uuid.ToString(), path.filename().string());
             return;
 
         }
@@ -114,29 +115,37 @@ namespace Editor::ProjectAssetDatabase {
 
     }
 
-    void LoadAsset(const fs::path& path, const std::string& extension) {
+    void LoadAsset(const fs::path& path, const std::string& extension, bool newAsset) {
 
         CUP_FUNCTION();
 
+        // Get the asset uuid (or generate a new one if required)
+
         UUID uuid; 
-        if (assetFiles.find(path) != assetFiles.end())
-            uuid = assetFiles.at(path);
+        if (const auto& it = assetFiles.find(path); it != assetFiles.end())
+            uuid = it->second;
         else {
 
-            LogWarn("{} was not loaded from ProjectMetadata.cu, creating new UUID", path);
+#ifdef CU_DEBUG
+            if (!newAsset)
+                LogWarn("Asset {} was not loaded from ProjectMetadata.cu, creating new UUID", path);
+#endif
 
             UUID::Generate(uuid);
             assetFiles[path] = uuid;
 
         }
-
         CU_ASSERT(uuid != UUID::GetInvalid(), "Invalid UUID loaded for asset {}", path);
+
+        // Load and store the asset
 
         if (extension == ".png" || extension == ".jpg")
             AssetStorage::InsertAsset<Texture>(uuid, GetProject().GetAssetsPath() / path);
         else if (extension == ".mat" && !AssetFile::DeserializeMaterial(GetProject().GetAssetsPath() / path, uuid)) return;
         else if (extension == ".fbx")
             AssetStorage::InsertAsset<Model>(uuid, path);
+
+        // Update project asset database
 
         assetNames[uuid] = path.filename().string();
 
@@ -152,14 +161,15 @@ namespace Editor::ProjectAssetDatabase {
 
         CUP_FUNCTION();
 
-        if (!assetFiles.contains(path)) {
+        const auto& it = assetFiles.find(path);
+        if (it == assetFiles.end()) {
 
-            LogError("Can't remove an asset that is not loaded!\n\tPath: {}", path.string());
+            LogError("Can't remove an asset that is not loaded! Asset: {}", path);
             return;
 
         }
 
-        const UUID& uuid = assetFiles.at(path);
+        const UUID& uuid = it->second;
 
         // Delete actual asset
 
@@ -188,7 +198,7 @@ namespace Editor::ProjectAssetDatabase {
 
         case FileWatcher::FileChangeType::Created:
         case FileWatcher::FileChangeType::Changed:
-        case FileWatcher::FileChangeType::RenamedNewName: LoadAsset(path, extension); break;
+        case FileWatcher::FileChangeType::RenamedNewName: LoadAsset(path, extension, true); break;
         case FileWatcher::FileChangeType::Deleted:
         case FileWatcher::FileChangeType::RenamedOldName: RemoveAsset(path, extension); break;
 
@@ -200,31 +210,31 @@ namespace Editor::ProjectAssetDatabase {
         
         CUP_FUNCTION();
 
-        if (assetFiles.find(path) == assetFiles.end()) {
+        const auto& it = assetFiles.find(path);
+        if (it == assetFiles.end()) {
 
-            LogError("Can't get an asset that isn't loaded.\n\tPath: {}", path);
+            LogError("Asset {} isn't loaded.", path);
             return UUID::GetInvalid();
 
         }
 
-        return assetFiles.at(path);
+        return it->second;
     
     }
     const std::string& GetAssetName(const Copper::UUID& uuid) {
 
         CUP_FUNCTION();
         
-        if (assetNames.find(uuid) == assetNames.end()) {
+        const auto& it = assetNames.find(uuid);
+        if (it == assetNames.end()) {
 
-            LogError("No asset with uuid '{}' exists, or is not loaded", uuid.ToString());
+            LogError("Asset with uuid {} isn't loaded.", uuid.ToString());
             return emptyString;
 
         }
-        return assetNames.at(uuid);
+        return it->second;
 
     }
-
-
 
     bool CheckExtension(const std::string& extension) {
 

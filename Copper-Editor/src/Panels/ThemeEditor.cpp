@@ -138,7 +138,7 @@ namespace Editor {
 
         } catch (YAML::ParserException e) {
 
-            LogError("Failed to Read The Scene Meta Data file ({})\n    {}", path.string(), e.what());
+            LogError("Failed to read the editor theme file at {}. Error: {}.", path, e.what());
             return;
 
         }

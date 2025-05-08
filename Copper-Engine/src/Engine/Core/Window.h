@@ -39,20 +39,23 @@ namespace Copper {
         void Update();
         void Shutdown();
 
+        static void InitializeBackend();
+        static void ShutdownBackend();
+
         void SetAsCurrentContext();
 
-        inline void* GetWindowPtr() const { return windowPtr; }
+        inline void* GetWindowPtr() const { return m_windowPtr; }
 
         // Getters
 
         float GetTime() const;
 
-        inline uint32 GetWidth() const { return data.size.x; }
-        inline uint32 GetHeight() const { return data.size.y; }
-        inline const UVector2I& GetSize() const { return data.size; }
-        inline float GetAspectRatio() const { return static_cast<float>(data.size.x) / data.size.y; }
+        inline uint32 GetWidth() const { return m_data.size.x; }
+        inline uint32 GetHeight() const { return m_data.size.y; }
+        inline const UVector2I& GetSize() const { return m_data.size; }
+        inline float GetAspectRatio() const { return static_cast<float>(m_data.size.x) / m_data.size.y; }
 
-        inline const std::string& GetTitle() const { return data.title; }
+        inline const std::string& GetTitle() const { return m_data.title; }
 
         // Setters
 
@@ -64,21 +67,21 @@ namespace Copper {
 
         // Events
 
-        inline Event& GetWindowCloseEvent() { return data.windowCloseEvent; };
-        inline WindowFocusedEvent& GetWindowFocusedEvent() { return data.windowFocusedEvent; };
-        inline WindowResizeEvent& GetWindowResizeEvent() { return data.windowResizeEvent; };
+        inline Event& GetWindowCloseEvent() { return m_data.windowCloseEvent; };
+        inline WindowFocusedEvent& GetWindowFocusedEvent() { return m_data.windowFocusedEvent; };
+        inline WindowResizeEvent& GetWindowResizeEvent() { return m_data.windowResizeEvent; };
 
-        inline KeyEvent& GetKeyPressedEvent() { return data.keyPressedEvent; }
-        inline KeyEvent& GetKeyRepeatEvent() { return data.keyRepeatEvent; }
-        inline KeyEvent& GetKeyReleasedEvent() { return data.keyReleasedEvent; }
+        inline KeyEvent& GetKeyPressedEvent() { return m_data.keyPressedEvent; }
+        inline KeyEvent& GetKeyRepeatEvent() { return m_data.keyRepeatEvent; }
+        inline KeyEvent& GetKeyReleasedEvent() { return m_data.keyReleasedEvent; }
 
-        inline MouseEvent& GetMouseMoveEvent() { return data.mouseMoveEvent; }
-        inline MouseEvent& GetMouseButtonPressedEvent() { return data.mouseButtonPressedEvent; }
-        inline MouseEvent& GetMouseButtonReleasedEvent() { return data.mouseButtonReleasedEvent; }
+        inline MouseEvent& GetMouseMoveEvent() { return m_data.mouseMoveEvent; }
+        inline MouseEvent& GetMouseButtonPressedEvent() { return m_data.mouseButtonPressedEvent; }
+        inline MouseEvent& GetMouseButtonReleasedEvent() { return m_data.mouseButtonReleasedEvent; }
 
     private:
-        WindowData data;
-        void* windowPtr = nullptr;
+        WindowData m_data;
+        void* m_windowPtr = nullptr;
 
         void SetupEvents();
 

@@ -9,57 +9,41 @@
 
 #include <GLFW/glfw3.h>
 
-#define WINDOW (GLFWwindow*) windowPtr
+#define WINDOW (GLFWwindow*) m_windowPtr
 #define GETWINDATA (WindowData*) glfwGetWindowUserPointer(window)
 
 namespace Copper {
-
-    uint32 windowCount = 0;
 
     void Window::Create(const std::string& title, uint32 width, uint32 height, bool maximize) {
 
         CUP_FUNCTION();
 
-        if (windowPtr != nullptr) {
+        if (m_windowPtr != nullptr) {
 
             LogError("Window {} was already created, please call Shutdown() first", title);
             return;
 
         }
-        if (windowCount == 0) {
 
-#ifndef CU_EDITOR
-            VERIFY_STATE(EngineState::Initialization, "Initialize the main Window"); 
-#endif
-            if (!glfwInit()) {
-
-                Input::ErrorPopup("GLFW error", "Failed to initialize GLFW during window creation");
-                exit(-1);
-
-            }
-
-        }
-        windowCount++;
-
-        data.title = title;
+        m_data.title = title;
 
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-        windowPtr = (void*) glfwCreateWindow(width, height, data.title.c_str(), NULL, NULL);
-        CU_ASSERT(windowPtr != nullptr, "Could not create the GLFW window for window {}", data.title);
+        m_windowPtr = (void*) glfwCreateWindow(width, height, m_data.title.c_str(), NULL, NULL);
+        CU_ASSERT(m_windowPtr != nullptr, "Could not create the GLFW window for window {}", m_data.title);
 
         glfwMakeContextCurrent(WINDOW);
-        glfwSetWindowUserPointer(WINDOW, &data);
+        glfwSetWindowUserPointer(WINDOW, &m_data);
         if (maximize)
             glfwMaximizeWindow(WINDOW);
 
-        glfwGetWindowSize(WINDOW, (int32*) &data.size.x, (int32*) &data.size.y);
+        glfwGetWindowSize(WINDOW, (int32*) &m_data.size.x, (int32*) &m_data.size.y);
 
         SetupEvents();
 
-        Log("Created window {}, size: {}.", data.title, data.size);
+        Log("Created window {}, size: {}.", m_data.title, m_data.size);
 
     }
     void Window::Update() {
@@ -76,9 +60,31 @@ namespace Copper {
 
         glfwDestroyWindow(WINDOW);
 
-        if (windowCount == 1)
-            glfwTerminate();
-        windowCount--;
+    }
+
+    void Window::InitializeBackend() {
+
+        CUP_FUNCTION();
+
+#ifdef CU_EDITOR
+        VERIFY_STATE(EngineState::Entry, "Initialize GLFW");
+#else
+        VERIFY_STATE(EngineState::Initialization, "Initialize GLFW");
+#endif
+
+        if (glfwInit()) return;
+
+        Input::ErrorPopup("GLFW error", "Failed to initialize GLFW.");
+        exit(-1);
+
+    }
+    void Window::ShutdownBackend() {
+
+        CUP_FUNCTION();
+
+        VERIFY_STATE(EngineState::Shutdown, "Shutdown GLFW");
+
+        glfwTerminate();
 
     }
 
@@ -214,16 +220,16 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        glfwSetWindowSize(WINDOW, value, data.size.y);
-        data.size.x = value;
+        glfwSetWindowSize(WINDOW, value, m_data.size.y);
+        m_data.size.x = value;
 
     }
     void Window::SetHeight(uint32 value) {
 
         CUP_FUNCTION();
 
-        glfwSetWindowSize(WINDOW, data.size.x, value);
-        data.size.y = value;
+        glfwSetWindowSize(WINDOW, m_data.size.x, value);
+        m_data.size.y = value;
 
     }
     void Window::SetSize(const UVector2I& size) {
@@ -231,8 +237,8 @@ namespace Copper {
         CUP_FUNCTION();
 
         glfwSetWindowSize(WINDOW, size.x, size.y);
-        data.size.x = size.x;
-        data.size.y = size.y;
+        m_data.size.x = size.x;
+        m_data.size.y = size.y;
 
     }
 
@@ -241,7 +247,7 @@ namespace Copper {
         CUP_FUNCTION();
 
         glfwSetWindowTitle(WINDOW, title.c_str());
-        data.title = title;
+        m_data.title = title;
 
     }
 

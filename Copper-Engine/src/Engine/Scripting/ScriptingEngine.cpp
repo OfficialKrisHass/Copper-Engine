@@ -84,8 +84,13 @@ namespace Copper::Scripting {
         if (!data.scriptingAPI.IsValid())
             InitializeScriptingAPI();
 
-        data.game = Assembly(assemblyPath);
-        if (!data.game.IsValid()) return false;
+        data.game.Create(assemblyPath);
+        if (!data.game.IsValid()) {
+
+            LogError("Failed to load game assembly at path {}", assemblyPath);
+            return false;
+
+        }
 
         InitializeGame();
 
@@ -103,13 +108,15 @@ namespace Copper::Scripting {
 
         CUP_FUNCTION();
 
+        CU_ASSERT(data.game.IsValid(), "Game assembly is invalid.");
+
         mono_domain_set(data.rootDomain, false);
         mono_domain_unload(data.appDomain);
 
         ClearManagedReferences();
 
-        data.game = Assembly();
-        data.scriptingAPI = Assembly();
+        data.game.Unload();
+        data.scriptingAPI.Unload();
 
         data.componentScripts.clear();
 
@@ -132,13 +139,7 @@ namespace Copper::Scripting {
 
         Unload();
 
-        InitializeScriptingAPI();
-        if (!Load(savedPath)) {
-
-            LogError("Failed to load game assembly at path '{}'", savedPath);
-            return false;
-
-        }
+        if (!Load(savedPath)) return false;
 
         return true;
 
@@ -155,7 +156,7 @@ namespace Copper::Scripting {
 
         // I forgot I changed the dir name from ScriptAPI to Script - ING - API only here and didnt change the
         // Scripting api build directory and spent 2 days trying to figure out why the fuck nothing was working
-        data.scriptingAPI = Assembly(ExecutableFolder() / "assets/ScriptingAPI/Copper-ScriptingAPI.dll");
+        data.scriptingAPI.Create(ExecutableFolder() / "assets/ScriptingAPI/Copper-ScriptingAPI.dll");
         CU_ASSERT(data.scriptingAPI.IsValid(), "Could not load ScriptingAPI assembly.");
 
         SetupInternalCalls();

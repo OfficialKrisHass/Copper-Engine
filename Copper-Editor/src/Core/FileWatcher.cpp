@@ -34,11 +34,12 @@ namespace Editor::FileWatcher {
 #endif
 
     void Start() { Start(data.directory); }
-    void Start(const Copper::fs::path &directory) {
+    void Start(const Copper::fs::path& directory) {
 
         CUP_FUNCTION();
 
         CU_ASSERT(!directory.empty(), "Can't start FileWatcher on empty directory!");
+        CU_ASSERT(fs::exists(directory), "{} Does not exist.", directory);
 
         if (data.fw != nullptr)
             Stop();

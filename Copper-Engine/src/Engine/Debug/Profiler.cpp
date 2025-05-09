@@ -58,15 +58,18 @@ namespace Copper::Profiler {
 
     void CrashHandler(int sig) {
 
-        LogError("A crash ({}) has occured in the Copper-Engine!\nCall stack:\n", sig);
+        LogError("A crash ({}) has occured in the Copper-Engine!\n", sig);
         PrintScopeStack();
 
     }
     void PrintScopeStack() {
 
-        for (const Scope* scope : scopeStack) {
+        LogError("Call stack:");
 
-            Log("{}: {}", scope->name, scope->file);
+        for (int32 i = scopeStack.size() - 1; i > -1; i--) {
+
+            Scope* scope = scopeStack[i];
+            LogError("#{} {}: {}", i, scope->name, scope->file);
 
         }
 

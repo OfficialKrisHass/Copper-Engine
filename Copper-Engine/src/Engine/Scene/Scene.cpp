@@ -105,7 +105,6 @@ namespace Copper {
             if (Light* lightComponent = entity->GetComponent<Light>()) {
                 
                 Renderer::AddLight(lightComponent);
-                Renderer::AddLine(Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Color::green, entity->m_transform);
             
             }
             if (Camera* cameraComponent = entity->GetComponent<Camera>()) {

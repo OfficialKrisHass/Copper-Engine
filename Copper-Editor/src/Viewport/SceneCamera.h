@@ -31,8 +31,9 @@ namespace Editor {
         bool m_firstClick = true;
         bool m_canLook = false;
 
-        float m_rotX = 0.0f;
-        float m_rotY = 0.0f;
+        Copper::Quaternion m_rotation;
+
+        float m_multiplier = 1.0f;
 
     };
 

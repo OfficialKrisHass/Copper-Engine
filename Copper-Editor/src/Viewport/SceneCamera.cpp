@@ -23,6 +23,8 @@ namespace Editor {
 
     void SceneCamera::Update() {
 
+        CUP_FUNCTION();
+
         m_transform->Update();
 
         if(!m_canLook) return;
@@ -40,7 +42,12 @@ namespace Editor {
                 return;
 
             }
-            case KeyState::Down: break;
+            case KeyState::Down: {
+
+                if (Input::GetCursorVisible()) return;
+                break;
+
+            }
             case KeyState::Released: {
 
                 Input::SetCursorVisible(true);
@@ -53,10 +60,15 @@ namespace Editor {
 
         }
 
+        if (Input::GetKeyState(KeyCode::LeftShift) == KeyState::Pressed)
+            m_multiplier = 2.0f;
+        else if (Input::GetKeyState(KeyCode::LeftShift) == KeyState::Released)
+            m_multiplier = 1.0f;
+
         // Movement
 
-        float horizontal = Input::GetAxis("Keys_WS") * speed * GetDeltaTime();
-        float vertical = Input::GetAxis("Keys_DA") * speed * GetDeltaTime();
+        float horizontal = Input::GetAxis("Keys_WS") * speed * m_multiplier * GetDeltaTime();
+        float vertical = Input::GetAxis("Keys_DA") * speed * m_multiplier * GetDeltaTime();
 
         m_transform->AddPosition(m_transform->Forward() * horizontal + m_transform->Right() * vertical);
 
@@ -67,9 +79,12 @@ namespace Editor {
 
         // Look
 
-        m_rotY -= Input::GetMouseAxis("Mouse X") / GetWindow().GetWidth() * sensitivity * GetDeltaTime();
-        m_rotX -= Input::GetMouseAxis("Mouse Y") / GetWindow().GetHeight() * sensitivity * GetDeltaTime();
-        m_transform->SetRotation(Quaternion(m_rotX, m_rotY, 0.0f));
+        float deltaX = -Input::GetMouseAxis("Mouse X") / GetWindow().GetWidth() * sensitivity * GetDeltaTime();
+        float deltaY = -Input::GetMouseAxis("Mouse Y") / GetWindow().GetHeight() * sensitivity * GetDeltaTime();
+
+        m_rotation = Quaternion(Vector3(0.0f, 1.0f, 0.0f) * deltaX) * m_rotation;
+        m_rotation *= Quaternion(Vector3(1.0f, 0.0f, 0.0f) * deltaY);
+        m_transform->SetRotation(m_rotation);
 
     }
 
@@ -77,9 +92,7 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        Vector3 euler = m_transform->Rotation().EulerAngles();
-        m_rotX = -euler.x;
-        m_rotY = euler.y;
+        m_rotation = m_transform->Rotation();
 
     }
 

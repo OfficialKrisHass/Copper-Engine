@@ -74,5 +74,5 @@ if [ $configuration == Release ]; then
 fi
 
 echo Copying editor binaries
-cp $editor_dir/lib/mono/bin/linux/$configuration/libmonosgen-2.0.a $build_dir
-cp -r $editor_dir/lib/PhysX/linux/$configuration/. $build_dir
+cp $editor_dir/bin/mono/linux/$configuration/libmonosgen-2.0.a $build_dir
+cp -r $editor_dir/bin/PhysX/linux/$configuration/. $build_dir

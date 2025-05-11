@@ -51,9 +51,9 @@ namespace Copper::Scripting {
         VERIFY_STATE(EngineState::Initialization, "Initialize the Scripting Engine");
 
 #ifdef CU_LINUX
-        mono_set_assemblies_path((ExecutableFolder() / "lib/mono/lib/linux").string().c_str());
+        mono_set_assemblies_path((ExecutableFolder() / "lib/mono/linux").string().c_str());
 #elif CU_WINDOWS
-        mono_set_assemblies_path((ExecutableFolder() / "lib/mono/lib/windows").string().c_str());
+        mono_set_assemblies_path((ExecutableFolder() / "lib/mono/windows").string().c_str());
 #endif
 
         mono_config_parse((ExecutableFolder() / "lib/mono/config").string().c_str());

@@ -6,6 +6,9 @@
 compile_commands.json
 Copper-ScriptingAPI.dll
 
+Copper-Editor/bin/mono/
+Copper-Editor/bin/PhysX/
+
 [Tt]emp/
 
 # Copper-Editor projects

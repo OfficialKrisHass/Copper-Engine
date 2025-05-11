@@ -195,7 +195,7 @@ namespace Editor {
         // TODO: Add icons instead of text
 
         //static const float buttonSize = 20.f;
-        const float buttonSize = ImGui::CalcTextSize("W").x + ImGui::GetStyle().FramePadding.x * 2.5f;
+        const float buttonSize = ImGui::CalcTextSize("W").x + ImGui::GetStyle().FramePadding.x * 4.0f;
 
         ImGui::SetCursorPos({ ImGui::GetStyle().WindowPadding.x, ImGui::GetStyle().WindowPadding.y + tabBarHeight });
         if (ImGui::Button("P", { buttonSize, buttonSize }))

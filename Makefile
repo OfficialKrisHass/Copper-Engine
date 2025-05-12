@@ -14,9 +14,7 @@ engine: cmake
 
 editor: cmake
 	@${MAKE} --no-print-directory -C CMake/$(CONFIGURATION)/Copper-Editor -f Makefile
-ifeq ($(OS), linux)
-	@bash scripts/linux/CopyEditorFiles.sh $(CONFIGURATION)
-endif
+	@python scripts/post_build_editor.py $(CONFIGURATION) $(OS)
 	
 scriptapi: apibinder
 	@./Copper-Editor/util/premake/premake5 --file=Copper-ScriptingAPI/workspace.lua gmake2

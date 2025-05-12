@@ -3,6 +3,8 @@ import zipfile
 
 
 def extract(dir):
+    print("Extracting editor binaries.")
+
     with zipfile.ZipFile(dir + "/Copper-Editor/bin/EditorBinaries.zip", 'r') as editorBinaries:
         editorBinaries.extractall(dir + "/Copper-Editor/bin")
 

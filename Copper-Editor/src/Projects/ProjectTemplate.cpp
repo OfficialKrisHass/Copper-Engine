@@ -56,7 +56,7 @@ namespace Editor {
         }
 
         CreateFileAndReplace(templ / "Project.cu.cut", project.GetPath() / "Project.cu", ":{ProjectName}", project.GetName());
-        CopyFileTo(ExecutableFolder() / "assets/ScriptingAPI/Copper-ScriptingAPI.dll", project.GetPath() / "Binaries/Copper-ScriptingAPI.dll", true);
+        CopyFileTo(ExecutableFolder() / "assets/Copper-ScriptingAPI.dll", project.GetPath() / "Binaries/Copper-ScriptingAPI.dll", true);
 
         project.RegenerateBuildFiles();
 

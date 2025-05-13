@@ -156,7 +156,7 @@ namespace Copper::Scripting {
 
         // I forgot I changed the dir name from ScriptAPI to Script - ING - API only here and didnt change the
         // Scripting api build directory and spent 2 days trying to figure out why the fuck nothing was working
-        data.scriptingAPI.Create(ExecutableFolder() / "assets/ScriptingAPI/Copper-ScriptingAPI.dll");
+        data.scriptingAPI.Create(ExecutableFolder() / "assets/Copper-ScriptingAPI.dll");
         CU_ASSERT(data.scriptingAPI.IsValid(), "Could not load ScriptingAPI assembly.");
 
         SetupInternalCalls();

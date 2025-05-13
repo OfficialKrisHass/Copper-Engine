@@ -3,7 +3,7 @@ workspace "Copper-Engine"
     configurations { "Debug", "Release" }
     startproject "Copper-Editor"
 
-outputDir = "windows-%{cfg.architecture}-%{cfg.buildcfg}"
+buildDir = "Build/%{cfg.system}-%{cfg.architecture}-%{cfg.buildcfg}"
 
 group "Libraries"
     include "Copper-Engine/lib/GLFW"
@@ -30,8 +30,8 @@ project "Copper-Engine"
     staticruntime "on"
     systemversion "latest"
 
-    targetdir("Build/" .. outputDir .. "/%{prj.name}")
-    objdir("BuildInt/" .. outputDir .. "/%{prj.name}")
+    targetdir(buildDir .. "/%{prj.name}")
+    objdir(buildDir .. "/%{prj.name}/Intermediate")
 
     pchheader "cupch.h"
     pchsource "Copper-Engine/src/cupch.cpp"
@@ -141,8 +141,8 @@ project "Copper-Editor"
     staticruntime "on"
     systemversion "latest"
 
-    targetdir("Build/" .. outputDir .. "/%{prj.name}")
-    objdir("BuildInt/" .. outputDir .. "/%{prj.name}")
+    targetdir(buildDir .. "/%{prj.name}")
+    objdir(buildDir .. "/%{prj.name}/Intermediate")
 
     files {
 
@@ -155,6 +155,8 @@ project "Copper-Editor"
 
         "%{prj.name}/src",
 
+        "%{prj.name}/lib/FileWatch",
+
         "Copper-Engine/src",
         "Copper-Engine/lib/spdlog",
         "Copper-Engine/lib/ImGui",
@@ -165,8 +167,6 @@ project "Copper-Editor"
         "Copper-Engine/lib/GLM/include",
         "Copper-Engine/lib/yaml-cpp/include",
         "Copper-Engine/lib/assimp/include",
-
-        "%{prj.name}/lib/FileWatch",
 
     }
 
@@ -201,16 +201,16 @@ project "Copper-Editor"
         runtime "Debug"
         symbols "on"
 
-        postbuildcommands "%{os.getcwd()}/scripts/windows/CopyEditorFiles.bat Debug"
+        postbuildcommands "python scripts/post_build.py editor Debug %{cfg.system}"
 
-        debugargs { "-a", os.getcwd() .. "/%{prj.name}/" }
+        debugargs { "-e", os.getcwd() .. "/%{prj.name}/" }
 
     filter "configurations:Release"
         defines "CU_RELEASE"
         runtime "Release"
         optimize "on"
 
-        postbuildcommands "%{os.getcwd()}/scripts/windows/CopyEditorFiles.bat Release"
+        postbuildcommands "python scripts/post_build.py editor Release %{cfg.system}"
 
     filter "system:windows"
         link {
@@ -231,8 +231,8 @@ project "Copper-APIBinder"
     cppdialect "C++20"
     staticruntime "on"
 
-    targetdir("Build/" .. outputDir .. "/%{prj.name}")
-    objdir("BuildInt/" .. outputDir .. "/%{prj.name}")
+    targetdir(buildDir .. "/%{prj.name}")
+    objdir(buildDir .. "/%{prj.name}")
 
     files {
 
@@ -272,8 +272,8 @@ project "Copper-Launcher"
     cppdialect "C++20"
     staticruntime "on"
 
-    targetdir("Build/" .. outputDir .. "/Copper-Launcher")
-    objdir("BuildInt/" .. outputDir .. "/Copper-Launcher")
+    targetdir(buildDir .. "/Copper-Launcher")
+    objdir(buildDir .. "/Copper-Launcher")
 
     files {
 
@@ -319,11 +319,11 @@ project "Copper-Launcher"
         runtime "Debug"
         symbols "on"
 
-        postbuildcommands "%{os.getcwd()}/scripts/windows/CopyLauncherFiles.bat Debug"
+        postbuildcommands "python scripts/post_build.py launcher Debug %{cfg.system}"
 
     filter "configurations:Release"
         defines "CU_RELEASE"
         runtime "Release"
         optimize "on"
 
-        postbuildcommands "%{os.getcwd()}/scripts/windows/CopyLauncherFiles.bat Release"
+        postbuildcommands "python scripts/post_build.py launcher Release %{cfg.system}"

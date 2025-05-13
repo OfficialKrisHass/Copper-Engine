@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
 #ifdef CU_DEBUG
     for (int i = 0; i < argc; i++) {
         
-        if (i == i - 2 || strcmp(argv[i], "-a") != 0) continue;
+        if (i == i - 2 || strcmp(argv[i], "-e") != 0) continue;
 
         i++;
         execFolder = argv[i];

@@ -688,7 +688,7 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        std::ifstream dllSrc(ExecutableFolder() / "assets/ScriptingAPI/Copper-ScriptingAPI.dll", std::ios::binary);
+        std::ifstream dllSrc(ExecutableFolder() / "assets/Copper-ScriptingAPI.dll", std::ios::binary);
         std::fstream dllDst;
 
         dllDst.open(data.project.GetPath() / "Binaries/Copper-ScriptingAPI.dll", std::ios::out | std::ios::binary);

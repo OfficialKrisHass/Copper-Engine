@@ -44,7 +44,7 @@ namespace Launcher {
         fs::create_directories(path / name / "Binaries");
 
         FileFromTemplate(templatePath / "Project.cu.cut", path / name / "Project.cu", ":{ProjectName}", name);
-        CopyFile(PersistentData::EditorAssetsPath() / "assets/ScriptingAPI/Copper-ScriptingAPI.dll", path / name / "Binaries/Copper-ScriptingAPI.dll");
+        CopyFile(PersistentData::EditorAssetsPath() / "assets/Copper-ScriptingAPI.dll", path / name / "Binaries/Copper-ScriptingAPI.dll");
 
         for (const fs::directory_entry& entry : fs::recursive_directory_iterator(templatePath / "Assets")) {
 

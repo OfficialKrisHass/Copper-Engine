@@ -1,11 +1,13 @@
+buildDir = "../Build/%{cfg.system}-%{cfg.architecture}-%{cfg.buildcfg}"
+
 project "Copper-ScriptingAPI"
     location "."
     language "C#"
     kind "SharedLib"
     dotnetframework "4.8"
 
-    targetdir("../Copper-Editor/assets/ScriptingAPI")
-    objdir("../Copper-Editor/assets/ScriptingAPI/Int")
+    targetdir(buildDir .. "/%{prj.name}")
+    objdir(buildDir .. "/%{prj.name}/Intermediate")
 
     files {
 

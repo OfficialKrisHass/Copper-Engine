@@ -1,5 +1,8 @@
 @echo off
 
+python scripts/extract_binaries.py
+echo ""
+
 set /p version=<%~dp0\VERSION
 setx COPPER_VERSION "%version%"
 

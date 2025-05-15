@@ -5,9 +5,9 @@
 
 #include "Engine/Utilities/Math.h"
 
-#define POSITION_CHANGED 1 // 1 << 0
-#define ROTATION_CHANGED 2 // 1 << 1
-#define SCALE_CHANGED 4 // 1 << 2
+#define POSITION_CHANGED (FLAG(0))
+#define ROTATION_CHANGED (FLAG(1))
+#define SCALE_CHANGED (FLAG(2))
 
 namespace Copper {
 

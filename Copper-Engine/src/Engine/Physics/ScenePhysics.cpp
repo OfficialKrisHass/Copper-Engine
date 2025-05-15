@@ -82,6 +82,7 @@ namespace Copper {
         CUP_FUNCTION();
 
         m_physicsScene->removeActor(*body);
+        body->release();
 
     }
 

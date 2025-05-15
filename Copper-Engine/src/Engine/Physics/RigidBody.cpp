@@ -1,15 +1,13 @@
 #include "cupch.h"
 #include "Engine/Components/RigidBody.h"
 
-#include "Engine/Scene/CopperECS.h"
-
 #include "Engine/Components/Collider.h"
 
 #include "Engine/Physics/PhysicsEngine.h"
 
 #include <PxPhysicsAPI.h>
 
-#define DynamicBody ((PxRigidDynamic*) m_actor)
+#define DynamicBody static_cast<PxRigidDynamic*>(m_actor)
 
 namespace Copper {
 
@@ -37,21 +35,18 @@ namespace Copper {
         m_collider = GetEntity()->GetComponent<Collider>();
         if (m_collider == nullptr) {
 
-            LogError("No Collider on entity '{}' with a RigidBody component", *GetEntity());
+            LogError("Entity '{}' has no Collider!", *GetEntity());
             return;
 
         }
 
+
         PxShape* shape = m_collider->CreateShape();
-        CU_ASSERT(shape, "Could not create physx shape on entity '{}'", *GetEntity());
+        CU_ASSERT(shape != nullptr, "Could not create physx shape on entity '{}'", *GetEntity());
 
         m_collider->m_rb = this;
-        if (m_collider->m_trigger) {
-
-            shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
-            shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
-
-        }
+        shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, !m_collider->m_trigger);
+        shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, m_collider->m_trigger);
 
         if (m_static)
             InitializeStatic(shape);
@@ -60,10 +55,10 @@ namespace Copper {
 
         shape->release();
 
-        GetScene()->AddPhysicsBody(m_actor);
-
         m_actor->setName(GetEntity()->name.c_str());
-        m_actor->userData = (void*) GetEntity();
+        m_actor->userData = (void*) (uint64) GetEntity()->ID();
+
+        GetScene()->AddPhysicsBody(m_actor);
 
     }
     void RigidBody::Remove() {
@@ -96,10 +91,9 @@ namespace Copper {
         CU_ASSERT(m_actor != nullptr, "Failed to create RigidDynamic actor on entity {}", *GetEntity());
 
         DynamicBody->setMass(m_mass);
-        if (!m_gravity)
-            m_actor->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true);
+        m_actor->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, !m_gravity);
 
-        DynamicBody->setRigidDynamicLockFlags((PxRigidDynamicLockFlag::Enum) m_lockMask);
+        DynamicBody->setRigidDynamicLockFlags(static_cast<PxRigidDynamicLockFlag::Enum>(m_lockMask));
 
     }
 
@@ -107,10 +101,10 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        if (m_static) return;
+        CU_ASSERT(m_actor != nullptr, "Rigidbody actor is nullptr on entity '{}'", *GetEntity());
+        CU_ASSERT(m_collider != nullptr, "m_collider is nullptr!");
 
-        CU_ASSERT(m_actor, "m_actor is nullptr!");
-        CU_ASSERT(m_collider, "m_collider is nullptr!");
+        if (m_static) return;
     
         GetTransform()->SetPosition(PhysXToCopper(m_actor->getGlobalPose().p) + m_collider->m_center);
         GetTransform()->SetRotation(PhysXToCopper(m_actor->getGlobalPose().q));
@@ -121,6 +115,7 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+        CU_ASSERT(m_actor != nullptr, "RigidActor is nullptr on entity '{}'", *GetEntity());
         if (m_static) {
 
             LogError("Can't add force to a static RigidBody on entity '{}'", *GetEntity());
@@ -135,6 +130,7 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+        CU_ASSERT(m_actor != nullptr, "RigidActor is nullptr on entity '{}'", *GetEntity());
         if (m_static) {
 
             LogError("Can't add torque to a static RigidBody on entity '{}'", *GetEntity());
@@ -150,10 +146,10 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+        CU_ASSERT(m_actor != nullptr, "RigidActor is nullptr on entity '{}'", *GetEntity());
         if (m_static) return;
 
         m_mass = value;
-
         IN_RUNTIME(DynamicBody->setMass(m_mass));
 
     }
@@ -162,10 +158,9 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        if (m_static == value) return;
+        CU_ASSERT(m_actor != nullptr, "RigidActor is nullptr on entity '{}'", *GetEntity());
 
         m_static = value;
-
         IN_RUNTIME(Initialize());
 
     }
@@ -173,8 +168,9 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        m_gravity = value;
+        CU_ASSERT(m_actor != nullptr, "RigidActor is nullptr on entity '{}'", *GetEntity());
 
+        m_gravity = value;
         IN_RUNTIME(m_actor->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, !m_gravity));
 
     }
@@ -182,19 +178,22 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+        CU_ASSERT(m_actor != nullptr, "RigidActor is nullptr on entity '{}'", *GetEntity());
         if (m_static) return;
 
         m_lockMask = value;
-
         IN_RUNTIME(DynamicBody->setRigidDynamicLockFlags((PxRigidDynamicLockFlag::Enum) m_lockMask));
 
     }
 
     void RigidBody::SetPosition(const Vector3& position) {
 
+        CUP_FUNCTION();
+
         IN_NOT_RUNTIME(return);
 
-        if (m_actor == nullptr || m_static) return;
+        CU_ASSERT(m_actor != nullptr, "RigidActor is nullptr on entity '{}'", *GetEntity());
+        if (m_static) return;
 
         PxTransform pose = m_actor->getGlobalPose();
         pose.p = CopperToPhysX(position);
@@ -203,9 +202,12 @@ namespace Copper {
     }
     void RigidBody::SetRotation(const Quaternion& rotation) {
 
+        CUP_FUNCTION();
+
         IN_NOT_RUNTIME(return);
 
-        if (m_actor == nullptr || m_static) return;
+        CU_ASSERT(m_actor != nullptr, "RigidActor is nullptr on entity '{}'", *GetEntity());
+        if (m_static) return;
 
         PxTransform pose = m_actor->getGlobalPose();
         pose.q = CopperToPhysX(rotation);

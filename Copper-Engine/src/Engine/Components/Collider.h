@@ -67,9 +67,7 @@ namespace Copper {
 
             CUP_FUNCTION();
 
-            if (m_trigger == value) return;
             m_trigger = value;
-
             RecreateShape();
 
         }
@@ -77,9 +75,7 @@ namespace Copper {
 
             CUP_FUNCTION();
 
-            if (m_center == value) return;
             m_center = value;
-
             RecreateShape();
 
         }

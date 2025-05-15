@@ -1,8 +1,6 @@
 #include "cupch.h"
 #include "Engine/Components/Collider.h"
 
-#include "Engine/Scene/CopperECS.h"
-
 #include "Engine/Components/RigidBody.h"
 
 #include "Engine/Components/BoxCollider.h"
@@ -34,23 +32,21 @@ namespace Copper {
 
         // Remove current shape
 
+        CU_ASSERT(m_rb != nullptr, "Collider on entity '{}' has no rigidBody", *GetEntity());
+
         PxShape* shape = nullptr;
         m_rb->m_actor->getShapes(&shape, 1);
-        CU_ASSERT(shape, "Could not get shape from RigidBody");
+        CU_ASSERT(shape != nullptr, "Could not get the collider shape on entity '{}'", *GetEntity());
 
         m_rb->m_actor->detachShape(*shape);
 
         // Attach new one
 
         shape = CreateShape();
-        CU_ASSERT(shape, "Could not create physx shape on entity '{}'", *GetEntity());
+        CU_ASSERT(shape != nullptr, "Could not create the collider shape on entity '{}'", *GetEntity());
 
-        if (m_trigger) {
-
-            shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
-            shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
-
-        }
+        shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, !m_trigger);
+        shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, m_trigger);
 
         m_rb->m_actor->attachShape(*shape);
         shape->release();

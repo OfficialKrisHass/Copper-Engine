@@ -200,7 +200,7 @@ namespace Copper::RendererAPI {
 
         CUP_FUNCTION();
 
-    // Take what was rendered to the main FBO and render it onto the gameRect
+        // Take what was rendered to the main FBO and render it onto the gameRect
 #ifndef CU_EDITOR
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.18f, 0.18f, 0.18f, 1.0f);

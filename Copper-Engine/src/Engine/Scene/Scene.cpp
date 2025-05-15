@@ -90,6 +90,9 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+        CU_ASSERT(m_initialized, "Scene is not initialized!");
+        CU_ASSERT(m_physicsScene != nullptr, "Physics scene is nullptr!");
+
         Renderer::StartFrame();
 
         IN_RUNTIME(UpdatePhysics(deltaTime));
@@ -102,11 +105,8 @@ namespace Copper {
 
             entity->m_transform->Update();
 
-            if (Light* lightComponent = entity->GetComponent<Light>()) {
-                
+            if (Light* lightComponent = entity->GetComponent<Light>())
                 Renderer::AddLight(lightComponent);
-            
-            }
             if (Camera* cameraComponent = entity->GetComponent<Camera>()) {
 
                 Renderer::SetCamera(cameraComponent);

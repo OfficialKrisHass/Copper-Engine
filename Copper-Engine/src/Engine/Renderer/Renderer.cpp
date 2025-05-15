@@ -10,7 +10,6 @@
 #include "Engine/Renderer/Mesh.h"
 
 #include "Engine/AssetStorage/AssetPtr.h"
-#include "Engine/AssetStorage/AssetMap.h"
 #include "Engine/AssetStorage/AssetStorage.h"
 
 #include "Engine/Components/Transform.h"
@@ -257,6 +256,8 @@ namespace Copper::Renderer {
 
         CUP_FUNCTION();
 
+        CU_ASSERT(transform != nullptr, "Transform is nullptr!");
+
         const Matrix4& transformMat = transform->TransformMatrix();
 
         const uint32 indicesCount = (uint32) mesh->indices.size();
@@ -373,7 +374,7 @@ namespace Copper::Renderer {
 
         CUP_FUNCTION();
 
-        CU_ASSERT(data.lightCount < MAX_LIGHTS, "Can't add another light, reached maximum amount of lights allowed ({})", MAX_LIGHTS);
+        CU_ASSERT(data.lightCount < MAX_LIGHTS, "Max amount of lights reached ({})", MAX_LIGHTS);
 
         data.lights[data.lightCount] = light;
         data.lightCount++;
@@ -398,7 +399,13 @@ namespace Copper::Renderer {
 
     }
 
-    void SetCamera(Camera* cam) { CUP_FUNCTION(); RendererAPI::SetCamera(cam); }
+    void SetCamera(Camera* cam) {
+
+        CUP_FUNCTION();
+
+        RendererAPI::SetCamera(cam);
+
+    }
 
     void SetWireframe(bool value) {
 

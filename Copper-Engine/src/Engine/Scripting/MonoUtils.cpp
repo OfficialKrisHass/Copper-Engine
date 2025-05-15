@@ -34,12 +34,7 @@ namespace Copper::Scripting::MonoUtils {
         CUP_FUNCTION();
 
         MonoClass* klass = mono_object_get_class(exception);
-        if (!klass) {
-
-            LogError("Could not get mono exception class");
-            return;
-
-        }
+        CU_ASSERT(klass != nullptr, "Could not get exception C# class!");
 
 
         MonoProperty* msgProperty = mono_class_get_property_from_name(klass, "Message");
@@ -52,7 +47,7 @@ namespace Copper::Scripting::MonoUtils {
         MonoStringToString((MonoString*) mono_runtime_invoke(mono_property_get_get_method(msgProperty), exception, nullptr, nullptr), msg);
         MonoStringToString((MonoString*) mono_runtime_invoke(mono_property_get_get_method(stcProperty), exception, nullptr, nullptr), stackTrace);
 
-        LogError("Unhandle exception has been caught: {} {}\n\nStack trace:\n{}", name, msg, stackTrace);
+        LogError("Unhandle {} C# exception has been caught: {}\n\nStack trace:\n{}", name, msg, stackTrace);
 
     }
 

@@ -83,7 +83,7 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        CU_ASSERT(m_id != 0, "Can't delete the default framebuffer (with id 0)");
+        CU_ASSERT(m_id != 0, "Invalid framebuffer");
         CU_ASSERT(m_attachments.size() > 0, "Can't Recreate a frame buffer with no attachments. FrameBuffer id: {}", m_id);
 
         Delete();
@@ -130,6 +130,8 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+        CU_ASSERT(m_id != 0, "Invalid framebuffer");
+
         glBindFramebuffer(GL_FRAMEBUFFER, m_id);
         glViewport(0, 0, m_size.x, m_size.y);
 
@@ -147,6 +149,7 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+        CU_ASSERT(m_id != 0, "Invalid framebuffer");
         CU_ASSERT(attachment < m_attachments.size(), "Can't read from attachment {} (out of range index)", attachment);
 
         uint32 ret;

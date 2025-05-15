@@ -9,8 +9,8 @@
 
 #include <GLFW/glfw3.h>
 
-#define WINDOW (GLFWwindow*) m_windowPtr
-#define GETWINDATA (WindowData*) glfwGetWindowUserPointer(window)
+#define WINDOW static_cast<GLFWwindow*>(m_windowPtr)
+#define GETWINDATA static_cast<WindowData*>(glfwGetWindowUserPointer(window))
 
 namespace Copper {
 
@@ -49,6 +49,8 @@ namespace Copper {
     void Window::Update() {
 
         CUP_FUNCTION();
+
+        CU_ASSERT(m_windowPtr != nullptr, "Invalid window pointer on window '{}'", m_data.title);
 
         glfwPollEvents();
         glfwSwapBuffers(WINDOW);

@@ -2,7 +2,7 @@ OS = linux
 CONFIGURATION = Debug
 BUILD_DIR = Build/$(OS)-x86_64-$(CONFIGURATION)
 
-PROJECT_FILES = Makefile CMakeLists.txt Copper-Engine/CMakeLists.txt Copper-Editor/CMakeLists.txt Copper-Launcher/CMakeLists.txt Copper-APIBinder/CMakeLists.txt Copper-ScriptingAPI/premake5.lua Copper-ScriptingAPI/workspace.lua
+PROJECT_FILES = VERSION Makefile CMakeLists.txt Copper-Engine/CMakeLists.txt Copper-Editor/CMakeLists.txt Copper-Launcher/CMakeLists.txt Copper-APIBinder/CMakeLists.txt Copper-ScriptingAPI/premake5.lua Copper-ScriptingAPI/workspace.lua
 
 ENGINE = $(BUILD_DIR)/Copper-Engine/libCopper-Engine.a
 EDITOR = $(BUILD_DIR)/Copper-Editor/Copper-Editor
@@ -36,7 +36,7 @@ projects: CMake
 engine: Copper-APIBinder/.stamp
 	@${MAKE} --no-print-directory -C CMake/$(CONFIGURATION)/Copper-Engine -f Makefile
 
-editor:
+editor: CMake 
 	@${MAKE} --no-print-directory -C CMake/$(CONFIGURATION)/Copper-Editor -f Makefile
 	@python scripts/post_build.py editor $(CONFIGURATION) $(OS)
 launcher: CMake
@@ -84,7 +84,7 @@ CMake: $(PROJECT_FILES)
 
 # Build targets
 
-Copper-APIBinder/.stamp:
+Copper-APIBinder/.stamp: CMake
 	@cp $(SCRIPTING_API) $(CURDIR)/Copper-Editor/assets
 	@$(API_BINDER) $(CURDIR)/Copper-Editor
 	@touch Copper-APIBinder/.stamp

@@ -46,6 +46,8 @@ namespace Editor {
 
     void FileBrowser::Initialize() {
 
+        CUP_FUNCTION();
+
         directoryIcon.Create(ExecutableFolder() / "assets/Icons/DirectoryIcon.png", Texture::Format::RGBA);
         fileIcon.Create(ExecutableFolder() / "assets/Icons/FileIcon.png", Texture::Format::RGBA);
 
@@ -53,6 +55,7 @@ namespace Editor {
 
     void FileBrowser::UI() {
 
+        CUP_FUNCTION();
         CUP_START_FRAME("File browser");
 
         if (!GetProject().IsValid()) {
@@ -70,7 +73,8 @@ namespace Editor {
         const float panelWidth = ImGui::GetContentRegionAvail().x;
 
         uint32 columns = (uint32) (panelWidth / CellSize);
-        if(columns < 1) columns = 1;
+        if (columns < 1)
+            columns = 1;
 
         ImGui::Columns(columns, 0, false);
 
@@ -83,30 +87,31 @@ namespace Editor {
             const bool directory = entry.is_directory();
             const fs::path path = fs::relative(entry.path(), GetProject().GetAssetsPath());
             const std::string extension = path.extension().string();
-            if (extension == ".cum") continue;
+            const std::string filename = path.filename().replace_extension().string();
 
-            std::string filename = path.filename().string();
-            if (!directory)
-                filename = filename.substr(0, filename.find_last_of('.'));
+            ImGui::PushID(filename.c_str());
 
-            ImGui::PushID(path.string().c_str());
-            EntryIcon(path, directory);
+            if (Properties::GetSelectedData().type == SelectedData::Type::File && Properties::GetSelectedData().file == path)
+                ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyle().Colors[ImGuiCol_TabSelected]);
+            else
+                ImGui::PushStyleColor(ImGuiCol_Button, { 0.0f, 0.0f, 0.0f, 0.0f });
 
             // Functionality
-
+            
             if (directory)
                 DirectoryEntry(path, filename);
             else
                 FileEntry(path, filename, extension);
+            ImGui::PopStyleColor();
 
             EntryPopup(path);
-
-            // Finalize
 
             if (editingPath == path)
                 EditName(path, filename);
             else
                 ImGui::TextWrapped(filename.c_str());
+
+            // Finalize
 
             ImGui::NextColumn();
             ImGui::PopID();
@@ -138,6 +143,8 @@ namespace Editor {
 
     void FileBrowser::RelativeDirHeader() {
 
+        CUP_FUNCTION();
+
         ImGui::GetFont()->FontSize -= 2.0f;
 
         ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0));
@@ -158,6 +165,8 @@ namespace Editor {
     }
     void FileBrowser::WindowPopup() {
 
+        CUP_FUNCTION();
+
         if (!ImGui::BeginPopupContextWindow("##File Browser")) return;
 
         if (ImGui::MenuItem("New", nullptr, false, GetProject().IsValid()))
@@ -168,13 +177,12 @@ namespace Editor {
     }
     void FileBrowser::EntryPopup(const Copper::fs::path& path) {
 
+        CUP_FUNCTION();
+
         if (!ImGui::BeginPopupContextItem()) return;
 
-        if (ImGui::MenuItem("Remove")) {
-
+        if (ImGui::MenuItem("Remove"))
             fs::remove_all(GetProject().GetAssetsPath() / path);
-
-        }
         if (ImGui::MenuItem("Edit"))
             editingPath = path;
 
@@ -182,28 +190,21 @@ namespace Editor {
 
     }
 
-    void FileBrowser::EntryIcon(const fs::path& path, bool directory) {
-
-        uint32_t iconID = directory ? directoryIcon.GetID() : fileIcon.GetID();
-
-        if (Properties::GetSelectedData().type == SelectedData::Type::File && Properties::GetSelectedData().file == path)
-            ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyle().Colors[ImGuiCol_TabSelected]);
-        else
-            ImGui::PushStyleColor(ImGuiCol_Button, { 0.0f, 0.0f, 0.0f, 0.0f });
-
-        ImGui::ImageButton("##Entry", static_cast<ImTextureID>((uint64) iconID), { THUMBNAIL_SIZE, THUMBNAIL_SIZE }, { 0, 1 }, { 1, 0 });
-
-        ImGui::PopStyleColor();
-
-    }
-
     void FileBrowser::DirectoryEntry(const fs::path& path, const std::string& filename) {
+
+        CUP_FUNCTION();
+
+        ImGui::ImageButton("##Entry", static_cast<ImTextureID>((uint64) directoryIcon.GetID()), { THUMBNAIL_SIZE, THUMBNAIL_SIZE }, { 0, 1 }, { 1, 0 });
 
         if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
             m_projectRelativeDir /= filename;
 
     }
     void FileBrowser::FileEntry(const fs::path& path, const std::string& filename, const std::string& extension) {
+
+        CUP_FUNCTION();
+
+        ImGui::ImageButton("##Entry", static_cast<ImTextureID>((uint64) fileIcon.GetID()), { THUMBNAIL_SIZE, THUMBNAIL_SIZE }, { 0, 1 }, { 1, 0 });
 
         if (ImGui::IsItemClicked())
             clickedFile = path;
@@ -246,6 +247,8 @@ namespace Editor {
 
     void FileBrowser::EditName(const Copper::fs::path& path, const std::string& filename) {
 
+        CUP_FUNCTION();
+
         const std::string fullPath = (GetProject().GetAssetsPath() / path).string();
 
         char buffer[128] = {};
@@ -258,9 +261,7 @@ namespace Editor {
             editingPath /= buffer;
             editingPath += path.extension();
 
-            const std::string newFullPath = (GetProject().GetAssetsPath() / editingPath).string();
-
-            fs::rename(fullPath, newFullPath);
+            fs::rename(fullPath, GetProject().GetAssetsPath() / editingPath);
             
             if (Properties::GetSelectedData().type == SelectedData::Type::File && Properties::GetSelectedData().file == path)
                 Properties::SetSelectedFile(editingPath);
@@ -268,15 +269,6 @@ namespace Editor {
             editingPath = "";
 
         }
-
-    }
-
-    void FileBrowser::NewScript(const Copper::fs::path& path) {
-
-        std::ifstream templ(ExecutableFolder() / "assets/Templates/Script.cs.cut");
-        std::ofstream out(path / "Script.cs");
-
-        out << templ.rdbuf();
 
     }
 

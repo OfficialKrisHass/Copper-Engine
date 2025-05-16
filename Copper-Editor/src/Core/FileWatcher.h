@@ -31,8 +31,8 @@ namespace Editor::FileWatcher {
             case FileChangeType::Created: return "Created";
             case FileChangeType::Changed: return "Changed";
             case FileChangeType::Deleted: return "Deleted";
-            case FileChangeType::RenamedOldName: return "Renamed new";
-            case FileChangeType::RenamedNewName: return "Renamed old";
+            case FileChangeType::RenamedOldName: return "Renamed old";
+            case FileChangeType::RenamedNewName: return "Renamed new";
 
         }
 

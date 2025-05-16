@@ -69,7 +69,8 @@ namespace Copper {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        if (m_gizmo) ImGuizmo::BeginFrame();
+        if (m_gizmo)
+            ImGuizmo::BeginFrame();
 
     }
     void UIContext::End() {

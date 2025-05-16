@@ -25,14 +25,10 @@ namespace Editor {
         void WindowPopup();
         void EntryPopup(const Copper::fs::path& path);
 
-        void EntryIcon(const Copper::fs::path& path, bool directory);
-
         void DirectoryEntry(const Copper::fs::path& path, const std::string& filename);
         void FileEntry(const Copper::fs::path& path, const std::string& filename, const std::string& extension);
 
         void EditName(const Copper::fs::path& path, const std::string& filename);
-
-        void NewScript(const Copper::fs::path& path);
 
     };
 

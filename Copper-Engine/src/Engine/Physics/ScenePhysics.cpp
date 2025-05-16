@@ -55,6 +55,8 @@ namespace Copper {
         CUP_FUNCTION();
         CUP_START_FRAME("Physics");
 
+        CU_ASSERT(m_physicsScene != nullptr, "Physics scene is nullptr!");
+
         m_physicsScene->simulate(deltaTime);
         m_physicsScene->fetchResults(true);
 

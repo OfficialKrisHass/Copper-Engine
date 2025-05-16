@@ -25,11 +25,12 @@ namespace Editor {
 
         CUP_FUNCTION();
 
+        CU_ASSERT(m_viewport != nullptr, "SceneCamera was not assigned a viewport!");
+        CU_ASSERT(m_transform != nullptr, "SceneCamera doesn't have a transform!");
+
         m_transform->Update();
 
         if(!m_canLook) return;
-
-        CU_ASSERT(m_viewport != nullptr, "SceneCamera was not assigned a viewport!");
 
         switch (Input::GetKeyState(KeyCode::Mouse1)) {
 

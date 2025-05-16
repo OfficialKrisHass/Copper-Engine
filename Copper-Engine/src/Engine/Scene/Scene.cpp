@@ -91,7 +91,6 @@ namespace Copper {
         CUP_FUNCTION();
 
         CU_ASSERT(m_initialized, "Scene is not initialized!");
-        CU_ASSERT(m_physicsScene != nullptr, "Physics scene is nullptr!");
 
         Renderer::StartFrame();
 

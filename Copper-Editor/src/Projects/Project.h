@@ -12,7 +12,7 @@ namespace Editor {
 
         void Open(const Copper::fs::path& path);
         void Open();
-        void Save() const;
+        void Save(bool saveScene = true) const;
         void SaveAs();
 
         bool BuildScripts() const;

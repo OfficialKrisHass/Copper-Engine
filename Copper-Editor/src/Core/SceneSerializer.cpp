@@ -38,8 +38,6 @@ namespace Editor::SceneSerializer {
 
         CUP_FUNCTION();
 
-        Log("Serializing scene '{}'.", path.filename());
-
         if (!fs::exists((path.parent_path())))
             fs::create_directories(path.parent_path());
 
@@ -64,7 +62,7 @@ namespace Editor::SceneSerializer {
         file << out.c_str();
         file.close();
 
-        Log("Scene serialized.");
+        Log("Scene '{}' serialized.", path.filename().string());
 
     }
     void Deserialize(Scene* scene, const fs::path &path) {

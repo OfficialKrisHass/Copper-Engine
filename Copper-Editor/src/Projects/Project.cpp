@@ -118,7 +118,7 @@ namespace Editor {
         Open(path);
 
     }
-    void Project::Save() const {
+    void Project::Save(bool saveScene) const {
 
         CUP_FUNCTION();
 
@@ -138,6 +138,9 @@ namespace Editor {
         out << YAML::EndMap; // Main
         std::ofstream file(m_path / "Project.cu");
         file << out.c_str(); 
+
+        if (saveScene)
+            SaveScene();
 
         Log("Project saved.");
 

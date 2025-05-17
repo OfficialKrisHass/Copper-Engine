@@ -175,6 +175,7 @@ namespace Editor {
 
         ProjectAssetDatabase::Shutdown();
 
+        data.project.Save(false);
         SaveEditorData();
 
         LogStatus("Copper-Editor shut down.");
@@ -477,10 +478,7 @@ namespace Editor {
                 }
                 if (ImGui::MenuItem("Save Project", "Ctrl+Shift+S", false, data.project.IsValid())) {
 
-                    SaveScene();
-
                     data.project.Save();
-
                     SaveEditorData();
 
                 }
@@ -779,7 +777,7 @@ namespace Editor {
         data.title = "Copper Editor - " + data.project.GetName() + ": " + data.project.GetLastOpenedSceneName();
         data.window.SetTitle(data.title);
 
-        Log("Scene saved.");
+        SaveEditorData();
 
     }
     void SaveSceneAs() {
@@ -851,18 +849,14 @@ namespace Editor {
             case KeyCode::S: {
 
                 if (data.state == EditorState::Play) break;
-                if (control && shift) {
+                if (!control) break;
 
-                    SaveScene();
-
+                if (shift)
                     data.project.Save();
-                    SaveEditorData();
-
-                }
-                if (control && alt)
+                else if (alt)
                     SaveSceneAs();
-                if (control)
-                    SaveScene();
+
+                SaveEditorData();
 
                 break;
 

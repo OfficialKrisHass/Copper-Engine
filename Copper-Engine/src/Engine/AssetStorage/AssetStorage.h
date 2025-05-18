@@ -4,6 +4,11 @@
 
 #include "Engine/AssetStorage/AssetMap.h"
 
+// Registers a new asset type, this has to be in the global scope and namespace!
+#define REGISTER_ASSET_TYPE(Type, mapName) namespace Copper::AssetStorage {\
+                                           AssetMap<Type> mapName;\
+                                           template<> AssetMap<Type>& GetAssetMap<Type>() { return mapName; } }
+
 namespace Copper::AssetStorage {
 
     template<typename AssetType> AssetMap<AssetType>& GetAssetMap();
@@ -37,13 +42,6 @@ namespace Copper::AssetStorage {
 
         GetAssetMap<AssetType>().Delete(uuid);
     
-    }
-    template<typename AssetType> inline  void DeleteAsset(const AssetPtr<AssetType>& asset) {
-
-        CUP_FUNCTION();
-
-        GetAssetMap<AssetType>().Delete(asset);
-
     }
 
     // Raw versions

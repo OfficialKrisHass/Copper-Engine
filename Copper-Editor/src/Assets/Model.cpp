@@ -20,6 +20,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+REGISTER_ASSET_TYPE(Editor::Model, modelMap);
+
 namespace Editor {
 
     Model::Model(const fs::path& path) {
@@ -283,13 +285,5 @@ namespace Editor {
             out << YAML::Key << texture.second << YAML::Value << texture.first;
 
     }
-
-}
-
-namespace Copper::AssetStorage {
-
-    AssetMap<Editor::Model> modelMap;
-
-    template<> AssetMap<Editor::Model>& GetAssetMap<Editor::Model>() { return modelMap; }
 
 }

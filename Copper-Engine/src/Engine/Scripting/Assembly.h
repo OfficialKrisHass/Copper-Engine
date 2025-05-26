@@ -37,6 +37,8 @@ namespace Copper::Scripting {
         MonoAssembly* m_assembly = nullptr;
         MonoImage* m_image = nullptr;
 
+        void OpenImage();
+
     };
 
 }

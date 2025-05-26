@@ -12,7 +12,13 @@ namespace Copper {
 
     public:
         // Creates a new random UUID
-        UUID() = default;
+        UUID() {
+
+            CUP_FUNCTION();
+
+            Regenerate();
+
+        }
 
         UUID(const UUID& other);
 

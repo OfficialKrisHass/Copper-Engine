@@ -134,14 +134,8 @@ namespace Copper {
         if (RigidBody* rb = entity->GetComponent<RigidBody>())
             rb->UpdatePositionAndRotation();
 
-        if (ScriptComponent* script = entity->GetComponent<ScriptComponent>()) {
-
-            if (Renderer::IsFirstFrame())
-                script->OnBegin();
-
-            script->OnUpdate();
-
-        }
+        if (ScriptComponent* script = entity->GetComponent<ScriptComponent>())
+            script->Update();
 
     }
 

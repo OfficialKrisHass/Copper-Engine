@@ -29,11 +29,11 @@ namespace Copper::Scripting::MonoUtils {
 
     }
 
-    void PrintExceptionDetails(MonoObject* exception) {
+    void PrintExceptionDetails(MonoException* exception) {
 
         CUP_FUNCTION();
 
-        MonoClass* klass = mono_object_get_class(exception);
+        MonoClass* klass = mono_object_get_class((MonoObject*) exception);
         CU_ASSERT(klass != nullptr, "Could not get exception C# class!");
 
 

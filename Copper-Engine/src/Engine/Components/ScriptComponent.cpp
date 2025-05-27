@@ -26,6 +26,10 @@ namespace Copper {
 
         m_scriptName = script->FullName();
         m_instance = mono_object_new(AppDomain(), script->m_class);
+        m_state = State::Begin;
+
+        m_updateFuncs[0] = nullptr;
+        m_updateFuncs[1] = nullptr;
 
         if (!m_instance) {
 
@@ -36,11 +40,10 @@ namespace Copper {
 
         CallBaseConstructor();
 
-        m_begin = mono_class_get_method_from_name(script->m_class, "OnBegin", 0);
-
-        MonoMethod* onUpdate = mono_class_get_method_from_name(script->m_class, "OnUpdate", 0);
-        if (onUpdate)
-            m_update = (UpdateFunc) mono_method_get_unmanaged_thunk(onUpdate);
+        if (MonoMethod* method = mono_class_get_method_from_name(script->m_class, "OnBegin", 0))
+            m_updateFuncs[0] = (UpdateFunc) mono_method_get_unmanaged_thunk(method);
+        if (MonoMethod* method = mono_class_get_method_from_name(script->m_class, "OnUpdate", 0))
+            m_updateFuncs[1] = (UpdateFunc) mono_method_get_unmanaged_thunk(method);
 
     }
 
@@ -58,30 +61,33 @@ namespace Copper {
 
     }
 
-    void ScriptComponent::OnBegin() const {
+    void ScriptComponent::Update() {
 
         CUP_FUNCTION();
 
-        if (!m_begin) return;
+        UpdateFunc func = m_updateFuncs[static_cast<uint8>(m_state)];
+        if (func != nullptr)
+            ExecuteFunction(func);
 
-        MonoObject* exc = nullptr;
-        mono_runtime_invoke(m_begin, m_instance, nullptr, &exc);
+        switch (m_state) {
+
+            case State::Begin: m_state = State::Update; break;
+            case State::Update: break;
+            default: break;
+
+        }
+
+    }
+
+    void ScriptComponent::ExecuteFunction(UpdateFunc func) {
+
+        CUP_FUNCTION();
+
+        MonoException* exc = nullptr;
+        func(m_instance, &exc);
 
         if (!exc) return;
         MonoUtils::PrintExceptionDetails(exc);
-
-    }
-    void ScriptComponent::OnUpdate() const {
-
-        CUP_FUNCTION();
-
-        if (!m_update) return;
-
-        MonoException* exc = nullptr;
-        m_update(m_instance, &exc);
-
-        if (!exc) return;
-        MonoUtils::PrintExceptionDetails((MonoObject*) exc);
 
     }
 

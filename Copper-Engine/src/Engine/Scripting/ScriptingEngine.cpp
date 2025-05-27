@@ -101,6 +101,13 @@ namespace Copper::Scripting {
 #endif
             Log("Game assembly '{}' loaded with {} component scripts.", assemblyPath.filename().string(), data.componentScripts.size());
 
+        for (ScriptComponent* component : ComponentView<ScriptComponent>(GetScene())) {
+
+            if (!data.componentScripts.contains(component->GetScriptName())) continue;
+            component->Setup(&data.componentScripts[component->GetScriptName()]);
+
+        }
+
         return true;
 
     }
@@ -140,7 +147,6 @@ namespace Copper::Scripting {
         Unload();
 
         if (!Load(savedPath)) return false;
-
         return true;
 
     }

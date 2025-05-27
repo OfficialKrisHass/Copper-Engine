@@ -23,6 +23,15 @@ namespace Copper {
         friend Scripting::Field;
 
     public:
+        enum class State : uint8 {
+
+            Begin = 0,
+            Update,
+
+            None,
+
+        };
+
         ScriptComponent() = default;
         
         void Setup(const std::string& scriptName) {
@@ -41,9 +50,7 @@ namespace Copper {
 
         }
         void Setup(const Scripting::Script* script);
-
-        void OnBegin() const;
-        void OnUpdate() const;
+        void Update();
 
         inline const Scripting::Script* GetScript() const { return Scripting::GetScript(m_scriptName); }
         inline const std::string& GetScriptName() const { return m_scriptName; } 
@@ -53,13 +60,14 @@ namespace Copper {
     private:
         std::string m_scriptName;
         MonoObject* m_instance = nullptr;
-
-        MonoMethod* m_begin = nullptr;
+        State m_state = State::None;
 
         typedef void (*UpdateFunc)(MonoObject* instance, MonoException** exception);
-        UpdateFunc m_update = nullptr;
+        UpdateFunc m_updateFuncs[2] = { nullptr, nullptr };
 
         void CallBaseConstructor();
+
+        void ExecuteFunction(UpdateFunc func);
 
     };
 

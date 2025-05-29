@@ -97,7 +97,7 @@ namespace Editor::ProjectMetadata {
         if (!subAssets) return;
 
         for (YAML::const_iterator sub = subAssets.begin(); sub != subAssets.end(); ++sub)
-            ProjectAssetDatabase::AddAsset(sub->second.as<UUID>(), path / sub->first.as<std::string>());
+            ProjectAssetDatabase::AddAsset(path / sub->first.as<std::string>(), sub->second.as<UUID>());
 
     }
 

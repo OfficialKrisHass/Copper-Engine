@@ -18,16 +18,14 @@ namespace Copper {
             CUP_FUNCTION();
 
             UUID uuid;
-
-            m_map[uuid] = AssetType(args...);
-            return AssetPtr<AssetType>(uuid);
+            return Insert(uuid, std::forward<Args>(args)...);
 
         }
         template<typename... Args> inline AssetPtr<AssetType> Insert(const UUID& uuid, Args&&... args) {
 
             CUP_FUNCTION();
 
-            m_map[uuid] = AssetType(args...);
+            m_map.emplace(std::piecewise_construct, std::forward_as_tuple(uuid), std::forward_as_tuple(std::forward<Args>(args)...));
             return AssetPtr<AssetType>(uuid);
 
         }
@@ -63,17 +61,15 @@ namespace Copper {
             CUP_FUNCTION();
 
             UUID uuid;
-
-            m_map[uuid] = AssetType(args...);
-            return &m_map[uuid];
+            return InsertRaw(uuid, std::forward<Args>(args)...);
 
         }
         template<typename... Args> inline AssetType* InsertRaw(const UUID& uuid, Args&&... args) {
 
             CUP_FUNCTION();
 
-            m_map[uuid] = AssetType(args...);
-            return &m_map[uuid];
+            m_map.emplace(std::piecewise_construct, std::forward_as_tuple(uuid), std::forward_as_tuple(std::forward<Args>(args)...));
+            return &m_map.at(uuid);
 
         }
 

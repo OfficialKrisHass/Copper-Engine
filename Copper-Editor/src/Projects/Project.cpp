@@ -90,6 +90,9 @@ namespace Editor {
 
         }
 
+        if (m_valid)
+            ProjectAssetDatabase::Unload();
+
         m_valid = true;
 
         FileBrowser::SetRelativeDir("");

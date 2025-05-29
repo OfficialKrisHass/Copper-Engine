@@ -85,7 +85,7 @@ namespace Editor {
                 LogWarn("UUID for material {} of model {} does not exist, creating new one", name, m_path);
 
                 UUID::Generate(uuid);
-                ProjectAssetDatabase::AddAsset(uuid, m_path / name);
+                ProjectAssetDatabase::AddAsset(m_path / name, uuid);
 
             }
 
@@ -116,7 +116,7 @@ namespace Editor {
                 LogWarn("UUID for texture {} of model material {} of model {} does not exist, creating new one", texturePath.filename(), name, m_path);
 
                 UUID::Generate(uuid);
-                ProjectAssetDatabase::AddAsset(textureUUID, texturePath);
+                ProjectAssetDatabase::AddAsset(texturePath, textureUUID);
 
             }
 
@@ -173,7 +173,7 @@ namespace Editor {
                 LogWarn("UUID for mesh {} of model {} does not exist, creating new one", meshName, m_path);
 
                 UUID::Generate(uuid);
-                ProjectAssetDatabase::AddAsset(uuid, m_path / meshName);
+                ProjectAssetDatabase::AddAsset(m_path / meshName, uuid);
 
             }
 
@@ -280,9 +280,6 @@ namespace Editor {
 
         for (const std::pair<MaterialAsset, std::string>& material : m_materials) 
             out << YAML::Key << material.second << YAML::Value << material.first;
-
-        for (const std::pair<TextureAsset, std::string>& texture : m_textures)
-            out << YAML::Key << texture.second << YAML::Value << texture.first;
 
     }
 

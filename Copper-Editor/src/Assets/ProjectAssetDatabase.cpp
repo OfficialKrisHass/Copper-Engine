@@ -13,6 +13,7 @@
 
 #include <Engine/Renderer/Texture.h>
 #include <Engine/Renderer/Material.h>
+#include <Engine/Renderer/Mesh.h>
 
 #include <yaml-cpp/yaml.h>
 
@@ -86,6 +87,30 @@ namespace Editor::ProjectAssetDatabase {
 
     }
 
+    void Unload() {
+
+        CUP_FUNCTION();
+
+        Log("Unloading project asset database");
+
+        // Hack, I can't think of a better way of solving this unfortunately
+        for (auto& it : assetFiles) {
+
+            std::string extension = it.first.extension().string();
+            if (extension == ".png" || extension == ".jpg")
+                AssetStorage::GetAssetMap<Texture>().Delete(it.second);
+            else if (extension == ".mat")
+                AssetStorage::GetAssetMap<Material>().Delete(it.second);
+            else if (extension == ".fbs")
+                AssetStorage::GetAssetMap<Model>().Delete(it.second);
+
+        }
+
+        assetFiles.clear();
+        assetNames.clear();
+
+    }
+
     void Save() {
 
         CUP_FUNCTION();
@@ -99,7 +124,7 @@ namespace Editor::ProjectAssetDatabase {
 
     }
 
-    void AddAsset(const UUID &uuid, const fs::path &path) {
+    void AddAsset(const fs::path& path, const UUID &uuid) {
 
         CUP_FUNCTION();
 
@@ -112,6 +137,21 @@ namespace Editor::ProjectAssetDatabase {
 
         assetFiles[path] = uuid;
         assetNames[uuid] = path.filename().string();
+
+    }
+    void RemoveAsset(const Copper::fs::path& path) {
+
+        CUP_FUNCTION();
+
+        if (assetFiles.find(path) == assetFiles.end()) {
+
+            LogError("Asset '{}' is not loaded.", path.string());
+            return;
+
+        }
+
+        assetNames.erase(assetFiles[path]);
+        assetFiles.erase(path);
 
     }
 

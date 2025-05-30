@@ -14,32 +14,40 @@ namespace Copper {
         AssetPtr(const UUID& uuid) : m_key(uuid) {}
         AssetPtr(const AssetPtr& other) : m_key(other.m_key) {}
 
-        const UUID& AssetUUID() const { return m_key; }
-        
-        AssetType* operator->() const { return AssetStorage::GetAssetMap<AssetType>().GetRaw(m_key); }
+        // Main functionality
 
-        bool operator==(const UUID& other) const { return m_key == other; }
-        bool operator==(const AssetPtr& other) const { return m_key == other.m_key; }
-        bool operator!=(const UUID& other) const { return !(*this == other); }
-        bool operator!=(const AssetPtr& other) const { return !(*this == other); }
+        inline AssetType* operator->() const { return AssetStorage::GetAssetMap<AssetType>().GetRaw(m_key); }
 
-        AssetPtr& operator=(const AssetPtr& other) {
+        // Getters
+
+        inline const UUID& AssetUUID() const { return m_key; }
+        inline bool IsValid() const { return AssetStorage::GetAssetMap<AssetType>().GetRaw(m_key) != nullptr; }
+
+        // Assignement operators
+
+        inline AssetPtr& operator=(const AssetPtr& other) {
 
             m_key = other.m_key;
             return *this;
 
         }
-        AssetPtr& operator=(const UUID& other) {
+        inline AssetPtr& operator=(const UUID& other) {
 
             m_key = other;
             return *this;
 
         }
 
-        operator UUID() const { return m_key; }
+        // Comparison operators
 
-        operator AssetType*() const { return AssetStorage::GetAssetMap<AssetType>().GetRaw(m_key); }
-        operator bool() const { return AssetStorage::GetAssetMap<AssetType>().GetRaw(m_key) != nullptr; }
+        inline bool operator==(const UUID& other) const { return m_key == other; }
+        inline bool operator==(const AssetPtr& other) const { return m_key == other.m_key; }
+        inline bool operator!=(const UUID& other) const { return !(*this == other); }
+        inline bool operator!=(const AssetPtr& other) const { return !(*this == other); }
+
+        // Cast operators
+
+        inline operator AssetType*() const { return AssetStorage::GetAssetMap<AssetType>().GetRaw(m_key); }
 
     private:
         UUID m_key = UUID();

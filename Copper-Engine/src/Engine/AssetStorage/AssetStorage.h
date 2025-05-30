@@ -17,14 +17,14 @@ namespace Copper::AssetStorage {
         
         CUP_FUNCTION();
 
-        return GetAssetMap<AssetType>().Create(args...);
+        return GetAssetMap<AssetType>().Create(std::forward<Args>(args)...);
 
     }
     template<typename AssetType, typename... Args> inline AssetPtr<AssetType> InsertAsset(const UUID& uuid, Args&&... args) {
 
         CUP_FUNCTION();
 
-        return GetAssetMap<AssetType>().Insert(uuid, args...);
+        return GetAssetMap<AssetType>().Insert(uuid, std::forward<Args>(args)...);
 
     }
 
@@ -50,14 +50,14 @@ namespace Copper::AssetStorage {
 
         CUP_FUNCTION();
 
-        return GetAssetMap<AssetType>().CreateRaw(args...);
+        return GetAssetMap<AssetType>().CreateRaw(std::forward<Args>(args)...);
 
     }
     template<typename AssetType, typename... Args> inline AssetType* InsertAssetRaw(const UUID& uuid, Args&&... args) {
 
         CUP_FUNCTION();
 
-        return GetAssetMap<AssetType>().InsertRaw(uuid, args...);
+        return GetAssetMap<AssetType>().InsertRaw(uuid, std::forward<Args>(args)...);
 
     }
 

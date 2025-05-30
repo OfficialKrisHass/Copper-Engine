@@ -12,12 +12,18 @@ namespace Copper {
     // An UUID-AssetType Hash map
     template<typename AssetType> class AssetMap {
 
+        friend AssetPtr<AssetType>;
+
     public:
+        typedef std::unordered_map<UUID, AssetType> UnderlyingMap;
+
         template<typename... Args> inline AssetPtr<AssetType> Create(Args&&... args) {
 
             CUP_FUNCTION();
 
             UUID uuid;
+            CU_ASSERT(!m_map.contains(uuid), "Attempted to create a new asset but the RANDOMLY generated uuis is already present in the {} asset map. WHAT THE FUCK ???????????", typeid(AssetType).name());
+
             return Insert(uuid, std::forward<Args>(args)...);
 
         }
@@ -43,47 +49,31 @@ namespace Copper {
 
             CUP_FUNCTION();
 
-            if (!m_map.contains(uuid)) {
+            auto it = m_map.find(uuid);
+            if (it == m_map.end()) {
 
                 LogError("Can't remove an Asset that doesn't exist in the map:\n\tUUID: {}", uuid.ToString());
                 return;
 
             }
 
-            m_map.erase(uuid);
+            m_map.erase(it);
 
         }
 
-        // Raw versions
-
-        template<typename... Args> inline AssetType* CreateRaw(Args&&... args) {
-
-            CUP_FUNCTION();
-
-            UUID uuid;
-            return InsertRaw(uuid, std::forward<Args>(args)...);
-
-        }
-        template<typename... Args> inline AssetType* InsertRaw(const UUID& uuid, Args&&... args) {
-
-            CUP_FUNCTION();
-
-            m_map.emplace(std::piecewise_construct, std::forward_as_tuple(uuid), std::forward_as_tuple(std::forward<Args>(args)...));
-            return &m_map.at(uuid);
-
-        }
+    private:
+        UnderlyingMap m_map;
 
         inline AssetType* GetRaw(const UUID& uuid) {
 
             CUP_FUNCTION();
 
-            if (!m_map.contains(uuid)) return nullptr;
-            return &m_map.at(uuid);
+            auto it = m_map.find(uuid);
+
+            if (it == m_map.end()) return nullptr;
+            return &it->second;
 
         }
-
-    private:
-        std::unordered_map<UUID, AssetType> m_map;
 
     };
 

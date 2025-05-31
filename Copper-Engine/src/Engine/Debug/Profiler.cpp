@@ -1,8 +1,6 @@
 #include "cupch.h"
 #include "Profiler.h"
 
-#include <iostream>
-
 #ifdef CU_DEBUG
 namespace Copper::Profiler {
 
@@ -24,6 +22,7 @@ namespace Copper::Profiler {
     }
     Scope::~Scope() {
 
+        CU_ASSERT(!scopeStack.empty(), "Tried to pop a scope when the scope stack is empty. Seems like the scope destructor was called twice ? Scope name: {}, file: {}", name, file);
         scopeStack.pop_back();
 
     }

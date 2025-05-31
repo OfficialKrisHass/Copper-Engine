@@ -80,7 +80,7 @@ namespace Editor {
             // when ProjectMetadata gets serialized, and loaded on later runs
 
             UUID uuid = ProjectAssetDatabase::GetAssetFromPath(m_path / name);
-            if (uuid == UUID::GetInvalid()) {
+            if (!uuid.IsValid()) {
 
                 LogWarn("UUID for material {} of model {} does not exist, creating new one", name, m_path);
 
@@ -111,7 +111,7 @@ namespace Editor {
             }
 
             UUID textureUUID = ProjectAssetDatabase::GetAssetFromPath(texturePath);
-            if (uuid == UUID::GetInvalid()) {
+            if (!uuid.IsValid()) {
 
                 LogWarn("UUID for texture {} of model material {} of model {} does not exist, creating new one", texturePath.filename(), name, m_path);
 
@@ -168,7 +168,7 @@ namespace Editor {
             // when ProjectMetadata gets serialized, and loaded on later runs
 
             UUID uuid = ProjectAssetDatabase::GetAssetFromPath(m_path / meshName);
-            if (uuid == UUID::GetInvalid()) {
+            if (!uuid.IsValid()) {
 
                 LogWarn("UUID for mesh {} of model {} does not exist, creating new one", meshName, m_path);
 

@@ -175,7 +175,7 @@ namespace Editor::ProjectAssetDatabase {
             assetFiles[path] = uuid;
 
         }
-        CU_ASSERT(uuid != UUID::GetInvalid(), "Invalid UUID loaded for asset {}", path);
+        CU_ASSERT(uuid.IsValid(), "Invalid UUID loaded for asset {}", path);
 
         // Load and store the asset
 

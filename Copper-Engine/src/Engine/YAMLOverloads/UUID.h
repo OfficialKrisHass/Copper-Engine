@@ -38,7 +38,7 @@ namespace YAML {
             if (data == "")
                 uuid = UUID::GetInvalid();
             else
-                uuid = UUID::CreateFromString(data);
+                uuid = UUID::FromString(data);
 
             return true;
 

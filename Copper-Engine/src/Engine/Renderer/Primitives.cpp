@@ -7,8 +7,8 @@
 
 namespace Copper {
 
-    static const UUID planeUUID = UUID::CreateFromString("3fc27a27-5dc3-4941-bd00-f540d35f4eff");
-    static const UUID cubeUUID = UUID::CreateFromString("25a5d2e1-6959-4130-aed9-5195f0fe4789");
+    static const UUID planeUUID = UUID::FromString("3fc27a27-5dc3-4941-bd00-f540d35f4eff");
+    static const UUID cubeUUID = UUID::FromString("25a5d2e1-6959-4130-aed9-5195f0fe4789");
 
     MeshAsset planeMesh;
     MeshAsset cubeMesh;

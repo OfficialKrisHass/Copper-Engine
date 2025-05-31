@@ -11,14 +11,8 @@ namespace Copper {
     struct UUID {
 
     public:
-        // Creates a new random UUID
-        UUID() {
-
-            CUP_FUNCTION();
-
-            Regenerate();
-
-        }
+        // Defaults to the invalid UUID (all zeroes)
+        UUID() : UUID(0, 0) {}
 
         UUID(const UUID& other);
 
@@ -34,7 +28,7 @@ namespace Copper {
             CUP_FUNCTION();
 
             UUID ret;
-            Generate(ret);
+            GenerateUUID(ret.m_data);
 
             return ret;
 
@@ -56,35 +50,17 @@ namespace Copper {
 
         // Byte string
 
-        inline std::string ToBytes() const {
-
-            CUP_FUNCTION();
-
-            std::string ret;
-            ToBytes(ret);
-
-            return ret;
-
-        }
-        inline void ToBytes(std::string& out) const {
-
-            CUP_FUNCTION();
-
-            out.resize(sizeof(m_data));
-            ToBytes((char*) out.data());
-
-        }
         void ToBytes(char* out) const;
 
         // Pretty string
         
-        inline static UUID CreateFromString(const std::string& string) {
+        inline static UUID FromString(const std::string& string) {
 
             CUP_FUNCTION();
-            return CreateFromString(string.c_str());
+            return FromString(string.c_str());
 
         }
-        inline static UUID CreateFromString(const char* string) {
+        inline static UUID FromString(const char* string) {
 
             CUP_FUNCTION();
 
@@ -92,6 +68,13 @@ namespace Copper {
             ret.SetString(string);
 
             return ret;
+
+        }
+        inline void SetString(const std::string& string) {
+
+            CUP_FUNCTION();
+
+            SetString(string.c_str());
 
         }
         void SetString(const char* string);
@@ -121,13 +104,14 @@ namespace Copper {
         // Operators
 
         bool operator==(const UUID& other) const;
-        bool operator<(const UUID& other) const;
-        UUID& operator=(const UUID& other);
-
         inline bool operator!=(const UUID& other) const { return !(*this == other); }
+
+        bool operator<(const UUID& other) const;
         inline bool operator>(const UUID& other) const { return other < *this; }
         inline bool operator<=(const UUID& other) const { return !(*this > other); }
         inline bool operator>=(const UUID& other) const { return !(*this < other); }
+
+        UUID& operator=(const UUID& other);
 
         // Misc. 
 
@@ -168,7 +152,7 @@ namespace Copper {
         std::string tmp;
         stream >> tmp;
 
-        uuid.SetString(tmp.c_str());
+        uuid.FromString(tmp.c_str());
         return stream;
 
     }

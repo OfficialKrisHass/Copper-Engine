@@ -252,7 +252,7 @@ namespace Editor {
         CUP_FUNCTION();
 
         const UUID& asset = ProjectAssetDatabase::GetAssetFromPath(m_selectedData.file);
-        if (asset == UUID::GetInvalid()) {
+        if (!asset.IsValid()) {
 
             LogError("Can't serialize an asset that isn't loaded! Path: {}", m_selectedData.file);
             return;
@@ -469,7 +469,7 @@ namespace Editor {
     void Properties::RenderMaterial() {
 
         const MaterialAsset& material = ProjectAssetDatabase::GetAssetFromPath(m_selectedData.file);
-        if (material == UUID::GetInvalid()) {
+        if (!material.IsValid()) {
 
             LogWarn("Selected File is not found in the AssetFileDatabase, try refreshing.\n\tPath: {}", GetProject().GetAssetsPath() / m_selectedData.file);
             m_selectedData.type = SelectedData::Type::None;

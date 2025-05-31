@@ -69,8 +69,8 @@ namespace Copper {
             CUP_FUNCTION();
 
             auto it = m_map.find(uuid);
-
             if (it == m_map.end()) return nullptr;
+
             return &it->second;
 
         }

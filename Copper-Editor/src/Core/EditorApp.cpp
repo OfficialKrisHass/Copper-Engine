@@ -758,6 +758,8 @@ namespace Editor {
 
         CUP_FUNCTION();
 
+        if (!UnsavedChanges()) return;
+
         Log("Saving scene '{}'.", data.scenePath);
 
         if (data.scenePath.empty()) {
@@ -855,6 +857,8 @@ namespace Editor {
                     data.project.Save();
                 else if (alt)
                     SaveSceneAs();
+                else
+                    SaveScene();
 
                 SaveEditorData();
 

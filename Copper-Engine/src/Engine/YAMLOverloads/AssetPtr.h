@@ -28,7 +28,7 @@ namespace YAML {
         static Node encode(const AssetPtr<AssetType>& asset) {
 
             Node node;
-            node.push_back(asset.AssetUUID().str());
+            node.push_back(asset.AssetUUID().ToString());
 
             return node;
 

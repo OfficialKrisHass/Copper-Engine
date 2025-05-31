@@ -20,7 +20,7 @@ namespace Copper {
     static std::shared_ptr<std::mt19937_64> generator = std::make_shared<std::mt19937_64>(std::random_device()());
     static std::uniform_int_distribution<uint64> distribution = std::uniform_int_distribution<uint64>(std::numeric_limits<uint64>::min(), std::numeric_limits<uint64>::max());
 
-    const UUID UUID::m_invalid = UUID();
+    const UUID UUID::m_invalid = UUID(0, 0);
 
     void  m128itos(__m128i x, char* mem);
     __m128i stom128i(const char* mem);

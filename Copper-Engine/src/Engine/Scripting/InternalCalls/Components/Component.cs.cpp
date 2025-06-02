@@ -19,7 +19,7 @@ namespace Copper::Scripting::Component {
         CUP_FUNCTION();
 
         GET_UNMANAGED_PTR(Component*, ptr, component);
-        MonoObject* ret = ManagedReference((void*) (uint64) ptr->GetEntity()->ID());
+        MonoObject* ret = ManagedReference((void*) (uint64) ptr->GetEntity()->GetID());
 
         CU_ASSERT(ret, "Could not get Managed Entity Reference from Component");
         return ret;

@@ -56,7 +56,7 @@ namespace Copper {
         shape->release();
 
         m_actor->setName(GetEntity()->name.c_str());
-        m_actor->userData = (void*) (uint64) GetEntity()->ID();
+        m_actor->userData = (void*) (uint64) GetEntity()->GetID();
 
         GetScene()->AddPhysicsBody(m_actor);
 

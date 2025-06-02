@@ -167,17 +167,17 @@ namespace Editor {
                 if (m_gizmo.savedPosition != selectedEntity->GetTransform()->GetPosition()) {
 
                     Change& change = AddChange(Change::Type::EntityMoved);
-                    change << selectedEntity->ID() << m_gizmo.savedPosition << selectedEntity->GetTransform()->GetPosition();
+                    change << selectedEntity->GetID() << m_gizmo.savedPosition << selectedEntity->GetTransform()->GetPosition();
 
                 } else if (m_gizmo.savedRotation != selectedEntity->GetTransform()->GetRotation()) {
 
                     Change& change = AddChange(Change::Type::EntityRotated);
-                    change << selectedEntity->ID() << m_gizmo.savedRotation << selectedEntity->GetTransform()->GetRotation();
+                    change << selectedEntity->GetID() << m_gizmo.savedRotation << selectedEntity->GetTransform()->GetRotation();
 
                 } else if (m_gizmo.savedScale != selectedEntity->GetTransform()->GetScale()) {
 
                     Change& change = AddChange(Change::Type::EntityMoved);
-                    change << selectedEntity->ID() << m_gizmo.savedScale << selectedEntity->GetTransform()->GetScale();
+                    change << selectedEntity->GetID() << m_gizmo.savedScale << selectedEntity->GetTransform()->GetScale();
 
                 }
 

@@ -105,7 +105,6 @@ namespace Copper {
 
             m_entities[id].m_id = id;
             m_entities[id].name = name;
-            m_entities[id].m_scene = scene;
 
             m_entities[id].m_transform = AddComponent<Transform>(id);
             m_entities[id].m_transform->m_position = position;
@@ -122,26 +121,21 @@ namespace Copper {
 
             CUP_FUNCTION();
 
-            if (eID >= m_entities.size()) m_entities.resize(eID + 1, InternalEntity());
-            if (returnIfExists && m_entities[eID]) return &m_entities[eID];
+            if (eID == INVALID_ENTITY_ID) return nullptr;
+            if (returnIfExists && eID < m_entities.size() && m_entities[eID].m_id != INVALID_ENTITY_ID) return &m_entities[eID];
 
-            bool newEntity = !m_entities[eID];
+            if (eID >= m_entities.size()) m_entities.resize(eID + 1, InternalEntity());
 
             m_entities[eID].m_id = eID;
             m_entities[eID].name = name;
-            m_entities[eID].m_scene = scene;
 
             if (!m_entities[eID].m_transform) m_entities[eID].m_transform = AddComponent<Transform>(eID);
             m_entities[eID].m_transform->m_position = position;
             m_entities[eID].m_transform->m_rotation = rotation;
             m_entities[eID].m_transform->m_scale = scale;
 
-            if (newEntity) {
-
-                entityCreatedEvent.entity = &m_entities[eID];
-                entityCreatedEvent();
-
-            }
+            entityCreatedEvent.entity = &m_entities[eID];
+            entityCreatedEvent();
 
             return &m_entities[eID];
 
@@ -150,7 +144,7 @@ namespace Copper {
 
             CUP_FUNCTION();
 
-            if (eID == INVALID_ENTITY_ID || eID >= m_entities.size() || !m_entities[eID]) return nullptr;
+            if (eID == INVALID_ENTITY_ID || eID >= m_entities.size()) return nullptr;
             return &m_entities[eID];
 
         }
@@ -188,7 +182,6 @@ namespace Copper {
             CUP_FUNCTION();
 
             if (eID == INVALID_ENTITY_ID) return nullptr;
-            if (!m_entities[eID]) return nullptr;
 
             int32 cID = GetCID<T>();
 
@@ -217,7 +210,6 @@ namespace Copper {
             CUP_FUNCTION();
 
             if (eID == INVALID_ENTITY_ID) return nullptr;
-            if (!m_entities[eID]) return nullptr;
 
             int32 cID = GetCID<T>();
             if (!m_entities[eID].m_cMask.test(cID)) return nullptr;
@@ -231,7 +223,6 @@ namespace Copper {
             CUP_FUNCTION();
 
             if (eID == INVALID_ENTITY_ID) return false;
-            if (!m_entities[eID]) return false;
 
             int32 cID = GetCID<T>();
             return m_entities[eID].m_cMask.test(cID);
@@ -242,7 +233,6 @@ namespace Copper {
             CUP_FUNCTION();
 
             if (eID == INVALID_ENTITY_ID) return;
-            if (!m_entities[eID]) return;
 
             int32 cID = GetCID<T>();
             if (!m_entities[eID].m_cMask.test(cID)) return;
@@ -264,7 +254,6 @@ namespace Copper {
             CUP_FUNCTION();
 
             if (eID == INVALID_ENTITY_ID) return nullptr;
-            if (!m_entities[eID]) return nullptr;
             if (!m_entities[eID].m_cMask.test(componentID)) return nullptr;
 
             void* component = static_cast<void*>(m_pools[componentID]->Get(eID));
@@ -276,7 +265,6 @@ namespace Copper {
             CUP_FUNCTION();
 
             if (eID == INVALID_ENTITY_ID) return false;
-            if (!m_entities[eID]) return false;
 
             return m_entities[eID].m_cMask.test(componentID);
 
@@ -286,7 +274,6 @@ namespace Copper {
             CUP_FUNCTION();
 
             if (eID == INVALID_ENTITY_ID) return;
-            if (!m_entities[eID]) return;
             if (!m_entities[eID].m_cMask.test(componentID)) return;
 
             m_pools[componentID]->Remove(eID);

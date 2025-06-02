@@ -391,7 +391,7 @@ namespace Editor {
 
                 if (UI::EditEntity(field.GetName(), &entity)) {
 
-                    id = entity->ID();
+                    id = entity->GetID();
                     field.SetRefValue(scriptComponent, (void*) id);
 
                 }

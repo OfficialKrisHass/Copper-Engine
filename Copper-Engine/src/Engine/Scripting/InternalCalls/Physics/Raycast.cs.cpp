@@ -15,7 +15,7 @@ namespace Copper::Scripting::Raycast {
 
         bool ret = Raycast::Fire(origin, direction, data, maxDistance);
         if (ret)
-            data->entity = (InternalEntity*) ManagedReference((void*) (uint64) data->entity->ID());
+            data->entity = (InternalEntity*) ManagedReference((void*) (uint64) data->entity->GetID());
 
         return ret;
 

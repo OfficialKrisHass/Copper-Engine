@@ -56,7 +56,6 @@ namespace Copper {
     template<> Collider* Registry::GetComponent<Collider>(uint32 eID) {
 
         if (eID == INVALID_ENTITY_ID) return nullptr;
-        if (!m_entities[eID]) return nullptr;
 
         int cID = GetCID<Collider>();
         if (!m_entities[eID].m_cMask.test(cID)) return nullptr;
@@ -80,7 +79,6 @@ namespace Copper {
         CUP_FUNCTION();
 
         if (eID == INVALID_ENTITY_ID) return;
-        if (!m_entities[eID]) return;
 
         int32 cID = GetCID<Collider>();
         if (!m_entities[eID].m_cMask.test(cID)) return;
@@ -110,7 +108,6 @@ namespace Copper {
         CUP_FUNCTION();
 
         if (eID == INVALID_ENTITY_ID) return nullptr;
-        if (!m_entities[eID]) return nullptr;
 
         int32 cID = GetCID<Collider>();
 
@@ -144,7 +141,6 @@ namespace Copper {
         CUP_FUNCTION();
 
         if (eID == INVALID_ENTITY_ID) return nullptr;
-        if (!m_entities[eID]) return nullptr;
 
         int32 cID = GetCID<Collider>();
         if (!m_entities[eID].m_cMask.test(cID + type)) return nullptr;
@@ -158,7 +154,6 @@ namespace Copper {
         CUP_FUNCTION();
 
         if (eID == INVALID_ENTITY_ID) return false;
-        if (!m_entities[eID]) return false;
 
         int32 cID = GetCID<Collider>();
         return m_entities[eID].m_cMask.test(cID + type);
@@ -169,7 +164,6 @@ namespace Copper {
         CUP_FUNCTION();
 
         if (eID == INVALID_ENTITY_ID) return;
-        if (!m_entities[eID]) return;
 
         int32 cID = GetCID<Collider>();
         if (!m_entities[eID].m_cMask.test(cID + type)) return;

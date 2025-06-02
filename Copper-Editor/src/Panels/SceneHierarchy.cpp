@@ -81,7 +81,7 @@ namespace Editor {
 
             switch (Input::GetKeyState(KeyCode::Mouse0)) {
 
-            case KeyState::Pressed: clickedEntityID = entity->ID(); break;
+            case KeyState::Pressed: clickedEntityID = entity->GetID(); break;
             case KeyState::Released: Properties::SetSelectedEntity(entity); break;
             default: break;
 
@@ -97,7 +97,7 @@ namespace Editor {
 
         if (ImGui::BeginDragDropSource()) {
 
-            uint32 data = entity->ID();
+            uint32 data = entity->GetID();
 
             ImGui::SetDragDropPayload("SCH_ENTITY_NODE", &data, sizeof(uint32), ImGuiCond_Once);
             ImGui::EndDragDropSource();

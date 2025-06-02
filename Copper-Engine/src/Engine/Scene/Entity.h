@@ -15,6 +15,7 @@ namespace Copper {
         Entity(class InternalEntity* entity);
 
         inline uint32_t ID() const { return m_id; }
+        bool IsValid() const;
 
         bool operator==(const Entity& other) const;
         bool operator==(InternalEntity* other) const;
@@ -24,11 +25,9 @@ namespace Copper {
         InternalEntity* operator->();
 
         operator InternalEntity*() const;
-        operator bool() const;
 
     private:
         uint32_t m_id = 4'294'967'295;
-        Scene* m_scene = nullptr;
 
     };
 

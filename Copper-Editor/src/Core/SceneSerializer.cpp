@@ -100,7 +100,7 @@ namespace Editor::SceneSerializer {
 
         CUP_FUNCTION();
 
-        out << YAML::Key << entity->ID() << YAML::Value << YAML::BeginMap; // Entity
+        out << YAML::Key << entity->GetID() << YAML::Value << YAML::BeginMap; // Entity
 
         out << YAML::Key << "Name" << YAML::Value << entity->name;
 
@@ -133,12 +133,12 @@ namespace Editor::SceneSerializer {
         out << YAML::Key << "Scale" << YAML::Value << transform->GetScale();
 
         out << YAML::Key << "Parent" << YAML::Value;
-        if (transform->GetParent()) out << transform->GetParent()->GetEntity()->ID();
+        if (transform->GetParent()) out << transform->GetParent()->GetEntity()->GetID();
         else out << INVALID_ENTITY_ID;
 
         out << YAML::Key << "Children" << YAML::Value << YAML::BeginSeq; // Children
         for (uint32 i = 0; i < transform->GetChildCount(); i++)
-            out << transform->GetChild(i)->GetEntity()->ID();
+            out << transform->GetChild(i)->GetEntity()->GetID();
 
         out << YAML::EndSeq; // Children
         out << YAML::EndMap; // Transform
@@ -158,9 +158,9 @@ namespace Editor::SceneSerializer {
         uint32 parentID = data["Parent"].as<uint32>();
         if (parentID == INVALID_ENTITY_ID)
             transform->m_parent = nullptr;
-        else if (parentID > entity->ID()) {
+        else if (parentID > entity->GetID()) {
 
-            uint32 savedID = entity->ID();
+            uint32 savedID = entity->GetID();
             InternalEntity* parent = CreateEntityFromID(parentID);
             entity = *entityPtr = GetEntityFromID(savedID);
 
@@ -173,11 +173,11 @@ namespace Editor::SceneSerializer {
         for (uint32 i = 0; i < children.size(); i++) {
 
             uint32 childID = children[i].as<uint32>();
-            if (childID < entity->ID()) continue;
+            if (childID < entity->GetID()) continue;
 
             transform->m_children.push_back(childID);
 
-            uint32 savedID = entity->ID();
+            uint32 savedID = entity->GetID();
             InternalEntity* child = CreateEntityFromID(childID);
             entity = GetEntityFromID(savedID);
 
@@ -337,7 +337,7 @@ namespace Editor::SceneSerializer {
                     out << YAML::Key << field.GetName() << YAML::Value << YAML::BeginMap; // Field
 
                     out << YAML::Key << "Type" << YAML::Value << (uint32) field.GetType();
-                    out << YAML::Key << "Value" << YAML::Value << (transform ? transform->GetEntity()->ID() : INVALID_ENTITY_ID);
+                    out << YAML::Key << "Value" << YAML::Value << (transform ? transform->GetEntity()->GetID() : INVALID_ENTITY_ID);
 
                     out << YAML::EndMap; // Field
 
@@ -488,9 +488,9 @@ namespace Editor::SceneSerializer {
                     uint64 id = fieldNode["Value"].as<uint64>();
                     if (id == INVALID_ENTITY_ID) break;
 
-                    if (id > entity->ID()) {
+                    if (id > entity->GetID()) {
 
-                        uint32 tmp = entity->ID();
+                        uint32 tmp = entity->GetID();
                         CreateEntityFromID((uint32) id);
                         entity = GetEntityFromID(tmp);
 
@@ -507,9 +507,9 @@ namespace Editor::SceneSerializer {
                     uint32 id = fieldNode["Value"].as<uint32>();
                     if (id == INVALID_ENTITY_ID) break;
 
-                    if (id > entity->ID()) {
+                    if (id > entity->GetID()) {
 
-                        uint32 tmp = entity->ID();
+                        uint32 tmp = entity->GetID();
                         CreateEntityFromID(id);
                         entity = GetEntityFromID(tmp);
 

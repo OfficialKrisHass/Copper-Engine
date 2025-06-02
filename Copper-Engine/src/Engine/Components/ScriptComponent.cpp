@@ -33,7 +33,7 @@ namespace Copper {
 
         if (!m_instance) {
 
-            LogError("Could not instantiate the ScriptComponent.\n\tScript name: {}\n\tEntity: {} ({})", m_scriptName, GetEntity()->name, GetEntity()->ID());
+            LogError("Could not instantiate the ScriptComponent.\n\tScript name: {}\n\tEntity: {}", m_scriptName, GetEntity());
             return;
 
         }

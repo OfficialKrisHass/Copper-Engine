@@ -59,7 +59,7 @@ namespace Copper {
             Matrix4 local = m_mat * CMath::Inverse(parent->m_mat);
 
             m_parent = parent;
-            parent->m_children.push_back(GetEntity()->ID());
+            parent->m_children.push_back(GetEntity()->GetID());
 
             glm::vec3 pos, rot, scale;
             Math::DecomposeTransform(local, pos, rot, scale);
@@ -77,7 +77,7 @@ namespace Copper {
         Matrix4 local = m_mat * CMath::Inverse(parent->m_mat);
 
         m_parent = parent;
-        parent->m_children.push_back(GetEntity()->ID());
+        parent->m_children.push_back(GetEntity()->GetID());
 
         glm::vec3 pos, rot, scale;
         Math::DecomposeTransform(local, pos, rot, scale);
@@ -101,7 +101,7 @@ namespace Copper {
         Matrix4 childGlobal = child->m_mat;
 
         child->m_parent = this;
-        m_children.push_back(child->GetEntity()->ID());
+        m_children.push_back(child->GetEntity()->GetID());
 
         Matrix4 childLocal = childGlobal * CMath::Inverse(m_mat);
 
@@ -141,7 +141,7 @@ namespace Copper {
 
         for (uint32 i = 0; i < m_children.size(); i++) {
 
-            if (m_children[i] != transform->GetEntity()->ID()) continue;
+            if (m_children[i] != transform->GetEntity()->GetID()) continue;
 
             RemoveChild(i);
             return;

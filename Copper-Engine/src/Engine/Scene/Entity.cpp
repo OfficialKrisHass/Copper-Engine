@@ -7,19 +7,27 @@ namespace Copper {
 
     Entity::Entity(InternalEntity* entity) {
 
+        CUP_FUNCTION();
+
         if (!entity) return;
 
         m_id = entity->m_id;
-        m_scene = entity->m_scene;
 
     }
 
-    bool Entity::operator==(const Entity& other) const { return m_id == other.m_id && m_scene == other.m_scene; }
-    bool Entity::operator==(InternalEntity* other) const { return m_id == other->m_id && m_scene == other->m_scene; }
+    bool Entity::IsValid() const {
 
-    InternalEntity* Entity::operator->() { return m_scene->GetEntityFromID(m_id); }
+        CUP_FUNCTION();
 
-    Entity::operator InternalEntity* () const { return m_scene->GetEntityFromID(m_id); }
-    Entity::operator bool() const { return m_scene != nullptr && m_scene->GetEntityFromID(m_id) != nullptr; }
+        return GetScene()->GetEntityFromID(m_id) != nullptr;
+
+    }
+
+    bool Entity::operator==(const Entity& other) const { return m_id == other.m_id; }
+    bool Entity::operator==(InternalEntity* other) const { return m_id == other->m_id; }
+
+    InternalEntity* Entity::operator->() { return GetScene()->GetEntityFromID(m_id); }
+
+    Entity::operator InternalEntity* () const { return GetScene()->GetEntityFromID(m_id); }
 
 }

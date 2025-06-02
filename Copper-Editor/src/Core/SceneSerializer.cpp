@@ -128,16 +128,16 @@ namespace Editor::SceneSerializer {
 
         out << YAML::Key << "Transform" << YAML::Value << YAML::BeginMap; // Transform
 
-        out << YAML::Key << "Position" << YAML::Value << transform->Position();
-        out << YAML::Key << "Rotation" << YAML::Value << transform->Rotation();
-        out << YAML::Key << "Scale" << YAML::Value << transform->Scale();
+        out << YAML::Key << "Position" << YAML::Value << transform->GetPosition();
+        out << YAML::Key << "Rotation" << YAML::Value << transform->GetRotation();
+        out << YAML::Key << "Scale" << YAML::Value << transform->GetScale();
 
         out << YAML::Key << "Parent" << YAML::Value;
-        if (transform->Parent()) out << transform->Parent()->GetEntity()->ID();
+        if (transform->GetParent()) out << transform->GetParent()->GetEntity()->ID();
         else out << INVALID_ENTITY_ID;
 
         out << YAML::Key << "Children" << YAML::Value << YAML::BeginSeq; // Children
-        for (uint32 i = 0; i < transform->NumOfChildren(); i++)
+        for (uint32 i = 0; i < transform->GetChildCount(); i++)
             out << transform->GetChild(i)->GetEntity()->ID();
 
         out << YAML::EndSeq; // Children
@@ -537,8 +537,8 @@ namespace Editor::SceneSerializer {
 
         const SceneCamera& sceneCam = GetSceneCam();
 
-        out << YAML::Key << "Position" << YAML::Value << sceneCam.GetTransform()->Position();
-        out << YAML::Key << "Rotation" << YAML::Value << sceneCam.GetTransform()->Rotation();
+        out << YAML::Key << "Position" << YAML::Value << sceneCam.GetTransform()->GetPosition();
+        out << YAML::Key << "Rotation" << YAML::Value << sceneCam.GetTransform()->GetRotation();
 
         out << YAML::Key << "Speed" << YAML::Value << sceneCam.speed;
         out << YAML::Key << "Sensitivity" << YAML::Value << sceneCam.sensitivity;

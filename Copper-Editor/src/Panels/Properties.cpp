@@ -86,7 +86,7 @@ namespace Editor {
             
             Transform* transform = entity->GetTransform();
 
-            Vector3 pos = transform->Position();
+            Vector3 pos = transform->GetPosition();
             if (UI::EditVector3("Position", &pos)) {
 
                 transform->SetPosition(pos);
@@ -98,7 +98,7 @@ namespace Editor {
 
             }
 
-            Vector3 newRot = transform->Rotation().EulerAngles();
+            Vector3 newRot = transform->GetRotation().EulerAngles();
             if (UI::EditVector3("Rotation", &newRot)) {
 
                 Quaternion rot = Quaternion(newRot);
@@ -111,7 +111,7 @@ namespace Editor {
 
             }
 
-            Vector3 scale = transform->Scale();
+            Vector3 scale = transform->GetScale();
             if (UI::EditVector3("Scale", &scale)) {
 
                 transform->SetScale(scale);

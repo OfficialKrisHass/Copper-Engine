@@ -5,56 +5,14 @@
 
 #include "Engine/Utilities/Math.h"
 
-#define POSITION_CHANGED (FLAG(0))
-#define ROTATION_CHANGED (FLAG(1))
-#define SCALE_CHANGED (FLAG(2))
-
 namespace Copper {
 
-    Transform::Transform() : m_changed(POSITION_CHANGED | ROTATION_CHANGED | SCALE_CHANGED) {}
-    Transform::Transform(const Vector3& position, const Quaternion& rotation, const Vector3& scale) : m_position(position), m_rotation(rotation), m_scale(scale), m_changed(POSITION_CHANGED | ROTATION_CHANGED | SCALE_CHANGED) {}
-    Transform::Transform(const Vector3& position, const Vector3& rotation, const Vector3& scale) : m_position(position), m_rotation(rotation), m_scale(scale), m_changed(POSITION_CHANGED | ROTATION_CHANGED | SCALE_CHANGED) {}
-
-    void Transform::Update() {
-
-        CUP_FUNCTION();
-
-        if (m_changed == 0) return;
-
-        CalculateMatrix();
-        glm::vec3 pos, rot, scale;
-        Math::DecomposeTransform(m_mat, pos, rot, scale);
-
-        if (m_changed & POSITION_CHANGED)
-            m_globalPosition = pos;
-
-        if (m_changed & SCALE_CHANGED)
-            m_globalScale = scale;
-
-        if (m_changed & ROTATION_CHANGED) {
-
-            m_globalRotation = (Vector3) rot;
-
-            m_forward = m_globalRotation * Vector3(0.0f, 0.0f, -1.0f);
-            m_right = m_globalRotation * Vector3(1.0f, 0.0f, 0.0f);
-            m_up = m_globalRotation * Vector3(0.0f, 1.0f, 0.0f);
-
-        }
-
-        m_changed = 0;
-        m_calculated = false;
-
-    }
-    
     void Transform::SetPosition(const Vector3& position) {
 
         CUP_FUNCTION();
 
         m_position = position;
-        m_changed |= POSITION_CHANGED;
-
-        for (uint32 id : m_children)
-            GetEntityFromID(id)->GetTransform()->SetChanged(m_changed);
+        UpdatePosition();
 
     }
 
@@ -63,10 +21,7 @@ namespace Copper {
         CUP_FUNCTION();
 
         m_rotation = rotation;
-        m_changed |= ROTATION_CHANGED;
-
-        for (uint32 id : m_children)
-            GetEntityFromID(id)->GetTransform()->SetChanged(m_changed);
+        UpdateRotation();
 
     }
 
@@ -75,13 +30,9 @@ namespace Copper {
         CUP_FUNCTION();
 
         m_scale = scale;
-        m_changed |= SCALE_CHANGED;
-
-        for (uint32 id : m_children)
-            GetEntityFromID(id)->GetTransform()->SetChanged(m_changed);
+        UpdateScale();
 
     }
-
 
     // Parent
 
@@ -208,14 +159,19 @@ namespace Copper {
 
     }
 
+    // Calculations
+
     void Transform::CalculateMatrix() {
 
         CUP_FUNCTION();
 
-        if (m_calculated) return;
+        if (!m_dirty) return;
+
+        // First calculate the matrix
+
         m_mat = Matrix4(1.0f);
 
-        if (m_parent) {
+        if (m_parent != nullptr) {
 
             m_parent->CalculateMatrix();
             m_mat *= m_parent->m_mat;
@@ -225,19 +181,143 @@ namespace Copper {
         CMath::TranslateMatrix(m_mat, m_position);
         m_mat = m_mat * (Matrix4) m_rotation;
         CMath::ScaleMatrix(m_mat, m_scale);
-
-        m_calculated = true;
+        
+        m_dirty = false;
 
     }
 
-    void Transform::SetChanged(ChangeMask value) {
+    void Transform::UpdatePosition() {
 
         CUP_FUNCTION();
 
-        m_changed = value;
-        for (uint32 id : m_children)
-            GetEntityFromID(id)->GetTransform()->SetChanged(value);
+        m_dirty = true;
+        CalculateMatrix();
+
+        m_globalPosition = Vector3(m_mat[3].x, m_mat[3].y, m_mat[3].z);
+
+        for (uint32 childID : m_children) {
+
+            InternalEntity* child = GetEntityFromID(childID);
+            CU_ASSERT(child != nullptr, "Could not get child from Entity {}, childID: {}", *GetEntity(), childID);
+
+            child->GetTransform()->UpdatePosition();
+
+        }
 
     }
-    
+    void Transform::UpdateRotation() {
+
+        CUP_FUNCTION();
+
+        m_dirty = true;
+        CalculateMatrix();
+        ExtractGlobalRotation();
+
+        m_forward = m_globalRotation * Vector3(0.0f, 0.0f, -1.0f);
+        m_right = m_globalRotation * Vector3(1.0f, 0.0f, 0.0f);
+        m_up = m_globalRotation * Vector3(0.0f, 1.0f, 0.0f);
+
+        for (uint32 childID : m_children) {
+
+            InternalEntity* child = GetEntityFromID(childID);
+            CU_ASSERT(child != nullptr, "Could not get child from Entity {}, childID: {}", *GetEntity(), childID);
+
+            child->GetTransform()->UpdateRotation();
+
+        }
+
+    }
+    void Transform::UpdateScale() {
+
+        CUP_FUNCTION();
+
+        m_dirty = true;
+        CalculateMatrix();
+
+        Vector3 col1 = m_mat[0];
+        Vector3 col2 = m_mat[1];
+        Vector3 col3 = m_mat[2];
+        m_globalScale = Vector3(col1.Length(), col2.Length(), col3.Length());
+
+        for (uint32 childID : m_children) {
+
+            InternalEntity* child = GetEntityFromID(childID);
+            CU_ASSERT(child != nullptr, "Could not get child from Entity {}, childID: {}", *GetEntity(), childID);
+
+            child->GetTransform()->UpdateScale();
+
+        }
+
+    }
+
+    void Transform::ExtractGlobalRotation() {
+
+        CUP_FUNCTION();
+
+        // Guard against zero scale
+
+        if (m_globalScale.x == 0.0f || m_globalScale.y == 0.0f || m_globalScale.z == 0.0f) {
+
+            m_globalRotation = Quaternion::identity;
+            return;
+
+        }
+
+        // Get and normalize rotation axes
+
+        Vector3 col1 = m_mat[0] / m_globalScale.x;
+        Vector3 col2 = m_mat[1] / m_globalScale.y;
+        Vector3 col3 = m_mat[2] / m_globalScale.z;
+
+        Matrix3 rot = Matrix3(col1, col2, col3);
+        float trace = rot[0][0] + rot[1][1] + rot[2][2];
+
+        if (trace > 0.0f) {
+
+            float s = std::sqrt(trace + 1.0f) * 2.0f;
+
+            m_globalRotation.w = 0.25f * s;
+            m_globalRotation.x = (rot[1][2] - rot[2][1]) / s;
+            m_globalRotation.y = (rot[2][0] - rot[0][2]) / s;
+            m_globalRotation.z = (rot[0][1] - rot[1][0]) / s;
+
+            return;
+
+        }
+
+        if (rot[0][0] > rot[1][1] && rot[0][0] > rot[2][2]) {
+
+            float s = std::sqrt(1.0f + rot[0][0] - rot[1][1] - rot[2][2]) * 2.0f;
+
+            m_globalRotation.w = (rot[1][2] - rot[2][1]) / s;
+            m_globalRotation.x = 0.25f * s;
+            m_globalRotation.y = (rot[0][1] + rot[1][0]) / s;
+            m_globalRotation.z = (rot[0][2] + rot[2][0]) / s;
+
+            return;
+
+        } else if (rot[1][1] > rot[2][2]) {
+
+            float s = std::sqrt(1.0f + rot[1][1] - rot[0][0] - rot[2][2]) * 2.0f;
+
+            m_globalRotation.w = (rot[2][0] - rot[0][2]) / s;
+            m_globalRotation.x = (rot[0][1] + rot[1][0]) / s;
+            m_globalRotation.y = 0.25f * s;
+            m_globalRotation.z = (rot[1][2] + rot[2][1]) / s;
+
+            return;
+
+        }
+
+        float s = std::sqrt(1.0f + rot[2][2] - rot[0][0] - rot[1][1]) * 2.0f;
+
+        m_globalRotation.w = (rot[0][1] - rot[1][0]) / s;
+        m_globalRotation.x = (rot[0][2] + rot[2][0]) / s;
+        m_globalRotation.y = (rot[1][2] + rot[2][1]) / s;
+        m_globalRotation.z = 0.25f * s;
+
+        return;
+
+    }
+
 }

@@ -102,8 +102,6 @@ namespace Copper {
 
             IN_RUNTIME(RuntimeUpdateEntity(entity, deltaTime));
 
-            entity->m_transform->Update();
-
             if (Light* lightComponent = entity->GetComponent<Light>())
                 Renderer::AddLight(lightComponent);
             if (Camera* cameraComponent = entity->GetComponent<Camera>()) {

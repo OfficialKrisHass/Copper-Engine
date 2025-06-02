@@ -15,7 +15,6 @@ namespace Copper {
 
         friend class Registry;
         friend class Scene;
-        friend class OldSceneVersionSerializer;
 
 #ifdef CU_EDITOR
         friend Editor::SceneCamera;

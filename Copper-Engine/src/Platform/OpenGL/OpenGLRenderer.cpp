@@ -152,7 +152,7 @@ namespace Copper::RendererAPI {
 
         // Fragment
 
-        shader.LoadVec3("camPos", cam->GetTransform()->Position());
+        shader.LoadVec3("camPos", cam->GetTransform()->GetPosition());
 
         // Lights
 
@@ -166,7 +166,7 @@ namespace Copper::RendererAPI {
             CU_ASSERT(light, "lights[{}] is nullptr!", i);
 
             shader.LoadInt(lightStr + "type", (uint32) light->type);
-            shader.LoadVec3(lightStr + "posOrDir", light->type == Light::Type::Point ? light->GetTransform()->GlobalPosition() : light->GetTransform()->Forward());
+            shader.LoadVec3(lightStr + "posOrDir", light->type == Light::Type::Point ? light->GetTransform()->GetGlobalPosition() : light->GetTransform()->GetForward());
 
             shader.LoadVec3(lightStr + "color", light->color);
             shader.LoadFloat(lightStr + "intensity", light->intensity);

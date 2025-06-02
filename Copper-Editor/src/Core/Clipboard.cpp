@@ -20,7 +20,7 @@ namespace Editor {
 
         out << YAML::Key << "Name" << YAML::Value << entity->name;
 
-        Transform* parent = entity->GetTransform()->Parent();
+        Transform* parent = entity->GetTransform()->GetParent();
         std::vector<uint32> children = entity->GetTransform()->m_children;
 
         entity->GetTransform()->m_parent = nullptr;

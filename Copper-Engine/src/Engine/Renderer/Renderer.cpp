@@ -258,7 +258,7 @@ namespace Copper::Renderer {
 
         CU_ASSERT(transform != nullptr, "Transform is nullptr!");
 
-        const Matrix4& transformMat = transform->TransformMatrix();
+        const Matrix4& transformMat = transform->GetTransformMatrix();
 
         const uint32 indicesCount = (uint32) mesh->indices.size();
         const uint32 verticesCount = (uint32) mesh->vertices.size();
@@ -328,7 +328,7 @@ namespace Copper::Renderer {
 
         CUP_FUNCTION();
 
-        AddLine(transform->TransformMatrix() * Vector4(start, 1.0f), transform->TransformMatrix() * Vector4(end, 1.0f), color);
+        AddLine(transform->GetTransformMatrix() * Vector4(start, 1.0f), transform->GetTransformMatrix() * Vector4(end, 1.0f), color);
 
     }
     void AddCube(const Vector3& centre, const Vector3& size, const Color& color, Transform* transform) {

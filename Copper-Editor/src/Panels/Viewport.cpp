@@ -127,7 +127,7 @@ namespace Editor {
 
             Matrix4 projection = m_sceneCam.CreateProjectionMatrix();
             Matrix4 view = m_sceneCam.CreateViewMatrix();
-            Matrix4 transform = selectedEntity->GetTransform()->TransformMatrix();
+            Matrix4 transform = selectedEntity->GetTransform()->GetTransformMatrix();
 
             bool snap = Input::GetKeyState(KeyCode::LeftControl) == KeyState::Down;
             float snapValues[3] = { 0.5f, 0.5f, 0.5f };
@@ -140,9 +140,9 @@ namespace Editor {
 
                     m_gizmo.active = true;
 
-                    m_gizmo.savedPosition = selectedEntity->GetTransform()->Position();
-                    m_gizmo.savedRotation = selectedEntity->GetTransform()->Rotation();
-                    m_gizmo.savedScale = selectedEntity->GetTransform()->Scale();
+                    m_gizmo.savedPosition = selectedEntity->GetTransform()->GetPosition();
+                    m_gizmo.savedRotation = selectedEntity->GetTransform()->GetRotation();
+                    m_gizmo.savedScale = selectedEntity->GetTransform()->GetScale();
 
                 }
 
@@ -164,20 +164,20 @@ namespace Editor {
 
                 m_gizmo.active = false;
 
-                if (m_gizmo.savedPosition != selectedEntity->GetTransform()->Position()) {
+                if (m_gizmo.savedPosition != selectedEntity->GetTransform()->GetPosition()) {
 
                     Change& change = AddChange(Change::Type::EntityMoved);
-                    change << selectedEntity->ID() << m_gizmo.savedPosition << selectedEntity->GetTransform()->Position();
+                    change << selectedEntity->ID() << m_gizmo.savedPosition << selectedEntity->GetTransform()->GetPosition();
 
-                } else if (m_gizmo.savedRotation != selectedEntity->GetTransform()->Rotation()) {
+                } else if (m_gizmo.savedRotation != selectedEntity->GetTransform()->GetRotation()) {
 
                     Change& change = AddChange(Change::Type::EntityRotated);
-                    change << selectedEntity->ID() << m_gizmo.savedRotation << selectedEntity->GetTransform()->Rotation();
+                    change << selectedEntity->ID() << m_gizmo.savedRotation << selectedEntity->GetTransform()->GetRotation();
 
-                } else if (m_gizmo.savedScale != selectedEntity->GetTransform()->Scale()) {
+                } else if (m_gizmo.savedScale != selectedEntity->GetTransform()->GetScale()) {
 
                     Change& change = AddChange(Change::Type::EntityMoved);
-                    change << selectedEntity->ID() << m_gizmo.savedScale << selectedEntity->GetTransform()->Scale();
+                    change << selectedEntity->ID() << m_gizmo.savedScale << selectedEntity->GetTransform()->GetScale();
 
                 }
 

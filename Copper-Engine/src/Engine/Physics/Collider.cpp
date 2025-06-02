@@ -57,14 +57,14 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        return physics->createShape(PxBoxGeometry(CopperToPhysX(GetTransform()->Scale() * m_size / 2.0f)), *material);
+        return physics->createShape(PxBoxGeometry(CopperToPhysX(GetTransform()->GetScale() * m_size / 2.0f)), *material);
 
     }
     PxShape* SphereCollider::CreateShape() const {
 
         CUP_FUNCTION();
 
-        return physics->createShape(PxSphereGeometry(m_radius * GetTransform()->Scale().x), *material);
+        return physics->createShape(PxSphereGeometry(m_radius * GetTransform()->GetScale().x), *material);
 
     }
     PxShape* CapsuleCollider::CreateShape() const {
@@ -72,7 +72,7 @@ namespace Copper {
         CUP_FUNCTION();
 
         Transform* transform = GetTransform();
-        return physics->createShape(PxCapsuleGeometry(transform->Scale().x * m_radius, transform->Scale().y * m_height), *material);
+        return physics->createShape(PxCapsuleGeometry(transform->GetScale().x * m_radius, transform->GetScale().y * m_height), *material);
 
     }
 

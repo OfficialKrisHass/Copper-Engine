@@ -9,7 +9,7 @@ namespace Copper {
 
     Matrix4 Camera::CreateViewMatrix() const {
 
-        return CMath::ViewMatrix(GetTransform()->GlobalPosition(), GetTransform()->Forward(), GetTransform()->Up());
+        return CMath::ViewMatrix(GetTransform()->GetGlobalPosition(), GetTransform()->GetForward(), GetTransform()->GetUp());
 
     }
     Matrix4 Camera::CreateProjectionMatrix() const {

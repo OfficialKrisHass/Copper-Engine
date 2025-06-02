@@ -17,7 +17,7 @@ namespace Editor {
 
     SceneCamera::SceneCamera(UVector2I size, Viewport* viewport) : Camera(size), m_viewport(viewport) {
 
-        m_transform = new Transform(Vector3::zero, Quaternion::identity, Vector3::one);
+        m_transform = new Transform();
 
     }
 
@@ -27,8 +27,6 @@ namespace Editor {
 
         CU_ASSERT(m_viewport != nullptr, "SceneCamera was not assigned a viewport!");
         CU_ASSERT(m_transform != nullptr, "SceneCamera doesn't have a transform!");
-
-        m_transform->Update();
 
         if(!m_canLook) return;
 
@@ -71,12 +69,12 @@ namespace Editor {
         float horizontal = Input::GetAxis("Keys_WS") * speed * m_multiplier * GetDeltaTime();
         float vertical = Input::GetAxis("Keys_DA") * speed * m_multiplier * GetDeltaTime();
 
-        m_transform->AddPosition(m_transform->Forward() * horizontal + m_transform->Right() * vertical);
+        m_transform->AddPosition(m_transform->GetForward() * horizontal + m_transform->GetRight() * vertical);
 
         if (Input::GetKeyState(KeyCode::Space) == KeyState::Down)
-            m_transform->AddPosition( m_transform->Up() * speed * GetDeltaTime());
+            m_transform->AddPosition( m_transform->GetUp() * speed * GetDeltaTime());
         if (Input::GetKeyState(KeyCode::LeftControl) == KeyState::Down)
-            m_transform->AddPosition(-m_transform->Up() * speed * GetDeltaTime());
+            m_transform->AddPosition(-m_transform->GetUp() * speed * GetDeltaTime());
 
         // Look
 
@@ -93,7 +91,7 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        m_rotation = m_transform->Rotation();
+        m_rotation = m_transform->GetRotation();
 
     }
 

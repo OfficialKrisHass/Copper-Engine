@@ -18,7 +18,7 @@ namespace Copper::Scripting::Transform {
         Transform* ptr = nullptr;
         mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
 
-        return ptr->Position();
+        return ptr->GetPosition();
 
     }
     void SetPosition(MonoObject* transform, Vector3 value) {
@@ -38,7 +38,7 @@ namespace Copper::Scripting::Transform {
         Transform* ptr = nullptr;
         mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
 
-        *ret = ptr->Rotation();
+        *ret = ptr->GetRotation();
 
     }
     void SetRotation(MonoObject* transform, const Quaternion* value) {
@@ -58,7 +58,7 @@ namespace Copper::Scripting::Transform {
         Transform* ptr = nullptr;
         mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
 
-        return ptr->Scale();
+        return ptr->GetScale();
 
     }
     void SetScale(MonoObject* transform, Vector3 value) {
@@ -79,7 +79,7 @@ namespace Copper::Scripting::Transform {
         Transform* ptr = nullptr;
         mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
 
-        return ptr->GlobalPosition();
+        return ptr->GetGlobalPosition();
 
     }
     void GetGlobalRotation(MonoObject* transform, Quaternion* ret) {
@@ -89,7 +89,7 @@ namespace Copper::Scripting::Transform {
         Transform* ptr = nullptr;
         mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
 
-        *ret = ptr->GlobalRotation();
+        *ret = ptr->GetGlobalRotation();
 
     }
     Vector3 GetGlobalScale(MonoObject* transform) {
@@ -99,7 +99,7 @@ namespace Copper::Scripting::Transform {
         Transform* ptr = nullptr;
         mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
 
-        return ptr->GlobalScale();
+        return ptr->GetGlobalScale();
 
     }
 
@@ -110,7 +110,7 @@ namespace Copper::Scripting::Transform {
         Transform* ptr = nullptr;
         mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
 
-        return ptr->Forward();
+        return ptr->GetForward();
 
     }
     Vector3 GetRight(MonoObject* transform) {
@@ -120,7 +120,7 @@ namespace Copper::Scripting::Transform {
         Transform* ptr = nullptr;
         mono_field_get_value(transform, UnmanagedPtrField(), (void*) &ptr);
 
-        return ptr->Right();
+        return ptr->GetRight();
 
     }
     Vector3 GetUp(MonoObject* transform) {
@@ -130,7 +130,7 @@ namespace Copper::Scripting::Transform {
         Transform* ptr = nullptr;
         mono_field_get_value(transform, UnmanagedPtrField(), (void*) ptr);
 
-        return ptr->Up();
+        return ptr->GetUp();
 
     }
 

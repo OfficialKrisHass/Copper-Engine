@@ -38,7 +38,7 @@ namespace Editor {
         for (InternalEntity* entity : EntityView(GetScene())) {
 
             if (!entity) continue;
-            if (entity->GetTransform()->Parent()) continue;
+            if (entity->GetTransform()->GetParent()) continue;
 
             DrawEntityNode(entity);
 
@@ -131,11 +131,8 @@ namespace Editor {
 
         if (opened) {
 
-            for (uint32 i = 0; i < entity->GetTransform()->NumOfChildren(); i++) {
-
+            for (uint32 i = 0; i < entity->GetTransform()->GetChildCount(); i++)
                 DrawEntityNode(entity->GetTransform()->GetChild(i)->GetEntity());
-
-            }
 
             ImGui::TreePop();
 

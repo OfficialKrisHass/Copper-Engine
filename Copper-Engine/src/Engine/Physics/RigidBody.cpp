@@ -73,8 +73,8 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        PxVec3 position = CopperToPhysX(GetTransform()->Position() - m_collider->m_center);
-        PxQuat rotation = CopperToPhysX(GetTransform()->Rotation());
+        PxVec3 position = CopperToPhysX(GetTransform()->GetPosition() - m_collider->m_center);
+        PxQuat rotation = CopperToPhysX(GetTransform()->GetRotation());
         m_actor = PxCreateStatic(*physics, PxTransform(position, rotation), *shape);
 
         CU_ASSERT(m_actor != nullptr, "Failed to create RigidStatic actor on entity {}", *GetEntity());
@@ -84,8 +84,8 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        PxVec3 position = CopperToPhysX(GetTransform()->Position() - m_collider->m_center);
-        PxQuat rotation = CopperToPhysX(GetTransform()->Rotation());
+        PxVec3 position = CopperToPhysX(GetTransform()->GetPosition() - m_collider->m_center);
+        PxQuat rotation = CopperToPhysX(GetTransform()->GetRotation());
         m_actor = PxCreateDynamic(*physics, PxTransform(position, rotation), *shape, 1.0f);
 
         CU_ASSERT(m_actor != nullptr, "Failed to create RigidDynamic actor on entity {}", *GetEntity());

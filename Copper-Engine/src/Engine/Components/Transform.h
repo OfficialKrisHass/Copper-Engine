@@ -37,9 +37,7 @@ namespace Copper {
 #endif
 
     public:
-        Transform();
-        Transform(const Vector3& position, const Quaternion& rotation, const Vector3& scale);
-        Transform(const Vector3& position, const Vector3& rotation, const Vector3& scale);
+        Transform() = default;
 
         // Setters
 
@@ -53,23 +51,23 @@ namespace Copper {
 
         // Getters
 
-        inline const Vector3& Position() const { return m_position; }
-        inline const Quaternion& Rotation() const { return m_rotation; }
-        inline const Vector3& Scale() const { return m_scale; }
+        inline const Vector3& GetPosition() const { return m_position; }
+        inline const Quaternion& GetRotation() const { return m_rotation; }
+        inline const Vector3& GetScale() const { return m_scale; }
 
-        inline const Vector3& GlobalPosition() const { return m_globalPosition; }
-        inline const Quaternion& GlobalRotation() const { return m_globalRotation; }
-        inline const Vector3& GlobalScale() const { return m_globalScale; }
+        inline const Vector3& GetGlobalPosition() const { return m_globalPosition; }
+        inline const Quaternion& GetGlobalRotation() const { return m_globalRotation; }
+        inline const Vector3& GetGlobalScale() const { return m_globalScale; }
 
-        inline const Vector3& Forward() const { return m_forward; }
-        inline const Vector3& Right()   const { return m_right; }
-        inline const Vector3& Up()      const { return m_up; }
+        inline const Vector3& GetForward() const { return m_forward; }
+        inline const Vector3& GetRight()   const { return m_right; }
+        inline const Vector3& GetUp()      const { return m_up; }
 
         // Parent
 
         void SetParent(Transform* parent);
 
-        inline Transform* Parent() const { return m_parent; }
+        inline Transform* GetParent() const { return m_parent; }
 
         // Children
 
@@ -78,31 +76,24 @@ namespace Copper {
         void RemoveChild(uint32 index);
 
         Transform* GetChild(uint32 index) const;
-        inline uint32 NumOfChildren() const { return (uint32) m_children.size(); }
+        inline uint32 GetChildCount() const { return (uint32) m_children.size(); }
 
         // Transform matrix
 
-        inline const Matrix4& TransformMatrix() const { return m_mat; }
-
-        // Operator overloads
-
-        inline bool operator==(const Transform& other) const { return GetEntity() == other.GetEntity(); }
-
-    protected:
-        void Update();
+        inline const Matrix4& GetTransformMatrix() const { return m_mat; }
 
     private:
         Vector3 m_position = Vector3::zero;
-        Quaternion m_rotation = Quaternion(1.0f, 0.0, 0.0f, 0.0f);
+        Quaternion m_rotation = Quaternion::identity;
         Vector3 m_scale = Vector3::one;
 
+        bool m_dirty = false;
         Matrix4 m_mat = Matrix4(1.0f);
-        bool m_calculated = false;
 
         // Global-space data
 
         Vector3 m_globalPosition = Vector3::zero;
-        Quaternion m_globalRotation = Quaternion(1.0f, 0.0, 0.0f, 0.0f);
+        Quaternion m_globalRotation = Quaternion::identity;
         Vector3 m_globalScale = Vector3::one;
 
         // Directions based on rotation
@@ -110,11 +101,6 @@ namespace Copper {
         Vector3 m_forward = Vector3(0.0f, 0.0f, -1.0f);
         Vector3 m_right = Vector3(1.0f, 0.0f, 0.0f);
         Vector3 m_up = Vector3(0.0f, 1.0f, 0.0f);
-
-        // ChangeMask
-
-        typedef uint8 ChangeMask;
-        ChangeMask m_changed = 0;
 
         // Parent Data
 
@@ -126,7 +112,11 @@ namespace Copper {
 
         void CalculateMatrix();
 
-        void SetChanged(ChangeMask value);
+        void UpdatePosition();
+        void UpdateRotation();
+        void UpdateScale();
+
+        void ExtractGlobalRotation();
 
     };
 

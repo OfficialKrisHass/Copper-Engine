@@ -120,7 +120,7 @@ namespace Editor {
 
             }
 
-            m_textures.push_back({ textureUUID, texturePath.filename() });
+            m_textures.push_back({ textureUUID, texturePath.filename().string()});
 
             material->texture = textureUUID;
 
@@ -137,7 +137,7 @@ namespace Editor {
 
         if (&node == &m_rootNode) {
 
-            node.name = m_path.filename();
+            node.name = m_path.filename().string();
             node.name.resize(node.name.find_last_of('.'));
 
         } else if (modelNode->mName.length != 0)

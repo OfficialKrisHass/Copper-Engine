@@ -36,7 +36,7 @@ namespace Copper::Renderer {
         Vector3 normal;
 
         Vector2 uv;
-        uint32 materialIndex = 0.0f;
+        uint32 materialIndex = 0;
 
 #ifdef CU_EDITOR
         uint32 entityID = INVALID_ENTITY_ID;
@@ -287,7 +287,7 @@ namespace Copper::Renderer {
             vertex.color = mesh->colors[i];
 
             vertex.uv = mesh->uvs[i];
-            vertex.materialIndex = (float) matIndex; // TODO: Figure the fuck out why it has to be a float on shader side
+            vertex.materialIndex = matIndex;
 
 #ifdef CU_EDITOR
             vertex.entityID = transform->GetEntity().ID();

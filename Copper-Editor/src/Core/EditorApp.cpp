@@ -1018,7 +1018,9 @@ namespace Editor {
 }
 
 #pragma region EntryPoint
+#ifdef CU_CMAKE
 #include <Config.h>
+#endif
 #include <Engine/Core/Entry.h>
 
 void AppEntryPoint() {

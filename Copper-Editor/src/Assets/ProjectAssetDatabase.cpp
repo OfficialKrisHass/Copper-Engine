@@ -191,10 +191,10 @@ namespace Editor::ProjectAssetDatabase {
 
 #ifdef CU_LOG_STATUS
         if (GetEngineState() == EngineState::PostInitialization)
-            LogStatus("\t\tAsset '{}' ({}) loaded.", uuid, path.filename().string());
+            LogStatus("\t\tAsset '{}' ({}) loaded.", uuid.ToString(), path.filename().string());
         else
 #endif
-            Log("Asset '{}' ({}) loaded.", uuid, path.filename().string());
+            Log("Asset '{}' ({}) loaded.", uuid.ToString(), path.filename().string());
 
     }
     void RemoveAsset(const fs::path& path, const std::string& extension) {
@@ -223,7 +223,7 @@ namespace Editor::ProjectAssetDatabase {
         assetNames.erase(uuid);
         assetFiles.erase(path);
 
-        Log("Asset '{}' ({}) removed.", uuid, path.filename().string());
+        Log("Asset '{}' ({}) removed.", uuid.ToString(), path.filename().string());
 
     }
 

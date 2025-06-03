@@ -40,7 +40,7 @@ namespace Copper::Args {
             if (strcmp(argv[i], "-e") == 0) {
 
                 execFolder = argv[++i];
-                arguments.push_back(execFolder);
+                arguments.push_back(execFolder.string());
 
             }
 #endif

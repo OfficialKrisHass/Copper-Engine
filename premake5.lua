@@ -194,6 +194,11 @@ project "Copper-Editor"
         "_CRT_SECURE_NO_WARNINGS",
         "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
 
+        "VERSION_MAJOR=" .. version[1],
+        "VERSION_MINOR=" .. version[2],
+        "VERSION_PATCH=" .. version[3],
+        "VERSION_TWEAK=" .. version[4],
+
     }
 
     filter "configurations:Debug"
@@ -201,7 +206,11 @@ project "Copper-Editor"
         runtime "Debug"
         symbols "on"
 
-        postbuildcommands "python scripts/post_build.py editor Debug %{cfg.system}"
+        postbuildcommands {
+            
+            "python " .. _MAIN_SCRIPT_DIR .. "/scripts/post_build.py editor Debug %{cfg.system}",
+
+        }
 
         debugargs { "-e", os.getcwd() .. "/%{prj.name}/" }
 
@@ -210,10 +219,14 @@ project "Copper-Editor"
         runtime "Release"
         optimize "on"
 
-        postbuildcommands "python scripts/post_build.py editor Release %{cfg.system}"
+        postbuildcommands {
+            
+            "python " .. _MAIN_SCRIPT_DIR .. "/scripts/post_build.py editor Release %{cfg.system}",
+
+        }
 
     filter "system:windows"
-        link {
+        links {
 
             "Copper-Engine/lib/mono/lib/%{cfg.buildcfg}/mono-2.0-sgen.lib",
             "Copper-Engine/lib/PhysX/lib/%{cfg.buildcfg}/PhysX_64.lib",
@@ -319,11 +332,19 @@ project "Copper-Launcher"
         runtime "Debug"
         symbols "on"
 
-        postbuildcommands "python scripts/post_build.py launcher Debug %{cfg.system}"
+        postbuildcommands {
+            
+            "python " .. _MAIN_SCRIPT_DIR .. "/scripts/post_build.py launcher Debug %{cfg.system}",
+
+        }
 
     filter "configurations:Release"
         defines "CU_RELEASE"
         runtime "Release"
         optimize "on"
 
-        postbuildcommands "python scripts/post_build.py launcher Release %{cfg.system}"
+        postbuildcommands {
+            
+            "python " .. _MAIN_SCRIPT_DIR .. "/scripts/post_build.py launcher Release %{cfg.system}",
+
+        }

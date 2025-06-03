@@ -4,8 +4,8 @@ project "assimp"
   cppdialect "C++17"
   staticruntime "on"
 
-  targetdir("Build/" .. outputDir)
-    objdir("BuildInt/" .. outputDir)
+  targetdir("Build/" .. buildDir)
+    objdir("BuildInt/" .. buildDir)
 
   defines {
       -- "SWIG",

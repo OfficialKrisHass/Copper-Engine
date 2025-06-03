@@ -2,6 +2,8 @@
 
 #include "Engine/Core/Core.h"
 
+#include "Engine/Scene/InternalEntity.h"
+
 namespace Copper {
 
     class Scene;
@@ -33,7 +35,7 @@ namespace Copper {
 
     inline std::ostream& operator<<(std::ostream& os, const Entity& entity) {
 
-        return os << entity;
+        return os << *static_cast<InternalEntity*>(entity);
 
     }
 

@@ -2,8 +2,8 @@ project "yaml-cpp"
 	kind "StaticLib"
 	language "C++"
 
-	targetdir ("Build/" .. outputDir)
-	objdir ("BuildInt/" .. outputDir)
+	targetdir ("Build/" .. buildDir)
+	objdir ("BuildInt/" .. buildDir)
 
 	files {
 

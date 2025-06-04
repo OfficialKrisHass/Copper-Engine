@@ -2,6 +2,7 @@
 
 #include <Engine/AssetStorage/AssetStorage.h>
 
+#include <Engine/Renderer/Texture.h>
 #include <Engine/Renderer/Material.h>
 
 #include <yaml-cpp/yaml.h>

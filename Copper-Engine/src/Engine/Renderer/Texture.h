@@ -2,7 +2,7 @@
 
 #include "Engine/Core/Core.h"
 
-#include "Engine/AssetStorage/AssetPtr.h"
+#include "Engine/AssetStorage/AssetStorage.h"
 
 namespace Copper {
 
@@ -48,7 +48,7 @@ namespace Copper {
         inline uint32 GetID() const { return m_id; }
         inline const UVector2I& GetSize() const { return m_size; }
 
-        static const TextureAsset& WhiteTexture();
+        static const AssetPtr<Texture>& WhiteTexture();
 
         // Operators
 
@@ -61,3 +61,5 @@ namespace Copper {
     };
 
 }
+
+REGISTER_ASSET_TYPE(Copper, Texture);

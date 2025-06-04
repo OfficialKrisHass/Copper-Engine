@@ -12,6 +12,9 @@ namespace Copper {
     class Camera;
     class Light;
 
+    class Material;
+    class Mesh;
+
     namespace Renderer {
 
         void Initialize();
@@ -24,7 +27,7 @@ namespace Copper {
 
         void RenderLines();
 
-        void AddMesh(const MeshAsset& mesh, Transform* transform, const MaterialAsset& material);
+        void AddMesh(const AssetPtr<Mesh>& mesh, Transform* transform, const AssetPtr<Material>& material);
 
         void AddLine(const Vector3& start, const Vector3& end, const Color& color);
         void AddLine(const Vector3& start, const Vector3& end, const Color& color, Transform* transform);
@@ -58,7 +61,7 @@ namespace Copper {
         void ClearColor(const Color& color);
         void ResizeViewport(const UVector2I& size);
 
-        void Render(VertexArray* vao, uint32 count, Light** lights, uint32 lightCount, MaterialAsset* materials, uint32 materialCount);
+        void Render(VertexArray* vao, uint32 count, Light** lights, uint32 lightCount, AssetPtr<Material>* materials, uint32 materialCount);
         void RenderLines(VertexArray* vao, uint32 vertexCount);
         void EndFrame();
 

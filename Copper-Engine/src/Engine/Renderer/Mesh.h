@@ -2,6 +2,8 @@
 
 #include "Engine/Core/Core.h"
 
+#include "Engine/AssetStorage/AssetStorage.h"
+
 namespace Copper {
 
     class Mesh {
@@ -19,3 +21,5 @@ namespace Copper {
     };
 
 }
+
+REGISTER_ASSET_TYPE(Copper, Mesh);

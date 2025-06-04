@@ -21,7 +21,7 @@ namespace Copper {
 
             CUP_FUNCTION();
 
-            UUID uuid;
+            UUID uuid = UUID::Generate();
             CU_ASSERT(!m_map.contains(uuid), "Attempted to create a new asset but the RANDOMLY generated uuis is already present in the {} asset map. WHAT THE FUCK ???????????", typeid(AssetType).name());
 
             return Insert(uuid, std::forward<Args>(args)...);
@@ -50,12 +50,7 @@ namespace Copper {
             CUP_FUNCTION();
 
             auto it = m_map.find(uuid);
-            if (it == m_map.end()) {
-
-                LogError("Can't remove an Asset that doesn't exist in the map:\n\tUUID: {}", uuid.ToString());
-                return;
-
-            }
+            CU_EDITOR_ASSERT(it != m_map.end(), "Can't delete an asset that doesn't exist in the map. UUID: {}", uuid.ToString());
 
             m_map.erase(it);
 

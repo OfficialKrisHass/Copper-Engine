@@ -2,7 +2,9 @@
 
 #include <Copper.h>
 
-#include <Engine/AssetStorage/AssetPtr.h>
+#include <Engine/Renderer/Texture.h>
+#include <Engine/Renderer/Material.h>
+#include <Engine/Renderer/Mesh.h>
 
 struct aiScene;
 struct aiNode;
@@ -50,6 +52,6 @@ namespace Editor {
 
     };
 
-    typedef Copper::AssetPtr<Model> ModelAsset;
-
 }
+
+REGISTER_ASSET_TYPE(Editor, Model);

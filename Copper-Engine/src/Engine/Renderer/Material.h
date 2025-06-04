@@ -2,7 +2,7 @@
 
 #include "Engine/Core/Core.h"
 
-#include "Engine/AssetStorage/AssetPtr.h"
+#include "Engine/AssetStorage/AssetStorage.h"
 
 #include "Engine/Renderer/Texture.h"
 
@@ -17,10 +17,10 @@ namespace Copper {
         Color albedo = Color::white;
         float tiling = 1.0f;
         
-        static const MaterialAsset& WhiteMaterial();
-
-        inline operator bool() const { return texture; }
+        static const AssetPtr<Material>& WhiteMaterial();
 
     };
 
 }
+
+REGISTER_ASSET_TYPE(Copper, Material);

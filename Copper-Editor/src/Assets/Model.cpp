@@ -20,8 +20,6 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-REGISTER_ASSET_TYPE(Editor::Model, modelMap);
-
 namespace Editor {
 
     Model::Model(const fs::path& path) {

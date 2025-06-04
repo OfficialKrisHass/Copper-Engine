@@ -4,19 +4,41 @@
 
 #include "Engine/AssetStorage/AssetMap.h"
 
-// Registers a new asset type, this has to be in the global scope and namespace!
-#define REGISTER_ASSET_TYPE(Type, mapName) namespace Copper::AssetStorage {\
-                                           AssetMap<Type> mapName;\
-                                           template<> AssetMap<Type>& GetAssetMap<Type>() { return mapName; } }
+// Registers a new asset type, this has to be in the in the global scope and inside no namespace.
+// If type is inside a namespace, you have to 'using namespace <namespace Type is in>' before this.
+#define REGISTER_ASSET_TYPE(Namespace, Type) namespace Copper::AssetStorage {\
+                                             using namespace Namespace;\
+                                             inline AssetMap<Type> Type ## Map;\
+                                             template<> inline AssetMap<Type>& GetAssetMap<Type>() { return Type ## Map; } }\
+                                             namespace Namespace {\
+                                             typedef AssetPtr<Type> Type ## Asset; }
 
 namespace Copper::AssetStorage {
 
-    template<typename AssetType> AssetMap<AssetType>& GetAssetMap();
+    // Retrieves the asset map. This function is deleted by default and has to be template specialized manually.
+    // To do so, use REGISTER_ASSET_TYPE.
+    template<typename AssetType> AssetMap<AssetType>& GetAssetMap() = delete;
+
+    namespace traits {
+
+        template<typename T> struct IsAssetTypeRegistered {
+
+        private:
+            template<typename U> static auto Impl(int) -> decltype(GetAssetMap<U>(), std::true_type{});
+            template<typename U> static auto Impl(...) -> std::false_type;
+
+        public:
+            static constexpr bool value = decltype(Impl<T>(0))::value;
+
+        };
+
+    }
 
     template<typename AssetType, typename... Args> inline AssetPtr<AssetType> CreateAsset(Args&&... args) {
         
         CUP_FUNCTION();
 
+        static_assert(traits::IsAssetTypeRegistered<AssetType>::value, "Asset type is not registered!");
         return GetAssetMap<AssetType>().Create(std::forward<Args>(args)...);
 
     }
@@ -24,6 +46,7 @@ namespace Copper::AssetStorage {
 
         CUP_FUNCTION();
 
+        static_assert(traits::IsAssetTypeRegistered<AssetType>::value, "Asset type is not registered!");
         return GetAssetMap<AssetType>().Insert(uuid, std::forward<Args>(args)...);
 
     }
@@ -32,6 +55,7 @@ namespace Copper::AssetStorage {
         
         CUP_FUNCTION();
 
+        static_assert(traits::IsAssetTypeRegistered<AssetType>::value, "Asset type is not registered!");
         return GetAssetMap<AssetType>().Get(uuid);
     
     }
@@ -40,33 +64,11 @@ namespace Copper::AssetStorage {
         
         CUP_FUNCTION();
 
+        static_assert(traits::IsAssetTypeRegistered<AssetType>::value, "Asset type is not registered!");
         GetAssetMap<AssetType>().Delete(uuid);
     
     }
 
-    // Raw versions
-
-    template<typename AssetType, typename... Args> inline AssetType* CreateAssetRaw(Args&&... args) {
-
-        CUP_FUNCTION();
-
-        return GetAssetMap<AssetType>().CreateRaw(std::forward<Args>(args)...);
-
-    }
-    template<typename AssetType, typename... Args> inline AssetType* InsertAssetRaw(const UUID& uuid, Args&&... args) {
-
-        CUP_FUNCTION();
-
-        return GetAssetMap<AssetType>().InsertRaw(uuid, std::forward<Args>(args)...);
-
-    }
-
-    template<typename AssetType> inline AssetType* GetAssetRaw(const UUID& uuid) {
-
-        CUP_FUNCTION();
-
-        return GetAssetMap<AssetType>().GetRaw(uuid);
-
-    }
-
 }
+
+#include "Engine/AssetStorage/AssetPtr.h"

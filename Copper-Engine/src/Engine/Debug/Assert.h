@@ -4,8 +4,6 @@
 
 #include "Engine/Debug/Profiler.h"
 
-#define CHECK(x, ...) { if(!(x)) { LogError(__VA_ARGS__); } }
-
 #ifdef CU_DEBUG
 #ifdef CU_WINDOWS
 #define CU_ASSERT(x, ...) { if(!(x)) { LogError(__VA_ARGS__); ::Copper::Profiler::CrashHandler(-1); __debugbreak(); } }
@@ -14,4 +12,10 @@
 #endif
 #else
 #define CU_ASSERT(x, ...)
+#endif
+
+#ifdef CU_EDITOR
+#define CU_EDITOR_ASSERT(x, ...) if (!(x)) LogError(__VA_ARGS__)
+#else
+#define CU_EDITOR_ASSERT(x, ...) CU_ASSERT(x, __VA_ARGS__)
 #endif

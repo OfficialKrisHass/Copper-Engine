@@ -12,8 +12,6 @@ namespace Copper {
     class Transform;
     class Scene;
 
-    std::ostream& operator<<(std::ostream& os, const class InternalEntity& entity);
-
     class InternalEntity {
 
         friend class Registry;
@@ -56,10 +54,14 @@ namespace Copper {
 
     };
 
-    inline std::ostream& operator<<(std::ostream& os, const InternalEntity& entity) {
+}
 
-        return os << entity.name << " (" << entity.GetID() << ")";
+template<> struct fmt::formatter<Copper::InternalEntity> : fmt::formatter<std::string> {
+
+    auto format(const Copper::InternalEntity& entity, format_context& ctx) const -> decltype(ctx.out()) {
+
+        return fmt::format_to(ctx.out(), "{} ({})", entity.name, entity.GetID());
 
     }
 
-}
+};

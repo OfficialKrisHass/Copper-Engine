@@ -135,29 +135,17 @@ namespace Copper {
 
     };
 
-    inline std::ostream& operator<<(std::ostream& stream, const UUID& uuid) {
-
-        CUP_FUNCTION();
-
-        std::string tmp;
-        uuid.ToString(tmp);
-
-        return stream << tmp;
-
-    }
-    inline std::istream& operator>>(std::istream& stream, UUID& uuid) {
-
-        CUP_FUNCTION();
-
-        std::string tmp;
-        stream >> tmp;
-
-        uuid.FromString(tmp.c_str());
-        return stream;
-
-    }
-
 }
+
+template<> struct fmt::formatter<Copper::UUID> : fmt::formatter<std::string> {
+
+    auto format(const Copper::UUID& uuid, format_context& ctx) -> decltype(ctx.out()) {
+
+        return fmt::format_to(ctx.out(), "{}", uuid.ToString());
+
+    }
+
+};
 
 namespace std {
 

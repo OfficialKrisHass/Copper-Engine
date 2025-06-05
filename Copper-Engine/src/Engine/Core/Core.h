@@ -15,6 +15,9 @@
 
 #include <filesystem> // Replace with our filesystem implementation
 
+#include <fmt/format.h> // I hate hate HATE this, but stupid ahh spdlog requires it if we want to have logging functionality for user defined types.
+                        // spdlog includes it anyway so it doesn't really matter but still, horrible horrible HORRIBLE. PLEASE WRITE A CUSTOM LOGGING LIB PLEASE.
+
 #define FLAG(bit) (1 << bit)
 
 #ifdef CU_LOG_STATUS
@@ -82,3 +85,41 @@ namespace Copper {
     const fs::path& ExecutableFolder();
 
 }
+
+template<> struct fmt::formatter<Copper::fs::path> : fmt::formatter<std::string> {
+
+    auto format(const Copper::fs::path& path, format_context& ctx) const -> decltype(ctx.out()) {
+
+        return fmt::format_to(ctx.out(), "{}", path.string());
+
+    }
+
+};
+
+template<typename T> struct fmt::formatter<Copper::CMath::vec<2, T>> : fmt::formatter<std::string> {
+
+    auto format(const Copper::CMath::vec<2, T>& vec, format_context& ctx) const -> decltype(ctx.out()) {
+
+        return fmt::format_to(ctx.out(), "X: {{{}}} Y: {{{}}}", vec.x, vec.y);
+
+    }
+
+};
+template<typename T> struct fmt::formatter<Copper::CMath::vec<3, T>> : fmt::formatter<std::string> {
+
+    auto format(const Copper::CMath::vec<3, T>& vec, format_context& ctx) const -> decltype(ctx.out()) {
+
+        return fmt::format_to(ctx.out(), "X: {{{}}} Y: {{{}}} Z: {{{}}}", vec.x, vec.y, vec.z);
+
+    }
+
+};
+template<typename T> struct fmt::formatter<Copper::CMath::vec<4, T>> : fmt::formatter<std::string> {
+
+    auto format(const Copper::CMath::vec<4, T>& vec, format_context& ctx) const -> decltype(ctx.out()) {
+
+        return fmt::format_to(ctx.out(), "X: {{{}}} Y: {{{}}} Z: {{{}}} W: {{{}}}", vec.x, vec.y, vec.z, vec.w);
+
+    }
+
+};

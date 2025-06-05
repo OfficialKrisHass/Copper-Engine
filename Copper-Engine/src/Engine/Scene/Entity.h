@@ -33,10 +33,14 @@ namespace Copper {
 
     };
 
-    inline std::ostream& operator<<(std::ostream& os, const Entity& entity) {
+}
 
-        return os << *static_cast<InternalEntity*>(entity);
+template<> struct fmt::formatter<Copper::Entity> : fmt::formatter<std::string> {
+
+    auto format(const Copper::Entity& entity, format_context& ctx) const -> decltype(ctx.out()) {
+
+        return fmt::format_to(ctx.out(), "{}", *static_cast<Copper::InternalEntity*>(entity));
 
     }
 
-}
+};

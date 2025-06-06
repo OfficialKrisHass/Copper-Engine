@@ -1,35 +1,66 @@
 #include "Console.h"
 
+#include <ImGui/imgui.h>
+
 using namespace Copper;
 
 namespace Editor {
 
+    std::vector<Console::Message> Console::m_messages;
+
+    void Console::Initialize() {
+
+        CUP_FUNCTION();
+
+        Logger::SetCallback(Console::LogCallback);
+
+    }
+
     void Console::UI() {
 
-        /*if (ImGui::Button("Test")) Log("Test");
+        if (ImGui::Button("Test"))
+            Log("Test");
+        
+        ImGui::SameLine();
+        if (ImGui::Button("Test warn"))
+            LogWarn("Test warning");
 
-        ImGui::GetFont()->FontSize -= 2.0f;
+        ImGui::SameLine();
+        if (ImGui::Button("Test error"))
+            LogError("Test error");
 
-        for (int i = (int) Logger::GetLastLogMessages().size() - 1; i >= 0; i--) {
+        for (const Message& msg : m_messages) {
 
-            std::string msg = Logger::GetLastLogMessages()[i];
+            switch (msg.level) {
 
-            size_t endOfLevel = msg.find_first_of(':');
-            std::string level = msg.substr(0, endOfLevel);
-            msg.erase(0, endOfLevel + 1);
+                case spdlog::level::info:
+                case spdlog::level::trace: ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f)); break;
+                case spdlog::level::warn: ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.9f, 0.4f, 1.0f)); break;
+                case spdlog::level::err: ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.2f, 0.2f, 1.0f)); break;
+                default: continue;
+                
+            }
 
-            if (level == "trace") ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
-            else if (level == "warning") ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.9f, 0.4f, 1.0f));
-            else if (level == "error") ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.2f, 0.2f, 1.0f));
-
-            ImGui::Text(msg.c_str());
+            ImGui::Text(msg.text.c_str());
             ImGui::Separator();
 
             ImGui::PopStyleColor();
 
         }
 
-        ImGui::GetFont()->FontSize += 2.0f;*/
+    }
+
+    void Console::LogCallback(const spdlog::details::log_msg& msg) {
+
+        CUP_FUNCTION();
+
+        if (msg.level == spdlog::level::debug) return;
+
+        Message tmp;
+        tmp.text = std::string(msg.payload.data(), msg.payload.size());
+        tmp.level = msg.level;
+
+        m_messages.push_back(std::move(tmp));
 
     }
 

@@ -12,9 +12,22 @@ namespace Editor {
 
     public:
         Console() : Panel("Console") {}
+
+        void Initialize();
         
     private:
+        struct Message {
+
+            std::string text;
+            spdlog::level::level_enum level;
+
+        };
+
+        static std::vector<Message> m_messages;
+
         virtual void UI() override;
+
+        static void LogCallback(const spdlog::details::log_msg& msg);
 
     };
 

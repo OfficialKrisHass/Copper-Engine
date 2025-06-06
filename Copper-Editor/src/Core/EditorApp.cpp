@@ -150,6 +150,7 @@ namespace Editor {
 
         data.viewport.Initialize();
         data.fileBrowser.Initialize();
+        data.console.Initialize();
 
         data.themeEditor.LoadTheme(ExecutableFolder() / "assets/Themes/Default.cutheme");
 

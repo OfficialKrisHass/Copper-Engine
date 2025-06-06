@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
 
     //TODO: Start being consistent with function naming and stop eeny miny moe-ing between 'Initialize' and 'Setup' for gods sake
     Logger::Initialize();
-    Log("Running Copper Engine Version {}.{}.{}.{}.", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_TWEAK);
+    LogDebug("Running Copper Engine Version {}.{}.{}.{}.", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_TWEAK);
 
     Args::Initialize(argc, argv);
     

@@ -145,7 +145,7 @@ namespace Editor {
         if (saveScene)
             SaveScene();
 
-        Log("Project saved.");
+        LogDebug("Project saved.");
 
     }
     void Project::SaveAs() {

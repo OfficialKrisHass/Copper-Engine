@@ -4,6 +4,7 @@
 #include "Engine/Core/Window.h"
 
 struct ImGuiContext;
+struct ImFont;
 
 namespace Copper {
 
@@ -18,7 +19,8 @@ namespace Copper {
         void Begin();
         void End();
 
-        void LoadFont(const fs::path& path, float fontSize = 18.0f) const;
+        ImFont* LoadFont(const fs::path& path, float fontSize = 18.0f) const;
+        void SetDefaultFont(const fs::path& path, float size = 18.0f);
 
         void SetAsCurrent() const;
     
@@ -31,6 +33,6 @@ namespace Copper {
 
     };
 
-    const UIContext& MainUIContext();
+    UIContext& GetMainUIContext();
 
 }

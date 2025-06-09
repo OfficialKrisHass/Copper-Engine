@@ -144,7 +144,7 @@ namespace Editor {
         data.window.GetKeyPressedEvent() += Editor::OnKeyPressed;
         data.window.GetWindowFocusedEvent() += Editor::OnWindowFocused;
 
-        MainUIContext().LoadFont(ExecutableFolder() / "assets/Fonts/IBMPlexMono-Medium.ttf");
+        GetMainUIContext().SetDefaultFont(ExecutableFolder() / "assets/Fonts/IBMPlexMono-Medium.ttf");
 
         data.scene = GetScene();
 

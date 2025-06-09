@@ -322,7 +322,7 @@ namespace Copper {
 
     // Declaration in ImGui.h
 
-    const UIContext& MainUIContext() { return data.mainUIContext; }
+    UIContext& GetMainUIContext() { return data.mainUIContext; }
 
     // Declaration in Scene.h
 

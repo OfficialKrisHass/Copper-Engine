@@ -1,5 +1,7 @@
 #include "Console.h"
 
+#include "Engine/UI/ImGui.h"
+
 #include <ImGui/imgui.h>
 
 using namespace Copper;
@@ -8,11 +10,15 @@ namespace Editor {
 
     std::vector<Console::Message> Console::m_messages;
 
+    ImFont* font = nullptr;
+
     void Console::Initialize() {
 
         CUP_FUNCTION();
 
         Logger::SetCallback(Console::LogCallback);
+
+        font = GetMainUIContext().LoadFont(ExecutableFolder() / "assets/Fonts/IBMPlexMono-Medium.ttf", 16.0f);
 
     }
 
@@ -28,6 +34,8 @@ namespace Editor {
         ImGui::SameLine();
         if (ImGui::Button("Test error"))
             LogError("Test error");
+
+        ImGui::PushFont(font);
 
         for (const Message& msg : m_messages) {
 
@@ -47,6 +55,8 @@ namespace Editor {
             ImGui::PopStyleColor();
 
         }
+
+        ImGui::PopFont();
 
     }
 

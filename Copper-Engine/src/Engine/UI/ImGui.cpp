@@ -92,13 +92,24 @@ namespace Copper {
 
     }
 
-    void UIContext::LoadFont(const fs::path& path, float fontSize) const {
+    ImFont* UIContext::LoadFont(const fs::path& path, float size) const {
+
+        CUP_FUNCTION();
+
+        ImFont* ret = ImGui::GetIO().Fonts->AddFontFromFileTTF(path.string().c_str(), size);
+        CU_ASSERT(ret != nullptr, "Could not load font at '{}'", path.string());
+
+        return ret;
+
+    }
+    void UIContext::SetDefaultFont(const fs::path& path, float size) {
 
         CUP_FUNCTION();
 
         ImGuiIO& io = ImGui::GetIO();
-        io.FontDefault = io.Fonts->AddFontFromFileTTF(path.string().c_str(), fontSize);
-        CU_ASSERT(io.FontDefault != nullptr, "Could not load font at {}", path);
+        io.FontDefault = io.Fonts->AddFontFromFileTTF(path.string().c_str(), size);
+
+        CU_ASSERT(io.FontDefault != nullptr, "Could not load font at '{}'", path.string());
         
     }
 

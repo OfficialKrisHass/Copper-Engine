@@ -1,6 +1,7 @@
 ﻿#include "FileBrowser.h"
 
 #include "Core/EditorApp.h"
+#include "Core/FileWatcher.h"
 
 #include "Projects/Project.h"
 
@@ -17,24 +18,18 @@
 
 #include <ImGui/imgui.h>
 
-#include <fstream>
-
 #define PADDING 16.0f
 #define THUMBNAIL_SIZE 128.0f
-
-#ifdef CU_WINDOWS
-#define PATH_SEPARATOR "\\"
-#elif CU_LINUX
-#define PATH_SEPARATOR "/"
-#endif
+#define ENTRY_SIZE (THUMBNAIL_SIZE + PADDING)
 
 using namespace Copper;
 
 namespace Editor {
 
-    static constexpr float CellSize = THUMBNAIL_SIZE + PADDING;
+    FileBrowser::DirectoryEntry FileBrowser::m_rootEntry;
+    const FileBrowser::DirectoryEntry* FileBrowser::m_currEntry = &m_rootEntry;
 
-    fs::path FileBrowser::m_projectRelativeDir = "";
+    fs::path FileBrowser::m_projectRelativeDir;
 
     fs::path editingPath = "";
     fs::path clickedFile = "";
@@ -52,6 +47,19 @@ namespace Editor {
         fileIcon.Create(ExecutableFolder() / "assets/Icons/FileIcon.png", Texture::Format::RGBA);
 
     }
+    void FileBrowser::Refresh() {
+
+        CUP_FUNCTION();
+
+        m_currEntry = &m_rootEntry;
+        SetRelativeDir("");
+
+        m_rootEntry.folders.clear();
+        m_rootEntry.files.clear();
+
+        RefreshDirectoryTree(m_rootEntry, "");
+
+    }
 
     void FileBrowser::UI() {
 
@@ -64,59 +72,15 @@ namespace Editor {
             return;
 
         }
+
+        // Window stuff
         
         RelativeDirHeader();
         WindowPopup();
 
-        // Setup collumns
+        RenderDirectoryEntry(*m_currEntry);
 
-        const float panelWidth = ImGui::GetContentRegionAvail().x;
-
-        uint32 columns = (uint32) (panelWidth / CellSize);
-        if (columns < 1)
-            columns = 1;
-
-        ImGui::Columns(columns, 0, false);
-
-        // Display Items
-
-        for(const fs::directory_entry& entry : fs::directory_iterator((GetProject().GetAssetsPath() / m_projectRelativeDir).string())) {
-
-            // Setup
-
-            const bool directory = entry.is_directory();
-            const fs::path path = fs::relative(entry.path(), GetProject().GetAssetsPath());
-            const std::string extension = path.extension().string();
-            const std::string filename = path.filename().replace_extension().string();
-
-            ImGui::PushID(filename.c_str());
-
-            if (Properties::GetSelectedData().type == SelectedData::Type::File && Properties::GetSelectedData().file == path)
-                ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyle().Colors[ImGuiCol_TabSelected]);
-            else
-                ImGui::PushStyleColor(ImGuiCol_Button, { 0.0f, 0.0f, 0.0f, 0.0f });
-
-            // Functionality
-            
-            if (directory)
-                DirectoryEntry(path, filename);
-            else
-                FileEntry(path, filename, extension);
-            ImGui::PopStyleColor();
-
-            EntryPopup(path);
-
-            if (editingPath == path)
-                EditName(path, filename);
-            else
-                ImGui::TextWrapped(filename.c_str());
-
-            // Finalize
-
-            ImGui::NextColumn();
-            ImGui::PopID();
-            
-        }
+        // Delete key
 
         if (Properties::GetSelectedData().type == SelectedData::Type::File && ImGui::IsWindowFocused() && Input::GetKeyState(KeyCode::Delete) == KeyState::Pressed) {
 
@@ -124,8 +88,6 @@ namespace Editor {
             Properties::ClearSelectedData();
 
         }
-
-        ImGui::Columns(1);
 
         // New modal
 
@@ -141,6 +103,107 @@ namespace Editor {
         
     }
 
+    void FileBrowser::RenderDirectoryEntry(const DirectoryEntry& entry) {
+
+        CUP_FUNCTION();
+
+        uint32 columns = (uint32) (ImGui::GetContentRegionAvail().x / ENTRY_SIZE);
+        if (columns < 1)
+            columns = 1;
+
+        if (!ImGui::BeginTable("##FileTable", columns)) return;
+
+        for (const auto& it : entry.folders) {
+
+            const std::string& name = it.first;
+            const DirectoryEntry& folder = it.second;
+            const fs::path& path = m_projectRelativeDir / name;
+
+            ImGui::PushID(name.c_str());
+
+            if (Properties::GetSelectedData().type == SelectedData::Type::File && Properties::GetSelectedData().file == path)
+                ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyle().Colors[ImGuiCol_TabSelected]);
+            else
+                ImGui::PushStyleColor(ImGuiCol_Button, { 0.0f, 0.0f, 0.0f, 0.0f });
+
+            ImGui::TableNextColumn();
+            ImGui::ImageButton("##Entry", static_cast<ImTextureID>(directoryIcon.GetID()), { THUMBNAIL_SIZE, THUMBNAIL_SIZE }, { 0, 1 }, { 1, 0 });
+            ImGui::PopStyleColor();
+
+            EntryPopup(path);
+
+            if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
+
+                m_currEntry = &folder;
+                m_projectRelativeDir /= name;
+
+            }
+
+            if (editingPath == path)
+                EditName(path, name);
+            else
+                ImGui::TextWrapped(name.c_str());
+
+            ImGui::PopID();
+
+        }
+        for (const std::string& file : entry.files) {
+
+            const fs::path& path = m_projectRelativeDir / file;
+
+            ImGui::PushID(file.c_str());
+
+            if (Properties::GetSelectedData().type == SelectedData::Type::File && Properties::GetSelectedData().file == path)
+                ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyle().Colors[ImGuiCol_TabSelected]);
+            else
+                ImGui::PushStyleColor(ImGuiCol_Button, { 0.0f, 0.0f, 0.0f, 0.0f });
+
+            ImGui::TableNextColumn();
+            ImGui::ImageButton("##Entry", static_cast<ImTextureID>(fileIcon.GetID()), { THUMBNAIL_SIZE, THUMBNAIL_SIZE }, { 0, 1 }, { 1, 0 });
+            ImGui::PopStyleColor();
+
+            EntryPopup(path);
+
+            if (ImGui::IsItemClicked())
+                clickedFile = path;
+            if (clickedFile == path && ImGui::IsItemHovered() && ImGui::IsMouseReleased(0))
+                Properties::SetSelectedFile(path);
+
+            if (editingPath == path)
+                EditName(path, file);
+            else
+                ImGui::TextWrapped(file.c_str());
+
+            ImGui::PopID();
+
+        }
+
+        ImGui::EndTable();
+
+    }
+    void FileBrowser::RefreshDirectoryTree(DirectoryEntry& root, fs::path path) {
+
+        CUP_FUNCTION();
+
+        for (const fs::directory_entry& entry : fs::directory_iterator(GetProject().GetAssetsPath() / path)) {
+
+            std::string name = entry.path().filename();
+
+            if (entry.is_directory()) {
+
+                DirectoryEntry subEntry;
+                subEntry.parent = &root;
+                RefreshDirectoryTree(subEntry, path / name);
+
+                root.folders[name] = std::move(subEntry);
+
+            } else if (entry.is_regular_file())
+                root.files.push_back(name);
+
+        }
+
+    }
+
     void FileBrowser::RelativeDirHeader() {
 
         CUP_FUNCTION();
@@ -148,15 +211,21 @@ namespace Editor {
         ImGui::GetFont()->FontSize -= 2.0f;
 
         ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0));
-        if (ImGui::Button("<-", ImVec2(30, 30)) && m_projectRelativeDir != "")
+
+        if (ImGui::Button("<-", ImVec2(30, 30)) && m_projectRelativeDir != "") {
+
             m_projectRelativeDir = m_projectRelativeDir.parent_path();
+            m_currEntry = m_currEntry->parent;
+
+        }
+
         ImGui::PopStyleVar();
 
         ImGui::SameLine();
 
-        std::string path = PATH_SEPARATOR;
+        std::string path = "/";
         if (!m_projectRelativeDir.empty())
-            path += m_projectRelativeDir.string() + PATH_SEPARATOR;
+            path += m_projectRelativeDir.string() + '/';
 
         ImGui::Text(path.c_str());
 
@@ -187,61 +256,6 @@ namespace Editor {
             editingPath = path;
 
         ImGui::EndPopup();
-
-    }
-
-    void FileBrowser::DirectoryEntry(const fs::path& path, const std::string& filename) {
-
-        CUP_FUNCTION();
-
-        ImGui::ImageButton("##Entry", static_cast<ImTextureID>((uint64) directoryIcon.GetID()), { THUMBNAIL_SIZE, THUMBNAIL_SIZE }, { 0, 1 }, { 1, 0 });
-
-        if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
-            m_projectRelativeDir /= filename;
-
-    }
-    void FileBrowser::FileEntry(const fs::path& path, const std::string& filename, const std::string& extension) {
-
-        CUP_FUNCTION();
-
-        ImGui::ImageButton("##Entry", static_cast<ImTextureID>((uint64) fileIcon.GetID()), { THUMBNAIL_SIZE, THUMBNAIL_SIZE }, { 0, 1 }, { 1, 0 });
-
-        if (ImGui::IsItemClicked())
-            clickedFile = path;
-        if (clickedFile == path && ImGui::IsItemHovered() && ImGui::IsMouseReleased(0))
-            Properties::SetSelectedFile(path);
-
-        if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
-
-            if (extension == ".copper")
-                OpenSceneNext(GetProject().GetAssetsPath() / path);
-
-        }
-
-        if (extension == ".fbx" && ImGui::BeginDragDropSource()) {
-
-            ModelAsset& model = ProjectAssetDatabase::GetAssetFromPath<ModelAsset>(path);
-
-            ImGui::SetDragDropPayload("FB_MODEL", &model, sizeof(ModelAsset), ImGuiCond_Once);
-            ImGui::EndDragDropSource();
-
-        }
-        if ((extension == ".png" || extension == ".jpg") && ImGui::BeginDragDropSource()) {
-
-            TextureAsset& texture = ProjectAssetDatabase::GetAssetFromPath<TextureAsset>(path);
-
-            ImGui::SetDragDropPayload("FB_TEXTURE", &texture, sizeof(TextureAsset), ImGuiCond_Once);
-            ImGui::EndDragDropSource();
-
-        }
-        if (extension == ".mat" && ImGui::BeginDragDropSource()) {
-
-            MaterialAsset& material = ProjectAssetDatabase::GetAssetFromPath<MaterialAsset>(path);
-
-            ImGui::SetDragDropPayload("FB_MATERIAL", &material, sizeof(MaterialAsset), ImGuiCond_Once);
-            ImGui::EndDragDropSource();
-
-        }
 
     }
 

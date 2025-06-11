@@ -95,7 +95,7 @@ namespace Editor {
 
         m_valid = true;
 
-        FileBrowser::SetRelativeDir("");
+        FileBrowser::Refresh();
         ProjectAssetDatabase::Initialize();
 
         if (Scripting::GameAssembly().IsValid())

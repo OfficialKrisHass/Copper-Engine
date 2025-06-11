@@ -640,7 +640,7 @@ namespace Editor {
 
         data.project = Project(path);
 
-        FileBrowser::SetRelativeDir("");
+        FileBrowser::Refresh();
 
 #ifdef CU_LINUX
         data.project.RunPremake();

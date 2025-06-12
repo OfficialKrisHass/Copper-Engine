@@ -4,9 +4,21 @@
 
 #include "Panels/Panel.h"
 
+namespace Copper {
+
+    class Texture;
+
+}
+
 namespace Editor {
 
     using namespace Copper;
+
+    namespace FileWatcher {
+
+        enum class FileChangeType : uint8;
+
+    }
 
     class FileBrowser : public Panel {
 
@@ -23,7 +35,7 @@ namespace Editor {
         struct DirectoryEntry {
 
             DirectoryEntry* parent = nullptr;
-            std::unordered_map<std::string, DirectoryEntry> folders;
+            std::map<std::string, DirectoryEntry> folders;
             std::vector<std::string> files;
 
         };
@@ -35,14 +47,20 @@ namespace Editor {
 
         virtual void UI() override;
 
-        void RenderDirectoryEntry(const DirectoryEntry& entry);
         static void RefreshDirectoryTree(DirectoryEntry& entry, fs::path path);
+        static void FileChangeCallback(const fs::path& path, FileWatcher::FileChangeType changeType);
+        static DirectoryEntry& GetDirectoryEntry(const fs::path& path);
+
+        void RenderDirectoryEntry(const DirectoryEntry& entry);
+        void RenderEntryIcon(const Texture& icon, const fs::path& path);
 
         void RelativeDirHeader();
         void WindowPopup();
         void EntryPopup(const Copper::fs::path& path);
 
         void EditName(const Copper::fs::path& path, const std::string& filename);
+
+        void NavigateUp();
 
     };
 

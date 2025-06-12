@@ -18,6 +18,8 @@
 
 #include <ImGui/imgui.h>
 
+#include <map>
+
 #define PADDING 16.0f
 #define THUMBNAIL_SIZE 128.0f
 #define ENTRY_SIZE (THUMBNAIL_SIZE + PADDING)
@@ -45,6 +47,8 @@ namespace Editor {
 
         directoryIcon.Create(ExecutableFolder() / "assets/Icons/DirectoryIcon.png", Texture::Format::RGBA);
         fileIcon.Create(ExecutableFolder() / "assets/Icons/FileIcon.png", Texture::Format::RGBA);
+
+        FileWatcher::AddCallback(FileChangeCallback);
 
     }
     void FileBrowser::Refresh() {
@@ -88,6 +92,8 @@ namespace Editor {
             Properties::ClearSelectedData();
 
         }
+        if (m_focused && Input::GetKeyState(KeyCode::Mouse3) == KeyState::Pressed)
+            NavigateUp();
 
         // New modal
 
@@ -103,84 +109,6 @@ namespace Editor {
         
     }
 
-    void FileBrowser::RenderDirectoryEntry(const DirectoryEntry& entry) {
-
-        CUP_FUNCTION();
-
-        uint32 columns = (uint32) (ImGui::GetContentRegionAvail().x / ENTRY_SIZE);
-        if (columns < 1)
-            columns = 1;
-
-        if (!ImGui::BeginTable("##FileTable", columns)) return;
-
-        for (const auto& it : entry.folders) {
-
-            const std::string& name = it.first;
-            const DirectoryEntry& folder = it.second;
-            const fs::path& path = m_projectRelativeDir / name;
-
-            ImGui::PushID(name.c_str());
-
-            if (Properties::GetSelectedData().type == SelectedData::Type::File && Properties::GetSelectedData().file == path)
-                ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyle().Colors[ImGuiCol_TabSelected]);
-            else
-                ImGui::PushStyleColor(ImGuiCol_Button, { 0.0f, 0.0f, 0.0f, 0.0f });
-
-            ImGui::TableNextColumn();
-            ImGui::ImageButton("##Entry", static_cast<ImTextureID>(directoryIcon.GetID()), { THUMBNAIL_SIZE, THUMBNAIL_SIZE }, { 0, 1 }, { 1, 0 });
-            ImGui::PopStyleColor();
-
-            EntryPopup(path);
-
-            if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
-
-                m_currEntry = &folder;
-                m_projectRelativeDir /= name;
-
-            }
-
-            if (editingPath == path)
-                EditName(path, name);
-            else
-                ImGui::TextWrapped(name.c_str());
-
-            ImGui::PopID();
-
-        }
-        for (const std::string& file : entry.files) {
-
-            const fs::path& path = m_projectRelativeDir / file;
-
-            ImGui::PushID(file.c_str());
-
-            if (Properties::GetSelectedData().type == SelectedData::Type::File && Properties::GetSelectedData().file == path)
-                ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyle().Colors[ImGuiCol_TabSelected]);
-            else
-                ImGui::PushStyleColor(ImGuiCol_Button, { 0.0f, 0.0f, 0.0f, 0.0f });
-
-            ImGui::TableNextColumn();
-            ImGui::ImageButton("##Entry", static_cast<ImTextureID>(fileIcon.GetID()), { THUMBNAIL_SIZE, THUMBNAIL_SIZE }, { 0, 1 }, { 1, 0 });
-            ImGui::PopStyleColor();
-
-            EntryPopup(path);
-
-            if (ImGui::IsItemClicked())
-                clickedFile = path;
-            if (clickedFile == path && ImGui::IsItemHovered() && ImGui::IsMouseReleased(0))
-                Properties::SetSelectedFile(path);
-
-            if (editingPath == path)
-                EditName(path, file);
-            else
-                ImGui::TextWrapped(file.c_str());
-
-            ImGui::PopID();
-
-        }
-
-        ImGui::EndTable();
-
-    }
     void FileBrowser::RefreshDirectoryTree(DirectoryEntry& root, fs::path path) {
 
         CUP_FUNCTION();
@@ -202,6 +130,122 @@ namespace Editor {
 
         }
 
+        std::sort(root.files.begin(), root.files.end());
+
+    }
+    void FileBrowser::FileChangeCallback(const fs::path& path, FileWatcher::FileChangeType changeType) {
+
+        CUP_FUNCTION();
+
+        if (changeType != FileWatcher::FileChangeType::Created) return;
+
+        const fs::path fullPath = GetProject().GetAssetsPath() / path;
+
+        if (fs::is_directory(fullPath)) {
+
+            // This also creates the last folder and any missing ones, so this is all we need
+            GetDirectoryEntry(path);
+
+        } else if (fs::is_regular_file(fullPath)) {
+
+            DirectoryEntry& parent = GetDirectoryEntry(path.parent_path());
+            parent.files.push_back(path.filename());
+
+            std::sort(parent.files.begin(), parent.files.end());
+
+        }
+
+    }
+    FileBrowser::DirectoryEntry& FileBrowser::GetDirectoryEntry(const fs::path& path) {
+
+        CUP_FUNCTION();
+
+        DirectoryEntry* entry = &m_rootEntry;
+        for (const fs::path& it : path) {
+
+            const std::string name = it.string();
+
+            if (!entry->folders.contains(name)) {
+
+                DirectoryEntry newEntry;
+                newEntry.parent = entry;
+                entry->folders[name] = std::move(newEntry);
+
+            }
+
+            entry = &entry->folders.at(name);
+
+        }
+
+        return *entry;
+
+    }
+
+    void FileBrowser::RenderDirectoryEntry(const DirectoryEntry& entry) {
+
+        CUP_FUNCTION();
+
+        uint32 columns = (uint32) (ImGui::GetContentRegionAvail().x / ENTRY_SIZE);
+        if (columns < 1)
+            columns = 1;
+
+        if (!ImGui::BeginTable("##FileTable", columns)) return;
+
+        for (const auto& it : entry.folders) {
+
+            const std::string& name = it.first;
+            const DirectoryEntry& folder = it.second;
+            const fs::path& path = m_projectRelativeDir / name;
+
+            ImGui::PushID(name.c_str());
+            RenderEntryIcon(directoryIcon, path);
+
+            if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
+
+                m_currEntry = &folder;
+                m_projectRelativeDir /= name;
+
+            }
+
+            EditName(path, name);
+            ImGui::PopID();
+
+        }
+        for (const std::string& file : entry.files) {
+
+            const fs::path& path = m_projectRelativeDir / file;
+
+            ImGui::PushID(file.c_str());
+            RenderEntryIcon(fileIcon, path);
+
+            if (ImGui::IsItemClicked())
+                clickedFile = path;
+            if (clickedFile == path && ImGui::IsItemHovered() && ImGui::IsMouseReleased(0))
+                Properties::SetSelectedFile(path);
+
+            EditName(path, file);
+            ImGui::PopID();
+
+        }
+
+        ImGui::EndTable();
+
+    }
+    void FileBrowser::RenderEntryIcon(const Texture& icon, const fs::path& path) {
+
+        CUP_FUNCTION();
+
+        if (Properties::GetSelectedData().type == SelectedData::Type::File && Properties::GetSelectedData().file == path)
+            ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyle().Colors[ImGuiCol_TabSelected]);
+        else
+            ImGui::PushStyleColor(ImGuiCol_Button, { 0.0f, 0.0f, 0.0f, 0.0f });
+
+        ImGui::TableNextColumn();
+        ImGui::ImageButton("##Entry", static_cast<ImTextureID>(icon.GetID()), { THUMBNAIL_SIZE, THUMBNAIL_SIZE }, { 0, 1 }, { 1, 0 });
+        ImGui::PopStyleColor();
+
+        EntryPopup(path);
+
     }
 
     void FileBrowser::RelativeDirHeader() {
@@ -212,12 +256,8 @@ namespace Editor {
 
         ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0));
 
-        if (ImGui::Button("<-", ImVec2(30, 30)) && m_projectRelativeDir != "") {
-
-            m_projectRelativeDir = m_projectRelativeDir.parent_path();
-            m_currEntry = m_currEntry->parent;
-
-        }
+        if (ImGui::Button("<-", ImVec2(30, 30)) && m_projectRelativeDir != "")
+            NavigateUp();
 
         ImGui::PopStyleVar();
 
@@ -252,7 +292,7 @@ namespace Editor {
 
         if (ImGui::MenuItem("Remove"))
             fs::remove_all(GetProject().GetAssetsPath() / path);
-        if (ImGui::MenuItem("Edit"))
+        if (ImGui::MenuItem("Rename"))
             editingPath = path;
 
         ImGui::EndPopup();
@@ -262,6 +302,13 @@ namespace Editor {
     void FileBrowser::EditName(const Copper::fs::path& path, const std::string& filename) {
 
         CUP_FUNCTION();
+
+        if (editingPath != path) {
+            
+            ImGui::TextWrapped(filename.c_str());
+            return;
+
+        }
 
         const std::string fullPath = (GetProject().GetAssetsPath() / path).string();
 
@@ -273,7 +320,6 @@ namespace Editor {
 
             editingPath = editingPath.parent_path();
             editingPath /= buffer;
-            editingPath += path.extension();
 
             fs::rename(fullPath, GetProject().GetAssetsPath() / editingPath);
             
@@ -283,6 +329,15 @@ namespace Editor {
             editingPath = "";
 
         }
+
+    }
+
+    void FileBrowser::NavigateUp() {
+
+        CUP_FUNCTION();
+
+        m_projectRelativeDir = m_projectRelativeDir.parent_path();
+        m_currEntry = m_currEntry->parent;
 
     }
 

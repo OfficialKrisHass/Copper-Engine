@@ -119,11 +119,9 @@ namespace Editor {
 
             if (entry.is_directory()) {
 
-                DirectoryEntry subEntry;
+                DirectoryEntry& subEntry = root.folders[name];
                 subEntry.parent = &root;
                 RefreshDirectoryTree(subEntry, path / name);
-
-                root.folders[name] = std::move(subEntry);
 
             } else if (entry.is_regular_file())
                 root.files.push_back(name);

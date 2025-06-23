@@ -135,21 +135,87 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        if (changeType != FileWatcher::FileChangeType::Created) return;
-
         const fs::path fullPath = GetProject().GetAssetsPath() / path;
 
-        if (fs::is_directory(fullPath)) {
+        if (!fs::exists(fullPath.parent_path())) return;
 
-            // This also creates the last folder and any missing ones, so this is all we need
-            GetDirectoryEntry(path);
+        switch (changeType) {
 
-        } else if (fs::is_regular_file(fullPath)) {
+            case FileWatcher::FileChangeType::Created: {
 
-            DirectoryEntry& parent = GetDirectoryEntry(path.parent_path());
-            parent.files.push_back(path.filename());
+                if (fs::is_directory(fullPath)) {
 
-            std::sort(parent.files.begin(), parent.files.end());
+                    // This also creates the last folder and any missing ones, so this is all we need
+                    GetDirectoryEntry(path);
+
+                } else if (fs::is_regular_file(fullPath)) {
+
+                    DirectoryEntry& parent = GetDirectoryEntry(path.parent_path());
+                    parent.files.push_back(path.filename());
+
+                    std::sort(parent.files.begin(), parent.files.end());
+
+                }
+
+                break;
+
+            }
+            case FileWatcher::FileChangeType::Deleted: {
+
+                break;
+
+            }
+            case FileWatcher::FileChangeType::RenamedOldName: {
+
+                const std::string name = path.filename();
+                DirectoryEntry& parent = GetDirectoryEntry(path.parent_path());
+
+                Log("parent: '{}', name: '{}'", path.parent_path().string(), name);
+
+                // Since the old file path is no longer valid we have to check if it was a recorded folder or a file
+                // and since windows is stupid and doesn't give you a cookie during Rename events, we can't pair these events
+                // together and have to do it this way of deleting the entry/file and readding it in the RenamedNewName event
+
+                const auto& it = parent.folders.find(name);
+                if (it != parent.folders.end())
+                    parent.folders.erase(it);
+                else {
+
+                    uint32 i;
+                    for (i = 0; i < parent.files.size(); i++)
+                        if (parent.files[i] == name) break;
+
+                    // It is possible that we only get a RenamedOldName event (file/folder moved outside of the assets directory)
+                    if (i != parent.files.size())
+                        parent.files.erase(parent.files.begin() + i);
+
+                }
+
+                break;
+
+            }
+            case FileWatcher::FileChangeType::RenamedNewName: {
+
+                // TODO: Replace the creation of entries and files with DirectoryEntry functions and a constructor
+
+                if (fs::is_directory(fullPath)) {
+
+                    DirectoryEntry& entry = GetDirectoryEntry(path);
+                    RefreshDirectoryTree(entry, path);
+
+                } else if (fs::is_regular_file(fullPath)) {
+
+                    DirectoryEntry& parent = GetDirectoryEntry(path.parent_path());
+                    parent.files.push_back(path.filename());
+
+                    std::sort(parent.files.begin(), parent.files.end());
+
+                }
+
+                break;
+
+            }
+            default: break;
 
         }
 
@@ -308,7 +374,7 @@ namespace Editor {
 
         }
 
-        const std::string fullPath = (GetProject().GetAssetsPath() / path).string();
+        const fs::path fullPath = (GetProject().GetAssetsPath() / path).string();
 
         char buffer[128] = {};
         std::strncpy(buffer, filename.c_str(), filename.length() * sizeof(char));
@@ -319,7 +385,9 @@ namespace Editor {
             editingPath = editingPath.parent_path();
             editingPath /= buffer;
 
+            CU_ASSERT(fs::exists(fullPath), "Tried to renamed a file that doesn't exist. Path: '{}', new path: '{}'", fullPath.string(), editingPath.string());
             fs::rename(fullPath, GetProject().GetAssetsPath() / editingPath);
+            Log("Renamed '{}' to '{}'", fullPath.string(), editingPath.string());
             
             if (Properties::GetSelectedData().type == SelectedData::Type::File && Properties::GetSelectedData().file == path)
                 Properties::SetSelectedFile(editingPath);

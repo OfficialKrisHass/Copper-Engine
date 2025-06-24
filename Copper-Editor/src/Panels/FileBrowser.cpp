@@ -160,17 +160,11 @@ namespace Editor {
                 break;
 
             }
+            case FileWatcher::FileChangeType::RenamedOldName:
             case FileWatcher::FileChangeType::Deleted: {
-
-                break;
-
-            }
-            case FileWatcher::FileChangeType::RenamedOldName: {
 
                 const std::string name = path.filename();
                 DirectoryEntry& parent = GetDirectoryEntry(path.parent_path());
-
-                Log("parent: '{}', name: '{}'", path.parent_path().string(), name);
 
                 // Since the old file path is no longer valid we have to check if it was a recorded folder or a file
                 // and since windows is stupid and doesn't give you a cookie during Rename events, we can't pair these events
@@ -192,6 +186,7 @@ namespace Editor {
                 }
 
                 break;
+
 
             }
             case FileWatcher::FileChangeType::RenamedNewName: {
@@ -354,7 +349,7 @@ namespace Editor {
 
         if (!ImGui::BeginPopupContextItem()) return;
 
-        if (ImGui::MenuItem("Remove"))
+        if (ImGui::MenuItem("Delete"))
             fs::remove_all(GetProject().GetAssetsPath() / path);
         if (ImGui::MenuItem("Rename"))
             editingPath = path;

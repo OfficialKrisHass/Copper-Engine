@@ -31,6 +31,13 @@ namespace Editor {
     Project::Project(const fs::path& path) {
 
         CUP_FUNCTION();
+        Create(path);
+
+    }
+
+    void Project::Create(const fs::path& path) {
+
+        CUP_FUNCTION();
 
         m_path = path;
         m_name = path.filename().string();
@@ -103,7 +110,8 @@ namespace Editor {
 
         Scripting::Load((path / "Binaries/" / (m_name + ".dll")).string());
 
-        FileWatcher::Start(GetAssetsPath());
+        m_fileWatch.Start(GetAssetsPath(), true);
+        m_fileWatch.SetCallback(std::bind(&Project::FileChangeCallback, this, std::placeholders::_1, std::placeholders::_2));
 
         if (m_lastOpenedScenePath.empty() || !fs::exists(GetAssetsPath() / m_lastOpenedScenePath)) return;
 
@@ -156,6 +164,14 @@ namespace Editor {
         if (m_path.empty()) return;
 
         Save();
+
+    }
+
+    void Project::Update() {
+
+        CUP_FUNCTION();
+
+        m_fileWatch.Update();
 
     }
 
@@ -273,6 +289,12 @@ namespace Editor {
 
     }
 #endif
+
+    void Project::FileChangeCallback(const fs::path& path, FileChangeType type) {
+
+        CUP_FUNCTION();
+
+    }
 
     static void CreateFileAndReplace(const fs::path& original, const fs::path& out, const std::string& what, const std::string& argument) {
 

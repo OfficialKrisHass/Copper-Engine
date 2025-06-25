@@ -8,12 +8,6 @@ Assets:
     Sub Assets:
       Cylinder.001.cum: f118339c-609a-4fae-becc-de764f210183
       Coin.mat: 02e31da7-08e0-4fff-9f6a-d4feab1f7984
-  Testings/Players.mat:
-    UUID: a62ef09a-dee4-4aaf-bdcc-2b1166c890ee
-  Testings/Yippee/Playuh.mat:
-    UUID: 82051a41-8c98-4d92-b418-a55491da5817
-  Testings/Yippee/Wozah.mat:
-    UUID: ef4fe9c9-3007-45de-b5f5-decf9b647861
   Materials/Ground.mat:
     UUID: ea25238c-be4f-4fea-b659-a1a21b6b95ba
   Textures/wall.jpg:

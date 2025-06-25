@@ -37,6 +37,8 @@
 
 #include <Engine/UI/ImGui.h>
 
+#include <Engine/Filesystem/FileWatch.h>
+
 #include <Engine/Utilities/FileUtils.h>
 
 #include <CMath/CMath.h>
@@ -157,7 +159,7 @@ namespace Editor {
         data.playIcon.Create(ExecutableFolder() / "assets/Icons/PlayButton.png", Texture::Format::RGBA);
         data.stopIcon.Create(ExecutableFolder() / "assets/Icons/StopButton.png", Texture::Format::RGBA);
 
-        FileWatcher::AddCallback(FileChangedCallback);
+        //FileWatcher::AddCallback(FileChangedCallback);
 
         LoadEditorData();
 
@@ -262,6 +264,7 @@ namespace Editor {
         CUP_START_FRAME("Editor");
 
         FileWatcher::PollChanges();
+        data.project.Update();
 
         data.viewport.Update();
 
@@ -638,7 +641,7 @@ namespace Editor {
 
         // Create the Project
 
-        data.project = Project(path);
+        data.project.Create(path);
 
         FileBrowser::Refresh();
 

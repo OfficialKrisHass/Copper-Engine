@@ -294,6 +294,8 @@ namespace Editor {
 
         CUP_FUNCTION();
 
+        Log("FileWatch detected change at '{}', type: '{}' ({})", path, FileChangeTypeToString(type), static_cast<uint8>(type));
+
     }
 
     static void CreateFileAndReplace(const fs::path& original, const fs::path& out, const std::string& what, const std::string& argument) {

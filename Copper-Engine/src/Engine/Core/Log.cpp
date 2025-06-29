@@ -46,8 +46,6 @@ namespace Copper {
 
     void Logger::LogCallback(const spdlog::details::log_msg& msg) {
 
-        CUP_FUNCTION();
-
         if (!m_callback) return;
         m_callback(msg);
 

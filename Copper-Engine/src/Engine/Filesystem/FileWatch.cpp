@@ -33,17 +33,14 @@ namespace Copper {
 
         CU_ASSERT(m_callback != nullptr, "No callback was assigned to FileWatch at directory '{}'", m_directory);
 
-        std::vector<FileChange> changes;
+        std::vector<FileChange> data;
         {
             std::lock_guard<std::mutex> lock = std::lock_guard(m_dataMutex);
-            if (m_data.empty()) return;
-
-            std::swap(m_data, changes);
+            data.swap(m_data);
         }
 
-        for (const FileChange& change : changes) {
+        for (const FileChange& change : data) {
 
-            Log("FileWatch detected change at '{}', type: '{}' ({})", change.path, FileChangeTypeToString(change.type), static_cast<uint8>(change.type));
             m_callback(change.path, change.type);
 
         }
@@ -57,41 +54,11 @@ namespace Copper {
 
         StopBackend();
 
-        m_rootWatch.watch = -1;
-        m_rootWatch.subFolders.clear();
-
+        m_monitorThread.join();
         {
             std::lock_guard<std::mutex> lock = std::lock_guard(m_dataMutex);
             m_data.clear();
         }
-
-        m_monitorThread.join();
-
-    }
-
-    fs::path FileWatch::GetWatchPath(const DirectoryWatch& watch) {
-
-        CUP_FUNCTION();
-
-        const DirectoryWatch* tmp = &watch;
-        std::stack<const std::string*> pathParts;
-        while (tmp != &m_rootWatch) {
-
-            pathParts.push(&tmp->name);
-
-            CU_ASSERT(tmp->parent != nullptr, "DirectoryWatch '{}' has no parent DirectoryWatch assigned!", tmp->name);
-            tmp = tmp->parent;
-
-        }
-        fs::path path;
-        while (!pathParts.empty()) {
-
-            path /= *pathParts.top();
-            pathParts.pop();
-
-        }
-
-        return path;
 
     }
 

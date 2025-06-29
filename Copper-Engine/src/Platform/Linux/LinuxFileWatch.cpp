@@ -3,9 +3,7 @@
 
 #include <sys/inotify.h>
 
-#include <stack>
-
-#define FILTERS IN_MODIFY | IN_CREATE | IN_DELETE | IN_MOVED_FROM | IN_MOVED_TO
+#define FILTERS IN_MODIFY | IN_CREATE | IN_DELETE | IN_MOVED_FROM | IN_MOVED_TO | IN_MOVE_SELF
 
 #define BUFFER_SIZE 0x40000
 
@@ -18,15 +16,7 @@ namespace Copper {
         m_fd = inotify_init();
         CU_ASSERT(m_fd >= 0, "Could not initialize inotify during FileWatch initialization. Directory: '{}'", m_directory);
 
-        m_rootWatch.watch = AddWatch(m_directory);
-        m_rootWatch.name.clear();
-
-        m_watchMap[m_rootWatch.watch] = &m_rootWatch;
-
-        if (!m_recursive) return;
-
-        Log("Adding recursive watches.");
-        WatchSubfolders(m_rootWatch, m_directory);
+        AddWatch(m_directory, m_recursive);
 
     }
     void FileWatch::StopBackend() {
@@ -44,8 +34,6 @@ namespace Copper {
 
     void FileWatch::MonitorDirectory() {
 
-        CUP_FUNCTION();
-
         char* buffer = new char[BUFFER_SIZE];
 
         while (m_running == true) {
@@ -60,121 +48,116 @@ namespace Copper {
                 inotify_event* event = reinterpret_cast<inotify_event*>(&buffer[i]);
                 i += sizeof(inotify_event) + event->len;
 
-                if (event->len == 0) continue;
-                CU_ASSERT(m_watchMap.contains(event->wd), "FileWatch received inotify event from watch '{}', but that watch is not loaded in the watch map. Event name: '{}', mask: '{:x}', FileWatch directory: '{}'", event->wd, event->name, event->mask, m_directory);
+                CU_ASSERT(m_watchMap.contains(event->wd), "FileWatch received inotify event from watch that is not register in the watch map. Watch: '{}', Event name: '{}', mask: '{:x}, FileWatch directory: '{}'", event->wd, event->name, event->mask, m_directory);
 
-                DirectoryWatch* watch = m_watchMap.at(event->wd);
-                CU_ASSERT(watch != nullptr, "Watch retrieved from watch map for inotify watch '{}' was nullptr. Directory '{}'", watch->watch, m_directory);
+                DirectoryWatch& watch = m_watchMap.at(event->wd);
+                const fs::path path = watch.path / event->name;
+                const bool isDirectory = event->mask & IN_ISDIR;
 
-                FileChangeType type;
-                if (event->mask & IN_CREATE) 
+                FileChangeType type = FileChangeType::None;
+                if (event->mask & IN_CREATE) {
+
                     type = FileChangeType::Created;
-                else if (event->mask & IN_MODIFY)
+
+                    if (isDirectory)
+                        AddWatch(m_directory / path);
+
+                } else if (event->mask & IN_MOVED_TO) {
+
+                    type = FileChangeType::RenamedNew;
+                    if (isDirectory) {
+
+                        int32 wd = AddWatch(m_directory / path, true);
+
+                        CU_ASSERT(m_watchMap.contains(wd), "Renamed new event tried to update watch '{}' but it does't exist in the watch map. Path: '{}', FileWatch Directory: '{}'", wd, path, m_directory);
+                        m_watchMap.at(wd).moved = true;
+
+                    }
+
+                } else if(event->mask & IN_MOVE_SELF) {
+
+                    if (watch.moved) {
+
+                        watch.moved = false;
+                        continue;
+
+                    }
+
+                    RemoveWatch(event->wd);
+                    if (!m_recursive) continue;
+
+                    const std::string watchPath = watch.path.string();
+                    for (const auto& it : m_watchMap) {
+
+                        if (it.second.path.string().compare(0, watchPath.size(), watchPath) != 0) continue;
+                        RemoveWatch(it.first);
+
+                    }
+
+                    continue;
+
+                } else if (event->mask & IN_IGNORED) {
+
+                    m_watchMap.erase(event->wd);
+                    continue;
+
+                } else if (event->mask & IN_MODIFY)
                     type = FileChangeType::Changed;
                 else if (event->mask & IN_DELETE)
                     type = FileChangeType::Deleted;
                 else if (event->mask & IN_MOVED_FROM)
                     type = FileChangeType::RenamedOld;
-                else if (event->mask & IN_MOVED_TO)
-                    type = FileChangeType::RenamedNew;
 
-                if (m_recursive) {
-
-                    fs::path path = GetWatchPath(*watch) / event->name;
-                    parsedData.emplace_back(path, type);
-
-                    switch (type) {
-
-                        case FileChangeType::RenamedNew:
-                        case FileChangeType::Created: {
-
-                            if (!fs::is_directory(m_directory / path)) break;
-
-                            DirectoryWatch& newWatch = watch->subFolders.emplace_back(event->name);
-                            newWatch.watch = AddWatch(m_directory / path);
-                            newWatch.parent = watch;
-
-                            CU_ASSERT(!m_watchMap.contains(newWatch.watch), "FileWatch watch map already contains watch '{}'. Path: '{}', Directory: '{}'", newWatch.watch, path, m_directory);
-                            m_watchMap[newWatch.watch] = &newWatch;
-
-                            break;
-
-                        }
-                        case FileChangeType::RenamedOld:
-                        case FileChangeType::Deleted: {
-
-                            Log("Test");
-
-                            DirectoryWatch* tmp = nullptr;
-                            uint32 i;
-                            for (i = 0; i < watch->subFolders.size(); i++) {
-
-                                if (watch->subFolders[i].name != event->name) continue;
-                                
-                                tmp = &watch->subFolders[i];
-                                break;
-
-                            }
-                            if (tmp == nullptr) break;
-                            Log("Success");
-
-                            m_watchMap.erase(tmp->watch);
-                            watch->subFolders.erase(watch->subFolders.begin() + i);
-
-                            break;
-
-                        }
-                        default: break;
-
-                    }
-
-                } else
-                    parsedData.emplace_back(event->name, type);
+                parsedData.emplace_back(path, type);
 
             }
 
             std::lock_guard<std::mutex> lock = std::lock_guard(m_dataMutex);
-            std::swap(parsedData, m_data);
+            m_data.insert(m_data.end(), parsedData.begin(), parsedData.end());
 
         }
 
     }
 
-    void FileWatch::WatchSubfolders(DirectoryWatch& root, const fs::path& rootPath) {
-
-        CUP_FUNCTION();
-
-        for (const fs::directory_entry& entry : fs::directory_iterator(rootPath)) {
-
-            if (!entry.is_directory()) continue;
-
-            const fs::path& path = entry.path();
-
-            DirectoryWatch& watch = root.subFolders.emplace_back(path.filename().string());
-            watch.watch = AddWatch(path);
-            watch.parent = &root;
-
-            CU_ASSERT(!m_watchMap.contains(watch.watch), "FileWatch watch map already contains watch '{}'. Path: '{}', Directory: '{}'", watch.watch, fs::relative(path, rootPath), m_directory);
-            m_watchMap[watch.watch] = &watch;
-
-            WatchSubfolders(watch, path);
-
-        }
-
-    }
-    int32 FileWatch::AddWatch(const fs::path& path) {
-
-        CUP_FUNCTION();
+    int32 FileWatch::AddWatch(const fs::path& path, bool moved) {
 
         CU_ASSERT(m_fd >= 0, "Invalid FileWatch inotify file descriptor. Directory: '{}'", m_directory);
-        CU_ASSERT(fs::exists(path), "Tried to add FileWatch watch at path '{}', which does not exist. Directory: '{}'", path, m_directory);
+        CU_ASSERT(fs::exists(path), "Tried to add FileWatch watch at path '{}', which does not exist. Directory: '{}'", fs::relative(path, m_directory), m_directory);
 
-        int ret = inotify_add_watch(m_fd, path.string().c_str(), FILTERS);
-        CU_ASSERT(ret >= 0, "Could not add FileWatch watch at path '{}'. Directory '{}'", path, m_directory);
+        int wd = inotify_add_watch(m_fd, path.string().c_str(), FILTERS);
+        CU_ASSERT(wd >= 0, "Could not add FileWatch watch at path '{}'. Directory '{}'", fs::relative(path, m_directory), m_directory);
 
-        Log("Added watch at '{}' to FileWatch. Directory: '{}'", fs::relative(path, m_directory), m_directory);
+        const fs::path rel = fs::relative(path, m_directory);
 
-        return ret;
+        // If path is already an existing watch, inotify_add_watch returns it's wd. In that case, path was most likely a directory that is watched but was
+        // moved somewhere else, so we only need to update it's path. If inotify_add_watch does not return an existing wd, it means it's a new directory
+        const auto it = m_watchMap.find(wd);
+        if (it == m_watchMap.end())
+            m_watchMap.emplace(wd, DirectoryWatch(rel));
+        else if (rel == it->second.path) return wd;
+        else
+            it->second.path = rel;
+
+        // If path was moved, we also need to setup watches for all it's sub directories
+        if (m_recursive && moved) {
+
+            for (const fs::path& subDir : fs::directory_iterator(path)) {
+
+                if (!fs::is_directory(subDir)) continue;
+                AddWatch(subDir, true);
+
+            }
+
+        }
+
+        return wd;
+
+    }
+    void FileWatch::RemoveWatch(int32 wd) {
+
+        CU_ASSERT(m_watchMap.contains(wd), "Watch '{}' can not be removed, as it doesn't exist in the watch map. Directory: '{}'", wd, m_directory);
+
+        inotify_rm_watch(m_fd, wd);
 
     }
 

@@ -62,8 +62,6 @@ namespace Editor {
 
     void Console::LogCallback(const spdlog::details::log_msg& msg) {
 
-        CUP_FUNCTION();
-
         if (msg.level == spdlog::level::debug) return;
 
         Message tmp;

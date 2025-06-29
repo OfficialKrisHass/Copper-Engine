@@ -43,14 +43,11 @@ namespace Copper {
     private:
         struct DirectoryWatch {
 
-            int32 watch = -1;
-            std::string name;
-
-            DirectoryWatch* parent = nullptr;
-            std::vector<DirectoryWatch> subFolders;
+            fs::path path;
+            bool moved = false;
 
             DirectoryWatch() = default;
-            DirectoryWatch(const std::string& name) : name(name) {}
+            DirectoryWatch(const fs::path& path) : path(path) {}
 
         };
         struct FileChange {
@@ -62,24 +59,28 @@ namespace Copper {
 
         };
 
+        // Core data
+        
         fs::path m_directory;
         bool m_recursive = false;
+
         std::atomic<bool> m_running = false;
+        std::thread m_monitorThread;
+
+        // Implementation data
 
         int32 m_fd = -1;
-        DirectoryWatch m_rootWatch;
+#ifdef CU_LINUX
+        std::unordered_map<int32, DirectoryWatch> m_watchMap;
+#endif
         Callback m_callback = nullptr;
+
+        // Received data
 
         std::vector<FileChange> m_data;
         std::mutex m_dataMutex;
 
-        std::thread m_monitorThread;
-
-#ifdef CU_LINUX
-        std::unordered_map<int32, DirectoryWatch*> m_watchMap;
-#endif
-
-        fs::path GetWatchPath(const DirectoryWatch& watch);
+        // Backend, implementation in Platform/<Platform>/<Platform>FileWatch.cpp
 
         void StartBackend();
         void StopBackend();
@@ -88,8 +89,8 @@ namespace Copper {
         void MonitorDirectory();
 
 #ifdef CU_LINUX
-        void WatchSubfolders(DirectoryWatch& root, const fs::path& path);
-        int32 AddWatch(const fs::path& path);
+        int32 AddWatch(const fs::path& path, bool moved = false);
+        void RemoveWatch(int32 wd);
 #endif
 
     };

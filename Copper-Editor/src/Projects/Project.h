@@ -2,7 +2,7 @@
 
 #include <Copper.h>
 
-#include <Engine/Filesystem/FileWatch.h>
+#include <Engine/Filesystem/RecursiveDirWatch.h>
 
 namespace Editor {
 
@@ -58,7 +58,7 @@ namespace Editor {
         fs::path m_path;
         fs::path m_lastOpenedScenePath;
 
-        FileWatch m_fileWatch;
+        RecursiveDirWatch m_assetWatch;
 
         bool LoadFile(const Copper::fs::path& path);
 

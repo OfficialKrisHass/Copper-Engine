@@ -6,78 +6,46 @@
 
 namespace Copper {
 
-    // Stores the sub watches in an tree, but also keeps an unordered map with the key being the watch and the value a pointer to
-    // to the tree node, so that we can retrieve the path from the watch, and get the correct structure of the tree and it's subpath
-
+    // Watches a single file and calls the assigned callback everytime a change was detected. Will crash if file does not exist or isn't a file when started.
+    // Once the file is renamed or moved, watching will be stopped
+    // Spawns a separate thread for the monitoring, but callback is called from the main thread
+    // To watch a directory (folder) take a look at DirWatch and RecursiveDirWatch
     class FileWatch {
 
     public:
         typedef std::function<void(const fs::path& path, FileChangeType type)> Callback;
-
+        
         FileWatch() = default;
-        FileWatch(const fs::path& directory, bool recursive = false) : m_directory(directory), m_recursive(recursive) { Start(); }
-        ~FileWatch() {
+        FileWatch(const fs::path& path) : m_path(path) { Start(); } 
 
-            CUP_FUNCTION();
-
-            Stop();
-
-        }
-
-        inline void Start(const fs::path& directory, bool recursive = false) {
-
-            CUP_FUNCTION();
-
-            m_directory = directory;
-            m_recursive = recursive;
-
-            Start();
-
-        }
         void Start();
         void Update();
         void Stop();
 
+        inline void Start(const fs::path& path) {
+
+            CUP_FUNCTION();
+
+            m_path = path;
+            Start();
+
+        }
+
         inline void SetCallback(Callback callback) { m_callback = callback; }
 
+        inline bool IsRunning() const { return m_running; }
+
     private:
-        struct DirectoryWatch {
-
-            fs::path path;
-            bool moved = false;
-
-            DirectoryWatch() = default;
-            DirectoryWatch(const fs::path& path) : path(path) {}
-
-        };
-        struct FileChange {
-
-            fs::path path; // relative to the file watch directory
-            FileChangeType type;
-
-            FileChange(const fs::path& path, FileChangeType type) : path(path), type(type) {}
-
-        };
-
-        // Core data
-        
-        fs::path m_directory;
-        bool m_recursive = false;
-
+        fs::path m_path;
         std::atomic<bool> m_running = false;
         std::thread m_monitorThread;
-
-        // Implementation data
+        Callback m_callback;
 
         int32 m_fd = -1;
-#ifdef CU_LINUX
-        std::unordered_map<int32, DirectoryWatch> m_watchMap;
-#endif
-        Callback m_callback = nullptr;
 
         // Received data
 
-        std::vector<FileChange> m_data;
+        std::vector<FileChangeType> m_data;
         std::mutex m_dataMutex;
 
         // Backend, implementation in Platform/<Platform>/<Platform>FileWatch.cpp
@@ -85,13 +53,8 @@ namespace Copper {
         void StartBackend();
         void StopBackend();
 
-        // This is called from the monitoring thread
-        void MonitorDirectory();
-
-#ifdef CU_LINUX
-        int32 AddWatch(const fs::path& path, bool moved = false);
-        void RemoveWatch(int32 wd);
-#endif
+        // Called by the monitoring thread
+        void MonitorChanges();
 
     };
 

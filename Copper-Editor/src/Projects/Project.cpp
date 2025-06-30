@@ -110,8 +110,8 @@ namespace Editor {
 
         Scripting::Load((path / "Binaries/" / (m_name + ".dll")).string());
 
-        m_fileWatch.Start(GetAssetsPath(), true);
-        m_fileWatch.SetCallback(std::bind(&Project::FileChangeCallback, this, std::placeholders::_1, std::placeholders::_2));
+        m_assetWatch.Start(GetAssetsPath());
+        m_assetWatch.SetCallback(std::bind(&Project::FileChangeCallback, this, std::placeholders::_1, std::placeholders::_2));
 
         if (m_lastOpenedScenePath.empty() || !fs::exists(GetAssetsPath() / m_lastOpenedScenePath)) return;
 
@@ -171,7 +171,7 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        m_fileWatch.Update();
+        m_assetWatch.Update();
 
     }
 
@@ -294,7 +294,7 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        Log("FileWatch detected change at '{}', type: '{}' ({})", path, FileChangeTypeToString(type), static_cast<uint8>(type));
+        Log("Asset DirWatch detected change at '{}', type: '{}' ({})", path, FileChangeTypeToString(type), static_cast<uint8>(type));
 
     }
 

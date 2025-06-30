@@ -4,16 +4,17 @@
 
 namespace Copper {
 
+    // File (or directory) changes detected by the File/DirWatches.
     enum class FileChangeType : uint8 {
 
         None = 0,
 
-        Created,
-        Changed,
-        Deleted,
+        Created, // Created, duh
+        Changed, // Some change was made it's contents
+        Deleted, // File was deleted or stopped being watched
 
-        RenamedOld,
-        RenamedNew,
+        RenamedOld, // File was renamed or moved, and this is it's old path/name
+        RenamedNew, // File was renamed or moved, and this is it's new path/name
 
     };
 

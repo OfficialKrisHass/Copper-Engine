@@ -1,8 +1,6 @@
 #include "cupch.h"
 #include "FileWatch.h"
 
-#include <stack>
-
 namespace Copper {
 
     void FileWatch::Start() {
@@ -11,17 +9,17 @@ namespace Copper {
 
         if (m_running == true) {
 
-            LogWarn("FileWatch at directory '{}' already started.", m_directory);
+            LogError("FileWatch was already started. Path: '{}'", m_path);
             return;
 
         }
 
-        Log("Starting FileWatch at directory '{}'. Recursive: '{}'", m_directory, m_recursive);
+        CU_ASSERT(fs::exists(m_path), "Can't start FileWatch, file doesn't exist. Path: '{}'", m_path);
+        CU_ASSERT(fs::is_regular_file(m_path), "FileWatch can only watch files (maybe you meant DirWatch). Path: '{}'", m_path);
 
-        CU_ASSERT(fs::exists(m_directory), "Cant't start FileWatch, directory '{}' does not exist!", m_directory);
         StartBackend();
 
-        m_monitorThread = std::thread([this]() { MonitorDirectory(); });
+        m_monitorThread = std::thread([this]() { MonitorChanges(); });
         m_running = true;
 
     }
@@ -31,19 +29,16 @@ namespace Copper {
 
         if (m_running == false) return;
 
-        CU_ASSERT(m_callback != nullptr, "No callback was assigned to FileWatch at directory '{}'", m_directory);
+        CU_ASSERT(m_callback != nullptr, "No callback was to FileWatch. Path: '{}'", m_path);
 
-        std::vector<FileChange> data;
+        std::vector<FileChangeType> data;
         {
             std::lock_guard<std::mutex> lock = std::lock_guard(m_dataMutex);
             data.swap(m_data);
         }
 
-        for (const FileChange& change : data) {
-
-            m_callback(change.path, change.type);
-
-        }
+        for (FileChangeType type : data)
+            m_callback(m_path, type);
 
     }
     void FileWatch::Stop() {

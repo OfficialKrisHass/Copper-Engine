@@ -6,9 +6,9 @@
 
 #ifdef CU_DEBUG
 #ifdef CU_WINDOWS
-#define CU_ASSERT(x, ...) { if(!(x)) { LogError(__VA_ARGS__); ::Copper::Profiler::CrashHandler(-1); __debugbreak(); } }
+#define CU_ASSERT(x, ...) { if(!(x)) { LogError(__VA_ARGS__); ::Copper::Profiler::PrintScopeStack(); __debugbreak(); } }
 #elif CU_LINUX
-#define CU_ASSERT(x, ...) { if(!(x)) { LogError(__VA_ARGS__); ::Copper::Profiler::CrashHandler(-1); exit(-1); } }
+#define CU_ASSERT(x, ...) { if(!(x)) { LogError(__VA_ARGS__); ::Copper::Profiler::PrintScopeStack(); abort(); } }
 #endif
 #else
 #define CU_ASSERT(x, ...)

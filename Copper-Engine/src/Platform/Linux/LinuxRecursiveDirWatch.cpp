@@ -7,13 +7,15 @@
 
 #define BUFFER_SIZE 0x40000
 
+#define SLEEP_LENGTH 100
+
 namespace Copper {
 
     void RecursiveDirWatch::StartBackend() {
 
         CUP_FUNCTION();
 
-        m_fd = inotify_init();
+        m_fd = inotify_init1(IN_NONBLOCK);
         CU_ASSERT(m_fd >= 0, "Could not initialize inotify during DirWatch initialization. Directory: '{}'", m_directory);
 
         AddWatch(m_directory, true);
@@ -31,12 +33,26 @@ namespace Copper {
     void RecursiveDirWatch::MonitorChanges() {
 
         char* buffer = new char[BUFFER_SIZE];
+        std::vector<FileChange> parsedData;
+
         while (m_running == true) {
 
             ssize_t length = read(m_fd, buffer, BUFFER_SIZE);
-            if (length < 1) break;
+            if (length < 1) {
 
-            std::vector<FileChange> parsedData;
+                if (errno == EAGAIN || errno == EWOULDBLOCK) {
+
+                    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_LENGTH));
+                    continue;
+
+                }
+
+                break; 
+
+            }
+
+            parsedData.clear();
+
             uint32 i = 0;
             while (i < length) {
 

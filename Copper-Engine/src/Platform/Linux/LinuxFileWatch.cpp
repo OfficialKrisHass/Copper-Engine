@@ -7,13 +7,15 @@
 
 #define BUFFER_SIZE 0x40000
 
+#define SLEEP_LENGTH 100
+
 namespace Copper {
 
     void FileWatch::StartBackend() {
 
         CUP_FUNCTION();
 
-        m_fd = inotify_init();
+        m_fd = inotify_init1(IN_NONBLOCK);
         CU_ASSERT(m_fd >= 0, "Could not initialize inotify during FileWatch initialization. Path: '{}'", m_path);
 
         int32 wd = inotify_add_watch(m_fd, m_path.string().c_str(), FILTERS);
@@ -34,7 +36,15 @@ namespace Copper {
         while (m_running = true) {
 
             ssize_t length = read(m_fd, buffer, BUFFER_SIZE);
-            if (length < 1) break;
+            if (length < 1) {
+
+                if (errno == EAGAIN || errno == EWOULDBLOCK)
+                    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_LENGTH));
+                else break;
+
+                continue;
+
+            }
 
             std::vector<FileChangeType> parsedData;
             uint32 i = 0;
@@ -51,13 +61,17 @@ namespace Copper {
                 else if (event->mask & IN_DELETE_SELF || event->mask & IN_IGNORED) {
 
                     type = FileChangeType::Deleted;
-                    m_running = false;
+
+                    m_destroy = true;
+                    return;
 
                 }
                 else if (event->mask & IN_MOVE_SELF) {
 
                     type = FileChangeType::RenamedNew;
-                    inotify_rm_watch(m_fd, event->wd);
+
+                    m_destroy = true;
+                    return;
 
                 }
 

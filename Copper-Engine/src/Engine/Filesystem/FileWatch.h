@@ -17,6 +17,13 @@ namespace Copper {
         
         FileWatch() = default;
         FileWatch(const fs::path& path) : m_path(path) { Start(); } 
+        ~FileWatch() {
+
+            CUP_FUNCTION();
+
+            Stop();
+
+        }
 
         void Start();
         void Update();
@@ -31,15 +38,21 @@ namespace Copper {
 
         }
 
-        inline void SetCallback(Callback callback) { m_callback = callback; }
+        // Getters
 
         inline bool IsRunning() const { return m_running; }
+
+        // Setters
+
+        inline void SetCallback(Callback callback) { m_callback = callback; }
 
     private:
         fs::path m_path;
         std::atomic<bool> m_running = false;
-        std::thread m_monitorThread;
         Callback m_callback;
+
+        std::atomic<bool> m_destroy = false;
+        std::thread m_monitorThread;
 
         int32 m_fd = -1;
 

@@ -64,6 +64,7 @@ namespace Copper {
         
         fs::path m_directory;
         std::atomic<bool> m_running = false;
+
         std::thread m_monitorThread;
 
         // Implementation data

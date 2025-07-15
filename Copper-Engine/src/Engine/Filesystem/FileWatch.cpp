@@ -27,6 +27,13 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+        if (m_destroy == true) {
+
+            Stop();
+            return;
+
+        }
+
         if (m_running == false) return;
 
         CU_ASSERT(m_callback != nullptr, "No callback was to FileWatch. Path: '{}'", m_path);
@@ -46,14 +53,13 @@ namespace Copper {
         CUP_FUNCTION();
 
         m_running = false;
+        m_destroy = false;
 
-        StopBackend();
+        if (m_monitorThread.joinable())
+            m_monitorThread.join();
+        m_data.clear();
 
-        m_monitorThread.join();
-        {
-            std::lock_guard<std::mutex> lock = std::lock_guard(m_dataMutex);
-            m_data.clear();
-        }
+        StopBackend(); 
 
     }
 

@@ -14,8 +14,8 @@ namespace Copper {
 
         }
 
-        CU_ASSERT(fs::exists(m_directory), "Cant't start DirWatch, directory '{}' does not exist!", m_directory);
-        CU_ASSERT(fs::is_directory(m_directory), "DirWatch can only watch directories (folders). Directory: '{}', m_directory");
+        CU_ASSERT(fs::exists(m_directory), "Can't start DirWatch, directory '{}' does not exist!", m_directory);
+        CU_ASSERT(fs::is_directory(m_directory), "RecursiveDirWatch can only watch directories. Directory: '{}'", m_directory);
 
         StartBackend();
 
@@ -47,13 +47,11 @@ namespace Copper {
 
         m_running = false;
 
-        StopBackend();
+        if (m_monitorThread.joinable())
+            m_monitorThread.join();
+        m_data.clear();
 
-        m_monitorThread.join();
-        {
-            std::lock_guard<std::mutex> lock = std::lock_guard(m_dataMutex);
-            m_data.clear();
-        }
+        StopBackend();
 
     }
 

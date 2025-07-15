@@ -37,8 +37,6 @@
 
 #include <Engine/UI/ImGui.h>
 
-#include <Engine/Filesystem/FileWatch.h>
-
 #include <Engine/Utilities/FileUtils.h>
 
 #include <CMath/CMath.h>

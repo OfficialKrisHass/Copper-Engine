@@ -13,6 +13,8 @@ namespace Copper {
         UVector2I size;
         std::string title;
 
+        bool focused;
+
         Event windowCloseEvent;
         WindowFocusedEvent windowFocusedEvent;
         WindowResizeEvent windowResizeEvent;
@@ -56,6 +58,8 @@ namespace Copper {
         inline float GetAspectRatio() const { return static_cast<float>(m_data.size.x) / m_data.size.y; }
 
         inline const std::string& GetTitle() const { return m_data.title; }
+
+        inline bool IsFocused() const { return m_data.focused; }
 
         // Setters
 

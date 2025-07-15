@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <Copper.h>
+#include <Engine/Filesystem/FileChangeType.h>
 
 #include "Panels/Panel.h"
 
@@ -48,7 +49,7 @@ namespace Editor {
         virtual void UI() override;
 
         static void RefreshDirectoryTree(DirectoryEntry& entry, fs::path path);
-        static void FileChangeCallback(const fs::path& path, FileWatcher::FileChangeType changeType);
+        static void AssetChangeHandler(const fs::path& path, FileChangeType changeType);
         static DirectoryEntry& GetDirectoryEntry(const fs::path& path);
 
         void RenderDirectoryEntry(const DirectoryEntry& entry);

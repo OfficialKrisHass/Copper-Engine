@@ -1,7 +1,6 @@
 #include "Project.h"
 
 #include "Core/EditorApp.h"
-#include "Core/FileWatcher.h"
 
 #include "Projects/ProjectChecker.h"
 #include "Projects/ProjectTemplate.h"
@@ -9,6 +8,8 @@
 #include "Assets/ProjectAssetDatabase.h"
 
 #include "Panels/FileBrowser.h"
+
+#include <Engine/Core/Window.h>
 
 #include <Engine/Scripting/ScriptingEngine.h>
 
@@ -173,6 +174,11 @@ namespace Editor {
 
         m_assetWatch.Update();
 
+        // Most rebuilding will be handled by the editors OnWindowFocus event handler
+        // However, there could be an edge case, so for pure safety
+        if (m_shouldRebuild && GetWindow().IsFocused())
+            Build();
+
     }
 
     bool Project::LoadFile(const fs::path& path) {
@@ -209,6 +215,28 @@ namespace Editor {
 
     }
 
+    bool Project::Build() {
+
+        CUP_FUNCTION();
+
+        if (!BuildScripts()) {
+
+            LogError("Failed to Build the project scripts.");
+            return false;
+
+        }
+        if (!Scripting::Reload()) {
+
+            LogError("Failed to reload the Scripting Engine.");
+            return false;
+
+        }
+
+        m_shouldRebuild = false;
+
+        return true;
+
+    }
     bool Project::BuildScripts() const {
 
         CUP_FUNCTION();
@@ -294,7 +322,17 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        Log("Asset DirWatch detected change at '{}', type: '{}' ({})", path, FileChangeTypeToString(type), static_cast<uint8>(type));
+        for (AssetChangeHandler& handler : m_assetChangeHandlers)
+            handler(path, type);
+
+        if (path.extension().string() != ".cs") return;
+
+        m_shouldRebuild = true;
+
+#ifdef CU_LINUX
+        if (type != FileChangeType::Changed)
+            RunPremake();
+#endif
 
     }
 

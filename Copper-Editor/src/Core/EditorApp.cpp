@@ -1,6 +1,5 @@
 #include "EditorApp.h"
 
-#include "Core/FileWatcher.h"
 #include "Core/SceneSerializer.h"
 #include "Core/ChangeHandler.h"
 #include "Core/Clipboard.h"
@@ -70,8 +69,6 @@ namespace Editor {
         // Project
 
         Project project;
-        bool scriptChanges = false;
-
         fs::path projectToLoad;
         bool shouldCreateNewProject = false;
 
@@ -125,7 +122,6 @@ namespace Editor {
 
     void NewProject();
 
-    void FileChangedCallback(const fs::path& path, const FileWatcher::FileChangeType changeType);
     void CopyScriptingAPI();
 
     void StartEditorRuntime();
@@ -156,8 +152,6 @@ namespace Editor {
 
         data.playIcon.Create(ExecutableFolder() / "assets/Icons/PlayButton.png", Texture::Format::RGBA);
         data.stopIcon.Create(ExecutableFolder() / "assets/Icons/StopButton.png", Texture::Format::RGBA);
-
-        //FileWatcher::AddCallback(FileChangedCallback);
 
         LoadEditorData();
 
@@ -261,7 +255,6 @@ namespace Editor {
         CUP_FUNCTION();
         CUP_START_FRAME("Editor");
 
-        FileWatcher::PollChanges();
         data.project.Update();
 
         data.viewport.Update();
@@ -612,21 +605,6 @@ namespace Editor {
 
         Input::SetCursorLocked(false);
         Input::SetCursorVisible(true);
-
-    }
-
-    void FileChangedCallback(const fs::path& path, const FileWatcher::FileChangeType changeType) {
-
-        CUP_FUNCTION();
-
-        if (path.extension().string() != ".cs") return;
-
-        data.scriptChanges = true;
-
-#ifdef CU_LINUX
-        if (changeType != FileWatcher::FileChangeType::Changed)
-            data.project.RunPremake();
-#endif
 
     }
 
@@ -988,12 +966,9 @@ namespace Editor {
         CUP_FUNCTION();
 
         const WindowFocusedEvent& event = static_cast<const WindowFocusedEvent&>(e);
-        if (!event.focused || !data.scriptChanges) return true;
+        if (!event.focused || !data.project.ShouldRebuild()) return true;
 
-        data.project.BuildScripts();
-        Scripting::Reload();
-
-        data.scriptChanges = false;
+        data.project.Build();
 
         return true;
 
@@ -1011,7 +986,7 @@ namespace Editor {
 
     }
     
-    const Project& GetProject() { return data.project; }
+    Project& GetProject() { return data.project; }
 
     SceneCamera& GetSceneCam() { return data.viewport.GetSceneCamera(); }
 

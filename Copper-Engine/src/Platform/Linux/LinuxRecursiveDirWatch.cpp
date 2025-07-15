@@ -18,7 +18,16 @@ namespace Copper {
         m_fd = inotify_init1(IN_NONBLOCK);
         CU_ASSERT(m_fd >= 0, "Could not initialize inotify during DirWatch initialization. Directory: '{}'", m_directory);
 
-        AddWatch(m_directory, true);
+        int wd = inotify_add_watch(m_fd, m_directory.string().c_str(), FILTERS);
+        CU_ASSERT(wd >= 0, "Could not add root DirWatch watch. Directory '{}'", m_directory);
+
+        m_watchMap.emplace(wd, Watch());
+        for (const fs::path& subDir : fs::directory_iterator(m_directory)) {
+
+            if (!fs::is_directory(subDir)) continue;
+            AddWatch(subDir, true);
+
+        }
 
     }
     void RecursiveDirWatch::StopBackend() {

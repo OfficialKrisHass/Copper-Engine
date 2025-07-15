@@ -23,7 +23,7 @@ namespace Editor {
 
     const std::string& GetWindowTitle();
 
-    const Project& GetProject();
+    Project& GetProject();
 
     SceneCamera& GetSceneCam();
 

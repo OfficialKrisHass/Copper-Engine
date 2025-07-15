@@ -113,6 +113,8 @@ namespace Copper {
 
             WindowData* data = GETWINDATA;
 
+            data->focused = focused;
+
             data->windowFocusedEvent.focused = focused;
             data->windowFocusedEvent();
 

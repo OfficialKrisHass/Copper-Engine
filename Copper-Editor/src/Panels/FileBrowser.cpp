@@ -1,7 +1,6 @@
 ﻿#include "FileBrowser.h"
 
 #include "Core/EditorApp.h"
-#include "Core/FileWatcher.h"
 
 #include "Projects/Project.h"
 
@@ -48,7 +47,7 @@ namespace Editor {
         directoryIcon.Create(ExecutableFolder() / "assets/Icons/DirectoryIcon.png", Texture::Format::RGBA);
         fileIcon.Create(ExecutableFolder() / "assets/Icons/FileIcon.png", Texture::Format::RGBA);
 
-        FileWatcher::AddCallback(FileChangeCallback);
+        GetProject().AddAssetChangeHandler(AssetChangeHandler);
 
     }
     void FileBrowser::Refresh() {
@@ -131,7 +130,7 @@ namespace Editor {
         std::sort(root.files.begin(), root.files.end());
 
     }
-    void FileBrowser::FileChangeCallback(const fs::path& path, FileWatcher::FileChangeType changeType) {
+    void FileBrowser::AssetChangeHandler(const fs::path& path, FileChangeType type) {
 
         CUP_FUNCTION();
 
@@ -139,9 +138,9 @@ namespace Editor {
 
         if (!fs::exists(fullPath.parent_path())) return;
 
-        switch (changeType) {
+        switch (type) {
 
-            case FileWatcher::FileChangeType::Created: {
+            case FileChangeType::Created: {
 
                 if (fs::is_directory(fullPath)) {
 
@@ -160,8 +159,8 @@ namespace Editor {
                 break;
 
             }
-            case FileWatcher::FileChangeType::RenamedOldName:
-            case FileWatcher::FileChangeType::Deleted: {
+            case FileChangeType::RenamedOld:
+            case FileChangeType::Deleted: {
 
                 const std::string name = path.filename();
                 DirectoryEntry& parent = GetDirectoryEntry(path.parent_path());
@@ -189,7 +188,7 @@ namespace Editor {
 
 
             }
-            case FileWatcher::FileChangeType::RenamedNewName: {
+            case FileChangeType::RenamedNew: {
 
                 // TODO: Replace the creation of entries and files with DirectoryEntry functions and a constructor
 

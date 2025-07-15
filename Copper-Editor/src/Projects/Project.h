@@ -10,6 +10,8 @@ namespace Editor {
 
     class Project {
 
+        typedef std::function<void(const fs::path&,FileChangeType)> AssetChangeHandler;
+
     public:
         Project() = default;
         Project(const fs::path& path);
@@ -23,6 +25,7 @@ namespace Editor {
 
         void Update();
 
+        bool Build();
         bool BuildScripts() const;
 
         void RegenerateProjectFiles() const;
@@ -32,6 +35,8 @@ namespace Editor {
         void RunPremake() const;
 #endif
 
+        inline void AddAssetChangeHandler(AssetChangeHandler handler) { m_assetChangeHandlers.push_back(std::move(handler)); }
+
         // Getters
 
         inline const std::string& GetName() const { return m_name; }
@@ -40,6 +45,8 @@ namespace Editor {
         inline const fs::path GetAssetsPath() const { return m_path / "Assets"; }
         inline const fs::path& GetLastOpenedScenePath() const { return m_lastOpenedScenePath; }
         inline const std::string GetLastOpenedSceneName() const { return m_lastOpenedScenePath.filename().string(); }
+
+        inline bool ShouldRebuild() const { return m_shouldRebuild; }
 
         // Setters
 
@@ -59,6 +66,9 @@ namespace Editor {
         fs::path m_lastOpenedScenePath;
 
         RecursiveDirWatch m_assetWatch;
+        std::vector<AssetChangeHandler> m_assetChangeHandlers;
+
+        bool m_shouldRebuild = false;
 
         bool LoadFile(const Copper::fs::path& path);
 

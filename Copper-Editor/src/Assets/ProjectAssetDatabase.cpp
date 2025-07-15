@@ -1,6 +1,5 @@
 #include "ProjectAssetDatabase.h"
 
-#include "Core/FileWatcher.h"
 #include "Core/EditorApp.h"
 
 #include "Projects/Project.h"
@@ -26,7 +25,7 @@ namespace Editor::ProjectAssetDatabase {
 
     std::string emptyString = "";
 
-    static void FileChangeCallback(const fs::path& path, const FileWatcher::FileChangeType changeType);
+    static void AssetChangeHandler(const fs::path& path, const FileChangeType type);
 
     void LoadAsset(const fs::path& path, const std::string& extension, bool newAsset = false);
     void RemoveAsset(const fs::path& path, const std::string& extension);
@@ -37,8 +36,8 @@ namespace Editor::ProjectAssetDatabase {
 
         CUP_FUNCTION();
 
-        FileWatcher::AddCallback(FileChangeCallback);
- 
+        GetProject().AddAssetChangeHandler(AssetChangeHandler);
+
         ProjectMetadata::Deserialize(assetFiles);
         Refresh();
 
@@ -227,20 +226,21 @@ namespace Editor::ProjectAssetDatabase {
 
     }
 
-    void FileChangeCallback(const fs::path& path, const FileWatcher::FileChangeType changeType) {
+    void AssetChangeHandler(const fs::path& path, const FileChangeType type) {
 
         CUP_FUNCTION();
 
         const std::string extension = path.extension().string();
         if (!CheckExtension(extension)) return;
 
-        switch (changeType) {
+        switch (type) {
 
-        case FileWatcher::FileChangeType::Created:
-        case FileWatcher::FileChangeType::Changed:
-        case FileWatcher::FileChangeType::RenamedNewName: LoadAsset(path, extension, true); break;
-        case FileWatcher::FileChangeType::Deleted:
-        case FileWatcher::FileChangeType::RenamedOldName: RemoveAsset(path, extension); break;
+        case FileChangeType::Created:
+        case FileChangeType::Changed:
+        case FileChangeType::RenamedNew: LoadAsset(path, extension, true); break;
+        case FileChangeType::Deleted:
+        case FileChangeType::RenamedOld: RemoveAsset(path, extension); break;
+        default: break;
 
         }
 

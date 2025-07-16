@@ -15,9 +15,6 @@
 
 #include <filesystem> // Replace with our filesystem implementation
 
-#include <fmt/format.h> // I hate hate HATE this, but stupid ahh spdlog requires it if we want to have logging functionality for user defined types.
-                        // spdlog includes it anyway so it doesn't really matter but still, horrible horrible HORRIBLE. PLEASE WRITE A CUSTOM LOGGING LIB PLEASE.
-
 #define FLAG(bit) (1 << bit)
 
 #ifdef CU_LOG_STATUS

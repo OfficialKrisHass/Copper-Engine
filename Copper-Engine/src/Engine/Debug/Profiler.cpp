@@ -65,7 +65,7 @@ namespace Copper::Profiler {
 
         LogError("Call stack:");
 
-        for (int32 i = scopeStack.size() - 1; i > -1; i--) {
+        for (size_t i = scopeStack.size() - 1; i > -1; i--) {
 
             Scope* scope = scopeStack[i];
             LogError("#{} {}: {}", i, scope->name, scope->file);

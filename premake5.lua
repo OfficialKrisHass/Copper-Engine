@@ -118,6 +118,9 @@ project "Copper-Engine"
 
     }
 
+    filter "action:vs*"
+        buildoptions { "/utf-8" }
+
     filter "files:Copper-Engine/lib/ImGuizmo/ImGuizmo/**.cpp"
         flags { "NoPCH" }
         includedirs { "%{prj.name}/lib/ImGui/ImGui" }
@@ -200,6 +203,9 @@ project "Copper-Editor"
         "VERSION_TWEAK=" .. version[4],
 
     }
+
+    filter "action:vs*"
+        buildoptions { "/utf-8" }
 
     filter "configurations:Debug"
         defines "CU_DEBUG"

@@ -114,7 +114,7 @@ namespace Editor {
 
         for (const fs::directory_entry& entry : fs::directory_iterator(GetProject().GetAssetsPath() / path)) {
 
-            std::string name = entry.path().filename();
+            std::string name = entry.path().filename().string();
 
             if (entry.is_directory()) {
 
@@ -150,7 +150,7 @@ namespace Editor {
                 } else if (fs::is_regular_file(fullPath)) {
 
                     DirectoryEntry& parent = GetDirectoryEntry(path.parent_path());
-                    parent.files.push_back(path.filename());
+                    parent.files.push_back(path.filename().string());
 
                     std::sort(parent.files.begin(), parent.files.end());
 
@@ -162,7 +162,7 @@ namespace Editor {
             case FileChangeType::RenamedOld:
             case FileChangeType::Deleted: {
 
-                const std::string name = path.filename();
+                const std::string name = path.filename().string();
                 DirectoryEntry& parent = GetDirectoryEntry(path.parent_path());
 
                 // Since the old file path is no longer valid we have to check if it was a recorded folder or a file
@@ -200,7 +200,7 @@ namespace Editor {
                 } else if (fs::is_regular_file(fullPath)) {
 
                     DirectoryEntry& parent = GetDirectoryEntry(path.parent_path());
-                    parent.files.push_back(path.filename());
+                    parent.files.push_back(path.filename().string());
 
                     std::sort(parent.files.begin(), parent.files.end());
 

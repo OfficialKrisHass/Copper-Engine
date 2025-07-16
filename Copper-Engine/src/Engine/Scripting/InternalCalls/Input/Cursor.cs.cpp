@@ -36,13 +36,13 @@ namespace Copper::Scripting::Cursor {
 
         // TODO: Fix this
         Vector2I tmp = Input::GetCursorPosition();
-        return Vector2(tmp.x, tmp.y);
+        return Vector2(static_cast<float>(tmp.x), static_cast<float>(tmp.y));
 
     }
     void SetPosition(Vector2 value) {
 
         CUP_FUNCTION();
-        Input::SetCursorPosition(value.x, value.y);
+        Input::SetCursorPosition(static_cast<int32>(value.x), static_cast<int32>(value.y));
 
     }
 

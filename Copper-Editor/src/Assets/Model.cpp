@@ -150,7 +150,7 @@ namespace Editor {
             const aiMesh* modelMesh = scene->mMeshes[modelNode->mMeshes[0]];
             CU_ASSERT(modelMesh != nullptr, "Could not get mesh from node {}, model: {}", node.name, m_path);
 
-            node.meshIndex = m_meshes.size();
+            node.meshIndex = static_cast<uint32>(m_meshes.size());
             node.materialIndex = modelMesh->mMaterialIndex;
 
             // Mesh name (for asset dtabase purposes)

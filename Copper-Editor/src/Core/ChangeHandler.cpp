@@ -34,7 +34,7 @@ namespace Editor {
 
         }
 
-        changeIndex = changes.size();
+        changeIndex = static_cast<int32>(changes.size());
         changes.push_back(type);
 
         return changes.back();

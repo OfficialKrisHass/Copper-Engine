@@ -1,2 +1,2 @@
 Name: First-Game
-Last scene: Scenes/PhysicsTesting.copper
+Last scene: Scenes/Maze1.copper

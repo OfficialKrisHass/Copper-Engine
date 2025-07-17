@@ -18,20 +18,40 @@ def libraries(dir, system, configuration):
     print(f"from: {libDir}")
     print(f"to: {destDir}\n")
 
+    print("Preparing directories")
+    if not os.path.exists(dir + "/Copper-Editor/bin/PhysX/" + system + "/" + configuration):
+        os.makedirs(dir + "/Copper-Editor/bin/PhysX/" + system + "/" + configuration)
+    if not os.path.exists(dir + "/Copper-Editor/bin/mono/" + system + "/" + configuration):
+        os.makedirs(dir + "/Copper-Editor/bin/mono/" + system + "/" + configuration)
+    if not os.path.exists(dir + "/Copper-Editor/lib/mono/" + system + "/mono/4.5"):
+        os.makedirs(dir + "/Copper-Editor/lib/mono/" + system + "/mono/4.5")
+
     # PhysX
     print("Copying PhysX binaries")
-
-    physxDestDir = destDir + "/PhysX/" + system + "/" + configuration
 
     physxBinDir = None
     if system == "linux":
         physxBinDir = libDir + "/PhysX/physx/bin/linux.x86_64/" + physxConfig[configuration]
+
+    physxDestDir = destDir + "/PhysX/" + system + "/" + configuration
 
     shutil.copy2(physxBinDir + "/libPhysX_static_64.a", physxDestDir)
     shutil.copy2(physxBinDir + "/libPhysXCommon_static_64.a", physxDestDir)
     shutil.copy2(physxBinDir + "/libPhysXExtensions_static_64.a", physxDestDir)
     shutil.copy2(physxBinDir + "/libPhysXFoundation_static_64.a", physxDestDir)
     shutil.copy2(physxBinDir + "/libPhysXPvdSDK_static_64.a", physxDestDir)
+
+    print("Copying mono binaries")
+
+    monoBinDir = libDir + "/mono/build/lib"
+    monoDestDir = destDir + "/mono/" + system + "/" + configuration
+
+    shutil.copy2(monoBinDir + "/libmonosgen-2.0.a", monoDestDir)
+
+    print("Copying mono libraries")
+    
+    monoLibDir = libDir + "/mono/build/lib/mono/4.5"
+    copyDir(monoLibDir, dir + "/Copper-Editor/lib/mono/" + system + "/mono/4.5/")
 
 
 # Copies editor files for the system and configuration, dir has to be Copper-Engine repository root directory

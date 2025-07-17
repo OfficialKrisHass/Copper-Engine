@@ -21,6 +21,7 @@ else
 endif
 
 export COPPER_VERSION := $(shell cat VERSION)
+export CMAKE_POLICY_VERSION_MINIMUM=3.5
 
 .PHONY: projects libraries engine editor launcher scriptapi apibinder bindapi
 .PHONY: run run-editor
@@ -35,14 +36,12 @@ projects: CMake
 
 # Build targets
 
-libraries:
-	@${MAKE} --no-print-directory -C Copper-Engine/lib/PhysX/physx/compiler/linux-gcc-$(PHYSX_CONFIG) -f Makefile
-	@python scripts/post_build.py libraries $(CONFIGURATION) $(OS)
+libraries: Copper-Engine/lib/.stamp
 
-engine: Copper-APIBinder/.stamp
+engine: Copper-Engine/lib/.stamp Copper-APIBinder/.stamp
 	@${MAKE} --no-print-directory -C CMake/$(CONFIGURATION)/Copper-Engine -f Makefile
 
-editor: CMake 
+editor: Copper-Engine/lib/.stamp CMake 
 	@${MAKE} --no-print-directory -C CMake/$(CONFIGURATION)/Copper-Editor -f Makefile
 	@python scripts/post_build.py editor $(CONFIGURATION) $(OS)
 launcher: CMake
@@ -75,6 +74,7 @@ clean:
 	@${MAKE} --no-print-directory -C Copper-Engine/lib/PhysX/physx/compiler/linux-gcc-$(PHYSX_CONFIG) -f Makefile clean
 	@rm -rf Build
 	@rm -rf CMake
+	@rm -f Copper-Engine/lib/.stamp
 	@rm -f Copper-APIBinder/.stamp
 	@rm -f Copper-Editor/assets/Copper-ScriptingAPI.dll
 	@rm -f compile_commands.json
@@ -91,6 +91,13 @@ CMake: $(PROJECT_FILES)
 	@./Copper-Editor/util/premake/premake5 --file=Copper-ScriptingAPI/workspace.lua gmake2
 
 # Build targets
+
+Copper-Engine/lib/.stamp:
+	@${MAKE} --no-print-directory -C Copper-Engine/lib/PhysX/physx/compiler/linux-gcc-$(PHYSX_CONFIG) -f Makefile
+	@${MAKE} --no-print-directory -C Copper-Engine/lib/mono -f Makefile
+	@${MAKE} --no-print-directory -C Copper-Engine/lib/mono -f Makefile install
+	@python scripts/post_build.py libraries $(CONFIGURATION) $(OS)
+	@touch Copper-Engine/lib/.stamp
 
 Copper-APIBinder/.stamp: CMake
 	@cp $(SCRIPTING_API) $(CURDIR)/Copper-Editor/assets

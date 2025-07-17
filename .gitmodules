@@ -7,3 +7,6 @@
 [submodule "Copper-Engine/lib/ImGuizmo/ImGuizmo"]
 	path = Copper-Engine/lib/ImGuizmo/ImGuizmo
 	url = https://github.com/CedricGuillemet/ImGuizmo
+[submodule "Copper-Engine/lib/PhysX"]
+	path = Copper-Engine/lib/PhysX
+	url = git@github.com:OfficialKrisHass/PhysX.git

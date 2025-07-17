@@ -13,14 +13,16 @@ API_BINDER = $(BUILD_DIR)/Copper-APIBinder/Copper-APIBinder
 ifeq ($(CONFIGURATION), Debug)
 	EDITOR_ARGS = -e $(CURDIR)/Copper-Editor
 	LAUNCHER_ARGS = -e $(CURDIR)/Copper-Launcher
+	PHYSX_CONFIG = checked
 else
 	EDITOR_ARGS =
 	LAUNCHER_ARGS =
+	PHYSX_CONFIG = release
 endif
 
 export COPPER_VERSION := $(shell cat VERSION)
 
-.PHONY: projects engine editor launcher scriptapi apibinder bindapi
+.PHONY: projects libraries engine editor launcher scriptapi apibinder bindapi
 .PHONY: run run-editor
 
 .PHONY: copyfiles clean
@@ -32,7 +34,11 @@ all: $(LAUNCHER)
 projects: CMake
 
 # Build targets
-#
+
+libraries:
+	@${MAKE} --no-print-directory -C Copper-Engine/lib/PhysX/physx/compiler/linux-gcc-$(PHYSX_CONFIG) -f Makefile
+	@python scripts/post_build.py libraries $(CONFIGURATION) $(OS)
+
 engine: Copper-APIBinder/.stamp
 	@${MAKE} --no-print-directory -C CMake/$(CONFIGURATION)/Copper-Engine -f Makefile
 
@@ -60,11 +66,13 @@ run-editor: $(EDITOR)
 # Util
 
 copyfiles:
+	@python scripts/post_build.py libraries $(CONFIGURATION) $(OS)
 	@python scripts/post_build.py editor $(CONFIGURATION) $(OS)
 	@python scripts/post_build.py launcher $(CONFIGURATION) $(OS)
 
 clean:
 	@${MAKE} --no-print-directory -C CMake/$(CONFIGURATION) -f Makefile clean
+	@${MAKE} --no-print-directory -C Copper-Engine/lib/PhysX/physx/compiler/linux-gcc-$(PHYSX_CONFIG) -f Makefile clean
 	@rm -rf Build
 	@rm -rf CMake
 	@rm -f Copper-APIBinder/.stamp

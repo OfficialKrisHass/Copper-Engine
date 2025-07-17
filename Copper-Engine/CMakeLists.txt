@@ -27,7 +27,7 @@ list(TRANSFORM CMathSources PREPEND lib/Copper-Math/)
 list(APPEND sources ${CMathSources})
 
 # Include dirs
-list(APPEND includeDirs lib/GLFW/include lib/GLAD/include lib/GLM/include lib/yaml-cpp/include lib/assimp/include lib/mono/include lib/PhysX/include
+list(APPEND includeDirs lib/GLFW/include lib/GLAD/include lib/GLM/include lib/yaml-cpp/include lib/assimp/include lib/mono/include lib/PhysX/physx/include
                         lib/spdlog lib/ImGui lib/ImGuizmo lib/stb lib/Copper-Math lib/portable-file-dialogs lib/uuid)
 
 # Defines

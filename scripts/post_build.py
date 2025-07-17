@@ -3,7 +3,38 @@ import sys
 
 import shutil
 
-# Copies editor files for the system and configuration, system has to be Copper-Engine repository root directory
+physxConfig = {
+    "Debug": "checked",
+    "Release": "release"
+}
+
+# Copies library binaries for the system and configuration, dir has to be Copper-Engine repository root directory
+def libraries(dir, system, configuration):
+    print(f"\nCopying library binaries ({configuration})\n")
+
+    libDir = dir + "/Copper-Engine/lib"
+    destDir = dir + "/Copper-Editor/bin"
+
+    print(f"from: {libDir}")
+    print(f"to: {destDir}\n")
+
+    # PhysX
+    print("Copying PhysX binaries")
+
+    physxDestDir = destDir + "/PhysX/" + system + "/" + configuration
+
+    physxBinDir = None
+    if system == "linux":
+        physxBinDir = libDir + "/PhysX/physx/bin/linux.x86_64/" + physxConfig[configuration]
+
+    shutil.copy2(physxBinDir + "/libPhysX_static_64.a", physxDestDir)
+    shutil.copy2(physxBinDir + "/libPhysXCommon_static_64.a", physxDestDir)
+    shutil.copy2(physxBinDir + "/libPhysXExtensions_static_64.a", physxDestDir)
+    shutil.copy2(physxBinDir + "/libPhysXFoundation_static_64.a", physxDestDir)
+    shutil.copy2(physxBinDir + "/libPhysXPvdSDK_static_64.a", physxDestDir)
+
+
+# Copies editor files for the system and configuration, dir has to be Copper-Engine repository root directory
 def editor(dir, system, configuration):
     print(f"\nCopying Editor files ({configuration})\n")
 
@@ -38,7 +69,7 @@ def editor(dir, system, configuration):
     copyDir(editorDir + "/bin/mono/" + system + "/" + configuration, buildDir)
     copyDir(editorDir + "/bin/PhysX/" + system + "/" + configuration, buildDir)
 
-# Copies launcher files for the system and configuration, system has to be Copper-Engine repository root directory
+# Copies launcher files for the system and configuration, dir has to be Copper-Engine repository root directory
 def launcher(dir, system, configuration):
     print(f"\nCopying Launcher files ({configuration})\n")
 
@@ -83,8 +114,8 @@ system = sys.argv[3]
 
 # Check validity of arguments
 
-if target != "editor" and target != "launcher":
-    print(f"Invalid target ({target}) provided! Accepted values: editor, launcher")
+if target != "libraries" and target != "editor" and target != "launcher":
+    print(f"Invalid target ({target}) provided! Accepted values: libraries, editor, launcher")
     exit(-1)
 
 if configuration != "Debug" and configuration != "Release":
@@ -101,7 +132,9 @@ dir = os.getcwd()
 if not os.path.isfile(dir + "/VERSION"):
     print("You need to run this script from the root directory of the Copper-Engine github repository.")
 
-if target == "editor":
+if target == "libraries":
+    libraries(dir, system, configuration)
+elif target == "editor":
     editor(dir, system, configuration)
 elif target == "launcher":
     launcher(dir, system, configuration)

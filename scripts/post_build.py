@@ -4,7 +4,7 @@ import sys
 import shutil
 
 physxConfig = {
-    "Debug": "checked",
+    "Debug": "debug",
     "Release": "release"
 }
 
@@ -32,26 +32,42 @@ def libraries(dir, system, configuration):
     physxBinDir = None
     if system == "linux":
         physxBinDir = libDir + "/PhysX/physx/bin/linux.x86_64/" + physxConfig[configuration]
+    elif system == "windows":
+        physxBinDir = libDir + "/PhysX/physx/bin/win.x86_64.vc143.mt/" + physxConfig[configuration]
 
     physxDestDir = destDir + "/PhysX/" + system + "/" + configuration
 
-    shutil.copy2(physxBinDir + "/libPhysX_static_64.a", physxDestDir)
-    shutil.copy2(physxBinDir + "/libPhysXCommon_static_64.a", physxDestDir)
-    shutil.copy2(physxBinDir + "/libPhysXExtensions_static_64.a", physxDestDir)
-    shutil.copy2(physxBinDir + "/libPhysXFoundation_static_64.a", physxDestDir)
-    shutil.copy2(physxBinDir + "/libPhysXPvdSDK_static_64.a", physxDestDir)
+    if system == "linux":
+        shutil.copy2(physxBinDir + "/libPhysX_static_64.a", physxDestDir)
+        shutil.copy2(physxBinDir + "/libPhysXCommon_static_64.a", physxDestDir)
+        shutil.copy2(physxBinDir + "/libPhysXExtensions_static_64.a", physxDestDir)
+        shutil.copy2(physxBinDir + "/libPhysXFoundation_static_64.a", physxDestDir)
+        shutil.copy2(physxBinDir + "/libPhysXPvdSDK_static_64.a", physxDestDir)
+    elif system == "windows"
+        shutil.copy2(physxBinDir + "PhysX_64.dll", physxDestDir)
+        shutil.copy2(physxBinDir + "PhysXCommon_64.dll", physxDestDir)
+        shutil.copy2(physxBinDir + "PhysXFoundation_64.dll", physxDestDir)
 
     print("Copying mono binaries")
 
-    monoBinDir = libDir + "/mono/build/lib"
+    monoBinDir = None
+    if system == "linux":
+        monoBinDir = libDir + "/mono/build/lib"
+    elif system == "windows":
+        monoBinDir = libDir + "/mono/msvc/build/sgen/x64/bin/" + configuratio
+
     monoDestDir = destDir + "/mono/" + system + "/" + configuration
 
-    shutil.copy2(monoBinDir + "/libmonosgen-2.0.a", monoDestDir)
+    if system == "linux":
+        shutil.copy2(monoBinDir + "/libmonosgen-2.0.a", monoDestDir)
+    elif system == "windows":
+        shutil.copy2(monoBinDir + "/mono-2.0-sgen.dll", monoDestDir)
 
     print("Copying mono libraries")
     
-    monoLibDir = libDir + "/mono/build/lib/mono/4.5"
-    copyDir(monoLibDir, dir + "/Copper-Editor/lib/mono/" + system + "/mono/4.5/")
+    if system == "linux":
+        monoLibDir = libDir + "/mono/build/lib/mono/4.5"
+        copyDir(monoLibDir, dir + "/Copper-Editor/lib/mono/" + system + "/mono/4.5/")
 
 
 # Copies editor files for the system and configuration, dir has to be Copper-Engine repository root directory

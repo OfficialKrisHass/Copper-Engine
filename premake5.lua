@@ -64,8 +64,6 @@ project "Copper-Engine"
         "%{prj.name}/lib/GLM/include",
         "%{prj.name}/lib/yaml-cpp/include",
         "%{prj.name}/lib/assimp/include",
-        "%{prj.name}/lib/mono/include",
-        "%{prj.name}/lib/PhysX/include",
         "%{prj.name}/lib/spdlog",
         "%{prj.name}/lib/ImGui",
         "%{prj.name}/lib/ImGuizmo",
@@ -73,6 +71,9 @@ project "Copper-Engine"
         "%{prj.name}/lib/Copper-Math",
         "%{prj.name}/lib/portable-file-dialogs",
         "%{prj.name}/lib/uuid",
+
+        "%{prj.name}/lib/mono/msvc/include",
+        "%{prj.name}/lib/PhysX/physx/include",
 
         -- Stupid premake doesn't support include dirs for a single file so the entire project
         -- needs this, just for ImGuizmo.cpp to use it :)))))
@@ -212,8 +213,18 @@ project "Copper-Editor"
         runtime "Debug"
         symbols "on"
 
+        links {
+
+            "Copper-Engine/lib/PhysX/physx/bin/win.x86_64.vc143.mt/debug/PhysX_64.lib",
+            "Copper-Engine/lib/PhysX/physx/bin/win.x86_64.vc143.mt/debug/PhysXCommon_64.lib",
+            "Copper-Engine/lib/PhysX/physx/bin/win.x86_64.vc143.mt/debug/PhysXFoundation_64.lib",
+            "Copper-Engine/lib/PhysX/physx/bin/win.x86_64.vc143.mt/debug/PhysXExtensions_static_64.lib",
+
+        }
+
         postbuildcommands {
             
+            "python " .. _MAIN_SCRIPT_DIR .. "/scripts/post_build.py libraries Debug %{cfg.system}",
             "python " .. _MAIN_SCRIPT_DIR .. "/scripts/post_build.py editor Debug %{cfg.system}",
 
         }
@@ -225,8 +236,18 @@ project "Copper-Editor"
         runtime "Release"
         optimize "on"
 
+        links {
+
+            "Copper-Engine/lib/PhysX/physx/bin/win.x86_64.vc143.mt/release/PhysX_64.lib",
+            "Copper-Engine/lib/PhysX/physx/bin/win.x86_64.vc143.mt/release/PhysXCommon_64.lib",
+            "Copper-Engine/lib/PhysX/physx/bin/win.x86_64.vc143.mt/release/PhysXFoundation_64.lib",
+            "Copper-Engine/lib/PhysX/physx/bin/win.x86_64.vc143.mt/release/PhysXExtensions_static_64.lib",
+
+        }
+
         postbuildcommands {
             
+            "python " .. _MAIN_SCRIPT_DIR .. "/scripts/post_build.py libraries Release %{cfg.system}",
             "python " .. _MAIN_SCRIPT_DIR .. "/scripts/post_build.py editor Release %{cfg.system}",
 
         }
@@ -234,13 +255,10 @@ project "Copper-Editor"
     filter "system:windows"
         links {
 
-            "Copper-Engine/lib/mono/lib/%{cfg.buildcfg}/mono-2.0-sgen.lib",
-            "Copper-Engine/lib/PhysX/lib/%{cfg.buildcfg}/PhysX_64.lib",
-            "Copper-Engine/lib/PhysX/lib/%{cfg.buildcfg}/PhysXCommon_64.lib",
-            "Copper-Engine/lib/PhysX/lib/%{cfg.buildcfg}/PhysXFoundation_64.lib",
-            "Copper-Engine/lib/PhysX/lib/%{cfg.buildcfg}/PhysXExtensions_static_64.lib",
+            "Copper-Engine/lib/mono/msvc/build/sgen/x64/lib/%{cfg.buildcfg}/mono-2.0-sgen.lib",
 
         }
+        
 
 project "Copper-APIBinder"
     location "Copper-APIBinder"

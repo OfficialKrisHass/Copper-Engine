@@ -13,7 +13,7 @@ API_BINDER = $(BUILD_DIR)/Copper-APIBinder/Copper-APIBinder
 ifeq ($(CONFIGURATION), Debug)
 	EDITOR_ARGS = -e $(CURDIR)/Copper-Editor
 	LAUNCHER_ARGS = -e $(CURDIR)/Copper-Launcher
-	PHYSX_CONFIG = checked
+	PHYSX_CONFIG = debug
 else
 	EDITOR_ARGS =
 	LAUNCHER_ARGS =

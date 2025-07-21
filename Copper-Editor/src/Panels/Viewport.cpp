@@ -61,7 +61,9 @@ namespace Editor {
         if (m_mousePos.x > -1 && m_mousePos.y > -1 && m_mousePos.x < m_size.x && m_mousePos.y < m_size.y && Input::GetKeyState(KeyCode::Mouse0) == KeyState::Pressed && !ImGuizmo::IsOver()) {
 
             uint32 id = m_fbo.ReadPixel(1, m_mousePos.x, m_mousePos.y);
-            if (id != INVALID_ENTITY_ID)
+            InternalEntity* selectedEntity = GetEntityFromID(id);
+
+            if (selectedEntity != nullptr)
                 Properties::SetSelectedEntity(Entity(GetEntityFromID(id)));
 
         }

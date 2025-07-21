@@ -20,6 +20,16 @@
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/mono-config.h>
 
+#ifdef CU_DEBUG
+#ifdef CU_LINUX
+#define ASSEMBLIES_PATH "lib/mono/linux"
+#elif CU_WINDOWS
+#define ASSEMBLIES_PATH "lib\\mono\\windows"
+#endif
+#else
+#define ASSEMBLIES_PATH "lib"
+#endif
+
 namespace Copper::Scripting {
 
     static char AppDomainName[] = "CUSAppDomain";
@@ -50,11 +60,8 @@ namespace Copper::Scripting {
         CUP_FUNCTION();
         VERIFY_STATE(EngineState::Initialization, "Initialize the Scripting Engine");
 
-#ifdef CU_LINUX
-        mono_set_assemblies_path((ExecutableFolder() / "lib/mono/linux").string().c_str());
-#elif CU_WINDOWS
-        mono_set_assemblies_path((ExecutableFolder() / "lib/mono/windows").string().c_str());
-#endif
+        fs::path execFolder = ExecutableFolder();
+        mono_set_assemblies_path((execFolder / ASSEMBLIES_PATH).string().c_str());
 
         mono_config_parse((ExecutableFolder() / "lib/mono/config").string().c_str());
 

@@ -89,8 +89,8 @@ def editor(dir, system, configuration):
 
         print("Copying mono libraries")
         if not os.path.exists(buildDir + "/lib/mono"):
-            os.mkdir(buildDir + "/lib/mono")
-        os.system("cp -r " + editorDir + "/lib/mono/" + system + "/mono " + buildDir + "/lib")
+            os.makedirs(buildDir + "/lib/mono")
+        copyDir(editorDir + "/lib/mono/" + system + "/mono", buildDir + "/lib/mono")
 
         print("Copying miscelanous files")
         shutil.copy2(editorDir + "/imgui.ini", buildDir)
@@ -126,7 +126,7 @@ def launcher(dir, system, configuration):
 # Copies the entire directory tree from source to dest
 def copyDir(source, dest):
     if not os.path.exists(dest):
-        os.mkdir(dest)
+        os.makedirs(dest)
 
     files = os.listdir(source)
     for file in files:

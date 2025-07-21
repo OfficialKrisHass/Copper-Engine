@@ -45,8 +45,11 @@ namespace Copper {
         io.IniFilename = iniPath.c_str();
         ImGui::LoadIniSettingsFromDisk(io.IniFilename);
 
-        CU_ASSERT(ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(window.GetWindowPtr()), true), "Could not initialize ImGui GLFW backend.");
-        CU_ASSERT(ImGui_ImplOpenGL3_Init("#version 460"), "Could not initialize ImGui OpenGL backend.");
+        bool success = ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(window.GetWindowPtr()), true);
+        CU_ASSERT(success, "Could not initialize ImGui GLFW backend.");
+
+        success = ImGui_ImplOpenGL3_Init("#version 460");
+        CU_ASSERT(success, "Could not initialize ImGui OpenGL backend.");
 
     }
     void UIContext::Shutdown() {

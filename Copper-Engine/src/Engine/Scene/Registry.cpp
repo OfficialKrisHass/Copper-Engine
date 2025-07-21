@@ -14,7 +14,7 @@
 #include "Engine/Components/SphereCollider.h"
 #include "Engine/Components/CapsuleCollider.h"
 
-#define ASSERT_CID(component, expected) CU_ASSERT(GetCID<component>() == expected, #component " component id ({}) is expected to be {}", GetCID<component>(), expected);
+#define ASSERT_CID(component, expected) uint32 cID_ ## component = GetCID<component>(); CU_ASSERT(cID_ ## component == expected, #component " component id ({}) is expected to be {}", GetCID<component>(), expected)
 
 namespace Copper {
 

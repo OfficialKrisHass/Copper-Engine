@@ -49,6 +49,10 @@ namespace Copper {
         void InitializePhysics();
         void DeinitializePhysics();
 
+        // TODO: VERY VERY VERY TEMPORARY, I seriously need to rewrite the ECS from the ground up, this shit is getting too PirateSoftware-esque
+        //       I just can't because if I will I will never finish 0.3.
+        void InitializeRegistry() { m_registry.Initialize(); }
+
         InternalEntity* CreateEntity(const Vector3& position = Vector3::zero, const Quaternion& rotation = Quaternion::identity, const Vector3& scale = Vector3::one, const std::string& name = "Entity") {
 
             CUP_FUNCTION();

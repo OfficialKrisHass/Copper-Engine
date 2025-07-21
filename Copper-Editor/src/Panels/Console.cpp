@@ -24,17 +24,6 @@ namespace Editor {
 
     void Console::UI() {
 
-        if (ImGui::Button("Test"))
-            Log("Test");
-        
-        ImGui::SameLine();
-        if (ImGui::Button("Test warn"))
-            LogWarn("Test warning");
-
-        ImGui::SameLine();
-        if (ImGui::Button("Test error"))
-            LogError("Test error");
-
         ImGui::PushFont(font);
 
         for (const Message& msg : m_messages) {

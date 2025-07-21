@@ -101,8 +101,6 @@ project "Copper-Engine"
 
         "CU_PREMAKE",
 
-        "CU_LOG_STATUS",
-
         "YAML_CPP_STATIC_DEFINE",
 
         "INCLUDE_GLM",
@@ -128,12 +126,25 @@ project "Copper-Engine"
         includedirs { "%{prj.name}/lib/ImGui/ImGui" }
 
     filter "configurations:Debug"
-        defines "CU_DEBUG"
+        defines {
+
+            "CU_DEBUG",
+            "CU_LOG_STATUS",
+
+            "_DEBUG",
+
+        }
         runtime "Debug"
         symbols "on"
 
     filter "configurations:Release"
-        defines "CU_RELEASE"
+        defines {
+
+            "CU_RELEASE",
+
+            "NDEBUG",
+
+        }
         runtime "Release"
         optimize "on"
 
@@ -208,11 +219,15 @@ project "Copper-Editor"
 
     }
 
-    filter "action:vs*"
-        buildoptions { "/utf-8" }
-
     filter "configurations:Debug"
-        defines "CU_DEBUG"
+        defines {
+
+            "CU_DEBUG",
+            "CU_LOG_STATUS",
+
+            "_DEBUG"
+
+        }
         runtime "Debug"
         symbols "on"
 
@@ -235,7 +250,13 @@ project "Copper-Editor"
         debugargs { "-e", os.getcwd() .. "/%{prj.name}/" }
 
     filter "configurations:Release"
-        defines "CU_RELEASE"
+        defines {
+
+            "CU_RELEASE",
+
+            "NDEBUG",
+
+        }
         runtime "Release"
         optimize "on"
 
@@ -261,6 +282,9 @@ project "Copper-Editor"
             "Copper-Engine/lib/mono/msvc/build/sgen/x64/lib/%{cfg.buildcfg}/mono-2.0-sgen.lib",
 
         }
+
+    filter "action:vs*"
+        buildoptions { "/utf-8" }
 
 project "Copper-APIBinder"
     location "Copper-APIBinder"

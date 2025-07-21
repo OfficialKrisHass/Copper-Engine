@@ -69,6 +69,8 @@ namespace Editor::SceneSerializer {
 
         CUP_FUNCTION();
 
+        scene->InitializeRegistry();
+
         try {
 
         YAML::Node data = YAML::LoadFile(path.string());

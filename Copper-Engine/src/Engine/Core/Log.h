@@ -18,6 +18,7 @@
 #else
 
 #define Log(...)
+#define LogDebug(...)
 #define LogWarn(...)
 #define LogTrace(...)
 #define LogError(...)

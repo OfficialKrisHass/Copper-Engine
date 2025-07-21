@@ -3,7 +3,8 @@ workspace "Copper-Engine"
     configurations { "Debug", "Release" }
     startproject "Copper-Editor"
 
-buildDir = "Build/%{cfg.system}-%{cfg.architecture}-%{cfg.buildcfg}"
+buildDir = "%{cfg.system}-%{cfg.architecture}-%{cfg.buildcfg}"
+print(buildDir)
 
 group "Libraries"
     include "Copper-Engine/lib/GLFW"
@@ -30,8 +31,8 @@ project "Copper-Engine"
     staticruntime "on"
     systemversion "latest"
 
-    targetdir(buildDir .. "/%{prj.name}")
-    objdir(buildDir .. "/%{prj.name}/Intermediate")
+    targetdir("Build/" .. buildDir .. "/%{prj.name}")
+    objdir("Build/" .. buildDir .. "/%{prj.name}/Intermediate")
 
     pchheader "cupch.h"
     pchsource "Copper-Engine/src/cupch.cpp"
@@ -145,8 +146,10 @@ project "Copper-Editor"
     staticruntime "on"
     systemversion "latest"
 
-    targetdir(buildDir .. "/%{prj.name}")
-    objdir(buildDir .. "/%{prj.name}/Intermediate")
+    targetdir("Build/" .. buildDir .. "/%{prj.name}")
+    objdir("Build/" .. buildDir .. "/%{prj.name}/Intermediate")
+
+    debugdir "%{cfg.targetdir}"
 
     files {
 
@@ -224,8 +227,8 @@ project "Copper-Editor"
 
         postbuildcommands {
             
-            "python " .. _MAIN_SCRIPT_DIR .. "/scripts/post_build.py libraries Debug %{cfg.system}",
-            "python " .. _MAIN_SCRIPT_DIR .. "/scripts/post_build.py editor Debug %{cfg.system}",
+            "python " .. _MAIN_SCRIPT_DIR .. "/scripts/post_build.py libraries Debug %{cfg.system} " .. _MAIN_SCRIPT_DIR,
+            "python " .. _MAIN_SCRIPT_DIR .. "/scripts/post_build.py editor Debug %{cfg.system} " .. _MAIN_SCRIPT_DIR,
 
         }
 
@@ -247,8 +250,8 @@ project "Copper-Editor"
 
         postbuildcommands {
             
-            "python " .. _MAIN_SCRIPT_DIR .. "/scripts/post_build.py libraries Release %{cfg.system}",
-            "python " .. _MAIN_SCRIPT_DIR .. "/scripts/post_build.py editor Release %{cfg.system}",
+            "python " .. _MAIN_SCRIPT_DIR .. "/scripts/post_build.py libraries Release %{cfg.system} " .. _MAIN_SCRIPT_DIR,
+            "python " .. _MAIN_SCRIPT_DIR .. "/scripts/post_build.py editor Release %{cfg.system} " .. _MAIN_SCRIPT_DIR,
 
         }
 
@@ -258,7 +261,6 @@ project "Copper-Editor"
             "Copper-Engine/lib/mono/msvc/build/sgen/x64/lib/%{cfg.buildcfg}/mono-2.0-sgen.lib",
 
         }
-        
 
 project "Copper-APIBinder"
     location "Copper-APIBinder"
@@ -268,8 +270,8 @@ project "Copper-APIBinder"
     cppdialect "C++20"
     staticruntime "on"
 
-    targetdir(buildDir .. "/%{prj.name}")
-    objdir(buildDir .. "/%{prj.name}")
+    targetdir("Build/" .. buildDir .. "/%{prj.name}")
+    objdir("Build/" .. buildDir .. "/%{prj.name}/Intermediate")
 
     files {
 
@@ -282,7 +284,7 @@ project "Copper-APIBinder"
 
         "%{prj.name}/src",
 
-        "Copper-Engine/lib/mono/include",
+        "Copper-Engine/lib/mono/msvc/include",
 
     }
 
@@ -309,8 +311,8 @@ project "Copper-Launcher"
     cppdialect "C++20"
     staticruntime "on"
 
-    targetdir(buildDir .. "/Copper-Launcher")
-    objdir(buildDir .. "/Copper-Launcher")
+    targetdir("Build/" .. buildDir .. "/Copper-Launcher")
+    objdir("Build/" .. buildDir .. "/Copper-Launcher/Intermediate")
 
     files {
 
@@ -358,7 +360,7 @@ project "Copper-Launcher"
 
         postbuildcommands {
             
-            "python " .. _MAIN_SCRIPT_DIR .. "/scripts/post_build.py launcher Debug %{cfg.system}",
+            "python " .. _MAIN_SCRIPT_DIR .. "/scripts/post_build.py launcher Debug %{cfg.system} "  .. _MAIN_SCRIPT_DIR,
 
         }
 
@@ -369,6 +371,6 @@ project "Copper-Launcher"
 
         postbuildcommands {
             
-            "python " .. _MAIN_SCRIPT_DIR .. "/scripts/post_build.py launcher Release %{cfg.system}",
+            "python " .. _MAIN_SCRIPT_DIR .. "/scripts/post_build.py launcher Release %{cfg.system} "  .. _MAIN_SCRIPT_DIR,
 
         }

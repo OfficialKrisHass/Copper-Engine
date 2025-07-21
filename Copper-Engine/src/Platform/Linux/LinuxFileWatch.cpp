@@ -1,13 +1,10 @@
 #include "cupch.h"
 #include "Engine/Filesystem/FileWatch.h"
+#include "Engine/Filesystem/WatchConstants.h"
 
 #include <sys/inotify.h>
 
 #define FILTERS IN_CREATE | IN_MODIFY | IN_DELETE_SELF | IN_MOVE_SELF
-
-#define BUFFER_SIZE 0x40000
-
-#define SLEEP_LENGTH 100
 
 namespace Copper {
 
@@ -32,8 +29,8 @@ namespace Copper {
 
     void FileWatch::MonitorChanges() {
 
-        char* buffer = new char[BUFFER_SIZE];
-        while (m_running = true) {
+        char buffer[BUFFER_SIZE];
+        while (m_destroy == false) {
 
             ssize_t length = read(m_fd, buffer, BUFFER_SIZE);
             if (length < 1) {

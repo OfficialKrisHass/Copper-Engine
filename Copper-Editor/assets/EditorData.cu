@@ -1,3 +1,3 @@
-Last Project: /home/jakub/programming/Copper-Engine/Dev Projects/First-Game
+Last Project: C:\Programming\Copper-Engine\Dev Projects\First-Game
 Gizmo operation: 7
 Gizmo global mode: true

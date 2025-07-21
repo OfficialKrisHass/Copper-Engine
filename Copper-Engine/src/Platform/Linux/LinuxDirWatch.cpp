@@ -1,15 +1,10 @@
 #include "cupch.h"
 #include "Engine/Filesystem/DirWatch.h"
+#include "Engine/Filesystem/WatchConstants.h"
 
 #include <sys/inotify.h>
 
-#include <iostream>
-
 #define FILTERS IN_CREATE | IN_MODIFY | IN_DELETE | IN_MOVED_TO | IN_MOVED_FROM | IN_MOVE_SELF | IN_DELETE_SELF | IN_IGNORED
-
-#define BUFFER_SIZE 0x40000
-
-#define SLEEP_LENGTH 100
 
 namespace Copper {
 
@@ -34,7 +29,7 @@ namespace Copper {
 
     void DirWatch::MonitorChanges() {
 
-        char* buffer = new char[BUFFER_SIZE];
+        char buffer[BUFFER_SIZE];
         std::vector<FileChange> parsedData;
 
         while (m_running) {

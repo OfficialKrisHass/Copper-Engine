@@ -43,10 +43,10 @@ def libraries(dir, system, configuration):
         shutil.copy2(physxBinDir + "/libPhysXExtensions_static_64.a", physxDestDir)
         shutil.copy2(physxBinDir + "/libPhysXFoundation_static_64.a", physxDestDir)
         shutil.copy2(physxBinDir + "/libPhysXPvdSDK_static_64.a", physxDestDir)
-    elif system == "windows"
-        shutil.copy2(physxBinDir + "PhysX_64.dll", physxDestDir)
-        shutil.copy2(physxBinDir + "PhysXCommon_64.dll", physxDestDir)
-        shutil.copy2(physxBinDir + "PhysXFoundation_64.dll", physxDestDir)
+    elif system == "windows":
+        shutil.copy2(physxBinDir + "/PhysX_64.dll", physxDestDir)
+        shutil.copy2(physxBinDir + "/PhysXCommon_64.dll", physxDestDir)
+        shutil.copy2(physxBinDir + "/PhysXFoundation_64.dll", physxDestDir)
 
     print("Copying mono binaries")
 
@@ -54,7 +54,7 @@ def libraries(dir, system, configuration):
     if system == "linux":
         monoBinDir = libDir + "/mono/build/lib"
     elif system == "windows":
-        monoBinDir = libDir + "/mono/msvc/build/sgen/x64/bin/" + configuratio
+        monoBinDir = libDir + "/mono/msvc/build/sgen/x64/bin/" + configuration
 
     monoDestDir = destDir + "/mono/" + system + "/" + configuration
 
@@ -166,7 +166,14 @@ if system != "linux" and system != "windows":
 
 dir = os.getcwd()
 if not os.path.isfile(dir + "/VERSION"):
-    print("You need to run this script from the root directory of the Copper-Engine github repository.")
+    if len(sys.argv) < 5:
+        print("You need to run this script from the root directory of the Copper-Engine github repository.")
+        exit(-1)
+
+    dir = sys.argv[4]
+    if not os.path.isfile(dir + "/VERSION"):
+        print("You need to run this script from the root directory of the Copper-Engine github repository.")
+        exit(-1)
 
 if target == "libraries":
     libraries(dir, system, configuration)

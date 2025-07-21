@@ -9,7 +9,7 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        if (!entity) return;
+        if (entity == nullptr) return;
 
         m_id = entity->m_id;
 

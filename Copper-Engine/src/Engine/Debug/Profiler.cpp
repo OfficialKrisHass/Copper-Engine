@@ -7,7 +7,12 @@ namespace Copper::Profiler {
     static const char* CopperEngine = "Copper-Engine";
     static constexpr uint32 CopperEngineLen = 13;
 
-    static std::vector<Scope*> scopeStack;
+    std::vector<Scope*>& GetScopeStack() {
+
+        static std::vector<Scope*> scopeStack;
+        return scopeStack;
+
+    }
 
     static const char* RemovePath(const char* file);
 
@@ -16,14 +21,14 @@ namespace Copper::Profiler {
         this->name = name;
         this->file = RemovePath(file);
 
-        scopeStack.push_back(this);
+        GetScopeStack().push_back(this);
 
 
     }
     Scope::~Scope() {
 
-        CU_ASSERT(!scopeStack.empty(), "Tried to pop a scope when the scope stack is empty. Seems like the scope destructor was called twice ? Scope name: {}, file: {}", name, file);
-        scopeStack.pop_back();
+        CU_ASSERT(!GetScopeStack().empty(), "Tried to pop a scope when the scope stack is empty. Seems like the scope destructor was called twice ? Scope name: {}, file: {}", name, file);
+        GetScopeStack().pop_back();
 
     }
 
@@ -65,9 +70,9 @@ namespace Copper::Profiler {
 
         LogError("Call stack:");
 
-        for (size_t i = scopeStack.size() - 1; i > -1; i--) {
+        for (size_t i = GetScopeStack().size() - 1; i > -1; i--) {
 
-            Scope* scope = scopeStack[i];
+            Scope* scope = GetScopeStack()[i];
             LogError("#{} {}: {}", i, scope->name, scope->file);
 
         }

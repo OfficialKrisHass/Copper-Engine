@@ -1,4 +1,4 @@
-buildDir = "../Build/%{cfg.system}-%{cfg.architecture}-%{cfg.buildcfg}"
+buildDir = "%{cfg.system}-%{cfg.architecture}-%{cfg.buildcfg}"
 
 project "Copper-ScriptingAPI"
     location "."
@@ -6,8 +6,8 @@ project "Copper-ScriptingAPI"
     kind "SharedLib"
     dotnetframework "4.8"
 
-    targetdir(buildDir .. "/%{prj.name}")
-    objdir(buildDir .. "/%{prj.name}/Intermediate")
+    targetdir("../Build/" .. buildDir .. "/%{prj.name}")
+    objdir("../Build/" .. buildDir .. "/%{prj.name}/Intermediate")
 
     files {
 

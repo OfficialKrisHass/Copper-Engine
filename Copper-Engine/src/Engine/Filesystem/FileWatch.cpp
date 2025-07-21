@@ -7,9 +7,9 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        if (m_running == true) {
+        if (m_monitorThread.joinable()) {
 
-            LogError("FileWatch was already started. Path: '{}'", m_path);
+            LogError("FileWatch is already running. Path: '{}'", m_path);
             return;
 
         }
@@ -20,7 +20,7 @@ namespace Copper {
         StartBackend();
 
         m_monitorThread = std::thread([this]() { MonitorChanges(); });
-        m_running = true;
+        m_destroy = false;
 
     }
     void FileWatch::Update() {
@@ -33,8 +33,6 @@ namespace Copper {
             return;
 
         }
-
-        if (m_running == false) return;
 
         CU_ASSERT(m_callback != nullptr, "No callback was to FileWatch. Path: '{}'", m_path);
 
@@ -52,11 +50,21 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        m_running = false;
+        if (!m_monitorThread.joinable()) return;
+
         m_destroy = false;
 
-        if (m_monitorThread.joinable())
-            m_monitorThread.join();
+#ifdef CU_WINDOWS
+        SendCloseEvent();
+#endif
+
+        m_monitorThread.join();
+
+        // To ensure all of the events were reported
+
+        CU_ASSERT(m_callback != nullptr, "No callback was to FileWatch. Path: '{}'", m_path);
+        for (FileChangeType type : m_data)
+            m_callback(m_path, type);
         m_data.clear();
 
         StopBackend(); 

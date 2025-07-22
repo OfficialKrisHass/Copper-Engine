@@ -34,7 +34,7 @@ namespace Copper {
 
         }
 
-        CU_ASSERT(m_callback != nullptr, "No callback was to FileWatch. Path: '{}'", m_path);
+        CU_ASSERT(m_callback != nullptr, "No callback was assigned to FileWatch. Path: '{}'", m_path);
 
         std::vector<FileChangeType> data;
         {
@@ -52,22 +52,24 @@ namespace Copper {
 
         if (!m_monitorThread.joinable()) return;
 
-        m_destroy = false;
+        m_destroy = true;
 
 #ifdef CU_WINDOWS
         SendCloseEvent();
 #endif
-
         m_monitorThread.join();
 
         // To ensure all of the events were reported
 
-        CU_ASSERT(m_callback != nullptr, "No callback was to FileWatch. Path: '{}'", m_path);
+        CU_ASSERT(m_callback != nullptr, "No callback was assigned to FileWatch. Path: '{}'", m_path);
         for (FileChangeType type : m_data)
             m_callback(m_path, type);
+
         m_data.clear();
 
-        StopBackend(); 
+        StopBackend();
+
+        m_destroy = false;
 
     }
 

@@ -7,7 +7,7 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        if (m_running == true) {
+        if (m_monitorThread.joinable()) {
 
             LogWarn("DirWatch is already running. Directory: '{}'", m_directory);
             return;
@@ -20,7 +20,7 @@ namespace Copper {
         StartBackend();
 
         m_monitorThread = std::thread([this]() { MonitorChanges(); });
-        m_running = true;
+        m_destroy = false;
 
     }
     void DirWatch::Update() {
@@ -33,8 +33,6 @@ namespace Copper {
             return;
 
         }
-
-        if (m_running == false) return;
 
         CU_ASSERT(m_callback != nullptr, "No callback was assigned to DirWatch at directory '{}'", m_directory);
 
@@ -50,14 +48,26 @@ namespace Copper {
     }
     void DirWatch::Stop() {
 
-        m_running = false;
-        m_destroy = false;
+        if (!m_monitorThread.joinable()) return;
 
-        if (m_monitorThread.joinable())
-            m_monitorThread.join();
+        m_destroy = true;
+
+#ifdef CU_WINDOWS
+        SendCloseEvent();
+#endif
+        m_monitorThread.join();
+
+        // To ensure all of the events were reported
+
+        CU_ASSERT(m_callback != nullptr, "No callback was assigned to DirWatch. Directory: '{}'", m_directory);
+        for (const FileChange& change : m_data)
+            m_callback(change.path, change.type);
+
         m_data.clear();
 
         StopBackend();
+
+        m_destroy = false;
 
     }
 

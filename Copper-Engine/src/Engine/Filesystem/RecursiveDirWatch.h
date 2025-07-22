@@ -42,15 +42,6 @@ namespace Copper {
         inline void SetCallback(Callback callback) { m_callback = callback; }
 
     private:
-        struct Watch {
-
-            fs::path path;
-            bool moved = false;
-
-            Watch() = default;
-            Watch(const fs::path& path) : path(path) {}
-
-        };
         struct FileChange {
 
             fs::path path; // relative to the file watch directory
@@ -64,16 +55,34 @@ namespace Copper {
         
         fs::path m_directory;
         std::atomic<bool> m_running = false;
+        Callback m_callback = nullptr;
 
         std::thread m_monitorThread;
 
         // Implementation data
 
-        int32 m_fd = -1;
 #ifdef CU_LINUX
+        struct Watch {
+
+            fs::path path;
+            bool moved = false;
+
+            Watch() = default;
+            Watch(const fs::path& path) : path(path) {}
+
+        };
+
+        int32 m_fd = -1;
         std::unordered_map<int32, Watch> m_watchMap;
+
+        int32 AddWatch(const fs::path& path, bool moved = false);
+        void RemoveWatch(int32 wd);
+#elif CU_WINDOWS
+        HANDLE m_handle = nullptr;
+        HANDLE m_closeEvent = nullptr;
+
+        void SendCloseEvent();
 #endif
-        Callback m_callback = nullptr;
 
         // Received data
 
@@ -87,11 +96,6 @@ namespace Copper {
 
         // This is called from the monitoring thread
         void MonitorChanges();
-
-#ifdef CU_LINUX
-        int32 AddWatch(const fs::path& path, bool moved = false);
-        void RemoveWatch(int32 wd);
-#endif
 
     };
 

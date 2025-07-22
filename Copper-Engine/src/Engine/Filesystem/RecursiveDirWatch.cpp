@@ -45,10 +45,21 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+        if (!m_monitorThread.joinable()) return;
+
         m_running = false;
 
-        if (m_monitorThread.joinable())
-            m_monitorThread.join();
+#ifdef CU_WINDOWS
+        SendCloseEvent();
+#endif
+        m_monitorThread.join();
+
+        // To ensure all of the events were reported
+
+        CU_ASSERT(m_callback != nullptr, "No callback was assigned to DirWatch. Directory: '{}'", m_directory);
+        for (const FileChange& change : m_data)
+            m_callback(change.path, change.type);
+
         m_data.clear();
 
         StopBackend();

@@ -32,7 +32,7 @@ namespace Copper {
         char buffer[BUFFER_SIZE];
         std::vector<FileChange> parsedData;
 
-        while (m_running) {
+        while (m_destroy == false) {
 
             int32 length = read(m_fd, buffer, BUFFER_SIZE);
             if (length < 1) {

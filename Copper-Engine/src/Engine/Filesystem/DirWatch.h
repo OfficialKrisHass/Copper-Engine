@@ -43,7 +43,7 @@ namespace Copper {
 
         // Getters
 
-        inline bool IsRunning() const { return m_running; }
+        inline bool IsRunning() const { return m_monitorThread.joinable(); }
 
         // Setters
 
@@ -62,7 +62,6 @@ namespace Copper {
         // Core
 
         fs::path m_directory;
-        std::atomic<bool> m_running = false;
         Callback m_callback;
 
         std::atomic<bool> m_destroy = false;
@@ -70,7 +69,14 @@ namespace Copper {
 
         // Implementation
 
+#ifdef CU_LINUX
         int32 m_fd = -1;
+#elif CU_WINDOWS
+        HANDLE m_handle = nullptr;
+        HANDLE m_closeEvent = nullptr;
+
+        void SendCloseEvent();
+#endif
 
         // Received data
 

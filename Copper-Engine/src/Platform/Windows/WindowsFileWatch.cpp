@@ -15,7 +15,7 @@ namespace Copper {
 
 		CUP_FUNCTION();
 
-		m_handle = CreateFileW(m_path.parent_path().c_str(), FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, HANDLE(0));
+		m_handle = CreateFileW(m_path.parent_path().c_str(), FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED, HANDLE(0));
 		CU_ASSERT(m_handle != nullptr, "Could not Create a File handle for FileWatch at path '{}'. Error: '{}'", m_path, GetLastError());
 
 		m_closeEvent = CreateEventW(nullptr, true, false, nullptr);
@@ -57,7 +57,7 @@ namespace Copper {
 			parsedData.clear();
 
 			BOOL ec = ReadDirectoryChangesW(m_handle, buffer, BUFFER_SIZE, false, FILTERS, &bytesRead, &overlapped, nullptr);
-			CU_ASSERT(ec != 0, "Call to ReadDirectoryChangesW failed. Error: '{}', Path: '{}'", GetLastError(), m_path);
+			CU_ASSERT(ec != 0, "FileWatch call to ReadDirectoryChangesW failed. Error: '{}', Path: '{}'", GetLastError(), m_path);
 
 			asyncPending = true;
 
@@ -67,13 +67,11 @@ namespace Copper {
 
 				// File Change event
 
-				BOOL success = GetOverlappedResult(m_handle, &overlapped, &bytesRead, INFINITE);
+				BOOL success = GetOverlappedResult(m_handle, &overlapped, &bytesRead, true);
 				CU_ASSERT(success != 0, "FileWatch call to GetOverlappedResult failed. Error: '{}', Path: '{}'", GetLastError(), m_path);
-				CU_ASSERT(bytesRead != 0, "Call to ReadDirectoryChangesW read 0 bytes. Path: '{}'", m_path);
+				CU_ASSERT(bytesRead != 0, "FileWatch call to ReadDirectoryChangesW read 0 bytes. Path: '{}'", m_path);
 
 				asyncPending = false;
-
-				if (bytesRead == 0) break;
 
 				FILE_NOTIFY_INFORMATION* fileInformation = reinterpret_cast<FILE_NOTIFY_INFORMATION*>(&buffer[0]);
 				do {
@@ -142,10 +140,12 @@ namespace Copper {
 
 		}
 
+		// Cleanup in case we stopped mid processing
+
 		if (asyncPending) {
 
 			CancelIo(m_handle);
-			GetOverlappedResult(m_handle, &overlapped, &bytesRead, INFINITE);
+			GetOverlappedResult(m_handle, &overlapped, &bytesRead, true);
 
 		}
 

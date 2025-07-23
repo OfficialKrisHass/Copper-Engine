@@ -165,3 +165,5 @@ namespace Copper {
     }
 
 }
+
+#include "Engine/Scene/InternalEntity.inl"

@@ -18,14 +18,14 @@ list(TRANSFORM includeDirs PREPEND ../Copper-Engine/)
 list(APPEND includeDirs ../Copper-Engine/src ../Copper-Engine/lib/uuid ${PROJECT_BINARY_DIR}/Copper-Engine/src lib/Filewatch src)
 
 # Defines
-list(APPEND defines CU_EDITOR CU_CMAKE INCLUDE_GLM CU_LOG_STATUS _CRT_SECURE_NO_WARNING)
+list(APPEND defines CU_EDITOR CU_CMAKE INCLUDE_GLM _CRT_SECURE_NO_WARNING)
 
 # OS Specific
 list(APPEND defines CU_LINUX)
 
 # Config Specific
 if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
-    list(APPEND defines CU_DEBUG)
+    list(APPEND defines CU_DEBUG CU_LOG_STATUS)
 elseif(${CMAKE_BUILD_TYPE} STREQUAL Release)
     list(APPEND defines CU_RELEASE)
 endif()

@@ -31,7 +31,7 @@ list(APPEND includeDirs lib/GLFW/include lib/GLAD/include lib/GLM/include lib/ya
                         lib/spdlog lib/ImGui lib/ImGuizmo lib/stb lib/Copper-Math lib/portable-file-dialogs lib/uuid)
 
 # Defines
-list(APPEND defines CU_ENGINE CU_EDITOR CU_CMAKE CU_LOG_STATUS _CRT_SECURE_NO_WARNINGS INCLUDE_GLM)
+list(APPEND defines CU_ENGINE CU_EDITOR CU_CMAKE _CRT_SECURE_NO_WARNINGS INCLUDE_GLM)
 
 # OS Specific
 # TODO: Add options to control what os we are building for
@@ -41,7 +41,7 @@ include(src/Platform/Linux/CMakeLists.txt)
 include(src/Platform/OpenGL/CMakeLists.txt)
 
 if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
-    list(APPEND defines CU_DEBUG)
+    list(APPEND defines CU_DEBUG CU_LOG_STATUS)
 elseif(${CMAKE_BUILD_TYPE} STREQUAL Release)
     list(APPEND defines CU_RELEASE)
 endif()

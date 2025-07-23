@@ -1,5 +1,5 @@
 OS = linux
-CONFIGURATION = Debug
+CONFIGURATION = Release
 BUILD_DIR = Build/$(OS)-x86_64-$(CONFIGURATION)
 
 PROJECT_FILES = VERSION Makefile CMakeLists.txt Copper-Engine/CMakeLists.txt Copper-Editor/CMakeLists.txt Copper-Launcher/CMakeLists.txt Copper-APIBinder/CMakeLists.txt Copper-ScriptingAPI/premake5.lua Copper-ScriptingAPI/workspace.lua
@@ -13,11 +13,15 @@ API_BINDER = $(BUILD_DIR)/Copper-APIBinder/Copper-APIBinder
 ifeq ($(CONFIGURATION), Debug)
 	EDITOR_ARGS = -e $(CURDIR)/Copper-Editor
 	LAUNCHER_ARGS = -e $(CURDIR)/Copper-Launcher
+
 	PHYSX_CONFIG = debug
+	SCRIPTING_API_CONFIG = debug
 else
 	EDITOR_ARGS =
 	LAUNCHER_ARGS =
+
 	PHYSX_CONFIG = release
+	SCRIPTING_API_CONFIG = release
 endif
 
 export COPPER_VERSION := $(shell cat VERSION)
@@ -49,7 +53,7 @@ launcher: CMake
 	@python scripts/post_build.py launcher $(CONFIGURATION) $(OS)
 
 scriptapi: CMake
-	@${MAKE} --no-print-directory -C Copper-ScriptingAPI -f Makefile
+	@${MAKE} --no-print-directory -C Copper-ScriptingAPI -f Makefile config=$(SCRIPTING_API_CONFIG)
 apibinder: CMake
 	@${MAKE} --no-print-directory -C CMake/$(CONFIGURATION)/Copper-APIBinder -f Makefile
 bindapi: Copper-APIBinder/.stamp

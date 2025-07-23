@@ -1,6 +1,8 @@
 #include "cupch.h"
 #include "Engine/Components/RigidBody.h"
 
+#include "Engine/Scene/Scene.h"
+
 #include "Engine/Components/Collider.h"
 
 #include "Engine/Physics/PhysicsEngine.h"

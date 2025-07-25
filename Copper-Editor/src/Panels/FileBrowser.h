@@ -39,6 +39,15 @@ namespace Editor {
             std::map<std::string, DirectoryEntry> folders;
             std::vector<std::string> files;
 
+            void AddFile(const std::string& file) {
+
+                CUP_FUNCTION();
+
+                files.emplace_back(file);
+                std::sort(files.begin(), files.end());
+
+            }
+
         };
 
         static DirectoryEntry m_rootEntry;
@@ -50,7 +59,8 @@ namespace Editor {
 
         static void RefreshDirectoryTree(DirectoryEntry& entry, fs::path path);
         static void AssetChangeHandler(const fs::path& path, FileChangeType changeType);
-        static DirectoryEntry& GetDirectoryEntry(const fs::path& path);
+        static DirectoryEntry* GetDirectoryEntry(const fs::path& path);
+        static DirectoryEntry* CreateDirectoryEntry(const fs::path& path);
 
         void RenderDirectoryEntry(const DirectoryEntry& entry);
         void RenderEntryIcon(const Texture& icon, const fs::path& path);

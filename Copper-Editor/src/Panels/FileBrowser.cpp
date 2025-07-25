@@ -112,18 +112,21 @@ namespace Editor {
 
         CUP_FUNCTION();
 
+        root.files.clear();
         for (const fs::directory_entry& entry : fs::directory_iterator(GetProject().GetAssetsPath() / path)) {
 
-            std::string name = entry.path().filename().string();
+            fs::path name = entry.path().filename();
 
             if (entry.is_directory()) {
+
+                // This will either create, or get the entry. I am so smart
 
                 DirectoryEntry& subEntry = root.folders[name];
                 subEntry.parent = &root;
                 RefreshDirectoryTree(subEntry, path / name);
 
             } else if (entry.is_regular_file())
-                root.files.push_back(name);
+                root.files.push_back(name.string());
 
         }
 
@@ -134,27 +137,22 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        const fs::path fullPath = GetProject().GetAssetsPath() / path;
+        Log("{}: {}", FileChangeTypeToString(type), path);
 
+        const fs::path fullPath = GetProject().GetAssetsPath() / path;
         if (!fs::exists(fullPath.parent_path())) return;
 
         switch (type) {
 
             case FileChangeType::Created: {
 
-                if (fs::is_directory(fullPath)) {
+                if (fs::is_regular_file(fullPath)) {
 
-                    // This also creates the last folder and any missing ones, so this is all we need
-                    GetDirectoryEntry(path);
+                    DirectoryEntry* parent = CreateDirectoryEntry(path.parent_path());
+                    parent->AddFile(path.filename().string());
 
-                } else if (fs::is_regular_file(fullPath)) {
-
-                    DirectoryEntry& parent = GetDirectoryEntry(path.parent_path());
-                    parent.files.push_back(path.filename().string());
-
-                    std::sort(parent.files.begin(), parent.files.end());
-
-                }
+                } else if (fs::is_directory(fullPath))
+                    CreateDirectoryEntry(path); // This will create the entry if it does not exist
 
                 break;
 
@@ -163,26 +161,29 @@ namespace Editor {
             case FileChangeType::Deleted: {
 
                 const std::string name = path.filename().string();
-                DirectoryEntry& parent = GetDirectoryEntry(path.parent_path());
 
-                // Since the old file path is no longer valid we have to check if it was a recorded folder or a file
-                // and since windows is stupid and doesn't give you a cookie during Rename events, we can't pair these events
-                // together and have to do it this way of deleting the entry/file and readding it in the RenamedNewName event
+                Log("Name: {}", name);
+                Log("RootPath: {}", path.parent_path());
 
-                const auto& it = parent.folders.find(name);
-                if (it != parent.folders.end())
-                    parent.folders.erase(it);
+                DirectoryEntry* parent = GetDirectoryEntry(path.parent_path());
+                if (parent == nullptr) break;
+
+                const auto it = parent->folders.find(name);
+                if (it != parent->folders.end())
+                    parent->folders.erase(it);
                 else {
 
                     uint32 i;
-                    for (i = 0; i < parent.files.size(); i++)
-                        if (parent.files[i] == name) break;
+                    for (i = 0; i < parent->files.size(); i++) {
 
-                    // It is possible that we only get a RenamedOldName event (file/folder moved outside of the assets directory)
-                    if (i != parent.files.size())
-                        parent.files.erase(parent.files.begin() + i);
+                        if (parent->files[i] != name) continue;
 
-                }
+                        parent->files.erase(parent->files.begin() + i);
+                        break;
+
+                    }
+
+                } 
 
                 break;
 
@@ -194,15 +195,13 @@ namespace Editor {
 
                 if (fs::is_directory(fullPath)) {
 
-                    DirectoryEntry& entry = GetDirectoryEntry(path);
-                    RefreshDirectoryTree(entry, path);
+                    DirectoryEntry* entry = CreateDirectoryEntry(path);
+                    RefreshDirectoryTree(*entry, path);
 
                 } else if (fs::is_regular_file(fullPath)) {
 
-                    DirectoryEntry& parent = GetDirectoryEntry(path.parent_path());
-                    parent.files.push_back(path.filename().string());
-
-                    std::sort(parent.files.begin(), parent.files.end());
+                    DirectoryEntry* parent = CreateDirectoryEntry(path.parent_path());
+                    parent->AddFile(path.filename().string());
 
                 }
 
@@ -214,7 +213,24 @@ namespace Editor {
         }
 
     }
-    FileBrowser::DirectoryEntry& FileBrowser::GetDirectoryEntry(const fs::path& path) {
+    FileBrowser::DirectoryEntry* FileBrowser::GetDirectoryEntry(const fs::path& path) {
+
+        CUP_FUNCTION();
+
+        DirectoryEntry* tmp = &m_rootEntry;
+        for (const fs::path& it : path) {
+
+            const auto folder = tmp->folders.find(it.string());
+            if (folder == tmp->folders.end()) return nullptr;
+
+            tmp = &folder->second;
+
+        }
+
+        return tmp;
+
+    }
+    FileBrowser::DirectoryEntry* FileBrowser::CreateDirectoryEntry(const fs::path& path) {
 
         CUP_FUNCTION();
 
@@ -222,20 +238,15 @@ namespace Editor {
         for (const fs::path& it : path) {
 
             const std::string name = it.string();
+            DirectoryEntry* tmp = entry;
 
-            if (!entry->folders.contains(name)) {
-
-                DirectoryEntry newEntry;
-                newEntry.parent = entry;
-                entry->folders[name] = std::move(newEntry);
-
-            }
-
-            entry = &entry->folders.at(name);
+            entry = &entry->folders[name];
+            if (entry->parent == nullptr)
+                entry->parent = tmp;
 
         }
 
-        return *entry;
+        return entry;
 
     }
 

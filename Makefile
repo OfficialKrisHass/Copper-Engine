@@ -1,5 +1,5 @@
 OS = linux
-CONFIGURATION = Release
+CONFIGURATION = Debug
 BUILD_DIR = Build/$(OS)-x86_64-$(CONFIGURATION)
 
 PROJECT_FILES = VERSION Makefile CMakeLists.txt Copper-Engine/CMakeLists.txt Copper-Editor/CMakeLists.txt Copper-Launcher/CMakeLists.txt Copper-APIBinder/CMakeLists.txt Copper-ScriptingAPI/premake5.lua Copper-ScriptingAPI/workspace.lua

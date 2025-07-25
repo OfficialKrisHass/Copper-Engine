@@ -137,8 +137,6 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        Log("{}: {}", FileChangeTypeToString(type), path);
-
         const fs::path fullPath = GetProject().GetAssetsPath() / path;
         if (!fs::exists(fullPath.parent_path())) return;
 
@@ -161,9 +159,6 @@ namespace Editor {
             case FileChangeType::Deleted: {
 
                 const std::string name = path.filename().string();
-
-                Log("Name: {}", name);
-                Log("RootPath: {}", path.parent_path());
 
                 DirectoryEntry* parent = GetDirectoryEntry(path.parent_path());
                 if (parent == nullptr) break;

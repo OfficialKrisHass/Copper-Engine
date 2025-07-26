@@ -25,8 +25,6 @@ namespace Editor::ProjectAssetDatabase {
 
     std::string emptyString = "";
 
-    static void AssetChangeHandler(const fs::path& path, const FileChangeType type);
-
     void LoadAsset(const fs::path& path, const std::string& extension, bool newAsset = false);
     void RemoveAsset(const fs::path& path, const std::string& extension);
 
@@ -35,8 +33,6 @@ namespace Editor::ProjectAssetDatabase {
     void Initialize() {
 
         CUP_FUNCTION();
-
-        GetProject().AddAssetChangeHandler(AssetChangeHandler);
 
         ProjectMetadata::Deserialize(assetFiles);
         Refresh();
@@ -154,6 +150,26 @@ namespace Editor::ProjectAssetDatabase {
 
     }
 
+    void OnAssetChange(const fs::path& path, const FileChangeType changeType) {
+
+        CUP_FUNCTION();
+
+        const std::string extension = path.extension().string();
+        if (!CheckExtension(extension)) return;
+
+        switch (changeType) {
+
+        case FileChangeType::Created:
+        case FileChangeType::Changed:
+        case FileChangeType::RenamedNew: LoadAsset(path, extension, true); break;
+        case FileChangeType::Deleted:
+        case FileChangeType::RenamedOld: RemoveAsset(path, extension); break;
+        default: break;
+
+        }
+
+    }
+
     void LoadAsset(const fs::path& path, const std::string& extension, bool newAsset) {
 
         CUP_FUNCTION();
@@ -223,26 +239,6 @@ namespace Editor::ProjectAssetDatabase {
         assetFiles.erase(path);
 
         Log("Asset '{}' ({}) removed.", uuid.ToString(), path.filename().string());
-
-    }
-
-    void AssetChangeHandler(const fs::path& path, const FileChangeType type) {
-
-        CUP_FUNCTION();
-
-        const std::string extension = path.extension().string();
-        if (!CheckExtension(extension)) return;
-
-        switch (type) {
-
-        case FileChangeType::Created:
-        case FileChangeType::Changed:
-        case FileChangeType::RenamedNew: LoadAsset(path, extension, true); break;
-        case FileChangeType::Deleted:
-        case FileChangeType::RenamedOld: RemoveAsset(path, extension); break;
-        default: break;
-
-        }
 
     }
 

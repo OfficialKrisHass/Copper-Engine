@@ -29,6 +29,8 @@ namespace Editor {
         void Initialize();
         static void Refresh();
 
+        static void OnAssetChange(const fs::path& path, FileChangeType changeType);
+
         static void SetRelativeDir(const Copper::fs::path& value) { m_projectRelativeDir = value; }
         static const Copper::fs::path& GetRelativeDir() { return m_projectRelativeDir; }
 
@@ -58,7 +60,6 @@ namespace Editor {
         virtual void UI() override;
 
         static void RefreshDirectoryTree(DirectoryEntry& entry, fs::path path);
-        static void AssetChangeHandler(const fs::path& path, FileChangeType changeType);
         static DirectoryEntry* GetDirectoryEntry(const fs::path& path);
         static DirectoryEntry* CreateDirectoryEntry(const fs::path& path);
 

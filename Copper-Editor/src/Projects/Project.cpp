@@ -322,8 +322,8 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        for (AssetChangeHandler& handler : m_assetChangeHandlers)
-            handler(path, type);
+        ProjectAssetDatabase::OnAssetChange(path, type);
+        FileBrowser::OnAssetChange(path, type);
 
         if (path.extension().string() != ".cs") return;
 

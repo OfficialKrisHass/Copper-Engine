@@ -10,8 +10,6 @@ namespace Editor {
 
     class Project {
 
-        typedef std::function<void(const fs::path&,FileChangeType)> AssetChangeHandler;
-
     public:
         Project() = default;
         Project(const fs::path& path);
@@ -34,8 +32,6 @@ namespace Editor {
 #ifdef CU_LINUX
         void RunPremake() const;
 #endif
-
-        inline void AddAssetChangeHandler(AssetChangeHandler handler) { m_assetChangeHandlers.push_back(std::move(handler)); }
 
         // Getters
 
@@ -66,7 +62,6 @@ namespace Editor {
         fs::path m_lastOpenedScenePath;
 
         RecursiveDirWatch m_assetWatch;
-        std::vector<AssetChangeHandler> m_assetChangeHandlers;
 
         bool m_shouldRebuild = false;
 

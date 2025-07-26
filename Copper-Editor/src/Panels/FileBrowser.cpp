@@ -47,8 +47,6 @@ namespace Editor {
         directoryIcon.Create(ExecutableFolder() / "assets/Icons/DirectoryIcon.png", Texture::Format::RGBA);
         fileIcon.Create(ExecutableFolder() / "assets/Icons/FileIcon.png", Texture::Format::RGBA);
 
-        GetProject().AddAssetChangeHandler(AssetChangeHandler);
-
     }
     void FileBrowser::Refresh() {
 
@@ -133,7 +131,7 @@ namespace Editor {
         std::sort(root.files.begin(), root.files.end());
 
     }
-    void FileBrowser::AssetChangeHandler(const fs::path& path, FileChangeType type) {
+    void FileBrowser::OnAssetChange(const fs::path& path, FileChangeType type) {
 
         CUP_FUNCTION();
 

@@ -131,14 +131,14 @@ namespace Editor {
         std::sort(root.files.begin(), root.files.end());
 
     }
-    void FileBrowser::OnAssetChange(const fs::path& path, FileChangeType type) {
+    void FileBrowser::OnAssetChange(const fs::path& path, FileChangeType changeType, AssetType type) {
 
         CUP_FUNCTION();
 
         const fs::path fullPath = GetProject().GetAssetsPath() / path;
         if (!fs::exists(fullPath.parent_path())) return;
 
-        switch (type) {
+        switch (changeType) {
 
             case FileChangeType::Created: {
 

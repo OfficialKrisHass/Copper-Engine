@@ -44,7 +44,7 @@ namespace Editor::AssetFile {
         try { node = YAML::LoadFile(path.string()); } catch (YAML::Exception e) {
 
             LogError("Couldn't read Material asset file.\n\tPath: {}\n\tError Message: {}", path.string(), e.msg);
-            return MaterialAsset();
+            return UUID::GetInvalid();
 
         }
 

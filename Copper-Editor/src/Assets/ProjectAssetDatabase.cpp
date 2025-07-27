@@ -25,10 +25,8 @@ namespace Editor::ProjectAssetDatabase {
 
     std::string emptyString = "";
 
-    void LoadAsset(const fs::path& path, const std::string& extension, bool newAsset = false);
-    void RemoveAsset(const fs::path& path, const std::string& extension);
-
-    bool CheckExtension(const std::string& extension);
+    void LoadAsset(const fs::path& path, AssetType type, bool newAsset = false);
+    void RemoveAsset(const fs::path& path, AssetType type);
 
     void Initialize() {
 
@@ -60,11 +58,11 @@ namespace Editor::ProjectAssetDatabase {
 
             if (entry.is_directory()) continue;
 
-            std::string extension = entry.path().extension().string();
-            if (!CheckExtension(extension)) continue;
+            AssetType type = GetAssetTypeFromExtension(entry.path().extension().string());
+            if (!IsDatabaseAsset(type)) continue;
 
             fs::path path = fs::relative(entry.path(), dir);
-            LoadAsset(path, extension);
+            LoadAsset(path, type);
 
         }
 
@@ -150,29 +148,32 @@ namespace Editor::ProjectAssetDatabase {
 
     }
 
-    void OnAssetChange(const fs::path& path, const FileChangeType changeType) {
+    void OnAssetChange(const fs::path& path, FileChangeType changeType, AssetType type) {
 
         CUP_FUNCTION();
 
-        const std::string extension = path.extension().string();
-        if (!CheckExtension(extension)) return;
+        if (!IsDatabaseAsset(type)) return;
 
         switch (changeType) {
 
         case FileChangeType::Created:
         case FileChangeType::Changed:
-        case FileChangeType::RenamedNew: LoadAsset(path, extension, true); break;
+        case FileChangeType::RenamedNew: LoadAsset(path, type, true); break;
         case FileChangeType::Deleted:
-        case FileChangeType::RenamedOld: RemoveAsset(path, extension); break;
+        case FileChangeType::RenamedOld: RemoveAsset(path, type); break;
         default: break;
 
         }
 
     }
 
-    void LoadAsset(const fs::path& path, const std::string& extension, bool newAsset) {
+    void LoadAsset(const fs::path& path, AssetType type, bool newAsset) {
 
         CUP_FUNCTION();
+
+        CU_ASSERT(IsDatabaseAsset(type), "AssetType '{}' is not a databse asset!", static_cast<uint8>(type));
+
+        const fs::path fullPath = GetProject().GetAssetsPath() / path;
 
         // Get the asset uuid (or generate a new one if required)
 
@@ -194,11 +195,29 @@ namespace Editor::ProjectAssetDatabase {
 
         // Load and store the asset
 
-        if (extension == ".png" || extension == ".jpg")
-            AssetStorage::InsertAsset<Texture>(uuid, GetProject().GetAssetsPath() / path);
-        else if (extension == ".mat" && !AssetFile::DeserializeMaterial(GetProject().GetAssetsPath() / path, uuid)) return;
-        else if (extension == ".fbx")
-            AssetStorage::InsertAsset<Model>(uuid, path);
+        switch (type) {
+
+            case AssetType::Texture: {
+
+                AssetStorage::InsertAsset<Texture>(uuid, fullPath);
+                break;
+
+            }
+            case AssetType::Material: {
+
+                if (!AssetFile::DeserializeMaterial(fullPath, uuid).IsValid()) return;
+                break;
+
+            }
+            case AssetType::Model: {
+
+                AssetStorage::InsertAsset<Model>(uuid, path);
+                break;
+
+            }
+            default: break;
+
+        }
 
         // Update project asset database
 
@@ -212,9 +231,11 @@ namespace Editor::ProjectAssetDatabase {
             Log("Asset '{}' ({}) loaded.", uuid.ToString(), path.filename().string());
 
     }
-    void RemoveAsset(const fs::path& path, const std::string& extension) {
+    void RemoveAsset(const fs::path& path, AssetType type) {
 
         CUP_FUNCTION();
+
+        CU_ASSERT(IsDatabaseAsset(type), "AssetType '{}' is not a databse asset!", static_cast<uint8>(type));
 
         const auto& it = assetFiles.find(path);
         if (it == assetFiles.end()) {
@@ -228,12 +249,29 @@ namespace Editor::ProjectAssetDatabase {
 
         // Delete actual asset
 
-        if (extension == ".png" || extension == ".jpg")
-            AssetStorage::DeleteAsset<Texture>(uuid);
-        else if (extension == ".mat")
-            AssetStorage::DeleteAsset<Material>(uuid);
-        else if (extension == ".fbx")
-            AssetStorage::DeleteAsset<Model>(uuid);
+        switch (type) {
+
+            case AssetType::Texture: {
+
+                AssetStorage::DeleteAsset<Texture>(uuid);
+                break;
+
+            }
+            case AssetType::Material: {
+
+                AssetStorage::DeleteAsset<Material>(uuid);
+                break;
+
+            }
+            case AssetType::Model: {
+
+                AssetStorage::DeleteAsset<Model>(uuid);
+                break;
+
+            }
+            default: break;
+
+        } 
 
         assetNames.erase(uuid);
         assetFiles.erase(path);
@@ -269,14 +307,6 @@ namespace Editor::ProjectAssetDatabase {
 
         }
         return it->second;
-
-    }
-
-    bool CheckExtension(const std::string& extension) {
-
-        return extension == ".png" || extension == ".jpg" || // Textures
-               extension == ".mat" || // Materials
-               extension == ".fbx"; // Models
 
     }
 

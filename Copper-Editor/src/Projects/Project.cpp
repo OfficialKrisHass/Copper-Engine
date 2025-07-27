@@ -5,6 +5,7 @@
 #include "Projects/ProjectChecker.h"
 #include "Projects/ProjectTemplate.h"
 
+#include "Assets/AssetType.h"
 #include "Assets/ProjectAssetDatabase.h"
 
 #include "Panels/FileBrowser.h"
@@ -318,19 +319,23 @@ namespace Editor {
     }
 #endif
 
-    void Project::FileChangeCallback(const fs::path& path, FileChangeType type) {
+    void Project::FileChangeCallback(const fs::path& path, FileChangeType changeType) {
 
         CUP_FUNCTION();
 
-        ProjectAssetDatabase::OnAssetChange(path, type);
-        FileBrowser::OnAssetChange(path, type);
+        AssetType type = GetAssetTypeFromExtension(path.extension().string());
+
+        ProjectAssetDatabase::OnAssetChange(path, changeType, type);
+        FileBrowser::OnAssetChange(path, changeType, type);
+
+        // TODO: Move this into a separate file that handles the build system
 
         if (path.extension().string() != ".cs") return;
 
         m_shouldRebuild = true;
 
 #ifdef CU_LINUX
-        if (type != FileChangeType::Changed)
+        if (changeType != FileChangeType::Changed)
             RunPremake();
 #endif
 

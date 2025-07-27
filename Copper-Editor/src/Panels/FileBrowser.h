@@ -1,9 +1,12 @@
 ﻿#pragma once
 
 #include <Copper.h>
+
 #include <Engine/Filesystem/FileChangeType.h>
 
 #include "Panels/Panel.h"
+
+#include "Assets/AssetType.h"
 
 namespace Copper {
 
@@ -29,7 +32,7 @@ namespace Editor {
         void Initialize();
         static void Refresh();
 
-        static void OnAssetChange(const fs::path& path, FileChangeType changeType);
+        static void OnAssetChange(const fs::path& path, FileChangeType changeType, AssetType type);
 
         static void SetRelativeDir(const Copper::fs::path& value) { m_projectRelativeDir = value; }
         static const Copper::fs::path& GetRelativeDir() { return m_projectRelativeDir; }

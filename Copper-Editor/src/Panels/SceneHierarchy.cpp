@@ -37,7 +37,7 @@ namespace Editor {
 
         for (InternalEntity* entity : EntityView(GetScene())) {
 
-            if (!entity) continue;
+            if (entity == nullptr) continue;
             if (entity->GetTransform()->GetParent()) continue;
 
             DrawEntityNode(entity);
@@ -115,8 +115,10 @@ namespace Editor {
             }
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FB_MODEL")) {
 
-                ModelAsset& model = *static_cast<ModelAsset*>(payload->Data);
-                model->Instantiate(entity->GetTransform());
+                UUID model = reinterpret_cast<const uint8*>(payload->Data);
+                CU_ASSERT(model.IsValid(), "Invalid model asset was accepted at Drag Drop target");
+
+                AssetStorage::GetAsset<Model>(model)->Instantiate(nullptr);
 
                 SetChanges();
 
@@ -252,8 +254,10 @@ namespace Editor {
         }
         if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FB_MODEL")) {
 
-            ModelAsset& model = *static_cast<ModelAsset*>(payload->Data);
-            model->Instantiate(nullptr);
+            UUID model = reinterpret_cast<const uint8*>(payload->Data);
+            CU_ASSERT(model.IsValid(), "Invalid model asset was accepted at Drag Drop target");
+
+            AssetStorage::GetAsset<Model>(model)->Instantiate(nullptr);
 
             SetChanges();
 

@@ -127,7 +127,7 @@ namespace Copper {
 
     private:
 
-        alignas(128) uint8 m_data[16];
+        alignas(16) uint8 m_data[16];
 
         static const UUID m_invalid;
 

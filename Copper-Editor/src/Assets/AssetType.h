@@ -10,6 +10,8 @@ namespace Editor {
 
         None = 0,
 
+        Scene, // .copper
+
         Script, // .cs
 
         // Marker for PAD tracked assets. All Values after this are larger numerically.

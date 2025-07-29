@@ -4,6 +4,8 @@ namespace Editor {
 
     static const std::unordered_map<std::string_view, AssetType> extensionMap = {
 
+        { ".copper", AssetType::Scene },
+
         { ".cs", AssetType::Script },
 
         { ".png", AssetType::Texture },

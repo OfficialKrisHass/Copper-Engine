@@ -425,7 +425,7 @@ namespace Editor::UI {
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FB_TEXTURE")) {
 
                 ret = true;
-                *texture = *(TextureAsset*) payload->Data;
+                *texture = static_cast<const uint8*>(payload->Data);
 
             }
 
@@ -488,8 +488,7 @@ namespace Editor::UI {
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FB_MATERIAL")) {
 
                 ret = true;
-                *material = *(UUID*) payload->Data;
-
+                *material = static_cast<const uint8*>(payload->Data); 
             }
 
             ImGui::EndDragDropTarget();

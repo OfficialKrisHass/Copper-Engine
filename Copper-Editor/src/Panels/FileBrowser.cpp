@@ -16,6 +16,7 @@
 #include <Engine/Input/Input.h>
 
 #include <ImGui/imgui.h>
+#include <ImGui/imgui_internal.h>
 
 #include <map>
 
@@ -255,12 +256,16 @@ namespace Editor {
 
         for (const auto& it : entry.folders) {
 
+            // Setup
+
             const std::string& name = it.first;
             const DirectoryEntry& folder = it.second;
             const fs::path& path = m_projectRelativeDir / name;
 
             ImGui::PushID(name.c_str());
             RenderEntryIcon(directoryIcon, path);
+
+            // Functionality
 
             if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
 
@@ -269,21 +274,63 @@ namespace Editor {
 
             }
 
+            // Finish
+
             EditName(path, name);
             ImGui::PopID();
 
         }
         for (const std::string& file : entry.files) {
 
+            // Setup
+
             const fs::path& path = m_projectRelativeDir / file;
 
             ImGui::PushID(file.c_str());
             RenderEntryIcon(fileIcon, path);
 
+            // Functionality
+
+            const bool hovered = ImGui::IsItemHovered();
+            const AssetType type = GetAssetTypeFromExtension(path.extension().string());
+
             if (ImGui::IsItemClicked())
                 clickedFile = path;
-            if (clickedFile == path && ImGui::IsItemHovered() && ImGui::IsMouseReleased(0))
+            if (clickedFile == path && hovered && ImGui::IsMouseReleased(0))
                 Properties::SetSelectedFile(path);
+
+            if (hovered && ImGui::IsMouseDoubleClicked(0)) {
+
+                switch (type) {
+
+                    case AssetType::Scene: OpenSceneNext(GetProject().GetAssetsPath() / path); break;
+                    default: break;
+
+                }
+
+            }
+
+            if (IsDatabaseAsset(type) && ImGui::BeginDragDropSource()) {
+
+                const UUID& uuid = ProjectAssetDatabase::GetAssetFromPath(path);
+                CU_ASSERT(uuid.IsValid(), "Invalid UUID retrieved from GetAssetFromPath(), asset path: '{}'", path);
+
+                // TODO: Possibly replace this by passing the type directly into the DragDropPayload, instead of a string
+                //       may require a custom Drag Drop system ffs.
+                static const std::unordered_map<AssetType, const char*> dragDropType = {
+
+                    { AssetType::Texture, "FB_TEXTURE" },
+                    { AssetType::Material, "FB_MATERIAL" },
+                    { AssetType::Model, "FB_MODEL" },
+
+                };
+                ImGui::SetDragDropPayload(dragDropType.at(type), &uuid, sizeof(UUID), ImGuiCond_Once);
+
+                ImGui::EndDragDropSource();
+
+            }
+
+            // Finish
 
             EditName(path, file);
             ImGui::PopID();

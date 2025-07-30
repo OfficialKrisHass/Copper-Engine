@@ -148,19 +148,21 @@ namespace Editor::ProjectAssetDatabase {
 
     }
 
-    void OnAssetChange(const fs::path& path, FileChangeType changeType, AssetType type) {
+    void OnAssetChange(const fs::path& path, FileChangeType changeType, AssetType type, uint32 cookie) {
 
         CUP_FUNCTION();
+
+        // Don't forget to clear the renameMap every few seconds.
 
         if (!IsDatabaseAsset(type)) return;
 
         switch (changeType) {
 
-        case FileChangeType::Created:
-        case FileChangeType::Changed:
-        case FileChangeType::RenamedNew: LoadAsset(path, type, true); break;
-        case FileChangeType::Deleted:
-        case FileChangeType::RenamedOld: RemoveAsset(path, type); break;
+        case FileChangeType::Created: LoadAsset(path, type, true); break;
+        case FileChangeType::Changed: LoadAsset(path, type); break;
+        case FileChangeType::Deleted: RemoveAsset(path, type); break;
+        case FileChangeType::RenamedNew: break;
+        case FileChangeType::RenamedOld: break;
         default: break;
 
         }
@@ -178,7 +180,7 @@ namespace Editor::ProjectAssetDatabase {
         // Get the asset uuid (or generate a new one if required)
 
         UUID uuid; 
-        if (const auto& it = assetFiles.find(path); it != assetFiles.end())
+        if (const auto it = assetFiles.find(path); it != assetFiles.end())
             uuid = it->second;
         else {
 
@@ -199,7 +201,7 @@ namespace Editor::ProjectAssetDatabase {
 
             case AssetType::Texture: {
 
-                AssetStorage::InsertAsset<Texture>(uuid, fullPath);
+                AssetStorage::InsertAsset<Texture>(uuid)->Create(fullPath);
                 break;
 
             }
@@ -211,7 +213,7 @@ namespace Editor::ProjectAssetDatabase {
             }
             case AssetType::Model: {
 
-                AssetStorage::InsertAsset<Model>(uuid, path);
+                AssetStorage::InsertAsset<Model>(uuid)->Load(path);
                 break;
 
             }
@@ -237,7 +239,7 @@ namespace Editor::ProjectAssetDatabase {
 
         CU_ASSERT(IsDatabaseAsset(type), "AssetType '{}' is not a databse asset!", static_cast<uint8>(type));
 
-        const auto& it = assetFiles.find(path);
+        const auto it = assetFiles.find(path);
         if (it == assetFiles.end()) {
 
             LogError("Can't remove an asset that is not loaded! Asset: {}", path);
@@ -284,7 +286,7 @@ namespace Editor::ProjectAssetDatabase {
         
         CUP_FUNCTION();
 
-        const auto& it = assetFiles.find(path);
+        const auto it = assetFiles.find(path);
         if (it == assetFiles.end()) {
 
             LogError("Asset {} isn't loaded.", path);
@@ -299,7 +301,7 @@ namespace Editor::ProjectAssetDatabase {
 
         CUP_FUNCTION();
         
-        const auto& it = assetNames.find(uuid);
+        const auto it = assetNames.find(uuid);
         if (it == assetNames.end()) {
 
             LogError("Asset with uuid {} isn't loaded.", uuid.ToString());

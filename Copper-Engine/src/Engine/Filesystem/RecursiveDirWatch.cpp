@@ -38,7 +38,7 @@ namespace Copper {
         }
 
         for (const FileChange& change : data)
-            m_callback(change.path, change.type);
+            m_callback(change.path, change.type, change.cookie);
 
     }
     void RecursiveDirWatch::Stop() {
@@ -58,7 +58,7 @@ namespace Copper {
 
         CU_ASSERT(m_callback != nullptr, "No callback was assigned to DirWatch. Directory: '{}'", m_directory);
         for (const FileChange& change : m_data)
-            m_callback(change.path, change.type);
+            m_callback(change.path, change.type, change.cookie);
 
         m_data.clear();
 

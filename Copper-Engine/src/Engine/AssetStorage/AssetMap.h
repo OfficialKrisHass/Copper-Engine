@@ -22,7 +22,7 @@ namespace Copper {
             CUP_FUNCTION();
 
             UUID uuid = UUID::Generate();
-            CU_ASSERT(!m_map.contains(uuid), "Attempted to create a new asset but the RANDOMLY generated uuis is already present in the {} asset map. WHAT THE FUCK ???????????", typeid(AssetType).name());
+            CU_ASSERT(!m_map.contains(uuid), "Attempted to create a new asset but the RANDOMLY generated uuid ({}) is already present in the {} asset map. WHAT THE FUCK ???????????", uuid.ToString(), typeid(AssetType).name());
 
             return Insert(uuid, std::forward<Args>(args)...);
 
@@ -31,12 +31,12 @@ namespace Copper {
 
             CUP_FUNCTION();
 
-            m_map.emplace(std::piecewise_construct, std::forward_as_tuple(uuid), std::forward_as_tuple(std::forward<Args>(args)...));
+            m_map.try_emplace(uuid, std::forward<Args>(args)...);
             return AssetPtr<AssetType>(uuid);
 
         }
 
-        AssetPtr<AssetType> inline Get(const UUID& uuid) {
+        inline AssetPtr<AssetType> Get(const UUID& uuid) {
 
             CUP_FUNCTION();
 
@@ -53,6 +53,14 @@ namespace Copper {
             CU_EDITOR_ASSERT(it != m_map.end(), "Can't delete an asset that doesn't exist in the map. UUID: {}", uuid.ToString());
 
             m_map.erase(it);
+
+        }
+
+        inline bool Contains(const UUID& uuid) {
+
+            CUP_FUNCTION();
+
+            return m_map.contains(uuid);
 
         }
 

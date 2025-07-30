@@ -67,7 +67,7 @@ namespace Editor {
 
         bool LoadFile(const Copper::fs::path& path);
 
-        void FileChangeCallback(const fs::path& path, FileChangeType type);
+        void FileChangeCallback(const fs::path& path, FileChangeType type, uint32 cookie);
 
     };
 

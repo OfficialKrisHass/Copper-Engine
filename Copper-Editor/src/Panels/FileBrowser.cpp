@@ -132,7 +132,7 @@ namespace Editor {
         std::sort(root.files.begin(), root.files.end());
 
     }
-    void FileBrowser::OnAssetChange(const fs::path& path, FileChangeType changeType, AssetType type) {
+    void FileBrowser::OnAssetChange(const fs::path& path, FileChangeType changeType, AssetType type, uint32 cookie) {
 
         CUP_FUNCTION();
 

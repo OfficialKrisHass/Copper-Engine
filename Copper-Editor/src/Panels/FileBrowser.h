@@ -32,7 +32,7 @@ namespace Editor {
         void Initialize();
         static void Refresh();
 
-        static void OnAssetChange(const fs::path& path, FileChangeType changeType, AssetType type);
+        static void OnAssetChange(const fs::path& path, FileChangeType changeType, AssetType type, uint32 cookie);
 
         static void SetRelativeDir(const Copper::fs::path& value) { m_projectRelativeDir = value; }
         static const Copper::fs::path& GetRelativeDir() { return m_projectRelativeDir; }

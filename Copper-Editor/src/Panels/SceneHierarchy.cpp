@@ -37,8 +37,8 @@ namespace Editor {
 
         for (InternalEntity* entity : EntityView(GetScene())) {
 
-            if (entity == nullptr) continue;
-            if (entity->GetTransform()->GetParent()) continue;
+            if (entity == nullptr || entity->GetID() == INVALID_ENTITY_ID) continue;
+            if (entity->GetTransform()->GetParent() != nullptr) continue;
 
             DrawEntityNode(entity);
 

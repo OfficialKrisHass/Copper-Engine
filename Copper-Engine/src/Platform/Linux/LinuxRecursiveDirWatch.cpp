@@ -124,7 +124,7 @@ namespace Copper {
                 else if (event->mask & IN_MOVED_FROM)
                     type = FileChangeType::RenamedOld;
 
-                parsedData.emplace_back(path, type);
+                parsedData.emplace_back(path, type, event->cookie);
 
             }
 

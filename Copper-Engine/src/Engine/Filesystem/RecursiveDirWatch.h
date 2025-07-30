@@ -14,7 +14,7 @@ namespace Copper {
     class RecursiveDirWatch {
 
     public:
-        typedef std::function<void(const fs::path& path, FileChangeType type)> Callback;
+        typedef std::function<void(const fs::path& path, FileChangeType type, uint32 cookie)> Callback;
 
         RecursiveDirWatch() = default;
         RecursiveDirWatch(const fs::path& directory) : m_directory(directory) { Start(); }
@@ -46,8 +46,9 @@ namespace Copper {
 
             fs::path path; // relative to the file watch directory
             FileChangeType type;
+            uint32 cookie = 0; // Links rename events. 0 For all other events
 
-            FileChange(const fs::path& path, FileChangeType type) : path(path), type(type) {}
+            FileChange(const fs::path& path, FileChangeType type, uint32 cookie) : path(path), type(type), cookie(cookie) {}
 
         };
 

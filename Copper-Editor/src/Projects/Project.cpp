@@ -113,7 +113,7 @@ namespace Editor {
         Scripting::Load((path / "Binaries/" / (m_name + ".dll")).string());
 
         m_assetWatch.Start(GetAssetsPath());
-        m_assetWatch.SetCallback(std::bind(&Project::FileChangeCallback, this, std::placeholders::_1, std::placeholders::_2));
+        m_assetWatch.SetCallback(std::bind(&Project::FileChangeCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
 
         if (m_lastOpenedScenePath.empty() || !fs::exists(GetAssetsPath() / m_lastOpenedScenePath)) return;
 
@@ -319,14 +319,14 @@ namespace Editor {
     }
 #endif
 
-    void Project::FileChangeCallback(const fs::path& path, FileChangeType changeType) {
+    void Project::FileChangeCallback(const fs::path& path, FileChangeType changeType, uint32 cookie) {
 
         CUP_FUNCTION();
 
         AssetType type = GetAssetTypeFromExtension(path.extension().string());
 
-        ProjectAssetDatabase::OnAssetChange(path, changeType, type);
-        FileBrowser::OnAssetChange(path, changeType, type);
+        ProjectAssetDatabase::OnAssetChange(path, changeType, type, cookie);
+        FileBrowser::OnAssetChange(path, changeType, type, cookie);
 
         // TODO: Move this into a separate file that handles the build system
 

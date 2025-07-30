@@ -69,6 +69,15 @@ namespace Copper::AssetStorage {
     
     }
 
+    template<typename AssetType> inline bool ContainsAsset(const UUID& uuid) {
+
+        CUP_FUNCTION();
+
+        static_assert(traits::IsAssetTypeRegistered<AssetType>::value, "Asset type is not registered!");
+        return GetAssetMap<AssetType>().Contains(uuid);
+
+    }
+
 }
 
 #include "Engine/AssetStorage/AssetPtr.h"

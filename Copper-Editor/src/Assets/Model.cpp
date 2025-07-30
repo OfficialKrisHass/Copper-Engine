@@ -22,9 +22,12 @@
 
 namespace Editor {
 
-    Model::Model(const fs::path& path) {
+    void Model::Load(const fs::path& path) {
 
         CUP_FUNCTION();
+
+        if (m_valid)
+            Clear();
 
         m_path = path;
 
@@ -42,6 +45,21 @@ namespace Editor {
 
         m_meshes.reserve(scene->mNumMeshes);
         ProcessNode(m_rootNode, scene->mRootNode, scene);
+
+        m_valid = true;
+
+    }
+    void Model::Clear() {
+
+        CUP_FUNCTION();
+
+        m_rootNode.Reset();
+
+        m_meshes.clear();
+        m_materials.clear();
+        m_textures.clear();
+
+        m_valid = false;
 
     }
 
@@ -177,12 +195,10 @@ namespace Editor {
             MeshAsset mesh = AssetStorage::InsertAsset<Mesh>(uuid);
             m_meshes.push_back({ mesh, meshName });
 
-            // TODO: Maybe move this to the Mesh constructor since all of them get reserved the same size
-
-            mesh->vertices.reserve(modelMesh->mNumVertices);
-            mesh->normals.reserve(modelMesh->mNumVertices);
-            mesh->colors.reserve(modelMesh->mNumVertices);
-            mesh->uvs.reserve(modelMesh->mNumVertices);
+            mesh->vertices.clear();
+            mesh->normals.clear();
+            mesh->colors.clear();
+            mesh->uvs.clear();
 
             for (uint32 i = 0; i < modelMesh->mNumVertices; i++) {
 
@@ -206,9 +222,7 @@ namespace Editor {
 
             }
 
-            // NOTE: This doesn't feel right, but why the fuck would you have non triangle faces
-
-            mesh->indices.reserve(modelMesh->mNumFaces * 3);
+            mesh->indices.clear();
             for (uint32 i = 0; i < modelMesh->mNumFaces; i++) {
 
                 const aiFace& face = modelMesh->mFaces[i];

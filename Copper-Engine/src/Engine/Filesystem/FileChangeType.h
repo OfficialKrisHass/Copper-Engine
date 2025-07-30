@@ -32,7 +32,7 @@ namespace Copper {
 
         }
 
-        LogError("Could not get string of invalud FileChangeType value. Value: '{}'", static_cast<uint8>(value));
+        LogError("Could not get string of invalid FileChangeType value. Value: '{}'", static_cast<uint8>(value));
         return "";
 
     }

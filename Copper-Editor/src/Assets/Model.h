@@ -17,7 +17,16 @@ namespace Editor {
 
     public:
         Model() = default;
-        Model(const fs::path& path);
+        Model(const fs::path& path) {
+
+            CUP_FUNCTION();
+
+            Load(path);
+
+        }
+
+        void Load(const fs::path& path);
+        void Clear();
 
         void Instantiate(Transform* parent) const;
 
@@ -35,9 +44,21 @@ namespace Editor {
 
             std::vector<Node> children;
 
+            void Reset() {
+
+                CUP_FUNCTION();
+
+                name = "Node";
+                meshIndex = materialIndex = UINT_MAX;
+
+                children.clear();
+
+            }
+
         };
 
         fs::path m_path;
+        bool m_valid = false;
 
         std::vector<std::pair<MeshAsset, std::string>> m_meshes;
         std::vector<std::pair<MaterialAsset, std::string>> m_materials;

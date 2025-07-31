@@ -62,6 +62,54 @@ namespace Editor {
         m_valid = false;
 
     }
+    void Model::DeleteSubassets() {
+
+        CUP_FUNCTION();
+
+        // Textures are their own files so they get deleted on their own by the PAD when their file gets
+        // deleted
+
+        for (const auto& it : m_meshes)
+            AssetStorage::DeleteAsset<Mesh>(it.first.AssetUUID());
+        for (const auto& it : m_materials)
+            AssetStorage::DeleteAsset<Material>(it.first.AssetUUID());
+
+        m_meshes.clear();
+        m_materials.clear();
+        m_textures.clear();
+
+    }
+
+    void Model::Rename(fs::path newPath, std::unordered_map<fs::path, UUID>& assetMap, std::unordered_map<UUID, std::string>& assetNames) {
+
+        CUP_FUNCTION();
+
+        for (const auto& it : m_meshes) {
+
+            const std::string& meshName = it.second;
+
+            const auto meshIt = assetMap.find(m_path / meshName);
+            CU_ASSERT(meshIt != assetMap.end(), "Old model mesh path was not found in the PAD. Old Path: '{}', new path: '{}', mesh name: '{}'", m_path, newPath, meshName);
+
+            assetMap[newPath / meshName] = meshIt->second;
+            assetMap.erase(meshIt);
+
+        }
+        for (const auto& it : m_materials) {
+
+            const std::string& materialName = it.second;
+
+            const auto materialIt = assetMap.find(m_path / materialName);
+            CU_ASSERT(materialIt != assetMap.end(), "Old model material path was not found in the PAD. Old Path: '{}', new path: '{}', material name: '{}'", m_path, newPath, materialName);
+
+            assetMap[newPath / materialName] = materialIt->second;
+            assetMap.erase(materialIt);
+
+        }
+
+        m_path = newPath;
+
+    }
 
     void Model::Instantiate(Transform* parent) const {
 

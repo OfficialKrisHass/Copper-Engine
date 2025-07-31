@@ -8,6 +8,8 @@
 #include "Assets/Serializer.h"
 #include "Assets/Model.h"
 
+#include <Engine/Filesystem/WatchConstants.h>
+
 #include <Engine/AssetStorage/AssetStorage.h>
 
 #include <Engine/Renderer/Texture.h>
@@ -16,17 +18,34 @@
 
 #include <yaml-cpp/yaml.h>
 
+#include <chrono>
+
 namespace Editor::ProjectAssetDatabase {
 
     using namespace Copper;
 
+    using Timestamp = std::chrono::steady_clock::time_point;
+
+    struct RenameInfo {
+
+        fs::path otherPath;
+        FileChangeType type;
+        Timestamp timestamp;
+
+    };
+
     std::unordered_map<fs::path, UUID> assetFiles;
     std::unordered_map<UUID, std::string> assetNames;
+
+    std::unordered_map<uint32, RenameInfo> renameMap;
 
     std::string emptyString = "";
 
     void LoadAsset(const fs::path& path, AssetType type, bool newAsset = false);
-    void RemoveAsset(const fs::path& path, AssetType type);
+    void DeleteAsset(const fs::path& path, AssetType type);
+
+    void HandleAssetRename(const fs::path& oldPath, const fs::path& newPath);
+    void HandleUnpairedRename(const RenameInfo& info);
 
     void Initialize() {
 
@@ -43,6 +62,36 @@ namespace Editor::ProjectAssetDatabase {
             Log("Project asset database initialized.");
 
     }
+    void Update() {
+
+        CUP_FUNCTION();
+
+        Timestamp now = std::chrono::steady_clock::now();
+        for (auto it = renameMap.begin(); it != renameMap.end();) {
+
+            const RenameInfo& info = it->second;
+            if (now - info.timestamp > std::chrono::milliseconds(SLEEP_LENGTH * 2)) {
+
+                HandleUnpairedRename(info);
+                it = renameMap.erase(it);
+
+                continue;
+
+            }
+            
+            ++it;
+
+        }
+
+    }
+    void Shutdown() {
+
+        CUP_FUNCTION();
+
+        Save();
+
+    }
+
     void Refresh() {
 
         CUP_FUNCTION();
@@ -72,14 +121,6 @@ namespace Editor::ProjectAssetDatabase {
 #endif
 
     }
-    void Shutdown() {
-
-        CUP_FUNCTION();
-
-        Save();
-
-    }
-
     void Unload() {
 
         CUP_FUNCTION();
@@ -160,9 +201,36 @@ namespace Editor::ProjectAssetDatabase {
 
         case FileChangeType::Created: LoadAsset(path, type, true); break;
         case FileChangeType::Changed: LoadAsset(path, type); break;
-        case FileChangeType::Deleted: RemoveAsset(path, type); break;
-        case FileChangeType::RenamedNew: break;
-        case FileChangeType::RenamedOld: break;
+        case FileChangeType::Deleted: DeleteAsset(path, type); break;
+
+        case FileChangeType::RenamedOld:
+        case FileChangeType::RenamedNew: {
+
+            const auto it = renameMap.find(cookie);
+            if (it == renameMap.end()) {
+
+                RenameInfo& info = renameMap[cookie];
+                info.otherPath = path;
+                info.type = changeType;
+                info.timestamp = std::chrono::steady_clock::now();
+
+            } else {
+
+                RenameInfo& info = it->second;
+                CU_ASSERT(info.type != changeType, "2 Rename events of the same type with the same cookie! Cookie: {}, path: '{}', other path: '{}'", cookie, path, info.otherPath);
+
+                if (changeType == FileChangeType::RenamedNew)
+                    HandleAssetRename(info.otherPath, path);
+                else
+                    HandleAssetRename(path, info.otherPath);
+
+                renameMap.erase(it);
+
+            }
+
+            break;
+
+        }
         default: break;
 
         }
@@ -233,7 +301,7 @@ namespace Editor::ProjectAssetDatabase {
             Log("Asset '{}' ({}) loaded.", uuid.ToString(), path.filename().string());
 
     }
-    void RemoveAsset(const fs::path& path, AssetType type) {
+    void DeleteAsset(const fs::path& path, AssetType type) {
 
         CUP_FUNCTION();
 
@@ -279,6 +347,70 @@ namespace Editor::ProjectAssetDatabase {
         assetFiles.erase(path);
 
         Log("Asset '{}' ({}) removed.", uuid.ToString(), path.filename().string());
+
+    }
+
+    void HandleAssetRename(const fs::path& oldPath, const fs::path& newPath) {
+
+        CUP_FUNCTION();
+
+        // Setup
+
+        AssetType type = GetAssetTypeFromExtension(newPath.extension().string());
+        AssetType oldType = GetAssetTypeFromExtension(oldPath.extension().string());
+
+        CU_ASSERT(oldType == type, "Rename event that changed asset types occured! oldPath: '{}', newPath: '{}'", oldPath, newPath);
+        CU_ASSERT(IsDatabaseAsset(type), "AssetType '{}' is not a database asset!", static_cast<uint8>(type));
+
+        // Find asset
+
+        const auto oldIt = assetFiles.find(oldPath);
+        CU_ASSERT(oldIt != assetFiles.end(), "Old path for rename event is not present in the PAD. Old path: '{}', new path: '{}'", oldPath, newPath);
+
+        const UUID& uuid = oldIt->second;
+        CU_ASSERT(uuid.IsValid(), "Invalid UUID was retrieved from PAD at old path for rename event. Old path: '{}', new path '{}'", oldPath, newPath);
+
+        // Update to new path and name
+
+        assetFiles[newPath] = uuid;
+        assetFiles.erase(oldIt);
+
+        assetNames[uuid] = newPath.filename().string();
+
+        // TODO: Very temporary, remove asap pls
+        //       In the future, models will physically unpackage themself into physical files, in which case this is not required
+        //       but at the moment they are stored as subassets of the model and don't physically exist.
+        if (type == AssetType::Model)
+            AssetStorage::GetAsset<Model>(uuid)->Rename(newPath, assetFiles, assetNames);
+
+    }
+    void HandleUnpairedRename(const RenameInfo& info) {
+
+        CUP_FUNCTION();
+
+        // File was moved outside of the assets directory, or deleted (some file browsers generate move events instead of delete events)
+        // Handled as a Deleted event.
+        if (info.type == FileChangeType::RenamedOld) {
+
+            const fs::path& path = info.otherPath;
+            AssetType type = GetAssetTypeFromExtension(path.extension().string());
+
+            CU_ASSERT(assetFiles.contains(path), "Could not find asset in PAD while trying to resolve unpaired RenamedOld event. Path: '{}'", path);
+            DeleteAsset(path, type);
+
+            return;
+
+        }
+
+        // File was moved into the assets directory from outside. Handled as a Created event
+
+        CU_ASSERT(info.type == FileChangeType::RenamedNew, "Invalid Rename type in RenameInfo structure while trying to resolve unpaired event. Path: '{}', change type: '{}'", info.otherPath, FileChangeTypeToString(info.type));
+
+        const fs::path& path = info.otherPath;
+        AssetType type = GetAssetTypeFromExtension(path.extension().string());
+
+        CU_ASSERT(!assetFiles.contains(path), "PAD already contains asset from unpaired RenamedNew event. Path: '{}', Asset: {} ({})", path, assetFiles[path].ToString(), assetNames[assetFiles[path]]);
+        LoadAsset(path, type, true);
 
     }
 

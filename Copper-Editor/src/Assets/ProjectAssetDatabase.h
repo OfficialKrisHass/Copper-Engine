@@ -11,9 +11,10 @@ namespace Editor::ProjectAssetDatabase {
     using namespace Copper;
 
     void Initialize();
-    void Refresh();
+    void Update();
     void Shutdown();
 
+    void Refresh();
     void Unload();
 
     void Save();

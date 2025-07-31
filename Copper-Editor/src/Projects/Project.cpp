@@ -174,6 +174,7 @@ namespace Editor {
         CUP_FUNCTION();
 
         m_assetWatch.Update();
+        ProjectAssetDatabase::Update();
 
         // Most rebuilding will be handled by the editors OnWindowFocus event handler
         // However, there could be an edge case, so for pure safety

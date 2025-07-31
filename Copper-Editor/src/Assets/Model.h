@@ -13,6 +13,8 @@ namespace Editor {
 
     using namespace Copper;
 
+    // TODO: Replace with import of individual meshes and materials
+    // TODO: Also get rid of storing the path
     class Model {
 
     public:
@@ -24,9 +26,20 @@ namespace Editor {
             Load(path);
 
         }
+        ~Model() {
+
+            CUP_FUNCTION();
+
+            //DeleteSubassets();
+
+        }
 
         void Load(const fs::path& path);
         void Clear();
+        void DeleteSubassets();
+
+        // TODO: VERY VERY VERY TEMPORARY
+        void Rename(fs::path newPath, std::unordered_map<fs::path, UUID>& assetMap, std::unordered_map<UUID, std::string>& assetNames);
 
         void Instantiate(Transform* parent) const;
 

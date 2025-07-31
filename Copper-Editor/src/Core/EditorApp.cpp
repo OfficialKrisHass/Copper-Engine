@@ -256,7 +256,7 @@ namespace Editor {
         CUP_START_FRAME("Editor");
 
         data.project.Update();
-
+        
         data.viewport.Update();
 
         QueuedTasks();

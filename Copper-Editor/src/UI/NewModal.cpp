@@ -50,7 +50,9 @@ namespace Editor::NewModal {
     void Open() {
 
         CUP_FUNCTION();
+
         open = true;
+        nameInput[0] = '\0';
 
         ImGui::OpenPopup("New");
 
@@ -60,8 +62,8 @@ namespace Editor::NewModal {
     void Close() {
 
         CUP_FUNCTION();
-        open = false;
 
+        open = false;
         nameInput[0] = '\0';
 
     }
@@ -234,6 +236,8 @@ namespace Editor::NewModal {
     bool CreateDisabled() {
 
         CUP_FUNCTION();
+
+        if (nameInput[0] == '\0') return true;
 
         fs::path path = directory / nameInput;
 

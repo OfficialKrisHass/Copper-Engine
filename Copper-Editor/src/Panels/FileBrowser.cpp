@@ -114,7 +114,7 @@ namespace Editor {
         root.files.clear();
         for (const fs::directory_entry& entry : fs::directory_iterator(GetProject().GetAssetsPath() / path)) {
 
-            fs::path name = entry.path().filename();
+            std::string name = entry.path().filename().string();
 
             if (entry.is_directory()) {
 
@@ -125,7 +125,7 @@ namespace Editor {
                 RefreshDirectoryTree(subEntry, path / name);
 
             } else if (entry.is_regular_file())
-                root.files.push_back(name.string());
+                root.files.push_back(name);
 
         }
 

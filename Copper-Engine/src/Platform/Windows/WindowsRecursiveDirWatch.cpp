@@ -4,12 +4,35 @@
 
 #include <Windows.h>
 
+#include <random>
+#include <chrono>
+
 #include <locale>
 #include <codecvt>
 
 #define FILTERS FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_ATTRIBUTES | FILE_NOTIFY_CHANGE_SIZE | FILE_NOTIFY_CHANGE_LAST_ACCESS | FILE_NOTIFY_CHANGE_CREATION | FILE_NOTIFY_CHANGE_SECURITY
 
 namespace Copper {
+
+	typedef std::chrono::steady_clock Clock;
+
+	struct RenameInfo {
+
+		fs::path path;
+		FileChangeType type = FileChangeType::None;
+
+		uint32 cookie = 0;
+		Clock::time_point timestamp;
+
+		RenameInfo(const fs::path& path, FileChangeType type, uint32 cookie, Clock::time_point timestamp)
+			: path(path), type(type), cookie(cookie), timestamp(timestamp) {}
+
+	};
+	std::unordered_map<std::string, RenameInfo> renameMap;
+
+	std::random_device random;
+
+	void WStringToString(const std::wstring& wide, std::string& out);
 
 	void RecursiveDirWatch::StartBackend() {
 
@@ -58,6 +81,37 @@ namespace Copper {
 
 			parsedData.clear();
 
+			// Resolve unpaired events in renameMap
+
+			Clock::time_point now = Clock::now();
+			for (auto it = renameMap.begin(); it != renameMap.end();) {
+
+				RenameInfo& info = it->second;
+				if (now - info.timestamp >= std::chrono::milliseconds(SLEEP_LENGTH * 2)) {
+
+					FileChangeType type = FileChangeType::None;
+					if (info.type == FileChangeType::RenamedNew)
+						type = FileChangeType::Created;
+					else
+						type = FileChangeType::Deleted;
+
+					parsedData.emplace_back(info.path, type, 0);
+					it = renameMap.erase(it);
+
+					continue;
+
+				}
+
+				++it;
+
+			}
+			if (!parsedData.empty()) {
+
+				std::lock_guard<std::mutex> lock = std::lock_guard(m_dataMutex);
+				m_data.insert(m_data.end(), parsedData.begin(), parsedData.end());
+
+			}
+
 			// Start the asynchronous call
 
 			if (!asyncPending) {
@@ -88,29 +142,78 @@ namespace Copper {
 
 			asyncPending = false;
 
+			uint32 cookie = 0;
+
 			FILE_NOTIFY_INFORMATION* fileInformation = reinterpret_cast<FILE_NOTIFY_INFORMATION*>(&buffer[0]);
 			do {
 
 				std::wstring nameW = std::wstring(fileInformation->FileName, fileInformation->FileNameLength / sizeof(WCHAR));
+				std::string name;
+				WStringToString(nameW, name);
 
-				FileChangeType type = FileChangeType::None;
+				fs::path path = name;
 				switch (fileInformation->Action) {
 
-				case FILE_ACTION_ADDED: type = FileChangeType::Created; break;
-				case FILE_ACTION_MODIFIED: type = FileChangeType::Changed; break;
-				case FILE_ACTION_REMOVED: type = FileChangeType::Deleted; break;
-				case FILE_ACTION_RENAMED_OLD_NAME: type = FileChangeType::RenamedOld; break;
-				case FILE_ACTION_RENAMED_NEW_NAME: type = FileChangeType::RenamedNew; break;
-				default: break;
+				// The wonderful windows file explorer generated Deleted and Created events when a
+				// file or directory is moved, or sometimes even when it's renamed. Wonderful!!!!!!
+				case FILE_ACTION_REMOVED:
+				case FILE_ACTION_ADDED: {
+
+					FileChangeType type = fileInformation->Action == FILE_ACTION_ADDED ? FileChangeType::RenamedNew : FileChangeType::RenamedOld;
+					FileChangeType otherType = fileInformation->Action == FILE_ACTION_ADDED ? FileChangeType::RenamedOld : FileChangeType::RenamedNew;
+
+					// Add RenameInfo event if no match was found
+					// TODO: Replace the key with inode or some unique identifier
+
+					const auto it = renameMap.find(path.filename().string());
+					if (it == renameMap.end()) {
+
+						renameMap.emplace(std::piecewise_construct, std::forward_as_tuple(path.filename().string()), std::forward_as_tuple(path, type, random(), Clock::now()));
+						break;
+
+					}
+
+					// Resolve RenameInfo
+
+					RenameInfo& info = it->second;
+					CU_ASSERT(info.type == otherType, "RecursiveDirWatch received two rename events with the same type. Directory: '{}', path: '{}', other path: '{}'", m_directory, path, info.path);
+
+					parsedData.emplace_back(info.path, otherType, info.cookie);
+					parsedData.emplace_back(path, type, info.cookie);
+
+					renameMap.erase(it);
+
+					break;
 
 				}
 
-				int32 size = WideCharToMultiByte(CP_UTF8, 0, nameW.c_str(), -1, nullptr, 0, nullptr, nullptr);
-				std::string name = std::string(size, 0);
-				WideCharToMultiByte(CP_UTF8, 0, nameW.c_str(), -1, &name[0], size, nullptr, nullptr);
+				case FILE_ACTION_MODIFIED: {
 
-				fs::path path = name;
-				parsedData.emplace_back(path, type);
+					parsedData.emplace_back(path, FileChangeType::Changed, 0);
+					break;
+
+				}
+
+				// Windows isn't as goated as linux and doesn't provide a cookie for rename events so
+				// we have to create our own one. Thankfully a RenamedNew event is guaranteed to come
+				// right after a RenamedOld with a miniscule chance of a Changed event inbetween
+				case FILE_ACTION_RENAMED_OLD_NAME: {
+
+					cookie = random();
+					parsedData.emplace_back(path, FileChangeType::RenamedOld, cookie);
+					
+					break;
+
+				}
+				case FILE_ACTION_RENAMED_NEW_NAME: {
+
+					parsedData.emplace_back(path, FileChangeType::RenamedNew, cookie);
+					break;
+
+				}
+				default: break;
+
+				}
 
 				if (fileInformation->NextEntryOffset == 0) break;
 				fileInformation = reinterpret_cast<FILE_NOTIFY_INFORMATION*>(reinterpret_cast<BYTE*>(fileInformation) + fileInformation->NextEntryOffset);
@@ -136,6 +239,15 @@ namespace Copper {
 		}
 
 		CloseHandle(overlapped.hEvent);
+
+	}
+
+	void WStringToString(const std::wstring& wide, std::string& out) {
+
+		int32 size = WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), -1, nullptr, 0, nullptr, nullptr);
+		out.resize(size - 1);
+
+		WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), -1, &out[0], size, nullptr, nullptr);
 
 	}
 

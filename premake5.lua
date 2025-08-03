@@ -4,7 +4,6 @@ workspace "Copper-Engine"
     startproject "Copper-Editor"
 
 buildDir = "%{cfg.system}-%{cfg.architecture}-%{cfg.buildcfg}"
-print(buildDir)
 
 group "Libraries"
     include "Copper-Engine/lib/GLFW"

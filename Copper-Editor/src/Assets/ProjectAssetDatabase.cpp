@@ -70,7 +70,7 @@ namespace Editor::ProjectAssetDatabase {
         for (auto it = renameMap.begin(); it != renameMap.end();) {
 
             const RenameInfo& info = it->second;
-            if (now - info.timestamp > std::chrono::milliseconds(SLEEP_LENGTH * 2)) {
+            if (now - info.timestamp >= std::chrono::milliseconds(SLEEP_LENGTH * 2)) {
 
                 HandleUnpairedRename(info);
                 it = renameMap.erase(it);
@@ -343,10 +343,10 @@ namespace Editor::ProjectAssetDatabase {
 
         } 
 
+        Log("Asset '{}' ({}) removed.", uuid.ToString(), path.filename().string());
+
         assetNames.erase(uuid);
         assetFiles.erase(path);
-
-        Log("Asset '{}' ({}) removed.", uuid.ToString(), path.filename().string());
 
     }
 

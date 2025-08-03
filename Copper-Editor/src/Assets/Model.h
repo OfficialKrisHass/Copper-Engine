@@ -28,8 +28,6 @@ namespace Editor {
         }
         ~Model() {
 
-            CUP_FUNCTION();
-
             //DeleteSubassets();
 
         }

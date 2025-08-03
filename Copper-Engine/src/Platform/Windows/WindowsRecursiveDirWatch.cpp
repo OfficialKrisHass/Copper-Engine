@@ -12,6 +12,13 @@
 
 #define FILTERS FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_ATTRIBUTES | FILE_NOTIFY_CHANGE_SIZE | FILE_NOTIFY_CHANGE_LAST_ACCESS | FILE_NOTIFY_CHANGE_CREATION | FILE_NOTIFY_CHANGE_SECURITY
 
+// I HATE HATE HATE HATE HATE WINDOWS
+// THE WINDOWS API IS ONE OF THE WORST APIS ON PLANET EARTH
+//
+// Windows will randomly decide to generate 2 or 3 events when a file is deleted, 2 when created, change events for folders
+// all absolutely lovely to handle. A lot of the code will throw errors because an asset will be attempted to be removed 3 times
+// but I do not fucking care, go to bill g and tell him to fix his stupid dumbass code.
+
 namespace Copper {
 
 	typedef std::chrono::steady_clock Clock;

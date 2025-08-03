@@ -39,6 +39,8 @@ namespace Copper {
 
         }
 
+        inline bool IsRunning() { return m_running; }
+
         inline void SetCallback(Callback callback) { m_callback = callback; }
 
     private:

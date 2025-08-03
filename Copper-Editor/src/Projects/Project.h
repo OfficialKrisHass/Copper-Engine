@@ -14,6 +14,9 @@ namespace Editor {
         Project() = default;
         Project(const fs::path& path);
 
+        std::string name;
+        std::string description;
+
         void Create(const fs::path& path);
 
         void Open(const fs::path& path);
@@ -35,8 +38,6 @@ namespace Editor {
 
         // Getters
 
-        inline const std::string& GetName() const { return m_name; }
-
         inline const fs::path& GetPath() const { return m_path; }
         inline const fs::path GetAssetsPath() const { return m_path / "Assets"; }
         inline const fs::path& GetLastOpenedScenePath() const { return m_lastOpenedScenePath; }
@@ -46,8 +47,6 @@ namespace Editor {
 
         // Setters
 
-        inline void SetName(const std::string& value) { m_name = value; }
-
         inline void SetLastOpenedScenePath(const fs::path& value) { m_lastOpenedScenePath = value; }
 
         // Operators
@@ -56,7 +55,6 @@ namespace Editor {
 
     private:
         bool m_valid = false;
-        std::string m_name;
 
         fs::path m_path;
         fs::path m_lastOpenedScenePath;

@@ -4,6 +4,8 @@
 
 #include "Dialogs.h"
 
+#include <yaml-cpp/yaml.h>
+
 #include <fstream>
 #include <iostream>
 
@@ -23,7 +25,16 @@ namespace Launcher {
 
             const fs::path& path = entry.path();
 
-            s_templates.push_back(ProjectTemplate(path.filename().string(), ""));
+            YAML::Node node;
+            try { node = YAML::LoadFile(path / "Project.cu.cut"); }
+            catch (YAML::Exception& e) {
+
+                std::cerr << "Could not read Template '" << path.filename().string() << "' Project.cu.cut file!\n";
+                continue;
+
+            }
+
+            s_templates.push_back(ProjectTemplate(path.filename().string(), node["Description"].as<std::string>()));
 
         }
 

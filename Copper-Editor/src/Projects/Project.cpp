@@ -42,7 +42,7 @@ namespace Editor {
         CUP_FUNCTION();
 
         m_path = path;
-        m_name = path.filename().string();
+        name = path.filename().string();
 
         if (!fs::exists(m_path))
             fs::create_directories(m_path);
@@ -63,6 +63,9 @@ namespace Editor {
     void Project::Open(const fs::path& path) {
 
         CUP_FUNCTION();
+
+        if (m_assetWatch.IsRunning())
+            m_assetWatch.Stop();
 
 #ifdef CU_LOG_STATUS
         if (GetEngineState() == EngineState::PostInitialization)
@@ -110,7 +113,7 @@ namespace Editor {
         if (Scripting::GameAssembly().IsValid())
             Scripting::Unload();
 
-        Scripting::Load((path / "Binaries/" / (m_name + ".dll")).string());
+        Scripting::Load((path / "Binaries/" / (name + ".dll")).string());
 
         m_assetWatch.Start(GetAssetsPath());
         m_assetWatch.SetCallback(std::bind(&Project::FileChangeCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
@@ -145,7 +148,8 @@ namespace Editor {
         YAML::Emitter out;
         out << YAML::BeginMap; // Main
 
-        out << YAML::Key << "Name" << YAML::Value << m_name;
+        out << YAML::Key << "Name" << YAML::Value << name;
+        out << YAML::Key << "Description" << YAML::Value << description;
         out << YAML::Key << "Last scene" << YAML::Value << m_lastOpenedScenePath;
 
         out << YAML::EndMap; // Main
@@ -210,7 +214,9 @@ namespace Editor {
 
         }
 
-        m_name = main["Name"].as<std::string>();
+        name = main["Name"].as<std::string>();
+        description = main["Description"].as<std::string>();
+
         m_lastOpenedScenePath = main["Last scene"].as<fs::path>();
 
         return true;
@@ -256,8 +262,8 @@ namespace Editor {
 
         }
 
-        pos = m_name.find_first_of(' ');
-        std::string newName = m_name;
+        pos = name.find_first_of(' ');
+        std::string newName = name;
         while (pos != std::string::npos) {
 
             newName.erase(pos, 1);
@@ -283,7 +289,7 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        CreateFileAndReplace("assets/Templates/Project Files/Project.cu.cut", m_path / "Project.cu", ":{ProjectName}", m_name);
+        CreateFileAndReplace("assets/Templates/Project Files/Project.cu.cut", m_path / "Project.cu", ":{ProjectName}", name);
 
     }
     void Project::RegenerateBuildFiles() const {
@@ -291,10 +297,10 @@ namespace Editor {
         CUP_FUNCTION();
 
 #ifdef CU_WINDOWS
-        CreateFileAndReplace(ExecutableFolder() / "assets/Templates/Project Files/Template.sln.cut", m_path / (m_name + ".sln"), ":{ProjectName}", m_name);
-        CreateFileAndReplace(ExecutableFolder() / "assets/Templates/Project Files/Template.csproj.cut", m_path / (m_name + ".csproj"), ":{ProjectName}", m_name);
+        CreateFileAndReplace(ExecutableFolder() / "assets/Templates/Project Files/Template.sln.cut", m_path / (name + ".sln"), ":{ProjectName}", name);
+        CreateFileAndReplace(ExecutableFolder() / "assets/Templates/Project Files/Template.csproj.cut", m_path / (name + ".csproj"), ":{ProjectName}", name);
 #elif CU_LINUX
-        CreateFileAndReplace(ExecutableFolder() / "assets/Templates/Project Files/premake5.lua.cut", m_path / "premake5.lua", ":{ProjectName}", m_name);
+        CreateFileAndReplace(ExecutableFolder() / "assets/Templates/Project Files/premake5.lua.cut", m_path / "premake5.lua", ":{ProjectName}", name);
 #endif
 
     }

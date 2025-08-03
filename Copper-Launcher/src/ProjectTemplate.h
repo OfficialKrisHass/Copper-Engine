@@ -17,7 +17,7 @@ namespace Launcher {
         bool CreateProject(const std::string& name, const fs::path& path) const;
 
         inline const std::string& GetName() const { return m_name; }
-        inline const std::string& GetPath() const { return m_description; }
+        inline const std::string& GetDescription() const { return m_description; }
 
         inline static const std::vector<ProjectTemplate>& GetTemplates() { return s_templates; }
 

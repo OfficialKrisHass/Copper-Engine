@@ -240,7 +240,7 @@ namespace Launcher {
 
         for (uint32 i = 0; i < data.projectEntries.size(); i++) {
 
-            if (data.projectEntries[i].Name() != entry.Name()) continue;
+            if (data.projectEntries[i].Directory() != entry.Directory()) continue;
 
             data.projectEntries.erase(data.projectEntries.begin() + i);
 

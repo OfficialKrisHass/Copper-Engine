@@ -27,8 +27,10 @@ namespace Launcher {
 
     void ProjectEntry::Render() const {
 
-        const ImGuiID id = ImGui::GetID(m_name.c_str());
+        const ImGuiID id = ImGui::GetID(m_directory.string().c_str());
         const ImVec2 size = { ImGui::GetContentRegionAvail().x, ProjectTabHeight };
+
+        ImGui::PushID(id);
 
         const bool exists = fs::exists(m_directory / "Project.cu");
         const bool isHovered = heldID == ImGuiID(0) && ImGui::GetHoveredID() == id;
@@ -79,6 +81,7 @@ namespace Launcher {
             heldID = ImGuiID(0);
 
         ImGui::EndChildFrame();
+        ImGui::PopID();
 
     }
 

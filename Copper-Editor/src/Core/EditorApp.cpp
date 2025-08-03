@@ -625,7 +625,7 @@ namespace Editor {
         data.project.RunPremake();
 #endif
         data.project.BuildScripts();
-        Scripting::Load(data.project.GetPath() / "Binaries" / (data.project.GetName() + ".dll"));
+        Scripting::Load(data.project.GetPath() / "Binaries" / (data.project.name + ".dll"));
 
         data.scene->Deinitialize();
         SceneSerializer::Deserialize(data.scene, path / "Assets" / data.project.GetLastOpenedScenePath());
@@ -636,7 +636,7 @@ namespace Editor {
 
         ClearChanges();
 
-        data.title = "Copper Editor - " + data.project.GetName() + ": Main.copper";
+        data.title = "Copper Editor - " + data.project.name + ": Main.copper";
         data.window.SetTitle(data.title);
 
     }
@@ -706,7 +706,7 @@ namespace Editor {
 
         data.project.SetLastOpenedScenePath(fs::relative(path, data.project.GetAssetsPath()));
 
-        data.title = "Copper Editor - " + data.project.GetName() + ": " + data.project.GetLastOpenedSceneName();
+        data.title = "Copper Editor - " + data.project.name + ": " + data.project.GetLastOpenedSceneName();
         data.window.SetTitle(data.title); 
 
     }
@@ -756,7 +756,7 @@ namespace Editor {
 
         ResetUnsavedChanges();
 
-        data.title = "Copper Editor - " + data.project.GetName() + ": " + data.project.GetLastOpenedSceneName();
+        data.title = "Copper Editor - " + data.project.name + ": " + data.project.GetLastOpenedSceneName();
         data.window.SetTitle(data.title);
 
         SaveEditorData();

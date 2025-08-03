@@ -1,11 +1,16 @@
 #include "ProjectSettings.h"
 
+#include "Core/EditorApp.h"
+
+#include "Projects/Project.h"
+
 #include "UI/TypeWidgets.h"
 
 #include <Engine/Renderer/Renderer.h>
 
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_internal.h>
+#include <ImGui/misc/cpp/imgui_stdlib.h>
 
 #define Page_General FLAG(0)
 #define Page_Rendering FLAG(1)
@@ -83,7 +88,12 @@ namespace Editor::ProjectSettings {
 
     void ShowGeneralPage() {
 
-        ImGui::Text("General Page");
+        if (ImGui::CollapsingHeader("Project")) {
+
+            UI::EditString("Name", &GetProject().name);
+            ImGui::InputTextMultiline("Description", &GetProject().description);
+
+        }
 
     }
     void ShowRenderingPage() {

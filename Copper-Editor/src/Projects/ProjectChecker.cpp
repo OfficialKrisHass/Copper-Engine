@@ -6,10 +6,10 @@
 #include <fstream>
 
 #define CHECK_FOLDER(folderName, x) if (!std::filesystem::exists(path / folderName)) {\
-                                        LogError("Project '{}' is missing the {} folder", project.GetName(), folderName);\
+                                        LogError("Project '{}' is missing the {} folder", project.name, folderName);\
                                         ret |= FLAG(x); }
 #define CHECK_FILE(fileName, filePath, x) if (!std::filesystem::exists(path / filePath)) {\
-                                            LogError("Project '{}' is missing the {} ({}) file", project.GetName(), fileName, filePath);\
+                                            LogError("Project '{}' is missing the {} ({}) file", project.name, fileName, filePath);\
                                             ret |= FLAG(x); }
 
 #define GET_FLAG(x, flag) x & (uint16) flag
@@ -32,7 +32,7 @@ namespace Editor::ProjectChecker {
 
         // Binaries
 
-        CHECK_FILE("Project assembly", ("Binaries/" + project.GetName() + ".dll"), 2);
+        CHECK_FILE("Project assembly", ("Binaries/" + project.name + ".dll"), 2);
         CHECK_FILE("Scripting API assembly", "Binaries/Copper-ScriptingAPI.dll", 3);
 
         // Project files
@@ -65,7 +65,7 @@ namespace Editor::ProjectChecker {
 
         if (GET_FLAG(issueFlags, MissingProjectFile)) {
 
-            project.SetName(project.GetPath().parent_path().filename().string());
+            project.name = project.GetPath().parent_path().filename().string();
             project.RegenerateProjectFiles();
 
         }
@@ -121,7 +121,7 @@ namespace Editor::ProjectChecker {
             out += "Missing ScriptingAPI dll file (Binaries/Copper-ScriptingAPI.dll)\n";
 
         if (GET_FLAG(issueFlags, MissingProjectDLL))
-            out += "Missing project dll file (Binaries/" + project.GetName() + ".dll)\n";
+            out += "Missing project dll file (Binaries/" + project.name + ".dll)\n";
 
     }
 

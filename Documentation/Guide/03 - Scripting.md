@@ -142,7 +142,7 @@ Currently, we add `0.1f` to the Y coordinate of the cube every single frame, so 
 I am sure you can see the issue in that. To fix this, Copper-Engine uses a popular concept called delta time. Delta time is the time it took to render last frame, and it is used to make sure that certain calculations like the movement of the player won't behave differently on different frame rates.
 
 Change the your Update function to this:
-```
+```cs
 private void OnUpdate() {
     
     transform.position += new Vector3(0.0f, 0.1f * Game.deltaTime, 0.0f);

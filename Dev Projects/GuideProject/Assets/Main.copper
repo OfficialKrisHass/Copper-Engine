@@ -1,0 +1,62 @@
+Version: 0
+Entities:
+  0:
+    Name: Cube
+    Transform:
+      Position: [0, 0, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [10, 1, 10]
+      Parent: 4294967295
+      Children:
+        []
+    Mesh Renderer:
+      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
+      Material: 00000000-0000-0000-0000-000000000000
+  1:
+    Name: Light
+    Transform:
+      Position: [0, 0, 0]
+      Rotation: [0.924098909, -0.260623187, -0.269000322, -0.0758660436]
+      Scale: [1, 1, 1]
+      Parent: 4294967295
+      Children:
+        []
+    Light:
+      Type: 1
+      Color: [1, 1, 1, 1]
+      Intensity: 1
+  2:
+    Name: Camera
+    Transform:
+      Position: [0, 4, 7]
+      Rotation: [0.976296008, -0.21643962, -0, 0]
+      Scale: [1, 0.999997854, 0.999998569]
+      Parent: 4294967295
+      Children:
+        []
+    Camera:
+      Fov: 90
+      Near Plane: 0.100000001
+      Far Plane: 1000
+      Size: [1078, 516]
+  3:
+    Name: Cube
+    Transform:
+      Position: [0, 2, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent: 4294967295
+      Children:
+        []
+    Mesh Renderer:
+      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
+      Material: 00000000-0000-0000-0000-000000000000
+    Script Component:
+      Name: MyComponent
+      Fields:
+        {}
+Scene Camera:
+  Position: [0.213517234, 5.50722551, 5.4056654]
+  Rotation: [-0.996776223, 0.0798474029, 0.00489900354, 0.000391475973]
+  Speed: 1
+  Sensitivity: 2

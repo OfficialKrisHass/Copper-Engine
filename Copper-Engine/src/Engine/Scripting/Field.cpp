@@ -32,8 +32,8 @@ namespace Copper::Scripting {
 
         CUP_FUNCTION();
 
-        CU_ASSERT(out, "Can't get field value with nullptr out parameter");
-        CU_ASSERT(instance, "Can't get field value on nullptr instance");
+        CU_ASSERT(out != nullptr, "Can't get field value with nullptr out parameter");
+        CU_ASSERT(instance != nullptr, "Can't get field value on nullptr instance");
 
         mono_field_get_value(instance->m_instance, m_field, out);
 
@@ -42,7 +42,7 @@ namespace Copper::Scripting {
 
         CUP_FUNCTION();
 
-        CU_ASSERT(instance, "Can't set field value on nullptr instance");
+        CU_ASSERT(instance != nullptr, "Can't set field value on nullptr instance");
 
         mono_field_set_value(instance->m_instance, m_field, value);
 
@@ -51,6 +51,8 @@ namespace Copper::Scripting {
     void Field::GetRefValue(ScriptComponent* instance, void** out, void* none) const {
 
         CUP_FUNCTION();
+
+        CU_ASSERT(out != nullptr, "Can't get reference field value with nullptr out parameter");
 
         MonoObject* tmp = nullptr;
         GetValue(instance, &tmp);
@@ -69,7 +71,7 @@ namespace Copper::Scripting {
 
         CUP_FUNCTION();
 
-        MonoObject* tmp = ManagedReference(value);
+        MonoObject* tmp = GetManagedReference(value);
         CU_ASSERT(tmp, "Could not get Managed reference in order to set ref field");
 
         SetValue(instance, tmp);

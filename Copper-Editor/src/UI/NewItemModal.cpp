@@ -1,5 +1,5 @@
-#include "NewModal.h"
-#include "NewModalData.h"
+#include "NewItemModal.h"
+#include "NewItemModalData.h"
 
 #include "Core/EditorApp.h"
 
@@ -27,7 +27,7 @@
 
 using namespace Copper;
 
-namespace Editor::NewModal {
+namespace Editor::NewItemModal {
 
     static bool open = false;
     static uint32 selectedOption = 0;
@@ -54,7 +54,7 @@ namespace Editor::NewModal {
         open = true;
         nameInput[0] = '\0';
 
-        ImGui::OpenPopup("New");
+        ImGui::OpenPopup("New item");
 
         directory = GetProject().GetAssetsPath() / FileBrowser::GetRelativeDir();
 
@@ -78,7 +78,7 @@ namespace Editor::NewModal {
         ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
         ImGui::SetNextWindowBgAlpha(1.0f);
 
-        if (!ImGui::BeginPopupModal("New", &open)) return;
+        if (!ImGui::BeginPopupModal("New item", &open)) return;
 
         const ImGuiStyle& style = ImGui::GetStyle();
 

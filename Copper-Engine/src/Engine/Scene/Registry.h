@@ -292,6 +292,14 @@ namespace Copper {
 
             for (ComponentPool* pool : m_pools)
                 delete pool;
+            for (InternalEntity& entity : m_entities) {
+
+                if (entity.m_id == INVALID_ENTITY_ID) continue;
+
+                entityRemovedEvent.entity = &entity;
+                entityRemovedEvent();
+
+            }
 
             m_entities.clear();
             m_gaps.clear();

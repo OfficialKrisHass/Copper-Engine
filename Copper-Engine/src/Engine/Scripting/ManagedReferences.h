@@ -1,6 +1,8 @@
 #pragma once
 
-#include <Engine/Core/Core.h>
+#include "Engine/Core/Core.h"
+
+#include "Engine/Scripting/Classes.h"
 
 extern "C" {
 
@@ -13,8 +15,13 @@ namespace Copper::Scripting {
 
     void ClearManagedReferences();
 
-    MonoObject* ManagedReference(void* unmanagedPtr, MonoClass* classToCreate = nullptr);
+    MonoObject* GetManagedReference(void* unmanagedPtr, Class klass);
+    MonoObject* GetManagedReference(void* unmanagedPtr, MonoClass* klass);
+    MonoObject* GetManagedReference(void* unmanagedPtr);
+
+    MonoObject* CreateManagedReference(void* unmanagedPtr, Class klass);
     MonoObject* CreateManagedReference(void* unmanagedPtr, MonoClass* klass);
+
     void RemoveManagedReference(void* unmanagedPtr);
 
 }

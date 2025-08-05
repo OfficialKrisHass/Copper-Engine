@@ -20,7 +20,7 @@ namespace Launcher {
 
     void ProjectTemplate::LoadTemplates() {
 
-        static const fs::path templatesPath = PersistentData::EditorAssetsPath() / "assets/Templates/Projects";
+        static const fs::path templatesPath = PersistentData::EditorAssetsPath() / "Templates/Projects";
         for (const fs::directory_entry& entry : fs::directory_iterator(templatesPath)) {
 
             const fs::path& path = entry.path();
@@ -49,13 +49,13 @@ namespace Launcher {
 
         }
 
-        fs::path templatePath = PersistentData::EditorAssetsPath() / "assets/Templates/Projects" / m_name;
+        fs::path templatePath = PersistentData::EditorAssetsPath() / "Templates/Projects" / m_name;
 
         fs::create_directories(path / name / "Assets");
         fs::create_directories(path / name / "Binaries");
 
         FileFromTemplate(templatePath / "Project.cu.cut", path / name / "Project.cu", ":{ProjectName}", name);
-        CopyFile(PersistentData::EditorAssetsPath() / "assets/Copper-ScriptingAPI.dll", path / name / "Binaries/Copper-ScriptingAPI.dll");
+        CopyFile(PersistentData::EditorAssetsPath() / "Copper-ScriptingAPI.dll", path / name / "Binaries/Copper-ScriptingAPI.dll");
 
         for (const fs::directory_entry& entry : fs::recursive_directory_iterator(templatePath / "Assets")) {
 
@@ -80,7 +80,7 @@ namespace Launcher {
 
     void ProjectTemplate::GenerateBuildFiles(const std::string& name, const fs::path& path) const {
 
-        const fs::path templateDir = PersistentData::EditorAssetsPath() / "assets/Templates/Project Files";
+        const fs::path templateDir = PersistentData::EditorAssetsPath() / "Templates/Project Files";
 
 #ifdef CU_WINDOWS
         FileFromTemplate(templateDir / "Template.sln.cut", path / name / (name + ".sln"), ":{ProjectName}", name);
@@ -88,7 +88,7 @@ namespace Launcher {
 #elif CU_LINUX
         FileFromTemplate(templateDir / "premake5.lua.cut", path / name / "premake5.lua", ":{ProjectName}", name);
 
-        const std::string premakePath = PersistentData::EditorAssetsPath() / "util/premake/premake5";
+        const std::string premakePath = PersistentData::EditorAssetsPath() / "../util/premake/premake5";
         const std::string file = path / name / "premake5.lua";
 
         const std::string cmd = premakePath + " --file=\"" + file + "\" gmake2";

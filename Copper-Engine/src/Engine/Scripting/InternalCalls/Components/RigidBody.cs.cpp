@@ -85,10 +85,10 @@ namespace Copper::Scripting::RigidBody {
         GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
 
         Collider* collider = ptr->GetCollider();
-        CU_ASSERT(collider, "Could not get Collider from RigidBody '{}'", *ptr->GetEntity());
+        CU_ASSERT(collider != nullptr, "Could not get Collider from RigidBody '{}'", *ptr->GetEntity());
 
-        MonoObject* ret = ManagedReference(collider);
-        CU_ASSERT(ret, "Could not get Managed Reference to Collider on '{}'", *ptr->GetEntity());
+        MonoObject* ret = GetManagedReference(collider);
+        CU_ASSERT(ret != nullptr, "Could not get Managed Reference to Collider on '{}'", *ptr->GetEntity());
 
         return ret;
 

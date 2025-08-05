@@ -2,7 +2,7 @@
 
 #include <Copper.h>
 
-namespace Editor::NewModal {
+namespace Editor::NewItemModal {
 
     void Open();
     void Close();

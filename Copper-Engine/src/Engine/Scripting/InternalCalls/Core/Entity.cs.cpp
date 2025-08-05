@@ -9,6 +9,7 @@
 
 #include "Engine/Scripting/MonoUtils.h"
 #include "Engine/Scripting/ScriptingEngine.h"
+#include "Engine/Scripting/Classes.h"
 #include "Engine/Scripting/ManagedReferences.h"
 #include "Engine/Scripting/InternalCalls/Utils.h"
 
@@ -60,9 +61,10 @@ namespace Copper::Scripting::Entity {
 
         GET_ENTITY(ptr, entity);
         Transform* transform = ptr->GetTransform();
-        MonoObject* ret = ManagedReference(transform);
-        
+
+        MonoObject* ret = GetManagedReference(transform, Class::Transform);
         CU_ASSERT(ret, "Could not get Transform Managed reference from Entity");
+
         return ret;
 
     }
@@ -79,7 +81,7 @@ namespace Copper::Scripting::Entity {
         if (addComponentFuncs.find(typeName) != addComponentFuncs.end()) {
 
             void* comp = addComponentFuncs.at(typeName)(ptr);
-            MonoObject* ret = ManagedReference(comp);
+            MonoObject* ret = GetManagedReference(comp);
             CU_ASSERT(ret, "Could not get Managed Reference after Adding component '{}' to entity '{}'", typeName, *ptr);
 
             return ret;
@@ -123,10 +125,10 @@ namespace Copper::Scripting::Entity {
         GET_ENTITY(ptr, entity);
         void* component = ptr->GetComponent(cID);
 
-        if (!component)
+        if (component == nullptr)
             return nullptr;
 
-        MonoObject* ret = ManagedReference(component);
+        MonoObject* ret = GetManagedReference(component, klass);
         CU_ASSERT(ret, "Could not get Component (cID '{}') Managed reference", cID);
 
         return ret;

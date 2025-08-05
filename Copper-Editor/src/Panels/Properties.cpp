@@ -79,9 +79,6 @@ namespace Editor {
 
         }
 
-        ImGui::SameLine();
-        ImGui::Separator();
-
         if(DrawComponent("Transform", entity->GetTransform())) {
             
             Transform* transform = entity->GetTransform();

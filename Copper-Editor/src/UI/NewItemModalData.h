@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Editor::NewModal::Data {
+namespace Editor::NewItemModal::Data {
 
     inline const char* options[] = {
 

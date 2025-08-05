@@ -207,7 +207,7 @@ namespace Launcher {
         std::string path = Utils::ReplaceSpaces(projectPath);
         std::string args = editorPath;
 #ifdef CU_DEBUG
-        args += " -a " + PersistentData::EditorAssetsPath().string();
+        args += " -e " + PersistentData::EditorAssetsPath().string();
 #endif
         args += ' ' + projectPath;
 

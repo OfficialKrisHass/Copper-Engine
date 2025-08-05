@@ -9,12 +9,33 @@ extern "C" {
 }
 
 namespace Copper::Scripting {
+
+    enum class Class : uint8 {
+
+        Base = 0,
+
+        Entity,
+        Component,
+        Transform,
+
+        Camera,
+        Light,
+
+        RigidBody,
+        BoxCollider,
+        SphereCollider,
+        CapsuleCollider,
+
+        ShowInEditorAttribute,
+        HideInEditorAttribute,
+
+        None,
+        COUNT = None,
+
+    };
+
+    void InitializeClasses();
+
+    MonoClass* GetClass(Class klass);
     
-    MonoClass* BaseClass();
-
-    template<typename T> MonoClass* GetMonoClass();
-
-    MonoClass* ShowInEditorAttributeClass();
-    MonoClass* HideInEditorAttributeClass();
-
 }

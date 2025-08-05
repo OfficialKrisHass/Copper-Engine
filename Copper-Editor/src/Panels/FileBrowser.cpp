@@ -9,7 +9,7 @@
 
 #include "Panels/Properties.h"
 
-#include "UI/NewModal.h"
+#include "UI/NewItemModal.h"
 
 #include <Engine/Renderer/Texture.h>
 
@@ -39,7 +39,7 @@ namespace Editor {
     Texture directoryIcon;
     Texture fileIcon;
     
-    bool openNewModal = false;
+    bool openNewItemModal = false;
 
     void FileBrowser::Initialize() {
 
@@ -95,13 +95,13 @@ namespace Editor {
 
         // New modal
 
-        if (openNewModal) {
+        if (openNewItemModal) {
 
-            NewModal::Open();
-            openNewModal = false;
+            NewItemModal::Open();
+            openNewItemModal = false;
 
         }
-        NewModal::UIRender();
+        NewItemModal::UIRender();
 
         CUP_END_FRAME();
         
@@ -387,8 +387,8 @@ namespace Editor {
 
         if (!ImGui::BeginPopupContextWindow("##File Browser")) return;
 
-        if (ImGui::MenuItem("New", nullptr, false, GetProject().IsValid()))
-            openNewModal = true;
+        if (ImGui::MenuItem("New item", nullptr, false, GetProject().IsValid()))
+            openNewItemModal = true;
         
         ImGui::EndPopup();
 

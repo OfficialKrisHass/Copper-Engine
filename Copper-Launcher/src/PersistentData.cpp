@@ -82,7 +82,7 @@ namespace Launcher::PersistentData {
             LocateEditor();
 #ifdef CU_DEBUG
             save = true;
-#elif
+#elif CU_RELEASE
             Save(projectEntries);
 #endif
 
@@ -140,10 +140,11 @@ namespace Launcher::PersistentData {
     const fs::path& EditorPath() { return editorPath; }
     const fs::path& EditorAssetsPath() {
 
-#ifdef CU_DEBUG
+#ifdef CU_DEBUG 
         return editorAssetsPath;
-#elif
-        return editorPath / "assets";
+#elif CU_RELEASE
+        static fs::path ret = editorPath.parent_path() / "assets";
+        return ret;
 #endif
 
     }
@@ -179,7 +180,7 @@ namespace Launcher::PersistentData {
 
         }
 
-        if (fs::exists(editorAssetsPath / "assets/EditorData.cu")) return;
+        if (fs::exists(editorAssetsPath / "EditorData.cu")) return;
 
         Dialogs::Error("Invalid folder", "Invalid Editor assets directory.");
         exit(-1);

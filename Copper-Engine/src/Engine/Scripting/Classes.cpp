@@ -5,95 +5,49 @@
 
 #include <mono/metadata/class.h>
 
-#define NULL_CLASS_REF "{} class reference is nullptr. Make sure you provided the same name as in SET_CLASS()."
-
-#define SET_CLASS(var, name)    classes.var = mono_class_from_name(ScriptingAPIAssembly().GetImage(), "Copper", name);\
-                                CU_ASSERT(classes.var, "Could not get Copper.{} class.", name)
-
-#define GET_CLASS_FUNC(name, var)   MonoClass* name ## Class() { CUP_FUNCTION();\
-                                    CU_ASSERT(classes.var, NULL_CLASS_REF, #name);\
-                                    return classes.var; }
-
-#define GET_TMPL_CLASS_FUNC(type, var)  template<> MonoClass* GetMonoClass<type>() { CUP_FUNCTION();\
-                                        CU_ASSERT(classes.var, NULL_CLASS_REF, #var);\
-                                        return classes.var; }
-
-namespace Copper {
-
-    class InternalEntity;
-    class Component;
-    class Transform;
-
-    class Camera;
-    class Light;
-
-    class RigidBody;
-    class BoxCollider;
-    class SphereCollider;
-    class CapsuleCollider;
-
-}
+#define GET_CLASS(class) classes[static_cast<uint8>(Class::class)] = mono_class_from_name(ScriptingAPIAssembly().GetImage(), "Copper", #class);\
+                         CU_ASSERT(classes[static_cast<uint8>(Class::class)] != nullptr, "Failed to get class Copper.{}", #class);
 
 namespace Copper::Scripting {
 
-    struct Classes {
-
-        MonoClass* baseClass = nullptr;
-
-        MonoClass* entityClass = nullptr;
-        MonoClass* componentClass = nullptr;
-        MonoClass* transformClass = nullptr;
-
-        MonoClass* cameraClass = nullptr;
-        MonoClass* lightClass = nullptr;
-
-        MonoClass* rigidBodyClass = nullptr;
-        MonoClass* boxColliderClass = nullptr;
-        MonoClass* sphereColliderClass = nullptr;
-        MonoClass* capsuleColliderClass = nullptr;
-
-        MonoClass* showInEditorAttrClass = nullptr;
-        MonoClass* hideInEditorAttrClass = nullptr;
-
-    };
-    Classes classes;
+    MonoClass* classes[static_cast<uint8>(Class::COUNT)];
 
     void InitializeClasses() {
+        
+        CUP_FUNCTION();
 
-        SET_CLASS(baseClass, "Base");
+        CU_ASSERT(ScriptingAPIAssembly().IsValid(), "Called InitializeClasses() while ScriptingAPI assembly is invalid!");
+        CU_ASSERT(ScriptingAPIAssembly().GetImage() != nullptr, "Called InitializeClasses() while ScriptingAPI image is invalid!");
 
-        SET_CLASS(entityClass, "Entity");
-        SET_CLASS(componentClass, "Component");
-        SET_CLASS(transformClass, "Transform");
+        GET_CLASS(Base);
+        
+        GET_CLASS(Entity);
+        GET_CLASS(Component);
+        GET_CLASS(Transform);
 
-        SET_CLASS(cameraClass, "Camera");
-        SET_CLASS(lightClass, "Light");
+        GET_CLASS(Camera);
+        GET_CLASS(Light);
 
-        SET_CLASS(rigidBodyClass, "RigidBody");
-        SET_CLASS(boxColliderClass, "BoxCollider");
-        SET_CLASS(sphereColliderClass, "SphereCollider");
-        SET_CLASS(capsuleColliderClass, "CapsuleCollider");
+        GET_CLASS(RigidBody);
+        GET_CLASS(BoxCollider);
+        GET_CLASS(SphereCollider);
+        GET_CLASS(CapsuleCollider);
 
-        SET_CLASS(showInEditorAttrClass, "ShowInEditorAttribute");
-        SET_CLASS(hideInEditorAttrClass, "HideInEditorAttribute");
+        GET_CLASS(ShowInEditorAttribute);
+        GET_CLASS(HideInEditorAttribute);
+
 
     }
 
-    GET_CLASS_FUNC(Base, baseClass);
+    MonoClass* GetClass(Class klass) {
 
-    GET_TMPL_CLASS_FUNC(InternalEntity, entityClass);
-    GET_TMPL_CLASS_FUNC(Component, componentClass);
-    GET_TMPL_CLASS_FUNC(Transform, transformClass);
+        CUP_FUNCTION();
 
-    GET_TMPL_CLASS_FUNC(Camera, cameraClass);
-    GET_TMPL_CLASS_FUNC(Light, lightClass);
+        CU_ASSERT(klass != Class::None, "Can't get invalid Class (Class::None)!");
+        CU_ASSERT(classes[static_cast<uint8>(klass)] != nullptr, "Class '{}' is invalid!", static_cast<uint8>(klass));
 
-    GET_TMPL_CLASS_FUNC(RigidBody, rigidBodyClass);
-    GET_TMPL_CLASS_FUNC(BoxCollider, boxColliderClass);
-    GET_TMPL_CLASS_FUNC(SphereCollider, sphereColliderClass);
-    GET_TMPL_CLASS_FUNC(CapsuleCollider, capsuleColliderClass);
+        return classes[static_cast<uint8>(klass)];
 
-    GET_CLASS_FUNC(ShowInEditorAttribute, showInEditorAttrClass);
-    GET_CLASS_FUNC(HideInEditorAttribute, hideInEditorAttrClass);
+    }
 
 }

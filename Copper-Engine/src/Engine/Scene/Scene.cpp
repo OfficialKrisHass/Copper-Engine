@@ -37,7 +37,7 @@
 #include <fstream>
 #include <yaml-cpp/yaml.h>
 
-#define MANAGED_REFERENCE_ADD(cID, klass) case cID: Scripting::CreateManagedReference((klass*) event->component, Scripting::GetMonoClass<klass>()); break;
+#define MANAGED_REFERENCE_ADD(cID, klass) case cID: Scripting::CreateManagedReference((klass*) event->component, Scripting::Class::klass); break;
 
 namespace Copper {
 
@@ -148,10 +148,12 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+        using namespace Scripting;
+
         EntityEvent* event = (EntityEvent*) &e;
 
-        Scripting::CreateManagedReference((void*) (uint64) event->entity->m_id, Scripting::GetMonoClass<InternalEntity>());
-        Scripting::CreateManagedReference(event->entity->m_transform, Scripting::GetMonoClass<Transform>());
+        CreateManagedReference((void*) (uint64) event->entity->m_id, Class::Entity);
+        CreateManagedReference(event->entity->m_transform, Class::Transform);
 
         return true;
 
@@ -160,10 +162,12 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+        using namespace Scripting;
+
         EntityEvent* event = (EntityEvent*) &e;
 
-        Scripting::RemoveManagedReference((void*) (uint64) event->entity->m_id);
-        Scripting::RemoveManagedReference(event->entity->m_transform);
+        RemoveManagedReference((void*) (uint64) event->entity->m_id);
+        RemoveManagedReference(event->entity->m_transform);
 
         return true;
 

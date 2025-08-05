@@ -26,8 +26,9 @@ namespace Copper::Scripting::Collider {
 
         GET_UNMANAGED_PTR(Collider*, ptr, collider);
 
-        MonoObject* ret = ManagedReference(ptr->GetRigidBody());
+        MonoObject* ret = GetManagedReference(ptr->GetRigidBody(), Class::RigidBody);
         CU_ASSERT(ret, "Could not get Collider's Rigid body Managed Reference\n\t{}", ptr->GetEntity()->name);
+
         return ret;
 
     }

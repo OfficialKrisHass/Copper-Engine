@@ -66,20 +66,22 @@ namespace Editor {
 
         // Movement
 
-        float horizontal = Input::GetAxis("Keys_WS") * speed * m_multiplier * GetDeltaTime();
-        float vertical = Input::GetAxis("Keys_DA") * speed * m_multiplier * GetDeltaTime();
+        float multiplier = speed * m_multiplier * GetDeltaTime() * 10.0f; // Incredibly slow without the times 10
+        float horizontal = Input::GetAxis("Keys_WS") * multiplier;
+        float vertical = Input::GetAxis("Keys_DA") * multiplier;
 
         m_transform->AddPosition(m_transform->GetForward() * horizontal + m_transform->GetRight() * vertical);
 
-        if (Input::GetKeyState(KeyCode::Space) == KeyState::Down)
-            m_transform->AddPosition( m_transform->GetUp() * speed * GetDeltaTime());
-        if (Input::GetKeyState(KeyCode::LeftControl) == KeyState::Down)
-            m_transform->AddPosition(-m_transform->GetUp() * speed * GetDeltaTime());
+        if (Input::GetKeyState(KeyCode::E) == KeyState::Down)
+            m_transform->AddPosition( m_transform->GetUp() * multiplier);
+        if (Input::GetKeyState(KeyCode::Q) == KeyState::Down)
+            m_transform->AddPosition(-m_transform->GetUp() * multiplier);
 
         // Look
 
-        float deltaX = -Input::GetMouseAxis("Mouse X") / GetWindow().GetWidth() * sensitivity * GetDeltaTime();
-        float deltaY = -Input::GetMouseAxis("Mouse Y") / GetWindow().GetHeight() * sensitivity * GetDeltaTime();
+        multiplier = sensitivity * GetDeltaTime() * 5000.0f; // Incredibly slow without the times 5000
+        float deltaX = -Input::GetMouseAxis("Mouse X") / GetWindow().GetWidth() * multiplier;
+        float deltaY = -Input::GetMouseAxis("Mouse Y") / GetWindow().GetHeight() * multiplier;
 
         m_rotation = Quaternion(Vector3(0.0f, 1.0f, 0.0f) * deltaX) * m_rotation;
         m_rotation *= Quaternion(Vector3(1.0f, 0.0f, 0.0f) * deltaY);

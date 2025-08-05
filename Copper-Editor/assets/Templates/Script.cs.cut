@@ -3,14 +3,14 @@ using Copper;
 
 public class :{ScriptName} : Component {
 
-    // Called once, at the beginning of the lifetime of the Entity this component is on. Use for initialization
-    private void Create() {
+    // Called once, at the beginning of the lifetime of the Entity this component is attached to. Use for initialization
+    private void OnBegin() {
 
         //
 
     }
     // Called every frame. Use for game logic
-    private void Update() {
+    private void OnUpdate() {
 
         //
 

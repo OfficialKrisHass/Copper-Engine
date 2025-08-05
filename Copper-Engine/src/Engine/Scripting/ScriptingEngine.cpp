@@ -53,7 +53,6 @@ namespace Copper::Scripting {
     void InitializeGame();
 
     extern void SetupInternalCalls();
-    extern void InitializeClasses();
 
     void Initialize() {
 
@@ -152,9 +151,7 @@ namespace Copper::Scripting {
         fs::path savedPath = data.game.Path();
 
         Unload();
-
-        if (!Load(savedPath)) return false;
-        return true;
+        return Load(savedPath);
 
     }
 
@@ -177,7 +174,7 @@ namespace Copper::Scripting {
         SetupInternalCalls();
         InitializeClasses();
 
-        data.unmanagedPtrField = mono_class_get_field_from_name(BaseClass(), "m_unmanagedPtr");
+        data.unmanagedPtrField = mono_class_get_field_from_name(GetClass(Class::Base), "m_unmanagedPtr");
         CU_ASSERT(data.unmanagedPtrField != nullptr, "Could not get field reference to Base.m_unmanagedPtr.");
 
     }
@@ -205,7 +202,7 @@ namespace Copper::Scripting {
             // Filter out non component Scripts
 
             MonoClass* klass = mono_class_from_name_case(data.game.GetImage(), nameSpace, name);
-            if (!mono_class_is_subclass_of(klass, GetMonoClass<Component>(), false)) continue;
+            if (!mono_class_is_subclass_of(klass, GetClass(Class::Component), false)) continue;
 
             std::string fullName = mono_class_get_name(klass);
             data.componentScripts[fullName] = Script(klass);

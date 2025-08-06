@@ -111,7 +111,10 @@ namespace Editor {
         if (Scripting::GameAssembly().IsValid())
             Scripting::Unload();
 
-        Scripting::Load((path / "Binaries/" / (name + ".dll")).string());
+        if (!BuildScripts())
+            LogError("Failed to build C# scripts");
+        if (!Scripting::Load((path / "Binaries/" / (name + ".dll")).string()))
+            LogError("Failed to load assembly at path '{}.dll'", path / "Binaries" / name);
 
         m_assetWatch.Start(GetAssetsPath());
         m_assetWatch.SetCallback(std::bind(&Project::FileChangeCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));

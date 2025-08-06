@@ -123,7 +123,7 @@ namespace Editor::ProjectAssetDatabase {
 
         CUP_FUNCTION();
 
-        Log("Unloading project asset database");
+        LogStatus("Unloading project asset database");
 
         // Hack, I can't think of a better way of solving this unfortunately
         for (auto& it : assetFiles) {

@@ -100,12 +100,10 @@ namespace Copper::Scripting {
 
         InitializeGame();
 
-#ifdef CU_LOG_STATUS
         if (GetEngineState() == EngineState::PostInitialization)
             LogStatus("\tGame assembly '{}' loaded with {} component scripts.", assemblyPath.filename().string(), data.componentScripts.size());
         else
-#endif
-            Log("Game assembly '{}' loaded with {} component scripts.", assemblyPath.filename().string(), data.componentScripts.size());
+            LogStatus("Game assembly '{}' loaded with {} component scripts.", assemblyPath.filename().string(), data.componentScripts.size());
 
         for (ScriptComponent* component : ComponentView<ScriptComponent>(GetScene())) {
 
@@ -133,7 +131,7 @@ namespace Copper::Scripting {
 
         data.componentScripts.clear();
 
-        Log("Game assembly unloaded.");
+        LogStatus("Game assembly unloaded.");
 
 
     }

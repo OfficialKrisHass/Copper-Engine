@@ -62,7 +62,7 @@ namespace Editor::SceneSerializer {
         file << out.c_str();
         file.close();
 
-        Log("Scene '{}' serialized.", path.filename().string());
+        LogStatus("Scene '{}' serialized.", path.filename().string());
 
     }
     void Deserialize(Scene* scene, const fs::path &path) {
@@ -89,12 +89,10 @@ namespace Editor::SceneSerializer {
 
         }
 
-#ifdef CU_LOG_STATUS
         if (GetEngineState() == EngineState::PostInitialization)
             LogStatus("\tScene deserialized with {} entities.", scene->GetNumOfEntities());
         else
-#endif
-            Log("Scene deserialized with {} entities.", scene->GetNumOfEntities());
+            LogStatus("Scene deserialized with {} entities.", scene->GetNumOfEntities());
 
     }
 

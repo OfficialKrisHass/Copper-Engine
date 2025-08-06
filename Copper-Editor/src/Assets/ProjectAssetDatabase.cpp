@@ -54,12 +54,10 @@ namespace Editor::ProjectAssetDatabase {
         ProjectMetadata::Deserialize(assetFiles);
         Refresh();
 
-#ifdef CU_LOG_STATUS
         if (GetEngineState() == EngineState::PostInitialization)
             LogStatus("\tProject asset database initialized.");
         else
-#endif
-            Log("Project asset database initialized.");
+            LogStatus("Project asset database initialized.");
 
     }
     void Update() {
@@ -151,10 +149,8 @@ namespace Editor::ProjectAssetDatabase {
 
         ProjectMetadata::Serialize(assetFiles);
 
-#ifdef CU_LOG_STATUS
         if (GetEngineState() == EngineState::Shutdown)
             LogStatus("\tProject asset database saved.");
-#endif
 
     }
 
@@ -293,12 +289,10 @@ namespace Editor::ProjectAssetDatabase {
 
         assetNames[uuid] = path.filename().string();
 
-#ifdef CU_LOG_STATUS
         if (GetEngineState() == EngineState::PostInitialization)
             LogStatus("\t\tAsset '{}' ({}) loaded.", uuid.ToString(), path.filename().string());
         else
-#endif
-            Log("Asset '{}' ({}) loaded.", uuid.ToString(), path.filename().string());
+            LogStatus("Asset '{}' ({}) loaded.", uuid.ToString(), path.filename().string());
 
     }
     void DeleteAsset(const fs::path& path, AssetType type) {

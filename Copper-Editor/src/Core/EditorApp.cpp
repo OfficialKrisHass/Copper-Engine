@@ -671,12 +671,10 @@ namespace Editor {
 
         CU_ASSERT(fs::exists(path), "Scene at path {} does not exist", path);
 
-#ifdef CU_LOG_STATUS
         if (GetEngineState() == EngineState::PostInitialization)
             LogStatus("\tOpening scene at {}", fs::relative(path, data.project.GetAssetsPath()));
         else
-#endif
-            Log("Opening scene at {}", fs::relative(path, data.project.GetAssetsPath()));
+            LogStatus("Opening scene at {}", fs::relative(path, data.project.GetAssetsPath()));
 
         if(UnsavedChanges()) {
 

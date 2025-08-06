@@ -95,6 +95,35 @@ You can remove any of these functions if you are not using them, everything will
 
 NOTE: The way and order the update functions are called in is subject to change as I do not like the way this sounds in this guide lmao.
 
+## Printing into the console
+You can utilize the Editor class to print directly into the in editor Console. A hello world example would look something like this.
+
+```cs
+using System;
+using Copper;
+
+public class MyComponent : Component {
+
+    // Called once, at the beginning of the lifetime of the Entity this component is attached to. Use for initialization
+    private void OnBegin() {
+
+        Editor.Log("Hello, world!");
+
+    }
+    // Called every frame. Use for game logic
+    private void OnUpdate() {
+
+        //
+
+    }
+
+}
+```
+
+And the output should look something like this.
+
+![image caption](Media/03/Printing.png)
+
 ## Coding
 Now that you know what is what, we can start doing some simple coding. Let's start by making the entity fly upwards.
 
@@ -120,6 +149,7 @@ Open back your editor, when you do that, the code you've written should automati
 Let's start by adding a Cube and setting it's Y coordinate to 2.0.
 
 ![image caption](Media/03/Running1.png)
+
 ![image caption](Media/03/Running2.png)
 
 You can now click the Add Component button, and you should see your new component in there. Select it, and it should be added to the entity.

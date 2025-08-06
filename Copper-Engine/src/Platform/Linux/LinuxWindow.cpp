@@ -43,7 +43,7 @@ namespace Copper {
 
         SetupEvents();
 
-        LogDebug("Created window {}, size: {}.", m_data.title, m_data.size);
+        LogStatus("Created window {}, size: {}.", m_data.title, m_data.size);
 
     }
     void Window::Update() {

@@ -67,12 +67,10 @@ namespace Editor {
         if (m_assetWatch.IsRunning())
             m_assetWatch.Stop();
 
-#ifdef CU_LOG_STATUS
         if (GetEngineState() == EngineState::PostInitialization)
             LogStatus("\tOpening project '{}'.", path.filename().string());
         else
-#endif
-            Log("Opening project '{}'.", path.filename().string());
+            LogStatus("Opening project '{}'.", path.filename().string());
 
         try { 
 
@@ -159,7 +157,7 @@ namespace Editor {
         if (saveScene)
             SaveScene();
 
-        LogDebug("Project saved.");
+        LogStatus("Project saved.");
 
     }
     void Project::SaveAs() {

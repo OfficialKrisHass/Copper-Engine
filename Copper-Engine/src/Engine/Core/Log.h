@@ -7,10 +7,9 @@
 
 #include <spdlog/sinks/ringbuffer_sink.h>
 
-#ifdef CU_DEBUG
+#if defined(CU_DEBUG) | defined(CU_EDITOR)
 
 #define Log(...)        Copper::Logger::GetLogger()->trace(__VA_ARGS__)
-#define LogDebug(...)   Copper::Logger::GetLogger()->debug(__VA_ARGS__)
 #define LogInfo(...)    Copper::Logger::GetLogger()->info(__VA_ARGS__)
 #define LogWarn(...)    Copper::Logger::GetLogger()->warn(__VA_ARGS__)
 #define LogError(...)   Copper::Logger::GetLogger()->error(__VA_ARGS__)
@@ -18,11 +17,16 @@
 #else
 
 #define Log(...)
-#define LogDebug(...)
 #define LogWarn(...)
 #define LogTrace(...)
 #define LogError(...)
 
+#endif
+
+#ifdef CU_DEBUG
+#define LogDebug(...)   Copper::Logger::GetLogger()->debug(__VA_ARGS__)
+#else
+#define LogDebug(...)
 #endif
 
 namespace Copper {

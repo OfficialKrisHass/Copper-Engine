@@ -81,7 +81,7 @@ Occupying the same space is the Console panel which you can open by clickin on i
 
 ![image caption](Media/02/Console.png)
 
-In release builds (what you downloaded) this panel is useless as Logging is disabled in Release builds for now. But in the future, and in Debug builds, you can use this panel to send simple messages from the code for some simple debugging or status updates.
+This can be used for simple debugging or status updates as you can print into this console from any script. This console is also connected to the standard output so whatever you see here would be also visible in the command line.
 
 ### Game panel
 The last panel we will talk about is the Game panel. Occupying the same place as the Viewport panel, you will see this.

@@ -738,7 +738,7 @@ namespace Editor {
 
         if (!UnsavedChanges()) return;
 
-        Log("Saving scene '{}'.", data.scenePath);
+        LogStatus("Saving scene '{}'.", data.scenePath);
 
         if (data.scenePath.empty()) {
 

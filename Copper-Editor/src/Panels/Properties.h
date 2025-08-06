@@ -11,6 +11,7 @@ namespace Copper {
     class Light;
     class MeshRenderer;
 
+    class Collider;
     class BoxCollider;
     class CapsuleCollider;
     class SphereCollider;
@@ -61,6 +62,7 @@ namespace Editor {
 
         void RenderRigidBody(Copper::RigidBody* rb);
 
+        void RenderCollider(Copper::Collider* collider);
         void RenderBoxCollider(Copper::BoxCollider* collider);
         void RenderSphereCollider(Copper::SphereCollider* collider);
         void RenderCapsuleCollider(Copper::CapsuleCollider* collider);

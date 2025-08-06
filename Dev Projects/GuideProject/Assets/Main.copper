@@ -54,7 +54,24 @@ Entities:
     Script Component:
       Name: MyComponent
       Fields:
-        {}
+        speed:
+          Type: 3
+          Value: 5
+        another:
+          Type: 9
+          Value: 4
+  4:
+    Name: Another
+    Transform:
+      Position: [2.61670136, 0.722474933, 2.53572319e-09]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent: 4294967295
+      Children:
+        []
+    Mesh Renderer:
+      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
+      Material: 00000000-0000-0000-0000-000000000000
 Scene Camera:
   Position: [0.213517234, 5.50722551, 5.4056654]
   Rotation: [-0.996776223, 0.0798474029, 0.00489900354, 0.000391475973]

@@ -29,9 +29,9 @@
 #include <cstring>
 
 #define EditField(type, func) type value; field.GetValue(scriptComponent, &value);\
-                              if (func(field.GetName(), &value)) field.SetValue(scriptComponent, &value)
+                              if (func(field.GetName(), &value)) { field.SetValue(scriptComponent, &value); SetChanges(); }
 #define EditRefField(type, func) type value; field.GetRefValue(scriptComponent, (void**) &value);\
-                                 if (func(field.GetName(), &value)) field.SetRefValue(scriptComponent, value)
+                                 if (func(field.GetName(), &value)) { field.SetRefValue(scriptComponent, value); SetChanges(); }
 
 #define FRAME_WIDTH 241
 #define FRAME_HEIGHT 24
@@ -155,37 +155,37 @@ namespace Editor {
             if (ImGui::MenuItem("Light")) {
 
                 entity->AddComponent<Light>()->color.r = 0.5f;
-                Editor::SetChanges();
+                SetChanges();
 
             } else if (ImGui::MenuItem("Mesh Renderer")) {
 
                 entity->AddComponent<MeshRenderer>();
-                Editor::SetChanges();
+                SetChanges();
 
             } else if (ImGui::MenuItem("Camera")) {
 
                 entity->AddComponent<Camera>();
-                Editor::SetChanges();
+                SetChanges();
 
             } else if (ImGui::MenuItem("Rigid Body")) {
 
                 entity->AddComponent<RigidBody>();
-                Editor::SetChanges();
+                SetChanges();
 
             } else if (ImGui::MenuItem("Box Collider") && !collider) {
 
                 entity->AddComponent<BoxCollider>();
-                Editor::SetChanges();
+                SetChanges();
 
             } else if (ImGui::MenuItem("Sphere Collider") && !collider) {
 
                 entity->AddComponent<SphereCollider>();
-                Editor::SetChanges();
+                SetChanges();
 
             } else if (ImGui::MenuItem("Capsule Collider") && !collider) {
 
                 entity->AddComponent<CapsuleCollider>();
-                Editor::SetChanges();
+                SetChanges();
 
             }
 
@@ -199,7 +199,7 @@ namespace Editor {
 
                 ScriptComponent* component = entity->AddComponent<ScriptComponent>();
                 component->Setup(&script);
-                Editor::SetChanges();
+                SetChanges();
 
                 break;
 
@@ -267,7 +267,8 @@ namespace Editor {
 
         if (!DrawComponent<MeshRenderer>("Mesh Renderer", renderer)) return;
 
-        UI::EditMaterial("Material", &renderer->material);
+        if (UI::EditMaterial("Material", &renderer->material))
+            SetChanges();
 
         ImGui::PopID();
 
@@ -276,10 +277,13 @@ namespace Editor {
 
         if (!DrawComponent<Light>("Light", light)) return;
 
-        UI::EditDropDown("Type", s_lightTypes, LIGHT_TYPES, (uint8*) &light->type);
+        if (UI::EditDropDown("Type", s_lightTypes, LIGHT_TYPES, (uint8*) &light->type))
+            SetChanges();
 
-        UI::EditColor("Color", &light->color);
-        UI::EditFloat("Intensity", &light->intensity);
+        if (UI::EditColor("Color", &light->color))
+            SetChanges();
+        if (UI::EditFloat("Intensity", &light->intensity))
+            SetChanges();
 
         ImGui::PopID();
 
@@ -288,9 +292,12 @@ namespace Editor {
 
         if (!DrawComponent<Camera>("Camera", camera)) return;
 
-        UI::EditFloat("FOV", &camera->fov);
-        UI::EditFloat("Near Plane", &camera->nearPlane);
-        UI::EditFloat("Far Plane", &camera->farPlane);
+        if (UI::EditFloat("FOV", &camera->fov))
+            SetChanges();
+        if (UI::EditFloat("Near plane", &camera->nearPlane))
+            SetChanges();
+        if (UI::EditFloat("Far plane", &camera->farPlane))
+            SetChanges();
 
         ImGui::PopID();
 
@@ -300,17 +307,42 @@ namespace Editor {
 
         if (!DrawComponent<RigidBody>("Rigid Body", rb)) return;
 
-        if (UI::EditFloat("Mass", &rb->m_mass)) rb->SetMass(rb->m_mass);
+        if (UI::EditFloat("Mass", &rb->m_mass)) {
 
-        if (UI::EditBool("Static", &rb->m_static)) rb->SetStatic(rb->m_static);
-        if (UI::EditBool("Gravity", &rb->m_gravity)) rb->SetGravity(rb->m_gravity);
+            rb->SetMass(rb->m_mass);
+            SetChanges();
+
+        }
+
+        if (UI::EditBool("Static", &rb->m_static)) {
+
+            rb->SetStatic(rb->m_static);
+            SetChanges();
+
+        }
+        if (UI::EditBool("Gravity", &rb->m_gravity)) {
+
+            rb->SetGravity(rb->m_gravity);
+            SetChanges();
+
+        }
 
         if (ImGui::TreeNode("Locks")) {
 
             // Position Lock
 
-            if (UI::EditMask("Position", (uint32&) rb->m_lockMask, 3)) rb->SetLockMask(rb->m_lockMask);
-            if (UI::EditMask("Rotation", (uint32&) rb->m_lockMask, 3, 3)) rb->SetLockMask(rb->m_lockMask);
+            if (UI::EditMask("Position", (uint32&) rb->m_lockMask, 3)) {
+
+                rb->SetLockMask(rb->m_lockMask);
+                SetChanges();
+
+            }
+            if (UI::EditMask("Rotation", (uint32&) rb->m_lockMask, 3, 3)) {
+
+                rb->SetLockMask(rb->m_lockMask);
+                SetChanges();
+
+            }
 
             ImGui::TreePop();
 
@@ -320,14 +352,35 @@ namespace Editor {
 
     }
 
+    void Properties::RenderCollider(Collider* collider) {
+
+        if (UI::EditBool("Trigger", &collider->m_trigger)) {
+
+            collider->SetTrigger(collider->m_trigger);
+            SetChanges();
+
+        }
+        if (UI::EditVector3("Center", &collider->m_center)) {
+
+            collider->SetCenter(collider->m_center);
+            SetChanges();
+
+        }
+
+        ImGui::Separator();
+
+    }
     void Properties::RenderBoxCollider(BoxCollider* collider) {
 
         if (!DrawComponent<BoxCollider>("Box Collider", collider)) return;
+        RenderCollider(collider);
 
-        if (UI::EditBool("Trigger", &collider->m_trigger)) collider->SetTrigger(collider->m_trigger);
-        if (UI::EditVector3("Center", &collider->m_center)) collider->SetCenter(collider->m_center);
+        if (UI::EditVector3("Size", &collider->m_size)) {
 
-        if (UI::EditVector3("Size", &collider->m_size)) collider->SetSize(collider->m_size);
+            collider->SetSize(collider->m_size);
+            SetChanges();
+
+        }
 
         ImGui::PopID();
 
@@ -335,13 +388,14 @@ namespace Editor {
     void Properties::RenderSphereCollider(SphereCollider* collider) {
 
         if (!DrawComponent<SphereCollider>("Sphere Collider", collider)) return;
+        RenderCollider(collider);
 
-        if (UI::EditBool("Trigger", &collider->m_trigger)) collider->SetTrigger(collider->m_trigger);
-        if (UI::EditVector3("Center", &collider->m_center)) collider->SetCenter(collider->m_center);
+        if (UI::EditFloat("Radius", &collider->m_radius)) {
 
-        ImGui::Separator();
+            collider->SetRadius(collider->m_radius);
+            SetChanges();
 
-        if (UI::EditFloat("Radius", &collider->m_radius)) collider->SetRadius(collider->m_radius);
+        }
 
         ImGui::PopID();
 
@@ -349,14 +403,20 @@ namespace Editor {
     void Properties::RenderCapsuleCollider(CapsuleCollider* collider) {
 
         if (!DrawComponent<CapsuleCollider>("Capsule Collider", collider)) return;
+        RenderCollider(collider);
 
-        if (UI::EditBool("Trigger", &collider->m_trigger)) collider->SetTrigger(collider->m_trigger);
-        if (UI::EditVector3("Center", &collider->m_center)) collider->SetCenter(collider->m_center);
+        if (UI::EditFloat("Radius", &collider->m_radius)) {
 
-        ImGui::Separator();
+            collider->SetRadius(collider->m_radius);
+            SetChanges();
 
-        if (UI::EditFloat("Radius", &collider->m_radius)) collider->SetRadius(collider->m_radius);
-        if (UI::EditFloat("Height", &collider->m_height)) collider->SetHeight(collider->m_height);
+        }
+        if (UI::EditFloat("Height", &collider->m_height)) {
+
+            collider->SetHeight(collider->m_height);
+            SetChanges();
+
+        }
 
         ImGui::PopID();
 
@@ -390,6 +450,8 @@ namespace Editor {
 
                     id = entity->GetID();
                     field.SetRefValue(scriptComponent, (void*) id);
+
+                    SetChanges();
 
                 }
 
@@ -479,9 +541,13 @@ namespace Editor {
         ImGui::Text(name.c_str());
         ImGui::NewLine();
 
-        UI::EditTexture("Texture", &material->texture);
-        UI::EditColor("Albedo", &material->albedo);
-        UI::EditFloat("Tiling", &material->tiling);
+        if (UI::EditTexture("Texture", &material->texture))
+            SetChanges();
+
+        if (UI::EditColor("Albedo", &material->albedo))
+            SetChanges();
+        if (UI::EditFloat("Tiling", &material->tiling))
+            SetChanges();
 
     }
 

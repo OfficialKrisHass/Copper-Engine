@@ -148,7 +148,7 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        if (ImGui::MenuItem("Paste", nullptr, false, !ClipboardEmpty()))
+        if (ImGui::MenuItem("Paste", nullptr, false, !ClipboardEmpty())) 
             newEntity = PasteFromClipboard();
 
         ImGui::Separator();

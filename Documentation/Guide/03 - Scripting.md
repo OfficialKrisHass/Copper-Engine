@@ -187,3 +187,12 @@ As you can see, we multiple the Y coordinate by `Game.deltaTime`, which is a pro
 The cube should move at approximately the same speed. But why is it moving so slow ? Because deltaTime is usually really small. If your game is running at 60FPS, deltaTime will be around 0.016, so multiplying 0.1 by an even smaller number makes the resulting addition even smaller.
 
 So we will fix that, in the next guide.
+
+## Terminology
+Here is a list of terms you should understand from reading this guide.
+
+- Script: A C# file that is part of your project. Currently C# scripts can only be used to make your own components, but in the future they will be able to be used for many more things.
+
+- Update function: Update functions update the component. At the moment there are only `OnBegin` and `OnUpdate` which are called the first frame and then every frame after the first one, respectively.
+
+- Delta time: Delta time is the amount of seconds it took to render the previous frame. It is used to ensure certain frame dependent calculations like movement or animations, don't play faster at higher frame rate. The delta time can be read from `Game.deltaTime`.

@@ -41,8 +41,8 @@ namespace Editor::ProjectChecker {
 
 #ifdef CU_WINDOWS
 
-        CHECK_FILE("Visual Studio project", (project.GetName() + ".csproj"), 5);
-        CHECK_FILE("Visual Studio solution", (project.GetName() + ".sln"), 6);
+        CHECK_FILE("Visual Studio project", (project.name + ".csproj"), 5);
+        CHECK_FILE("Visual Studio solution", (project.name + ".sln"), 6);
 
 #elif CU_LINUX
 
@@ -90,7 +90,7 @@ namespace Editor::ProjectChecker {
         if (GET_FLAG(issueFlags, MissingProjectDLL))
             project.BuildScripts();
 
-        Log("\tIssues fixed.");
+        LogStatus("\tIssues fixed.");
 
     }
 
@@ -108,9 +108,9 @@ namespace Editor::ProjectChecker {
 
 #ifdef CU_WINDOWS
         if (GET_FLAG(issueFlags, MissingSolution))
-            out += "Missing Visual Studio solution (" + project.GetName() + ".sln)\n";
+            out += "Missing Visual Studio solution (" + project.name + ".sln)\n";
         if (GET_FLAG(issueFlags, MissingCSProj))
-            out += "Missing Visual Studio project file (" + project.GetName() + ".csproj)\n";
+            out += "Missing Visual Studio project file (" + project.name + ".csproj)\n";
 #elif CU_LINUX
         if (GET_FLAG(issueFlags, MissingPremake))
             out += "Missing premake file (premake5.lua)\n";

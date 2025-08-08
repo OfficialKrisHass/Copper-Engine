@@ -387,6 +387,8 @@ project "Copper-Launcher"
 
         }
 
+        debugargs { "-e", os.getcwd() .. "/%{prj.name}/" }
+
     filter "configurations:Release"
         defines "CU_RELEASE"
         runtime "Release"

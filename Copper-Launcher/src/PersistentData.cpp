@@ -10,7 +10,12 @@
 
 namespace Launcher::PersistentData {
 
+#ifdef CU_DEBUG
+    static const std::string filename = "LauncherData_DEBUG.cup";
+#elif CU_RELEASE
     static const std::string filename = "LauncherData.cup";
+#endif
+
 #ifdef CU_WINDOWS
     static const fs::path persistenFolder = std::string(getenv("appdata")) + "\\Copper-Editor";
 #elif CU_LINUX

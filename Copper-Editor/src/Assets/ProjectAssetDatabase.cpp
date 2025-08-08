@@ -149,8 +149,10 @@ namespace Editor::ProjectAssetDatabase {
 
         ProjectMetadata::Serialize(assetFiles);
 
+#ifdef CU_LOG_STATUS
         if (GetEngineState() == EngineState::Shutdown)
             LogStatus("\tProject asset database saved.");
+#endif
 
     }
 

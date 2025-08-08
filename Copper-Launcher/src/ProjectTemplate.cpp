@@ -26,10 +26,12 @@ namespace Launcher {
             const fs::path& path = entry.path();
 
             YAML::Node node;
-            try { node = YAML::LoadFile(path / "Project.cu.cut"); }
+            try { node = YAML::LoadFile((path / "Project.cu.cut").string()); }
             catch (YAML::Exception& e) {
 
                 std::cerr << "Could not read Template '" << path.filename().string() << "' Project.cu.cut file!\n";
+                std::cerr << "Error message: " << e.what() << "\n";
+
                 continue;
 
             }
@@ -55,7 +57,9 @@ namespace Launcher {
         fs::create_directories(path / name / "Binaries");
 
         FileFromTemplate(templatePath / "Project.cu.cut", path / name / "Project.cu", ":{ProjectName}", name);
-        CopyFile(PersistentData::EditorAssetsPath() / "Copper-ScriptingAPI.dll", path / name / "Binaries/Copper-ScriptingAPI.dll");
+        CopyFile(templatePath / "ProjectMetadata.cu.cut", path / name / "ProjectMetadata.cu");
+
+        CopyFile(PersistentData::EditorAssetsPath() / "Copper-ScriptingAPI.dll", path / name / "Binaries/Copper-ScriptingAPI.dll", true);
 
         for (const fs::directory_entry& entry : fs::recursive_directory_iterator(templatePath / "Assets")) {
 
@@ -98,11 +102,11 @@ namespace Launcher {
     }
     void ProjectTemplate::BuildProject(const std::string& name, const fs::path& path) const {
 
-#ifdef CU_WINDOW
+#ifdef CU_WINDOWS
         std::string cmd = "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\MSBuild.exe ";
 
-        size_t pos = m_path.string().find_first_of(' ');
-        std::string newPath = m_path.string();
+        size_t pos = path.string().find_first_of(' ');
+        std::string newPath = path.string();
         while (pos != std::string::npos) {
 
             newPath.erase(pos, 1);
@@ -111,8 +115,8 @@ namespace Launcher {
 
         }
 
-        pos = m_name.find_first_of(' ');
-        std::string newName = m_name;
+        pos = name.find_first_of(' ');
+        std::string newName = name;
         while (pos != std::string::npos) {
 
             newName.erase(pos, 1);
@@ -121,7 +125,7 @@ namespace Launcher {
 
         }
 
-        cmd += newPath + "\\" + newName + ".csproj";
+        cmd += newPath + "\\" + newName + "\\" + newName + ".csproj";
         cmd += " -nologo";
 
         system(cmd.c_str());
@@ -164,7 +168,9 @@ namespace Launcher {
     }
     static void CopyFile(const fs::path& inPath, const fs::path& outPath, bool binaryFile) {
 
-        std::ios_base::openmode flags = (std::ios_base::openmode) ((binaryFile << 2) & std::ios_base::binary);
+        std::ios_base::openmode flags = 0;
+        if (binaryFile)
+            flags = std::ios_base::binary;
 
         std::ifstream in;
         std::ofstream out;

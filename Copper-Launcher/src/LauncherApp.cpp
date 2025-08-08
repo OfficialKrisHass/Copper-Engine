@@ -207,9 +207,9 @@ namespace Launcher {
         std::string path = Utils::ReplaceSpaces(projectPath);
         std::string args = editorPath;
 #ifdef CU_DEBUG
-        args += " -e " + PersistentData::EditorAssetsPath().string();
+        args += " -e " + PersistentData::EditorAssetsPath().parent_path().string();
 #endif
-        args += ' ' + projectPath;
+        args += ' ' + path;
 
         STARTUPINFOA si;
         PROCESS_INFORMATION pi;

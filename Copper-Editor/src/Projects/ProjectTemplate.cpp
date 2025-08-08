@@ -32,6 +32,7 @@ namespace Editor {
         }
 
         CreateFileAndReplace(project.GetPath() / "Project.cu", path / "Project.cu.cut", project.name, ":{ProjectName}");
+        CopyFileTo(project.GetPath() / "ProjectMetadata.cu", path / "ProjectMetadata.cu.cut");
 
     }
     void CreateProjectFromTemplate(const std::string& templateName, Project& project) {
@@ -56,6 +57,8 @@ namespace Editor {
         }
 
         CreateFileAndReplace(templ / "Project.cu.cut", project.GetPath() / "Project.cu", ":{ProjectName}", project.name);
+        CopyFileTo(templ / "ProjectMetadata.cu.cut", project.GetPath() / "ProjectMetadata.cu");
+
         CopyFileTo(ExecutableFolder() / "assets/Copper-ScriptingAPI.dll", project.GetPath() / "Binaries/Copper-ScriptingAPI.dll", true);
 
         project.RegenerateBuildFiles();

@@ -1,3 +1,3 @@
-Last Project: /home/jakub/programming/Copper-Engine/Dev Projects/GuideProject
+Last Project: C:\Programming/WindowsTesting
 Gizmo operation: 7
 Gizmo global mode: true

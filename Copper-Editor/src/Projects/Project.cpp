@@ -200,7 +200,10 @@ namespace Editor {
         }
         if (!fs::exists(path / "Project.cu")) {
 
-            Input::ErrorPopup("Invalid project", "This folder is not a valid project (Project.cu could not be found).");
+            std::string desc = "This folder is not a valid project (Project.cu could not be found).\n\nLooked at: ";
+            desc += (path / "Project.cu").string();
+
+            Input::ErrorPopup("Invalid project", desc);
             return false;
 
         }

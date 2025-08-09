@@ -28,6 +28,8 @@ namespace Copper::Profiler {
     Scope::~Scope() {
 
         CU_ASSERT(!GetScopeStack().empty(), "Tried to pop a scope when the scope stack is empty. Seems like the scope destructor was called twice ? Scope name: {}, file: {}", name, file);
+        CU_ASSERT(GetScopeStack().back()->name == name && GetScopeStack().back()->file == file, "Scope destructor called with a different scope at the top of the scope stack. Scope: '{}', {}", name, file);
+        
         GetScopeStack().pop_back();
 
     }
@@ -70,9 +72,10 @@ namespace Copper::Profiler {
 
         LogError("Call stack:");
 
-        for (size_t i = GetScopeStack().size() - 1; i > -1; i--) {
+        size_t i = GetScopeStack().size() - 1;
+        for (auto it = GetScopeStack().rbegin(); it != GetScopeStack().rend(); ++it, --i) {
 
-            Scope* scope = GetScopeStack()[i];
+            Scope* scope = *it;
             LogError("#{} {}: {}", i, scope->name, scope->file);
 
         }

@@ -71,8 +71,6 @@ namespace Copper {
 
 	void RecursiveDirWatch::MonitorChanges() {
 
-		CUP_FUNCTION();
-
 		char buffer[BUFFER_SIZE] = {};
 		DWORD bytesRead = 0;
 

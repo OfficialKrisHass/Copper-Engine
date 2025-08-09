@@ -39,6 +39,7 @@ namespace Launcher {
         bool running = true;
 
         std::vector<ProjectEntry> projectEntries = {};
+        uint32 entryIndexToRemove = UINT32_MAX;
 
         bool createProjectWinOpen = false;
 
@@ -94,6 +95,12 @@ namespace Launcher {
             ImGui::Separator();
 
             ProjectEntries();
+            if (data.entryIndexToRemove != UINT32_MAX) {
+
+                data.projectEntries.erase(data.projectEntries.begin() + data.entryIndexToRemove);
+                data.entryIndexToRemove = UINT32_MAX;
+
+            }
 
             UI::EndFrame();
 
@@ -242,7 +249,8 @@ namespace Launcher {
 
             if (data.projectEntries[i].Directory() != entry.Directory()) continue;
 
-            data.projectEntries.erase(data.projectEntries.begin() + i);
+            data.entryIndexToRemove = i;
+            break;
 
         }
 

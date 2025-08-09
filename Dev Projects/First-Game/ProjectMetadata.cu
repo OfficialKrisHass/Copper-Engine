@@ -11,10 +11,10 @@ Assets:
       Coin.mat: 02e31da7-08e0-4fff-9f6a-d4feab1f7984
   Models/codezlybasictexturepack1(free)_512_2.png:
     UUID: a013185e-771e-4e22-8871-9ea8e0ac21b4
-  Textures/ground.jpg:
-    UUID: 2abdecbf-41fd-42fe-b6ed-ef8bed771774
   Textures/wall.jpg:
     UUID: 223fd27b-895d-4c6c-a6ae-bbf2e156735f
+  Textures/ground.jpg:
+    UUID: 2abdecbf-41fd-42fe-b6ed-ef8bed771774
   Materials/Wall.mat:
     UUID: e4427019-9f8e-4425-8930-166fdedc0817
   Materials/Ground.mat:

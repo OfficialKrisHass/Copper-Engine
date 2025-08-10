@@ -156,7 +156,7 @@ namespace Editor {
             MaterialAsset material = AssetStorage::InsertAsset<Material>(uuid);
             m_materials.push_back({ material, name });
 
-            CU_CHECK(modelMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, *reinterpret_cast<aiColor4D*>(&material->albedo)) != AI_SUCCESS, "Could not get albedo color from material {} of model {}", name, m_path);
+            CU_ASSERT(modelMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, *reinterpret_cast<aiColor4D*>(&material->albedo)) == AI_SUCCESS, "Could not get albedo color from material {} of model {}", name, m_path);
 
             // Texture
 

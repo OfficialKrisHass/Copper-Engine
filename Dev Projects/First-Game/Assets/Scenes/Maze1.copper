@@ -88,7 +88,7 @@ Entities:
       Fields:
         speed:
           Type: 3
-          Value: 0
+          Value: 1
   5:
     Name: Cube
     Transform:
@@ -114,7 +114,7 @@ Entities:
       Fov: 90
       Near Plane: 0.100000001
       Far Plane: 1000
-      Size: [1920, 969]
+      Size: [1920, 960]
   7:
     Name: Cube
     Transform:
@@ -336,7 +336,7 @@ Entities:
       Children:
         []
 Scene Camera:
-  Position: [-6.02237225, 15.9480124, -10.9677868]
-  Rotation: [0.0332475901, -0.00914129708, -0.963623106, -0.264953911]
+  Position: [-8.71582031, 11.976409, -3.79332089]
+  Rotation: [0.551745534, -0.170296326, -0.780102551, -0.240779117]
   Speed: 1
   Sensitivity: 2

@@ -78,6 +78,8 @@ namespace Copper::Scripting::Entity {
         MonoType* managedType = mono_reflection_type_get_type(type);
         std::string typeName = mono_type_get_name(managedType);
 
+        // Built in component (Transform, BoxCollider, Camera, etc)
+
         if (addComponentFuncs.find(typeName) != addComponentFuncs.end()) {
 
             void* comp = addComponentFuncs.at(typeName)(ptr);
@@ -88,21 +90,18 @@ namespace Copper::Scripting::Entity {
 
         }
 
+        // Script components
+
         if (ptr->HasComponent<ScriptComponent>()) return nullptr;
 
         const ScriptMap& scriptMap = ComponentScripts();
-        if (scriptMap.find(typeName) == scriptMap.end()) {
-
-            LogError("Could not add Component '{}' to Entity '{}'", typeName, *ptr);
-            return nullptr;
-
-        }
-
+        CU_ASSERT(scriptMap.find(typeName)!= scriptMap.end(), "Script component '{}' could not be found in the script map while trying to add to Entity '{}'", typeName, *ptr);
         const Script* script = &scriptMap.at(typeName);
+
         ScriptComponent* scriptComponent = ptr->AddComponent<ScriptComponent>();
         scriptComponent->Setup(script);
 
-        MonoObject* ret = CreateManagedReference(scriptComponent, mono_type_get_class(managedType));
+        MonoObject* ret = CreateManagedReference(scriptComponent, MonoClassToClass(mono_type_get_class(managedType)));
         CU_ASSERT(ret, "Could not Create Managed reference for a Script Component '{}'", typeName);
 
         return ret;
@@ -128,8 +127,8 @@ namespace Copper::Scripting::Entity {
         if (component == nullptr)
             return nullptr;
 
-        MonoObject* ret = GetManagedReference(component, klass);
-        CU_ASSERT(ret, "Could not get Component (cID '{}') Managed reference", cID);
+        MonoObject* ret = GetManagedReference(component);
+        CU_ASSERT(ret != nullptr, "Could not get Component (cID '{}') Managed reference", cID);
 
         return ret;
 

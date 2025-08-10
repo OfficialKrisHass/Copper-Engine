@@ -29,6 +29,7 @@ namespace Copper::Scripting {
         GET_CLASS(Light);
 
         GET_CLASS(RigidBody);
+        GET_CLASS(Collider);
         GET_CLASS(BoxCollider);
         GET_CLASS(SphereCollider);
         GET_CLASS(CapsuleCollider);
@@ -47,6 +48,16 @@ namespace Copper::Scripting {
         CU_ASSERT(classes[static_cast<uint8>(klass)] != nullptr, "Class '{}' is invalid!", static_cast<uint8>(klass));
 
         return classes[static_cast<uint8>(klass)];
+
+    }
+    Class MonoClassToClass(MonoClass *klass) {
+
+        CUP_FUNCTION();
+
+        for (uint32 i = 0; i < static_cast<uint8>(Class::COUNT); i++)
+            if (classes[i] == klass) return static_cast<Class>(i);
+
+        return Class::None;
 
     }
 

@@ -105,17 +105,10 @@ namespace Copper::Scripting {
         else
             LogStatus("Game assembly '{}' loaded with {} component scripts.", assemblyPath.filename().string(), data.componentScripts.size());
 
-        for (ScriptComponent* component : ComponentView<ScriptComponent>(GetScene())) {
-
-            if (!data.componentScripts.contains(component->GetScriptName())) continue;
-            component->Setup(&data.componentScripts[component->GetScriptName()]);
-
-        }
-
         return true;
 
     }
-    void Unload() {
+    void Unload(bool clearManagedRefMap) {
 
         CUP_FUNCTION();
 
@@ -124,7 +117,8 @@ namespace Copper::Scripting {
         mono_domain_set(data.rootDomain, false);
         mono_domain_unload(data.appDomain);
 
-        ClearManagedReferences();
+        if (clearManagedRefMap)
+            ClearManagedReferences();
 
         data.game.Unload();
         data.scriptingAPI.Unload();
@@ -148,8 +142,20 @@ namespace Copper::Scripting {
 
         fs::path savedPath = data.game.Path();
 
-        Unload();
-        return Load(savedPath);
+        Unload(false);
+        if (!Load(savedPath))
+            return false;
+
+        RefreshManagedReferences();
+
+        for (ScriptComponent* component : ComponentView<ScriptComponent>(GetScene())) {
+
+            if (!data.componentScripts.contains(component->GetScriptName())) continue;
+            component->Setup(&data.componentScripts[component->GetScriptName()]);
+
+        }
+
+        return true;
 
     }
 

@@ -64,6 +64,8 @@ namespace Editor {
 
         CUP_FUNCTION();
 
+        if (!EnsureUnsavedChanges()) return;
+
         if (m_assetWatch.IsRunning())
             m_assetWatch.Stop();
 
@@ -108,20 +110,15 @@ namespace Editor {
         FileBrowser::Refresh();
         ProjectAssetDatabase::Initialize();
 
-        if (Scripting::GameAssembly().IsValid())
-            Scripting::Unload();
-
-        if (!BuildScripts())
-            LogError("Failed to build C# scripts");
-        if (!Scripting::Load((path / "Binaries/" / (name + ".dll")).string()))
-            LogError("Failed to load assembly at path '{}.dll'", path / "Binaries" / name);
+        Build();
 
         m_assetWatch.Start(GetAssetsPath());
         m_assetWatch.SetCallback(std::bind(&Project::FileChangeCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
 
-        if (m_lastOpenedScenePath.empty() || !fs::exists(GetAssetsPath() / m_lastOpenedScenePath)) return;
+        if (m_lastOpenedScenePath.empty() || !fs::exists(GetAssetsPath() / m_lastOpenedScenePath))
+            return LogError("Could not open last opened scene at '{}'", m_lastOpenedScenePath);
 
-        OpenScene(GetAssetsPath() / m_lastOpenedScenePath);
+        OpenScene(GetAssetsPath() / m_lastOpenedScenePath, false);
 
 
     }
@@ -227,26 +224,34 @@ namespace Editor {
 
     }
 
-    bool Project::Build() {
+    void Project::Build() {
 
         CUP_FUNCTION();
 
-        if (!BuildScripts()) {
+        const fs::path assemblyPath = m_path / "Binaries" / (name + ".dll");
 
-            LogError("Failed to Build the project scripts.");
-            return false;
+        if (!BuildScripts())
+            return LogError("Failed to Build the project scripts.");
+
+        // First load or opening a project, we just need to Load the assembly and that's it
+
+        if (Scripting::GameAssembly().Path() != assemblyPath) {
+
+            if (Scripting::GameAssembly().IsValid())
+                Scripting::Unload();
+            if (!Scripting::Load(assemblyPath))
+                return LogError("Could not load game assembly. Path: '{}'", assemblyPath);
+
+            return;
 
         }
-        if (!Scripting::Reload()) {
 
-            LogError("Failed to reload the Scripting Engine.");
-            return false;
+        // If rebuilding (automatic or manual), we need to reload as to refresh the Managed references map
 
-        }
+        if (!Scripting::Reload())
+            return LogError("Failed to reload the Scripting Engine.");
 
         m_shouldRebuild = false;
-
-        return true;
 
     }
     bool Project::BuildScripts() const {

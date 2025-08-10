@@ -115,7 +115,7 @@ namespace Editor::ProjectAssetDatabase {
 
 #ifdef CU_DEBUG 
         if (GetEngineState() != EngineState::PostInitialization)
-            Log("Project asset database refreshed.");
+            LogStatus("Project asset database refreshed.");
 #endif
 
     }

@@ -485,12 +485,8 @@ namespace Editor {
 
                 ImGui::Separator();
 
-                if (ImGui::MenuItem("Build Scripts", "Ctrl+B", false, data.project.IsValid())) {
-
-                    data.project.BuildScripts();
-                    Scripting::Reload();
-
-                }
+                if (ImGui::MenuItem("Build Scripts", "Ctrl+B", false, data.project.IsValid()))
+                    data.project.Build();
 
                 ImGui::Separator();
 
@@ -665,31 +661,18 @@ namespace Editor {
         Properties::ClearSelectedData();
         
     }
-    void OpenScene(const fs::path& path) {
+    void OpenScene(const fs::path& path, bool checkUnsavedChanges) {
 
         CUP_FUNCTION();
 
-        CU_ASSERT(fs::exists(path), "Scene at path {} does not exist", path);
+        CU_ASSERT(fs::exists(path), "Scene at path '{}' does not exist", path);
+
+        if (checkUnsavedChanges && !EnsureUnsavedChanges()) return;
 
         if (GetEngineState() == EngineState::PostInitialization)
             LogStatus("\tOpening scene at {}", fs::relative(path, data.project.GetAssetsPath()));
         else
             LogStatus("Opening scene at {}", fs::relative(path, data.project.GetAssetsPath()));
-
-        if(UnsavedChanges()) {
-
-            LogWarn("Unsaved changes detected.");
-
-            switch(Input::WarningPopup("Unsaved Changes", "There are unsaved changes made to this scene, do you wish to save before opening a new scene ?")) {
-
-                case Input::PopupResult::Yes: SaveScene(); break;
-                case Input::PopupResult::No: break;
-                case Input::PopupResult::Cancel: return;
-                default: return;
-
-            }
-
-        }
 
         data.scenePath = path;
 
@@ -708,7 +691,7 @@ namespace Editor {
         data.window.SetTitle(data.title); 
 
     }
-    void OpenScene() {
+    void OpenScene(bool checkUnsavedChanges) {
 
         CUP_FUNCTION();
 
@@ -729,7 +712,7 @@ namespace Editor {
 
         }
 
-        OpenScene(result);
+        OpenScene(result, checkUnsavedChanges);
         
     }
     void SaveScene() {
@@ -812,6 +795,21 @@ namespace Editor {
 
     }
 
+    bool EnsureUnsavedChanges() {
+
+        if (!UnsavedChanges()) return true;
+
+        switch(Input::WarningPopup("Unsaved Changes", "There are unsaved changes made to this scene, do you wish to save before continuing ?")) {
+
+            case Input::PopupResult::Yes: SaveScene();
+            case Input::PopupResult::No: return true;
+            case Input::PopupResult::Cancel: return false;
+            default: return false;
+
+        }
+
+    }
+
     bool OnKeyPressed(const Event& e) {
 
         CUP_FUNCTION();
@@ -846,9 +844,7 @@ namespace Editor {
             case KeyCode::B: {
 
                 if (data.state == EditorState::Play || !control) break;
-
-                data.project.BuildScripts();
-                Scripting::Reload();
+                data.project.Build();
 
                 break;
 

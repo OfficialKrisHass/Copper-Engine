@@ -18,7 +18,7 @@ namespace Copper::Scripting {
     void Shutdown();
 
     bool Load(const fs::path& assemblyPath);
-    void Unload();
+    void Unload(bool clearManagedRefMap = true);
     bool Reload();
 
     MonoDomain* AppDomain();

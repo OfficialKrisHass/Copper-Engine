@@ -72,7 +72,7 @@ namespace Copper::Scripting {
         CUP_FUNCTION();
 
         MonoObject* tmp = GetManagedReference(value);
-        CU_ASSERT(tmp, "Could not get Managed reference in order to set ref field");
+        CU_ASSERT(tmp != nullptr, "Could not get Managed reference in order to set ref field");
 
         SetValue(instance, tmp);
 

@@ -13,14 +13,13 @@ extern "C" {
 
 namespace Copper::Scripting {
 
+    void RefreshManagedReferences();
     void ClearManagedReferences();
 
     MonoObject* GetManagedReference(void* unmanagedPtr, Class klass);
-    MonoObject* GetManagedReference(void* unmanagedPtr, MonoClass* klass);
     MonoObject* GetManagedReference(void* unmanagedPtr);
 
     MonoObject* CreateManagedReference(void* unmanagedPtr, Class klass);
-    MonoObject* CreateManagedReference(void* unmanagedPtr, MonoClass* klass);
 
     void RemoveManagedReference(void* unmanagedPtr);
 

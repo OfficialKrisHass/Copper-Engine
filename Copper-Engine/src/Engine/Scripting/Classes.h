@@ -22,6 +22,7 @@ namespace Copper::Scripting {
         Light,
 
         RigidBody,
+        Collider,
         BoxCollider,
         SphereCollider,
         CapsuleCollider,
@@ -37,5 +38,36 @@ namespace Copper::Scripting {
     void InitializeClasses();
 
     MonoClass* GetClass(Class klass);
+    Class MonoClassToClass(MonoClass* klass);
+
+    inline constexpr const char* ClassToString(Class klass) {
+
+        switch (klass) {
+
+            case Class::Base: return "Base";
+
+            case Class::Entity: return "Entity";
+            case Class::Component: return "Component";
+            case Class::Transform: return "Transform";
+
+            case Class::Camera: return "Camera";
+            case Class::Light: return "Camera";
+
+            case Class::RigidBody: return "RigidBody";
+            case Class::Collider: return "Collider";
+            case Class::BoxCollider: return "BoxCollider";
+            case Class::SphereCollider: return "SphereCollider";
+            case Class::CapsuleCollider: return "CapsuleCollider";
+
+            case Class::ShowInEditorAttribute: return "ShowInEditor attribute";
+            case Class::HideInEditorAttribute: return "HideIneditor attribute";
+
+            default: break;
+
+        }
+
+        return "";
+
+    }
     
 }

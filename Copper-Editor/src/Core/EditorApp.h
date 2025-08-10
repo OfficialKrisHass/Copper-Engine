@@ -13,13 +13,17 @@ namespace Editor {
     };
 
     void NewScene();
-    void OpenScene();
-    void OpenScene(const Copper::fs::path& path);
+    void OpenScene(bool checkUnsavedChanges = true);
+    void OpenScene(const Copper::fs::path& path, bool checkUnsavedChanges = true);
     void SaveScene();
     void SaveSceneAs();
 
     void OpenSceneNext(const Copper::fs::path& path);
     void OpenSceneNext();
+
+    // Checks if there are unsaved changes, if so, prompts the user to either save or discard them.
+    // Returns true if user selected cancel, aka, the operation should not be continued.
+    bool EnsureUnsavedChanges();
 
     const std::string& GetWindowTitle();
 

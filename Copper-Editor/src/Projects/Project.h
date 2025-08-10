@@ -26,7 +26,7 @@ namespace Editor {
 
         void Update();
 
-        bool Build();
+        void Build();
         bool BuildScripts() const;
 
         void RegenerateProjectFiles() const;

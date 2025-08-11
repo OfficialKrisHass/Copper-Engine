@@ -196,11 +196,13 @@ namespace Launcher {
 
         if (pid == 0) { // Child procces
 
+            fs::path assetsPath = PersistentData::EditorAssetsPath().parent_path();
+
             char* args[] = {
                 (char*) PersistentData::EditorPath().c_str(),
 #ifdef CU_DEBUG
                 (char*) "-e",
-                (char*) PersistentData::EditorAssetsPath().c_str(),
+                (char*) assetsPath.c_str(),
 #endif
                 (char*) projectPath.data(),
                 nullptr };

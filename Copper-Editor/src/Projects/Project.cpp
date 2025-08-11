@@ -1,6 +1,7 @@
 #include "Project.h"
 
 #include "Core/EditorApp.h"
+#include "Core/FieldSerializer.h"
 
 #include "Projects/ProjectChecker.h"
 #include "Projects/ProjectTemplate.h"
@@ -248,8 +249,11 @@ namespace Editor {
 
         // If rebuilding (automatic or manual), we need to reload as to refresh the Managed references map
 
+        SaveFields(ExecutableFolder() / "assets/Temp/fields.copper");
         if (!Scripting::Reload())
             return LogError("Failed to reload the Scripting Engine.");
+
+        LoadFields(ExecutableFolder() / "assets/Temp/fields.copper");
 
         m_shouldRebuild = false;
 

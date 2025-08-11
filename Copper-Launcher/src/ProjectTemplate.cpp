@@ -168,7 +168,7 @@ namespace Launcher {
     }
     static void CopyFile(const fs::path& inPath, const fs::path& outPath, bool binaryFile) {
 
-        std::ios_base::openmode flags = 0;
+        std::ios_base::openmode flags = static_cast<std::ios_base::openmode>(0);
         if (binaryFile)
             flags = std::ios_base::binary;
 

@@ -1,5 +1,6 @@
 #include "Viewport.h"
 
+#include "Core/EditorApp.h"
 #include "Core/Change.h"
 #include "Core/ChangeHandler.h"
 
@@ -58,7 +59,7 @@ namespace Editor {
         m_sceneCam.Update();
         GetScene()->Render(&m_sceneCam);
 
-        if (m_mousePos.x > -1 && m_mousePos.y > -1 && m_mousePos.x < m_size.x && m_mousePos.y < m_size.y && Input::GetKeyState(KeyCode::Mouse0) == KeyState::Pressed && !ImGuizmo::IsOver()) {
+        if (!IsInteractionBlocked() && m_mousePos.x > -1 && m_mousePos.y > -1 && m_mousePos.x < m_size.x && m_mousePos.y < m_size.y && Input::GetKeyState(KeyCode::Mouse0) == KeyState::Pressed && !ImGuizmo::IsOver()) {
 
             uint32 id = m_fbo.ReadPixel(1, m_mousePos.x, m_mousePos.y);
             InternalEntity* selectedEntity = GetEntityFromID(id);

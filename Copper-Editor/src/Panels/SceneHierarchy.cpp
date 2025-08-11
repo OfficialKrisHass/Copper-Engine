@@ -1,5 +1,6 @@
 #include "SceneHierarchy.h"
 
+#include "Core/EditorApp.h"
 #include "Core/ChangeHandler.h"
 #include "Core/Clipboard.h"
 
@@ -81,8 +82,22 @@ namespace Editor {
 
             switch (Input::GetKeyState(KeyCode::Mouse0)) {
 
-            case KeyState::Pressed: clickedEntityID = entity->GetID(); break;
-            case KeyState::Released: Properties::SetSelectedEntity(entity); break;
+            case KeyState::Pressed: {
+
+                if (!IsInteractionBlocked())
+                    clickedEntityID = entity->GetID();
+
+                break;
+
+            }
+            case KeyState::Released: {
+
+                if (!IsInteractionBlocked())
+                    Properties::SetSelectedEntity(entity);
+
+                break;
+
+            }
             default: break;
 
             }

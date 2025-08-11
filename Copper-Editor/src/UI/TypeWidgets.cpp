@@ -1,5 +1,7 @@
 #include "TypeWidgets.h"
 
+#include "Core/EditorApp.h"
+
 #include "Assets/ProjectAssetDatabase.h"
 
 #include <Engine/AssetStorage/AssetMap.h>
@@ -62,7 +64,7 @@ namespace Editor::UI {
 
         bool ret = false;
 
-        const float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+        const float lineHeight = GImGui->Font->LegacySize + GImGui->Style.FramePadding.y * 2.0f;
         const ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };
 
         // Init
@@ -110,7 +112,7 @@ namespace Editor::UI {
 
         bool ret = false;
 
-        const float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+        const float lineHeight = GImGui->Font->LegacySize + GImGui->Style.FramePadding.y * 2.0f;
         const ImVec2 buttonSize = { lineHeight, lineHeight };
 
         // Init
@@ -168,7 +170,7 @@ namespace Editor::UI {
 
         bool ret = false;
 
-        const float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+        const float lineHeight = GImGui->Font->LegacySize + GImGui->Style.FramePadding.y * 2.0f;
         const ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };
 
         // Init
@@ -267,7 +269,7 @@ namespace Editor::UI {
         const float textSizeY = ImGui::CalcTextSize(name.c_str(), nullptr, true).y;
         const ImVec2 frameSize = ImGui::CalcItemSize({ 0, 0 }, ImGui::CalcItemWidth(), textSizeY + style.FramePadding.y * 2.0f);
 
-        const bool hovered = ImGui::IsMouseHoveringRect(cursorPos, cursorPos + frameSize);
+        const bool hovered = ImGui::IsMouseHoveringRect(cursorPos, cursorPos + frameSize) && !IsInteractionBlocked();
 
         // Frame
 
@@ -331,7 +333,7 @@ namespace Editor::UI {
         const float textSizeY = ImGui::CalcTextSize(name.c_str(), nullptr, true).y;
         const ImVec2 frameSize = ImGui::CalcItemSize({ 0, 0 }, ImGui::CalcItemWidth(), textSizeY + style.FramePadding.y * 2.0f);
 
-        const bool hovered = ImGui::IsMouseHoveringRect(cursorPos, cursorPos + frameSize);
+        const bool hovered = ImGui::IsMouseHoveringRect(cursorPos, cursorPos + frameSize) && !IsInteractionBlocked();
 
         // Frame
 
@@ -395,7 +397,7 @@ namespace Editor::UI {
         const float textSizeY = ImGui::CalcTextSize(name.c_str(), nullptr, true).y;
         const ImVec2 frameSize = ImGui::CalcItemSize({ 0, 0 }, ImGui::CalcItemWidth(), textSizeY + style.FramePadding.y * 2.0f);
 
-        const bool hovered = ImGui::IsMouseHoveringRect(cursorPos, cursorPos + frameSize);
+        const bool hovered = ImGui::IsMouseHoveringRect(cursorPos, cursorPos + frameSize) && !IsInteractionBlocked();
 
         // Frame
 
@@ -458,7 +460,7 @@ namespace Editor::UI {
         const float textSizeY = ImGui::CalcTextSize(name.c_str(), nullptr, true).y;
         const ImVec2 frameSize = ImGui::CalcItemSize({ 0, 0 }, ImGui::CalcItemWidth(), textSizeY + style.FramePadding.y * 2.0f);
 
-        const bool hovered = ImGui::IsMouseHoveringRect(cursorPos, cursorPos + frameSize);
+        const bool hovered = ImGui::IsMouseHoveringRect(cursorPos, cursorPos + frameSize) && !IsInteractionBlocked();
 
         // Frame
 

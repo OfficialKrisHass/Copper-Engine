@@ -25,6 +25,9 @@ namespace Editor {
     // Returns true if user selected cancel, aka, the operation should not be continued.
     bool EnsureUnsavedChanges();
 
+    bool IsInteractionBlocked();
+    void SetIsInteractionBlocked(bool value);
+
     const std::string& GetWindowTitle();
 
     Project& GetProject();

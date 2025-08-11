@@ -13,6 +13,8 @@
 
 #include <Engine/Renderer/Texture.h>
 
+#include <Engine/UI/ImGui.h>
+
 #include <Engine/Input/Input.h>
 
 #include <ImGui/imgui.h>
@@ -33,6 +35,8 @@ namespace Editor {
 
     fs::path FileBrowser::m_projectRelativeDir;
 
+    ImFont* FileBrowser::m_font = nullptr;
+
     fs::path editingPath = "";
     fs::path clickedFile = "";
 
@@ -47,6 +51,8 @@ namespace Editor {
 
         directoryIcon.Create(ExecutableFolder() / "assets/Icons/DirectoryIcon.png", Texture::Format::RGBA);
         fileIcon.Create(ExecutableFolder() / "assets/Icons/FileIcon.png", Texture::Format::RGBA);
+
+        m_font = GetMainUIContext().LoadFont(ExecutableFolder() / "assets/Fonts/IBMPlexMono-Medium.ttf", 16.0f);
 
     }
     void FileBrowser::Refresh() {
@@ -361,7 +367,7 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        ImGui::GetFont()->FontSize -= 2.0f;
+        ImGui::PushFont(m_font);
 
         ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0));
 
@@ -378,7 +384,7 @@ namespace Editor {
 
         ImGui::Text(path.c_str());
 
-        ImGui::GetFont()->FontSize += 2.0f;
+        ImGui::PopFont();
 
     }
     void FileBrowser::WindowPopup() {

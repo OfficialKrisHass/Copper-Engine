@@ -63,6 +63,7 @@ namespace Editor {
         EditorState state = EditorState::Edit;
         Window window;
         std::string title;
+        bool interactionBlocked = false;
 
         bool gameAcceptingInput = false;
 
@@ -967,6 +968,23 @@ namespace Editor {
         return true;
 
     }
+
+    bool IsInteractionBlocked() {
+
+        if (data.interactionBlocked) return true;
+
+        ImGuiContext* g = ImGui::GetCurrentContext();
+        for (int32 i = 0; i < g->OpenPopupStack.Size; i++) {
+
+            const ImGuiPopupData& popup = g->OpenPopupStack[i];
+            if (popup.Window != nullptr && (popup.Window->Flags & ImGuiWindowFlags_Modal)) return true;
+
+        }
+
+        return false;
+
+    }
+    void SetIsInteractionBlocked(bool value) { data.interactionBlocked = value; }
 
     const std::string& GetWindowTitle() { return data.title; }
     void SetWindowTitle(const std::string& value) {

@@ -14,6 +14,8 @@ namespace Copper {
 
 }
 
+struct ImFont;
+
 namespace Editor {
 
     using namespace Copper;
@@ -59,6 +61,8 @@ namespace Editor {
         static const DirectoryEntry* m_currEntry;
 
         static fs::path m_projectRelativeDir;
+
+        static ImFont* m_font;
 
         virtual void UI() override;
 

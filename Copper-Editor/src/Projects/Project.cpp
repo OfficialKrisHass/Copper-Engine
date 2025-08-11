@@ -10,6 +10,7 @@
 #include "Assets/ProjectAssetDatabase.h"
 
 #include "Panels/FileBrowser.h"
+#include "Panels/SceneHierarchy.h"
 
 #include <Engine/Core/Window.h>
 
@@ -116,8 +117,16 @@ namespace Editor {
         m_assetWatch.Start(GetAssetsPath());
         m_assetWatch.SetCallback(std::bind(&Project::FileChangeCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
 
-        if (m_lastOpenedScenePath.empty() || !fs::exists(GetAssetsPath() / m_lastOpenedScenePath))
-            return LogError("Could not open last opened scene at '{}'", m_lastOpenedScenePath);
+        if (m_lastOpenedScenePath.empty() || !fs::exists(GetAssetsPath() / m_lastOpenedScenePath)) {
+
+            LogError("Could not open last opened scene at '{}'", m_lastOpenedScenePath);
+
+            SceneHierarchy::SetScene(nullptr);
+            GetScene()->Deinitialize();
+
+            return;
+
+        }
 
         OpenScene(GetAssetsPath() / m_lastOpenedScenePath, false);
 

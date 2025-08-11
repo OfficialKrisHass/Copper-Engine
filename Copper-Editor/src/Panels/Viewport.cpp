@@ -48,7 +48,7 @@ namespace Editor {
         RendererAPI::ClearColor(Color(0.18f, 0.18f, 0.18f));
         m_fbo.ClearAttachment(1, INVALID_ENTITY_ID);
 
-        if (GetScene() == nullptr) {
+        if (GetScene() == nullptr || !GetScene()->IsInitialized()) {
 
             m_fbo.Unbind();
             return;

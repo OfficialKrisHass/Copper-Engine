@@ -90,7 +90,11 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+#ifdef CU_EDITOR
+        if (!m_initialized) return;
+#else
         CU_ASSERT(m_initialized, "Scene is not initialized!");
+#endif
 
         Renderer::StartFrame();
 

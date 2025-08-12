@@ -140,8 +140,6 @@ namespace Copper {
         VERIFY_STATE(EngineState::PostInitialization, "Run the Engine");
         data.engineState = EngineState::Running;
 
-        data.scene.Initialize();
-
         while (data.engineState == EngineState::Running) {
 
             CUP_START_FRAME(nullptr);

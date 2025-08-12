@@ -506,9 +506,9 @@ namespace Editor {
                     NewScene();
                 if(ImGui::MenuItem("Open Scene", 0, false, data.project.IsValid()))
                     OpenSceneNext();
-                if(ImGui::MenuItem("Save Scene", "Ctr+S", false, data.project.IsValid()))
+                if(ImGui::MenuItem("Save Scene", "Ctr+S", false, data.scene->IsInitialized()))
                     SaveScene();
-                if(ImGui::MenuItem("Save Ass", "Ctrl+Alt+S", false, data.project.IsValid()))
+                if(ImGui::MenuItem("Save Ass", "Ctrl+Alt+S", false, data.scene->IsInitialized()))
                     SaveSceneAs();
 
                 ImGui::EndMenu();

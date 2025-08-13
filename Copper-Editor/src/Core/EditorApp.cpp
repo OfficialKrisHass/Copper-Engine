@@ -621,8 +621,7 @@ namespace Editor {
 #ifdef CU_LINUX
         data.project.RunPremake();
 #endif
-        data.project.BuildScripts();
-        Scripting::Load(data.project.GetPath() / "Binaries" / (data.project.name + ".dll"));
+        data.project.Build();
 
         data.scene->Deinitialize();
         SceneSerializer::Deserialize(data.scene, path / "Assets" / data.project.GetLastOpenedScenePath());

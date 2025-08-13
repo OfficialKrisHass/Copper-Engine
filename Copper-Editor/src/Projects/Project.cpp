@@ -11,6 +11,7 @@
 
 #include "Panels/FileBrowser.h"
 #include "Panels/SceneHierarchy.h"
+#include "Panels/Properties.h"
 
 #include <Engine/Core/Window.h>
 
@@ -122,6 +123,8 @@ namespace Editor {
             LogError("Could not open last opened scene at '{}'", m_lastOpenedScenePath);
 
             SceneHierarchy::SetScene(nullptr);
+            Properties::ClearSelectedData();
+
             GetScene()->Deinitialize();
 
             return;

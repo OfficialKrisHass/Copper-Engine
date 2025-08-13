@@ -7,6 +7,8 @@ namespace Copper::Profiler {
     static const char* CopperEngine = "Copper-Engine";
     static constexpr uint32 CopperEngineLen = 13;
 
+    static std::thread::id mainThreadID = std::this_thread::get_id();
+
     std::vector<Scope*>& GetScopeStack() {
 
         static std::vector<Scope*> scopeStack;
@@ -18,6 +20,10 @@ namespace Copper::Profiler {
 
     Scope::Scope(const char* name, const char* file) {
 
+        // TODO: This is bullshit. For now I am too lazy to make this shit ass "stacktrace system" a proper one, let alone make it
+        // thread safe. For now we just ignore it if it's not called on the main thread.
+        if (std::this_thread::get_id() != mainThreadID) return;
+
         this->name = name;
         this->file = RemovePath(file);
 
@@ -26,6 +32,8 @@ namespace Copper::Profiler {
 
     }
     Scope::~Scope() {
+
+        if (std::this_thread::get_id() != mainThreadID) return;
 
         CU_ASSERT(!GetScopeStack().empty(), "Tried to pop a scope when the scope stack is empty. Seems like the scope destructor was called twice ? Scope name: {}, file: {}", name, file);
         CU_ASSERT(GetScopeStack().back()->name == name && GetScopeStack().back()->file == file, "Scope destructor called with a different scope at the top of the scope stack. Scope: '{}', {}", name, file);

@@ -144,7 +144,9 @@ namespace Copper {
 
             CUP_FUNCTION();
 
-            if (eID == INVALID_ENTITY_ID || eID >= m_entities.size()) return nullptr;
+            if (eID >= m_entities.size()) return nullptr;
+            if (m_entities[eID].m_id == INVALID_ENTITY_ID) return nullptr;
+
             return &m_entities[eID];
 
         }

@@ -17,15 +17,18 @@ namespace Copper {
             if (scene->GetNumOfEntities() == 0) {
 
                 m_beginIndex = 1;
-                m_endIndex = 0;
+                m_endIndex = 1;
                 return;
 
             }
 
-            m_endIndex = scene->GetNumOfEntities() - 1;
+            m_endIndex = scene->GetNumOfEntities();
 
-            while (m_beginIndex != m_endIndex + 1 && !(scene->GetEntityFromID(m_beginIndex))) { m_beginIndex++; }
-            while (m_endIndex >= m_beginIndex && !(scene->GetEntityFromID(m_endIndex))) { m_endIndex--; }
+            while (scene->GetEntityFromID(m_beginIndex) == nullptr)
+                m_beginIndex++;
+
+            while (m_endIndex > m_beginIndex + 1 && scene->GetEntityFromID(m_endIndex - 1) == nullptr)
+                m_endIndex--;
 
         }
 
@@ -40,25 +43,26 @@ namespace Copper {
         struct Iterator {
 
         public:
-            Iterator(uint32_t index, Scene* scene, uint32_t endIndex = 0) : m_index(index), m_scene(scene), m_endIndex(endIndex) {}
+            Iterator(uint32_t index, Scene* scene) : m_index(index), m_scene(scene), m_endIndex(0) {}
+            Iterator(uint32_t index, Scene* scene, uint32_t endIndex) : m_index(index), m_scene(scene), m_endIndex(endIndex) {}
 
-            InternalEntity* operator*() { CUP_FUNCTION(); return m_scene->GetEntityFromID(m_index); }
+            InternalEntity* operator*() {
 
-            bool operator!=(const Iterator& other) { return m_index != other.m_index + 1; }
+                CUP_FUNCTION();
+
+                CU_ASSERT(m_scene->GetEntityFromID(m_index) != nullptr, "Entity View iterator is at nullptr! Index: {}", m_index);
+                return m_scene->GetEntityFromID(m_index);
+
+            }
+
+            bool operator!=(const Iterator& other) { return m_index != other.m_index; }
 
             Iterator& operator++() {
 
                 CUP_FUNCTION();
 
-                if (m_index == m_endIndex) {
-
-                    m_index++;
-                    return *this;
-
-                }
-
                 do m_index++;
-                while (!(m_scene->GetEntityFromID(m_index)));
+                while (m_index < m_endIndex && m_scene->GetEntityFromID(m_index) == nullptr);
 
                 return *this;
 
@@ -66,8 +70,8 @@ namespace Copper {
 
         private:
             uint32_t m_index;
-            Scene* m_scene;
             uint32_t m_endIndex;
+            Scene* m_scene;
 
         };
 

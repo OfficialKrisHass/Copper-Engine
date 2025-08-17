@@ -7,7 +7,7 @@ include(${PROJECT_SOURCE_DIR}/Copper-APIBinder/src/CMakeLists.txt)
 
 # Include Dirs
 
-set(includeDirs src ../Copper-Engine/lib/mono/include)
+set(includeDirs src ../Copper-Engine/lib/mono/build/include/mono-2.0)
 
 # Defines
 

@@ -24,6 +24,7 @@ You can select the gizmo operation (move, rotate, scale) or the mode (global loc
 Or select the operation by pressing Q, W, or E.
 
 WARNING: The rotation gizmos looks a bit funky for some reason
+
 ERROR: the gizmos get a little bit quirky ~~at night~~ when you try to operate on a child of an entity. This will be fixed sometime in the next few years.
 
 ### Scene Hierarchy

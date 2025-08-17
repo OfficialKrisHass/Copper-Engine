@@ -100,6 +100,9 @@ namespace Editor::SceneSerializer {
 
         CUP_FUNCTION();
 
+        CU_ASSERT(entity != nullptr,"Triedto serialize a nullptr entity!");
+        CU_ASSERT(entity->GetID() != INVALID_ENTITY_ID, "Tried to serialize an invalid entity! Entity: '{}'", *entity);
+
         out << YAML::Key << entity->GetID() << YAML::Value << YAML::BeginMap; // Entity
 
         out << YAML::Key << "Name" << YAML::Value << entity->name;

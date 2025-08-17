@@ -14,7 +14,7 @@
 
 extern bool IsGameAcceptingInput();
 #else
-#define CHECKCHECK_ACCEPTING_INPUT()
+#define CHECK_ACCEPTING_INPUT(retValue)
 #endif
 
 namespace Copper::Scripting::Input {
@@ -34,7 +34,7 @@ namespace Copper::Scripting::Input {
 
         CUP_FUNCTION();
 
-        CHECK_ACCEPTING_INPUT(0);
+        CHECK_ACCEPTING_INPUT(0.0f);
 
         std::string axisName;
         MonoUtils::MonoStringToString(axis, axisName);
@@ -46,7 +46,7 @@ namespace Copper::Scripting::Input {
 
         CUP_FUNCTION();
 
-        CHECK_ACCEPTING_INPUT(0);
+        CHECK_ACCEPTING_INPUT(0.0f);
 
         std::string axisName;
         MonoUtils::MonoStringToString(axis, axisName);

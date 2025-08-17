@@ -361,14 +361,13 @@ namespace Editor {
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2 {0, 0});
         bool open = ImGui::Begin("Game");
+        ImGui::PopStyleVar();
 
         if (!open) {
 
             ImGui::End();
-            ImGui::PopStyleVar();
 
             CUP_END_FRAME();
-
             return;
 
         }
@@ -377,10 +376,8 @@ namespace Editor {
             ImGui::Text("No Camera Available!");
 
             ImGui::End();
-            ImGui::PopStyleVar();
 
             CUP_END_FRAME();
-
             return;
 
         }
@@ -403,7 +400,6 @@ namespace Editor {
         }
 
         ImGui::End();
-        ImGui::PopStyleVar();
 
         CUP_END_FRAME();
 

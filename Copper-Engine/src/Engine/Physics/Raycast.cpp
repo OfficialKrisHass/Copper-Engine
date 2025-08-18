@@ -47,7 +47,7 @@ namespace Copper {
         data->normal = CVec3(out.block.normal);
         data->distance = out.block.distance;
 
-        data->entity = (InternalEntity*) out.block.actor->userData;
+        data->entity = GetEntityFromID((uint64) out.block.actor->userData);
 
         return true;
 

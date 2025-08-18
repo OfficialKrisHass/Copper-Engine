@@ -10,6 +10,8 @@
 
 #include <Engine/Renderer/Renderer.h>
 
+#include <Engine/Physics/Raycast.h>
+
 #include <Engine/Input/Input.h>
 
 #include <ImGui/imgui.h>
@@ -17,6 +19,8 @@
 #include <ImGuizmo/ImGuizmo.h>
 
 namespace Editor {
+
+    Raycast::Data hitData;
 
     void Viewport::Initialize() {
 
@@ -70,6 +74,9 @@ namespace Editor {
         }
 
         m_fbo.Unbind();
+
+        if (!Raycast::Fire(m_sceneCam.GetTransform()->GetPosition(), m_sceneCam.GetTransform()->GetForward(), &hitData)) return;
+        Log("hit '{}'", hitData.entity->name);
 
     }
     void Viewport::UIRender() {

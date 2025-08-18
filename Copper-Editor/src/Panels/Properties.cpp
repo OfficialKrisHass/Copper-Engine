@@ -169,22 +169,34 @@ namespace Editor {
 
             } else if (ImGui::MenuItem("Rigid Body")) {
 
-                entity->AddComponent<RigidBody>();
+                RigidBody* rb = entity->AddComponent<RigidBody>();
+                if (collider != nullptr)
+                    rb->Initialize();
+
                 SetChanges();
 
-            } else if (ImGui::MenuItem("Box Collider") && !collider) {
+            } else if (ImGui::MenuItem("Box Collider") && collider == nullptr) {
 
                 entity->AddComponent<BoxCollider>();
+                if (RigidBody* rb = entity->GetComponent<RigidBody>())
+                    rb->Initialize();
+
                 SetChanges();
 
-            } else if (ImGui::MenuItem("Sphere Collider") && !collider) {
+            } else if (ImGui::MenuItem("Sphere Collider") && collider == nullptr) {
 
                 entity->AddComponent<SphereCollider>();
+                if (RigidBody* rb = entity->GetComponent<RigidBody>())
+                    rb->Initialize();
+
                 SetChanges();
 
-            } else if (ImGui::MenuItem("Capsule Collider") && !collider) {
+            } else if (ImGui::MenuItem("Capsule Collider") && collider == nullptr) {
 
                 entity->AddComponent<CapsuleCollider>();
+                if (RigidBody* rb = entity->GetComponent<RigidBody>())
+                    rb->Initialize();
+
                 SetChanges();
 
             }
@@ -491,7 +503,9 @@ namespace Editor {
 
                 SetChanges();
                 ImGui::EndPopup();
-                ImGui::PopID();
+
+                if (opened)
+                    ImGui::PopID();
 
                 return false;
 

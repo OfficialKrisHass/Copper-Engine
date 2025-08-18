@@ -17,11 +17,14 @@ namespace Copper {
 
             class InternalEntity* entity = nullptr;
 
+            Data() = default;
+
             inline operator bool() const { return hit; }
 
         };
 
-        inline Raycast(const Vector3& origin, const Vector3& direction, float maxDistance = 1000.0f, bool fire = true) : m_origin(origin), m_direction(direction), m_dist(maxDistance) {
+        inline Raycast(const Vector3& origin, const Vector3& direction, float maxDistance = 1000.0f, bool fire = true)
+            : m_origin(origin), m_direction(direction), m_dist(maxDistance) {
 
             CUP_FUNCTION();
 
@@ -54,8 +57,6 @@ namespace Copper {
         // Operator overloading
 
         inline operator bool() const { return m_hitData; }
-
-
 
     private:
         Vector3 m_origin = Vector3::zero;

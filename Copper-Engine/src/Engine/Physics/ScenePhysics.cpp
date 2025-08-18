@@ -67,6 +67,13 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+        for (RigidBody* rb : ComponentView<RigidBody>(this)) {
+
+            if (rb->m_actor == nullptr) continue;
+            rb->Remove();
+
+        }
+
         m_physicsScene->release();
         m_physicsScene = nullptr;
 

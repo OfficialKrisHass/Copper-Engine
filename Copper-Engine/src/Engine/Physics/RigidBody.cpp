@@ -27,8 +27,6 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        IN_NOT_RUNTIME(return);
-
         // First remove if already existing
 
         if (m_actor != nullptr)
@@ -68,6 +66,7 @@ namespace Copper {
         CUP_FUNCTION();
 
         GetScene()->RemovePhysicsBody(m_actor);
+        m_actor = nullptr;
 
     }
 

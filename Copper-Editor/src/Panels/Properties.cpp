@@ -457,6 +457,7 @@ namespace Editor {
                 uint64 id;
                 field.GetRefValue(scriptComponent, (void**) &id, (void*) INVALID_ENTITY_ID);
                 InternalEntity* entity = GetEntityFromID((uint32) id);
+                CU_ASSERT(entity != nullptr, "Retrieved reference field value is invalid! Field: '{}' on entity: '{}'", field.GetName(), *scriptComponent->GetEntity());
 
                 if (UI::EditEntity(field.GetName(), &entity)) {
 
@@ -470,7 +471,22 @@ namespace Editor {
                 break;
 
             }
-            case Scripting::Field::Type::Transform: { EditRefField(Transform*, UI::EditTransform); break; }
+            case Scripting::Field::Type::Transform: {
+
+                Transform* value;
+                field.GetRefValue(scriptComponent, (void**) &value);
+
+                CU_ASSERT(value->GetEntity().IsValid(), "Retrieved reference field value is invalid! Field: '{}' on entity: '{}'", field.GetName(), *scriptComponent->GetEntity());
+                if (UI::EditTransform(field.GetName(), &value)) {
+
+                    field.SetRefValue(scriptComponent, value);
+                    SetChanges();
+
+                }
+
+                break;
+
+            }
 
             }
 

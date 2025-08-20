@@ -68,7 +68,7 @@ namespace Editor {
 
         float multiplier = speed * m_multiplier * GetDeltaTime() * 10.0f; // Incredibly slow without the times 10
         float horizontal = Input::GetAxis("Keys_WS") * multiplier;
-        float vertical = Input::GetAxis("Keys_DA") * multiplier;
+        float vertical = Input::GetAxis("Keys_AD") * multiplier;
 
         m_transform->AddPosition(m_transform->GetForward() * horizontal + m_transform->GetRight() * vertical);
 

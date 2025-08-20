@@ -34,7 +34,7 @@ On the left side of the viewport, you should see the Scene Hierarchy.
 
 This is quite literally the hierarchy of the scene. You can see all the entities in a nice tree, select them and move them around. By clicking on the arrow next to an entity name, you will expand that entity and see all of it's children.
 
-Children are entities who are "glued" to their parent, e.g. they move, rotate and scale with the parent. Any entity can have however many children, but an entity can have a single, or no parent (the entities you see without expanding any other entities have no parent).
+Children are entities who are "glued" to their parent, e.g. they move, rotate and scale with the parent. Any entity can have however many children, but an entity can only have a single, or no, parent (the top level entities have no parent).
 
 You can also create, copy, paste and delete entities by right clicking on the empty space, or on an entity.
 
@@ -67,7 +67,7 @@ At the moment this is only used with materials, which we will discuss in a later
 ![image caption](Media/02/PropertiesFile2.png)
 
 ### File Browser
-The File Browser is well, a file browser. It shows the contents of the Assets (ProjectPath/Assets) directory and is where you will be storing Scenes, Scripts, Materials, and more.
+The File Browser is well, a file browser. It shows the contents of the Assets (Path/To/Project/Assets) directory and is where you will be storing Scenes, Scripts, Materials, and more.
 
 ![image caption](Media/02/FileBrowser.png)
 
@@ -101,9 +101,12 @@ Here is a list of basic terms that you will come in contact pretty frequently wh
 - Scene: Scene is a level. You can have multiple scenes and switch between them at runtime. At the moment, the scene is what stores and manages the entire ECS and updates all the core systems every frame (Renderer, Physics Engine, Scripting Engine, etc).
 - Entity: An entity is like an object. A Scene is made up out of many entities, which on their own do very little to nothing. Each entity can be assigned components, which is what gives the entity functionality.
 - Component: Component is a class that as said previously, gives the entity functionality. You can create your own components by creating a C# script that is derived from the Component class, and override the OnBegin and OnUpdate functions to program said functionality. Example components are the RigidBody component, Light component, Transform component.
+- Transform: Transform is a component that each entity has. It is what gives the entity it's position, rotation and scale, and what does all the calculations. It also stores which entities are it's parent and children.
+
 
 - Child entity: A child entity is an entity that is parented by another entity. When the parent entity moves, rotates or scales, the same happens for the children. It is a way of gluing entities together. For instance the camera would be a child of the player entity, so that whenever the player moves, the camera moves automatically with the player.
 - Parent entity: A parent entity is an entity that has any number of children entities. Those children will act relative to the parent entity, meaning if the parent moves, rotates or scales, so will all the children entities.
+
 
 - Asset: An asset is a file that is used in the game somehow. A model, texture, audio file, etc. Copper-Engine has a powerful asset system that stores every asset in one big place, and provides safe pointers to the asset that you can use anywhere. This means that instead of every single box entity storing a copy of the box model, all of it's vertices, indices, textures, etc. The engine stores the box model somewhere in memory, and every box entity just points to the box model. This saves significant memory and performance and also makes sure that when an asset is changed, everything that uses that asset will see those changes.
 

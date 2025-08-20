@@ -20,7 +20,7 @@ namespace Copper::Input {
         VERIFY_STATE(EngineState::Initialization, "Initialize the Axis Manager");
 
         AddAxis("Keys_WS", KeyCode::W, KeyCode::S);
-        AddAxis("Keys_DA", KeyCode::D, KeyCode::A);
+        AddAxis("Keys_AD", KeyCode::D, KeyCode::A);
 
         AddMouseAxis("Mouse X", true);
         AddMouseAxis("Mouse Y", false);

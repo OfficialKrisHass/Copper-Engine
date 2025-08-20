@@ -1,11 +1,11 @@
 Version: 0
 Entities:
   0:
-    Name: Cube
+    Name: Ground
     Transform:
       Position: [0, 0, 0]
       Rotation: [1, 0, 0, 0]
-      Scale: [10, 1, 10]
+      Scale: [20, 1, 2]
       Parent: 4294967295
       Children:
         []
@@ -28,8 +28,8 @@ Entities:
   2:
     Name: Camera
     Transform:
-      Position: [0, 4, 7]
-      Rotation: [0.976296008, -0.21643962, -0, 0]
+      Position: [0, 1.85000002, 2.5]
+      Rotation: [1, 0, 0, 0]
       Scale: [1, 0.999997854, 0.999998569]
       Parent: 4294967295
       Children:
@@ -38,11 +38,11 @@ Entities:
       Fov: 90
       Near Plane: 0.100000001
       Far Plane: 1000
-      Size: [1920, 960]
+      Size: [1078, 516]
   3:
-    Name: Cube
+    Name: Player
     Transform:
-      Position: [0, 2, 0]
+      Position: [0, 1, 0]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
       Parent: 4294967295
@@ -52,28 +52,13 @@ Entities:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: 00000000-0000-0000-0000-000000000000
     Script Component:
-      Name: MyComponent
+      Name: PlayerMovement
       Fields:
         speed:
           Type: 3
-          Value: 5
-        another:
-          Type: 9
-          Value: 4
-  4:
-    Name: Another
-    Transform:
-      Position: [2.61670136, 0.722474933, 2.53572319e-09]
-      Rotation: [1, 0, 0, 0]
-      Scale: [1, 1, 1]
-      Parent: 4294967295
-      Children:
-        []
-    Mesh Renderer:
-      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
-      Material: 00000000-0000-0000-0000-000000000000
+          Value: 3
 Scene Camera:
-  Position: [2.16684294, 1.28927541, 1.1220783]
+  Position: [-0.349273205, 3.70605326, 6.15914917]
   Rotation: [-0.968721867, 0.201928735, 0.141062632, 0.0294032749]
   Speed: 1
   Sensitivity: 2

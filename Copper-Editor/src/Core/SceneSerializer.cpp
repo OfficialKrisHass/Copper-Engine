@@ -320,6 +320,7 @@ namespace Editor::SceneSerializer {
 
                     uint64 id;
                     field.GetRefValue(scriptComponent, (void**) &id, (void*) INVALID_ENTITY_ID);
+                    CU_ASSERT(GetEntityFromID(id) != nullptr, "Retrieved reference field value is invalid! Field: '{}' on entity: '{}'", field.GetName(), *scriptComponent->GetEntity());
 
                     out << YAML::Key << field.GetName() << YAML::Value << YAML::BeginMap; // Field
 
@@ -336,6 +337,7 @@ namespace Editor::SceneSerializer {
 
                     Transform* transform = nullptr;
                     field.GetRefValue(scriptComponent, (void**) &transform);
+                    CU_ASSERT(transform->GetEntity().IsValid(), "Retrieved reference field value is invalid! Field: '{}' on entity: '{}'", field.GetName(), *scriptComponent->GetEntity());
 
                     out << YAML::Key << field.GetName() << YAML::Value << YAML::BeginMap; // Field
 

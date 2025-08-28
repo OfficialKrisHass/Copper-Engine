@@ -134,7 +134,13 @@ namespace Editor {
 
                 }
 
-                CU_ASSERT(fieldNode["Type"].as<uint32>() == static_cast<uint32>(field.GetType()), "Saved field type ({}) does not match script field type ({}). Fieldd: '{}'", fieldNode["Type"].as<uint32>(), static_cast<uint32>(field.GetType()), field.GetName());
+                // TODO: This should be an assert, but only when the field is not a newly added one.
+                if (fieldNode["Type"].as<uint32>() != static_cast<uint32>(field.GetType())) {
+
+                    LogError("Saved field type ({}) does not match script field type ({}). Field: '{}'", fieldNode["Type"].as<uint32>(), static_cast<uint32>(field.GetType()), field.GetName());
+                    continue;
+
+                }
 
                 switch (field.GetType()) {
 

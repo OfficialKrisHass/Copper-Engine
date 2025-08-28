@@ -579,7 +579,6 @@ namespace Editor {
         data.state = EditorState::Play;
 
         SceneSerializer::Serialize(data.scene, ExecutableFolder() / "assets/Temp/scene_lock.copper");
-        SaveFields(ExecutableFolder() / "assets/Temp/fields.copper");
 
         Renderer::Restart();
 
@@ -595,7 +594,6 @@ namespace Editor {
 
         data.scene->Deinitialize();
         SceneSerializer::Deserialize(data.scene, ExecutableFolder() / "assets/Temp/scene_lock.copper");
-        LoadFields(ExecutableFolder() / "assets/Temp/fields.copper");
         data.scene->Initialize();
 
         data.gameAcceptingInput = false;

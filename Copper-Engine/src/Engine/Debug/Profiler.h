@@ -18,6 +18,8 @@ namespace Copper::Profiler {
 
     };
 
+    void PopTopScope();
+
     void CrashHandler(int sig);
     void PrintScopeStack();
 

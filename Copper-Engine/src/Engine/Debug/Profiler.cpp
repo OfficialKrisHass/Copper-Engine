@@ -70,6 +70,15 @@ namespace Copper::Profiler {
 
     }
 
+    void PopTopScope() {
+
+        if (std::this_thread::get_id() != mainThreadID) return;
+
+        CU_ASSERT(!GetScopeStack().empty(), "tried to pop the top scope with an empty scope stack.");
+        GetScopeStack().pop_back();
+
+    }
+
     void CrashHandler(int sig) {
 
         LogError("A crash ({}) has occured in the Copper-Engine!\n", sig);

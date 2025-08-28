@@ -457,7 +457,13 @@ namespace Editor {
                 uint64 id;
                 field.GetRefValue(scriptComponent, (void**) &id, (void*) INVALID_ENTITY_ID);
                 InternalEntity* entity = GetEntityFromID((uint32) id);
-                CU_ASSERT(entity != nullptr, "Retrieved reference field value is invalid! Field: '{}' on entity: '{}'", field.GetName(), *scriptComponent->GetEntity());
+
+                if (entity == nullptr && id != INVALID_ENTITY_ID) {
+
+                    LogError("Entity field '{}' on Entity '{}' has an invalid, presumably missing value. Value (entity ID): {}", field.GetName(), *scriptComponent->GetEntity(), id);
+                    field.SetValue(scriptComponent, nullptr);
+
+                }
 
                 if (UI::EditEntity(field.GetName(), &entity)) {
 
@@ -476,7 +482,15 @@ namespace Editor {
                 Transform* value;
                 field.GetRefValue(scriptComponent, (void**) &value);
 
-                CU_ASSERT(value->GetEntity().IsValid(), "Retrieved reference field value is invalid! Field: '{}' on entity: '{}'", field.GetName(), *scriptComponent->GetEntity());
+                if (value != nullptr && !value->GetEntity().IsValid() && value->GetEntity().ID() != INVALID_ENTITY_ID) {
+
+                    LogError("Transform field '{}' on Entity '{}' has an invalid, presumably missing value. Value (entity ID): {}", field.GetName(), *scriptComponent->GetEntity(), value->GetEntity().ID());
+                    field.SetValue(scriptComponent, nullptr);
+
+                    value = nullptr;
+
+                }
+
                 if (UI::EditTransform(field.GetName(), &value)) {
 
                     field.SetRefValue(scriptComponent, value);

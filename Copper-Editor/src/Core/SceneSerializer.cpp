@@ -320,7 +320,15 @@ namespace Editor::SceneSerializer {
 
                     uint64 id;
                     field.GetRefValue(scriptComponent, (void**) &id, (void*) INVALID_ENTITY_ID);
-                    CU_ASSERT(GetEntityFromID(id) != nullptr, "Retrieved reference field value is invalid! Field: '{}' on entity: '{}'", field.GetName(), *scriptComponent->GetEntity());
+
+                    if (GetEntityFromID(id) == nullptr && id != INVALID_ENTITY_ID) {
+
+                        LogError("Entity field '{}' on Entity '{}' has an invalid, presumably missing value. Value (entity ID): {}", field.GetName(), *entity, id);
+
+                        field.SetValue(scriptComponent, nullptr);
+                        id = INVALID_ENTITY_ID;
+
+                    }
 
                     out << YAML::Key << field.GetName() << YAML::Value << YAML::BeginMap; // Field
 
@@ -337,7 +345,15 @@ namespace Editor::SceneSerializer {
 
                     Transform* transform = nullptr;
                     field.GetRefValue(scriptComponent, (void**) &transform);
-                    CU_ASSERT(transform->GetEntity().IsValid(), "Retrieved reference field value is invalid! Field: '{}' on entity: '{}'", field.GetName(), *scriptComponent->GetEntity());
+
+                    if (transform != nullptr && !transform->GetEntity().IsValid() && transform->GetEntity().ID() != INVALID_ENTITY_ID) {
+
+                        LogError("Transform field '{}' on Entity '{}' has an invalid, presumably missing value. Value (entity ID): {}", field.GetName(), *entity, transform->GetEntity().ID());
+
+                        field.SetValue(scriptComponent, nullptr);
+                        transform = nullptr;
+
+                    }
 
                     out << YAML::Key << field.GetName() << YAML::Value << YAML::BeginMap; // Field
 
@@ -486,7 +502,12 @@ namespace Editor::SceneSerializer {
                     CUP_SCOPE("Entity Field deserialization", 457);
 
                     uint64 id = fieldNode["Value"].as<uint64>();
-                    if (id == INVALID_ENTITY_ID) break;
+                    if (id == INVALID_ENTITY_ID) {
+
+                        field.SetValue(scriptComponent, nullptr);
+                        break;
+
+                    }
 
                     if (id > entity->GetID()) {
 
@@ -505,7 +526,12 @@ namespace Editor::SceneSerializer {
                     CUP_SCOPE("Transform Field deserialization", 457);
 
                     uint32 id = fieldNode["Value"].as<uint32>();
-                    if (id == INVALID_ENTITY_ID) break;
+                    if (id == INVALID_ENTITY_ID) {
+
+                        field.SetValue(scriptComponent, nullptr);
+                        break;
+
+                    }
 
                     if (id > entity->GetID()) {
 
@@ -517,6 +543,7 @@ namespace Editor::SceneSerializer {
 
                     Transform* transform = GetEntityFromID(id)->GetTransform();
                     field.SetRefValue(scriptComponent, transform);
+
                     break;
 
                 }

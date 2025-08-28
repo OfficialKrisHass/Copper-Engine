@@ -45,6 +45,15 @@ namespace Editor {
                     uint64 id;
                     field.GetRefValue(component, (void**) &id, (void*) INVALID_ENTITY_ID);
 
+                    if (GetEntityFromID(id) == nullptr && id != INVALID_ENTITY_ID) {
+
+                        LogError("Entity field '{}' on Entity '{}' has an invalid, presumably missing value. Value (entity ID): {}", field.GetName(), *component->GetEntity(), id);
+
+                        field.SetValue(component, nullptr);
+                        id = INVALID_ENTITY_ID;
+
+                    }
+
                     out << YAML::Key << field.GetName() << YAML::Value << YAML::BeginMap; // Field
 
                     out << YAML::Key << "Type" << YAML::Value << (uint32) field.GetType();
@@ -60,6 +69,15 @@ namespace Editor {
 
                     Transform* transform = nullptr;
                     field.GetRefValue(component, (void**) &transform);
+
+                    if (transform != nullptr && !transform->GetEntity().IsValid() && transform->GetEntity().ID() != INVALID_ENTITY_ID) {
+
+                        LogError("Transform field '{}' on Entity '{}' has an invalid, presumably missing value. Value (entity ID): {}", field.GetName(), *component->GetEntity(), transform->GetEntity().ID());
+
+                        field.SetValue(component, nullptr);
+                        transform = nullptr;
+
+                    }
 
                     out << YAML::Key << field.GetName() << YAML::Value << YAML::BeginMap; // Field
 
@@ -136,8 +154,16 @@ namespace Editor {
                     CUP_SCOPE("Entity Field deserialization", 457);
 
                     uint32 id = fieldNode["Value"].as<uint32>();
-                    if (id == INVALID_ENTITY_ID) break;
-                    CU_ASSERT(GetEntityFromID(id) != nullptr, "Entity field of ScriptComponent on entity '{}' is set to a non existent entity ({})", *entity, id);
+
+                    if (GetEntityFromID(id) == nullptr) {
+
+                        if (id != INVALID_ENTITY_ID)
+                            LogError("Entity field '{}' on Entity '{}' has an invalid, presumably missing value. Value (entity ID): {}", field.GetName(), *component->GetEntity(), id);
+
+                        field.SetValue(component, nullptr);
+                        break;
+
+                    }
 
                     field.SetRefValue(component, (void*) static_cast<uint64>(id));
                     break;
@@ -148,11 +174,20 @@ namespace Editor {
                     CUP_SCOPE("Transform Field deserialization", 457);
 
                     uint32 id = fieldNode["Value"].as<uint32>();
-                    if (id == INVALID_ENTITY_ID) break;
-                    CU_ASSERT(GetEntityFromID(id) != nullptr, "Transform field of ScriptComponent on entity '{}' is set to a non existent entity ({})", *entity, id);
+
+                    if (GetEntityFromID(id) == nullptr) {
+
+                        if (id != INVALID_ENTITY_ID)
+                            LogError("Transform field '{}' on Entity '{}' has an invalid, presumably missing value. Value (entity ID): {}", field.GetName(), *component->GetEntity(), id);
+
+                        field.SetValue(component, nullptr);
+                        break;
+
+                    }
 
                     Transform* transform = GetEntityFromID(id)->GetTransform();
                     field.SetRefValue(component, transform);
+
                     break;
 
                 }

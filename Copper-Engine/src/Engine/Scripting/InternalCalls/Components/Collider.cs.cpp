@@ -7,6 +7,7 @@
 #include "Engine/Scripting/InternalCalls/Utils.h"
 
 #include <mono/jit/jit.h>
+#include <mono/metadata/exception.h>
 
 namespace Copper::Scripting::Collider {
 
@@ -16,7 +17,7 @@ namespace Copper::Scripting::Collider {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Collider*, ptr, collider);
+        GET_UNMANAGED_COMPONENT_PTR(Collider, ptr, collider);
         return ptr->GetType();
 
     }
@@ -24,7 +25,7 @@ namespace Copper::Scripting::Collider {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Collider*, ptr, collider);
+        GET_UNMANAGED_COMPONENT_PTR(Collider, ptr, collider);
 
         MonoObject* ret = GetManagedReference(ptr->GetRigidBody(), Class::RigidBody);
         CU_ASSERT(ret, "Could not get Collider's Rigid body Managed Reference\n\t{}", ptr->GetEntity()->name);
@@ -37,7 +38,7 @@ namespace Copper::Scripting::Collider {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Collider*, ptr, collider);
+        GET_UNMANAGED_COMPONENT_PTR(Collider, ptr, collider);
         return ptr->GetTrigger();
 
     }
@@ -45,7 +46,7 @@ namespace Copper::Scripting::Collider {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Collider*, ptr, collider);
+        GET_UNMANAGED_COMPONENT_PTR(Collider, ptr, collider);
         ptr->SetTrigger(value);
 
     }
@@ -53,7 +54,7 @@ namespace Copper::Scripting::Collider {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Collider*, ptr, collider);
+        GET_UNMANAGED_COMPONENT_PTR(Collider, ptr, collider);
         return ptr->GetCenter();
 
     }
@@ -61,7 +62,7 @@ namespace Copper::Scripting::Collider {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Collider*, ptr, collider);
+        GET_UNMANAGED_COMPONENT_PTR(Collider, ptr, collider);
         ptr->SetCenter(value);
 
     }

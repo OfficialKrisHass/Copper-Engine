@@ -6,6 +6,7 @@
 #include "Engine/Scripting/InternalCalls/Utils.h"
 
 #include <mono/jit/jit.h>
+#include <mono/metadata/exception.h>
 
 namespace Copper::Scripting::SphereCollider {
 
@@ -15,7 +16,7 @@ namespace Copper::Scripting::SphereCollider {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(SphereCollider*, ptr, collider);
+        GET_UNMANAGED_COMPONENT_PTR(SphereCollider, ptr, collider);
         return ptr->GetRadius();
 
     }
@@ -23,7 +24,7 @@ namespace Copper::Scripting::SphereCollider {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(SphereCollider*, ptr, collider);
+        GET_UNMANAGED_COMPONENT_PTR(SphereCollider, ptr, collider);
         ptr->SetRadius(value);
 
     }

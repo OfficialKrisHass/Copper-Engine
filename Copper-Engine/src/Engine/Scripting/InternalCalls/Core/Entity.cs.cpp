@@ -17,39 +17,22 @@
 #include <mono/metadata/object.h>
 #include <mono/metadata/exception.h>
 
+#define GET_ENTITY(name, instance) \
+    CU_ASSERT(instance != nullptr, "Can not get Entity unmanaged pointer from nullptr C# instance.");\
+    \
+    uint64 id = INVALID_ENTITY_ID; mono_field_get_value(instance, UnmanagedPtrField(), (void*) &id);\
+    CU_ASSERT(id < INVALID_ENTITY_ID, "Got an invalid ID from the Entity unmanaged pointer of a C# Entity instance.");\
+    \
+    InternalEntity* name = GetEntityFromID((uint32) id);\
+    if (name == nullptr && id != INVALID_ENTITY_ID) {\
+        LogError("Entity {} (ID) has been deleted or is invalid, but is still being accessed.", id);\
+        Profiler::PopTopScope();\
+        mono_raise_exception(mono_get_exception_null_reference());\
+    }
+
 namespace Copper::Scripting::Entity {
 
     std::unordered_map<std::string, std::function<void*(InternalEntity*)>> addComponentFuncs;
-
-    // Helper to get and check the validity of an entity. Ensures the entity is valid before using it.
-    InternalEntity* GetEntity(MonoObject* instance) {
-
-        CU_ASSERT(instance != nullptr, "Can not get unmanaged Entity from nullptr C# instance.");
-
-        uint64 id = INVALID_ENTITY_ID;
-        mono_field_get_value(instance, UnmanagedPtrField(), (void*) &id);
-        CU_ASSERT(id < INVALID_ENTITY_ID, "Got an invalid ID from the unmanaged pointer field of a C# instance.");
-
-        InternalEntity* ret = GetEntityFromID((uint32) id);
-
-        if (ret == nullptr && id != INVALID_ENTITY_ID) {
-
-            LogError("Entity has been deleted or is invalid, but is still being used.");
-
-            // mono_raise_exception will break this function, making it never return, therefore the scope won't be popped so we have
-            // to do it manually or we get a crash later on (a different scope tried to pop with this one still being at the top).
-
-            Profiler::PopTopScope();
-            mono_raise_exception(mono_get_exception_null_reference());
-
-            // This is completely unnecessary, but I know I won't be able to sleep at night without this here.
-            return nullptr;
-
-        }
-
-        return ret;
-
-    }
 
     void Initialize() {
 
@@ -66,7 +49,7 @@ namespace Copper::Scripting::Entity {
 
         CUP_FUNCTION();
 
-        InternalEntity* ptr = GetEntity(entity);
+        GET_ENTITY(ptr, entity);
         return MonoUtils::StringToMonoString(ptr->name);
 
     }
@@ -77,7 +60,7 @@ namespace Copper::Scripting::Entity {
         std::string name;
         MonoUtils::MonoStringToString(value, name);
 
-        InternalEntity* ptr = GetEntity(entity);
+        GET_ENTITY(ptr, entity);
         ptr->name = name;
 
     }
@@ -86,7 +69,7 @@ namespace Copper::Scripting::Entity {
 
         CUP_FUNCTION();
 
-        InternalEntity* ptr = GetEntity(entity);
+        GET_ENTITY(ptr, entity);
         Transform* transform = ptr->GetTransform();
 
         MonoObject* ret = GetManagedReference(transform, Class::Transform);
@@ -100,7 +83,7 @@ namespace Copper::Scripting::Entity {
 
         CUP_FUNCTION();
 
-        InternalEntity* ptr = GetEntity(entity);
+        GET_ENTITY(ptr, entity);
 
         MonoType* managedType = mono_reflection_type_get_type(type);
         std::string typeName = mono_type_get_name(managedType);
@@ -148,7 +131,7 @@ namespace Copper::Scripting::Entity {
 
         // Get Component
 
-        InternalEntity* ptr = GetEntity(entity);
+        GET_ENTITY(ptr, entity);
         void* component = ptr->GetComponent(cID);
 
         if (component == nullptr)
@@ -176,7 +159,7 @@ namespace Copper::Scripting::Entity {
 
         // Return
 
-        InternalEntity* ptr = GetEntity(entity);
+        GET_ENTITY(ptr, entity);
         return ptr->HasComponent(cID);
 
     }
@@ -196,7 +179,7 @@ namespace Copper::Scripting::Entity {
         
         // Return
 
-        InternalEntity* ptr = GetEntity(entity);
+        GET_ENTITY(ptr, entity);
         ptr->RemoveComponent(cID);
 
     }

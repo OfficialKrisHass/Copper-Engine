@@ -9,6 +9,7 @@
 #include "Engine/Scripting/InternalCalls/Utils.h"
 
 #include <mono/metadata/object.h>
+#include <mono/metadata/exception.h>
 
 namespace Copper::Scripting::Component {
 
@@ -18,7 +19,7 @@ namespace Copper::Scripting::Component {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Component*, ptr, component);
+        GET_UNMANAGED_COMPONENT_PTR(Component, ptr, component);
         MonoObject* ret = GetManagedReference((void*) (uint64) ptr->GetEntity()->GetID(), Class::Entity);
 
         CU_ASSERT(ret, "Could not get Managed Entity Reference from Component");
@@ -29,7 +30,7 @@ namespace Copper::Scripting::Component {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Component*, ptr, component);
+        GET_UNMANAGED_COMPONENT_PTR(Component, ptr, component);
         MonoObject* ret = GetManagedReference(ptr->GetTransform(), Class::Transform);
         
         CU_ASSERT(ret, "Could not get Managed Transform reference from Component");

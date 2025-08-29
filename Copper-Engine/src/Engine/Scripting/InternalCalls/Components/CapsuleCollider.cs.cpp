@@ -6,6 +6,7 @@
 #include "Engine/Scripting/InternalCalls/Utils.h"
 
 #include <mono/jit/jit.h>
+#include <mono/metadata/exception.h>
 
 namespace Copper::Scripting::CapsuleCollider {
 
@@ -15,7 +16,7 @@ namespace Copper::Scripting::CapsuleCollider {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(CapsuleCollider*, ptr, collider);
+        GET_UNMANAGED_COMPONENT_PTR(CapsuleCollider, ptr, collider);
         return ptr->GetRadius();
 
     }
@@ -23,7 +24,7 @@ namespace Copper::Scripting::CapsuleCollider {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(CapsuleCollider*, ptr, collider);
+        GET_UNMANAGED_COMPONENT_PTR(CapsuleCollider, ptr, collider);
         ptr->SetRadius(value);
 
     }
@@ -31,7 +32,7 @@ namespace Copper::Scripting::CapsuleCollider {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(CapsuleCollider*, ptr, collider);
+        GET_UNMANAGED_COMPONENT_PTR(CapsuleCollider, ptr, collider);
         return ptr->GetHeight();
 
     }
@@ -39,7 +40,7 @@ namespace Copper::Scripting::CapsuleCollider {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(CapsuleCollider*, ptr, collider);
+        GET_UNMANAGED_COMPONENT_PTR(CapsuleCollider, ptr, collider);
         ptr->SetHeight(value);
 
     }

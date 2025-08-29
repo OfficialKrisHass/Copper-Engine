@@ -7,6 +7,7 @@
 #include "Engine/Scripting/InternalCalls/Utils.h"
 
 #include <mono/jit/jit.h>
+#include <mono/metadata/exception.h>
 
 namespace Copper::Scripting::RigidBody {
 
@@ -16,7 +17,7 @@ namespace Copper::Scripting::RigidBody {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
+        GET_UNMANAGED_COMPONENT_PTR(RigidBody, ptr, rigidBody);
         return ptr->GetMass();
 
     }
@@ -24,7 +25,7 @@ namespace Copper::Scripting::RigidBody {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
+        GET_UNMANAGED_COMPONENT_PTR(RigidBody, ptr, rigidBody);
         ptr->SetMass(value);
 
     }
@@ -33,7 +34,7 @@ namespace Copper::Scripting::RigidBody {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
+        GET_UNMANAGED_COMPONENT_PTR(RigidBody, ptr, rigidBody);
         return ptr->GetStatic();
 
     }
@@ -41,7 +42,7 @@ namespace Copper::Scripting::RigidBody {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
+        GET_UNMANAGED_COMPONENT_PTR(RigidBody, ptr, rigidBody);
         ptr->SetStatic(value);
 
     }
@@ -49,7 +50,7 @@ namespace Copper::Scripting::RigidBody {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
+        GET_UNMANAGED_COMPONENT_PTR(RigidBody, ptr, rigidBody);
         return ptr->GetGravity();
 
     }
@@ -57,7 +58,7 @@ namespace Copper::Scripting::RigidBody {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
+        GET_UNMANAGED_COMPONENT_PTR(RigidBody, ptr, rigidBody);
         ptr->SetGravity(value);
 
     }
@@ -65,7 +66,7 @@ namespace Copper::Scripting::RigidBody {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
+        GET_UNMANAGED_COMPONENT_PTR(RigidBody, ptr, rigidBody);
         return ptr->GetLockMask();
 
     }
@@ -73,7 +74,7 @@ namespace Copper::Scripting::RigidBody {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
+        GET_UNMANAGED_COMPONENT_PTR(RigidBody, ptr, rigidBody);
         ptr->SetLockMask(value);
 
     }
@@ -82,7 +83,7 @@ namespace Copper::Scripting::RigidBody {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
+        GET_UNMANAGED_COMPONENT_PTR(RigidBody, ptr, rigidBody);
 
         Collider* collider = ptr->GetCollider();
         CU_ASSERT(collider != nullptr, "Could not get Collider from RigidBody '{}'", *ptr->GetEntity());
@@ -98,7 +99,7 @@ namespace Copper::Scripting::RigidBody {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
+        GET_UNMANAGED_COMPONENT_PTR(RigidBody, ptr, rigidBody);
         ptr->AddForce(force, (RigidBody::ForceMode) forceMode);
 
     }
@@ -106,7 +107,7 @@ namespace Copper::Scripting::RigidBody {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(RigidBody*, ptr, rigidBody);
+        GET_UNMANAGED_COMPONENT_PTR(RigidBody, ptr, rigidBody);
         ptr->AddTorque(torque, (RigidBody::ForceMode) forceMode);
 
     }

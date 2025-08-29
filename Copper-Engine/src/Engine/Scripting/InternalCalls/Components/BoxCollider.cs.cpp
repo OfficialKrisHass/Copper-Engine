@@ -6,6 +6,7 @@
 #include "Engine/Scripting/InternalCalls/Utils.h"
 
 #include <mono/jit/jit.h>
+#include <mono/metadata/exception.h>
 
 namespace Copper::Scripting::BoxCollider {
 
@@ -15,7 +16,7 @@ namespace Copper::Scripting::BoxCollider {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(BoxCollider*, ptr, collider);
+        GET_UNMANAGED_COMPONENT_PTR(BoxCollider, ptr, collider);
         return ptr->GetSize();
 
     }
@@ -23,7 +24,7 @@ namespace Copper::Scripting::BoxCollider {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(BoxCollider*, ptr, collider);
+        GET_UNMANAGED_COMPONENT_PTR(BoxCollider, ptr, collider);
         ptr->SetSize(value);
 
     }

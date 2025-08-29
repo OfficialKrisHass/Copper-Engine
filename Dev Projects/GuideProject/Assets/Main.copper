@@ -59,19 +59,7 @@ Entities:
           Value: 3
         test:
           Type: 9
-          Value: 4
-  4:
-    Name: Cube
-    Transform:
-      Position: [0, 0, 0]
-      Rotation: [1, 0, 0, 0]
-      Scale: [1, 1, 1]
-      Parent: 4294967295
-      Children:
-        []
-    Mesh Renderer:
-      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
-      Material: 00000000-0000-0000-0000-000000000000
+          Value: 4294967295
 Scene Camera:
   Position: [-0.349273205, 3.70605326, 6.15914917]
   Rotation: [-0.968721867, 0.201928735, 0.141062632, 0.0294032749]

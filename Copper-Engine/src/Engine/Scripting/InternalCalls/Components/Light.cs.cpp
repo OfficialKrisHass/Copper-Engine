@@ -6,6 +6,7 @@
 #include "Engine/Scripting/InternalCalls/Utils.h"
 
 #include <mono/metadata/object.h>
+#include <mono/metadata/exception.h>
 
 namespace Copper::Scripting::Light {
 
@@ -15,7 +16,7 @@ namespace Copper::Scripting::Light {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Light*, ptr, light);
+        GET_UNMANAGED_COMPONENT_PTR(Light, ptr, light);
         return ptr->color;
 
     }
@@ -23,7 +24,7 @@ namespace Copper::Scripting::Light {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Light*, ptr, light);
+        GET_UNMANAGED_COMPONENT_PTR(Light, ptr, light);
         ptr->color = value;
 
     }
@@ -31,7 +32,7 @@ namespace Copper::Scripting::Light {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Light*, ptr, light);
+        GET_UNMANAGED_COMPONENT_PTR(Light, ptr, light);
         return (uint32) ptr->type;
 
     }
@@ -39,7 +40,7 @@ namespace Copper::Scripting::Light {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Light*, ptr, light);
+        GET_UNMANAGED_COMPONENT_PTR(Light, ptr, light);
         ptr->type = (Light::Type) value;
 
     }
@@ -48,7 +49,7 @@ namespace Copper::Scripting::Light {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Light*, ptr, light);
+        GET_UNMANAGED_COMPONENT_PTR(Light, ptr, light);
         return ptr->intensity;
 
     }
@@ -56,7 +57,7 @@ namespace Copper::Scripting::Light {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Light*, ptr, light);
+        GET_UNMANAGED_COMPONENT_PTR(Light, ptr, light);
         ptr->intensity = value;
 
     }

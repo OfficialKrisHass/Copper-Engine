@@ -7,6 +7,7 @@
 
 #include <mono/jit/jit.h>
 #include <mono/metadata/object.h>
+#include <mono/metadata/exception.h>
 
 namespace Copper::Scripting::Camera {
 
@@ -16,7 +17,7 @@ namespace Copper::Scripting::Camera {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Camera*, ptr, camera);
+        GET_UNMANAGED_COMPONENT_PTR(Camera, ptr, camera);
         return ptr->fov;
 
     }
@@ -24,7 +25,7 @@ namespace Copper::Scripting::Camera {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Camera*, ptr, camera);
+        GET_UNMANAGED_COMPONENT_PTR(Camera, ptr, camera);
         ptr->fov = value;
 
     }
@@ -33,7 +34,7 @@ namespace Copper::Scripting::Camera {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Camera*, ptr, camera);
+        GET_UNMANAGED_COMPONENT_PTR(Camera, ptr, camera);
         return ptr->nearPlane;
 
     }
@@ -41,7 +42,7 @@ namespace Copper::Scripting::Camera {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Camera*, ptr, camera);
+        GET_UNMANAGED_COMPONENT_PTR(Camera, ptr, camera);
         ptr->nearPlane = value;
 
     }
@@ -49,7 +50,7 @@ namespace Copper::Scripting::Camera {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Camera*, ptr, camera);
+        GET_UNMANAGED_COMPONENT_PTR(Camera, ptr, camera);
         return ptr->farPlane;
 
     }
@@ -57,7 +58,7 @@ namespace Copper::Scripting::Camera {
 
         CUP_FUNCTION();
 
-        GET_UNMANAGED_PTR(Camera*, ptr, camera);
+        GET_UNMANAGED_COMPONENT_PTR(Camera, ptr, camera);
         ptr->farPlane = value;
 
     }

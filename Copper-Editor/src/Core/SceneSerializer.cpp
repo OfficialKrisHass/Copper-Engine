@@ -480,8 +480,8 @@ namespace Editor::SceneSerializer {
             for (const Scripting::Field& field : fields) {
 
                 YAML::Node fieldNode = fieldsNode[field.GetName()];
-                if (!fieldNode) continue;
 
+                if (!fieldNode) continue;
                 if (fieldNode["Type"].as<uint32>() != (uint32) field.GetType()) continue;
 
                 switch (field.GetType()) {

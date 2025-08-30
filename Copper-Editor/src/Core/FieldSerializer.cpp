@@ -127,20 +127,9 @@ namespace Editor {
             for (const Scripting::Field& field : fields) {
 
                 YAML::Node fieldNode = fieldsNode[field.GetName()];
-                if (!fieldNode) {
 
-                    LogError("ScriptComponent on entity '{}' has a field '{}' but it was not saved.", *entity, field.GetName());
-                    continue;
-
-                }
-
-                // TODO: This should be an assert, but only when the field is not a newly added one.
-                if (fieldNode["Type"].as<uint32>() != static_cast<uint32>(field.GetType())) {
-
-                    LogError("Saved field type ({}) does not match script field type ({}). Field: '{}'", fieldNode["Type"].as<uint32>(), static_cast<uint32>(field.GetType()), field.GetName());
-                    continue;
-
-                }
+                if (!fieldNode) continue;
+                if (fieldNode["Type"].as<uint32>() != static_cast<uint32>(field.GetType())) continue;
 
                 switch (field.GetType()) {
 

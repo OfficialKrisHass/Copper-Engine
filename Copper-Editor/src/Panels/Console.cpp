@@ -12,6 +12,10 @@ namespace Editor {
 
     ImFont* font = nullptr;
 
+    bool showInfo = true;
+    bool showWarn = true;
+    bool showError = true;
+
     void Console::Initialize() {
 
         CUP_FUNCTION();
@@ -24,6 +28,16 @@ namespace Editor {
 
     void Console::UI() {
 
+        if (ImGui::Button("Clear"))
+            m_messages.clear();
+
+        ImGui::SameLine();
+        ImGui::Checkbox("Info", &showInfo);
+        ImGui::SameLine();
+        ImGui::Checkbox("Warn", &showWarn);
+        ImGui::SameLine();
+        ImGui::Checkbox("Error", &showError);
+
         ImGui::PushFont(font);
 
         for (const Message& msg : m_messages) {
@@ -31,9 +45,30 @@ namespace Editor {
             switch (msg.level) {
 
                 case spdlog::level::info:
-                case spdlog::level::trace: ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f)); break;
-                case spdlog::level::warn: ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.9f, 0.4f, 1.0f)); break;
-                case spdlog::level::err: ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.2f, 0.2f, 1.0f)); break;
+                case spdlog::level::trace: {
+
+                    if (!showInfo) continue;
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+                    break;
+
+                }
+                case spdlog::level::warn: {
+
+                    if (!showWarn) continue;
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.9f, 0.4f, 1.0f));
+
+                    break;
+
+                }
+                case spdlog::level::err: {
+
+                    if (!showError) continue;
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.2f, 0.2f, 1.0f));
+
+                    break;
+
+                }
                 default: continue;
                 
             }

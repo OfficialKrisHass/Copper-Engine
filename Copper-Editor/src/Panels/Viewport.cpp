@@ -75,6 +75,7 @@ namespace Editor {
 
         m_fbo.Unbind();
 
+        return;
         if (!Raycast::Fire(m_sceneCam.GetTransform()->GetPosition(), m_sceneCam.GetTransform()->GetForward(), &hitData)) return;
         Log("hit '{}'", hitData.entity->name);
 
@@ -159,9 +160,9 @@ namespace Editor {
                 Vector3 position, rotation, scale;
                 ImGuizmo::DecomposeMatrixToComponents(&transform.cols[0].x, &position.x, &rotation.x, &scale.x);
 
-                selectedEntity->GetTransform()->SetPosition(position);
-                selectedEntity->GetTransform()->SetRotation(rotation);
-                selectedEntity->GetTransform()->SetScale(scale);
+                selectedEntity->GetTransform()->SetGlobalPosition(position);
+                selectedEntity->GetTransform()->SetGlobalRotation(rotation);
+                selectedEntity->GetTransform()->SetGlobalScale(scale);
 
                 if (RigidBody* rb = selectedEntity->GetComponent<RigidBody>()) {
 

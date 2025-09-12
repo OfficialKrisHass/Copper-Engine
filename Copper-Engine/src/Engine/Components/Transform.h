@@ -45,6 +45,10 @@ namespace Copper {
         void SetRotation(const Quaternion& rotation);
         void SetScale(const Vector3& scale);
 
+        void SetGlobalPosition(const Vector3& position);
+        void SetGlobalRotation(const Quaternion& rotation);
+        void SetGlobalScale(const Vector3& scale);
+
         inline void AddPosition(const Vector3& position) { SetPosition(m_position + position); }
         inline void AddRotation(const Quaternion& rotation) { SetRotation(m_rotation + rotation); }
         inline void AddScale(const Vector3& scale) { SetScale(m_scale + scale); }
@@ -116,7 +120,7 @@ namespace Copper {
         void UpdateRotation();
         void UpdateScale();
 
-        void ExtractGlobalRotation();
+        static Quaternion ExtractRotation(const Matrix4& mat, const Vector3& scale);
 
     };
 

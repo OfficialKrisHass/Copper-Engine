@@ -1,83 +1,49 @@
 #include "cupch.h"
 #include "Math.h"
 
-#include <GLM/gtx/matrix_decompose.hpp>
+#define PI 3.14159265358979323846f
+#define RAD2DEG (180.0f / PI)
 
 namespace Copper::Math {
 
-    //I don't know what this does, it works, the Cherno implemented this so
-    //uhhh yeah it works and I definitely Understand it
-    bool DecomposeTransform(const glm::mat4& transform, glm::vec3& position, glm::vec3& outRotation, glm::vec3& scale) {
-        // From glm::decompose in matrix_decompose.inl
+    void DecomposeTransform(const Matrix4& transform, Vector3& position, Quaternion& rotation, Vector3& scale) {
 
         CUP_FUNCTION();
 
-        using namespace glm;
-        using T = float;
+        Vector3 col1 = transform[0];
+        Vector3 col2 = transform[1];
+        Vector3 col3 = transform[2];
 
-        mat4 LocalMatrix(transform);
+        // Scale
 
-        // Normalize the matrix.
-        if (epsilonEqual(LocalMatrix[3][3], static_cast<float>(0), epsilon<T>()))
-            return false;
+        scale.x = col1.Length();
+        scale.y = col2.Length();
+        scale.z = col3.Length();
 
-        // First, isolate perspective.  This is the messiest.
-        if (
-            epsilonNotEqual(LocalMatrix[0][3], static_cast<T>(0), epsilon<T>()) ||
-            epsilonNotEqual(LocalMatrix[1][3], static_cast<T>(0), epsilon<T>()) ||
-            epsilonNotEqual(LocalMatrix[2][3], static_cast<T>(0), epsilon<T>())) {
-            // Clear the perspective partition
-            LocalMatrix[0][3] = LocalMatrix[1][3] = LocalMatrix[2][3] = static_cast<T>(0);
-            LocalMatrix[3][3] = static_cast<T>(1);
-        }
+        // Rotation, requires us to re-orthogonalize the axes (Gram-Schmidt or whatever)
 
-        // Next take care of translation (easy).
-        position = vec3(LocalMatrix[3]);
-        LocalMatrix[3] = vec4(0, 0, 0, LocalMatrix[3].w);
+        if (scale.x != 0.0f && scale.y != 0.0f && scale.z != 0.0f) {
 
-        vec3 Row[3];
+            col1 /= scale.x;
+            col2 /= scale.y;
+            col3 /= scale.z;
 
-        // Now get scale and shear.
-        for (length_t i = 0; i < 3; ++i)
-            for (length_t j = 0; j < 3; ++j)
-                Row[i][j] = LocalMatrix[i][j];
+            Vector3 test;
 
-        // Compute X scale factor and normalize first row.
-        scale.x = length(Row[0]);
-        Row[0] = detail::scale(Row[0], static_cast<T>(1));
-        scale.y = length(Row[1]);
-        Row[1] = detail::scale(Row[1], static_cast<T>(1));
-        scale.z = length(Row[2]);
-        Row[2] = detail::scale(Row[2], static_cast<T>(1));
+            test.x = RAD2DEG * atan2f(col2.z, col3.z);
+            test.y = RAD2DEG * atan2f(-col1.z, sqrtf(col2.z * col2.z + col3.z * col3.z));
+            test.z = RAD2DEG * atan2f(col1.y, col1.x);
 
-        // At this point, the matrix (in rows[]) is orthonormal.
-        // Check for a coordinate system flip.  If the determinant
-        // is -1, then negate the matrix and the scaling factors.
-#if 0
-        Pdum3 = cross(Row[1], Row[2]); // v3Cross(row[1], row[2], Pdum3);
-        if (dot(Row[0], Pdum3) < 0) {
-            for (length_t i = 0; i < 3; i++) {
-                scale[i] *= static_cast<T>(-1);
-                Row[i] *= static_cast<T>(-1);
-            }
-        }
-#endif
+            rotation = test;
 
-        glm::vec3 rotation = outRotation;
+        } else
+            rotation = Quaternion::identity;
 
-        rotation.y = asin(-Row[0][2]);
-        if (cos(rotation.y) != 0) {
-            rotation.x = atan2(Row[1][2], Row[2][2]);
-            rotation.z = atan2(Row[0][1], Row[0][0]);
-        } else {
-            rotation.x = atan2(-Row[2][0], Row[1][1]);
-            rotation.z = 0;
-        }
 
-        outRotation = glm::degrees(rotation);
-        //outRotation = rotation;
+        // Position, incredibly easy lol
 
-        return true;
+        position = transform[3];
+
     }
 
 }

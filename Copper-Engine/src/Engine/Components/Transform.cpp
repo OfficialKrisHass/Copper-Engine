@@ -61,7 +61,12 @@ namespace Copper {
         }
 
         Matrix4 mat = CMath::Inverse(m_parent->m_mat) * Matrix4(rotation);
-        m_rotation = ExtractRotation(mat, m_parent->m_globalScale);
+
+        Vector3 localPos, localScale;
+        Quaternion localRot;
+        Math::DecomposeTransform(mat, localPos, localRot, localScale);
+
+        m_rotation = localRot;
 
         UpdateRotation();
 
@@ -109,11 +114,12 @@ namespace Copper {
             m_parent = parent;
             parent->m_children.push_back(GetEntity()->GetID());
 
-            glm::vec3 pos, rot, scale;
+            Vector3 pos, scale;
+            Quaternion rot;
             Math::DecomposeTransform(local, pos, rot, scale);
 
             m_position = pos;
-            m_rotation = (Vector3) rot;
+            m_rotation = rot;
             m_scale = scale;
 
             return;
@@ -127,11 +133,12 @@ namespace Copper {
         m_parent = parent;
         parent->m_children.push_back(GetEntity()->GetID());
 
-        glm::vec3 pos, rot, scale;
+        Vector3 pos, scale;
+        Quaternion rot;
         Math::DecomposeTransform(local, pos, rot, scale);
 
         m_position = pos;
-        m_rotation = (Vector3) rot;
+        m_rotation = rot;
         m_scale = scale;
 
     }
@@ -153,11 +160,12 @@ namespace Copper {
 
         Matrix4 childLocal = childGlobal * CMath::Inverse(m_mat);
 
-        glm::vec3 pos, rot, scale;
+        Vector3 pos, scale;
+        Quaternion rot;
         Math::DecomposeTransform(childLocal, pos, rot, scale);
 
         child->m_position = pos;
-        child->m_rotation = (Vector3) rot;
+        child->m_rotation = rot;
         child->m_scale = scale;
 
     }
@@ -259,8 +267,7 @@ namespace Copper {
 
         m_dirty = true;
         CalculateMatrix();
-
-        m_globalRotation = ExtractRotation(m_mat, m_globalScale);
+        ExtractGlobalRotation();
 
         m_forward = m_globalRotation * Vector3(0.0f, 0.0f, -1.0f);
         m_right = m_globalRotation * Vector3(1.0f, 0.0f, 0.0f);
@@ -299,35 +306,38 @@ namespace Copper {
 
     }
 
-    Quaternion Transform::ExtractRotation(const Matrix4& mat, const Vector3& scale) {
+    void Transform::ExtractGlobalRotation() {
 
         CUP_FUNCTION();
 
         // Guard against zero scale
 
-        if (scale.x == 0.0f || scale.y == 0.0f || scale.z == 0.0f)
-            return Quaternion::identity;
+        if (m_globalScale.x == 0.0f || m_globalScale.y == 0.0f || m_globalScale.z == 0.0f) {
+
+            m_globalRotation = Quaternion::identity;
+            return;
+
+        }
 
         // Get and normalize rotation axes
 
-        Vector3 col1 = mat.cols[0] / scale.x;
-        Vector3 col2 = mat.cols[1] / scale.y;
-        Vector3 col3 = mat.cols[2] / scale.z;
+        Vector3 col1 = m_mat[0] / m_globalScale.x;
+        Vector3 col2 = m_mat[1] / m_globalScale.y;
+        Vector3 col3 = m_mat[2] / m_globalScale.z;
 
         Matrix3 rot = Matrix3(col1, col2, col3);
         float trace = rot[0][0] + rot[1][1] + rot[2][2];
-        Quaternion ret;
 
         if (trace > 0.0f) {
 
             float s = std::sqrt(trace + 1.0f) * 2.0f;
 
-            ret.w = 0.25f * s;
-            ret.x = (rot[1][2] - rot[2][1]) / s;
-            ret.y = (rot[2][0] - rot[0][2]) / s;
-            ret.z = (rot[0][1] - rot[1][0]) / s;
+            m_globalRotation.w = 0.25f * s;
+            m_globalRotation.x = (rot[1][2] - rot[2][1]) / s;
+            m_globalRotation.y = (rot[2][0] - rot[0][2]) / s;
+            m_globalRotation.z = (rot[0][1] - rot[1][0]) / s;
 
-            return ret;
+            return;
 
         }
 
@@ -335,34 +345,34 @@ namespace Copper {
 
             float s = std::sqrt(1.0f + rot[0][0] - rot[1][1] - rot[2][2]) * 2.0f;
 
-            ret.w = (rot[1][2] - rot[2][1]) / s;
-            ret.x = 0.25f * s;
-            ret.y = (rot[0][1] + rot[1][0]) / s;
-            ret.z = (rot[0][2] + rot[2][0]) / s;
+            m_globalRotation.w = (rot[1][2] - rot[2][1]) / s;
+            m_globalRotation.x = 0.25f * s;
+            m_globalRotation.y = (rot[0][1] + rot[1][0]) / s;
+            m_globalRotation.z = (rot[0][2] + rot[2][0]) / s;
 
-            return ret;
+            return;
 
         } else if (rot[1][1] > rot[2][2]) {
 
             float s = std::sqrt(1.0f + rot[1][1] - rot[0][0] - rot[2][2]) * 2.0f;
 
-            ret.w = (rot[2][0] - rot[0][2]) / s;
-            ret.x = (rot[0][1] + rot[1][0]) / s;
-            ret.y = 0.25f * s;
-            ret.z = (rot[1][2] + rot[2][1]) / s;
+            m_globalRotation.w = (rot[2][0] - rot[0][2]) / s;
+            m_globalRotation.x = (rot[0][1] + rot[1][0]) / s;
+            m_globalRotation.y = 0.25f * s;
+            m_globalRotation.z = (rot[1][2] + rot[2][1]) / s;
 
-            return ret;
+            return;
 
         }
 
         float s = std::sqrt(1.0f + rot[2][2] - rot[0][0] - rot[1][1]) * 2.0f;
 
-        ret.w = (rot[0][1] - rot[1][0]) / s;
-        ret.x = (rot[0][2] + rot[2][0]) / s;
-        ret.y = (rot[1][2] + rot[2][1]) / s;
-        ret.z = 0.25f * s;
+        m_globalRotation.w = (rot[0][1] - rot[1][0]) / s;
+        m_globalRotation.x = (rot[0][2] + rot[2][0]) / s;
+        m_globalRotation.y = (rot[1][2] + rot[2][1]) / s;
+        m_globalRotation.z = 0.25f * s;
 
-        return ret;
+        return;
 
     }
 

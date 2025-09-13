@@ -14,6 +14,8 @@
 
 #include <Engine/Input/Input.h>
 
+#include <Engine/Utilities/Math.h>
+
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_internal.h>
 #include <ImGuizmo/ImGuizmo.h>
@@ -157,8 +159,9 @@ namespace Editor {
 
                 }
 
-                Vector3 position, rotation, scale;
-                ImGuizmo::DecomposeMatrixToComponents(&transform.cols[0].x, &position.x, &rotation.x, &scale.x);
+                Vector3 position, scale;
+                Quaternion rotation;
+                Math::DecomposeTransform(transform, position, rotation, scale);
 
                 selectedEntity->GetTransform()->SetGlobalPosition(position);
                 selectedEntity->GetTransform()->SetGlobalRotation(rotation);

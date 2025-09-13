@@ -120,7 +120,7 @@ namespace Copper {
         void UpdateRotation();
         void UpdateScale();
 
-        static Quaternion ExtractRotation(const Matrix4& mat, const Vector3& scale);
+        void ExtractGlobalRotation();
 
     };
 

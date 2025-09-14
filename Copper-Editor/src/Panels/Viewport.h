@@ -21,7 +21,7 @@ namespace Editor {
             enum Operation : uint16 {
 
                 Translate = FLAG(0) | FLAG(1) | FLAG(2),
-                Rotate = FLAG(3) | FLAG(4) | FLAG(5) | FLAG(6),
+                Rotate = FLAG(3) | FLAG(4) | FLAG(5),
                 Scale = FLAG(7) | FLAG(8) | FLAG(9),
 
             };

@@ -4,29 +4,13 @@
 
 #include "Engine/Components/Component.h"
 
-#ifdef CU_EDITOR
-namespace YAML { class Emitter; }
-namespace Editor {
-
-    class Project;
-    namespace SceneSerializer {
-
-        void SerializeEntityComponents(Copper::InternalEntity* entity, YAML::Emitter& out);
-
-    }
-
-}
-#endif
+COMPONENT_FORWARD_DECL()
 
 namespace Copper {
 
     class Camera : public Component {
 
-        friend class Scene;
-#ifdef CU_EDITOR
-        friend Editor::Project;
-        friend void Editor::SceneSerializer::SerializeEntityComponents(Copper::InternalEntity *entity, YAML::Emitter &out);
-#endif
+        COMPONENT_FRIEND_CLASSES();
 
     public:
         Camera() = default;

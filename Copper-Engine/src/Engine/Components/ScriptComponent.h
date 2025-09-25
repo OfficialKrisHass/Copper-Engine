@@ -6,6 +6,8 @@
 
 #include "Engine/Scripting/ScriptingEngine.h"
 
+COMPONENT_FORWARD_DECL()
+
 extern "C" {
 
     typedef struct _MonoObject MonoObject;
@@ -19,6 +21,8 @@ namespace Copper {
     namespace Scripting { class Script; struct Field; }
 
     class ScriptComponent : public Component {
+
+        COMPONENT_FRIEND_CLASSES();
 
         friend Scripting::Field;
 

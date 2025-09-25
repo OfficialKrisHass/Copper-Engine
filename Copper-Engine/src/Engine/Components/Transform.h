@@ -4,20 +4,10 @@
 
 #include "Engine/Components/Component.h"
 
+COMPONENT_FORWARD_DECL()
+
 #ifdef CU_EDITOR
-namespace YAML { class Node; }
-namespace Copper { class InternalEntity; }
-namespace Editor {
-
-    namespace SceneSerializer {
-
-        void DeserializeEntityTransform(Copper::InternalEntity** entityPtr, const YAML::Node& data);
-
-    }
-
-    void CopyToClipboard(Copper::InternalEntity *entity);
-
-}
+namespace Editor { class SceneCamera; }
 #endif
 
 namespace Copper {
@@ -26,14 +16,11 @@ namespace Copper {
     // Position, rotation and scale are local-space, to get the global-space version use the functiom GlobalPosition/Rotation/Scale()
     class Transform : public Component {
 
+        COMPONENT_FRIEND_CLASSES();
         friend class Registry;
-        friend class Scene;
-        friend class OldSceneDeserialization;
 
 #ifdef CU_EDITOR
         friend Editor::SceneCamera;
-        friend void Editor::SceneSerializer::DeserializeEntityTransform(Copper::InternalEntity**, const YAML::Node&);
-        friend void Editor::CopyToClipboard(Copper::InternalEntity*);
 #endif
 
     public:

@@ -12,19 +12,7 @@ namespace physx {
 
 }
 
-#ifdef CU_EDITOR
-namespace YAML { class Node; }
-namespace Editor {
-
-    class Properties;
-    namespace SceneSerializer {
-
-        void DeserializeEntityComponents(Copper::InternalEntity* entity, const YAML::Node& data);
-
-    }
-
-}
-#endif
+COMPONENT_FORWARD_DECL()
 
 namespace Copper {
 
@@ -32,13 +20,9 @@ namespace Copper {
 
     class RigidBody : public Component {
 
-        friend class Scene;
-        friend Collider;
+        COMPONENT_FRIEND_CLASSES();
 
-#ifdef CU_EDITOR
-        friend Editor::Properties;
-        friend void Editor::SceneSerializer::DeserializeEntityComponents(Copper::InternalEntity *entity, const YAML::Node &data);
-#endif
+        friend Collider;
 
     public:
         enum class LockFlags : uint8 {

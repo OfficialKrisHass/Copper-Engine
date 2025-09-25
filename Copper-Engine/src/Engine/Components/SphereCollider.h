@@ -4,32 +4,13 @@
 
 #include "Engine/Components/Collider.h"
 
-#ifdef CU_EDITOR
-namespace YAML { class Emitter; }
-namespace Editor {
-
-    class Properties;
-    namespace SceneSerializer {
-
-        void SerializeEntityComponents(Copper::InternalEntity* entity, YAML::Emitter& out);
-        void DeserializeEntityComponents(Copper::InternalEntity* entity, const YAML::Node& data);
-
-    }
-
-}
-#endif
+COMPONENT_FORWARD_DECL()
 
 namespace Copper {
 
     class SphereCollider : public Collider {
 
-        friend Scene;
-
-#ifdef CU_EDITOR
-        friend Editor::Properties;
-        friend void Editor::SceneSerializer::SerializeEntityComponents(Copper::InternalEntity *entity, YAML::Emitter &out);
-        friend void Editor::SceneSerializer::DeserializeEntityComponents(Copper::InternalEntity *entity, const YAML::Node &data);
-#endif
+        COMPONENT_FRIEND_CLASSES();
 
     public:
         float GetRadius() const { return m_radius; }

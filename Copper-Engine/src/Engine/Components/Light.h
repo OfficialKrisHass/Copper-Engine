@@ -8,9 +8,13 @@
 
 #define MAX_LIGHTS 8
 
+COMPONENT_FORWARD_DECL()
+
 namespace Copper {
 
     class Light : public Component {
+
+        COMPONENT_FRIEND_CLASSES();
 
     public:
         enum class Type : uint8 {

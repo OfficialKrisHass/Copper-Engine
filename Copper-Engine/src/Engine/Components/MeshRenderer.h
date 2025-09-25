@@ -9,9 +9,13 @@
 
 #include "Engine/Components/Component.h"
 
+COMPONENT_FORWARD_DECL()
+
 namespace Copper {
 
     class MeshRenderer : public Component {
+
+        COMPONENT_FRIEND_CLASSES();
 
     public:
         MeshRenderer() = default;

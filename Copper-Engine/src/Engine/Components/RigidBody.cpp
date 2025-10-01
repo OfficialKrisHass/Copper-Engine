@@ -1,5 +1,5 @@
 #include "cupch.h"
-#include "Engine/Components/RigidBody.h"
+#include "RigidBody.h"
 
 #include "Engine/Scene/Scene.h"
 

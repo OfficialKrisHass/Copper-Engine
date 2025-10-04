@@ -11,6 +11,7 @@
 #include "Projects/ProjectTemplate.h"
 
 #include "Panels/Viewport.h"
+#include "Panels/CamView.h"
 #include "Panels/SceneHierarchy.h"
 #include "Panels/Properties.h"
 #include "Panels/FileBrowser.h"
@@ -66,8 +67,6 @@ namespace Editor {
         std::string title;
         bool interactionBlocked = false;
 
-        bool gameAcceptingInput = false;
-
         // Project
 
         Project project;
@@ -93,6 +92,7 @@ namespace Editor {
         // Panels
 
         Viewport viewport;
+        CamView camView;
         SceneHierarchy sceneHierarchy;
         Properties properties;
         FileBrowser fileBrowser;
@@ -118,7 +118,6 @@ namespace Editor {
     void SaveEditorData();
 
     void RenderDockspace();
-    void RenderGamePanel();
     void RenderToolbar();
     void RenderMenu();
 
@@ -278,7 +277,7 @@ namespace Editor {
         data.properties.UIRender();
         data.sceneHierarchy.UIRender();
         data.viewport.UIRender();
-        RenderGamePanel();
+        data.camView.UIRender();
 
         if (data.themeEditorOpen)
             data.themeEditor.UIRender();
@@ -353,56 +352,6 @@ namespace Editor {
         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
 
         style.WindowMinSize.x = minWinSizeX;
-
-    }
-    void RenderGamePanel() {
-
-        CUP_FUNCTION();
-        CUP_START_FRAME("Game Panel");
-
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2 {0, 0});
-        bool open = ImGui::Begin("Game");
-        ImGui::PopStyleVar();
-
-        if (!open) {
-
-            ImGui::End();
-
-            CUP_END_FRAME();
-            return;
-
-        }
-        if (!data.project.IsValid() || !data.scene->GetMainCamera()) {
-
-            ImGui::Text("No Camera Available!");
-
-            ImGui::End();
-
-            CUP_END_FRAME();
-            return;
-
-        }
-
-        ImVec2 windowSize = ImGui::GetContentRegionAvail();
-        data.gamePanelSize = UVector2I((uint32) windowSize.x, (uint32) windowSize.y);
-
-        SetWindowSize(data.gamePanelSize);
-
-        ImGui::Image(static_cast<ImTextureID>((uint64) GetMainFBO().GetColorAttachmentID(0)), windowSize, ImVec2 {0, 1}, ImVec2 {1, 0});
-
-        if (data.state == EditorState::Play && !data.gameAcceptingInput && ImGui::IsItemClicked()) {
-
-            data.gameAcceptingInput = true;
-
-            //Input::SetCursorPosition((float) data.viewportCentre.x, (float) data.viewportCentre.y);
-            Input::SetCursorLocked(true);
-            Input::SetCursorVisible(false);
-
-        }
-
-        ImGui::End();
-
-        CUP_END_FRAME();
 
     }
     
@@ -596,7 +545,7 @@ namespace Editor {
         SceneSerializer::Deserialize(data.scene, ExecutableFolder() / "assets/Temp/scene_lock.copper");
         data.scene->Initialize();
 
-        data.gameAcceptingInput = false;
+        data.camView.SetIsAcceptingInput(false);
 
         Input::SetCursorLocked(false);
         Input::SetCursorVisible(true);
@@ -912,7 +861,7 @@ namespace Editor {
 
                 if (data.state == EditorState::Edit || !shift) break;
 
-                data.gameAcceptingInput = false;
+                data.camView.SetIsAcceptingInput(false);
 
                 Input::SetCursorLocked(false);
                 Input::SetCursorVisible(true);
@@ -996,6 +945,7 @@ namespace Editor {
     }
     
     Project& GetProject() { return data.project; }
+    EditorState GetEditorState() { return data.state; }
 
     SceneCamera& GetSceneCam() { return data.viewport.GetSceneCamera(); }
 
@@ -1031,4 +981,4 @@ void AppEntryPoint() {
 
 Window* GetEditorWindow() { return &Editor::data.window; }
 
-bool IsGameAcceptingInput() { return Editor::data.gameAcceptingInput; }
+bool IsGameAcceptingInput() { return Editor::data.camView.IsAcceptingInput(); }

@@ -31,6 +31,7 @@ namespace Editor {
     const std::string& GetWindowTitle();
 
     Project& GetProject();
+    EditorState GetEditorState();
 
     SceneCamera& GetSceneCam();
 
@@ -41,3 +42,5 @@ namespace Editor {
     void SetWindowTitle(const std::string& title);
 
 }
+
+bool IsGameAcceptingInput();

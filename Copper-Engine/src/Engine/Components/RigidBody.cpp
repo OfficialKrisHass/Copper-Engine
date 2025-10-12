@@ -147,11 +147,13 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        CU_ASSERT(m_actor != nullptr, "RigidActor is nullptr on entity '{}'", *GetEntity());
         if (m_static) return;
 
         m_mass = value;
-        IN_RUNTIME(DynamicBody->setMass(m_mass));
+        IN_NOT_RUNTIME(return);
+
+        CU_ASSERT(m_actor != nullptr, "RigidActor is nullptr on entity '{}'", *GetEntity());
+        DynamicBody->setMass(m_mass);
 
     }
 
@@ -159,31 +161,35 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        CU_ASSERT(m_actor != nullptr, "RigidActor is nullptr on entity '{}'", *GetEntity());
-
         m_static = value;
-        IN_RUNTIME(Initialize());
+        IN_NOT_RUNTIME(return);
+
+        CU_ASSERT(m_actor != nullptr, "RigidActor is nullptr on entity '{}'", *GetEntity());
+        Initialize();
 
     }
     void RigidBody::SetGravity(bool value) {
 
         CUP_FUNCTION();
 
-        CU_ASSERT(m_actor != nullptr, "RigidActor is nullptr on entity '{}'", *GetEntity());
-
         m_gravity = value;
-        IN_RUNTIME(m_actor->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, !m_gravity));
+        IN_NOT_RUNTIME(return);
+
+        CU_ASSERT(m_actor != nullptr, "RigidActor is nullptr on entity '{}'", *GetEntity());
+        m_actor->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, !m_gravity);
 
     }
     void RigidBody::SetLockMask(uint8 value) {
 
         CUP_FUNCTION();
 
-        CU_ASSERT(m_actor != nullptr, "RigidActor is nullptr on entity '{}'", *GetEntity());
         if (m_static) return;
 
         m_lockMask = value;
-        IN_RUNTIME(DynamicBody->setRigidDynamicLockFlags((PxRigidDynamicLockFlag::Enum) m_lockMask));
+        IN_NOT_RUNTIME(return);
+
+        CU_ASSERT(m_actor != nullptr, "RigidActor is nullptr on entity '{}'", *GetEntity());
+        DynamicBody->setRigidDynamicLockFlags((PxRigidDynamicLockFlag::Enum) m_lockMask);
 
     }
 

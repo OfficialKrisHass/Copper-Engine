@@ -90,11 +90,7 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-#ifdef CU_EDITOR
-        if (!m_initialized) return;
-#else
-        CU_ASSERT(m_initialized, "Scene is not initialized!");
-#endif
+        CU_EDITOR_ASSERT(m_initialized, "Scene is not initialized.");
 
         Renderer::StartFrame();
 
@@ -103,6 +99,8 @@ namespace Copper {
         CUP_START_FRAME("ECS Update");
 
         for (InternalEntity* entity : EntityView(this)) {
+
+            CU_ASSERT(entity != nullptr && entity->GetID() != INVALID_ENTITY_ID, "Invalid entity from entity view in scene update.");
 
             IN_RUNTIME(RuntimeUpdateEntity(entity, deltaTime));
 
@@ -124,17 +122,24 @@ namespace Copper {
 
         CUP_END_FRAME();
 
-        Renderer::LoadBatch();
-        if (m_cam != nullptr)
+        if (m_cam != nullptr) {
+
+            Renderer::LoadBatch();
             Renderer::RenderBatch();
+
+        }
 
     }
     void Scene::RuntimeUpdateEntity(InternalEntity* entity, float deltaTIme) {
 
         CUP_FUNCTION();
 
-        if (RigidBody* rb = entity->GetComponent<RigidBody>())
-            rb->UpdatePositionAndRotation();
+        if (RigidBody* rb = entity->GetComponent<RigidBody>()) {
+
+            if (entity->GetComponent<Collider>() != nullptr)
+                rb->UpdatePositionAndRotation();
+
+        }
 
         if (ScriptComponent* script = entity->GetComponent<ScriptComponent>())
             script->Update();

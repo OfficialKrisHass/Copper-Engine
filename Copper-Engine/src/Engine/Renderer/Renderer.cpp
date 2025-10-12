@@ -234,7 +234,9 @@ namespace Copper::Renderer {
 
         CUP_FUNCTION();
 
+        LoadBatch();
         RenderBatch();
+
         StartBatch();
 
     }
@@ -256,6 +258,8 @@ namespace Copper::Renderer {
 
         CUP_FUNCTION();
 
+        if (!mesh.IsValid()) return;
+
         CU_ASSERT(transform != nullptr, "Transform is nullptr!");
 
         const Matrix4& transformMat = transform->GetTransformMatrix();
@@ -264,6 +268,7 @@ namespace Copper::Renderer {
         const uint32 verticesCount = (uint32) mesh->vertices.size();
 
         const uint32 matIndex = GetMaterialIndex(material);
+        CU_ASSERT(matIndex != MaxMaterials, "Could not get material index of material '{}'", material.AssetUUID().ToString());
 
         // Check if batch is full
 
@@ -271,7 +276,6 @@ namespace Copper::Renderer {
             data.verticesCount + verticesCount > MaxVertices ||
             data.materialCount >= MaxMaterials) {
 
-            Log("Batch is full!");
             NewBatch();
 
         }
@@ -434,7 +438,7 @@ namespace Copper::Renderer {
 
     uint32 GetMaterialIndex(const MaterialAsset& material) {
 
-        if (!material) return MaxMaterials;
+        if (!material || data.materialCount == MaxMaterials) return MaxMaterials;
 
         for (uint32 i = 1; i < data.materialCount; i++) {
 

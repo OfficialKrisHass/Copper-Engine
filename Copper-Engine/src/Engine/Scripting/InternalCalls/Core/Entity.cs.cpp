@@ -132,7 +132,12 @@ namespace Copper::Scripting::Entity {
         // Get Component
 
         GET_ENTITY(ptr, entity);
-        void* component = ptr->GetComponent(cID);
+        
+        void* component = nullptr;
+        if (cID == Registry::GetCID<Collider>())
+            component = ptr->GetComponent<Collider>();
+        else
+            component = ptr->GetComponent(cID);
 
         if (component == nullptr)
             return nullptr;

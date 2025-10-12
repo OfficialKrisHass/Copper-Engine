@@ -43,11 +43,11 @@ Congratulations, you've made your game interactible. It's still boring, but it's
 - `KeyState.Released`: This is the frame the key was released, next frame the state of the key will be `KeyState.None`.
 
 ## Finally something interesting
-Now, we have the fundamental knowledge of making a game. So let's put it to the test. Let's create some movement.
+Now, we have the fundamental knowledge of making a game, so let's put it to the test. Let's create a movement system for our game.
 
 This section will be a sort of a task. The task is to create a simple side-to-side movement system. The player (a cube) should move left when the A key is pressed, and right when the D key is pressed. Please try to do this on your own, before looking at our solution. It should look something like this.
 
-//
+![image caption](Media/05/Outcome.gif)
 
 And here is our solution. Keep in mind that there can be multiple solutions, this is just the one we came up with.
 
@@ -78,16 +78,16 @@ public class PlayerMovement : Component {
 }
 ```
 
-As you can see, it only uses the basic concepts we've already talked about. We simply check the state of the A D and add the speed multiplied by delta time to the x coordinate of the position.
+As you can see, it only uses the basic concepts we've already talked about. We simply check the state of the A and D keys and add the speed multiplied by delta time to the x coordinate of the position.
 
 Note that we subtract in the case the A key is held down. This is because to move to the left we need to make X go down, whereas to move to the right, we need to make X go up.
 
-Conratulations, you've just made an input system that may be used in a side-scroller game. I think you deserve to pat yourself on the back, whether you came up with your own
+Conratulations, you've just made an input system that may be used in a side-scroller game. I think you deserve to pat yourself on the back, whether you came up with it your own or used our solution.
 
 ## Input axes
 There is a way to simplify the above code, and that is using what Copper-Engine calls Input axes.
 
-An Input axis returns -1, 0 or 1 when a pair of two keys is held. And if you look closely into our code, we could use an axis that would return -1 when A is held, and 1 when D is held. Thankfully, Copper-Engine provides some built-in axes.
+An Input axis returns -1, 0 or 1 when a key out of a pair of two keys is held. And if you look closely into our code, we could use an axis that would return -1 when A is held, and 1 when D is held. Thankfully, Copper-Engine provides some built-in axes.
 
 Update your `OnUpdate()` function to this.
 
@@ -96,7 +96,7 @@ float input = Input.GetAxis("Keys_AD") * speed * Game.deltaTime;
 transform.position += new Vector3(input, 0.0f, 0.0f);
 ```
 
-`Input.GetAxis(string axis)` returns the value for the axis with the name equal to the value of `axis`. In this keys, `"Keys_AD"` is a built-in axis that returns -1 for A and 1 for D.
+`Input.GetAxis(string axis)` returns the value for the axis with the name equal to the value of `axis`. In this case, `"Keys_AD"` is a built-in axis that returns -1 for A and 1 for D.
 
 When you run the game now, you should get the exact same result.
 
@@ -109,8 +109,6 @@ As said previously, Copper-Engine provides a few built-in axes, here is a list o
 Copper-Engine also supports mouse axes. A mouse axes returns how much has the mouse moved in the given axis (direction) since last frame.
 
 Copper-Engine provides `"Mouse_X"` for left (-1) and right (1), and `"Mouse_Y"` for up (1) and down (-1).
-
-We will be using Mouse axes more thoroughly in the next guide.
 
 ## Terminology
 Here are some of the terms you should understand after reading this guide.

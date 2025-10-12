@@ -56,6 +56,13 @@ namespace Copper {
         void Setup(const Scripting::Script* script);
         void Update();
 
+        void OnCollisionBegin(InternalEntity* other);
+        void OnCollisionPersist(InternalEntity* other);
+        void OnCollisionEnd(InternalEntity* other);
+
+        void OnTriggerEnter(InternalEntity* other);
+        void OnTriggerLeave(InternalEntity* other);
+
         inline const Scripting::Script* GetScript() const { return Scripting::GetScript(m_scriptName); }
         inline const std::string& GetScriptName() const { return m_scriptName; } 
 
@@ -66,12 +73,25 @@ namespace Copper {
         MonoObject* m_instance = nullptr;
         State m_state = State::None;
 
+        // Update functions
         typedef void (*UpdateFunc)(MonoObject* instance, MonoException** exception);
+
         UpdateFunc m_updateFuncs[2] = { nullptr, nullptr };
+
+        // Collision functions
+        typedef void (*CollisionFunc)(MonoObject* instance, MonoObject* other, MonoException** exception);
+
+        CollisionFunc m_onCollisionBegin = nullptr;
+        CollisionFunc m_onCollisionPersist = nullptr;
+        CollisionFunc m_onCollisionEnd = nullptr;
+
+        CollisionFunc m_onTriggerEnter = nullptr;
+        CollisionFunc m_onTriggerLeave = nullptr;
 
         void CallBaseConstructor();
 
         void ExecuteFunction(UpdateFunc func);
+        void ExecuteCollisionFunction(CollisionFunc func, MonoObject* other);
 
     };
 

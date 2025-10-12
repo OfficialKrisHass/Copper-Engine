@@ -1,5 +1,5 @@
 # Copper-Engine Documentation
-This is the documentation for the [Copper-Engine project](https://github.com/OfficialKrisHass/Copper-Engine), this documentation is maintainted by [OfficialKrisHass](https://github.com/OfficialKrisHass). The information may always be up-to-date, so contributions are very welcome. If you want to help with maintaining the documentation, please reach out to the main maintainer on discord (@chrishass)
+This is the documentation for the [Copper-Engine project](https://github.com/OfficialKrisHass/Copper-Engine), this documentation is maintainted by [OfficialKrisHass](https://github.com/OfficialKrisHass). The information may not always be up-to-date, so contributions are very welcome. If you want to help with maintaining the documentation, please reach out to the main maintainer on discord (@chrishass)
 
 ## Structure
 This documentation is split into 2 parts.

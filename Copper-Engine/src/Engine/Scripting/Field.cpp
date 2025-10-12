@@ -114,7 +114,6 @@ namespace Copper::Scripting {
         else if (name == "Copper.Entity") return Field::Type::Entity;
         else if (name == "Copper.Transform") return Field::Type::Transform;
 
-        LogError("Could not get Field type from MonoField ({})", name);
         return Field::Type::None;
 
     }

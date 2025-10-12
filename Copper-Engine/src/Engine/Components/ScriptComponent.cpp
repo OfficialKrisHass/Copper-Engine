@@ -1,13 +1,17 @@
 #include "cupch.h"
 #include "ScriptComponent.h"
 
+#include "Engine/Scripting/Classes.h"
 #include "Engine/Scripting/MonoUtils.h"
 #include "Engine/Scripting/Script.h"
+#include "Engine/Scripting/ManagedReferences.h"
 #include "Engine/Scripting/ScriptingEngine.h"
-#include "Engine/Scripting/Classes.h"
 
 #include <mono/metadata/object.h>
 #include <mono/metadata/class.h>
+
+#define GET_FUNC(name, parCount, variable, type) if (MonoMethod* method = mono_class_get_method_from_name(script->m_class, name, parCount))\
+                                            variable = (type) mono_method_get_unmanaged_thunk(method)
 
 namespace Copper {
 
@@ -40,10 +44,15 @@ namespace Copper {
 
         CallBaseConstructor();
 
-        if (MonoMethod* method = mono_class_get_method_from_name(script->m_class, "OnBegin", 0))
-            m_updateFuncs[0] = (UpdateFunc) mono_method_get_unmanaged_thunk(method);
-        if (MonoMethod* method = mono_class_get_method_from_name(script->m_class, "OnUpdate", 0))
-            m_updateFuncs[1] = (UpdateFunc) mono_method_get_unmanaged_thunk(method);
+        GET_FUNC("OnBegin", 0, m_updateFuncs[0], UpdateFunc);
+        GET_FUNC("OnUpdate", 0, m_updateFuncs[1], UpdateFunc);
+
+        GET_FUNC("OnCollisionBegin", 1, m_onCollisionBegin, CollisionFunc);
+        GET_FUNC("OnCollisionPersist", 1, m_onCollisionPersist, CollisionFunc);
+        GET_FUNC("OnCollisionEnd", 1, m_onCollisionEnd, CollisionFunc);
+
+        GET_FUNC("OnTriggerEnter", 1, m_onTriggerEnter, CollisionFunc);
+        GET_FUNC("OnTriggerLeave", 1, m_onTriggerLeave, CollisionFunc);
 
     }
 
@@ -79,6 +88,60 @@ namespace Copper {
 
     }
 
+    // Collision Functions
+
+    void ScriptComponent::OnCollisionBegin(InternalEntity* other) {
+
+        CUP_FUNCTION();
+
+        if (m_onCollisionBegin == nullptr) return;
+
+        MonoObject* managedOther = GetManagedReference((void*) static_cast<uint64>(other->GetID()), Class::Entity);
+        ExecuteCollisionFunction(m_onCollisionBegin, managedOther);
+
+    }
+    void ScriptComponent::OnCollisionPersist(InternalEntity* other) {
+
+        CUP_FUNCTION();
+
+        if (m_onCollisionPersist == nullptr) return;
+
+        MonoObject* managedOther = GetManagedReference((void*) static_cast<uint64>(other->GetID()), Class::Entity);
+        ExecuteCollisionFunction(m_onCollisionPersist, managedOther);
+
+    }
+    void ScriptComponent::OnCollisionEnd(InternalEntity* other) {
+
+        CUP_FUNCTION();
+
+        if (m_onCollisionEnd == nullptr) return;
+
+        MonoObject* managedOther = GetManagedReference((void*) static_cast<uint64>(other->GetID()), Class::Entity);
+        ExecuteCollisionFunction(m_onCollisionEnd, managedOther);
+
+    }
+
+    void ScriptComponent::OnTriggerEnter(InternalEntity* other) {
+
+        CUP_FUNCTION();
+
+        if (m_onTriggerEnter == nullptr) return;
+
+        MonoObject* managedOther = GetManagedReference((void*) static_cast<uint64>(other->GetID()), Class::Entity);
+        ExecuteCollisionFunction(m_onTriggerEnter, managedOther);
+
+    }
+    void ScriptComponent::OnTriggerLeave(InternalEntity* other) {
+
+        CUP_FUNCTION();
+
+        if (m_onTriggerLeave == nullptr) return;
+
+        MonoObject* managedOther = GetManagedReference((void*) static_cast<uint64>(other->GetID()), Class::Entity);
+        ExecuteCollisionFunction(m_onTriggerLeave, managedOther);
+        
+    }
+
     void ScriptComponent::ExecuteFunction(UpdateFunc func) {
 
         CUP_FUNCTION();
@@ -86,7 +149,18 @@ namespace Copper {
         MonoException* exc = nullptr;
         func(m_instance, &exc);
 
-        if (!exc) return;
+        if (exc == nullptr) return;
+        MonoUtils::PrintExceptionDetails(exc);
+
+    }
+    void ScriptComponent::ExecuteCollisionFunction(CollisionFunc func, MonoObject* other) {
+
+        CUP_FUNCTION();
+
+        MonoException* exc = nullptr;
+        func(m_instance, other, &exc);
+
+        if (exc == nullptr) return;
         MonoUtils::PrintExceptionDetails(exc);
 
     }

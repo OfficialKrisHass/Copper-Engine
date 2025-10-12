@@ -94,20 +94,20 @@ namespace Copper::Scripting {
             Field f = Field(field);
             MonoCustomAttrInfo* attrInfo = mono_custom_attrs_from_field(m_class, field);
 
-            // Add if Public and no HideInEditor attribute
-            if (f.GetAccessibility() == Field::Accessibility::Public) {
+            if (attrInfo != nullptr && mono_custom_attrs_has_attr(attrInfo, Scripting::GetClass(Class::HideInEditorAttribute))) continue;
+            switch (f.GetAccessibility()) {
 
-                if (attrInfo != nullptr && mono_custom_attrs_has_attr(attrInfo, Scripting::GetClass(Class::HideInEditorAttribute))) continue;
+            case Field::Accessibility::Public: m_fields.push_back(f); break;
+            case Field::Accessibility::Private: {
+
+                if (attrInfo == nullptr || !mono_custom_attrs_has_attr(attrInfo, Scripting::GetClass(Class::ShowInEditorAttribute))) break;
+
                 m_fields.push_back(f);
-
-                continue;
+                break;
 
             }
 
-            // Add if ShowInEditor attribute
-
-            if (attrInfo == nullptr || !mono_custom_attrs_has_attr(attrInfo, Scripting::GetClass(Class::ShowInEditorAttribute))) continue;
-            m_fields.push_back(f);
+            }
 
         }
 

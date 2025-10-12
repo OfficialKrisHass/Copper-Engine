@@ -5,13 +5,22 @@ Entities:
     Transform:
       Position: [0, 0, 0]
       Rotation: [1, 0, 0, 0]
-      Scale: [20, 1, 2]
+      Scale: [20, 1, 20]
       Parent: 4294967295
       Children:
         []
     Mesh Renderer:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: 00000000-0000-0000-0000-000000000000
+    Rigid Body:
+      Mass: 1
+      Static: true
+      Gravity: false
+      Lock Mask: 0
+    Box Collider:
+      Trigger: false
+      Center: [0, 0, 0]
+      Size: [1, 1, 1]
   1:
     Name: Light
     Transform:
@@ -38,11 +47,11 @@ Entities:
       Fov: 90
       Near Plane: 0.100000001
       Far Plane: 1000
-      Size: [1078, 516]
+      Size: [1920, 960]
   3:
     Name: Player
     Transform:
-      Position: [0, 1, 0]
+      Position: [0, 2.42000008, 0]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
       Parent: 4294967295
@@ -51,17 +60,45 @@ Entities:
     Mesh Renderer:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
       Material: 00000000-0000-0000-0000-000000000000
+    Rigid Body:
+      Mass: 1
+      Static: false
+      Gravity: true
+      Lock Mask: 0
+    Box Collider:
+      Trigger: false
+      Center: [0, 0, 0]
+      Size: [1, 1, 1]
     Script Component:
       Name: PlayerMovement
       Fields:
         speed:
           Type: 3
-          Value: 3
-        test:
-          Type: 9
-          Value: 4294967295
+          Value: 10
+  4:
+    Name: Trigger
+    Transform:
+      Position: [2.71422005, 1.66130066, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 2.16000009, 3.6099999]
+      Parent: 4294967295
+      Children:
+        []
+    Rigid Body:
+      Mass: 1
+      Static: true
+      Gravity: false
+      Lock Mask: 0
+    Box Collider:
+      Trigger: true
+      Center: [0, 0, 0]
+      Size: [1, 1, 1]
+    Script Component:
+      Name: TriggerTest
+      Fields:
+        {}
 Scene Camera:
-  Position: [-0.349273205, 3.70605326, 6.15914917]
-  Rotation: [-0.968721867, 0.201928735, 0.141062632, 0.0294032749]
+  Position: [4.57579851, 2.68636346, 1.52393293]
+  Rotation: [-0.783622742, 0.174861461, -0.581766784, -0.129819453]
   Speed: 1
   Sensitivity: 2

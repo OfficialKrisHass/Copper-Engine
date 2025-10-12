@@ -1,7 +1,7 @@
 # Physics
-Physics are an essential part of a game since without them, the world would be static and boring and that is no bueono. Thankfully Copper-Engine uses physx for its physics simulation.
+Physics are an essential part of a game since without them, the world would be static and boring and that is no bueno. Thankfully Copper-Engine provides a Physics engine, which uses PhysX for its physics simulation.
 
-In this guide we will explore the physics system and how to use it in your games and learning the fundamental knowledge that we will use in the next guide to create a simple FPS movement system!
+In this guide we will explore the physics system and how to use it in your games, You will learn the fundamental knowledge that we will use in the next guide to create a simple FPS movement system!
 
 ## Rigid Body physics
 Rigid body physics are physics simulations where the objects do not deform under external forces, e.g. they keep their shape as if they were made out of humanity's strongest, indestructible metal.
@@ -36,10 +36,10 @@ In total there are 3 of them, `BoxCollider`, `SphereCollider` and `CapsuleCollid
 
 We chose the BoxCollider as our player is currently a cube, so logically it seems fitting. Anyways, here is an explanation of the `BoxCollider` fields.
 
-- **Trigger**: A trigger collider will not block collisions, instead it will notify the entity it is one that it was intersected (a different rigidbody has entered it's shape). This is useful for things like Cutscene triggers, finish lines, etc.
+- **Trigger**: A trigger collider will not block collisions, instead it will notify the entity it is on that it was intersected (a different rigidbody has entered it's shape). This is useful for things like Cutscene triggers, finish lines, etc.
 - **Center**: The xyz coordinates of the center relative to the entities global position. Basically the offset of the collider.
 
-These two are the base `Collider` fields, every collider type will have these two.
+These two are the base `Collider` fields, every collider type will have these two. And here are the type specific fields.
 
 - **Size (BoxCollider)**: How big is the box in all three axes relative to the entity's scale (1, 1, 1 will be the same shape as the entity no matter it's scale)
 
@@ -53,6 +53,8 @@ Now before running the game, we need to add another rigidbody actor as right now
 Let's scale up the Ground entity and give it a `RigidBody` component and a `BoxCollider` component.
 
 ![image caption](Media/06/Ground.png)
+
+Make sure the RigidBody is set to static.
 
 And now finally, when we move the player entity into the air and run the game, you should see something like this.
 
@@ -80,10 +82,10 @@ But most importantly, you can apply a force or torque to the rigidBody using the
 
 `RigidBody.ForceMode` is an enum with these four values.
 
-- **Force**: The most common choice, a simple force using the rigidbody's mass and changes the velocity over time. Similar to Acceleration, but takes into account the mass.
-- **Impulse**: Similar to force but serves as a quick impulse to the velocity (not over time), also takes into account the mass.
+- **Force**: The most common choice, a simple force using the rigidbody's mass. Changes the velocity over time. Similar to Acceleration, but takes into account the mass.
+- **Impulse**: Similar to force but serves as a quick impulse to the velocity (not change over time), also takes into account the mass.
 - **VelocityChange**: Directly changes the velocity ignoring the rigidbody's mass.
-- **Acceleration**: Also directly changes the velocity and ignores the rigidbody's mass but acts as an acceleration, e.g.g change over time.
+- **Acceleration**: Also directly changes the velocity and ignores the rigidbody's mass but acts as an acceleration, e.g changes the velocity over time.
 
 The functions use `RigidBody.ForceMode.Force` as a default parameter so in that case you don't need to worry about it.
 
@@ -98,7 +100,8 @@ private void OnUpdate() {
 
     rb.AddForce(force);
 
-}```
+}
+```
 
 You might notice we are no longer multiplying by `Game.deltaTime` and that is because at the start of every frame, the physics engine is given `Game.deltaTime` as the time step (how much time has passed). It uses this time step to divide the change to the velocity by the force we are giving it so multiplying it by `Game.deltaTime` would do some weird stuff.
 
@@ -108,7 +111,8 @@ NOTE: Make sure to set the speed to a higher number than before, something like 
 
 ![image caption](Media/06/LRMovement.gif)
 
-Calling `GetComponent<Collider>()` will return any collider on the entity as the base Collider class. You can check which type it is using the `Collider.type` property. You can also cast the Collider into the appropriate type, but make sure you've checked `Collider.type`.
+### Collider types in C#
+Calling `GetComponent<Collider>()` will return any collider on the entity as the base `Collider` class. You can check which type it is using the `Collider.type` property. You can also cast the Collider into the appropriate class, but make sure you've checked `Collider.type`.
 
 ### Collision events
 You can also receive collision events by adding these three functions to your script.
@@ -131,11 +135,11 @@ private void OnCollisionEnd(Entity other) {
 }
 ```
 
-Now when you run your game, you should see something like in the console.
+Now when you run your game, you should see something like this in the console.
 
 ![image caption](Media/06/CollisionEvents.png)
 
-To quickly go over the three functions, in each function the `Entity other` parameter is the entity the contact happened with (in our case, the ground)
+To quickly go over the three functions, in each function the `Entity other` parameter is the entity the contact happened with (in this case, the ground)
 
 - **OnCollisionBegin**: Called the same frame the collision first happens, when the contact is initiated.
 - **OnCollisionPersist**: Called every frame while the contact is not broken.
@@ -146,7 +150,7 @@ NOTE: The function signature (return type, name and parameters) must match the o
 ### Trigger events
 And last but not least, you can also receive events when a trigger was entered or left using the `OnTriggerEnter(Entity other)` and `OnTriggerLeft(Entity other)` functions.
 
-For this let's create a new test component called TriggerTest, then add these 2 functions to the component.
+For this let's create a new test component called `TriggerTest`, then add these 2 functions to the component.
 
 ```cs
 private void OnTriggerEnter(Entity other) {
@@ -161,13 +165,13 @@ private void OnTriggerLeave(Entity other) {
 }
 ```
 
-Now in the editor, let's create a new empty entity and add a RigidBody component, BoxCollider component, and the new Trigger component.
+Now in the editor, let's create a new empty entity and add a `RigidBody` component, `BoxCollider` component, and the new `TriggerTest` component.
 
 ![image caption](Media/06/Trigger1.png)
 
 ![image caption](Media/06/Trigger2.png)
 
-Don't forget to mark the RigidBody as static, no gravity, and the collider as a trigger.
+Don't forget to mark the RigidBody as static with no gravity, and the collider as a trigger.
 
 Now move it up and either to the left or right of the player, like this.
 
@@ -180,7 +184,7 @@ And now when you run the game and run into and out of it you should see somethin
 ## Recap
 This one was a long one right ?
 
-To recap what we learned, we learned how to make our entities partake in the Physics simulation, how to manipulate them through code and lastly how to receive Collision and Trigger events from the Physics system.
+To recap, we learned how to make our entities partake in the Physics simulation, how to manipulate them through code and lastly how to receive Collision and Trigger events from the Physics system.
 
 You've now got the fundamental knowledge to create an FPS movement system, which we will do in the next guide!
 
@@ -188,5 +192,5 @@ You've now got the fundamental knowledge to create an FPS movement system, which
 Here are some of the terms you should now understand.
 
 - **RigidBody**: A component that marks an entity to partake in the Physics simulation. It stores the mass, whether it's static, has gravity and lastly the Position and Rotation locks.
-- **Collider**: A component that gives a RigidBody the shape, there are multiple Collider shapes present. A collider can be a trigger. An entity needs both a RigidBody component and a Collider component to parake in the physics simulation, having just one of them will result in an error.
-- **Trigger**: A trigger is a collider that has the trigger field ticked as true, in which case instead of blocking all entities and acting as hard surface, it lets them go right through and hang out inside the trigger volume, firing events for when an object enters or leaves said volume.
+- **Collider**: A component that gives a RigidBody the shape. There are multiple built-in Collider shapes. An entity needs both a `RigidBody` component and a `Collider` component to partake in the physics simulation, having just one of them will result in an error.
+- **Trigger**: A trigger is a collider that has the trigger field ticked as true, in which case instead of blocking all entities and acting as hard solid volume, it lets them go right through and hang out inside the trigger volume, firing events for when an object enters or leaves said volume.

@@ -71,13 +71,16 @@ namespace Copper::Scripting {
         mono_add_internal_call("Copper.Transform::get_scale", (void*) Transform::GetScale);
         mono_add_internal_call("Copper.Transform::set_scale", (void*) Transform::SetScale);
         mono_add_internal_call("Copper.Transform::get_globalPosition", (void*) Transform::GetGlobalPosition);
+        mono_add_internal_call("Copper.Transform::set_globalPosition", (void*) Transform::SetGlobalPosition);
         mono_add_internal_call("Copper.Transform::get_globalScale", (void*) Transform::GetGlobalScale);
+        mono_add_internal_call("Copper.Transform::set_globalScale", (void*) Transform::SetGlobalScale);
         mono_add_internal_call("Copper.Transform::get_forward", (void*) Transform::GetForward);
         mono_add_internal_call("Copper.Transform::get_right", (void*) Transform::GetRight);
         mono_add_internal_call("Copper.Transform::get_up", (void*) Transform::GetUp);
         mono_add_internal_call("Copper.Transform::Internal_GetRotation", (void*) Transform::GetRotation);
         mono_add_internal_call("Copper.Transform::Internal_SetRotation", (void*) Transform::SetRotation);
         mono_add_internal_call("Copper.Transform::Internal_GetGlobalRotation", (void*) Transform::GetGlobalRotation);
+        mono_add_internal_call("Copper.Transform::Internal_SetGlobalRotation", (void*) Transform::SetGlobalRotation);
         mono_add_internal_call("Copper.Entity::get_name", (void*) Entity::GetName);
         mono_add_internal_call("Copper.Entity::set_name", (void*) Entity::SetName);
         mono_add_internal_call("Copper.Entity::get_transform", (void*) Entity::GetTransform);

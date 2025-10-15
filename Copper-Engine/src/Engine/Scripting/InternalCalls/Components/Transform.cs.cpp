@@ -12,20 +12,14 @@ namespace Copper::Scripting::Transform {
 
     typedef ::Copper::Transform Transform;
 
+    // Position rotation and scale
+
     Vector3 GetPosition(MonoObject* transform) {
 
         CUP_FUNCTION();
 
         GET_UNMANAGED_COMPONENT_PTR(Transform, ptr, transform);
         return ptr->GetPosition();
-
-    }
-    void SetPosition(MonoObject* transform, Vector3 value) {
-
-        CUP_FUNCTION();
-
-        GET_UNMANAGED_COMPONENT_PTR(Transform, ptr, transform);
-        ptr->SetPosition(value);
 
     }
     void GetRotation(MonoObject* transform, Quaternion* ret) {
@@ -36,20 +30,29 @@ namespace Copper::Scripting::Transform {
         *ret = ptr->GetRotation();
 
     }
-    void SetRotation(MonoObject* transform, const Quaternion* value) {
-
-        CUP_FUNCTION();
-
-        GET_UNMANAGED_COMPONENT_PTR(Transform, ptr, transform);
-        ptr->SetRotation(*value);
-
-    }
     Vector3 GetScale(MonoObject* transform) {
 
         CUP_FUNCTION();
 
         GET_UNMANAGED_COMPONENT_PTR(Transform, ptr, transform);
         return ptr->GetScale();
+
+    }
+
+    void SetPosition(MonoObject* transform, Vector3 value) {
+
+        CUP_FUNCTION();
+
+        GET_UNMANAGED_COMPONENT_PTR(Transform, ptr, transform);
+        ptr->SetPosition(value);
+
+    }
+    void SetRotation(MonoObject* transform, const Quaternion* value) {
+
+        CUP_FUNCTION();
+
+        GET_UNMANAGED_COMPONENT_PTR(Transform, ptr, transform);
+        ptr->SetRotation(*value);
 
     }
     void SetScale(MonoObject* transform, Vector3 value) {
@@ -60,6 +63,8 @@ namespace Copper::Scripting::Transform {
         ptr->SetScale(value);
 
     }
+
+    // Globals
 
     Vector3 GetGlobalPosition(MonoObject* transform) {
 
@@ -85,6 +90,33 @@ namespace Copper::Scripting::Transform {
         return ptr->GetGlobalScale();
 
     }
+
+    void SetGlobalPosition(MonoObject* transform, Vector3 value) {
+
+        CUP_FUNCTION();
+
+        GET_UNMANAGED_COMPONENT_PTR(Transform, ptr, transform);
+        ptr->SetGlobalPosition(value);
+
+    }
+    void SetGlobalRotation(MonoObject* transform, Quaternion* value) {
+
+        CUP_FUNCTION();
+
+        GET_UNMANAGED_COMPONENT_PTR(Transform, ptr, transform);
+        ptr->SetGlobalRotation(*value);
+
+    }
+    void SetGlobalScale(MonoObject* transform, Vector3 value) {
+
+        CUP_FUNCTION();
+
+        GET_UNMANAGED_COMPONENT_PTR(Transform, ptr, transform);
+        ptr->SetGlobalScale(value);
+
+    }
+
+    // Directionals
 
     Vector3 GetForward(MonoObject* transform) {
 

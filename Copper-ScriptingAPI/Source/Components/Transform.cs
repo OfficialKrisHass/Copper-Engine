@@ -48,6 +48,9 @@ namespace Copper {
             [MethodImpl(MethodImplOptions.InternalCall)]
             [NativeFunction("GetGlobalPosition")]
             get;
+            [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("SetGlobalPosition")]
+            set;
 
         }
         public Quaternion globalRotation {
@@ -59,6 +62,7 @@ namespace Copper {
                 return ret;
 
             }
+            set { Internal_SetGlobalRotation(this, ref value); }
 
         }
         public extern Vector3 globalScale {
@@ -66,6 +70,9 @@ namespace Copper {
             [MethodImpl(MethodImplOptions.InternalCall)]
             [NativeFunction("GetGlobalScale")]
             get;
+            [MethodImpl(MethodImplOptions.InternalCall)]
+            [NativeFunction("SetGlobalScale")]
+            set;
 
         }
 
@@ -117,6 +124,9 @@ namespace Copper {
         [MethodImpl(MethodImplOptions.InternalCall)]
         [NativeFunction("GetGlobalRotation")]
         internal extern static void Internal_GetGlobalRotation(Transform transform, out Quaternion ret);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        [NativeFunction("SetGlobalRotation")]
+        internal extern static void Internal_SetGlobalRotation(Transform transform, ref Quaternion value);
 
     }
 

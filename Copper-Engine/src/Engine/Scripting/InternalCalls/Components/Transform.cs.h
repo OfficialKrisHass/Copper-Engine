@@ -10,16 +10,27 @@ extern "C" {
 
 namespace Copper::Scripting::Transform {
 
+    // Position rotation and scale
+
     Vector3 GetPosition(MonoObject* transform);
-    void SetPosition(MonoObject* transform, Vector3 value);
     void GetRotation(MonoObject* transform, Quaternion* ret);
-    void SetRotation(MonoObject* transform, const Quaternion* value);
     Vector3 GetScale(MonoObject* transform);
+
+    void SetPosition(MonoObject* transform, Vector3 value);
+    void SetRotation(MonoObject* transform, const Quaternion* value);
     void SetScale(MonoObject* transform, Vector3 value);
+
+    // Globals
 
     Vector3 GetGlobalPosition(MonoObject* transform);
     void GetGlobalRotation(MonoObject* transform, Quaternion* ret);
     Vector3 GetGlobalScale(MonoObject* transform);
+
+    void SetGlobalPosition(MonoObject* transform, Vector3 value);
+    void SetGlobalRotation(MonoObject* transform, Quaternion* value);
+    void SetGlobalScale(MonoObject* transform, Vector3 value);
+
+    // Directionals
 
     Vector3 GetForward(MonoObject* transform);
     Vector3 GetRight(MonoObject* transform);

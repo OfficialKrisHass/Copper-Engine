@@ -129,7 +129,7 @@ namespace Copper {
         [MethodImpl(MethodImplOptions.InternalCall)]
         [NativeFunction("FromEuler")]
         internal extern static void Internal_FromEuler(ref Vector3 eulerAngles, out Quaternion quat);
-        
+
     }
 
 }

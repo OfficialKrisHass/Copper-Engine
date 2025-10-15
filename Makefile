@@ -42,7 +42,7 @@ projects: CMake
 
 libraries: Copper-Engine/lib/.stamp
 
-engine: Copper-Engine/lib/.stamp Copper-APIBinder/.stamp
+engine: Copper-Engine/lib/.stamp
 	@${MAKE} --no-print-directory -C CMake/$(CONFIGURATION)/Copper-Engine -f Makefile
 
 editor: Copper-Engine/lib/.stamp CMake 
@@ -56,7 +56,10 @@ scriptapi: CMake
 	@${MAKE} --no-print-directory -C Copper-ScriptingAPI -f Makefile config=$(SCRIPTING_API_CONFIG)
 apibinder: CMake
 	@${MAKE} --no-print-directory -C CMake/$(CONFIGURATION)/Copper-APIBinder -f Makefile
-bindapi: Copper-APIBinder/.stamp
+bindapi: CMake
+	@cp $(SCRIPTING_API) $(CURDIR)/Copper-Editor/assets
+	@$(API_BINDER) $(CURDIR)/Copper-Editor
+	@touch Copper-APIBinder/.stamp
 
 # Run targets
 
@@ -102,8 +105,3 @@ Copper-Engine/lib/.stamp:
 	@${MAKE} --no-print-directory -C Copper-Engine/lib/mono -f Makefile install
 	@python scripts/post_build.py libraries $(CONFIGURATION) $(OS)
 	@touch Copper-Engine/lib/.stamp
-
-Copper-APIBinder/.stamp: CMake
-	@cp $(SCRIPTING_API) $(CURDIR)/Copper-Editor/assets
-	@$(API_BINDER) $(CURDIR)/Copper-Editor
-	@touch Copper-APIBinder/.stamp

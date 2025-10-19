@@ -11,11 +11,13 @@
 #include "Engine/Scripting/InternalCalls/Components/Transform.cs.h"
 #include "Engine/Scripting/InternalCalls/Core/Entity.cs.h"
 #include "Engine/Scripting/InternalCalls/Core/Game.cs.h"
+#include "Engine/Scripting/InternalCalls/Core/UUID.cs.h"
 #include "Engine/Scripting/InternalCalls/Editor/Editor.cs.h"
 #include "Engine/Scripting/InternalCalls/Input/Cursor.cs.h"
 #include "Engine/Scripting/InternalCalls/Input/Input.cs.h"
 #include "Engine/Scripting/InternalCalls/Math/Quaternion.cs.h"
 #include "Engine/Scripting/InternalCalls/Physics/Raycast.cs.h"
+#include "Engine/Scripting/InternalCalls/Renderer/Material.cs.h"
 
 #include <mono/jit/jit.h>
 
@@ -89,6 +91,13 @@ namespace Copper::Scripting {
         mono_add_internal_call("Copper.Entity::Internal_HasComponent", (void*) Entity::HasComponent);
         mono_add_internal_call("Copper.Entity::Internal_RemoveComponent", (void*) Entity::RemoveComponent);
         mono_add_internal_call("Copper.Game::get_deltaTime", (void*) Game::GetDeltaTime);
+        mono_add_internal_call("Copper.UUID::Internal_Constructor", (void*) UUID::Constructor);
+        mono_add_internal_call("Copper.UUID::Internal_GenerateUUID", (void*) UUID::GenerateUUID);
+        mono_add_internal_call("Copper.UUID::Internal_SetString", (void*) UUID::SetString);
+        mono_add_internal_call("Copper.UUID::Internal_ToString", (void*) UUID::ToString);
+        mono_add_internal_call("Copper.UUID::Internal_Equals", (void*) UUID::Equals);
+        mono_add_internal_call("Copper.UUID::Internal_LessThan", (void*) UUID::LessThan);
+        mono_add_internal_call("Copper.UUID::Internal_Hash", (void*) UUID::Hash);
         mono_add_internal_call("Copper.Editor::Internal_EditorLog", (void*) Editor::EditorLog);
         mono_add_internal_call("Copper.Editor::Internal_EditorLogWarn", (void*) Editor::EditorLogWarn);
         mono_add_internal_call("Copper.Editor::Internal_EditorLogError", (void*) Editor::EditorLogError);

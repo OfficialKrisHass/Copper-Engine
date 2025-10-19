@@ -85,6 +85,7 @@ namespace Copper {
         public Vector3 globalEulerAngles {
 
             get { return globalRotation.eulerAngles; }
+            set { globalRotation = new Quaternion(value); }
 
         }
 

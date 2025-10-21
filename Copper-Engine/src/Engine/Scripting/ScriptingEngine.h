@@ -31,5 +31,6 @@ namespace Copper::Scripting {
     const Script* GetScript(const std::string& name);
 
     MonoClassField* UnmanagedPtrField(); 
+    MonoClassField* AssetUUIDField();
 
 }

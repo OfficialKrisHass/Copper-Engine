@@ -34,6 +34,10 @@ namespace Copper::Scripting {
         GET_CLASS(SphereCollider);
         GET_CLASS(CapsuleCollider);
 
+        GET_CLASS(Asset);
+        //GET_CLASS(Texture);
+        GET_CLASS(Material);
+
         GET_CLASS(ShowInEditorAttribute);
         GET_CLASS(HideInEditorAttribute);
 

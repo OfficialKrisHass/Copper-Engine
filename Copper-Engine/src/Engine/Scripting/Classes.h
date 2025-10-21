@@ -27,6 +27,10 @@ namespace Copper::Scripting {
         SphereCollider,
         CapsuleCollider,
 
+        Asset,
+        Texture,
+        Material,
+
         ShowInEditorAttribute,
         HideInEditorAttribute,
 
@@ -58,6 +62,10 @@ namespace Copper::Scripting {
             case Class::BoxCollider: return "BoxCollider";
             case Class::SphereCollider: return "SphereCollider";
             case Class::CapsuleCollider: return "CapsuleCollider";
+
+            case Class::Asset: return "Asset";
+            case Class::Texture: return "Texture";
+            case Class::Material: return "Material";
 
             case Class::ShowInEditorAttribute: return "ShowInEditor attribute";
             case Class::HideInEditorAttribute: return "HideIneditor attribute";

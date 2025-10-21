@@ -6,9 +6,9 @@ namespace Copper {
 
     [StructLayout(LayoutKind.Sequential)]
     [NativeClass("Engine/Scripting/InternalCalls/Renderer/Material.cs.h")]
-    public class Material : Base {
+    public class Material : Asset {
 
-        /*public Color albedo {
+        public Color albedo {
 
             [MethodImpl(MethodImplOptions.InternalCall)]
             [NativeFunction("GetAlbedo")]
@@ -27,7 +27,7 @@ namespace Copper {
             [NativeFunction("SetTiling")]
             set;
 
-        }*/
+        }
 
     }
 

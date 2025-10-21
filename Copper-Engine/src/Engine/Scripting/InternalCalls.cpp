@@ -113,6 +113,10 @@ namespace Copper::Scripting {
         mono_add_internal_call("Copper.Quaternion::Internal_ToEuler", (void*) Quaternion::ToEuler);
         mono_add_internal_call("Copper.Quaternion::Internal_FromEuler", (void*) Quaternion::FromEuler);
         mono_add_internal_call("Copper.Raycast::Internal_Fire", (void*) Raycast::Fire);
+        mono_add_internal_call("Copper.Material::get_albedo", (void*) Material::GetAlbedo);
+        mono_add_internal_call("Copper.Material::set_albedo", (void*) Material::SetAlbedo);
+        mono_add_internal_call("Copper.Material::get_tiling", (void*) Material::GetTiling);
+        mono_add_internal_call("Copper.Material::set_tiling", (void*) Material::SetTiling);
 
     }
 

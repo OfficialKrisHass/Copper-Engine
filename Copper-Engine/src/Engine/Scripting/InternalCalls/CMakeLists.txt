@@ -4,3 +4,4 @@ include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Scripting/InternalCalls/C
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Scripting/InternalCalls/Input/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Scripting/InternalCalls/Components/CMakeLists.txt)
 include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Scripting/InternalCalls/Physics/CMakeLists.txt)
+include(${PROJECT_SOURCE_DIR}/Copper-Engine/src/Engine/Scripting/InternalCalls/Renderer/CMakeLists.txt)

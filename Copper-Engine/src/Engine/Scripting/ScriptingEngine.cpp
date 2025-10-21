@@ -43,6 +43,7 @@ namespace Copper::Scripting {
         Assembly game;
 
         MonoClassField* unmanagedPtrField;
+        MonoClassField* assetUUIDField;
 
         ScriptMap componentScripts;
 
@@ -181,6 +182,9 @@ namespace Copper::Scripting {
         data.unmanagedPtrField = mono_class_get_field_from_name(GetClass(Class::Base), "m_unmanagedPtr");
         CU_ASSERT(data.unmanagedPtrField != nullptr, "Could not get field reference to Base.m_unmanagedPtr.");
 
+        data.assetUUIDField = mono_class_get_field_from_name(GetClass(Class::Asset), "m_uuid");
+        CU_ASSERT(data.assetUUIDField != nullptr, "Could not get field reference to Asset.m_uuid.");
+
     }
     void InitializeGame() {
 
@@ -231,5 +235,6 @@ namespace Copper::Scripting {
     }
 
     MonoClassField* UnmanagedPtrField() { return data.unmanagedPtrField; }
+    MonoClassField* AssetUUIDField() { return data.assetUUIDField; }
 
 }

@@ -139,7 +139,7 @@ namespace Copper {
 
 template<> struct fmt::formatter<Copper::UUID> : fmt::formatter<std::string> {
 
-    auto format(const Copper::UUID& uuid, format_context& ctx) -> decltype(ctx.out()) {
+    auto format(const Copper::UUID& uuid, format_context& ctx) const -> decltype(ctx.out()) {
 
         return fmt::format_to(ctx.out(), "{}", uuid.ToString());
 

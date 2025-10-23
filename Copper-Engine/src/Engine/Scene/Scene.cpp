@@ -190,10 +190,12 @@ namespace Copper {
 
         switch (event->componentID) {
 
+            MANAGED_REFERENCE_ADD(MESH_RENDERER_CID, MeshRenderer);
             MANAGED_REFERENCE_ADD(CAMERA_CID, Camera);
             MANAGED_REFERENCE_ADD(LIGHT_CID, Light);
 
             MANAGED_REFERENCE_ADD(RIGIDBODY_CID, RigidBody);
+
             MANAGED_REFERENCE_ADD(BOX_COLLIDER_CID, BoxCollider);
             MANAGED_REFERENCE_ADD(SPHERE_COLLIDER_CID, SphereCollider);
             MANAGED_REFERENCE_ADD(CAPSULE_COLLIDER_CID, CapsuleCollider);

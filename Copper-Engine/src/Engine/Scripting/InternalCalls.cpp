@@ -6,6 +6,7 @@
 #include "Engine/Scripting/InternalCalls/Components/Collider.cs.h"
 #include "Engine/Scripting/InternalCalls/Components/Component.cs.h"
 #include "Engine/Scripting/InternalCalls/Components/Light.cs.h"
+#include "Engine/Scripting/InternalCalls/Components/MeshRenderer.cs.h"
 #include "Engine/Scripting/InternalCalls/Components/RigidBody.cs.h"
 #include "Engine/Scripting/InternalCalls/Components/SphereCollider.cs.h"
 #include "Engine/Scripting/InternalCalls/Components/Transform.cs.h"
@@ -55,6 +56,8 @@ namespace Copper::Scripting {
         mono_add_internal_call("Copper.Light::set_type", (void*) Light::SetType);
         mono_add_internal_call("Copper.Light::get_intensity", (void*) Light::GetIntensity);
         mono_add_internal_call("Copper.Light::set_intensity", (void*) Light::SetIntensity);
+        mono_add_internal_call("Copper.MeshRenderer::get_material", (void*) MeshRenderer::GetMaterial);
+        mono_add_internal_call("Copper.MeshRenderer::set_material", (void*) MeshRenderer::SetMaterial);
         mono_add_internal_call("Copper.RigidBody::get_mass", (void*) RigidBody::GetMass);
         mono_add_internal_call("Copper.RigidBody::set_mass", (void*) RigidBody::SetMass);
         mono_add_internal_call("Copper.RigidBody::get_isStatic", (void*) RigidBody::GetIsStatic);

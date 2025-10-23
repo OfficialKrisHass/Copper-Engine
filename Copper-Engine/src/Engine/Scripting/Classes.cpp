@@ -25,6 +25,7 @@ namespace Copper::Scripting {
         GET_CLASS(Component);
         GET_CLASS(Transform);
 
+        GET_CLASS(MeshRenderer);
         GET_CLASS(Camera);
         GET_CLASS(Light);
 

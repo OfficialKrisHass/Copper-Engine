@@ -3,6 +3,7 @@
 #include "Engine/Scene/CopperECS.h"
 
 #include "Engine/Components/Camera.h"
+#include "Engine/Components/MeshRenderer.h"
 #include "Engine/Components/Light.h"
 #include "Engine/Components/ScriptComponent.h"
 #include "Engine/Components/RigidBody.h"
@@ -39,9 +40,17 @@ namespace Copper::Scripting::Entity {
         CUP_FUNCTION();
 
         addComponentFuncs["Copper.Transform"] = [](InternalEntity* entity) { return entity->GetTransform(); };
+
+        addComponentFuncs["Copper.MeshRenderer"] = [](InternalEntity* entity) { return entity->AddComponent<MeshRenderer>(); };
         addComponentFuncs["Copper.Camera"] = [](InternalEntity* entity) { return entity->AddComponent<Camera>(); };
         addComponentFuncs["Copper.Light"] = [](InternalEntity* entity) { return entity->AddComponent<Light>(); };
+
         addComponentFuncs["Copper.RigidBody"] = [](InternalEntity* entity) { return entity->AddComponent<RigidBody>(); };
+
+        addComponentFuncs["Copper.Collider"] = [](InternalEntity* entity) { return entity->AddComponent<Collider>(); };
+        addComponentFuncs["Copper.BoxCollider"] = [](InternalEntity* entity) { return entity->AddComponent<BoxCollider>(); };
+        addComponentFuncs["Copper.SphereCollider"] = [](InternalEntity* entity) { return entity->AddComponent<SphereCollider>(); };
+        addComponentFuncs["Copper.CapsuleCollider"] = [](InternalEntity* entity) { return entity->AddComponent<CapsuleCollider>(); };
 
     }
 

@@ -18,6 +18,7 @@ namespace Copper::Scripting {
         Component,
         Transform,
 
+        MeshRenderer,
         Camera,
         Light,
 
@@ -54,6 +55,7 @@ namespace Copper::Scripting {
             case Class::Component: return "Component";
             case Class::Transform: return "Transform";
 
+            case Class::MeshRenderer: return "MeshRenderer";
             case Class::Camera: return "Camera";
             case Class::Light: return "Camera";
 

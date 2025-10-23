@@ -63,6 +63,21 @@ namespace Copper::Scripting::UUID {
 
     }
 
+    void SetBytes(MonoArray* data, MonoArray* bytes) {
+
+        CUP_FUNCTION();
+
+        CU_ASSERT(data != nullptr && bytes != nullptr, "Invalid arrays passed to UUID::Internal_SetBytes.");
+        CU_ASSERT(mono_array_length(data) == 16, "Invalid array length for the uuid data array.");
+        CU_ASSERT(mono_array_length(bytes) == 16, "Invalid array length for the bytes array.");
+
+        void* src = mono_array_addr(bytes, uint8, 0);
+        void* dst = mono_array_addr(data, uint8, 0);
+
+        memcpy(dst, src, 16);
+
+    }
+
     void SetString(MonoArray* data, MonoString* string) {
 
         CUP_FUNCTION();

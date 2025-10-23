@@ -93,6 +93,7 @@ namespace Copper::Scripting {
         mono_add_internal_call("Copper.Game::get_deltaTime", (void*) Game::GetDeltaTime);
         mono_add_internal_call("Copper.UUID::Internal_Constructor", (void*) UUID::Constructor);
         mono_add_internal_call("Copper.UUID::Internal_GenerateUUID", (void*) UUID::GenerateUUID);
+        mono_add_internal_call("Copper.UUID::Internal_SetBytes", (void*) UUID::SetBytes);
         mono_add_internal_call("Copper.UUID::Internal_SetString", (void*) UUID::SetString);
         mono_add_internal_call("Copper.UUID::Internal_ToString", (void*) UUID::ToString);
         mono_add_internal_call("Copper.UUID::Internal_Equals", (void*) UUID::Equals);

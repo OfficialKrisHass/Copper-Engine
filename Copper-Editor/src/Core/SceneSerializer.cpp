@@ -365,6 +365,21 @@ namespace Editor::SceneSerializer {
                     break;
 
                 }
+                case Scripting::Field::Type::Material: {
+
+                    UUID uuid;
+                    field.GetAssetValue(scriptComponent, &uuid);
+
+                    out << YAML::Key << field.GetName() << YAML::Value << YAML::BeginMap; // Field
+
+                    out << YAML::Key << "Type" << YAML::Value << static_cast<uint32>(field.GetType());
+                    out << YAML::Key << "Value" << YAML::Value << uuid;
+
+                    out << YAML::EndMap; // Field;
+
+                    break;
+
+                }
 
                 default: LogError("Invalid field type {}. Could not serialize on entity {}", (uint8) field.GetType(), *entity); break;
 
@@ -545,6 +560,12 @@ namespace Editor::SceneSerializer {
                     field.SetRefValue(scriptComponent, transform);
 
                     break;
+
+                }
+                case Scripting::Field::Type::Material: {
+
+                    UUID uuid = fieldNode["Value"].as<UUID>();
+                    field.SetAssetValue(scriptComponent, uuid);
 
                 }
 

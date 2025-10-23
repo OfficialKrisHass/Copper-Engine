@@ -1,6 +1,8 @@
 #include "cupch.h"
 #include "Field.h"
 
+#include "Engine/Core/UUID.h"
+
 #include "Engine/Scripting/ScriptingEngine.h"
 #include "Engine/Scripting/ManagedReferences.h"
 
@@ -78,6 +80,65 @@ namespace Copper::Scripting {
 
     }
 
+    void Field::GetAssetValue(ScriptComponent* instance, UUID* out) const {
+
+        CUP_FUNCTION();
+
+        MonoObject* asset = nullptr;
+        GetValue(instance, &asset);
+
+        if (asset == nullptr) {
+
+            *out = UUID::GetInvalid();
+            return;
+
+        }
+
+        MonoArray* uuidBytes = nullptr;
+        mono_field_get_value(asset, AssetUUIDField(), &uuidBytes);
+
+        CU_ASSERT(mono_array_length(uuidBytes) == 16, "Invalid uuid bytes array retrieved from asset m_uuid field.");
+        *out = mono_array_addr(uuidBytes, uint8, 0);
+
+    }
+    void Field::SetAssetValue(ScriptComponent* instance, const UUID& value) const {
+
+        CUP_FUNCTION();
+
+        MonoClass* klass = nullptr;
+        switch (m_type) {
+
+            case Field::Type::Material: klass = GetClass(Class::Material); break;
+            default: {
+
+                LogError("A non asset field can't call Field::SetAssetValue().");
+                return;
+
+            }
+
+        }
+
+        // We have to create a new instance of the asset, get it's uuid byte array, copy value into it and finally set the field
+        // Since both UUID in C# and C++ are nothing more than an array of 16 bytes, we can memcpy into it, it is dangerous but whateva.
+
+        MonoObject* asset = mono_object_new(AppDomain(), klass);
+        CU_ASSERT(asset != nullptr, "Could not create new managed asset.");
+
+        MonoMethod* ctor = mono_class_get_method_from_name(klass, ".ctor", 0);
+        CU_ASSERT(ctor != nullptr, "Could not get assets constructor.");
+        mono_runtime_invoke(ctor, asset, nullptr, nullptr);
+
+        MonoArray* uuidBytes = nullptr;
+        mono_field_get_value(asset, AssetUUIDField(), &uuidBytes);
+
+        CU_ASSERT(uuidBytes != nullptr, "Could not get uuid bytes array from Asset.m_uuid field.");
+        CU_ASSERT(mono_array_length(uuidBytes) == 16, "Invalid array retrieved from Asset.m_uuid field.");
+
+        memcpy(mono_array_addr(uuidBytes, uint8, 0), &value, 16);
+        SetValue(instance, asset);
+
+    }
+
     Field::Accessibility FieldAccessibility(MonoClassField* field) {
 
         CUP_FUNCTION();
@@ -113,6 +174,8 @@ namespace Copper::Scripting {
 
         else if (name == "Copper.Entity") return Field::Type::Entity;
         else if (name == "Copper.Transform") return Field::Type::Transform;
+
+        else if (name == "Copper.Material") return Field::Type::Material;
 
         return Field::Type::None;
 

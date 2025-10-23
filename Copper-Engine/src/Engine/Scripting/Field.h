@@ -7,7 +7,13 @@ extern "C" {
     typedef struct _MonoClassField MonoClassField;
 
 }
-namespace Copper { class ScriptComponent; }
+namespace Copper {
+
+    struct UUID;
+
+    class ScriptComponent;
+
+}
 
 namespace Copper::Scripting {
 
@@ -40,6 +46,8 @@ namespace Copper::Scripting {
             Entity,
             Transform,
 
+            Material,
+
         };
 
         Field() = default;
@@ -50,6 +58,9 @@ namespace Copper::Scripting {
 
         void GetRefValue(ScriptComponent* instance, void** out, void* none = nullptr) const;
         void SetRefValue(ScriptComponent* instance, void* value) const;
+
+        void GetAssetValue(ScriptComponent* instance, struct UUID* out) const;
+        void SetAssetValue(ScriptComponent* instance, const struct UUID& value) const;
         
         inline Accessibility GetAccessibility() const { return m_accessibility; }
         inline Type GetType() const { return m_type; }

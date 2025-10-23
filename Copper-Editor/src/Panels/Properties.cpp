@@ -501,6 +501,21 @@ namespace Editor {
                 break;
 
             }
+            case Scripting::Field::Type::Material: {
+
+                MaterialAsset asset;
+                field.GetAssetValue(scriptComponent, (UUID*) &asset);
+
+                if (UI::EditMaterial(field.GetName(), &asset)) {
+
+                    field.SetAssetValue(scriptComponent, asset.AssetUUID());
+                    SetChanges();
+
+                }
+
+                break;
+
+            }
 
             }
 

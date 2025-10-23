@@ -7,7 +7,18 @@ namespace Copper {
     [StructLayout(LayoutKind.Sequential)]
     public class Asset {
 
-        public UUID m_uuid = UUID.invalid;
+        public UUID m_uuid;
+
+        public Asset() {
+
+            m_uuid = UUID.invalid;
+
+        }
+        public Asset(UUID uuid) {
+
+            m_uuid = uuid;
+
+        }
 
     }
 

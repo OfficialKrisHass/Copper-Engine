@@ -22,6 +22,12 @@ namespace Copper {
             Internal_SetString(m_data, prettyString);
 
         }
+        public UUID(byte[] bytes) {
+
+            m_data = new byte[16];
+            Internal_SetBytes(m_data, bytes);
+
+        }
 
         private byte[] m_data;
 
@@ -46,6 +52,15 @@ namespace Copper {
             Internal_GenerateUUID(m_data);
 
         }
+
+        // Bytes
+
+        public void SetBytes(byte[] bytes) {
+
+            Internal_SetBytes(m_data, bytes);
+
+        }
+        public byte[] GetBytes() { return m_data; }
 
         // String
 
@@ -109,6 +124,10 @@ namespace Copper {
         [MethodImpl(MethodImplOptions.InternalCall)]
         [NativeFunction("GenerateUUID")]
         internal extern static void Internal_GenerateUUID(byte[] data);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        [NativeFunction("SetBytes")]
+        internal extern static void Internal_SetBytes(byte[] data, byte[] value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         [NativeFunction("SetString")]

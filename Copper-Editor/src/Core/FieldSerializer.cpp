@@ -89,6 +89,21 @@ namespace Editor {
                     break;
 
                 }
+                case Scripting::Field::Type::Material: {
+
+                    UUID uuid;
+                    field.GetAssetValue(component, &uuid);
+
+                    out << YAML::Key << field.GetName() << YAML::Value << YAML::BeginMap; // Field
+
+                    out << YAML::Key << "Type" << YAML::Value << static_cast<uint32>(field.GetType());
+                    out << YAML::Key << "Value" << YAML::Value << uuid;
+
+                    out << YAML::EndMap; // Field;
+
+                    break;
+
+                }
 
                 default: LogError("Invalid field type {}. Could not serialize on entity {}", (uint8) field.GetType(), *component->GetEntity()); break;
 
@@ -184,6 +199,12 @@ namespace Editor {
                     field.SetRefValue(component, transform);
 
                     break;
+
+                }
+                case Scripting::Field::Type::Material: {
+
+                    UUID uuid = fieldNode["Value"].as<UUID>();
+                    field.SetAssetValue(component, uuid);
 
                 }
 

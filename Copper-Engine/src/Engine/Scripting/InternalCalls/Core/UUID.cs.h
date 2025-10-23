@@ -15,6 +15,8 @@ namespace Copper::Scripting::UUID {
 
     void GenerateUUID(MonoArray* data);
 
+    void SetBytes(MonoArray* data, MonoArray* bytes);
+
     void SetString(MonoArray* data, MonoString* string);
     MonoString* ToString(MonoArray* data);
 

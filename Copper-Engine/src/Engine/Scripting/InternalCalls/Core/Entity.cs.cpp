@@ -27,7 +27,7 @@
     InternalEntity* name = GetEntityFromID((uint32) id);\
     if (name == nullptr && id != INVALID_ENTITY_ID) {\
         LogError("Entity {} (ID) has been deleted or is invalid, but is still being accessed.", id);\
-        Profiler::PopTopScope();\
+        CUP_POP_TOP();\
         mono_raise_exception(mono_get_exception_null_reference());\
     }
 

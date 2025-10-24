@@ -5,11 +5,16 @@
 namespace Editor::Profiler {
 
     using namespace Copper;
+
+#ifdef CU_DEBUG
     typedef Copper::Profiler::Frame Frame;
+#endif
 
     static bool isOpen = false;
 
+#ifdef CU_DEBUG
     void Subframe(const Copper::Profiler::Frame& frame, Copper::uint32 depth = 0);
+#endif
 
     void Open() { isOpen = true; }
     void UIRender() {
@@ -33,6 +38,7 @@ namespace Editor::Profiler {
 
     }
 
+#ifdef CU_DEBUG
     void Subframe(const Frame& frame, uint32 depth) {
 
         std::string text = "\t";
@@ -46,5 +52,6 @@ namespace Editor::Profiler {
             Subframe(subframe, depth + 1);
 
     }
+#endif
 
 }

@@ -8,6 +8,6 @@
     \
     if (!name->GetEntity().IsValid() && name->GetEntity().ID() != INVALID_ENTITY_ID) {\
         LogError("Entity {} (ID) has been deleted or is invalid, but is still being accessed.", name->GetEntity().ID());\
-        Profiler::PopTopScope();\
+        CUP_POP_TOP();\
         mono_raise_exception(mono_get_exception_null_reference());\
     }

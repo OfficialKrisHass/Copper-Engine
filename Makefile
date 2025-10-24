@@ -65,11 +65,11 @@ bindapi: CMake
 
 # Run targets
 
-run: $(LAUNCHER) $(EDITOR)
-	@./$(BUILD_DIR)/Copper-Launcher/Copper-Launcher $(LAUNCHER_ARGS)
+run:
+	@./$(LAUNCHER) $(LAUNCHER_ARGS)
 
-run-editor: $(EDITOR)
-	@./$(BUILD_DIR)/Copper-Editor/Copper-Editor $(EDITOR_ARGS)
+run-editor:
+	@./$(EDITOR) $(EDITOR_ARGS)
 
 # Util
 

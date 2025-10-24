@@ -144,7 +144,7 @@ namespace Copper {
 
     // SIMD functions
 
-    void inline m128itos(__m128i x, char* mem) {
+    void m128itos(__m128i x, char* mem) {
 
         CUP_FUNCTION();
 
@@ -180,7 +180,7 @@ namespace Copper {
         *(uint32_t*)(mem+32) = betole32(_mm256_extract_epi32(res, 7));
 
     }
-    __m128i inline stom128i(const char* mem) {
+    __m128i stom128i(const char* mem) {
 
         CUP_FUNCTION();
 

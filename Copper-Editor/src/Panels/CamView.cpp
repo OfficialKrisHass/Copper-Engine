@@ -43,7 +43,7 @@ namespace Editor {
         }
 
         ImVec2 windowSize = ImGui::GetContentRegionAvail();
-        SetWindowSize(UVector2I(windowSize.x, windowSize.y));
+        SetWindowSize(UVector2I(static_cast<uint32>(windowSize.x), static_cast<uint32>(windowSize.y)));
 
         ImGui::Image(static_cast<ImTextureID>((uint64) GetMainFBO().GetColorAttachmentID(0)), windowSize, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
         if (GetEditorState() == EditorState::Play && !m_isAcceptingInput && ImGui::IsItemClicked()) {

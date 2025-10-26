@@ -4,17 +4,15 @@ project "Copper-ScriptingAPI"
     location "."
     language "C#"
     kind "SharedLib"
-    dotnetframework "net8.0"
+    dotnetframework "4.8"
 
     targetdir("../Build/" .. buildDir .. "/%{prj.name}")
     objdir("../Build/" .. buildDir .. "/%{prj.name}/Intermediate")
 
-    filter "action:gmake*"
-        files {
+    files {
 
-            "Source/**.cs"
-
-        }
+        "Source/**.cs"
+    }
 
     filter "configurations:Debug"
         optimize "Off"

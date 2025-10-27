@@ -21,6 +21,9 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+        CU_ASSERT(script != nullptr, "Can't setup script component on entity '{}' with invalid script", *GetEntity());
+        CU_ASSERT(script->m_class != nullptr, "Can't setup script component with invalid script. Script: '{}', Entity: '{}'", script->FullName(), *GetEntity());
+
         if (!script->IsSubclassOf(GetClass(Class::Component))) {
 
             LogError("Can not create Script Component with a non Component script.\n\tScript name: {}", script->FullName());
@@ -28,19 +31,13 @@ namespace Copper {
 
         }
 
-        m_scriptName = script->FullName();
+        m_script = script;
         m_instance = mono_object_new(AppDomain(), script->m_class);
-        m_state = State::Begin;
+        CU_ASSERT(m_instance != nullptr, "Could not instantiate ScriptComponent '{}' on Entity '{}'", GetScriptName(), *GetEntity());
 
+        m_state = State::Begin;
         m_updateFuncs[0] = nullptr;
         m_updateFuncs[1] = nullptr;
-
-        if (!m_instance) {
-
-            LogError("Could not instantiate the ScriptComponent.\n\tScript name: {}\n\tEntity: {}", m_scriptName, GetEntity());
-            return;
-
-        }
 
         CallBaseConstructor();
 
@@ -60,8 +57,8 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        MonoMethod* constructor = mono_class_get_method_from_name(GetClass(Class::Component), ".ctor", 0);
-        CU_ASSERT(constructor, "Could not get the Component Constructor from the Component class");
+        MonoMethod* constructor = mono_class_get_method_from_name(m_script->m_class, ".ctor", 0);
+        CU_ASSERT(constructor != nullptr, "Could not get Script component Constructor.");
 
         ScriptComponent* value = this;
         mono_field_set_value(m_instance, UnmanagedPtrField(), (void*) &value);

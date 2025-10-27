@@ -190,7 +190,7 @@ namespace Editor {
 
                 } else if (m_gizmo.savedScale != selectedEntity->GetTransform()->GetScale()) {
 
-                    Change& change = AddChange(Change::Type::EntityMoved);
+                    Change& change = AddChange(Change::Type::EntityScaled);
                     change << selectedEntity->GetID() << m_gizmo.savedScale << selectedEntity->GetTransform()->GetScale();
 
                 }

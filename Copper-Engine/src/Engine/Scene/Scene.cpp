@@ -136,7 +136,7 @@ namespace Copper {
 
         if (RigidBody* rb = entity->GetComponent<RigidBody>()) {
 
-            if (entity->GetComponent<Collider>() != nullptr)
+            if (rb->m_actor != nullptr && entity->GetComponent<Collider>() != nullptr)
                 rb->UpdatePositionAndRotation();
 
         }

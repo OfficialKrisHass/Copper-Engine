@@ -6,8 +6,10 @@
 
 #ifdef CU_DEBUG
 #define CU_CHECK(x, ...) if(x) LogError(__VA_ARGS__)
+#define CU_CHECK_RETURN(x, ...) if (x) { LogError(__VA_ARGS__); return; }
 #else
 #define CU_CHECK(x, ...)
+#define CU_CHECK_RETURN(x, ...)
 #endif
 
 #ifdef CU_DEBUG
@@ -22,6 +24,8 @@
 
 #ifdef CU_EDITOR
 #define CU_EDITOR_ASSERT(x, ...) CU_CHECK(!(x), __VA_ARGS__)
+#define CU_EDITOR_ASSERT_RETURN(x, ...) CU_CHECK_RETURN(!(x), __VA_ARGS__)
 #else
 #define CU_EDITOR_ASSERT(x, ...) CU_ASSERT(x, __VA_ARGS__)
+#define CU_EDITOR_ASSERT_RETURN(x, ...) CU_ASSERT(x, __VA_ARGS__)
 #endif

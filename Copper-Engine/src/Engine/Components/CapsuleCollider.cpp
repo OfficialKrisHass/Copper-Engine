@@ -22,6 +22,9 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+        CU_ASSERT(physics != nullptr, "PhysX Physics not initialized.");
+        CU_ASSERT(material != nullptr, "PhysX Physics material is invalid.");
+
         Transform* transform = GetTransform();
         return physics->createShape(PxCapsuleGeometry(transform->GetScale().x * m_radius, transform->GetScale().y * m_height), *material);
 

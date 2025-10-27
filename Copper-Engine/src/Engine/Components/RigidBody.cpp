@@ -33,13 +33,7 @@ namespace Copper {
             Remove();
 
         m_collider = GetEntity()->GetComponent<Collider>();
-        if (m_collider == nullptr) {
-
-            LogError("Entity '{}' has no Collider!", *GetEntity());
-            return;
-
-        }
-
+        CU_EDITOR_ASSERT_RETURN(m_collider != nullptr, "Etntity '{}' has no Collider.", *GetEntity());
 
         PxShape* shape = m_collider->CreateShape();
         CU_ASSERT(shape != nullptr, "Could not create physx shape on entity '{}'", *GetEntity());
@@ -78,7 +72,7 @@ namespace Copper {
         PxQuat rotation = CopperToPhysX(GetTransform()->GetRotation());
         m_actor = PxCreateStatic(*physics, PxTransform(position, rotation), *shape);
 
-        CU_ASSERT(m_actor != nullptr, "Failed to create RigidStatic actor on entity {}", *GetEntity());
+        CU_ASSERT(m_actor != nullptr, "Failed to create RigidStatic actor on entity '{}'", *GetEntity());
 
     }
     void RigidBody::InitializeDynamic(physx::PxShape* shape) {
@@ -89,7 +83,7 @@ namespace Copper {
         PxQuat rotation = CopperToPhysX(GetTransform()->GetRotation());
         m_actor = PxCreateDynamic(*physics, PxTransform(position, rotation), *shape, 1.0f);
 
-        CU_ASSERT(m_actor != nullptr, "Failed to create RigidDynamic actor on entity {}", *GetEntity());
+        CU_ASSERT(m_actor != nullptr, "Failed to create RigidDynamic actor on entity '{}'", *GetEntity());
 
         DynamicBody->setMass(m_mass);
         m_actor->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, !m_gravity);

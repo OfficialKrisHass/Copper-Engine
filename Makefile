@@ -2,8 +2,6 @@ OS = linux
 CONFIGURATION = Debug
 BUILD_DIR = Build/$(OS)-x86_64-$(CONFIGURATION)
 
-GENERATE_CSHARP_SOLUTION = ON
-
 PROJECT_FILES = VERSION Makefile CMakeLists.txt Copper-Engine/CMakeLists.txt Copper-Editor/CMakeLists.txt Copper-Launcher/CMakeLists.txt Copper-APIBinder/CMakeLists.txt Copper-ScriptingAPI/premake5.lua Copper-ScriptingAPI/workspace.lua
 
 ENGINE = $(BUILD_DIR)/Copper-Engine/libCopper-Engine.a
@@ -98,11 +96,6 @@ CMake: $(PROJECT_FILES)
 	@ln -s CMake/$(CONFIGURATION)/compile_commands.json compile_commands.json
 	@echo ""
 	@./Copper-Editor/util/premake/premake5 --file=Copper-ScriptingAPI/workspace.lua gmake2
-ifeq ($(GENERATE_CSHARP_SOLUTION), ON)
-	@./Copper-Editor/util/premake/premake5 --file=Copper-ScriptingAPI/workspace.lua vs2022
-	@rm -f Copper-ScriptingAPI.sln
-	@ln -s Copper-ScriptingAPI/Copper-ScriptingAPI.sln Copper-ScriptingAPI.sln
-endif
 
 # Build targets
 

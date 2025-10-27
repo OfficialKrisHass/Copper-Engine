@@ -106,32 +106,21 @@ namespace Copper {
 
         // Case 2: Changing a parent (old parent != nullptr)
 
-        if (m_parent) {
+        if (m_parent != nullptr) {
 
             m_parent->RemoveChild(this);
-            Matrix4 local = m_mat * CMath::Inverse(parent->m_mat);
+            m_parent = parent;
+
+            parent->m_children.push_back(GetEntity()->GetID());
+
+        } else { // Case 3: Setting a parent (old parent == nullptr)
 
             m_parent = parent;
             parent->m_children.push_back(GetEntity()->GetID());
 
-            Vector3 pos, scale;
-            Quaternion rot;
-            Math::DecomposeTransform(local, pos, rot, scale);
-
-            m_position = pos;
-            m_rotation = rot;
-            m_scale = scale;
-
-            return;
-
         }
 
-        // Case 3: Setting a parent (old parent == nullptr)
-
         Matrix4 local = m_mat * CMath::Inverse(parent->m_mat);
-
-        m_parent = parent;
-        parent->m_children.push_back(GetEntity()->GetID());
 
         Vector3 pos, scale;
         Quaternion rot;
@@ -149,16 +138,15 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        if (child->m_parent == this || !child) return;
-        if (child->m_parent)
-            child->m_parent->RemoveChild(child);
+        if (child == nullptr || child->m_parent == this) return;
 
-        Matrix4 childGlobal = child->m_mat;
+        if (child->m_parent != nullptr)
+            child->m_parent->RemoveChild(child);
 
         child->m_parent = this;
         m_children.push_back(child->GetEntity()->GetID());
 
-        Matrix4 childLocal = childGlobal * CMath::Inverse(m_mat);
+        Matrix4 childLocal = child->m_mat * CMath::Inverse(m_mat);
 
         Vector3 pos, scale;
         Quaternion rot;
@@ -173,12 +161,7 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        if (index < 0 || index > m_children.size()) {
-
-            LogError("Can't remove an invalid index child. Parent: {}, index: {}", *GetEntity(), index);
-            return;
-
-        }
+        CU_EDITOR_ASSERT_RETURN(index > 0 && index < m_children.size(), "Can't remove child, index out of range. Parent '{}', index: '{}'", *GetEntity(), index);
 
         Transform* child = GetEntityFromID(m_children[index])->GetTransform();
         
@@ -204,13 +187,14 @@ namespace Copper {
 
         }
 
-        LogError("Can't remove a child. Parent: {}, Child: {}", *GetEntity(), *transform->GetEntity());
+        LogError("Child is not child of parent, could not remove. Child: '{}', Parent: '{}'", *transform->GetEntity(), *GetEntity());
 
     }
     Transform* Transform::GetChild(uint32 index) const {
 
         CUP_FUNCTION();
 
+        CU_ASSERT(GetEntityFromID(m_children[index]) != nullptr, "Transform has an invalid child. Index: '{}'", index);
         return GetEntityFromID(m_children[index])->GetTransform();
 
     }

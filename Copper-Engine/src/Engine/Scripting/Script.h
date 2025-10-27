@@ -49,7 +49,7 @@ namespace Copper::Scripting {
 
         inline const std::vector<Field>& GetFields() const { return m_fields; }
 
-        inline operator bool() const { return m_class != nullptr; }
+        inline bool IsValid() const { return m_class != nullptr; }
 
     private:
         std::string m_namespace = "";

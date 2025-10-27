@@ -122,9 +122,7 @@ namespace Copper::Scripting::Transform {
 
         CUP_FUNCTION();
 
-
         GET_UNMANAGED_COMPONENT_PTR(Transform, ptr, transform);
-        Log("C++: '{}'", ptr->GetForward());
         return ptr->GetForward();
 
     }

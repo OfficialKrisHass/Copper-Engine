@@ -34,6 +34,8 @@ namespace Copper {
 
         };
 
+        void RecreateShape();
+
         // Getters
 
         inline Type GetType() const { return m_type; }
@@ -67,8 +69,6 @@ namespace Copper {
 
         bool m_trigger = false;
         Vector3 m_center = Vector3::zero;
-
-        void RecreateShape();
 
     private:
         virtual physx::PxShape* CreateShape() const = 0;

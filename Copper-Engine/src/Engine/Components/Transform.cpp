@@ -3,6 +3,9 @@
 
 #include "Engine/Scene/Scene.h"
 
+#include "Engine/Components/RigidBody.h"
+#include "Engine/Components/Collider.h"
+
 #include "Engine/Utilities/Math.h"
 
 namespace Copper {
@@ -13,24 +16,51 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+        if (m_position == position) return;
+
         m_position = position;
         UpdatePosition();
+
+        // TODO: A Transform component should keep a reference to the rigidbody, meaning this is unnecessary
+        // however atm there is no way to keep that reference up to date. Fix this pls.
+
+        if (!GetEntity().IsValid()) return;
+        if (RigidBody* rb = GetEntity()->GetComponent<RigidBody>())
+            rb->SetPosition(position);
 
     }
     void Transform::SetRotation(const Quaternion& rotation) {
 
         CUP_FUNCTION();
 
+        if (m_rotation == rotation) return;
+
         m_rotation = rotation;
         UpdateRotation();
+
+        // TODO: A Transform component should keep a reference to the rigidbody, meaning this is unnecessary
+        // however atm there is no way to keep that reference up to date. Fix this pls.
+
+        if (!GetEntity().IsValid()) return;
+        if (RigidBody* rb = GetEntity()->GetComponent<RigidBody>())
+            rb->SetRotation(rotation);
 
     }
     void Transform::SetScale(const Vector3& scale) {
 
         CUP_FUNCTION();
 
+        if (m_scale == scale) return;
+
         m_scale = scale;
         UpdateScale();
+
+        // TODO: A Transform component should keep a reference to the rigidbody, meaning this is unnecessary
+        // however atm there is no way to keep that reference up to date. Fix this pls.
+
+        if (!GetEntity().IsValid()) return;
+        if (Collider* collider = GetEntity()->GetComponent<Collider>())
+            collider->RecreateShape();
 
     }
 

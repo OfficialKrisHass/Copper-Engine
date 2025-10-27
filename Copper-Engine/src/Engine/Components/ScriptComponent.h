@@ -63,13 +63,13 @@ namespace Copper {
         void OnTriggerEnter(InternalEntity* other);
         void OnTriggerLeave(InternalEntity* other);
 
-        inline const Scripting::Script* GetScript() const { return m_script; }
-        inline const std::string GetScriptName() const { return m_script->FullName(); } 
+        inline const Scripting::Script* GetScript() const { return Scripting::GetScript(m_scriptName); }
+        inline const std::string GetScriptName() const { return m_scriptName; } 
 
         inline bool IsValid() const { return m_instance != nullptr; }
 
     private:
-        const Scripting::Script* m_script = nullptr;
+        std::string m_scriptName;
         MonoObject* m_instance = nullptr;
 
         State m_state = State::None;

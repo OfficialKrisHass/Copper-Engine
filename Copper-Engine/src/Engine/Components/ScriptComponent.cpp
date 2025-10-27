@@ -31,7 +31,7 @@ namespace Copper {
 
         }
 
-        m_script = script;
+        m_scriptName = script->FullName();
         m_instance = mono_object_new(AppDomain(), script->m_class);
         CU_ASSERT(m_instance != nullptr, "Could not instantiate ScriptComponent '{}' on Entity '{}'", GetScriptName(), *GetEntity());
 
@@ -57,7 +57,7 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        MonoMethod* constructor = mono_class_get_method_from_name(m_script->m_class, ".ctor", 0);
+        MonoMethod* constructor = mono_class_get_method_from_name(GetScript()->m_class, ".ctor", 0);
         CU_ASSERT(constructor != nullptr, "Could not get Script component Constructor.");
 
         ScriptComponent* value = this;

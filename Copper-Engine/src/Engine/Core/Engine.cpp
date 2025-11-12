@@ -86,6 +86,7 @@ namespace Copper {
         LogStatus("Initializing Copper-Engine.");
 
 #ifdef CU_DEBUG
+        // Monos watchdog gets called first, which is on one hand good since the current trace system sucks ass
         SignalHandler::RegisterHandler(SignalHandler::Signal::Abort, Profiler::CrashHandler);
         SignalHandler::RegisterHandler(SignalHandler::Signal::Segfault, Profiler::CrashHandler);
 #endif
@@ -97,7 +98,7 @@ namespace Copper {
         CU_ASSERT(data.window != nullptr, "GetEditorWindow() returned nullptr, check if you have created a window in AppEntryPoint.");
 #else
         Window::InitializeBackend();
-        data.window.Initialize("Copper Engine", 1280, 720);
+        data.window.Create("Copper Engine", 1280, 720);
 #endif
 
         data.GetWindow().GetWindowCloseEvent() += OnWindowClose;
@@ -213,28 +214,12 @@ namespace Copper {
     }
 
     EngineState GetEngineState() { return data.engineState; }
-    const char* EngineStateToString(EngineState state) {
-
-        switch (state) {
-
-            case EngineState::Entry: return "Entry"; break;
-            case EngineState::Initialization: return "Initialization"; break;
-            case EngineState::PostInitialization: return "Post Initialization"; break;
-            case EngineState::Running: return "Running"; break;
-            case EngineState::Shutdown: return "Shutdown"; break;
-
-        }
-
-        LogError("Invalid engine state: {}", static_cast<uint8>(state));
-        return "Invalid Engine State!";
-
-    }
 
     bool OnWindowClose(const Event& e) {
 
         CUP_FUNCTION();
 
-        LogStatus("Window close event has been triggered.");
+        LogStatus("Window close event has been attempted.");
 
         if (!data.preShutdownEvent()) {
 
@@ -284,7 +269,7 @@ namespace Copper {
 #ifdef CU_EDITOR
         return data.fbo.GetSize();
 #else
-        return data.window.GetSize();
+        return data.GetWindow().GetSize();
 #endif
 
     }

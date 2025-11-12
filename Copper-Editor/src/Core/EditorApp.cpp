@@ -227,9 +227,9 @@ namespace Editor {
         // Project
 
         // If a project was passed as an argument, it has priority.
-        if (!Args::GetProjectToOpenPath().empty()) {
+        if (!Args::GetProjectPath().empty()) {
 
-            data.project.Open(Args::GetProjectToOpenPath());
+            data.project.Open(Args::GetProjectPath());
             return;
 
         }

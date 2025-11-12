@@ -36,19 +36,16 @@ namespace Copper {
         m_fragment = CreateShader(fragmentPath, GL_FRAGMENT_SHADER);
 
         m_id = glCreateProgram();
-        CU_ASSERT(m_id != 0, "Could not create the shader program for shaders {} and {}", vertexPath, fragmentPath);
+        CU_ASSERT(m_id != 0, "Failed to create shader program. Vertex shader: '{}', Fragment shader: '{}'", vertexPath, fragmentPath);
 
         glAttachShader(m_id, m_vertex);
         glAttachShader(m_id, m_fragment);
         glLinkProgram(m_id);
 
-        if (!CheckShaderLink(m_id))
-            Delete(); 
+        CU_ASSERT(CheckShaderLink(m_id), "Shader link fail.");
 
         glDeleteShader(m_vertex);
         glDeleteShader(m_fragment);
-
-        CU_ASSERT(m_id != 0, "Could not create Shader from {} and {}", vertexPath, fragmentPath);
 
     }
 
@@ -65,8 +62,10 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+        CU_ASSERT(fs::exists(path), "Could not create {}, file does not exist. Path: '{}'", ShaderTypeToString(type), path);
+
         uint32 id = glCreateShader(type);
-        CU_ASSERT(id != 0, "Could not create shader of type {} from path {}", ShaderTypeToString(type), path);
+        CU_ASSERT(id != 0, "Failed to create shader of type {} from path {}", ShaderTypeToString(type), path);
 
         const std::string& source = Utilities::ReadFile(path);
         const char* src = source.c_str();
@@ -84,11 +83,10 @@ namespace Copper {
         CUP_FUNCTION();
 
         glGetShaderiv(id, GL_COMPILE_STATUS, &success);
-
         if (success) return;
 
         glGetShaderInfoLog(id, 2048, NULL, infoLog);
-        LogError("{} Compilation Failed!\n\t{}", ShaderTypeToString(type), infoLog);
+        LogError("{} Compilation Failed!\n{}", ShaderTypeToString(type), infoLog);
 
     }
     bool CheckShaderLink(uint32 id) {
@@ -96,11 +94,10 @@ namespace Copper {
         CUP_FUNCTION();
 
         glGetProgramiv(id, GL_LINK_STATUS, &success);
-
         if (success) return true;
 
         glGetProgramInfoLog(id, 512, NULL, infoLog);
-        LogError("Shader Linking Failed!\n\t{}", infoLog);
+        LogError("Shader Linking Failed!\n{}", infoLog);
 
         return false;
 
@@ -125,6 +122,7 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+        CU_ASSERT(m_id != 0, "Could not bind an invalid shader program.");
         glUseProgram(m_id);
 
     }

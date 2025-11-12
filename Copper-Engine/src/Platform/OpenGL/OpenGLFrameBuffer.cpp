@@ -11,7 +11,7 @@ namespace Copper {
 
         m_size = size;
 
-        CU_ASSERT(attachmentFormats.size() < 5, "A max of 4 color attachments are allowed on a FrameBuffer");
+        CU_ASSERT(attachmentFormats.size() < 5, "A max of 4 color attachments are allowed on a FrameBuffer.");
 
         m_attachments.reserve(attachmentFormats.size());
         for(Attachment::Format format : attachmentFormats)
@@ -27,6 +27,7 @@ namespace Copper {
 
         glGenFramebuffers(1, &m_id);
         CU_ASSERT(m_id != 0, "Could not generate the Frame Buffer id.");
+
         glBindFramebuffer(GL_FRAMEBUFFER, m_id);
 
         // Color attachments
@@ -36,7 +37,8 @@ namespace Copper {
             Attachment& attachment = m_attachments[i];
 
             glGenTextures(1, &attachment.id);
-            CU_ASSERT(attachment.id != 0, "Could not create Color attachment texture for FrameBuffer (id {}), format: {}", m_id, static_cast<uint8>(attachment.format));
+            CU_ASSERT(attachment.id != 0, "Could not create Color attachment texture for FrameBuffer (id {}). Format: {}", m_id, static_cast<uint8>(attachment.format));
+
             glBindTexture(GL_TEXTURE_2D, attachment.id);
 
             switch (attachment.format) {
@@ -56,6 +58,7 @@ namespace Copper {
 
         glGenTextures(1, &m_depthAttachment);
         CU_ASSERT(m_depthAttachment != 0, "Could not create depth attachment texture for FrameBuffer (id {})", m_id);
+
         glBindTexture(GL_TEXTURE_2D, m_depthAttachment);
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, m_size.x, m_size.y, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
@@ -70,7 +73,7 @@ namespace Copper {
 
         // Finalize
         
-        GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+        static const GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
         glDrawBuffers(static_cast<int32>(m_attachments.size()), buffers);
 
         CU_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Could not create Frame Buffer.");
@@ -83,7 +86,7 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        CU_ASSERT(m_id != 0, "Invalid framebuffer");
+        CU_ASSERT(m_id != 0, "Cannot recreate an invalid framebuffer.");
         CU_ASSERT(m_attachments.size() > 0, "Can't Recreate a frame buffer with no attachments. FrameBuffer id: {}", m_id);
 
         Delete();
@@ -94,7 +97,7 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        CU_ASSERT(m_id != 0, "Can't delete the default framebuffer (with id 0)");
+        CU_ASSERT(m_id != 0, "Can't delete an invalid framebuffer.");
 
         glDeleteFramebuffers(1, &m_id);
         glDeleteTextures(1, &m_depthAttachment);
@@ -108,7 +111,6 @@ namespace Copper {
 
         m_id = 0;
         m_depthAttachment = 0;
-
 
     }
 
@@ -130,7 +132,7 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        CU_ASSERT(m_id != 0, "Invalid framebuffer");
+        CU_ASSERT(m_id != 0, "Could not bind invalid framebuffer");
 
         glBindFramebuffer(GL_FRAMEBUFFER, m_id);
         glViewport(0, 0, m_size.x, m_size.y);
@@ -149,8 +151,8 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        CU_ASSERT(m_id != 0, "Invalid framebuffer");
-        CU_ASSERT(attachment < m_attachments.size(), "Can't read from attachment {} (out of range index)", attachment);
+        CU_ASSERT(m_id != 0, "Could not read pixel from invalid framebuffer.");
+        CU_ASSERT(attachment < m_attachments.size(), "Can't read from framebuffer (id {}) attachment #{} (out of range)", m_id, attachment);
 
         uint32 ret;
 
@@ -165,8 +167,7 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        CU_ASSERT(attachment < m_attachments.size(), "Can't clear attachment {} (out of range index)", attachment);
-
+        CU_ASSERT(attachment < m_attachments.size(), "Can't clear attachment #{} (out of range index) on framebuffer '{}'", attachment, m_id);
         glClearTexImage(m_attachments[attachment].id, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, &value);
 
     }

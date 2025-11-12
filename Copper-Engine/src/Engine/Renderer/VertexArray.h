@@ -32,10 +32,12 @@ namespace Copper {
 
             CUP_FUNCTION();
 
-            CU_ASSERT(m_ibo, "Vertex array has no Index Buffer attached");
+            CU_ASSERT(m_ibo != nullptr, "Vertex array has no Index Buffer attached");
             return m_ibo->GetCount();
 
         }
+
+        inline bool IsValid() const { return m_id != 0; }
 
     private:
         uint32 m_id = 0;

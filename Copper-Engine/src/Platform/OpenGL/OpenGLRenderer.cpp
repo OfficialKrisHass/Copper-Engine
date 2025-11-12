@@ -137,6 +137,8 @@ namespace Copper::RendererAPI {
 
         for (uint32 i = 0; i < materialCount; i++) {
 
+            CU_ASSERT(materials[i].IsValid(), "Invalid material asset used when rendering. UUID: {}", materials[i].AssetUUID());
+
             const std::string materialName = "materials[" + std::to_string(i) + "].";
             materials[i]->texture->Bind(i);
 
@@ -163,7 +165,8 @@ namespace Copper::RendererAPI {
 
             lightStr[7] = '0' + i;
             Light* light = lights[i];
-            CU_ASSERT(light, "lights[{}] is nullptr!", i);
+
+            CU_ASSERT(light != nullptr, "lights[{}] is nullptr!", i);
 
             shader.LoadInt(lightStr + "type", (uint32) light->type);
             shader.LoadVec3(lightStr + "posOrDir", light->type == Light::Type::Point ? light->GetTransform()->GetGlobalPosition() : light->GetTransform()->GetForward());

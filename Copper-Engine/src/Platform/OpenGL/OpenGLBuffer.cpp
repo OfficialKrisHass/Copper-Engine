@@ -38,6 +38,7 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+        CU_ASSERT(m_id != 0, "Could not bind invalid vertex buffer.");
         glBindBuffer(GL_ARRAY_BUFFER, m_id);
 
     }
@@ -82,6 +83,7 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+        CU_ASSERT(m_id != 0, "Could not bind invalid index buffer.");
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
 
     }

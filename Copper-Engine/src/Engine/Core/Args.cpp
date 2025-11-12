@@ -8,32 +8,38 @@
 
 namespace Copper::Args {
 
+#ifdef CU_DEBUG
     static bool initialized = false;
+#endif
 
     static std::vector<std::string> arguments;
 
     static fs::path execFolder;
 #ifdef CU_EDITOR
-    static fs::path projectToOpenPath;
+    static fs::path projectPath;
 #endif
 
     void Initialize(uint32 argc, char* argv[]) {
 
         CUP_FUNCTION();
 
+#ifdef CU_DEBUG
         if (initialized) {
 
-            LogError("Can't initialize Args as it has already been initialized.");
+            LogError("Can't initialize Args twice.");
             return;
 
         }
         initialized = true;
+#endif
+
         arguments.reserve(argc);
-        
         for (uint32 i = 0; i < argc; i++) {
 
             arguments.push_back(argv[i]);
 
+            // This may seem redundant but after this point we will be checking for options with values, which
+            // are not valid if the option (starts with a -) is the last argument, e.g. there is no value argument (the next i).
             if (i == argc - 1) break;
 
 #ifdef CU_DEBUG
@@ -47,10 +53,12 @@ namespace Copper::Args {
 
         }
 
-        // The last argument is an optional project to open path.
+        // The last argument is an optional project path.
+        // Here we check if there are at least 2 arguments (the first one is the executable path)
+        // and if the last argument is not the value of some option (e.g. -e).
 #ifdef CU_EDITOR
         if (argc > 1 && argv[argc - 2][0] != '-')
-            projectToOpenPath = argv[argc - 1];
+            projectPath = argv[argc - 1];
 #endif
 
         // We only retrieve the executable folder from the OS if it wasn't passed as an argument.
@@ -79,13 +87,13 @@ namespace Copper::Args {
 
         CUP_FUNCTION();
 
-        CU_ASSERT(index < arguments.size(), "")
+        CU_ASSERT(index < arguments.size(), "Invalid argument index. Index: '{}'", index);
         return arguments[index];
 
     }
 
 #ifdef CU_EDITOR
-    const fs::path& GetProjectToOpenPath() { return projectToOpenPath; }
+    const fs::path& GetProjectPath() { return projectPath; }
 #endif
 
 }

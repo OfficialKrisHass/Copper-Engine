@@ -12,7 +12,7 @@ namespace Copper::Args {
     const std::string& GetArgument(uint32 index);
 
 #ifdef CU_EDITOR
-    const fs::path& GetProjectToOpenPath();
+    const fs::path& GetProjectPath();
 #endif
 
 }

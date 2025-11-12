@@ -14,7 +14,7 @@ namespace Copper {
         m_ibo = ibo;
 
         glGenVertexArrays(1, &m_id);
-        CU_ASSERT(m_id != 0, "Could not create Vertex Array.");
+        CU_ASSERT(m_id != 0, "Failed to create Vertex Array.");
 
         glBindVertexArray(m_id);
 
@@ -24,11 +24,9 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        uint32 count = vbo->GetElementCount();
-        for (uint32 i = 0; i < count; i++) {
+        for (uint32 i = 0; i < vbo->GetElementCount(); i++) {
 
             ElementType type = vbo->GetType(i);
-
 
             glEnableVertexAttribArray(i);
             switch (type) {

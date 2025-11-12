@@ -12,7 +12,7 @@ namespace Copper {
 
     enum class EngineState : uint8 {
 
-        Entry, // Before Engine::Initialize is called
+        Entry, // Before EngineInitialize is called
         Initialization, // Only for internal use, logger, scripting, etc get initialized during this state
         PostInitialization, // Before The first frame is rendered, AppPostInitEven is called during this
         Running, // Logical duh
@@ -26,17 +26,32 @@ namespace Copper {
     void EngineShutdown();
 
     EngineState GetEngineState();
-    const char* EngineStateToString(EngineState state);
+    inline constexpr const char* EngineStateToString(EngineState state) {
+
+        switch (state) {
+
+            case EngineState::Entry: return "Entry"; break;
+            case EngineState::Initialization: return "Initialization"; break;
+            case EngineState::PostInitialization: return "Post Initialization"; break;
+            case EngineState::Running: return "Running"; break;
+            case EngineState::Shutdown: return "Shutdown"; break;
+
+        }
+
+        LogError("Invalid engine state: {}", static_cast<uint8>(state));
+        return "";
+
+    }
 
     // Engine Events
 
-    SimpleEvent& GetPostInitEvent();
+    SimpleEvent& GetPostInitEvent(); // Called after Engine initialization is finished, EngineState::PostInitialization.
 
-    SimpleEvent& GetUpdateEvent();
-    SimpleEvent& GetUIUpdateEvent();
+    SimpleEvent& GetUpdateEvent(); // Called every frame after the scene was updated and renderered, EngineState::Running.
+    SimpleEvent& GetUIUpdateEvent(); // called every frame while the main UI context is active, EngineState::Running.
 
-    Event& GetPreShutdownEvent();
-    SimpleEvent& GetPostShutdownEvent();
+    Event& GetPreShutdownEvent(); // Called when a shutdown was requested, if this event blocks, the shutdown will be prevented. EngineState::Running.
+    SimpleEvent& GetPostShutdownEvent(); // Called after the engine was shut down, EngineState::Shutdown.
 
     // Game
 

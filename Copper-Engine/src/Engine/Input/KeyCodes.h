@@ -4,10 +4,11 @@ namespace Copper {
 
     enum class KeyState : uint8 {
 
-        Pressed = 0,
+        None = 0,
+
+        Pressed,
         Down,
         Released,
-        None,
 
     };
 

@@ -1,6 +1,7 @@
 #pragma once
 
-// This file needs be included by the executable, and only once
+// This file handles the entry point of the application, it has to be included by the user, and the only thing
+// that needs to be supplied is the definition for AppEntryPoint, which can be empty.
 
 #include "Engine/Core/Engine.h"
 #include "Engine/Core/Args.h"

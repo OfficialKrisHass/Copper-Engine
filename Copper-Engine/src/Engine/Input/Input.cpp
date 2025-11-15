@@ -34,6 +34,8 @@ namespace Copper::Input {
         CUP_FUNCTION();
 
         VERIFY_STATE(EngineState::Initialization, "Initialize Input");
+        CU_ASSERT(win != nullptr, "Invalid window passed to Input::Initialize().");
+
         window = win;
 
         window->GetKeyPressedEvent() += OnKeyPressed;
@@ -63,10 +65,11 @@ namespace Copper::Input {
 
         for (KeyCode key : keysToUpdate) {
 
-            switch (keyStates.at(key)) {
+            auto it = keyStates.find(key);
+            switch (it->second) {
 
-            case KeyState::Pressed: keyStates[key] = KeyState::Down; break;
-            case KeyState::Released: keyStates[key] = KeyState::None; break;
+            case KeyState::Pressed: it->second = KeyState::Down; break;
+            case KeyState::Released: it->second = KeyState::None; break;
             default: break;
 
             }
@@ -82,8 +85,10 @@ namespace Copper::Input {
 
         CUP_FUNCTION();
 
-        if (keyStates.find(key) == keyStates.end()) return KeyState::None;
-        return keyStates.at(key);
+        // The [] operator will insert (and return) KeyState::None if key is not present in the map, which is perfectly fine,
+        // In the future when a KeyEvent is generated for key, it will already be present in the keyStates map because of this.
+
+        return keyStates[key];
 
     }
 

@@ -31,7 +31,9 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+        CU_ASSERT(m_fd >= 0, "Can't close an invalid inotify file descript.");
         close(m_fd);
+
         m_watchMap.clear();
 
     }

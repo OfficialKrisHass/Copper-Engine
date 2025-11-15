@@ -6,6 +6,10 @@
 
 namespace Copper {
 
+    // Watches a directory and calls the assigned callback everytime a change was detected.. Will crash if file does not exist or isn't a directory when started.
+    // This will only watch the directory provided, not it's subdirectories. The DirWatch will be stopped when the watched directory is renamed, deleted or moved.
+    // Spawns a separate thread for the monitoring, but callback is called from the main thread.
+    // To watch subdirectories take a look at RecursiveDirWatch, to watch a single file take a look at FileWatch.
     class DirWatch {
 
     public:

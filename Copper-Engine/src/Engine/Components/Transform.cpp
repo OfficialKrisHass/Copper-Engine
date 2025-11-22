@@ -191,7 +191,7 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        CU_EDITOR_ASSERT_RETURN(index > 0 && index < m_children.size(), "Can't remove child, index out of range. Parent '{}', index: '{}'", *GetEntity(), index);
+        CU_EDITOR_ASSERT_RETURN(index >= 0 && index < m_children.size(),, "Can't remove child, index out of range. Parent '{}', index: '{}'", *GetEntity(), index);
 
         Transform* child = GetEntityFromID(m_children[index])->GetTransform();
         

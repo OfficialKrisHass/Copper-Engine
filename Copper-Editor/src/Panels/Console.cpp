@@ -76,6 +76,8 @@ namespace Editor {
             ImGui::Text(msg.text.c_str());
             ImGui::Separator();
 
+            ImGui::SetScrollHereY();
+
             ImGui::PopStyleColor();
 
         }

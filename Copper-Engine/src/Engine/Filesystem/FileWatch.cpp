@@ -14,8 +14,8 @@ namespace Copper {
 
         }
 
-        CU_EDITOR_ASSERT_RETURN(fs::exists(m_path), "Can't start FileWatch, file '{}' does not exist", m_path);
-        CU_EDITOR_ASSERT_RETURN(fs::is_regular_file(m_path), "FileWatch can only watch files (maybe you meant DirWatch). Path: '{}'", m_path);
+        CU_EDITOR_ASSERT_RETURN(fs::exists(m_path),, "Can't start FileWatch, file '{}' does not exist", m_path);
+        CU_EDITOR_ASSERT_RETURN(fs::is_regular_file(m_path),, "FileWatch can only watch files (maybe you meant DirWatch). Path: '{}'", m_path);
 
         StartBackend();
 
@@ -34,7 +34,7 @@ namespace Copper {
 
         }
 
-        CU_EDITOR_ASSERT_RETURN(m_callback != nullptr, "No callback was assigned to FileWatch. Path: '{}'", m_path);
+        CU_EDITOR_ASSERT_RETURN(m_callback != nullptr,, "No callback was assigned to FileWatch. Path: '{}'", m_path);
 
         std::vector<FileChangeType> data;
         {
@@ -64,7 +64,7 @@ namespace Copper {
 
         // To ensure all of the events were reported
 
-        CU_EDITOR_ASSERT_RETURN(m_callback != nullptr, "No callback was assigned to FileWatch. Path: '{}'", m_path);
+        CU_EDITOR_ASSERT_RETURN(m_callback != nullptr,, "No callback was assigned to FileWatch. Path: '{}'", m_path);
         for (FileChangeType type : m_data)
             m_callback(m_path, type);
 

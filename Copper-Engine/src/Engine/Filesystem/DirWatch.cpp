@@ -14,8 +14,8 @@ namespace Copper {
 
         }
 
-        CU_EDITOR_ASSERT_RETURN(fs::exists(m_directory), "Can't start DirWatch at '{}', directory does not exist", m_directory);
-        CU_EDITOR_ASSERT_RETURN(fs::is_directory(m_directory), "DirWatch can only watch directories. Directory: '{}'", m_directory);
+        CU_EDITOR_ASSERT_RETURN(fs::exists(m_directory),, "Can't start DirWatch at '{}', directory does not exist", m_directory);
+        CU_EDITOR_ASSERT_RETURN(fs::is_directory(m_directory),, "DirWatch can only watch directories. Directory: '{}'", m_directory);
 
         StartBackend();
 
@@ -34,7 +34,7 @@ namespace Copper {
 
         }
 
-        CU_EDITOR_ASSERT_RETURN(m_callback != nullptr, "No callback was assigned to DirWatch at directory '{}'", m_directory);
+        CU_EDITOR_ASSERT_RETURN(m_callback != nullptr,, "No callback was assigned to DirWatch at directory '{}'", m_directory);
 
         std::vector<FileChange> data;
         {
@@ -62,7 +62,7 @@ namespace Copper {
 
         // To ensure all of the events were reported
 
-        CU_EDITOR_ASSERT_RETURN(m_callback != nullptr, "No callback was assigned to DirWatch. Directory: '{}'", m_directory);
+        CU_EDITOR_ASSERT_RETURN(m_callback != nullptr,, "No callback was assigned to DirWatch. Directory: '{}'", m_directory);
         for (const FileChange& change : m_data)
             m_callback(change.path, change.type);
 

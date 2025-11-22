@@ -33,7 +33,7 @@ namespace Copper {
             Remove();
 
         m_collider = GetEntity()->GetComponent<Collider>();
-        CU_EDITOR_ASSERT_RETURN(m_collider != nullptr, "Etntity '{}' has no Collider.", *GetEntity());
+        CU_EDITOR_ASSERT_RETURN(m_collider != nullptr,, "Etntity '{}' has no Collider.", *GetEntity());
 
         PxShape* shape = m_collider->CreateShape();
         CU_ASSERT(shape != nullptr, "Could not create physx shape on entity '{}'", *GetEntity());

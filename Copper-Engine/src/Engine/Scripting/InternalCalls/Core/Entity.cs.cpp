@@ -18,19 +18,6 @@
 #include <mono/metadata/object.h>
 #include <mono/metadata/exception.h>
 
-#define GET_ENTITY(name, instance) \
-    CU_ASSERT(instance != nullptr, "Can not get Entity unmanaged pointer from nullptr C# instance.");\
-    \
-    uint64 id = INVALID_ENTITY_ID; mono_field_get_value(instance, UnmanagedPtrField(), (void*) &id);\
-    CU_ASSERT(id < INVALID_ENTITY_ID, "Got an invalid ID from the Entity unmanaged pointer of a C# Entity instance.");\
-    \
-    InternalEntity* name = GetEntityFromID((uint32) id);\
-    if (name == nullptr && id != INVALID_ENTITY_ID) {\
-        LogError("Entity {} (ID) has been deleted or is invalid, but is still being accessed.", id);\
-        CUP_POP_TOP();\
-        mono_raise_exception(mono_get_exception_null_reference());\
-    }
-
 namespace Copper::Scripting::Entity {
 
     std::unordered_map<std::string, std::function<void*(InternalEntity*)>> addComponentFuncs;
@@ -58,7 +45,7 @@ namespace Copper::Scripting::Entity {
 
         CUP_FUNCTION();
 
-        GET_ENTITY(ptr, entity);
+        GET_UNMANAGED_ENTITY(ptr, entity);
         return MonoUtils::StringToMonoString(ptr->name);
 
     }
@@ -69,7 +56,7 @@ namespace Copper::Scripting::Entity {
         std::string name;
         MonoUtils::MonoStringToString(value, name);
 
-        GET_ENTITY(ptr, entity);
+        GET_UNMANAGED_ENTITY(ptr, entity);
         ptr->name = name;
 
     }
@@ -78,7 +65,7 @@ namespace Copper::Scripting::Entity {
 
         CUP_FUNCTION();
 
-        GET_ENTITY(ptr, entity);
+        GET_UNMANAGED_ENTITY(ptr, entity);
         Transform* transform = ptr->GetTransform();
 
         MonoObject* ret = GetManagedReference(transform, Class::Transform);
@@ -92,7 +79,7 @@ namespace Copper::Scripting::Entity {
 
         CUP_FUNCTION();
 
-        GET_ENTITY(ptr, entity);
+        GET_UNMANAGED_ENTITY(ptr, entity);
 
         MonoType* managedType = mono_reflection_type_get_type(type);
         std::string typeName = mono_type_get_name(managedType);
@@ -140,7 +127,7 @@ namespace Copper::Scripting::Entity {
 
         // Get Component
 
-        GET_ENTITY(ptr, entity);
+        GET_UNMANAGED_ENTITY(ptr, entity);
         
         void* component = nullptr;
         if (cID == Registry::GetCID<Collider>())
@@ -173,7 +160,7 @@ namespace Copper::Scripting::Entity {
 
         // Return
 
-        GET_ENTITY(ptr, entity);
+        GET_UNMANAGED_ENTITY(ptr, entity);
         return ptr->HasComponent(cID);
 
     }
@@ -193,7 +180,7 @@ namespace Copper::Scripting::Entity {
         
         // Return
 
-        GET_ENTITY(ptr, entity);
+        GET_UNMANAGED_ENTITY(ptr, entity);
         ptr->RemoveComponent(cID);
 
     }

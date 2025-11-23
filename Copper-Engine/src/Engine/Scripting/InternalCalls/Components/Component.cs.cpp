@@ -38,4 +38,22 @@ namespace Copper::Scripting::Component {
 
     }
 
+    void RemoveEntity(MonoObject* entity) {
+
+        CUP_FUNCTION();
+
+#ifdef CU_EDITOR
+        if (entity == nullptr) {
+
+            CUP_POP_TOP();
+            mono_raise_exception(mono_get_exception_argument_null("entity"));
+
+        }
+#endif
+
+        GET_UNMANAGED_ENTITY(ptr, entity);
+        GetScene()->RemoveEntity(ptr);
+
+    }
+
 }

@@ -132,6 +132,8 @@ namespace Editor {
     bool OnWindowClose(const Event& e);
     bool OnWindowFocused(const Event& e);
 
+    bool OnEntityRemoved(const Event& e);
+
     void Initialize() {
 
         CUP_FUNCTION();
@@ -144,6 +146,7 @@ namespace Editor {
         GetMainUIContext().SetDefaultFont(ExecutableFolder() / "assets/Fonts/IBMPlexMono-Medium.ttf");
 
         data.scene = GetScene();
+        data.scene->GetRegistry().AddEntityRemovedEventFunc(OnEntityRemoved);
 
         data.viewport.Initialize();
         data.fileBrowser.Initialize();
@@ -910,6 +913,20 @@ namespace Editor {
         if (!event.focused || !data.project.ShouldRebuild()) return true;
 
         data.project.Build();
+
+        return true;
+
+    }
+
+    bool OnEntityRemoved(const Event& e) {
+
+        CUP_FUNCTION();
+
+        if (Properties::GetSelectedData().type != SelectedData::Type::Entity) return true;
+
+        EntityEvent* event = (EntityEvent*) &e;
+        if (Properties::GetSelectedData().entity == event->entity)
+            Properties::ClearSelectedData();
 
         return true;
 

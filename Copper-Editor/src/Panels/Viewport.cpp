@@ -200,8 +200,6 @@ namespace Editor {
             if (ImGui::IsWindowFocused() && Input::GetKeyState(KeyCode::Delete) == KeyState::Pressed) {
 
                 RemoveEntity(selectedEntity);
-                Properties::ClearSelectedData();
-
                 SetChanges();
 
             }

@@ -13,4 +13,6 @@ namespace Copper::Scripting::Component {
     MonoObject* GetEntity(MonoObject* component);
     MonoObject* GetTransform(MonoObject* component);
 
+    void RemoveEntity(MonoObject* entity);
+
 }

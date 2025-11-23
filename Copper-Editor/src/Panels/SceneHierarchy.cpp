@@ -52,8 +52,6 @@ namespace Editor {
             CU_ASSERT(Properties::GetSelectedData().entity, "Selected entity is invalid, can't delete!");
 
             m_entityToRemove = Properties::GetSelectedData().entity;
-            Properties::ClearSelectedData();
-
             SetChanges();
 
         }
@@ -222,9 +220,6 @@ namespace Editor {
         CUP_FUNCTION();
 
         if (ImGui::MenuItem("Remove")) {
-
-            if (Properties::GetSelectedData().type == SelectedData::Type::Entity && Properties::GetSelectedData().entity == entity)
-                Properties::ClearSelectedData();
 
             m_entityToRemove = entity;
             SetChanges();

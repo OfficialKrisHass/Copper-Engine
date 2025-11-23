@@ -17,8 +17,9 @@ namespace Copper::PhysicsEngine {
 
             CUP_FUNCTION();
 
-            CU_ASSERT(!(pairHeader.flags & PxContactPairHeaderFlag::eREMOVED_ACTOR_0), "First actor out of a contact pair was removed.");
-            CU_ASSERT(!(pairHeader.flags & PxContactPairHeaderFlag::eREMOVED_ACTOR_1), "Second actor out of a contact pair was removed.");
+            // pairHeader.flags is 0 unless one of the eREMOVED_ACTOR_X flags is set, which we can safely ignore.
+            // Maybe in the future we can add a new event, or just fire OnCollisionEnd when a RigidBody that was in contact is removed.
+            if (static_cast<uint16>(pairHeader.flags) != 0) return;
 
             uint32 id0 = static_cast<uint32>((uint64) pairHeader.actors[0]->userData);
             CU_ASSERT(GetEntityFromID(id0) != nullptr, "Could not retrieve the first contact entity from the ContactPairHeader. Retrieved ID: '{}'", id0);

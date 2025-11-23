@@ -50,6 +50,7 @@ namespace Copper::Scripting {
         mono_add_internal_call("Copper.Collider::set_center", (void*) Collider::SetCenter);
         mono_add_internal_call("Copper.Component::get_entity", (void*) Component::GetEntity);
         mono_add_internal_call("Copper.Component::get_transform", (void*) Component::GetTransform);
+        mono_add_internal_call("Copper.Component::Internal_RemoveEntity", (void*) Component::RemoveEntity);
         mono_add_internal_call("Copper.Light::get_color", (void*) Light::GetColor);
         mono_add_internal_call("Copper.Light::set_color", (void*) Light::SetColor);
         mono_add_internal_call("Copper.Light::get_type", (void*) Light::GetType);

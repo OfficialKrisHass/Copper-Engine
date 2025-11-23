@@ -292,8 +292,6 @@ namespace Copper {
 
         void Cleanup() {
 
-            for (ComponentPool* pool : m_pools)
-                delete pool;
             for (InternalEntity& entity : m_entities) {
 
                 if (entity.m_id == INVALID_ENTITY_ID) continue;
@@ -302,6 +300,8 @@ namespace Copper {
                 entityRemovedEvent();
 
             }
+            for (ComponentPool* pool : m_pools)
+                delete pool;
 
             m_entities.clear();
             m_gaps.clear();

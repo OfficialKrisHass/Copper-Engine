@@ -93,6 +93,8 @@ namespace Copper {
 
         inline Camera* GetMainCamera() const { return m_cam; }
 
+        Registry& GetRegistry() { return m_registry; }
+
         Registry::ComponentPool* GetComponentPool(int32 cID) const { CUP_FUNCTION(); return m_registry.GetComponentPool(cID); }
         uint32 GetNumOfEntities() const { return (uint32) m_registry.m_entities.size(); }
 

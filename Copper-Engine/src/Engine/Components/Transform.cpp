@@ -224,7 +224,9 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+        CU_EDITOR_ASSERT_RETURN(index < m_children.size(), nullptr, "Invalid child index '{}'. Transform: '{}'", index, GetEntity());
         CU_ASSERT(GetEntityFromID(m_children[index]) != nullptr, "Transform has an invalid child. Index: '{}'", index);
+
         return GetEntityFromID(m_children[index])->GetTransform();
 
     }

@@ -36,4 +36,16 @@ namespace Copper::Scripting::Transform {
     Vector3 GetRight(MonoObject* transform);
     Vector3 GetUp(MonoObject* transform);
 
+    // Parent & Child
+
+    MonoObject* GetParent(MonoObject* transform);
+    void SetParent(MonoObject* transform, MonoObject* parent);
+
+    MonoObject* GetChild(MonoObject* transform, uint32 index);
+    uint32 GetChildCount(MonoObject* transform);
+
+    void AddChild(MonoObject* transform, MonoObject* child);
+    void RemoveChild(MonoObject* transform, uint32 index);
+    void RemoveChildTransform(MonoObject* transform, MonoObject* child);
+
 }

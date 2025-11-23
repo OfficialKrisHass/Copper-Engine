@@ -62,9 +62,9 @@ namespace Copper {
 
         // Children
 
-        void AddChild(Transform* transform);
-        void RemoveChild(Transform* transform);
+        void AddChild(Transform* child);
         void RemoveChild(uint32 index);
+        void RemoveChild(Transform* child);
 
         Transform* GetChild(uint32 index) const;
         inline uint32 GetChildCount() const { return (uint32) m_children.size(); }

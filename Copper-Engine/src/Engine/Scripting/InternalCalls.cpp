@@ -82,10 +82,17 @@ namespace Copper::Scripting {
         mono_add_internal_call("Copper.Transform::get_forward", (void*) Transform::GetForward);
         mono_add_internal_call("Copper.Transform::get_right", (void*) Transform::GetRight);
         mono_add_internal_call("Copper.Transform::get_up", (void*) Transform::GetUp);
+        mono_add_internal_call("Copper.Transform::get_parent", (void*) Transform::GetParent);
+        mono_add_internal_call("Copper.Transform::set_parent", (void*) Transform::SetParent);
+        mono_add_internal_call("Copper.Transform::get_childCount", (void*) Transform::GetChildCount);
         mono_add_internal_call("Copper.Transform::Internal_GetRotation", (void*) Transform::GetRotation);
         mono_add_internal_call("Copper.Transform::Internal_SetRotation", (void*) Transform::SetRotation);
         mono_add_internal_call("Copper.Transform::Internal_GetGlobalRotation", (void*) Transform::GetGlobalRotation);
         mono_add_internal_call("Copper.Transform::Internal_SetGlobalRotation", (void*) Transform::SetGlobalRotation);
+        mono_add_internal_call("Copper.Transform::Internal_GetChild", (void*) Transform::GetChild);
+        mono_add_internal_call("Copper.Transform::Internal_AddChild", (void*) Transform::AddChild);
+        mono_add_internal_call("Copper.Transform::Internal_RemoveChild", (void*) Transform::RemoveChild);
+        mono_add_internal_call("Copper.Transform::Internal_RemoveChildTransform", (void*) Transform::RemoveChildTransform);
         mono_add_internal_call("Copper.Entity::get_name", (void*) Entity::GetName);
         mono_add_internal_call("Copper.Entity::set_name", (void*) Entity::SetName);
         mono_add_internal_call("Copper.Entity::get_transform", (void*) Entity::GetTransform);

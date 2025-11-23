@@ -4,6 +4,7 @@
 
 #include "Engine/Scripting/ScriptingEngine.h"
 #include "Engine/Scripting/InternalCalls/Utils.h"
+#include "Engine/Scripting/ManagedReferences.h"
 
 #include <mono/metadata/object.h>
 #include <mono/metadata/exception.h>
@@ -140,6 +141,113 @@ namespace Copper::Scripting::Transform {
 
         GET_UNMANAGED_COMPONENT_PTR(Transform, ptr, transform);
         return ptr->GetUp();
+
+    }
+
+    // Parent & Child
+
+    MonoObject* GetParent(MonoObject* transform) {
+        
+        CUP_FUNCTION();
+
+        GET_UNMANAGED_COMPONENT_PTR(Transform, ptr, transform);
+
+        Transform* parent = ptr->GetParent();
+        if (parent == nullptr) return nullptr;
+
+        return GetManagedReference(parent, Class::Transform);
+
+    }
+    void SetParent(MonoObject* transform, MonoObject* parent) {
+
+        CUP_FUNCTION();
+
+        GET_UNMANAGED_COMPONENT_PTR(Transform, ptr, transform);
+        if (parent == nullptr) {
+
+            Log("Setting parrent to nullptr.");
+            ptr->SetParent(nullptr);
+            return;
+
+        }
+
+        GET_UNMANAGED_COMPONENT_PTR(Transform, newParent, parent);
+        ptr->SetParent(newParent);
+
+    }
+
+    MonoObject* GetChild(MonoObject* transform, uint32 index) {
+
+        CUP_FUNCTION();
+
+        GET_UNMANAGED_COMPONENT_PTR(Transform, ptr, transform);
+
+        Transform* child = ptr->GetChild(index);
+#ifdef CU_EDITOR
+        if (child == nullptr) {
+
+            CUP_POP_TOP();
+            mono_raise_exception(mono_get_exception_argument_null("index"));
+
+        }
+#endif
+
+        return GetManagedReference(child, Class::Transform);
+
+    }
+    uint32 GetChildCount(MonoObject* transform) {
+
+        CUP_FUNCTION();
+
+        GET_UNMANAGED_COMPONENT_PTR(Transform, ptr, transform);
+        return ptr->GetChildCount();
+
+    }
+
+    void AddChild(MonoObject* transform, MonoObject* child) {
+
+        CUP_FUNCTION();
+
+        GET_UNMANAGED_COMPONENT_PTR(Transform, ptr, transform);
+        
+#ifdef CU_EDITOR
+        if (child == nullptr) {
+
+            CUP_POP_TOP();
+            mono_raise_exception(mono_get_exception_argument_null("child"));
+
+        }
+#endif
+
+        GET_UNMANAGED_COMPONENT_PTR(Transform, unmanagedChild, child);
+        ptr->AddChild(unmanagedChild);
+
+    }
+    void RemoveChild(MonoObject* transform, uint32 index) {
+
+        CUP_FUNCTION();
+
+        GET_UNMANAGED_COMPONENT_PTR(Transform, ptr, transform);
+        ptr->RemoveChild(index);
+
+    }
+    void RemoveChildTransform(MonoObject* transform, MonoObject* child) {
+
+        CUP_FUNCTION();
+
+        GET_UNMANAGED_COMPONENT_PTR(Transform, ptr, transform);
+
+#ifdef CU_EDITOR
+        if (child == nullptr) {
+
+            CUP_POP_TOP();
+            mono_raise_exception(mono_get_exception_argument_null("child"));
+
+        }
+#endif
+
+        GET_UNMANAGED_COMPONENT_PTR(Transform, unmanagedChild, child);
+        ptr->RemoveChild(unmanagedChild);
 
     }
 

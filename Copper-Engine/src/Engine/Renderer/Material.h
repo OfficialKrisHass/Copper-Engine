@@ -6,6 +6,8 @@
 
 #include "Engine/Renderer/Texture.h"
 
+#define MAX_MATERIALS 16
+
 namespace Copper {
 
     class Material {

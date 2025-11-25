@@ -108,11 +108,6 @@ namespace Editor {
 
             }
 
-            Vector3 test = transform->GetGlobalRotation().EulerAngles();
-            UI::EditVector3("GRotation", &test);
-
-            ImGui::Separator();
-
             Vector3 scale = transform->GetScale();
             if (UI::EditVector3("Scale", &scale)) {
 

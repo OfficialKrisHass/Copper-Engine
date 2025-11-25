@@ -378,7 +378,7 @@ namespace Copper::Renderer {
 
         CUP_FUNCTION();
 
-        CU_ASSERT(data.lightCount < MAX_LIGHTS, "Max amount of lights reached ({})", MAX_LIGHTS);
+        CU_EDITOR_ASSERT_RETURN(data.lightCount < MAX_LIGHTS,, "Max amount of lights reached ({})", MAX_LIGHTS);
 
         data.lights[data.lightCount] = light;
         data.lightCount++;
@@ -392,6 +392,7 @@ namespace Copper::Renderer {
 
     }
 
+    // This function is called at the end of each frame to render the last batch.
     void Render(Camera* cam, bool gizmos) {
 
         CUP_FUNCTION();
@@ -438,7 +439,7 @@ namespace Copper::Renderer {
 
     uint32 GetMaterialIndex(const MaterialAsset& material) {
 
-        if (!material || data.materialCount == MaxMaterials) return MaxMaterials;
+        if (!material.IsValid() || data.materialCount == MaxMaterials) return MaxMaterials;
 
         for (uint32 i = 1; i < data.materialCount; i++) {
 

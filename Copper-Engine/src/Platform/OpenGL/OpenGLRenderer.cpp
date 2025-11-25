@@ -132,19 +132,23 @@ namespace Copper::RendererAPI {
 
         CUP_FUNCTION();
 
+        CU_ASSERT(cam != nullptr, "Renderer was given no camera to render with.");
+
         vao->Bind();
         shader.Bind();
 
+        CU_EDITOR_ASSERT_RETURN(materialCount < MAX_MATERIALS,, "Mas numbers of materials ({}) reached. Current number of materials: '{}'", MAX_MATERIALS, materialCount);
         for (uint32 i = 0; i < materialCount; i++) {
 
-            CU_ASSERT(materials[i].IsValid(), "Invalid material asset used when rendering. UUID: {}", materials[i].AssetUUID());
+            MaterialAsset& material = materials[i];
+            CU_ASSERT(material.IsValid(), "Invalid material asset used when rendering. UUID: {}", materials[i].AssetUUID());
 
             const std::string materialName = "materials[" + std::to_string(i) + "].";
-            materials[i]->texture->Bind(i);
+            material->texture->Bind(i);
 
             shader.LoadInt(materialName + "texture", i); // texture
-            shader.LoadColor(materialName + "albedo", materials[i]->albedo); // albedo
-            shader.LoadFloat(materialName + "tiling", materials[i]->tiling); // tiling
+            shader.LoadColor(materialName + "albedo", material->albedo); // albedo
+            shader.LoadFloat(materialName + "tiling", material->tiling); // tiling
 
         }
 
@@ -158,21 +162,19 @@ namespace Copper::RendererAPI {
 
         // Lights
 
-        CU_ASSERT(lightCount < MAX_LIGHTS + 1, "You have reached more lights then allowed ({}), current number of lights: {}", MAX_LIGHTS, lightCount);
-
-        std::string lightStr = "lights[x].";
+        CU_EDITOR_ASSERT_RETURN(lightCount < MAX_LIGHTS + 1,, "Max number of lights ({}) reached. Current number of lights: '{}'", MAX_LIGHTS, lightCount);
         for (uint32 i = 0; i < lightCount; i++) {
 
-            lightStr[7] = '0' + i;
+            const std::string lightName = "lights[" + std::to_string(i) + "].";
             Light* light = lights[i];
 
             CU_ASSERT(light != nullptr, "lights[{}] is nullptr!", i);
 
-            shader.LoadInt(lightStr + "type", (uint32) light->type);
-            shader.LoadVec3(lightStr + "posOrDir", light->type == Light::Type::Point ? light->GetTransform()->GetGlobalPosition() : light->GetTransform()->GetForward());
+            shader.LoadInt(lightName + "type", (uint32) light->type);
+            shader.LoadVec3(lightName + "posOrDir", light->type == Light::Type::Point ? light->GetTransform()->GetGlobalPosition() : light->GetTransform()->GetForward());
 
-            shader.LoadVec3(lightStr + "color", light->color);
-            shader.LoadFloat(lightStr + "intensity", light->intensity);
+            shader.LoadVec3(lightName + "color", light->color);
+            shader.LoadFloat(lightName + "intensity", light->intensity);
 
         }
         shader.LoadInt("lightCount", lightCount);
@@ -189,6 +191,8 @@ namespace Copper::RendererAPI {
     void RenderLines(VertexArray* vao, uint32 vertexCount) {
 
         CUP_FUNCTION();
+
+        CU_ASSERT(cam != nullptr, "Renderer was given no camera to render with.");
 
         vao->Bind();
         lineShader.Bind();

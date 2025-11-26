@@ -38,8 +38,22 @@ namespace Copper {
         public float lengthSq { get { return x * x + y * y; } }
         public float length { get { return (float) Math.Sqrt(x * x + y * y); } }
 
-        public Vector2 normalized { get { return this / length; } }
-        public void Normalize() { this = this / length; }
+        public Vector2 normalized {
+
+            get {
+
+                if (length == 0.0f) return zero;
+                return this / length;
+
+            }
+
+        }
+        public void Normalize() {
+
+            if (length == 0.0f) return;
+            this = this / length;
+
+        }
         
         // Math operators
 
@@ -129,8 +143,22 @@ namespace Copper {
         public float lengthSq { get { return x * x + y * y; } }
         public float length { get { return (float) Math.Sqrt(x * x + y * y); } }
 
-        public Vector2I normalized { get { return this / (int) length; } }
-        public void Normalize() { this = this / (int) length; }
+        public Vector2I normalized {
+
+            get {
+
+                if (length == 0.0f) return zero;
+                return this / (int) length;
+
+            }
+
+        }
+        public void Normalize() {
+
+            if (length == 0.0f) return;
+            this = this / (int) length;
+
+        }
         
         // Math operators
 
@@ -219,8 +247,22 @@ namespace Copper {
         public float lengthSq { get { return x * x + y * y; } }
         public float length { get { return (float) Math.Sqrt(x * x + y * y); } }
 
-        public UVector2I normalized { get { return this / (uint) length; } }
-        public void Normalize() { this = this / (uint) length; }
+        public UVector2I normalized {
+
+            get {
+
+                if (length == 0.0f) return zero;
+                return this / (uint) length;
+
+            }
+
+        }
+        public void Normalize() {
+
+            if (length == 0.0f) return;
+            this = this / (uint) length;
+
+        }
         
         // Math operators
 

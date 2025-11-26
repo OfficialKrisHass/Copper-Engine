@@ -69,8 +69,22 @@ namespace Copper {
         public float lengthSq { get { return x * x + y * y + z * z; } }
         public float length { get { return (float) Math.Sqrt(x * x + y * y + z * z); } }
         
-        public Vector3 normalized { get { return this / length; } }
-        public void Normalize() { this = this / length; }
+        public Vector3 normalized {
+
+            get {
+
+                if (length == 0.0f) return zero;
+                return this / length;
+
+            }
+
+        }
+        public void Normalize() {
+
+            if (length == 0.0f) return;
+            this = this / length;
+
+        }
 
         // Math operators
 
@@ -190,9 +204,23 @@ namespace Copper {
 
         public float lengthSq { get { return x * x + y * y + z * z; } }
         public float length { get { return (float) Math.Sqrt(x * x + y * y + z * z); } }
-        
-        public Vector3I normalized { get { return this / (int) length; } }
-        public void Normalize() { this = this / (int) length; }
+
+        public Vector3I normalized {
+
+            get {
+
+                if (length == 0.0f) return zero;
+                return this / (int) length;
+
+            }
+
+        }
+        public void Normalize() {
+
+            if (length == 0.0f) return;
+            this = this / (int) length;
+
+        }
 
         // Math operators
 
@@ -311,8 +339,22 @@ namespace Copper {
         public float lengthSq { get { return x * x + y * y + z * z; } }
         public float length { get { return (float) Math.Sqrt(x * x + y * y + z * z); } }
         
-        public UVector3I normalized { get { return this / (uint) length; } }
-        public void Normalize() { this = this / (uint) length; }
+        public UVector3I normalized {
+
+            get {
+
+                if (length == 0.0f) return zero;
+                return this / (uint) length;
+
+            }
+
+        }
+        public void Normalize() {
+
+            if (length == 0.0f) return;
+            this = this / (uint) length;
+
+        }
 
         // Math operators
 

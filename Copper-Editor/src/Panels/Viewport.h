@@ -60,6 +60,7 @@ namespace Editor {
         SceneCamera m_sceneCam; 
         FrameBuffer m_fbo;
 
+        bool m_open = false;
         bool m_firstFrame = true;
 
         Gizmo m_gizmo;

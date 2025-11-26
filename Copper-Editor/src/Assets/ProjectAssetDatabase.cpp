@@ -238,7 +238,6 @@ namespace Editor::ProjectAssetDatabase {
     void LoadAsset(const fs::path& path, AssetType type, bool newAsset) {
 
         CUP_FUNCTION();
-
         CU_ASSERT(IsDatabaseAsset(type), "AssetType '{}' is not a databse asset!", static_cast<uint8>(type));
 
         const fs::path fullPath = GetProject().GetAssetsPath() / path;
@@ -300,7 +299,6 @@ namespace Editor::ProjectAssetDatabase {
     void DeleteAsset(const fs::path& path, AssetType type) {
 
         CUP_FUNCTION();
-
         CU_ASSERT(IsDatabaseAsset(type), "AssetType '{}' is not a databse asset!", static_cast<uint8>(type));
 
         const auto it = assetFiles.find(path);

@@ -126,6 +126,7 @@ namespace Editor::NewItemModal {
     void Options() {
 
         CUP_FUNCTION();
+
         ImGui::BeginChild("##Options", ImVec2(70.0f * ImGui::GetContentRegionAvail().x / 100.0f, ImGui::GetContentRegionAvail().y - BUTTON_HEIGHT * 1.5f), true);
 
         ImGui::PushItemWidth(-1);
@@ -188,6 +189,7 @@ namespace Editor::NewItemModal {
     void CreateFolder() {
 
         CUP_FUNCTION();
+
         fs::create_directories(directory / nameInput);
 
     }

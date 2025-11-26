@@ -15,6 +15,7 @@ namespace Editor {
 
     void ThemeEditor::UI() {
 
+        CUP_FUNCTION();
         CU_ASSERT(m_style, "Theme Editor style is nullptr, make sure you called Load or SaveTheme at least once");
 
         ImGui::DragFloat("Rounding", &m_style->FrameRounding);
@@ -26,6 +27,8 @@ namespace Editor {
     }
 
     void ThemeEditor::ColorEditor() {
+
+        CUP_FUNCTION();
 
         COLOR_EDIT(ImGuiCol_WindowBg, "Window background");
         COLOR_EDIT(ImGuiCol_ChildBg, "Child window background");
@@ -73,6 +76,8 @@ namespace Editor {
     }
 
     void ThemeEditor::SaveTheme(const fs::path& path) {
+
+        CUP_FUNCTION();
 
         if (!m_style)
             m_style = &ImGui::GetStyle();
@@ -127,6 +132,8 @@ namespace Editor {
 
     }
     void ThemeEditor::LoadTheme(const fs::path& path) {
+
+        CUP_FUNCTION();
 
         if (m_style == nullptr)
             m_style = &ImGui::GetStyle();

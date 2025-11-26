@@ -31,6 +31,7 @@ namespace Editor {
 
     void SceneHierarchy::UI() {
 
+        CUP_FUNCTION();
         CUP_START_FRAME("Scene Hierarchy");
 
         if (ImGui::BeginPopupContextWindow("##Scene Hierarchy"))
@@ -70,6 +71,8 @@ namespace Editor {
 
     void SceneHierarchy::DrawEntityNode(InternalEntity* entity) {
 
+        CUP_FUNCTION();
+
         ImGui::PushID((uint32) (uint64) entity);
 
         ImVec2 pos = ImGui::GetCursorScreenPos();
@@ -82,16 +85,16 @@ namespace Editor {
 
             case KeyState::Pressed: {
 
-                if (!IsInteractionBlocked())
-                    clickedEntityID = entity->GetID();
+                if (IsInteractionBlocked()) break;
+                clickedEntityID = entity->GetID();
 
                 break;
 
             }
             case KeyState::Released: {
 
-                if (!IsInteractionBlocked())
-                    Properties::SetSelectedEntity(entity);
+                if (IsInteractionBlocked()) break;
+                Properties::SetSelectedEntity(entity);
 
                 break;
 
@@ -240,6 +243,8 @@ namespace Editor {
     }
     void SceneHierarchy::PopupWindow() {
 
+        CUP_FUNCTION();
+
         Entity newEntity;
         CommonPopup(newEntity);
 
@@ -248,6 +253,8 @@ namespace Editor {
     }
 
     void SceneHierarchy::RemoveParentTarget() {
+
+        CUP_FUNCTION();
 
         const ImVec2 regionMax = ImGui::GetWindowContentRegionMax();
         const ImRect windowRect{ { ImGui::GetWindowContentRegionMin().x + 1, ImGui::GetItemRectMax().y + 2 }, { regionMax.x, regionMax.y + 80 } };

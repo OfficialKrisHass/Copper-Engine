@@ -63,6 +63,7 @@ namespace Editor {
 
     void Properties::RenderEntity() {
 
+        CUP_FUNCTION();
         CU_ASSERT(m_selectedData.type == SelectedData::Type::Entity, "Can't render an entity when one isn't selected!");
 
         if (!m_selectedData.entity) return;
@@ -224,7 +225,9 @@ namespace Editor {
     }
     void Properties::RenderFile() {
 
+        CUP_FUNCTION();
         CU_ASSERT(m_selectedData.type == SelectedData::Type::File, "Can't render file when a file is not selected!");
+
         if (m_selectedData.file.empty()) return;
 
         ImGui::Text(m_selectedData.file.string().c_str());
@@ -277,6 +280,8 @@ namespace Editor {
 
     void Properties::RenderMeshRenderer(Copper::MeshRenderer* renderer) {
 
+        CUP_FUNCTION();
+
         if (!DrawComponent<MeshRenderer>("Mesh Renderer", renderer)) return;
 
         if (UI::EditMaterial("Material", &renderer->material))
@@ -286,6 +291,8 @@ namespace Editor {
 
     }
     void Properties::RenderLight(Light* light) {
+
+        CUP_FUNCTION();
 
         if (!DrawComponent<Light>("Light", light)) return;
 
@@ -302,6 +309,8 @@ namespace Editor {
     }
     void Properties::RenderCamera(Camera* camera) {
 
+        CUP_FUNCTION();
+
         if (!DrawComponent<Camera>("Camera", camera)) return;
 
         if (UI::EditFloat("FOV", &camera->fov))
@@ -316,6 +325,8 @@ namespace Editor {
     }
 
     void Properties::RenderRigidBody(RigidBody* rb) {
+
+        CUP_FUNCTION();
 
         if (!DrawComponent<RigidBody>("Rigid Body", rb)) return;
 
@@ -366,6 +377,8 @@ namespace Editor {
 
     void Properties::RenderCollider(Collider* collider) {
 
+        CUP_FUNCTION();
+
         if (UI::EditBool("Trigger", &collider->m_trigger)) {
 
             collider->SetTrigger(collider->m_trigger);
@@ -384,6 +397,8 @@ namespace Editor {
     }
     void Properties::RenderBoxCollider(BoxCollider* collider) {
 
+        CUP_FUNCTION();
+
         if (!DrawComponent<BoxCollider>("Box Collider", collider)) return;
         RenderCollider(collider);
 
@@ -399,6 +414,8 @@ namespace Editor {
     }
     void Properties::RenderSphereCollider(SphereCollider* collider) {
 
+        CUP_FUNCTION();
+
         if (!DrawComponent<SphereCollider>("Sphere Collider", collider)) return;
         RenderCollider(collider);
 
@@ -413,6 +430,8 @@ namespace Editor {
 
     }
     void Properties::RenderCapsuleCollider(CapsuleCollider* collider) {
+
+        CUP_FUNCTION();
 
         if (!DrawComponent<CapsuleCollider>("Capsule Collider", collider)) return;
         RenderCollider(collider);
@@ -434,6 +453,8 @@ namespace Editor {
 
     }
     void Properties::RenderScriptComponent(ScriptComponent* scriptComponent) {
+
+        CUP_FUNCTION();
 
         const Scripting::Script* script = scriptComponent->GetScript();
         if (script == nullptr) return;
@@ -527,6 +548,8 @@ namespace Editor {
 
     template<typename T> static bool DrawComponent(const std::string& name, T* component) {
 
+        CUP_FUNCTION();
+
         ImGui::PushID((uint32) (uint64) component);
 
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
@@ -565,6 +588,8 @@ namespace Editor {
     }
     static bool DrawComponent(const std::string& name, Transform* component) {
 
+        CUP_FUNCTION();
+
         ImGui::PushID((uint32) (uint64) component);
 
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
@@ -585,6 +610,8 @@ namespace Editor {
     // Assets
 
     void Properties::RenderMaterial() {
+
+        CUP_FUNCTION();
 
         const MaterialAsset& material = ProjectAssetDatabase::GetAssetFromPath(m_selectedData.file);
         if (!material.IsValid()) {

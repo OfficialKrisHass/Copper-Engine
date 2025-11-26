@@ -36,6 +36,7 @@ namespace Editor {
     Project::Project(const fs::path& path) {
 
         CUP_FUNCTION();
+
         Create(path);
 
     }

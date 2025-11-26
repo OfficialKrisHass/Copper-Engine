@@ -2,8 +2,10 @@
 
 #include <Copper.h>
 
+
 namespace Editor {
 
+    // THIS IS NOT FINISHED PLEASE DO NOT USE ANYWHERE
     class LoadingBar {
 
     public:

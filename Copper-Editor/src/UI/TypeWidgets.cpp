@@ -26,41 +26,57 @@ namespace Editor::UI {
 
     bool EditBool(const std::string& name, bool* show) {
 
+        CUP_FUNCTION();
+
         return ImGui::Checkbox(name.c_str(), show);;
 
     }
     bool EditInt(const std::string& name, int32* show) {
+
+        CUP_FUNCTION();
 
         return ImGui::DragInt(name.c_str(), show, DragIntSpeed);
 
     }
     bool EditUInt(const std::string& name, uint32* show) {
 
+        CUP_FUNCTION();
+
         return ImGui::DragInt(name.c_str(), (int*) show, DragIntSpeed, 0);;
 
     }
     bool EditFloat(const std::string& name, float* show) {
+
+        CUP_FUNCTION();
 
         return ImGui::DragFloat(name.c_str(), show, DragFloatSpeed);
 
     }
     bool EditDouble(const std::string& name, double* show) {
 
+        CUP_FUNCTION();
+
         return ImGui::DragFloat(name.c_str(), (float*) show, DragFloatSpeed);
 
     }
     bool EditString(const std::string& name, std::string* show) {
+
+        CUP_FUNCTION();
 
         return ImGui::InputText(name.c_str(), show);
 
     }
     bool EditChar(const std::string& name, char* show) {
 
+        CUP_FUNCTION();
+
         return ImGui::InputText(name.c_str(), show, sizeof(char));
 
     }
 
     bool EditVector2(const std::string& name, Vector2* vec) {
+
+        CUP_FUNCTION();
 
         bool ret = false;
 
@@ -109,6 +125,8 @@ namespace Editor::UI {
 
     }
     bool EditVector3(const std::string& name, Vector3* vec) {
+
+        CUP_FUNCTION();
 
         bool ret = false;
 
@@ -167,6 +185,8 @@ namespace Editor::UI {
 
     }
     bool EditVector4(const std::string& name, Vector4* vec) {
+
+        CUP_FUNCTION();
 
         bool ret = false;
 
@@ -235,6 +255,8 @@ namespace Editor::UI {
     }
     bool EditColor(const std::string& name, Color* col) {
 
+        CUP_FUNCTION();
+
         bool ret = false;
 
         ImGui::PushID(name.c_str());
@@ -250,6 +272,8 @@ namespace Editor::UI {
     }
 
     bool EditEntity(const std::string& name, InternalEntity** entity) {
+
+        CUP_FUNCTION();
 
         ImGuiID id = ImGuiID((uint32) (uint64) name.c_str());
         ImGui::PushID(id);
@@ -313,6 +337,8 @@ namespace Editor::UI {
 
     }
     bool EditTransform(const std::string& name, Transform** transform) {
+
+        CUP_FUNCTION();
 
         bool ret = false;
 
@@ -379,6 +405,8 @@ namespace Editor::UI {
 
     bool EditTexture(const std::string& name, Copper::TextureAsset* texture) {
 
+        CUP_FUNCTION();
+
         ImGuiID id = ImGuiID((uint32) (uint64) name.c_str());
         ImGui::PushID(id);
 
@@ -441,6 +469,8 @@ namespace Editor::UI {
 
     }
     bool EditMaterial(const std::string& name, MaterialAsset* material) {
+
+        CUP_FUNCTION();
 
         ImGuiID id = ImGuiID((uint32) (uint64) name.c_str());
         ImGui::PushID(id);
@@ -505,6 +535,8 @@ namespace Editor::UI {
 
     bool EditDropDown(const std::string& name, const char* items[], uint32 count, uint8* selected) {
 
+        CUP_FUNCTION();
+
         bool ret = false;
 
         if (ImGui::BeginCombo(name.c_str(), items[*selected])) {
@@ -527,6 +559,8 @@ namespace Editor::UI {
 
     }
     bool EditMask(const std::string& name, uint32& mask, uint32 num, uint32 maskOffset, char startLabel) {
+
+        CUP_FUNCTION();
 
         ImGui::Text(name.c_str());
 

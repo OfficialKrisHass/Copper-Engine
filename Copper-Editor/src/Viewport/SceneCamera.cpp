@@ -17,6 +17,8 @@ namespace Editor {
 
     SceneCamera::SceneCamera(UVector2I size, Viewport* viewport) : Camera(size), m_viewport(viewport) {
 
+        CUP_FUNCTION();
+
         m_transform = new Transform();
 
     }

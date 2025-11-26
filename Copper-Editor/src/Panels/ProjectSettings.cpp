@@ -34,6 +34,8 @@ namespace Editor::ProjectSettings {
 
     void UIRender() {
 
+        CUP_FUNCTION();
+
         if (!isOpen) return;
 
         // Setup window and tables
@@ -88,6 +90,8 @@ namespace Editor::ProjectSettings {
 
     void ShowGeneralPage() {
 
+        CUP_FUNCTION();
+
         if (ImGui::CollapsingHeader("Project")) {
 
             UI::EditString("Name", &GetProject().name);
@@ -97,6 +101,8 @@ namespace Editor::ProjectSettings {
 
     }
     void ShowRenderingPage() {
+
+        CUP_FUNCTION();
 
         if (ImGui::CollapsingHeader("Ambient light")) {
 
@@ -113,6 +119,8 @@ namespace Editor::ProjectSettings {
 
     }
     void ShowPhysicsPage() {
+
+        CUP_FUNCTION();
 
         ImGui::Text("Physics Page");
 

@@ -67,6 +67,8 @@ namespace Editor {
     
     void CreateFileAndReplace(const fs::path& original, const fs::path& out, const std::string& what, const std::string& argument) {
 
+        CUP_FUNCTION();
+
         std::ifstream originalFile(original);
         std::ofstream templateFile(out);
 
@@ -91,6 +93,8 @@ namespace Editor {
     }
 
     void CopyFileTo(const fs::path& original, const fs::path& where, bool binary) {
+
+        CUP_FUNCTION();
         
         std::ios_base::openmode inFlags = std::ios_base::in;
         std::ios_base::openmode outFlags = std::ios_base::out;

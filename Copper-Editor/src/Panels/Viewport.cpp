@@ -65,7 +65,11 @@ namespace Editor {
         m_sceneCam.Update();
         GetScene()->Render(&m_sceneCam);
 
-        if (!IsInteractionBlocked() && m_mousePos.x > -1 && m_mousePos.y > -1 && m_mousePos.x < m_size.x && m_mousePos.y < m_size.y && Input::GetKeyState(KeyCode::Mouse0) == KeyState::Pressed && !ImGuizmo::IsOver()) {
+        // When the left mouse button is clicked, the window has to be open, interactions can't be blocked and the cursor needs to be in the window are
+        // and not hovering over the gizmos for the selection of the entity to be successful. 
+
+        if (m_open && !IsInteractionBlocked() && Input::GetKeyState(KeyCode::Mouse0) == KeyState::Pressed
+            && m_mousePos.x > -1 && m_mousePos.y > -1 && m_mousePos.x < m_size.x && m_mousePos.y < m_size.y && !ImGuizmo::IsOver()) {
 
             uint32 id = m_fbo.ReadPixel(1, m_mousePos.x, m_mousePos.y);
             InternalEntity* selectedEntity = GetEntityFromID(id);
@@ -77,10 +81,6 @@ namespace Editor {
 
         m_fbo.Unbind();
 
-        return;
-        if (!Raycast::Fire(m_sceneCam.GetTransform()->GetPosition(), m_sceneCam.GetTransform()->GetForward(), &hitData)) return;
-        Log("hit '{}'", hitData.entity->name);
-
     }
     void Viewport::UIRender() {
 
@@ -88,12 +88,12 @@ namespace Editor {
         CUP_START_FRAME("Viewport");
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
-        bool open = ImGui::Begin(m_name.c_str());
+        m_open = ImGui::Begin(m_name.c_str());
         ImGui::PopStyleVar();
 
         m_focused = ImGui::IsWindowFocused();
 
-        if (!open) {
+        if (!m_open) {
 
             ImGui::End();
 

@@ -28,6 +28,8 @@ namespace Editor {
 
     void Console::UI() {
 
+        CUP_FUNCTION();
+
         if (ImGui::Button("Clear"))
             m_messages.clear();
 
@@ -76,8 +78,6 @@ namespace Editor {
             ImGui::Text(msg.text.c_str());
             ImGui::Separator();
 
-            ImGui::SetScrollHereY();
-
             ImGui::PopStyleColor();
 
         }
@@ -87,6 +87,8 @@ namespace Editor {
     }
 
     void Console::LogCallback(const spdlog::details::log_msg& msg) {
+
+        CUP_FUNCTION();
 
         if (msg.level == spdlog::level::debug) return;
 

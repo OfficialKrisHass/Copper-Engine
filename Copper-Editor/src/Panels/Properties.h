@@ -30,11 +30,15 @@ namespace Editor {
 
         static void SetSelectedEntity(Copper::Entity entity) {
 
+            CUP_FUNCTION();
+
             m_selectedData.entity = entity;
             m_selectedData.type = SelectedData::Type::Entity;
 
         }
         static void SetSelectedFile(const Copper::fs::path& file) {
+
+            CUP_FUNCTION();
 
             new(&m_selectedData.file) fs::path();
             m_selectedData.file = file;

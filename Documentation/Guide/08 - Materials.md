@@ -18,7 +18,7 @@ To apply a material, you can select the entity you want to apply it to, grab and
 
 ![image caption](Media/08/ApplyMaterial.gif)
 
-However, you will notice that nothing was changed. This is because we have not modified the material in any way, By default each material has the same properties as the default material, which is all white.
+However, you will notice that nothing has changed. This is because we have not modified the material in any way, By default each material has the same properties as the default material, which is all white.
 
 To edit the material, select the material in the File Browser and observe the Properties panel.
 
@@ -59,7 +59,7 @@ And a value below one will zoom the texture in.
 ![image caption](Media/08/TilingIn.png)
 
 ## Materials in C#
-You can add `Material` fields to your C# scripts to modify or even generate materials through code.
+You can add `Material` fields to your C# scripts to modify an existing material.
 
 ```cs
 [ShowInEditor] private Material material = null;
@@ -69,7 +69,7 @@ You can now drag and drop a material onto the field to set it's value.
 
 ![image caption](Media/08/MaterialField.gif)
 
-However, only the `albedo` and `tiling` fields are editable. Unfortunately Textures would require a overhaul of the current Texture system, which will be done soon, ong.
+However, only the `albedo` and `tiling` fields are editable. Unfortunately Textures would require a overhaul of the current Texture system, which will be done soon, I promise, ong.
 
 ```cs
 material.albedo = Color.red;
@@ -87,7 +87,7 @@ GetComponent<MeshRenderer>().material = material;
 This does get reset when you stop the runtime, unlike modifying the material itself.
 
 ## Recap
-In this guide we learned what a material is, how to create and modify one and how to use them.
+In this super quick guide we learned what a material is, how to create and modify one and how to use them.
 
 ## Terminology
 Here are some of the terms you should now understand.

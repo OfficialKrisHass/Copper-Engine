@@ -11,7 +11,7 @@ Let's break down the problem into smaller ones.
 1. We want to listen to the keyboard and mouse input, specifically the WASD keys and the mouse movement.
 2. Based on the input, we want to add a force to the `RigidBody` component and rotate the player and camera.
 
-Thankfully, we have the knowledge for both of these tasks from the last 2 guides.
+Thankfully, we have the knowledge for both of these tasks from the previous 2 guides.
 
 ## 1. Input
 Let's start with an empty Component that we will call `PlayerMovement` but you are free to call it whatever you want.
@@ -235,6 +235,8 @@ camera.position = new Vector3(transform.position.x, camera.position.y, transform
 Now when you go to the Copper-Editor, position the camera to where the eyes of the player would be and make sure it isn't a child of the parent.
 
 ![image caption](Media/07/NonUniform2.png)
+
+
 ![image caption](Media/07/NonUniform1.png)
 
 And when you run the game, you should have a working First Person movement system!

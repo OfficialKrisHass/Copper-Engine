@@ -1,6 +1,7 @@
 #include "ProjectChecker.h"
 
 #include "Projects/Project.h"
+#include "Projects/ProjectBuilder.h"
 
 #include <filesystem>
 #include <fstream>
@@ -88,7 +89,7 @@ namespace Editor::ProjectChecker {
 
         }
         if (GET_FLAG(issueFlags, MissingProjectDLL))
-            project.BuildScripts();
+            ProjectBuilder::BuildScripts(project.GetPath());
 
         LogStatus("\tIssues fixed.");
 

@@ -31,7 +31,7 @@ namespace Editor {
         CUP_FUNCTION();
 
         if (ImGui::Button("Clear"))
-            m_messages.clear();
+            Clear();
 
         ImGui::SameLine();
         ImGui::Checkbox("Info", &showInfo);
@@ -75,7 +75,7 @@ namespace Editor {
                 
             }
 
-            ImGui::Text(msg.text.c_str());
+            ImGui::TextWrapped(msg.text.c_str());
             ImGui::Separator();
 
             ImGui::PopStyleColor();

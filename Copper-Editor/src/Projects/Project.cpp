@@ -5,6 +5,7 @@
 
 #include "Projects/ProjectChecker.h"
 #include "Projects/ProjectTemplate.h"
+#include "Projects/ProjectBuilder.h"
 
 #include "Assets/AssetType.h"
 #include "Assets/ProjectAssetDatabase.h"
@@ -12,6 +13,7 @@
 #include "Panels/FileBrowser.h"
 #include "Panels/SceneHierarchy.h"
 #include "Panels/Properties.h"
+#include "Panels/Console.h"
 
 #include <Engine/Core/Window.h>
 
@@ -244,7 +246,9 @@ namespace Editor {
 
         const fs::path assemblyPath = m_path / "Binaries" / (name + ".dll");
 
-        if (!BuildScripts())
+        Console::Clear();
+
+        if (!ProjectBuilder::BuildScripts(m_path))
             return LogError("Failed to Build the project scripts.");
 
         // First load or opening a project, we just need to Load the assembly and that's it
@@ -269,45 +273,6 @@ namespace Editor {
         LoadFields(ExecutableFolder() / "assets/Temp/fields.copper");
 
         m_shouldRebuild = false;
-
-    }
-    bool Project::BuildScripts() const {
-
-        CUP_FUNCTION();
-
-#ifdef CU_WINDOWS
-        std::string cmd = "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\MSBuild.exe ";
-
-        size_t pos = m_path.string().find_first_of(' ');
-        std::string newPath = m_path.string();
-        while (pos != std::string::npos) {
-
-            newPath.erase(pos, 1);
-            newPath.insert(pos, "\" \"");
-            pos = newPath.find_first_of(' ', pos + 3);
-
-        }
-
-        pos = name.find_first_of(' ');
-        std::string newName = name;
-        while (pos != std::string::npos) {
-
-            newName.erase(pos, 1);
-            newName.insert(pos, "\" \"");
-            pos = newName.find_first_of(' ', pos + 3);
-
-        }
-
-        cmd += newPath + "\\" + newName + ".csproj";
-        cmd += " -nologo";
-
-        system(cmd.c_str());
-#else
-        const std::string cmd = "make --no-print-directory -C \"" + m_path.string() + "\" -f Makefile";
-        system(cmd.c_str());
-#endif
-
-        return true;
 
     }
 

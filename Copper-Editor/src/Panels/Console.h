@@ -14,6 +14,8 @@ namespace Editor {
         Console() : Panel("Console") {}
 
         void Initialize();
+
+        static inline void Clear() { m_messages.clear(); }
         
     private:
         struct Message {

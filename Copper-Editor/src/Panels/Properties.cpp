@@ -623,10 +623,6 @@ namespace Editor {
 
         }
 
-        const std::string name = m_selectedData.file.filename().string();
-        ImGui::Text(name.c_str());
-        ImGui::NewLine();
-
         if (UI::EditTexture("Texture", &material->texture))
             SetChanges();
 

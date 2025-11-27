@@ -11,7 +11,7 @@ Entities:
         []
     Mesh Renderer:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
-      Material: 00000000-0000-0000-0000-000000000000
+      Material: 686fdcf0-95c5-4947-8460-99d2b7f10a27
     Rigid Body:
       Mass: 1
       Static: true
@@ -59,7 +59,7 @@ Entities:
         []
     Mesh Renderer:
       Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
-      Material: 00000000-0000-0000-0000-000000000000
+      Material: baf2d7d8-470e-417b-9424-69bf62bdeb80
     Rigid Body:
       Mass: 1
       Static: false
@@ -104,7 +104,7 @@ Entities:
       Fields:
         {}
 Scene Camera:
-  Position: [1.7278595, 3.3335073, -0.938857079]
-  Rotation: [-0.411919057, 0.132373229, -0.858278036, -0.275818229]
+  Position: [-3.69727492, 4.34575319, 4.0551343]
+  Rotation: [0.903158426, -0.246119171, -0.339250267, -0.0924470499]
   Speed: 1
   Sensitivity: 2

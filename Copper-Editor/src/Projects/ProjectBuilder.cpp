@@ -47,8 +47,8 @@ namespace Editor::ProjectBuilder {
 
 #ifdef CU_WINDOWS
         // I ABSOLUTELY HATE THE WINDOWS API
-        // genuinely look how simple the linux api is. It's about 50 lines of code, 30 of which are formatting and comments
-        // It is so bloody simple and easy and not stupid like the windows api.
+        // genuinely look how simple the linux api is. It's literally 13 fucking lines, THIRTEEN
+        // THE WINDOWS VERSION IS LIKE 50 SKHKJSHDJHSHGDHGHSJDGHJD
 
         static const fs::path msbuild = GetMSBuildPath();
 

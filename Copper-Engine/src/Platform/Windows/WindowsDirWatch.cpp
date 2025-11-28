@@ -24,16 +24,12 @@ namespace Copper {
 	}
 	void DirWatch::StopBackend() {
 
-		CUP_FUNCTION();
-
 		CloseHandle(m_handle);
 		CloseHandle(m_closeEvent);
 
 	}
 
 	void DirWatch::SendCloseEvent() {
-
-		CUP_FUNCTION();
 
 		SetEvent(m_closeEvent);
 

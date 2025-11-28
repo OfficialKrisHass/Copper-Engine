@@ -2,6 +2,10 @@
 
 #include <regex>
 
+#ifdef CU_WINDOWS
+#include <windows.h>
+#endif
+
 namespace Editor::ProjectBuilder {
 
     struct BuildMessage {
@@ -27,92 +31,113 @@ namespace Editor::ProjectBuilder {
 
     };
 
-    bool BuildScripts(const fs::path &path) {
+    void LineParser(const std::string& line);
+
+#ifdef CU_WINDOWS
+    fs::path GetMSBuildPath();
+#endif
+
+    bool BuildScripts(const fs::path& path) {
 
         CUP_FUNCTION();
 
+        // This seems too large, but in very rare cases, an error or warning might be incredibly long.
+        // Thankfully this code is not ran that often so it's a worthy sacrifice.
+        static char buffer[4096];
+
 #ifdef CU_WINDOWS
-        std::string cmd = "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\MSBuild.exe ";
+        // I ABSOLUTELY HATE THE WINDOWS API
+        // genuinely look how simple the linux api is. It's about 50 lines of code, 30 of which are formatting and comments
+        // It is so bloody simple and easy and not stupid like the windows api.
 
-        size_t pos = path.string().find_first_of(' ');
-        std::string newPath = path.string();
-        while (pos != std::string::npos) {
+        static const fs::path msbuild = GetMSBuildPath();
 
-            newPath.erase(pos, 1);
-            newPath.insert(pos, "\" \"");
-            pos = newPath.find_first_of(' ', pos + 3);
+        // Setup and create the pipe
+
+        SECURITY_ATTRIBUTES sa;
+        ZeroMemory(&sa, sizeof(sa));
+        sa.nLength = sizeof(sa);
+        sa.bInheritHandle = true;
+
+        HANDLE read, write;
+        bool success = CreatePipe(&read, &write, &sa, 0);
+        CU_ASSERT(success, "Failed to create pipe for MSBuild.exe");
+
+        SetHandleInformation(read, HANDLE_FLAG_INHERIT, 0);
+
+        // Actually run MSBuild
+
+        const std::string solutionPath = (path / path.filename().replace_extension(".csproj")).string();
+        std::string cmd = "\"" + msbuild.string() + "\" \"" + solutionPath + "\" /nologo /verbosity:minimal";
+
+        PROCESS_INFORMATION processInfo = {};
+        STARTUPINFOA startupInfo = {};
+
+        startupInfo.cb = sizeof(startupInfo);
+        startupInfo.hStdOutput = write;
+        startupInfo.hStdError = write;
+        startupInfo.dwFlags = STARTF_USESTDHANDLES;
+
+        if (!CreateProcessA(nullptr, cmd.data(), nullptr, nullptr, true, CREATE_NO_WINDOW, nullptr, nullptr, &startupInfo, &processInfo)) {
+
+            LogError("Could not run MSBUild.exe. cmd: {}", cmd);
+
+            CloseHandle(read);
+            CloseHandle(write);
+
+            return false;
 
         }
 
-        pos = name.find_first_of(' ');
-        std::string newName = name;
-        while (pos != std::string::npos) {
+        CloseHandle(write);
 
-            newName.erase(pos, 1);
-            newName.insert(pos, "\" \"");
-            pos = newName.find_first_of(' ', pos + 3);
+        // Read stdout/stderr
+
+        DWORD bytesRead = 0;
+        std::string line;
+
+        while (true) {
+
+            if (!ReadFile(read, buffer, sizeof(buffer), &bytesRead, nullptr) || bytesRead == 0) break;
+
+            for (uint32 i = 0; i < bytesRead; i++) {
+
+                if (buffer[i] == '\n') {
+
+                    LineParser(line);
+                    line.clear();
+
+                    continue;
+
+                }
+                if (buffer[i] == '\r') continue;
+
+                line += buffer[i];
+
+            }
 
         }
 
-        cmd += newPath + "\\" + newName + ".csproj";
-        cmd += " -nologo";
+        if (!line.empty())
+            LineParser(line);
 
-        system(cmd.c_str());
+        // Cleanup
+
+        CloseHandle(read);
+
+        WaitForSingleObject(processInfo.hProcess, INFINITE);
+        CloseHandle(processInfo.hThread);
+        CloseHandle(processInfo.hProcess);
 #else
         const std::string cmd = "make --no-print-directory -C \"" + path.string() + "\" -f Makefile 2>&1";
 
         FILE* make = popen(cmd.c_str(), "r");
         CU_ASSERT(make != nullptr, "Could not open pipe to run makefile. Command: '{}'", cmd);
 
-        // Assets/PlayerMovement.cs(11,20): warning CS0649: Field 'PlayerMovement.test' is never assigned to, and will always have its default value null
-        //
-        // Group 0 - whole line
-        // Group 1 - File path (Assets/PlayerMovement.cs)
-        // Group 2 - Line number (11)
-        // Group 3 - Optional column number (20)
-        // Group 4 - either the word warning or error (warning)
-        // Group 5 - diagnostic code (CS0649)
-        // Group 6 - message (Field 'PlayerMovement.test'...)
-        //
-        // I hate regex. This took me an hour to figure out :)
-        const std::regex regex(R"(^(.+?)\((\d+)(?:,(\d+))?\):\s*(warning|error)\s+(CS\d+):\s*(.+)\s)", std::regex::ECMAScript | std::regex::icase);
-
-        // This seems too large, but in very rare cases, an error or warning might be incredibly long.
-        // Thankfully this code is not ran that often so it's a worthy sacrifice.
-        char buffer[4096];
         while (fgets(buffer, sizeof(buffer), make) != nullptr) {
 
             const std::string line = buffer;
-            std::smatch match;
-
-            if (!std::regex_search(line, match, regex)) continue;
-
-            BuildMessage msg;
-
-            msg.file = match[1].str();
-
-            msg.line = std::stoi(match[2].str());
-            if (match[3].matched) msg.column = std::stoi(match[3].str());
-
-            if (match[4].str() == "warning")
-                msg.severity = BuildMessage::Severity::Warning;
-            else if (match[4].str() == "error")
-                msg.severity = BuildMessage::Severity::Error;
-            else {
-
-                LogError("Invalid build message severity! {}", line);
-
-                msg.severity = BuildMessage::Severity::None;
-
-            }
-
-            msg.code = match[5].str();
-            msg.message = match[6].str();
-
-            if (msg.severity == BuildMessage::Severity::Warning)
-                LogWarn("{}:({},{}): {} ({})", msg.file, msg.line, msg.column, msg.message, msg.code);
-            else if (msg.severity == BuildMessage::Severity::Error)                
-                LogError("{}:({},{}): {} ({})", msg.file, msg.line, msg.column, msg.message, msg.code);
+            LineParser(line);
 
         }
 
@@ -122,5 +147,88 @@ namespace Editor::ProjectBuilder {
         return true;
 
     }
+
+    void LineParser(const std::string& line) {
+
+        CUP_FUNCTION();
+
+        // C:\Programming\Copper-Engine\Dev Projects\GuideProject\Assets\PlayerMovement.cs(20,33): error CS1061: 'Vector3' does not contain a definition for 'Normaize' and no accessible extension method 'Normaize' accepting a first argument of type 'Vector3' could be found (are you missing a using directive or an assembly reference?) [C:\Programming\Copper-Engine\Dev Projects\GuideProject\GuideProject.csproj]
+        //
+        // Group 0 - Whole line
+        // Group 1 - File path (Assets/PlayerMovement.cs)
+        // Group 2 - Line number (20)
+        // Group 3 - Optional column number (33)
+        // Group 4 - The word error or warning (error)
+        // Group 5 - Diagnostic code (CS1061)
+        // Group 6 - Actual build message ('Vector3' does not contain...)
+
+#ifdef CU_WINDOWS
+        static const std::regex regex = std::regex(R"(^.+(Assets\\.+)\((\d+)(?:,(\d+?))?\):\s*(warning|error)\s*(CS\d+):\s*(.+)\s+\[.+\]$)", std::regex::ECMAScript | std::regex::icase);
+#elif CU_LINUX
+        static const std::regex regex(R"(^(.+?)\((\d+)(?:,(\d+))?\):\s*(warning|error)\s+(CS\d+):\s*(.+)\s)", std::regex::ECMAScript | std::regex::icase);
+#endif
+
+        std::smatch match;
+
+        if (!std::regex_search(line, match, regex)) return;
+
+        BuildMessage msg;
+
+        msg.file = match[1].str();
+
+        msg.line = std::stoi(match[2].str());
+        if (match[3].matched) msg.column = std::stoi(match[3].str());
+
+        if (match[4].str() == "warning")
+            msg.severity = BuildMessage::Severity::Warning;
+        else if (match[4].str() == "error")
+            msg.severity = BuildMessage::Severity::Error;
+        else {
+
+            LogError("Invalid build message severity! {}", line);
+
+            msg.severity = BuildMessage::Severity::None;
+
+        }
+
+        msg.code = match[5].str();
+        msg.message = match[6].str();
+
+        if (msg.severity == BuildMessage::Severity::Warning)
+            LogWarn("{}:({},{}): {} ({})", msg.file, msg.line, msg.column, msg.message, msg.code);
+        else if (msg.severity == BuildMessage::Severity::Error)
+            LogError("{}:({},{}): {} ({})", msg.file, msg.line, msg.column, msg.message, msg.code);
+
+    }
+
+#ifdef CU_WINDOWS
+    fs::path GetMSBuildPath() {
+
+        CUP_FUNCTION();
+
+        static const char* cmd = "\"C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer\\vswhere.exe\" "
+            "-latest -requires Microsoft.Component.MSBuild -find MSBuild\\**\\Bin\\MSBuild.exe";
+
+        FILE* pipe = _popen(cmd, "r");
+        if (pipe == nullptr) {
+
+            LogError("Could not open pipe to vswhere. Command: {}", cmd);
+            return "";
+
+        }
+
+        static char buffer[4096];
+        std::string ret;
+
+        while (fgets(buffer, sizeof(buffer), pipe))
+            ret += buffer;
+
+        _pclose(pipe);
+
+        ret.erase(ret.find_last_not_of(" \r\n\t") + 1);
+        return ret;
+
+    }
+#endif
 
 }

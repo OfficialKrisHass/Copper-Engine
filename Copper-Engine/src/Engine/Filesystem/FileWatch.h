@@ -19,8 +19,6 @@ namespace Copper {
         FileWatch(const fs::path& path) : m_path(path) { Start(); } 
         ~FileWatch() {
 
-            CUP_FUNCTION();
-
             Stop();
 
         }

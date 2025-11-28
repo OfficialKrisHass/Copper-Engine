@@ -20,8 +20,6 @@ namespace Copper {
         RecursiveDirWatch(const fs::path& directory) : m_directory(directory) { Start(); }
         ~RecursiveDirWatch() {
 
-            CUP_FUNCTION();
-
             Stop();
 
         }

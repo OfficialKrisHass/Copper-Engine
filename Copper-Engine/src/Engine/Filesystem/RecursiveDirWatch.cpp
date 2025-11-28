@@ -43,8 +43,6 @@ namespace Copper {
     }
     void RecursiveDirWatch::Stop() {
 
-        CUP_FUNCTION();
-
         if (!m_monitorThread.joinable()) return;
 
         m_running = false;

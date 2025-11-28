@@ -48,8 +48,6 @@ namespace Copper {
     }
     void FileWatch::Stop() {
 
-        CUP_FUNCTION();
-
         if (!m_monitorThread.joinable()) return;
 
         m_destroy = true;

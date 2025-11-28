@@ -26,8 +26,6 @@ namespace Copper {
         }
         ~DirWatch() {
 
-            CUP_FUNCTION();
-
             Stop();
 
         }

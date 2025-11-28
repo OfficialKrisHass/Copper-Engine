@@ -24,16 +24,12 @@ namespace Copper {
 	}
 	void FileWatch::StopBackend() {
 
-		CUP_FUNCTION();
-
 		CloseHandle(m_handle);
 		CloseHandle(m_closeEvent);
 
 	}
 
 	void FileWatch::SendCloseEvent() {
-
-		CUP_FUNCTION();
 
 		SetEvent(m_closeEvent);
 

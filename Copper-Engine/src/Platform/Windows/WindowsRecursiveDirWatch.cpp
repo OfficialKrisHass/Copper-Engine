@@ -54,16 +54,12 @@ namespace Copper {
 	}
 	void RecursiveDirWatch::StopBackend() {
 
-		CUP_FUNCTION();
-
 		CloseHandle(m_handle);
 		CloseHandle(m_closeEvent);
 
 	}
 
 	void RecursiveDirWatch::SendCloseEvent() {
-
-		CUP_FUNCTION();
 
 		SetEvent(m_closeEvent);
 

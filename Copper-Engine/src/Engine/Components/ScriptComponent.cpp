@@ -71,14 +71,28 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        UpdateFunc func = m_updateFuncs[static_cast<uint8>(m_state)];
-        if (func != nullptr)
-            ExecuteFunction(func);
-
         switch (m_state) {
 
-            case State::Begin: m_state = State::Update; break;
-            case State::Update: break;
+            case State::Begin: {
+
+                UpdateFunc func = m_updateFuncs[static_cast<uint8>(State::Begin)];
+                if (func != nullptr)
+                    ExecuteFunction(func);
+
+                m_state = State::Update;
+
+                // This fall through is intentional, we want Update to be called as well.
+
+            }
+            case State::Update: {
+
+                UpdateFunc func = m_updateFuncs[static_cast<uint8>(m_state)];
+                if (func != nullptr)
+                    ExecuteFunction(func);
+
+                break;
+
+            }
             default: break;
 
         }

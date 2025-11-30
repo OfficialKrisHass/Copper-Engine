@@ -67,12 +67,12 @@ Let's start by getting the rigidbody component of our player. To do this we can 
 
 ```cs
 private RigidBody rb = null;
-
+	
 // Called once, at the beginning of the lifetime of the Entity this component is attached to. Use for initialization
 private void OnBegin() {
-
+	
     rb = GetComponent<RigidBody>();
-
+	
 }
 ```
 
@@ -94,12 +94,12 @@ Now to actually use the functions. Let's replace our old movement where we dirre
 ```cs
 // Called every frame. Use for game logic
 private void OnUpdate() {
-
+	
     float input = Input.GetAxis("Keys_AD");
     Vector3 force = new Vector3(input * speed, 0.0f, 0.0f);
-
+	
     rb.AddForce(force);
-
+	
 }
 ```
 
@@ -119,19 +119,19 @@ You can also receive collision events by adding these three functions to your sc
 
 ```cs
 private void OnCollisionBegin(Entity other) {
-
+	
     Editor.Log("Collision begun with: " + other.name);
-
+	
 }
 private void OnCollisionPersist(Entity other) {
-
+	
     Editor.Log("Collision persisting with: " + other.name);
-
+	
 }
 private void OnCollisionEnd(Entity other) {
-
+	
     Editor.Log("Collision ended with: " + other.name);
-
+	
 }
 ```
 
@@ -154,14 +154,14 @@ For this let's create a new test component called `TriggerTest`, then add these 
 
 ```cs
 private void OnTriggerEnter(Entity other) {
-
+	
     Editor.Log("Trigger entered by: " + other.name);
-
+	
 }
 private void OnTriggerLeave(Entity other) {
-
+	
     Editor.Log("Trigger left by: " + other.name);
-
+	
 }
 ```
 

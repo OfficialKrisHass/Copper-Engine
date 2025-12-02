@@ -6,7 +6,7 @@ NOTE: At the moment, Copper only supports Keyboard and mouse. Controllers, VR/XR
 ## Copper Input System
 The Copper-Engine uses a simple state based Input system. You can query the state of any given key (or mouse button) and act according to it's value (Pressed, Down, Released, None).
 
-To use the system, we are going to use the `Input` class, and it's `GetKeyState` function. Replace your current code in `OnUpdate()` with this.
+To use the system, we are going to use the `Input` class, and it's `GetKeyState(KeyCode key)` function. Replace your current code in `OnUpdate()` with this.
 
 ```cs
 // Called every frame. Use for game logic
@@ -24,9 +24,11 @@ private void OnUpdate() {
 }
 ```
 
-Now when you go back into the editor, select the game window (important), and start the runtime, the cubes will move up only while you are holding the Spacebar, something like this.
+Now when you go back into the editor, select the Camera view window, click on it (important), and start the runtime, the cubes will move up only while you are holding the Spacebar, something like this.
 
-![image caption](Media/05/FlyingUp.gif)
+NOTE: Input is only captured after you've clicked on the Camera view panel. By default the cursor gets hidden and locked in place. To escape this, you can press `Shift + F1`.
+
+![Fly up test](Media/05/FlyingUp.gif)
 
 Congratulations, you've made your game interactible. It's still boring, but it's the smalls steps that matter.
 
@@ -47,7 +49,7 @@ Now, we have the fundamental knowledge of making a game, so let's put it to the 
 
 This section will be a sort of a task. The task is to create a simple side-to-side movement system. The player (a cube) should move left when the A key is pressed, and right when the D key is pressed. Please try to do this on your own, before looking at our solution. It should look something like this.
 
-![image caption](Media/05/Outcome.gif)
+![Side scroller movement test](Media/05/Outcome.gif)
 
 And here is our solution. Keep in mind that there can be multiple solutions, this is just the one we came up with.
 
@@ -116,6 +118,7 @@ Here are some of the terms you should understand after reading this guide.
 - KeyCode: An enum representing a Key or mouse button.
 - KeyState: The state of a key. Can be retrieved by calling `Input.GetKeyState(KeyCode key)`.
 
+#
 
 - Input axis: An input axis returns -1, 0 or 1, depending on which of a pair of two keys is being held down.
 - Mouse axis: Returns how much has the mouse moved in the given axis (left and right, or up and down), since the last frame. The value is between -1 and 1, and is relative to the window dimension.

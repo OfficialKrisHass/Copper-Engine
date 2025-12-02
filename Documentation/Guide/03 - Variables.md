@@ -1,7 +1,7 @@
 # Variables
 In the last guide, we have made our first component using the Copper-Engine C# scripting engine. We have explored topics such as deltaTime, and explained the two update functions.
 
-However we left off with our cube moving correctly, but incredibly slowly. This was due to us adding a small number multiplied by an even smaller number (at 60FPS deltaTime is equal to around 0.016) to the Y coordinate of our cube.
+However we left off with our cube moving correctly, but incredibly slowly. This was due to us adding a small number multiplied by an even smaller number (`Game.deltaTime`, which at 60FPS is equal to around `0.016f`) to the Y coordinate of our cube.
 
 ```cs
 transform.position += new Vector3(0.0f, 0.1f * Game.deltaTime, 0.0f);
@@ -35,13 +35,13 @@ private void OnUpdate() {
 
 Now open the editor, and select the entity you've attached your component to. You should now see the variable appear below the MyComponent header.
 
-![image caption](Media/04/Properties.png)
+![speed variable field](Media/04/Properties.png)
 
 You can freely change this to whatever value you want, and when you press play, you should see the difference in speed.
 
-![image caption](Media/04/Running1.gif)
+![Higher speed](Media/04/Running1.gif)
 
-![image caption](Media/04/Running2.gif)
+![Lower speed](Media/04/Running2.gif)
 
 ## Variable visibility
 You may have noticed that we used the word public for the speed variable. This makes it visible to everyone, and also visible in the editor by default. However this may be unwanted behaviour, as you usually want variables to be private unless it is absolutely neccessary.
@@ -85,38 +85,41 @@ private void OnUpdate() {
 
 Now in the Properties panel, you should see the new variable show up.
 
-![image caption](Media/04/RefFields1.png)
+![Reference variable field](Media/04/RefFields1.png)
 
 It is currently invalid (it's equal to `null`), so you can assign it to a transform by dragging any entity and dropping it on top of the field. 
 
 Let's create another cube.
 
-![image caption](Media/04/RefFields2.png)
+![New entity](Media/04/RefFields2.png)
 
 And drag it from the Scene Hierarchy on top of the `Transform` variable field.
 
-![image caption](Media/04/RefFields3.png)
+![Setting reference field](Media/04/RefFields3.png)
 
 Now when you press Play, you should see two cubes moving up with the same speed.
 
-![image caption](Media/04/Running3.gif)
+![Two entity fly up](Media/04/Running3.gif)
 
-NOTE: At the moment, Copper-Engine only supports `Entity` and `Transform` as reference types. All other types will not show up in the Copper-Editor but can be assigned and used if you pass them through a function as a parameter.
+NOTE: At the moment, Copper-Editor only supports `Entity`, `Transform` and `Material` as reference types. All other types will not show up in the Copper-Editor, but can be assigned and used in your code.
 
 ## Variable types
-Copper-Engine and the Copper-Editor support a wide range of variable types. Here is a list of all supported variable types that will show up the Copper-Editor and can be modified.
+Here is a list of the variable types that will show up in the Copper-Editor.
 
 - `int`
 - `uint`
 - `float`
 
+#
 
 - `Vector2`
 - `Vector3`
 
+#
 
 - `Entity`
 - `Transform`
+- `Material`
 
 NOTE: This is a very short list I know, but more types will be supported in Copper version 0.3.1.
 

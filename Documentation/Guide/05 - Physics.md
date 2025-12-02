@@ -8,11 +8,11 @@ Rigid body physics are physics simulations where the objects do not deform under
 
 In Copper-Engine, you can use rigid body physics by adding a, you guessed it, `RigidBody` component to any entity. This will "mark" the entity to partake in the physics simulation.
 
-![image caption](Media/06/RigidBodyComponent.png)
+![Add RigidBody component](Media/06/RigidBodyComponent.png)
 
 After adding a `RigidBody` component to an entity, you will see these editable fields.
 
-![image caption](Media/06/RigidBodyFields.png)
+![RigidBody component fields](Media/06/RigidBodyFields.png)
 
 Let's quickly go over them and how to set them.
 
@@ -23,7 +23,7 @@ Let's quickly go over them and how to set them.
 
 Now if you attempt to run the game, you will get an error like this.
 
-![image caption](Media/06/NoColliderError.png)
+![Missing collider error](Media/06/NoColliderError.png)
 
 This is due to one last missing piece.
 
@@ -32,33 +32,38 @@ To simulate collisions we of course need to know the shape of the RigidBody. For
 
 In total there are 3 of them, `BoxCollider`, `SphereCollider` and `CapsuleCollider` for the three supported shapes, Box, Sphere and Capsule. Add one of these to your entity and you will see these fields.
 
-![image caption](Media/06/BoxColliderFields.png)
+![BoxCollider component fields](Media/06/BoxColliderFields.png)
 
 We chose the BoxCollider as our player is currently a cube, so logically it seems fitting. Anyways, here is an explanation of the `BoxCollider` fields.
 
 - **Trigger**: A trigger collider will not block collisions, instead it will notify the entity it is on that it was intersected (a different rigidbody has entered it's shape). This is useful for things like Cutscene triggers, finish lines, etc.
+
 - **Center**: The xyz coordinates of the center relative to the entities global position. Basically the offset of the collider.
 
 These two are the base `Collider` fields, every collider type will have these two. And here are the type specific fields.
 
 - **Size (BoxCollider)**: How big is the box in all three axes relative to the entity's scale (1, 1, 1 will be the same shape as the entity no matter it's scale)
 
+#
+
 - **Radius (SphereCollider)**: The radius of the sphere.
+
+#
 
 - **Radius (CapsuleCollider)**: The radius of the capsule in the xz plane.
 - **Height (CapsuleCollider)**: The height of the capsule, in the y plane (up and down)
 
-Now before running the game, we need to add another rigidbody actor as right now our cube would just fall down into the void.
+Now before running the game, we need to add a ground rigidbody entity as right now our cube would just fall down into the void.
 
 Let's scale up the Ground entity and give it a `RigidBody` component and a `BoxCollider` component.
 
-![image caption](Media/06/Ground.png)
+![Ground entity properties](Media/06/Ground.png)
 
-Make sure the RigidBody is set to static.
+Make sure the RigidBody is set to static as we obviously don't want to ground to fall too.
 
 And now finally, when we move the player entity into the air and run the game, you should see something like this.
 
-![image caption](Media/06/PhysicsYayy.gif)
+![Physics test](Media/06/PhysicsYayy.gif)
 
 ## Working with physics in C#
 To use the physics system to it's fullest extent, we can work with it in C# and make it do whatever our minds come up with.
@@ -103,16 +108,32 @@ private void OnUpdate() {
 }
 ```
 
-You might notice we are no longer multiplying by `Game.deltaTime` and that is because at the start of every frame, the physics engine is given `Game.deltaTime` as the time step (how much time has passed). It uses this time step to divide the change to the velocity by the force we are giving it so multiplying it by `Game.deltaTime` would do some weird stuff.
+You might notice we are no longer multiplying by `Game.deltaTime` and that is because the physics engine is already given `Game.deltaTime` and divides the force with it internally. Multiplying here would cause some weird, funky stuff.
 
 Now when you run the game you should be ale to see something like this.
 
 NOTE: Make sure to set the speed to a higher number than before, something like 10.
 
-![image caption](Media/06/LRMovement.gif)
+![Side scroller movement](Media/06/LRMovement.gif)
 
 ### Collider types in C#
-Calling `GetComponent<Collider>()` will return any collider on the entity as the base `Collider` class. You can check which type it is using the `Collider.type` property. You can also cast the Collider into the appropriate class, but make sure you've checked `Collider.type`.
+Calling `GetComponent<Collider>()` will return any collider on the entity as the base `Collider` class. You can check which type it is using the `Collider.type` property. You can also cast the Collider into the appropriate class.
+
+```cs
+private void OnBegin() {
+
+	Collider collider = GetComponent<Collider>();
+	if (collider.type = Collider.Type.Box) {
+
+		BoxCollider box = (BoxCollider) collider;
+
+		// This line will result in an error as the type is not correct.
+		SphereCollider sphere = (SphereCollider) collider;
+
+	}
+
+}
+```
 
 ### Collision events
 You can also receive collision events by adding these three functions to your script.
@@ -137,7 +158,7 @@ private void OnCollisionEnd(Entity other) {
 
 Now when you run your game, you should see something like this in the console.
 
-![image caption](Media/06/CollisionEvents.png)
+![Collision event console logs](Media/06/CollisionEvents.png)
 
 To quickly go over the three functions, in each function the `Entity other` parameter is the entity the contact happened with (in this case, the ground)
 
@@ -167,19 +188,19 @@ private void OnTriggerLeave(Entity other) {
 
 Now in the editor, let's create a new empty entity and add a `RigidBody` component, `BoxCollider` component, and the new `TriggerTest` component.
 
-![image caption](Media/06/Trigger1.png)
+![Add entity](Media/06/Trigger1.png)
 
-![image caption](Media/06/Trigger2.png)
+![Trigger entity properties](Media/06/Trigger2.png)
 
 Don't forget to mark the RigidBody as static with no gravity, and the collider as a trigger.
 
 Now move it up and either to the left or right of the player, like this.
 
-![image caption](Media/06/Trigger3.png)
+![Trigger entity placement](Media/06/Trigger3.png)
 
 And now when you run the game and run into and out of it you should see something like this in the console.
 
-![image caption](Media/06/TriggerFinal.png)
+![Trigger events console log](Media/06/TriggerFinal.png)
 
 ## Recap
 This one was a long one right ?
@@ -193,4 +214,7 @@ Here are some of the terms you should now understand.
 
 - **RigidBody**: A component that marks an entity to partake in the Physics simulation. It stores the mass, whether it's static, has gravity and lastly the Position and Rotation locks.
 - **Collider**: A component that gives a RigidBody the shape. There are multiple built-in Collider shapes. An entity needs both a `RigidBody` component and a `Collider` component to partake in the physics simulation, having just one of them will result in an error.
+
+#
+
 - **Trigger**: A trigger is a collider that has the trigger field ticked as true, in which case instead of blocking all entities and acting as hard solid volume, it lets them go right through and hang out inside the trigger volume, firing events for when an object enters or leaves said volume.

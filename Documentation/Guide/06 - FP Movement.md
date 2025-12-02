@@ -116,16 +116,19 @@ Copper-Engine provides you with the 3 directional vectors of a transform compone
 
 You already worked with these, in the gizmos when you select an entity and have the position tool selected.
 
-![image caption](Media/07/Directionals.png)
+![Position gizmo arrows](Media/07/Directionals.png)
 
 `transform.forward`, `transform.right` and `transform.up` point in the same directions as these three arrows.
 
 #
+
 Back on topic, the force calculation solution should be intuitive to you hopefully. We are multiplying each direction with the input axis "paired" with that direction.
 
 Now this force equation is not done yet, this is just the direction we want to move in. But before we continue, we need to normalize the direction.
 
-Imagine the scenario where the Player holds both the W and D key at the same time. `x` and `y` will both be equal to one, therefore the force equation will be:
+#### Vector normalization
+
+Imagine the scenario where the Player holds both the W and D key at the same time. `x` and `y` will both be equal to one, therefore the force equation will result to:
 
 ```cs
 Vector3 force = transform.right * 1 + transform.forward * 1;
@@ -207,25 +210,25 @@ This would normally work in most engines and games, and it does in Copper. Unles
 
 Normally you would make the camera a child of the player entity, which is why you only have to set the yaw because it inherits the pitch from the parent. However in our example, the player has a scale of `1, 2, 1` which introduces some very weird roll (Z-axis) rotation for the camera.
 
-NOTE: This is technically not a bug. It comes from how the rotation is calculated and applied in the `Transform` component. This will be fixedin the future, pinky promise.
+NOTE: This is technically not a bug. It comes from how the rotation is calculated and applied in the `Transform` component. This will be fixed in the future, pinky promise.
 
-#
+#### Uniform scale
 If your player entity has a uniform scale (all 3-axis are equal) you can now move to the Copper-Editor and make the camera a child of the player. Don't forget to set the camera field of the component to the camera entity.
 
 NOTE: If you see no movement, make sure your `speed` and `sensitivity` values are not too small. We used the values `10.0` and `10.0`.
 
-![image caption](Media/07/Uniform2.png)
+![Camera as child of Player](Media/07/Uniform2.png)
 
 We also recommend moving the camera slightly up as to not be in the center of the player's body.
 
-![image caption](Media/07/Uniform1.png)
+![Camera moved up](Media/07/Uniform1.png)
 
 Now when you run the game, you should have a working First Person movement system!
 
-![image caption](Media/07/UniformFinal.gif)
+![Uniform scale movement test](Media/07/UniformFinal.gif)
 
-#
-If your Player entity has a non uniform scale (e.g. `1, 2, 1)`, we need to rotate around both the X and Y axis, alongside moving the camera to match the X and Z position of the player.
+#### Non-uniform scale
+If your Player entity has a non uniform scale (e.g. `1, 2, 1)`, we need to rotate around both the X and Y axis, alongside moving the camera to match the X and Z position of the player since the camera can not be a child of the player entity.
 
 ```cs
 camera.rotation = new Quaternion(yaw, pitch, 0.0f);
@@ -234,14 +237,14 @@ camera.position = new Vector3(transform.position.x, camera.position.y, transform
 
 Now when you go to the Copper-Editor, position the camera to where the eyes of the player would be and make sure it isn't a child of the parent.
 
-![image caption](Media/07/NonUniform2.png)
+![Camera as not a child of Player](Media/07/NonUniform2.png)
 
 
-![image caption](Media/07/NonUniform1.png)
+![Camera moved up](Media/07/NonUniform1.png)
 
 And when you run the game, you should have a working First Person movement system!
 
-![image caption](Media/07/NonUniformFinal.gif)
+![Non-uniform scale movement test](Media/07/NonUniformFinal.gif)
 
 ## Full code
 Here is the full code from this tutorial, please check the bottom section of `OnUpdate()` and use the version that fits your usecase better.
@@ -287,7 +290,7 @@ public class PlayerMovement : Component {
         transform.rotation = new Quaternion(0.0f, pitch, 0.0f);
 
         // If your player entity (the body) has a unfirom scale (e.g. 1, 1, 1), you can use this version if the camera is a child
-        // of the player entity, but you can also use the second one if it is not.
+        // of the player entity
         // camera.rotation = new Quaternion(yaw, 0.0f, 0.0f);
 
         // If your player entity (the body) has a non uniform scale (not all ones), you have to use this version
@@ -309,5 +312,8 @@ We calculated the direction which the player should move in, normalized it and a
 Here are some of the terms you should now understand.
 
 - **Normalize**: To normalize a vector is to modify it so that it's length is equal to exactly one while keeping it pointing in the same direction.
+
+#
+
 - **Uniform**: For something to be the exact same along multiple values, axes, etc. A uniform scale is something like `1, 1, 1` or `2, 2, 2`.
 - **Non Uniform**: Exact opposite of Uniform, at least one of the values, axes, etc is different than the rest. `1, 2, 3` and `1, 2, 1` are an example of a non uniform scale.

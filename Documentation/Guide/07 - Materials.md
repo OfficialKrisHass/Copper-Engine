@@ -6,57 +6,57 @@ A Material is an asset that defines the visual side of a mesh, e.g. it's color, 
 ## Creating your first material
 Creating a material is incredibly simple. You can use the New Item modal by right clicking on an empty space in the File browser window.
 
-![image caption](Media/03/Scripting1.png)
+![New item](Media/03/Scripting1.png)
 
 Here you can selec the Material option, give it a name an click Create.
 
-![image caption](Media/08/MaterialCreation.png)
+![New Material](Media/08/MaterialCreation.png)
 
 A file with the name of the material should've now appeared in the File browser.
 
 To apply a material, you can select the entity you want to apply it to, grab and drag the material and drop it onto the `material` field of the `MeshRenderer` component.
 
-![image caption](Media/08/ApplyMaterial.gif)
+![Aplying a material](Media/08/ApplyMaterial.gif)
 
-However, you will notice that nothing has changed. This is because we have not modified the material in any way, By default each material has the same properties as the default material, which is all white.
+However, you will notice that nothing has changed. This is because we have not modified the material in any way and by default every material has the same properties as the default material, which is all white.
 
 To edit the material, select the material in the File Browser and observe the Properties panel.
 
-![image caption](Media/08/Material1.png)
+![Selecting a material](Media/08/Material1.png)
 
 
-![image caption](Media/08/Material2.png)
+![Material properties](Media/08/Material2.png)
 
-Here you can select the material properties. Copper-Engine currently provides 3 properties you can edit.
+Here you can see and modify the material properties. Copper-Engine currently provides 3 properties you can edit.
 
 ### Texture
 A texture is an image that gets "painted" over the mesh. It gives the mesh a more unique and detailed look than just a plain color.
 
 To set this field, add any picture to the `Assets` folder of your project. It should now appear in the FileBrowser. You can now grab and drag this file onto the field to set the texture of the material.
 
-![image caption](Media/08/ApplyTexture.gif)
+![Setting a material texture](Media/08/ApplyTexture.gif)
 
 ### Albedo
 Albedo is the color the texture will be multiplied with.
 
 By default this value is White, which will keep the texture untouched. Modifying it will give the texture a hue of the color.
 
-![image caption](Media/08/AlbedoTexture.png)
+![Albedo with a texture](Media/08/AlbedoTexture.png)
 
 In the case the material has no texture, Albedo acts as a sort of color property. E.g. whatever color albedo is set to will be the exact color of the material.
 
-![image caption](Media/08/AlbedoNoTexture.png)
+![Albedo with no texture](Media/08/AlbedoNoTexture.png)
 
 ### Tiling
 And lastly, tiling.
 
 Tiling is how much should the texture be tiled. It acts as a sort of zoom property where a value above 1 will zoom the texture out.
 
-![image caption](Media/08/TilingOut.png)
+![Tiling above one](Media/08/TilingOut.png)
 
 And a value below one will zoom the texture in.
 
-![image caption](Media/08/TilingIn.png)
+![Tiling below one](Media/08/TilingIn.png)
 
 ## Materials in C#
 You can add `Material` fields to your C# scripts to modify an existing material.
@@ -67,9 +67,9 @@ You can add `Material` fields to your C# scripts to modify an existing material.
 
 You can now drag and drop a material onto the field to set it's value.
 
-![image caption](Media/08/MaterialField.gif)
+![Setting a material field](Media/08/MaterialField.gif)
 
-However, only the `albedo` and `tiling` fields are editable. Unfortunately Textures would require a overhaul of the current Texture system, which will be done soon, I promise, ong.
+However, only the `albedo` and `tiling` fields are editable. Unfortunately Textures would require a overhaul of the current Texture system, which will be done soon, I promise, fr fr ong.
 
 ```cs
 material.albedo = Color.red;
@@ -94,6 +94,7 @@ Here are some of the terms you should now understand.
 
 - **Material**: A Material is an asset that defines the visual properties of a surface. You can apply any material to any mesh, through the `MeshRenderer` component, giving that mesh those surface properties.
 
+# 
 
 - **Texture**: A texture is an image that gives a surface more details.
 - **Albedo**: Albedo is the color the material's Texture will be multiplied by. If the material has no texture, this will be the defacto color of the surface.

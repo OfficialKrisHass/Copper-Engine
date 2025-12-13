@@ -38,6 +38,8 @@ namespace Copper {
 
         // Getters
 
+        inline bool IsValid() const { return (bool) *this && m_rb != nullptr; }
+
         inline Type GetType() const { return m_type; }
         inline RigidBody* GetRigidBody() const { return m_rb; }
 

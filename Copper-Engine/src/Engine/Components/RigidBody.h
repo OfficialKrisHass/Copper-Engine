@@ -44,6 +44,8 @@ namespace Copper {
         void AddTorque(const Vector3& torque, const ForceMode mode = ForceMode::Force);
 
         // Getters
+        
+        inline bool IsValid() const { return (bool) *this && m_collider != nullptr; }
 
         inline float GetMass() const { return m_mass; }
 

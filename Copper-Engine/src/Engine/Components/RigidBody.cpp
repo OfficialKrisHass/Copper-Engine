@@ -60,7 +60,9 @@ namespace Copper {
         CUP_FUNCTION();
 
         GetScene()->RemovePhysicsBody(m_actor);
+
         m_actor = nullptr;
+        m_collider = nullptr;
 
     }
 

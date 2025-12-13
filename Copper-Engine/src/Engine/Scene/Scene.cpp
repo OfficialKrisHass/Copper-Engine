@@ -215,6 +215,27 @@ namespace Copper {
         ComponentEvent* event = (ComponentEvent*) &e;
         Scripting::RemoveManagedReference(event->component);
 
+        // NOTE: A bit temporary. This should be handled better and more automatically.
+
+        if (event->componentID == RIGIDBODY_CID) {
+
+            InternalEntity* entity = event->component->GetEntity();
+            Collider* collider = entity->GetComponent<Collider>();
+
+            if (collider != nullptr)
+                collider->m_rb = nullptr;
+
+            return true;
+
+        }
+        if (event->componentID < COLLIDER_CID) return true;
+
+        InternalEntity* entity = event->component->GetEntity();
+        RigidBody* rb = entity->GetComponent<RigidBody>();
+
+        if (rb != nullptr)
+            rb->Remove();
+
         return true;
 
     }

@@ -86,6 +86,10 @@ namespace Editor {
 
         // Icons
 
+        Texture infoIcon;
+        Texture warnIcon;
+        Texture errorIcon;
+
         Texture playIcon;
         Texture stopIcon;
         
@@ -154,8 +158,12 @@ namespace Editor {
 
         data.themeEditor.LoadTheme(ExecutableFolder() / "assets/Themes/Default.cutheme");
 
-        data.playIcon.Create(ExecutableFolder() / "assets/Icons/PlayButton.png", Texture::Format::RGBA);
-        data.stopIcon.Create(ExecutableFolder() / "assets/Icons/StopButton.png", Texture::Format::RGBA);
+        data.infoIcon.Create(ExecutableFolder() / "assets/Icons/info.png", Texture::Format::RGBA);
+        data.warnIcon.Create(ExecutableFolder() / "assets/Icons/warn.png", Texture::Format::RGBA);
+        data.errorIcon.Create(ExecutableFolder() / "assets/Icons/error.png", Texture::Format::RGBA);
+
+        data.playIcon.Create(ExecutableFolder() / "assets/Icons/Runtime/PlayButton.png", Texture::Format::RGBA);
+        data.stopIcon.Create(ExecutableFolder() / "assets/Icons/Runtime/StopButton.png", Texture::Format::RGBA);
 
         LoadEditorData();
 
@@ -948,6 +956,10 @@ namespace Editor {
 
     }
     void SetIsInteractionBlocked(bool value) { data.interactionBlocked = value; }
+
+    const Texture& GetInfoIcon() { return data.infoIcon; }
+    const Texture& GetWarnIcon() { return data.warnIcon; }
+    const Texture& GetErrorIcon() { return data.errorIcon; }
 
     const std::string& GetWindowTitle() { return data.title; }
     void SetWindowTitle(const std::string& value) {

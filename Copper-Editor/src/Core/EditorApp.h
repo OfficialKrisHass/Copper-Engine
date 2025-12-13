@@ -2,7 +2,15 @@
 
 #include <Copper.h>
 
+namespace Copper {
+
+    class Texture;
+
+}
+
 namespace Editor {
+
+    using namespace Copper;
 
     class Project;
 
@@ -24,6 +32,10 @@ namespace Editor {
     // Checks if there are unsaved changes, if so, prompts the user to either save or discard them.
     // Returns true if user selected cancel, aka, the operation should not be continued.
     bool EnsureUnsavedChanges();
+
+    const Texture& GetInfoIcon();
+    const Texture& GetWarnIcon();
+    const Texture& GetErrorIcon();
 
     bool IsInteractionBlocked();
     void SetIsInteractionBlocked(bool value);

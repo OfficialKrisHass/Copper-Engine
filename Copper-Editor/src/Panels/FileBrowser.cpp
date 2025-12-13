@@ -49,8 +49,8 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        directoryIcon.Create(ExecutableFolder() / "assets/Icons/DirectoryIcon.png", Texture::Format::RGBA);
-        fileIcon.Create(ExecutableFolder() / "assets/Icons/FileIcon.png", Texture::Format::RGBA);
+        directoryIcon.Create(ExecutableFolder() / "assets/Icons/FileBrowser/DirectoryIcon.png", Texture::Format::RGBA);
+        fileIcon.Create(ExecutableFolder() / "assets/Icons/FileBrowser/FileIcon.png", Texture::Format::RGBA);
 
         m_font = GetMainUIContext().LoadFont(ExecutableFolder() / "assets/Fonts/IBMPlexMono-Medium.ttf", 16.0f);
 

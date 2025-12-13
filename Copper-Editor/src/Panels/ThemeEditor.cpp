@@ -67,6 +67,10 @@ namespace Editor {
 
         ImGui::Separator();
 
+        COLOR_EDIT(ImGuiCol_Border, "Border");
+
+        ImGui::Separator();
+
         COLOR_EDIT(ImGuiCol_CheckMark, "Check mark");
 
         ImGui::Separator();
@@ -113,6 +117,8 @@ namespace Editor {
         WRITE_COLOR(ImGuiCol_Button);
         WRITE_COLOR(ImGuiCol_ButtonHovered);
         WRITE_COLOR(ImGuiCol_ButtonActive);
+
+        WRITE_COLOR(ImGuiCol_Border);
 
         WRITE_COLOR(ImGuiCol_CheckMark);
 

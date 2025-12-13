@@ -8,6 +8,7 @@
 #include "Assets/ProjectAssetDatabase.h"
 #include "Assets/Serializer.h"
 
+#include "UI/Widgets.h"
 #include "UI/TypeWidgets.h"
 
 #include <Engine/Components/BoxCollider.h>
@@ -330,6 +331,9 @@ namespace Editor {
 
         if (!DrawComponent<RigidBody>("Rigid Body", rb)) return;
 
+        if (!rb->IsValid())
+            UI::InfoLabel(GetWarnIcon(), "RigidBody is missing a Collider component!");
+
         if (UI::EditFloat("Mass", &rb->m_mass)) {
 
             rb->SetMass(rb->m_mass);
@@ -378,6 +382,9 @@ namespace Editor {
     void Properties::RenderCollider(Collider* collider) {
 
         CUP_FUNCTION();
+
+        if (!collider->IsValid())
+            UI::InfoLabel(GetWarnIcon(), "Collider is missing a RigidBody component!");
 
         if (UI::EditBool("Trigger", &collider->m_trigger)) {
 

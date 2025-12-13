@@ -103,22 +103,6 @@ Entities:
       Name: TriggerTest
       Fields:
         {}
-  5:
-    Name: Cube
-    Transform:
-      Position: [0, 3.76617432, 0]
-      Rotation: [1, 0, 0, 0]
-      Scale: [1, 1, 1]
-      Parent: 4294967295
-      Children:
-        []
-    Mesh Renderer:
-      Mesh: 25a5d2e1-6959-4130-aed9-5195f0fe4789
-      Material: 00000000-0000-0000-0000-000000000000
-    Sphere Collider:
-      Trigger: false
-      Center: [0, 0, 0]
-      Radius: 0.5
 Scene Camera:
   Position: [-3.69727492, 4.34575319, 4.0551343]
   Rotation: [0.903158426, -0.246119171, -0.339250267, -0.0924470499]

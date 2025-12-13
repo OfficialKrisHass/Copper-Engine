@@ -59,6 +59,8 @@ namespace Copper {
 
         CUP_FUNCTION();
 
+        CU_ASSERT(m_actor != nullptr, "Can't remove an unitiliazed/invalid RigidBody.");
+
         GetScene()->RemovePhysicsBody(m_actor);
 
         m_actor = nullptr;

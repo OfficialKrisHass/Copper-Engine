@@ -178,7 +178,8 @@ namespace Copper {
         RemoveManagedReference((void*) (uint64) event->entity->m_id);
         RemoveManagedReference(event->entity->m_transform);
 
-        if (RigidBody* rb = m_registry.GetComponent<RigidBody>(event->entity->m_id))
+        RigidBody* rb = event->entity->GetComponent<RigidBody>();
+        if (rb != nullptr && rb->IsValid())
             rb->Remove();
 
         return true;

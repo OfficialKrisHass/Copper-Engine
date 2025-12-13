@@ -37,6 +37,8 @@
 #define FRAME_WIDTH 241
 #define FRAME_HEIGHT 24
 
+#define HEADER_MARGIN 0.0f
+
 using namespace Copper;
 
 namespace Editor {
@@ -69,6 +71,9 @@ namespace Editor {
 
         if (!m_selectedData.entity) return;
 
+        static const ImGuiStyle& style = ImGui::GetStyle();
+        ImGui::PushStyleVarY(ImGuiStyleVar_ItemSpacing, style.ItemSpacing.y + 1.0f);
+
         InternalEntity* entity = m_selectedData.entity;
 
         char buffer[128] = {};
@@ -82,7 +87,7 @@ namespace Editor {
         }
 
         if(DrawComponent("Transform", entity->GetTransform())) {
-            
+
             Transform* transform = entity->GetTransform();
 
             Vector3 pos = transform->GetPosition();
@@ -223,6 +228,8 @@ namespace Editor {
 
         }
 
+        ImGui::PopStyleVar();
+
     }
     void Properties::RenderFile() {
 
@@ -334,7 +341,7 @@ namespace Editor {
         if (!rb->IsValid())
             UI::InfoLabel(GetWarnIcon(), "RigidBody is missing a Collider component!");
 
-        if (UI::EditFloat("Mass", &rb->m_mass)) {
+        if (UI::EditFloat("Mass (kg)", &rb->m_mass)) {
 
             rb->SetMass(rb->m_mass);
             SetChanges();
@@ -562,6 +569,7 @@ namespace Editor {
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2 {4, 4});
 
+        ImGui::Dummy(ImVec2(0.0f, HEADER_MARGIN));
         bool opened = ImGui::TreeNodeEx((void*) component, flags, name.c_str());
 
         ImGui::PopStyleVar();
@@ -590,6 +598,9 @@ namespace Editor {
 
         }
 
+        if (opened)
+            ImGui::Dummy(ImVec2(0.0f, HEADER_MARGIN));
+
         return opened;
 
     }
@@ -602,6 +613,7 @@ namespace Editor {
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4, 4 });
 
+        ImGui::Dummy(ImVec2(0.0f, HEADER_MARGIN));
         bool opened = ImGui::TreeNodeEx((void*) component, flags, name.c_str());
 
         ImGui::PopStyleVar();
@@ -609,6 +621,9 @@ namespace Editor {
             ImGui::TreePop();
         else
             ImGui::PopID();
+
+        if (opened)
+            ImGui::Dummy(ImVec2(0.0f, HEADER_MARGIN));
 
         return opened;
 

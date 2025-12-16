@@ -17,9 +17,9 @@ namespace Launcher::PersistentData {
 #endif
 
 #ifdef CU_WINDOWS
-    static const fs::path persistenFolder = std::string(getenv("appdata")) + "\\Copper-Editor";
+    static const fs::path persistenFolder = std::string(getenv("appdata")) + "\\Copper-Engine";
 #elif CU_LINUX
-    static const fs::path persistenFolder = std::string("/home/") + cuserid(nullptr)+ "/.config/Copper-Editor";
+    static const fs::path persistenFolder = std::string("/home/") + cuserid(nullptr)+ "/.config/Copper-Engine";
 #endif
 
     static fs::path editorPath = "";

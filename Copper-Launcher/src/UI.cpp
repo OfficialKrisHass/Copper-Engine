@@ -30,7 +30,7 @@ namespace Launcher::UI {
         LoadTheme();
 
         ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*) Window::NativePointer(), true);
-        ImGui_ImplOpenGL3_Init("#version 460");
+        ImGui_ImplOpenGL3_Init("#version 330");
 
     }
 

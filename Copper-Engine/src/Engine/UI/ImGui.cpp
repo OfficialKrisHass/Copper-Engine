@@ -48,7 +48,7 @@ namespace Copper {
         bool success = ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(window.GetWindowPtr()), true);
         CU_ASSERT(success, "Could not initialize ImGui GLFW backend.");
 
-        success = ImGui_ImplOpenGL3_Init("#version 460");
+        success = ImGui_ImplOpenGL3_Init("#version 330");
         CU_ASSERT(success, "Could not initialize ImGui OpenGL backend.");
 
     }

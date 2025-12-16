@@ -175,6 +175,7 @@ namespace Launcher {
         ImGui::PopStyleColor();
 
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + WindowPadding);
+        ImGui::Dummy(ImVec2(0, 0));
 
         for (const ProjectEntry& entry : data.projectEntries)
             entry.Render();

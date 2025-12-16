@@ -10,7 +10,15 @@ namespace Launcher::Window {
 
     GLFWwindow* window = nullptr;
 
+    void GLFWErrorCallback(int error, const char* description) {
+
+        std::cout << "GLFW Error (" << error << "): " << description << '\n';
+
+    }
+
     void Create(uint32 width, uint32 height, const char* title) {
+
+        glfwSetErrorCallback(GLFWErrorCallback);
 
         if (!glfwInit()) {
 

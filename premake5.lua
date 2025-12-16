@@ -311,11 +311,12 @@ project "Copper-APIBinder"
 
     }
 
-    links {
+    filter "system:windows"
+        links {
 
-        "Copper-Engine/lib/mono/lib/%{cfg.buildcfg}/mono-2.0-sgen.lib",
+            "Copper-Engine/lib/mono/msvc/build/sgen/x64/lib/%{cfg.buildcfg}/mono-2.0-sgen.lib",
 
-    }
+        }
 
     filter "configurations:Debug"
         defines "CU_DEBUG"

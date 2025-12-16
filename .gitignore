@@ -26,6 +26,9 @@ Copper-Editor/lib/mono/windows
 *.js
 *.html
 
+# Installer
+Installer/*.exe
+
 # User-specific files
 *.rsuser
 *.suo

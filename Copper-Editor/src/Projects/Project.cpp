@@ -80,7 +80,7 @@ namespace Editor {
         else
             LogStatus("Opening project '{}'.", path.filename().string());
 
-        try { 
+        try {
 
             if (!LoadFile(path)) return; 
 
@@ -92,6 +92,7 @@ namespace Editor {
 
         }
 
+        ProjectBuilder::BuildScripts(m_path);
         if (uint16_t issueFlags = ProjectChecker::CheckProject(*this)) {
 
             std::string description = "This project is missing some of the core folders and/or files that are required by the Editor to function properly.\n\n";

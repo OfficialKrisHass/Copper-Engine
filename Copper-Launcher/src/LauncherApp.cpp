@@ -200,26 +200,24 @@ namespace Launcher {
             fs::path assetsPath = PersistentData::EditorAssetsPath().parent_path();
 
             char* args[] = {
-                (char*) PersistentData::EditorPath().c_str(),
 #ifdef CU_DEBUG
                 (char*) "-e",
                 (char*) assetsPath.c_str(),
 #endif
                 (char*) projectPath.data(),
-                nullptr };
+                nullptr
+            };
 
             execv(PersistentData::EditorPath().c_str(), args);
 
         } else
             OnWindowClose();
 #elif CU_WINDOWS
-        std::string editorPath = Utils::ReplaceSpaces(PersistentData::EditorPath().string());
-        std::string path = Utils::ReplaceSpaces(projectPath);
-        std::string args = editorPath;
+        std::string args = "\"" + PersistentData::EditorPath().string() + "\"";
 #ifdef CU_DEBUG
         args += " -e " + PersistentData::EditorAssetsPath().parent_path().string();
 #endif
-        args += ' ' + path;
+        args += " \"" + projectPath + "\"";
 
         STARTUPINFOA si;
         PROCESS_INFORMATION pi;
@@ -228,7 +226,12 @@ namespace Launcher {
         ZeroMemory(&pi, sizeof(pi));
         si.cb = sizeof(si);
 
-        CreateProcessA(editorPath.c_str(), args.data(), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
+        // For some reason, passing the executable to the first arguemnt causes some weird semantics
+        // where it doesn't work in case A on machine A but does on machine B, and vice versa.
+
+        if (!CreateProcessA(NULL, args.data(), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi))
+            std::cout << "CreateProcess failed!\nError: " << GetLastError() << '\n';
+
         CloseHandle(pi.hProcess);
         CloseHandle(pi.hThread);
 

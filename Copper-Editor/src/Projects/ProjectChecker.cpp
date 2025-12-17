@@ -33,7 +33,9 @@ namespace Editor::ProjectChecker {
 
         // Binaries
 
-        CHECK_FILE("Project assembly", ("Binaries/" + project.name + ".dll"), 2);
+        // This should almost never fail because the project binary is built whenever a project is opened, just before this function
+        // is called. But in the case there are errors in the project or the build system fails in an other way, we need to capture that.
+        CHECK_FILE("Project binary", ("Binaries/" + project.name + ".dll"), 2);
         CHECK_FILE("Scripting API assembly", "Binaries/Copper-ScriptingAPI.dll", 3);
 
         // Project files
@@ -122,7 +124,7 @@ namespace Editor::ProjectChecker {
             out += "Missing ScriptingAPI dll file (Binaries/Copper-ScriptingAPI.dll)\n";
 
         if (GET_FLAG(issueFlags, MissingProjectDLL))
-            out += "Missing project dll file (Binaries/" + project.name + ".dll)\n";
+            out += "Missing project binary (Binaries/" + project.name + ".dll)\n";
 
     }
 

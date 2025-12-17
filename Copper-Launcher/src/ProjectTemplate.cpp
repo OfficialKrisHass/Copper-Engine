@@ -76,7 +76,6 @@ namespace Launcher {
         }
 
         GenerateBuildFiles(name, path);
-        BuildProject(name, path);
         
         return true;
 

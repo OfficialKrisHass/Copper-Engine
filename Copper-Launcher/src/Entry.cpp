@@ -7,16 +7,20 @@
 #include <libloaderapi.h>
 #endif
 
-std::filesystem::path execFolder = "";
+#ifdef CU_LINUX
+#define LAUNCHER_DATA_DIRECTORY "/usr/share/copper-launcher"
+#endif
+
+std::filesystem::path dataDirectory = "";
 
 namespace Launcher {
     
     extern int Entry(); // LauncherApp.cpp
-    const std::filesystem::path& ExecutableFolder() { return execFolder; } // Base.h
+    const std::filesystem::path& DataDirectory() { return dataDirectory; } // Base.h
 
 }
 
-void GetExecutableFolder();
+void GetDataDirectory();
 
 int main(int argc, char* argv[]) {
 
@@ -26,36 +30,40 @@ int main(int argc, char* argv[]) {
         if (i == i - 2 || strcmp(argv[i], "-e") != 0) continue;
 
         i++;
-        execFolder = argv[i];
+        dataDirectory = argv[i];
 
     }
 #endif
 
-    if (execFolder.empty())
-        GetExecutableFolder();
+    if (dataDirectory.empty())
+        GetDataDirectory();
 
-    std::cout << execFolder << "\n";
+    std::cout << dataDirectory << "\n";
 
     return Launcher::Entry();
 
 }
 
-void GetExecutableFolder() {
+void GetDataDirectory() {
 
     std::string tmp;
 
 #ifdef CU_LINUX
     tmp = std::filesystem::canonical("/proc/self/exe");
-    size_t pos = tmp.find_last_of('/');
 #elif CU_WINDOWS
     CHAR path[MAX_PATH];
     GetModuleFileNameA(NULL, path, MAX_PATH);
 
     tmp = path;
-    size_t pos = tmp.find_last_of('\\');
 #endif
+    size_t pos = tmp.find_last_of(std::filesystem::path::preferred_separator);
     tmp.erase(pos, std::string::npos);
 
-    execFolder = tmp;
+    dataDirectory = tmp;
+
+#ifdef CU_LINUX
+    if (std::filesystem::exists(dataDirectory / "assets")) return;
+    dataDirectory = LAUNCHER_DATA_DIRECTORY;
+#endif
 
 }

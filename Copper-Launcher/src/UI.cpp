@@ -22,9 +22,9 @@ namespace Launcher::UI {
 
         ImGuiIO& io = ImGui::GetIO();
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NoMouseCursorChange | ImGuiConfigFlags_ViewportsEnable;
-        io.FontDefault = AddFont(ExecutableFolder() / MainFontPath, 25.0f);
+        io.FontDefault = AddFont(DataDirectory() / MainFontPath, 25.0f);
 
-        iniPath = (ExecutableFolder() / "imgui.ini").string();
+        iniPath = (DataDirectory() / "imgui.ini").string();
         io.IniFilename = iniPath.c_str();
 
         LoadTheme();

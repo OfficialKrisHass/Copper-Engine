@@ -79,7 +79,12 @@ namespace Copper {
     typedef long long           int64;
     typedef unsigned long long  uint64;
 
-    const fs::path& ExecutableFolder();
+    // The directory containing the application data. On Windows this is just the directory of the executable
+    // but on linux this can be either the executable directory (portable builds) or /usr/share/
+    //
+    // NOTE: This needs to be changed in the future somehow. Applications should have a Data path of their own.
+    //       Maybe their executables don't have to be in /usr/bin ?
+    const fs::path& DataDirectory();
 
 }
 

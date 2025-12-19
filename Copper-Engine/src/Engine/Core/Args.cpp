@@ -6,6 +6,10 @@
 #include <libloaderapi.h>
 #endif
 
+#if defined(CU_LINUX) && defined(CU_EDITOR)
+#define EDITOR_DATA_DIRECTORY "/usr/share/copper-editor"
+#endif
+
 namespace Copper::Args {
 
 #ifdef CU_DEBUG
@@ -14,10 +18,7 @@ namespace Copper::Args {
 
     static std::vector<std::string> arguments;
 
-    static fs::path execFolder;
-#ifdef CU_EDITOR
-    static fs::path projectPath;
-#endif
+    static fs::path dataDirectory;
 
     void Initialize(uint32 argc, char* argv[]) {
 
@@ -42,41 +43,44 @@ namespace Copper::Args {
             // are not valid if the option (starts with a -) is the last argument, e.g. there is no value argument (the next i).
             if (i == argc - 1) break;
 
+            // 1. In debug mode, the -e argument has priority over all. This will be used as the data folder
 #ifdef CU_DEBUG
             if (strcmp(argv[i], "-e") == 0) {
 
-                execFolder = argv[++i];
-                arguments.push_back(execFolder.string());
+                dataDirectory = argv[++i];
+                arguments.push_back(dataDirectory.string());
 
             }
 #endif
 
         }
 
-        // The last argument is an optional project path.
-        // Here we check if there are at least 2 arguments (the first one is the executable path)
-        // and if the last argument is not the value of some option (e.g. -e).
-#ifdef CU_EDITOR
-        if (argc > 1 && argv[argc - 2][0] != '-')
-            projectPath = argv[argc - 1];
-#endif
+        // 2. On non debug builds or when the -e argument was not passed, we use the executable path for windows,
+        //    on linux we use the executable path for non editor builds, and for editor builds we check if the
+        //    executable path contains the assets directory (portable builds), if not we use EDITOR_DATA_DIRECTORY
+        //
+        // TODO: Currently this means that other copper-engine applications can not be placed in the /usr/bin directory
+        //       because in that case the data directory would be /usr/bin/ which is an invalid place to put assets.
 
-        // We only retrieve the executable folder from the OS if it wasn't passed as an argument.
-        if (!execFolder.empty()) return;
+        if (!dataDirectory.empty()) return;
 
 #ifdef CU_LINUX
         std::string tmp = fs::canonical("/proc/self/exe");
-        size_t pos = tmp.find_last_of('/');
 #elif CU_WINDOWS
         CHAR path[MAX_PATH];
         GetModuleFileNameA(NULL, path, MAX_PATH);
 
         std::string tmp = path;
-        size_t pos = tmp.find_last_of('\\');
 #endif
+        size_t pos = tmp.find_last_of(fs::path::preferred_separator);
         tmp.erase(pos, std::string::npos);
 
-        execFolder = tmp;
+        dataDirectory = tmp;
+
+#ifdef EDITOR_DATA_DIRECTORY
+        if (fs::exists(dataDirectory / "assets")) return;
+        dataDirectory = EDITOR_DATA_DIRECTORY; 
+#endif
 
         LogStatus("Parsed {} command line arguments.", argc);
 
@@ -92,14 +96,10 @@ namespace Copper::Args {
 
     }
 
-#ifdef CU_EDITOR
-    const fs::path& GetProjectPath() { return projectPath; }
-#endif
-
 }
 
 namespace Copper {
 
-    const fs::path& ExecutableFolder() { return Args::execFolder; }
+    const fs::path& DataDirectory() { return Args::dataDirectory; }
 
 }

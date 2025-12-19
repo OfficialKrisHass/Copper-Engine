@@ -147,7 +147,7 @@ namespace Editor {
         data.window.GetKeyPressedEvent() += Editor::OnKeyPressed;
         data.window.GetWindowFocusedEvent() += Editor::OnWindowFocused;
 
-        GetMainUIContext().SetDefaultFont(ExecutableFolder() / "assets/Fonts/IBMPlexMono-Medium.ttf");
+        GetMainUIContext().SetDefaultFont(DataDirectory() / "assets/Fonts/IBMPlexMono-Medium.ttf");
 
         data.scene = GetScene();
         data.scene->GetRegistry().AddEntityRemovedEventFunc(OnEntityRemoved);
@@ -156,14 +156,14 @@ namespace Editor {
         data.fileBrowser.Initialize();
         data.console.Initialize();
 
-        data.themeEditor.LoadTheme(ExecutableFolder() / "assets/Themes/Default.cutheme");
+        data.themeEditor.LoadTheme(DataDirectory() / "assets/Themes/Default.cutheme");
 
-        data.infoIcon.Create(ExecutableFolder() / "assets/Icons/info.png", Texture::Format::RGBA);
-        data.warnIcon.Create(ExecutableFolder() / "assets/Icons/warn.png", Texture::Format::RGBA);
-        data.errorIcon.Create(ExecutableFolder() / "assets/Icons/error.png", Texture::Format::RGBA);
+        data.infoIcon.Create(DataDirectory() / "assets/Icons/info.png", Texture::Format::RGBA);
+        data.warnIcon.Create(DataDirectory() / "assets/Icons/warn.png", Texture::Format::RGBA);
+        data.errorIcon.Create(DataDirectory() / "assets/Icons/error.png", Texture::Format::RGBA);
 
-        data.playIcon.Create(ExecutableFolder() / "assets/Icons/Runtime/PlayButton.png", Texture::Format::RGBA);
-        data.stopIcon.Create(ExecutableFolder() / "assets/Icons/Runtime/StopButton.png", Texture::Format::RGBA);
+        data.playIcon.Create(DataDirectory() / "assets/Icons/Runtime/PlayButton.png", Texture::Format::RGBA);
+        data.stopIcon.Create(DataDirectory() / "assets/Icons/Runtime/StopButton.png", Texture::Format::RGBA);
 
         LoadEditorData();
 
@@ -204,7 +204,7 @@ namespace Editor {
 
         out << YAML::EndMap; //End
 
-        std::ofstream file(ExecutableFolder() / "assets/EditorData.cu");
+        std::ofstream file(DataDirectory() / "assets/EditorData.cu");
         file << out.c_str();
 
     }
@@ -214,7 +214,7 @@ namespace Editor {
 
         // Load the file
 
-        if (!fs::exists(ExecutableFolder() / "assets/EditorData.cu")) {
+        if (!fs::exists(DataDirectory() / "assets/EditorData.cu")) {
 
             LogWarn("EditorData.cu is missing, generating a default one");
             SaveEditorData();
@@ -222,10 +222,10 @@ namespace Editor {
         }
 
         YAML::Node main;
-        try { main = YAML::LoadFile((ExecutableFolder() / "assets/EditorData.cu").string()); }
+        try { main = YAML::LoadFile((DataDirectory() / "assets/EditorData.cu").string()); }
         catch (YAML::Exception e) {
 
-            Input::ErrorPopup("EditorData.cu read failed", "Could not read the EditorData.cu file.\n\nIt should be located: " + (ExecutableFolder() / "assets/EditorData.cu").string() + "\n\nError message: " + e.what());
+            Input::ErrorPopup("EditorData.cu read failed", "Could not read the EditorData.cu file.\n\nIt should be located: " + (DataDirectory() / "assets/EditorData.cu").string() + "\n\nError message: " + e.what());
             exit(-1);
 
         }
@@ -237,11 +237,15 @@ namespace Editor {
 
         // Project
 
-        // If a project was passed as an argument, it has priority.
-        if (!Args::GetProjectPath().empty()) {
+        if (Args::Count() > 0) {
 
-            data.project.Open(Args::GetProjectPath());
-            return;
+            const fs::path projectPath = Args::GetArgument(Args::Count() - 1);
+            if (fs::exists(projectPath / "Project.cu")) {
+
+                data.project.Open(projectPath);
+                return;
+
+            }
 
         }
 
@@ -538,7 +542,7 @@ namespace Editor {
 
         data.state = EditorState::Play;
 
-        SceneSerializer::Serialize(data.scene, ExecutableFolder() / "assets/Temp/scene_lock.copper");
+        SceneSerializer::Serialize(data.scene, DataDirectory() / "assets/Temp/scene_lock.copper");
 
         Renderer::Restart();
 
@@ -553,7 +557,7 @@ namespace Editor {
         data.state = EditorState::Edit;
 
         data.scene->Deinitialize();
-        SceneSerializer::Deserialize(data.scene, ExecutableFolder() / "assets/Temp/scene_lock.copper");
+        SceneSerializer::Deserialize(data.scene, DataDirectory() / "assets/Temp/scene_lock.copper");
         data.scene->Initialize();
 
         data.camView.SetIsAcceptingInput(false);
@@ -599,7 +603,7 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        std::ifstream dllSrc(ExecutableFolder() / "assets/Copper-ScriptingAPI.dll", std::ios::binary);
+        std::ifstream dllSrc(DataDirectory() / "assets/Copper-ScriptingAPI.dll", std::ios::binary);
         std::fstream dllDst;
 
         dllDst.open(data.project.GetPath() / "Binaries/Copper-ScriptingAPI.dll", std::ios::out | std::ios::binary);

@@ -1,2 +1,3 @@
 Name: TemplateTest
-Last scene: Main.copper
+Description: ""
+Last scene: ""

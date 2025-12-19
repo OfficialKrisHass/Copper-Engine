@@ -267,11 +267,11 @@ namespace Editor {
 
         // If rebuilding (automatic or manual), we need to reload as to refresh the Managed references map
 
-        SaveFields(ExecutableFolder() / "assets/Temp/fields.copper");
+        SaveFields(DataDirectory() / "assets/Temp/fields.copper");
         if (!Scripting::Reload())
             return LogError("Failed to reload the Scripting Engine.");
 
-        LoadFields(ExecutableFolder() / "assets/Temp/fields.copper");
+        LoadFields(DataDirectory() / "assets/Temp/fields.copper");
 
         m_shouldRebuild = false;
 
@@ -289,10 +289,10 @@ namespace Editor {
         CUP_FUNCTION();
 
 #ifdef CU_WINDOWS
-        CreateFileAndReplace(ExecutableFolder() / "assets/Templates/Project Files/Template.sln.cut", m_path / (name + ".sln"), ":{ProjectName}", name);
-        CreateFileAndReplace(ExecutableFolder() / "assets/Templates/Project Files/Template.csproj.cut", m_path / (name + ".csproj"), ":{ProjectName}", name);
+        CreateFileAndReplace(DataDirectory() / "assets/Templates/Project Files/Template.sln.cut", m_path / (name + ".sln"), ":{ProjectName}", name);
+        CreateFileAndReplace(DataDirectory() / "assets/Templates/Project Files/Template.csproj.cut", m_path / (name + ".csproj"), ":{ProjectName}", name);
 #elif CU_LINUX
-        CreateFileAndReplace(ExecutableFolder() / "assets/Templates/Project Files/premake5.lua.cut", m_path / "premake5.lua", ":{ProjectName}", name);
+        CreateFileAndReplace(DataDirectory() / "assets/Templates/Project Files/premake5.lua.cut", m_path / "premake5.lua", ":{ProjectName}", name);
 #endif
 
     }
@@ -313,7 +313,7 @@ namespace Editor {
         //system(("cd \"" + data.project.path.string() + "\" ; ./premake/premake5 gmake2").c_str());
 
         // Turns out there is :)
-        system(((ExecutableFolder() / "util/premake/premake5 --file=\"").string() + (m_path / "premake5.lua").string() + "\" gmake2 > /dev/null").c_str());
+        system(((DataDirectory() / "util/premake/premake5 --file=\"").string() + (m_path / "premake5.lua").string() + "\" gmake2 > /dev/null").c_str());
 
     }
 #endif

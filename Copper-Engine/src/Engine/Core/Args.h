@@ -11,8 +11,4 @@ namespace Copper::Args {
     uint64 Count();
     const std::string& GetArgument(uint32 index);
 
-#ifdef CU_EDITOR
-    const fs::path& GetProjectPath();
-#endif
-
 }

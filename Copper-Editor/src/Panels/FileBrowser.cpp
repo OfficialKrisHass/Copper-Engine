@@ -49,10 +49,10 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        directoryIcon.Create(ExecutableFolder() / "assets/Icons/FileBrowser/DirectoryIcon.png", Texture::Format::RGBA);
-        fileIcon.Create(ExecutableFolder() / "assets/Icons/FileBrowser/FileIcon.png", Texture::Format::RGBA);
+        directoryIcon.Create(DataDirectory() / "assets/Icons/FileBrowser/DirectoryIcon.png", Texture::Format::RGBA);
+        fileIcon.Create(DataDirectory() / "assets/Icons/FileBrowser/FileIcon.png", Texture::Format::RGBA);
 
-        m_font = GetMainUIContext().LoadFont(ExecutableFolder() / "assets/Fonts/IBMPlexMono-Medium.ttf", 16.0f);
+        m_font = GetMainUIContext().LoadFont(DataDirectory() / "assets/Fonts/IBMPlexMono-Medium.ttf", 16.0f);
 
     }
     void FileBrowser::Refresh() {

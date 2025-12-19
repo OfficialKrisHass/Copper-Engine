@@ -16,7 +16,7 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        const fs::path path = ExecutableFolder() / "assets/Templates/Projects" / project.name;
+        const fs::path path = DataDirectory() / "assets/Templates/Projects" / project.name;
 
         create_directories(path.string() + "/Assets");
         for (const fs::directory_entry& entry : fs::recursive_directory_iterator(project.GetAssetsPath())) {
@@ -39,7 +39,7 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        const fs::path templ = ExecutableFolder() / "assets/Templates/Projects" / templateName;
+        const fs::path templ = DataDirectory() / "assets/Templates/Projects" / templateName;
 
         create_directories(project.GetAssetsPath());
         create_directories((project.GetPath() / "Binaries"));
@@ -59,7 +59,7 @@ namespace Editor {
         CreateFileAndReplace(templ / "Project.cu.cut", project.GetPath() / "Project.cu", ":{ProjectName}", project.name);
         CopyFileTo(templ / "ProjectMetadata.cu.cut", project.GetPath() / "ProjectMetadata.cu");
 
-        CopyFileTo(ExecutableFolder() / "assets/Copper-ScriptingAPI.dll", project.GetPath() / "Binaries/Copper-ScriptingAPI.dll", true);
+        CopyFileTo(DataDirectory() / "assets/Copper-ScriptingAPI.dll", project.GetPath() / "Binaries/Copper-ScriptingAPI.dll", true);
 
         project.RegenerateBuildFiles();
 

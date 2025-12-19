@@ -30,7 +30,7 @@ namespace Launcher {
     typedef long long           int64;
     typedef unsigned long long  uint64;
 
-    const fs::path& ExecutableFolder();
+    const fs::path& DataDirectory();
 
     void LaunchEditor(const std::string& projectPath);
 

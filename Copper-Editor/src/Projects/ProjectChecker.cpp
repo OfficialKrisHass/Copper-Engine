@@ -81,7 +81,7 @@ namespace Editor::ProjectChecker {
 #endif
         if (GET_FLAG(issueFlags, MissingScriptingDLL)) {
 
-            std::ifstream dllSrc(ExecutableFolder() / "assets/Copper-ScriptingAPI.dll", std::ios::binary);
+            std::ifstream dllSrc(DataDirectory() / "assets/Copper-ScriptingAPI.dll", std::ios::binary);
             std::ofstream dllDst;
 
             dllDst.open(project.GetPath() / "Binaries/Copper-ScriptingAPI.dll", std::ios::out | std::ios::binary);

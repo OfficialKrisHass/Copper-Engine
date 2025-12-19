@@ -26,6 +26,7 @@ int main(int argc, char* argv[]) {
     LogDebug("Running Copper Engine Version {}.{}.{}.{}.", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_TWEAK);
 
     Args::Initialize(argc, argv);
+    Log("Data dir: '{}'", DataDirectory());
     
     AppEntryPoint();
 

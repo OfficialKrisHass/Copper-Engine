@@ -22,7 +22,7 @@ namespace Editor {
 
         Logger::SetCallback(Console::LogCallback);
 
-        font = GetMainUIContext().LoadFont(ExecutableFolder() / "assets/Fonts/IBMPlexMono-Medium.ttf", 16.0f);
+        font = GetMainUIContext().LoadFont(DataDirectory() / "assets/Fonts/IBMPlexMono-Medium.ttf", 16.0f);
 
     }
 

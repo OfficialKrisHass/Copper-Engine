@@ -136,7 +136,7 @@ namespace Launcher {
         out << YAML::EndMap; // Main
 
         std::ofstream file;
-        file.open(ExecutableFolder() / "assets/Launcher.cutheme");
+        file.open(DataDirectory() / "assets/Launcher.cutheme");
         file << out.c_str();
         file.close();
 
@@ -147,7 +147,7 @@ namespace Launcher {
             style = &ImGui::GetStyle();
 
         YAML::Node theme;
-        try { theme = YAML::LoadFile((ExecutableFolder() / "assets/Launcher.cutheme").string()); }
+        try { theme = YAML::LoadFile((DataDirectory() / "assets/Launcher.cutheme").string()); }
         catch (YAML::Exception e) {
 
             Dialogs::Error("Theme load failed", "Could not load theme file Launcher.cutheme.\n\nError:\n" + e.msg);

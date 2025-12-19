@@ -61,6 +61,9 @@ bindapi: CMake
 	@$(API_BINDER) $(CURDIR)/Copper-Editor
 	@touch Copper-APIBinder/.stamp
 
+install:
+	@cmake --install CMake/$(CONFIGURATION)
+
 # Run targets
 
 run:

@@ -17,3 +17,11 @@ add_subdirectory(Copper-Engine)
 add_subdirectory(Copper-Editor)
 add_subdirectory(Copper-Launcher)
 add_subdirectory(Copper-APIBinder)
+
+install(TARGETS Copper-Editor Copper-Launcher RUNTIME DESTINATION bin)
+
+install(DIRECTORY Copper-Editor/assets Copper-Editor/lib Copper-Editor/util DESTINATION share/copper-editor)
+install(FILES Copper-Editor/imgui.ini DESTINATION share/copper-editor)
+
+install(DIRECTORY Copper-Launcher/assets DESTINATION share/copper-launcher)
+install(FILES Copper-Launcher/imgui.ini DESTINATION share/copper-launcher)

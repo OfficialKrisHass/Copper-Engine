@@ -62,13 +62,13 @@ namespace Launcher {
         }
 
         ImGui::PushFont(Fonts::SubtitleFont());
-        ImGui::Text(m_name.c_str());
+        ImGui::TextUnformatted(m_name.c_str());
         ImGui::PopFont();
 
         ImGui::SetCursorPosY(ImGui::GetContentRegionMax().y - ImGui::GetTextLineHeight());
 
         ImGui::PushFont(Fonts::SmallTextFont());
-        ImGui::Text(m_directory.string().c_str());
+        ImGui::TextUnformatted(m_directory.string().c_str());
         ImGui::PopFont();
 
         bool held = false;

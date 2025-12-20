@@ -85,7 +85,7 @@ namespace Launcher::CreateProjectWindow {
 
         // ImGui is retarded and I hate it why the fuck does it exist ????????
         ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + 240.0f);
-        ImGui::Text(templates[selectedTemplate].GetDescription().c_str());
+        ImGui::TextUnformatted(templates[selectedTemplate].GetDescription().c_str());
         ImGui::PopTextWrapPos();
 
         // Create Button

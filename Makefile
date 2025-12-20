@@ -103,7 +103,7 @@ CMake: $(PROJECT_FILES)
 # Build targets
 
 Copper-Engine/lib/.stamp:
-	@${MAKE} --no-print-directory -C Copper-Engine/lib/PhysX/physx/compiler/linux-gcc-$(PHYSX_CONFIG) -f Makefile
+	@${MAKE} --no-print-directory -C Copper-Engine/lib/PhysX/physx/compiler/linux-gcc-cpu-only-$(PHYSX_CONFIG) -f Makefile
 	@${MAKE} --no-print-directory -C Copper-Engine/lib/mono -f Makefile
 	@${MAKE} --no-print-directory -C Copper-Engine/lib/mono -f Makefile install
 	@python scripts/post_build.py libraries $(CONFIGURATION) $(OS)

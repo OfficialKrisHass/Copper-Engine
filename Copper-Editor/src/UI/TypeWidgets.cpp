@@ -111,7 +111,7 @@ namespace Editor::UI {
 
         // Text
 
-        ImGui::Text(name.c_str());
+        ImGui::TextUnformatted(name.c_str());
         ImGui::PopItemWidth();
 
         // Cleanup
@@ -170,7 +170,7 @@ namespace Editor::UI {
 
         // Text
 
-        ImGui::Text(name.c_str());
+        ImGui::TextUnformatted(name.c_str());
         ImGui::PopItemWidth();
 
         // Cleanup
@@ -239,7 +239,7 @@ namespace Editor::UI {
 
         // Text
 
-        ImGui::Text(name.c_str());
+        ImGui::TextUnformatted(name.c_str());
         ImGui::PopItemWidth();
 
         // Cleanup
@@ -263,7 +263,7 @@ namespace Editor::UI {
 
         ret = ImGui::ColorEdit3("##Color", &col->r);
         ImGui::SameLine();
-        ImGui::Text(name.c_str());
+        ImGui::TextUnformatted(name.c_str());
 
         ImGui::PopID();
 
@@ -301,7 +301,7 @@ namespace Editor::UI {
             ImGui::PushStyleColor(ImGuiCol_FrameBg, ImGui::GetColorU32(ImGuiCol_FrameBgHovered));
 
         ImGui::BeginChildFrame(id, frameSize);
-        ImGui::Text(nodeText.c_str());
+        ImGui::TextUnformatted(nodeText.c_str());
         ImGui::EndChildFrame();
 
         if (hovered)
@@ -310,7 +310,7 @@ namespace Editor::UI {
         // Name
 
         ImGui::SameLine(0.0f, style.ItemInnerSpacing.x);
-        ImGui::Text(name.c_str());
+        ImGui::TextUnformatted(name.c_str());
 
         // Drag Drop
 
@@ -367,7 +367,7 @@ namespace Editor::UI {
             ImGui::PushStyleColor(ImGuiCol_FrameBg, ImGui::GetColorU32(ImGuiCol_FrameBgHovered));
 
         ImGui::BeginChildFrame(id, frameSize);
-        ImGui::Text(nodeText.c_str());
+        ImGui::TextUnformatted(nodeText.c_str());
         ImGui::EndChildFrame();
 
         if (hovered)
@@ -376,7 +376,7 @@ namespace Editor::UI {
         // Name
 
         ImGui::SameLine(0.0f, style.ItemInnerSpacing.x);
-        ImGui::Text(name.c_str());
+        ImGui::TextUnformatted(name.c_str());
 
         // Drag Drop
 
@@ -433,7 +433,7 @@ namespace Editor::UI {
             ImGui::PushStyleColor(ImGuiCol_FrameBg, ImGui::GetColorU32(ImGuiCol_FrameBgHovered));
 
         ImGui::BeginChildFrame(id, frameSize);
-        ImGui::Text(nodeText.c_str());
+        ImGui::TextUnformatted(nodeText.c_str());
         ImGui::EndChildFrame();
 
         if (hovered)
@@ -442,7 +442,7 @@ namespace Editor::UI {
         // Name
 
         ImGui::SameLine(0.0f, style.ItemInnerSpacing.x);
-        ImGui::Text(name.c_str());
+        ImGui::TextUnformatted(name.c_str());
 
         // Drag Drop
 
@@ -498,7 +498,7 @@ namespace Editor::UI {
             ImGui::PushStyleColor(ImGuiCol_FrameBg, ImGui::GetColorU32(ImGuiCol_FrameBgHovered));
 
         ImGui::BeginChildFrame(id, frameSize);
-        ImGui::Text(nodeText.c_str());
+        ImGui::TextUnformatted(nodeText.c_str());
         ImGui::EndChildFrame();
 
         if (hovered)
@@ -507,7 +507,7 @@ namespace Editor::UI {
         // Name
 
         ImGui::SameLine(0.0f, style.ItemInnerSpacing.x);
-        ImGui::Text(name.c_str());
+        ImGui::TextUnformatted(name.c_str());
 
         // Drag Drop
 
@@ -562,7 +562,7 @@ namespace Editor::UI {
 
         CUP_FUNCTION();
 
-        ImGui::Text(name.c_str());
+        ImGui::TextUnformatted(name.c_str());
 
         bool tmp;
         bool ret = false;

@@ -27,7 +27,7 @@ namespace Editor::UI {
 
         ImGui::SameLine();
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() - (textHeight - iconSize) * 0.5f);
-        ImGui::Text(text);
+        ImGui::TextUnformatted(text);
 
         ImGui::EndChild();
 

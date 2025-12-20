@@ -164,7 +164,7 @@ namespace Editor::NewItemModal {
 
         ImGui::BeginChild("##Details", ImVec2(0, 90.0f * ImGui::GetContentRegionAvail().y / 100.0f));
 
-        ImGui::TextWrapped(Data::optionsDetails[selectedOption]);
+        ImGui::TextWrapped("%s", Data::optionsDetails[selectedOption]);
 
         ImGui::EndChild();
 

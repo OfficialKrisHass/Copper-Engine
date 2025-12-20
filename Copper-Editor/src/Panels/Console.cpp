@@ -75,7 +75,7 @@ namespace Editor {
                 
             }
 
-            ImGui::TextWrapped(msg.text.c_str());
+            ImGui::TextWrapped("%s", msg.text.c_str());
             ImGui::Separator();
 
             ImGui::PopStyleColor();

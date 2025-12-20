@@ -109,7 +109,7 @@ namespace Editor {
         if (Properties::GetSelectedData().type == SelectedData::Type::Entity && Properties::GetSelectedData().entity == entity)
             flags |= ImGuiTreeNodeFlags_Selected;
 
-        bool opened = ImGui::TreeNodeEx(entity, flags, entity->name.c_str());
+        bool opened = ImGui::TreeNodeEx(entity, flags, "%s", entity->name.c_str());
 
         if (ImGui::BeginDragDropSource()) {
 

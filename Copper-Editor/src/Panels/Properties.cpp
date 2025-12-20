@@ -238,7 +238,7 @@ namespace Editor {
 
         if (m_selectedData.file.empty()) return;
 
-        ImGui::Text(m_selectedData.file.string().c_str());
+        ImGui::TextUnformatted(m_selectedData.file.string().c_str());
         ImGui::Separator();
 
         std::string extension = m_selectedData.file.extension().string();
@@ -551,6 +551,7 @@ namespace Editor {
                 break;
 
             }
+            default: break;
 
             }
 
@@ -570,7 +571,7 @@ namespace Editor {
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2 {4, 4});
 
         ImGui::Dummy(ImVec2(0.0f, HEADER_MARGIN));
-        bool opened = ImGui::TreeNodeEx((void*) component, flags, name.c_str());
+        bool opened = ImGui::TreeNodeEx((void*) component, flags, "%s", name.c_str());
 
         ImGui::PopStyleVar();
         if (opened)
@@ -614,7 +615,7 @@ namespace Editor {
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4, 4 });
 
         ImGui::Dummy(ImVec2(0.0f, HEADER_MARGIN));
-        bool opened = ImGui::TreeNodeEx((void*) component, flags, name.c_str());
+        bool opened = ImGui::TreeNodeEx((void*) component, flags, "%s", name.c_str());
 
         ImGui::PopStyleVar();
         if (opened)

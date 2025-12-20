@@ -46,7 +46,7 @@ namespace Editor::Profiler {
             text += '\t';
 
         text += fmt::format("Subframe: {} took {}ms", frame.name, frame.duration);
-        ImGui::Text(text.c_str());
+        ImGui::TextUnformatted(text.c_str());
 
         for (const Frame& subframe : frame.subframes)
             Subframe(subframe, depth + 1);

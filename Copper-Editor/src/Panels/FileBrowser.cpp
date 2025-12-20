@@ -382,7 +382,7 @@ namespace Editor {
         if (!m_projectRelativeDir.empty())
             path += m_projectRelativeDir.string() + '/';
 
-        ImGui::Text(path.c_str());
+        ImGui::TextUnformatted(path.c_str());
 
         ImGui::PopFont();
 
@@ -420,7 +420,7 @@ namespace Editor {
 
         if (editingPath != path) {
             
-            ImGui::TextWrapped(filename.c_str());
+            ImGui::TextWrapped("%s", filename.c_str());
             return;
 
         }

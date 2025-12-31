@@ -35,3 +35,5 @@ set_target_properties(Copper-Launcher PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PRO
 target_include_directories(Copper-Launcher PRIVATE ${includes})
 target_compile_definitions(Copper-Launcher PRIVATE ${defines})
 target_link_libraries(Copper-Launcher glfw GLAD ImGui yaml-cpp)
+
+target_compile_options(Copper-Launcher PRIVATE -Wformat -Wformat-security -Werror=format-security)

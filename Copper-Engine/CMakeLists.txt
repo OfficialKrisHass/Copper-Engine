@@ -67,6 +67,11 @@ target_link_options(Copper-Engine PRIVATE -L/usr/lib/pkgconfig/../../lib -lmono-
 target_include_directories(Copper-Engine PRIVATE src ${includeDirs} ${PROJECT_BINARY_DIR}/Copper-Engine/src)
 
 # Libraries
+set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+
 add_subdirectory(lib/GLFW)
 add_subdirectory(lib/GLAD)
 add_subdirectory(lib/ImGui)

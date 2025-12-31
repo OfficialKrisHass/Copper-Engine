@@ -35,7 +35,7 @@ add_executable(Copper-Editor ${sources})
 
 # Compiler setup
 set_target_properties(Copper-Editor PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/Build/${OUTPUT_DIR}/Copper-Editor")
-target_compile_options(Copper-Engine PRIVATE -I/usr/include/mono-2.0 -D_REENTRANT)
+target_compile_options(Copper-Engine PRIVATE -I/usr/include/mono-2.0 -D_REENTRANT -Wformat -Wformat-security -Werror=format-security)
 
 target_include_directories(Copper-Editor PRIVATE ${includeDirs})
 target_compile_definitions(Copper-Editor PRIVATE ${defines})

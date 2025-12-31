@@ -51,13 +51,13 @@ namespace Launcher {
         COLOR_EDIT(ImGuiCol_HeaderHovered, "Header hovered");
         COLOR_EDIT(ImGuiCol_HeaderActive, "Header active");
 
-        ImGui::Text("");
+        ImGui::NewLine();
 
         COLOR_EDIT(ImGuiCol_TitleBg, "Title bar");
         COLOR_EDIT(ImGuiCol_TitleBgActive, "Title bar active");
         COLOR_EDIT(ImGuiCol_TitleBgCollapsed, "Title bar collapsed");
 
-        ImGui::Text("");
+        ImGui::NewLine();
 
         COLOR_EDIT(ImGuiCol_Tab, "Tab");
         COLOR_EDIT(ImGuiCol_TabHovered, "Tab hovered");

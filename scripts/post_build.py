@@ -80,6 +80,9 @@ def editor(dir, system, configuration):
     print(f"from: {editorDir}")
     print(f"to: {buildDir}\n")
 
+    print("Copying Copper-ScriptingAPI")
+    shutil.copy2(dir + "/Build/" + system + "-x86_64-" + configuration + "/Copper-ScriptingAPI/Copper-ScriptingAPI.dll", editorDir + "/assets/")
+
     if configuration == "Release":
         print("Copying assets")
         copyDir(editorDir + "/assets", buildDir + "/assets/")
@@ -94,12 +97,6 @@ def editor(dir, system, configuration):
 
         print("Copying miscelanous files")
         shutil.copy2(editorDir + "/imgui.ini", buildDir)
-
-        print("Copying Copper-ScriptingAPI")
-        shutil.copy2(dir + "/Build/" + system + "-x86_64-" + configuration + "/Copper-ScriptingAPI/Copper-ScriptingAPI.dll", buildDir + "/assets/")
-    elif configuration == "Debug":
-        print("Copying Copper-ScriptingAPI")
-        shutil.copy2(dir + "/Build/" + system + "-x86_64-" + configuration + "/Copper-ScriptingAPI/Copper-ScriptingAPI.dll", editorDir + "/assets/")
 
     print("Copying binaries")
     copyDir(editorDir + "/bin/mono/" + system + "/" + configuration, buildDir)

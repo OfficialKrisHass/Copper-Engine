@@ -11,212 +11,241 @@
 #include <limits>
 #include <memory>
 
+#if defined(_MSC_VER)
+  #include <intrin.h>
+#else
+  #include <cpuid.h>
+#endif
+
+// Platform independent cpuid implementation.
+// out are the eax, ebx, ecx and edx registers.
+static void cpuid(int out[4], int leaf, int count) {
+
+#if defined(_MSC_VER)
+    __cpuidex(out, leaf, count);
+#else
+    __cpuid_count(leaf, count, out[0], out[1], out[2], out[3]);
+#endif
+
+}
+
+// Platform independent xgetbv implementation.
+// Returns the xcr0 register
+static int xgetbv() {
+
+#if defined(_MSC_VER)
+    return _xgetbv(0);
+#else
+    uint32_t eax, edx;
+    __asm__ volatile ("xgetbv" : "=a"(eax), "=d"(edx) : "c"(0));
+    return ((uint64_t)edx << 32) | eax;
+#endif
+
+}
+
 // This is a modified version of the uuid_v4 library found at
 // https://github.com/crashoz/uuid_v4
 // License can be found in the lib/uuid dir
 
 namespace Copper {
 
-    static std::shared_ptr<std::mt19937_64> generator = std::make_shared<std::mt19937_64>(std::random_device()());
-    static std::uniform_int_distribution<uint64> distribution = std::uniform_int_distribution<uint64>(std::numeric_limits<uint64>::min(), std::numeric_limits<uint64>::max());
+    // Used for the generation itself
 
+    std::shared_ptr<std::mt19937_64> generator = std::make_shared<std::mt19937_64>(std::random_device()());
+    std::uniform_int_distribution<uint64> distribution = std::uniform_int_distribution<uint64>(std::numeric_limits<uint64>::min(), std::numeric_limits<uint64>::max());
+
+    // UUID static variables
+
+    UUID::Type UUID::m_type = UUID::Type::None;
     const UUID UUID::m_invalid = UUID(0, 0);
 
-    void  m128itos(__m128i x, char* mem);
-    __m128i stom128i(const char* mem);
+    std::function<void(uint8*, const uint8*)> UUID::m_setImpl = nullptr;
+    std::function<void(uint8*, uint64, uint64)> UUID::m_constructorImpl = nullptr;
+    std::function<void(uint8*)> UUID::m_generateImpl = nullptr;
+    std::function<void(const uint8*, char*)> UUID::m_toBytesImpl = nullptr;
+    std::function<void(uint8*, const char*)> UUID::m_setStrigImpl = nullptr;
+    std::function<void(const uint8*, char*)> UUID::m_toStringImpl = nullptr;
+    std::function<bool(const uint8*, const uint8*)> UUID::m_equalsImpl = nullptr;
 
-    UUID::UUID(const UUID& other) {
+    // UUID Functions implementations.
+    //
+    // Scalar functions found in UUID.cpp (here)
+    // SSE functions found in UUID_SSE4.cpp
+    // AVX functions found in UUID_AVX2.cpp
 
-        CUP_FUNCTION();
+    // SSE
 
-        __m128i x = _mm_load_si128((__m128i*) other.m_data);
-        _mm_store_si128((__m128i*) m_data, x);
+    extern void UUIDSet_SSE(uint8* data, const uint8* otherData);
+    extern void UUIDConstructor_SSE(uint8* data, uint64 x, uint64 y);
 
-    }
-    UUID::UUID(uint64 x, uint64 y) {
+    extern void UUIDGenerate_SSE(uint8* bytes);
 
-        CUP_FUNCTION();
+    extern void UUIDToBytes_SSE(const uint8* data, char* out);
 
-        __m128i z = _mm_set_epi64x(x, y);
-        _mm_store_si128((__m128i*) m_data, z);
+    extern bool UUIDEquals_SSE(const uint8* lhs, const uint8* rhs);
 
-    }
-    UUID::UUID(const uint8* bytes) {
+    // AVX
 
-        CUP_FUNCTION();
+    extern void UUIDSetString_AVX(uint8* data, const char* string);
+    extern void UUIDToString_AVX(const uint8* data, char* out);
 
-        __m128i x = _mm_loadu_si128((__m128i*) bytes);
-        _mm_store_si128((__m128i*) m_data, x);
+    // Scalar implementations.
 
-    }
+    void UUIDSet(uint8* data, const uint8* otherData);
+    void UUIDConstructor(uint8* data, uint64 x, uint64 y);
 
-    UUID::UUID(const std::string& bytes) {
+    void UUIDGenerate(uint8* bytes);
 
-        CUP_FUNCTION();
+    void UUIDToBytes(const uint8* data, char* out);
 
-        __m128i x = betole128(_mm_loadu_si128((__m128i*) bytes.data()));
-        _mm_store_si128((__m128i*) m_data, x);
+    bool UUIDEquals(const uint8* lhs, const uint8* rhs);
 
-    }
+    void UUIDSetString(uint8* data, const char* string);
+    void UUIDToString(const uint8* data, char* out);
 
-    // Generation
+    // Query functions
 
-    void UUID::GenerateUUID(uint8* bytes) {
+    static bool SSE4Support();
+    static bool AVX2Support();
 
-        CUP_FUNCTION();
-
-        const __m128i andMask = _mm_set_epi64x(0xFFFFFFFFFFFFFF3Full, 0xFF0FFFFFFFFFFFFFull);
-        const __m128i orMask = _mm_set_epi64x(0x0000000000000080ull, 0x0040000000000000ull);
-
-        __m128i n = _mm_set_epi64x(distribution(*generator), distribution(*generator));
-        __m128i uuid = _mm_or_si128(_mm_and_si128(n, andMask), orMask);
-
-        _mm_store_si128((__m128i*) bytes, uuid);
-
-    }
-
-    // Byte string
-
-    void UUID::ToBytes(char* out) const {
+    void UUID::Init() {
 
         CUP_FUNCTION();
 
-        __m128i x = betole128(_mm_load_si128((__m128i*) m_data));
-        _mm_storeu_si128((__m128i*) out, x);
+        // AVX2 also checks for SSE support so no need to check for both
+
+        if (AVX2Support())
+            m_type = Type::SIMD_AVX2;
+        else if (SSE4Support())
+            m_type = Type::SIMD_SSE4;
+        else
+            m_type = Type::Scalar;
+
+        SetType(m_type);
 
     }
 
-    // Pretty string
-
-    void UUID::SetString(const char* string) {
+    void UUID::SetType(Type type) {
 
         CUP_FUNCTION();
 
-        _mm_store_si128((__m128i*) m_data, stom128i(string));
+        using enum UUID::Type;
+
+        switch (type) {
+
+            case Type::Scalar: {
+
+                // No SIMD instructions availalbe means we have to do it all the slow way.
+
+                m_setImpl = UUIDSet;
+                m_constructorImpl = UUIDConstructor;
+                m_generateImpl = UUIDGenerate;
+                m_toBytesImpl = UUIDToBytes;
+                m_equalsImpl = UUIDEquals;
+
+                m_setStrigImpl = UUIDSetString;
+                m_toStringImpl = UUIDToString;
+
+                break;
+
+            }
+            case Type::SIMD_SSE4: {
+
+                // SSE4.1 is what we need for 99% of the implementation, however
+                // the Pretty string functions require AVX, so we have to use the scalar
+                // versions here.
+
+                m_setImpl = UUIDSet_SSE;
+                m_constructorImpl = UUIDConstructor_SSE;
+                m_generateImpl = UUIDGenerate_SSE;
+                m_toBytesImpl = UUIDToBytes_SSE;
+                m_equalsImpl = UUIDEquals_SSE;
+
+                m_setStrigImpl = UUIDSetString;
+                m_toStringImpl = UUIDToString;
+
+                break;
+
+            }
+            case Type::SIMD_AVX2: {
+
+                // AVX2 support enables both SSE, and fills in the gaps of the
+                // pretty string functions, which is why it's so similar to the
+                // SSE4 type.
+
+                m_setImpl = UUIDSet_SSE;
+                m_constructorImpl = UUIDConstructor_SSE;
+                m_generateImpl = UUIDGenerate_SSE;
+                m_toBytesImpl = UUIDToBytes_SSE;
+                m_equalsImpl = UUIDEquals_SSE;
+
+                m_setStrigImpl = UUIDSetString_AVX;
+                m_toStringImpl = UUIDToString_AVX;
+
+                break;
+
+            }
+            default: {
+
+                CU_ASSERT(false, "Invalid UUID type '{}'", static_cast<uint32>(type));
+                break;
+
+            }
+
+        }
 
     }
 
-    void UUID::ToString(char* out) const {
+    bool SSE4Support() {
 
-        CUP_FUNCTION();
+        // Leaf 1 count 0 = Processor info and feature bits
+        // ECX bit 19 = SSE4.1 support
 
-        __m128i x = _mm_load_si128((__m128i*) m_data);
-        m128itos(x, out);
+        int out[4];
+        cpuid(out, 1, 0);
+
+        return (out[2] & (1 << 19)) != 0;
+
+    }
+    bool AVX2Support() {
+
+        // AVX
+        // The CPU may support AVX instructions, but if the OS does not support
+        // extended state saving (xsave and xrestore), the SIMD instructions will
+        // crash. Which is why this is a bit more complex.
+
+        // Leaf 1 count 0 = Processor info and feature bits
+        // ECX bit 27 = xsave and xrestore support
+        // ECX bit 28 = AVX support
+
+        int out[4];
+        cpuid(out, 1, 0);
+
+        bool cpu = (out[2] & (1 << 28)) != 0; // AVX. CPU dependant
+        bool xsave = (out[2] & (1 << 27)) != 0; // xsave and xrestore support. OS dependant
+
+        if (!cpu || !xsave)
+            return false;
+
+        // XCR = Extended Control Register. Determines which register sets are enabled
+        // Bit 1 = SSE support
+        // Bit 2 = AVX support
+
+        int xcr = xgetbv();
+
+        // Test for both SSE and AVX support (0x6 = first and second bit)
+        if ((xcr & 0x6) != 0x6) return false;
+
+        // AVX2
+
+        // Leaf 7 count 0 = Extended features
+        // EBX bit 5 = AVX support
+
+        cpuid(out, 7, 0);
+        return (out[1] & (1 << 5)) != 0;
 
     }
 
-    // Operators
-
-    bool UUID::operator==(const UUID& other) const {
-
-        CUP_FUNCTION();
-
-        __m128i x = _mm_load_si128((__m128i*) m_data);
-        __m128i y = _mm_load_si128((__m128i*) other.m_data);
-
-        __m128i neq = _mm_xor_si128(x, y);
-        return _mm_test_all_zeros(neq, neq);
-
-    }
-    bool UUID::operator<(const UUID& other) const {
-
-        CUP_FUNCTION();
-
-        uint64* x = (uint64*) m_data;
-        uint64* y = (uint64*) other.m_data;
-        
-        return *x < *y || (*x == *y && *(x + 1) < *(y + 1));
-
-    }
-
-    UUID& UUID::operator=(const UUID& other) {
-
-        CUP_FUNCTION();
-
-        if (&other == this) return *this;
-
-        __m128i x = _mm_load_si128((__m128i*) other.m_data);
-        _mm_store_si128((__m128i*) m_data, x);
-
-        return *this;
-
-    }
-
-    // SIMD functions
-
-    void m128itos(__m128i x, char* mem) {
-
-        CUP_FUNCTION();
-
-        // Expand each byte in x to two bytes in res
-        // i.e. 0x12345678 -> 0x0102030405060708
-        // Then translate each byte to its hex ascii representation
-        // i.e. 0x0102030405060708 -> 0x3132333435363738
-        const __m256i mask = _mm256_set1_epi8(0x0F);
-        const __m256i add = _mm256_set1_epi8(0x06);
-        const __m256i alpha_mask = _mm256_set1_epi8(0x10);
-        const __m256i alpha_offset = _mm256_set1_epi8(0x57);
-
-        __m256i a = _mm256_castsi128_si256(x);
-        __m256i as = _mm256_srli_epi64(a, 4);
-        __m256i lo = _mm256_unpacklo_epi8(as, a);
-        __m128i hi = _mm256_castsi256_si128(_mm256_unpackhi_epi8(as, a));
-        __m256i c =  _mm256_inserti128_si256(lo, hi, 1);
-        __m256i d = _mm256_and_si256(c, mask);
-        __m256i alpha = _mm256_slli_epi64(_mm256_and_si256(_mm256_add_epi8(d, add), alpha_mask), 3);
-        __m256i offset = _mm256_blendv_epi8(_mm256_slli_epi64(add, 3), alpha_offset, alpha);
-        __m256i res = _mm256_add_epi8(d, offset);
-
-        // Add dashes between blocks as specified in RFC-4122
-        // 8-4-4-4-12
-        const __m256i dash_shuffle = _mm256_set_epi32(0x0b0a0908, 0x07060504, 0x80030201, 0x00808080, 0x0d0c800b, 0x0a090880, 0x07060504, 0x03020100);
-        const __m256i dash = _mm256_set_epi64x(0x0000000000000000ull, 0x2d000000002d0000ull, 0x00002d000000002d, 0x0000000000000000ull);
-
-        __m256i resd = _mm256_shuffle_epi8(res, dash_shuffle);
-        resd = _mm256_or_si256(resd, dash);
-
-        _mm256_storeu_si256((__m256i*)mem, betole256(resd));
-        *(uint16_t*)(mem+16) = betole16(_mm256_extract_epi16(res, 7));
-        *(uint32_t*)(mem+32) = betole32(_mm256_extract_epi32(res, 7));
-
-    }
-    __m128i stom128i(const char* mem) {
-
-        CUP_FUNCTION();
-
-        // Remove dashes and pack hex ascii bytes in a 256-bits int
-        const __m256i dash_shuffle = _mm256_set_epi32(0x80808080, 0x0f0e0d0c, 0x0b0a0908, 0x06050403, 0x80800f0e, 0x0c0b0a09, 0x07060504, 0x03020100);
-
-        __m256i x = betole256(_mm256_loadu_si256((__m256i*)mem));
-        x = _mm256_shuffle_epi8(x, dash_shuffle);
-        x = _mm256_insert_epi16(x, betole16(*(uint16_t*)(mem+16)), 7);
-        x = _mm256_insert_epi32(x, betole32(*(uint32_t*)(mem+32)), 7);
-
-        // Build a mask to apply a different offset to alphas and digits
-        const __m256i sub = _mm256_set1_epi8(0x2F);
-        const __m256i mask = _mm256_set1_epi8(0x20);
-        const __m256i alpha_offset = _mm256_set1_epi8(0x28);
-        const __m256i digits_offset = _mm256_set1_epi8(0x01);
-        const __m256i unweave = _mm256_set_epi32(0x0f0d0b09, 0x0e0c0a08, 0x07050301, 0x06040200, 0x0f0d0b09, 0x0e0c0a08, 0x07050301, 0x06040200);
-        const __m256i shift = _mm256_set_epi32(0x00000000, 0x00000004, 0x00000000, 0x00000004, 0x00000000, 0x00000004, 0x00000000, 0x00000004);
-
-        // Translate ascii bytes to their value
-        // i.e. 0x3132333435363738 -> 0x0102030405060708
-        // Shift hi-digits
-        // i.e. 0x0102030405060708 -> 0x1002300450067008
-        // Horizontal add
-        // i.e. 0x1002300450067008 -> 0x12345678
-        __m256i a = _mm256_sub_epi8(x, sub);
-        __m256i alpha = _mm256_slli_epi64(_mm256_and_si256(a, mask), 2);
-        __m256i sub_mask = _mm256_blendv_epi8(digits_offset, alpha_offset, alpha);
-        a = _mm256_sub_epi8(a, sub_mask);
-        a = _mm256_shuffle_epi8(a, unweave);
-        a = _mm256_sllv_epi32(a, shift);
-        a = _mm256_hadd_epi32(a, _mm256_setzero_si256());
-        a = _mm256_permute4x64_epi64(a, 0b00001000);
-
-        return _mm256_castsi256_si128(a);
-
-    }
+    // Scalar function implementations.
 
 }

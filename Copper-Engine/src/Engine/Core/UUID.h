@@ -6,20 +6,38 @@
 // https://github.com/crashoz/uuid_v4
 // License can be found in the lib/uuid dir 
 
+#define UUID_FUNC_IMPL(func, ...) CU_ASSERT(func != nullptr, "UUID::" #func " was not assigned. UUID Type: '{}'", static_cast<uint32>(m_type)); func(__VA_ARGS__)
+
 namespace Copper {
 
+    // A wrapper around a 16 byte unsigned char array containing.
+    // Contains SIMD code that gets enabled and disabled during startup or manually using UUID::SetType.
     struct UUID {
 
     public:
+        enum class Type : uint8 {
+
+            None = 0,
+
+            Scalar,     // No SIMD
+            SIMD_SSE4,  // SSE4 SIMD instructions
+            SIMD_AVX2   // SSE4 + AVX2 SIMD instructions
+
+        };
+
         // Defaults to the invalid UUID (all zeroes)
         UUID() : UUID(0, 0) {}
 
-        UUID(const UUID& other);
+        inline UUID(const UUID& other) { UUID_FUNC_IMPL(m_setImpl, m_data, other.m_data); }
 
-        UUID(uint64 x, uint64 y);
-        UUID(const uint8* bytes);
+        inline UUID(uint64 x, uint64 y) { UUID_FUNC_IMPL(m_constructorImpl, m_data, x, y); }
+        inline UUID(const uint8* bytes) { UUID_FUNC_IMPL(m_setImpl, m_data, bytes); }
 
-        explicit UUID(const std::string& bytes);
+        // Determines UUID Type and enables the specific functions.
+        static void Init();
+
+        static void SetType(Type type);
+        static inline Type GetType() { return m_type; }
 
         // Generate functions
 
@@ -47,10 +65,11 @@ namespace Copper {
             GenerateUUID(m_data);
 
         }
+        inline static void GenerateUUID(uint8* bytes) { UUID_FUNC_IMPL(m_generateImpl, bytes); }
 
         // Byte string
 
-        void ToBytes(char* out) const;
+        inline void ToBytes(char* out) const { UUID_FUNC_IMPL(m_toBytesImpl, m_data, out); }
 
         // Pretty string
         
@@ -77,7 +96,7 @@ namespace Copper {
             SetString(string.c_str());
 
         }
-        void SetString(const char* string);
+        inline void SetString(const char* string) { UUID_FUNC_IMPL(m_setStrigImpl, m_data, string); }
 
         inline std::string ToString() const {
 
@@ -97,21 +116,44 @@ namespace Copper {
             ToString((char*) out.data());
 
         }
-        void ToString(char* out) const;
+        inline void ToString(char* out) const { UUID_FUNC_IMPL(m_toStringImpl, m_data, out); }
 
         inline bool IsValid() const { return *this != m_invalid; }
 
         // Operators
 
-        bool operator==(const UUID& other) const;
+        inline bool operator==(const UUID& other) const {
+
+            CU_ASSERT(m_equalsImpl != nullptr, "UUID::m_equalsImpl was not assigned. UUID Type: '{}'", static_cast<uint32>(m_type));
+            return m_equalsImpl(m_data, other.m_data);
+
+        }
         inline bool operator!=(const UUID& other) const { return !(*this == other); }
 
-        bool operator<(const UUID& other) const;
+        inline bool operator<(const UUID& other) const {
+
+            CUP_FUNCTION();
+
+            uint64* x = (uint64*) m_data;
+            uint64* y = (uint64*) other.m_data;
+
+            return *x < *y || (*x == *y && *(x + 1) < *(y + 1));
+
+        }
         inline bool operator>(const UUID& other) const { return other < *this; }
         inline bool operator<=(const UUID& other) const { return !(*this > other); }
         inline bool operator>=(const UUID& other) const { return !(*this < other); }
 
-        UUID& operator=(const UUID& other);
+        inline UUID& operator=(const UUID& other) {
+
+            CUP_FUNCTION();
+
+            if (&other == this) return *this;
+
+            UUID_FUNC_IMPL(m_setImpl, m_data, other.m_data);
+            return *this;
+
+        }
 
         // Misc. 
 
@@ -126,12 +168,24 @@ namespace Copper {
         inline static const UUID& GetInvalid() { return m_invalid; }
 
     private:
-
-        alignas(16) uint8 m_data[16];
-
+        static Type m_type;
         static const UUID m_invalid;
 
-        static void GenerateUUID(uint8* bytes);
+        // Function implementations. These pointers will change based on 
+        // the available SIMD instructions (or lack there of). These are automatically
+        // set in UUID::SetType()
+
+        static std::function<void(uint8*, const uint8*)> m_setImpl;
+        static std::function<void(uint8*, uint64, uint64)> m_constructorImpl;
+        static std::function<void(uint8*)> m_generateImpl;
+        static std::function<void(const uint8*, char*)> m_toBytesImpl;
+        static std::function<void(uint8*, const char*)> m_setStrigImpl;
+        static std::function<void(const uint8*, char*)> m_toStringImpl;
+        static std::function<bool(const uint8*, const uint8*)> m_equalsImpl;
+
+        // UUID data
+
+        alignas(16) uint8 m_data[16];
 
     };
 

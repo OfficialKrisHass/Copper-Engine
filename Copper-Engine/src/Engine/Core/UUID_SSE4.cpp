@@ -1,4 +1,3 @@
-#include "cupch.h"
 #include "UUID.h"
 
 #include <random>
@@ -43,15 +42,6 @@ namespace Copper {
         __m128i uuid = _mm_or_si128(_mm_and_si128(n, andMask), orMask);
 
         _mm_store_si128((__m128i*) bytes, uuid);
-
-    }
-
-    void UUIDToBytes_SSE(const uint8* data, char* out) {
-
-        CUP_FUNCTION();
-
-        __m128i x = _mm_load_si128((__m128i*) data);
-        _mm_storeu_si128((__m128i*) out, x);
 
     }
 

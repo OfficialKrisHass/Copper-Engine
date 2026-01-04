@@ -36,7 +36,7 @@ namespace YAML {
 
             std::string data = node.as<std::string>();
             if (data == "")
-                uuid = UUID::GetInvalid();
+                uuid = UUID::GetNil();
             else
                 uuid = UUID::FromString(data);
 

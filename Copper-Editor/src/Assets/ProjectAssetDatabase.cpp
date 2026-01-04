@@ -416,7 +416,7 @@ namespace Editor::ProjectAssetDatabase {
         if (it == assetFiles.end()) {
 
             LogError("Asset {} isn't loaded.", path);
-            return UUID::GetInvalid();
+            return UUID::GetNil();
 
         }
 

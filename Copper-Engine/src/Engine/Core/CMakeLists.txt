@@ -4,5 +4,5 @@ list(TRANSFORM coreSources PREPEND src/Engine/Core/)
 
 list(APPEND sources ${coreSources})
 
-set_source_files_properties(src/Engine/Core/UUID_SSE4.cpp PROPERTIES COMPILE_OPTIONS "-msse4.1")
-set_source_files_properties(src/Engine/Core/UUID_AVX2.cpp PROPERTIES COMPILE_OPTIONS "-mavx2")
+set_source_files_properties(src/Engine/Core/UUID_SSE4.cpp PROPERTIES COMPILE_OPTIONS "-msse4.1" SKIP_PRECOMPILE_HEADERS ON)
+set_source_files_properties(src/Engine/Core/UUID_AVX2.cpp PROPERTIES COMPILE_OPTIONS "-mavx2" SKIP_PRECOMPILE_HEADERS ON)

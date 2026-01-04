@@ -152,10 +152,10 @@ namespace Copper::Renderer {
 
         // Built in Assets
 
-        data.whiteMaterial = AssetStorage::InsertAsset<Material>(UUID::GetInvalid());
+        data.whiteMaterial = AssetStorage::InsertAsset<Material>(UUID::GetNil());
 
         uint32 white = 0xffffffff;
-        data.whiteMaterial->texture = AssetStorage::InsertAsset<Texture>(UUID::GetInvalid(), 1, 1, Texture::Format::RGBA, (uint8*)&white);
+        data.whiteMaterial->texture = AssetStorage::InsertAsset<Texture>(UUID::GetNil(), 1, 1, Texture::Format::RGBA, (uint8*)&white);
 
         data.materials[0] = data.whiteMaterial;
         data.materialCount = 1;

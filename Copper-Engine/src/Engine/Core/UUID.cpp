@@ -57,12 +57,11 @@ namespace Copper {
     // UUID static variables
 
     UUID::Type UUID::m_type = UUID::Type::None;
-    const UUID UUID::m_invalid = UUID(0, 0);
+    const UUID UUID::m_nil = UUID(0, 0);
 
     std::function<void(uint8*, const uint8*)> UUID::m_setImpl = nullptr;
     std::function<void(uint8*, uint64, uint64)> UUID::m_constructorImpl = nullptr;
     std::function<void(uint8*)> UUID::m_generateImpl = nullptr;
-    std::function<void(const uint8*, char*)> UUID::m_toBytesImpl = nullptr;
     std::function<void(uint8*, const char*)> UUID::m_setStrigImpl = nullptr;
     std::function<void(const uint8*, char*)> UUID::m_toStringImpl = nullptr;
     std::function<bool(const uint8*, const uint8*)> UUID::m_equalsImpl = nullptr;
@@ -80,8 +79,6 @@ namespace Copper {
 
     extern void UUIDGenerate_SSE(uint8* bytes);
 
-    extern void UUIDToBytes_SSE(const uint8* data, char* out);
-
     extern bool UUIDEquals_SSE(const uint8* lhs, const uint8* rhs);
 
     // AVX
@@ -96,19 +93,17 @@ namespace Copper {
 
     void UUIDGenerate(uint8* bytes);
 
-    void UUIDToBytes(const uint8* data, char* out);
-
     bool UUIDEquals(const uint8* lhs, const uint8* rhs);
 
     void UUIDSetString(uint8* data, const char* string);
     void UUIDToString(const uint8* data, char* out);
 
-    // Query functions
+    // SIMD support query functions
 
     static bool SSE4Support();
     static bool AVX2Support();
 
-    void UUID::Init() {
+    void UUID::Initialize() {
 
         CUP_FUNCTION();
 
@@ -140,7 +135,6 @@ namespace Copper {
                 m_setImpl = UUIDSet;
                 m_constructorImpl = UUIDConstructor;
                 m_generateImpl = UUIDGenerate;
-                m_toBytesImpl = UUIDToBytes;
                 m_equalsImpl = UUIDEquals;
 
                 m_setStrigImpl = UUIDSetString;
@@ -158,7 +152,6 @@ namespace Copper {
                 m_setImpl = UUIDSet_SSE;
                 m_constructorImpl = UUIDConstructor_SSE;
                 m_generateImpl = UUIDGenerate_SSE;
-                m_toBytesImpl = UUIDToBytes_SSE;
                 m_equalsImpl = UUIDEquals_SSE;
 
                 m_setStrigImpl = UUIDSetString;
@@ -176,7 +169,6 @@ namespace Copper {
                 m_setImpl = UUIDSet_SSE;
                 m_constructorImpl = UUIDConstructor_SSE;
                 m_generateImpl = UUIDGenerate_SSE;
-                m_toBytesImpl = UUIDToBytes_SSE;
                 m_equalsImpl = UUIDEquals_SSE;
 
                 m_setStrigImpl = UUIDSetString_AVX;
@@ -195,6 +187,95 @@ namespace Copper {
         }
 
     }
+
+    // Scalar functions
+
+    static uint8 HexToHalfByte(char c) {
+
+        if (c >= '0' && c <= '9') return c - '0';
+        if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+        if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+
+        CU_ASSERT(false, "Invalid char, expect hex char (0-f), received: '{}'", c);
+        return 0xff;
+
+    }
+    
+    void UUIDSet(uint8* data, const uint8* otherData) {
+
+        CUP_FUNCTION();
+
+        std::memcpy(data, otherData, 16);
+
+    }
+    void UUIDConstructor(uint8* data, uint64 x, uint64 y) {
+
+        CUP_FUNCTION();
+
+        std::memcpy(data, &x, 8);
+        std::memcpy(data + 8, &y, 8);
+
+    }
+
+    void UUIDGenerate(uint8* bytes) {
+
+        CUP_FUNCTION();
+
+        // Fill the whole UUID with random bytes.
+
+        UUIDConstructor(bytes, distribution(*generator), distribution(*generator));
+
+        // Set the verison and variant
+
+        bytes[6] = ((bytes[6] & 0x0f) | 0x40); // Version 4
+        bytes[8] = ((bytes[8] & 0x3f) | 0x80); // Variant 10
+
+    }
+
+    bool UUIDEquals(const uint8* lhs, const uint8* rhs) {
+
+        CUP_FUNCTION();
+
+        return std::memcmp(lhs, rhs, 16) == 0;
+
+    }
+
+    void UUIDSetString(uint8* data, const char* string) {
+
+        CUP_FUNCTION();
+
+        uint32 stringIndex = 0;
+        uint32 dataIndex = 0;
+        while (stringIndex < 36) {
+
+            if (string[stringIndex] == '-') {
+
+                stringIndex++;
+                continue;
+
+            }
+
+            data[dataIndex++] = (HexToHalfByte(string[stringIndex]) << 4) | HexToHalfByte(string[stringIndex + 1]);
+            stringIndex += 2;
+
+        }
+
+        CU_ASSERT(dataIndex == 16, "Wrote an invalid amount of bytes to UUID. Expected: '16', wrote: '{}'", dataIndex);
+
+    }
+    void UUIDToString(const uint8* data, char* out) {
+
+        // There is no reliable way of checking if out is at least 37 bytes long
+        // so we just have to pray to our lord and saviour that it is.
+
+        int n = std::snprintf(out, 37, "%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+                              data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8],
+                              data[9], data[10], data[11], data[12], data[13], data[14], data[15]);
+        CU_ASSERT(n == 36, "Written less than 36 bytes into a UUID pretty string. Output: '{}'", out);
+
+    }
+
+    // SIMD support query functions
 
     bool SSE4Support() {
 
@@ -245,7 +326,5 @@ namespace Copper {
         return (out[1] & (1 << 5)) != 0;
 
     }
-
-    // Scalar function implementations.
 
 }

@@ -5,6 +5,7 @@
 
 #include "Engine/Core/Engine.h"
 #include "Engine/Core/Args.h"
+#include "Engine/Core/UUID.h"
 
 #include "Engine/Debug/Profiler.h"
 
@@ -24,6 +25,8 @@ int main(int argc, char* argv[]) {
     //TODO: Start being consistent with function naming and stop eeny miny moe-ing between 'Initialize' and 'Setup' for gods sake
     Logger::Initialize();
     LogDebug("Running Copper Engine Version {}.{}.{}.{}.", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_TWEAK);
+
+    UUID::Initialize();
 
     Args::Initialize(argc, argv);
     Log("Data dir: '{}'", DataDirectory());

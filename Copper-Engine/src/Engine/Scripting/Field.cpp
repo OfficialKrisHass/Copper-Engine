@@ -89,7 +89,7 @@ namespace Copper::Scripting {
 
         if (asset == nullptr) {
 
-            *out = UUID::GetInvalid();
+            *out = UUID::GetNil();
             return;
 
         }

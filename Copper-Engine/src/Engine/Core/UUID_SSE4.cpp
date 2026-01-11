@@ -19,7 +19,7 @@ namespace Copper {
         CUP_FUNCTION();
 
         __m128i x = _mm_loadu_si128((__m128i*) otherData);
-        _mm_store_si128((__m128i*) data, x);
+        _mm_storeu_si128((__m128i*) data, x);
 
     }
     void UUIDConstructor_SSE(uint8* data, uint64 x, uint64 y) {
@@ -27,7 +27,7 @@ namespace Copper {
         CUP_FUNCTION();
 
         __m128i z = _mm_set_epi64x(x, y);
-        _mm_store_si128((__m128i*) data, z);
+        _mm_storeu_si128((__m128i*) data, z);
 
     }
 
@@ -41,7 +41,7 @@ namespace Copper {
         __m128i n = _mm_set_epi64x(distribution(*generator), distribution(*generator));
         __m128i uuid = _mm_or_si128(_mm_and_si128(n, andMask), orMask);
 
-        _mm_store_si128((__m128i*) bytes, uuid);
+        _mm_storeu_si128((__m128i*) bytes, uuid);
 
     }
 
@@ -49,8 +49,8 @@ namespace Copper {
 
         CUP_FUNCTION();
 
-        __m128i x = _mm_load_si128((__m128i*) lhs);
-        __m128i y = _mm_load_si128((__m128i*) rhs);
+        __m128i x = _mm_loadu_si128((__m128i*) lhs);
+        __m128i y = _mm_loadu_si128((__m128i*) rhs);
 
         __m128i neq = _mm_xor_si128(x, y);
         return _mm_test_all_zeros(neq, neq);

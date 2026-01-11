@@ -6,7 +6,8 @@
 // https://github.com/crashoz/uuid_v4
 // License can be found in the lib/uuid dir 
 
-#define UUID_FUNC_IMPL(func, ...) CUP_FUNCTION(); CU_ASSERT(func != nullptr, "UUID::" #func " was not assigned. UUID Type: '{}'", static_cast<uint32>(m_type)); func(__VA_ARGS__)
+#define UUID_FUNC_IMPL(func, ...) CUP_FUNCTION(); EnsureInitialized(); CU_ASSERT(&Get ## func ## Impl() != nullptr, "UUID:: Get" #func "Impl() was not assigned. UUID Type: '{}'", static_cast<uint32>(m_type)); Get ## func ## Impl()(__VA_ARGS__)
+#define UUID_GET_IMPL(signature, name) inline static std::function<signature>& Get ## name ## Impl() { static std::function<signature> name ## _impl = nullptr; return name ## _impl; }
 
 namespace Copper {
 
@@ -29,10 +30,10 @@ namespace Copper {
         // Creates a nil UUID (all zeroes)
         UUID() : UUID(0, 0) {}
 
-        inline UUID(const UUID& other) { UUID_FUNC_IMPL(m_setImpl, m_data, other.m_data); }
+        inline UUID(const UUID& other) { UUID_FUNC_IMPL(Set, m_data, other.m_data); }
 
-        inline UUID(uint64 x, uint64 y) { UUID_FUNC_IMPL(m_constructorImpl, m_data, x, y); }
-        inline UUID(const uint8* bytes) { UUID_FUNC_IMPL(m_setImpl, m_data, bytes); }
+        inline UUID(uint64 x, uint64 y) { UUID_FUNC_IMPL(Constructor, m_data, x, y); }
+        inline UUID(const uint8* bytes) { UUID_FUNC_IMPL(Set, m_data, bytes); }
 
         // Determines UUID Type and enables the specific functions.
         static void Initialize();
@@ -40,6 +41,10 @@ namespace Copper {
         // Sets the function pointers based on type.
         static void SetType(Type type);
         static inline Type GetType() { return m_type; }
+
+        // Construct functions
+
+        inline static void Construct(uint8* out, uint64 x, uint64 y) { UUID_FUNC_IMPL(Constructor, out, x, y); }
 
         // Generate functions
 
@@ -67,10 +72,18 @@ namespace Copper {
             GenerateUUID(m_data);
 
         }
-        inline static void GenerateUUID(uint8* bytes) { UUID_FUNC_IMPL(m_generateImpl, bytes); }
+        inline static void GenerateUUID(uint8* bytes) { UUID_FUNC_IMPL(Generate, bytes); }
 
         // Pretty string
         
+        inline static void FromString(uint8* out, const std::string& string) {
+
+            CUP_FUNCTION();
+            FromString(out, string.c_str());
+
+        }
+        inline static void FromString(uint8* out, const char* string) { UUID_FUNC_IMPL(SetString, out, string); }
+
         inline static UUID FromString(const std::string& string) {
 
             CUP_FUNCTION();
@@ -98,15 +111,27 @@ namespace Copper {
 
             CUP_FUNCTION();
 
+            EnsureInitialized();
+
             CU_ASSERT(string != nullptr, "Invalid string passed to UUID::SetString().");
             CU_ASSERT(strlen(string) == 36, "Invalid string passed to UUID::SetString(), expected size of 36 bytes but got '{}' bytes. String: '{}'", strlen(string), string);
             CU_ASSERT(string[8] == '-' && string[13] == '-' && string[18] == '-' && string[23] == '-', "Invalid string format passed to UUID::SetString(). Expected 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' Received: '{}'", string);
 
-            CU_ASSERT(m_setStrigImpl != nullptr, "UUID::m_setStrigImpl was not assigned. UUID Type: '{}'", static_cast<uint32>(m_type));
+            CU_ASSERT(GetSetStringImpl() != nullptr, "UUID::GetSetStringImpl() was not assigned. UUID Type: '{}'", static_cast<uint32>(m_type));
 
-            m_setStrigImpl(m_data, string);
+            GetSetStringImpl()(m_data, string);
 
         }
+
+        inline static void ToString(const uint8* bytes, std::string& out) {
+
+            CUP_FUNCTION();
+
+            out.resize(36);
+            ToString(bytes, static_cast<char*>(out.data()));
+
+        }
+        inline static void ToString(const uint8* bytes, char* out) { UUID_FUNC_IMPL(ToString, bytes, out); }
 
         inline std::string ToString() const {
 
@@ -126,18 +151,26 @@ namespace Copper {
             ToString((char*) out.data());
 
         }
-        inline void ToString(char* out) const { UUID_FUNC_IMPL(m_toStringImpl, m_data, out); }
+        inline void ToString(char* out) const { UUID_FUNC_IMPL(ToString, m_data, out); }
+
+        // Misc.
+
+        inline static bool Equals(const uint8* lhs, const uint8* rhs) {
+
+            CUP_FUNCTION();
+
+            EnsureInitialized();
+
+            CU_ASSERT(GetEqualsImpl() != nullptr, "UUID::GetEqualsImpl was not assigned. UUID Type: '{}'", static_cast<uint32>(m_type));
+            return GetEqualsImpl()(lhs, rhs);
+
+        }
 
         inline bool IsValid() const { return *this != m_nil; }
 
         // Operators
 
-        inline bool operator==(const UUID& other) const {
-
-            CU_ASSERT(m_equalsImpl != nullptr, "UUID::m_equalsImpl was not assigned. UUID Type: '{}'", static_cast<uint32>(m_type));
-            return m_equalsImpl(m_data, other.m_data);
-
-        }
+        inline bool operator==(const UUID& other) const { return UUID::Equals(m_data, other.m_data); }
         inline bool operator!=(const UUID& other) const { return !(*this == other); }
 
         inline bool operator<(const UUID& other) const {
@@ -160,7 +193,10 @@ namespace Copper {
 
             if (&other == this) return *this;
 
-            UUID_FUNC_IMPL(m_setImpl, m_data, other.m_data);
+            EnsureInitialized();
+            CU_ASSERT(GetSetImpl() != nullptr, "UUID::GetSetImpl() was not assigned. UUID Type: '{}'", static_cast<uint32>(m_type));
+
+            GetSetImpl()(m_data, other.m_data);
             return *this;
 
         }
@@ -185,20 +221,27 @@ namespace Copper {
         static Type m_type;
         static const UUID m_nil;
 
-        // Function implementations. These pointers will change based on 
-        // the available SIMD instructions (or lack there of). These are automatically
-        // set in UUID::SetType()
-
-        static std::function<void(uint8*, const uint8*)> m_setImpl;
-        static std::function<void(uint8*, uint64, uint64)> m_constructorImpl;
-        static std::function<void(uint8*)> m_generateImpl;
-        static std::function<void(uint8*, const char*)> m_setStrigImpl;
-        static std::function<void(const uint8*, char*)> m_toStringImpl;
-        static std::function<bool(const uint8*, const uint8*)> m_equalsImpl;
-
         // UUID data
 
         alignas(16) uint8 m_data[16];
+
+        inline static void EnsureInitialized() {
+
+            static const bool unused = (Initialize(), true);
+            (void) unused;
+
+        }
+
+        // Function implementations. If these were regular static variables, another static UUID
+        // varialbe (for instance m_nil) could call Initialize, assign the pointers and then the
+        // static initialization of the pointers would happen, thereby resetting them to nullptr.
+
+        UUID_GET_IMPL(void(uint8*, const uint8*), Set);
+        UUID_GET_IMPL(void(uint8*, uint64, uint64), Constructor);
+        UUID_GET_IMPL(void(uint8*), Generate);
+        UUID_GET_IMPL(void(uint8*, const char*), SetString);
+        UUID_GET_IMPL(void(const uint8*, char*), ToString);
+        UUID_GET_IMPL(bool(const uint8*, const uint8*), Equals);
 
     };
 

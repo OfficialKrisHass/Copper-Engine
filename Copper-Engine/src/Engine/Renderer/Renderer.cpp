@@ -439,6 +439,8 @@ namespace Copper::Renderer {
 
     uint32 GetMaterialIndex(const MaterialAsset& material) {
 
+        CUP_FUNCTION();
+
         if (!material.IsValid() || data.materialCount == MaxMaterials) return MaxMaterials;
 
         for (uint32 i = 1; i < data.materialCount; i++) {

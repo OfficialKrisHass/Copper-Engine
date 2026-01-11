@@ -59,13 +59,6 @@ namespace Copper {
     UUID::Type UUID::m_type = UUID::Type::None;
     const UUID UUID::m_nil = UUID(0, 0);
 
-    std::function<void(uint8*, const uint8*)> UUID::m_setImpl = nullptr;
-    std::function<void(uint8*, uint64, uint64)> UUID::m_constructorImpl = nullptr;
-    std::function<void(uint8*)> UUID::m_generateImpl = nullptr;
-    std::function<void(uint8*, const char*)> UUID::m_setStrigImpl = nullptr;
-    std::function<void(const uint8*, char*)> UUID::m_toStringImpl = nullptr;
-    std::function<bool(const uint8*, const uint8*)> UUID::m_equalsImpl = nullptr;
-
     // UUID Functions implementations.
     //
     // Scalar functions found in UUID.cpp (here)
@@ -132,13 +125,13 @@ namespace Copper {
 
                 // No SIMD instructions availalbe means we have to do it all the slow way.
 
-                m_setImpl = UUIDSet;
-                m_constructorImpl = UUIDConstructor;
-                m_generateImpl = UUIDGenerate;
-                m_equalsImpl = UUIDEquals;
+                GetSetImpl() = UUIDSet;
+                GetConstructorImpl() = UUIDConstructor;
+                GetGenerateImpl() = UUIDGenerate;
+                GetEqualsImpl() = UUIDEquals;
 
-                m_setStrigImpl = UUIDSetString;
-                m_toStringImpl = UUIDToString;
+                GetSetStringImpl() = UUIDSetString;
+                GetToStringImpl() = UUIDToString;
 
                 break;
 
@@ -149,13 +142,13 @@ namespace Copper {
                 // the Pretty string functions require AVX, so we have to use the scalar
                 // versions here.
 
-                m_setImpl = UUIDSet_SSE;
-                m_constructorImpl = UUIDConstructor_SSE;
-                m_generateImpl = UUIDGenerate_SSE;
-                m_equalsImpl = UUIDEquals_SSE;
+                GetSetImpl() = UUIDSet_SSE;
+                GetConstructorImpl() = UUIDConstructor_SSE;
+                GetGenerateImpl() = UUIDGenerate_SSE;
+                GetEqualsImpl() = UUIDEquals_SSE;
 
-                m_setStrigImpl = UUIDSetString;
-                m_toStringImpl = UUIDToString;
+                GetSetStringImpl() = UUIDSetString;
+                GetToStringImpl() = UUIDToString;
 
                 break;
 
@@ -166,13 +159,13 @@ namespace Copper {
                 // pretty string functions, which is why it's so similar to the
                 // SSE4 type.
 
-                m_setImpl = UUIDSet_SSE;
-                m_constructorImpl = UUIDConstructor_SSE;
-                m_generateImpl = UUIDGenerate_SSE;
-                m_equalsImpl = UUIDEquals_SSE;
+                GetSetImpl() = UUIDSet_SSE;
+                GetConstructorImpl() = UUIDConstructor_SSE;
+                GetGenerateImpl() = UUIDGenerate_SSE;
+                GetEqualsImpl() = UUIDEquals_SSE;
 
-                m_setStrigImpl = UUIDSetString_AVX;
-                m_toStringImpl = UUIDToString_AVX;
+                GetSetStringImpl() = UUIDSetString_AVX;
+                GetToStringImpl() = UUIDToString_AVX;
 
                 break;
 

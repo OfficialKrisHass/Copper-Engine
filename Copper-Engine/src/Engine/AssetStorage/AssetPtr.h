@@ -27,11 +27,15 @@ namespace Copper {
 
         inline AssetPtr& operator=(const AssetPtr& other) {
 
+            CUP_FUNCTION();
+
             m_key = other.m_key;
             return *this;
 
         }
         inline AssetPtr& operator=(const UUID& other) {
+
+            CUP_FUNCTION();
 
             m_key = other;
             return *this;

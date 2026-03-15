@@ -26,10 +26,10 @@ int main(int argc, char* argv[]) {
     Logger::Initialize();
     LogDebug("Running Copper Engine Version {}.{}.{}.{}.", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_TWEAK);
 
-    UUID::Initialize();
 
     Args::Initialize(argc, argv);
     Log("Data dir: '{}'", DataDirectory());
+    UUID::Initialize();
     
     AppEntryPoint();
 

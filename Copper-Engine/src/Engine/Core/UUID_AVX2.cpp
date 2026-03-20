@@ -1,3 +1,4 @@
+#include "cupch.h"
 #include "UUID.h"
 
 #include <emmintrin.h>

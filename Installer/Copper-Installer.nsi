@@ -69,7 +69,7 @@ Section "Uninstall"
     RMDir /r "$INSTDIR\Copper-Editor"
     RMDir /r "$INSTDIR\Copper-Launcher"
 
-    RMDIR /r "$APPDATA\Copper-Engine"
+    RMDir /r "$APPDATA\Copper-Engine"
 
     Delete "$INSTDIR\uninstall.exe"
 

@@ -107,7 +107,7 @@ namespace Copper {
 #endif
 
         Renderer::Initialize();
-        Renderer::SetShaderPath(DataDirectory() / "assets/Shaders/vertexDefault.glsl", DataDirectory() / "assets/Shaders/fragmentDefault.glsl");
+        Renderer::SetShaderPath(ResourceDirectory() / "assets/Shaders/vertexDefault.glsl", ResourceDirectory() / "assets/Shaders/fragmentDefault.glsl");
         data.fbo.Create(UVector2I(1280, 720), { FrameBuffer::Attachment::Format::RGB8 }); // TODO: Find a solution to this (maybe store the resolution somewhere ?)
         LogStatus("\tMain frame buffer created.");
 

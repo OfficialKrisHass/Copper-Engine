@@ -200,7 +200,7 @@ namespace Editor::NewItemModal {
         std::ifstream templ;
         std::ofstream file;
 
-        templ.open(DataDirectory() / "assets/Templates/Script.cs.cut");
+        templ.open(ResourceDirectory() / "assets/Templates/Script.cs.cut");
         file.open((directory / nameInput).replace_extension(".cs"));
 
         std::string line;

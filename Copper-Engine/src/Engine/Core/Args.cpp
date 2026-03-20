@@ -6,8 +6,8 @@
 #include <libloaderapi.h>
 #endif
 
-#if defined(CU_LINUX) && defined(CU_EDITOR)
-#define EDITOR_DATA_DIRECTORY "/usr/share/copper-editor"
+#if defined(CU_DEBUG) || defined(CU_LINUX)
+#define SEPARATE_RESOURCE_DIR
 #endif
 
 namespace Copper::Args {
@@ -18,7 +18,15 @@ namespace Copper::Args {
 
     static std::vector<std::string> arguments;
 
+    static fs::path executableDirectory;
     static fs::path dataDirectory;
+#ifdef  SEPARATE_RESOURCE_DIR
+    static fs::path resourceDirectory;
+    void GetResourceDirectory();
+#endif
+
+    void GetExecutableDirectory();
+    void GetDataDirectory();
 
     void Initialize(uint32 argc, char* argv[]) {
 
@@ -43,26 +51,33 @@ namespace Copper::Args {
             // are not valid if the option (starts with a -) is the last argument, e.g. there is no value argument (the next i).
             if (i == argc - 1) break;
 
-            // 1. In debug mode, the -e argument has priority over all. This will be used as the data folder
+            // In debug mode, the -e argument has priority over all. This will be used as the resource directory. 
 #ifdef CU_DEBUG
             if (strcmp(argv[i], "-e") == 0) {
 
-                dataDirectory = argv[++i];
-                arguments.push_back(dataDirectory.string());
+                resourceDirectory = argv[++i];
+                arguments.push_back(resourceDirectory.string());
 
             }
 #endif
 
         }
 
-        // 2. On non debug builds or when the -e argument was not passed, we use the executable path for windows,
-        //    on linux we use the executable path for non editor builds, and for editor builds we check if the
-        //    executable path contains the assets directory (portable builds), if not we use EDITOR_DATA_DIRECTORY
-        //
-        // TODO: Currently this means that other copper-engine applications can not be placed in the /usr/bin directory
-        //       because in that case the data directory would be /usr/bin/ which is an invalid place to put assets.
+        LogStatus("Parsed {} command line arguments.", argc);
 
-        if (!dataDirectory.empty()) return;
+        GetExecutableDirectory();
+        GetDataDirectory();
+
+#ifdef SEPARATE_RESOURCE_DIR
+        if (resourceDirectory.empty())
+            GetResourceDirectory();
+#endif
+        
+    }
+
+    void GetExecutableDirectory() {
+
+        CUP_FUNCTION();
 
 #ifdef CU_LINUX
         std::string tmp = fs::canonical("/proc/self/exe");
@@ -75,16 +90,49 @@ namespace Copper::Args {
         size_t pos = tmp.find_last_of(fs::path::preferred_separator);
         tmp.erase(pos, std::string::npos);
 
-        dataDirectory = tmp;
-
-#ifdef EDITOR_DATA_DIRECTORY
-        if (fs::exists(dataDirectory / "assets")) return;
-        dataDirectory = EDITOR_DATA_DIRECTORY; 
-#endif
-
-        LogStatus("Parsed {} command line arguments.", argc);
+        executableDirectory = tmp;
 
     }
+    void GetDataDirectory() {
+
+        CUP_FUNCTION();
+
+#ifdef CU_LINUX
+        // We need to respect XDG_DATA_HOME, as some users may change the environemt variable to
+
+        const char* xdgData = std::getenv("XDG_DATA_HOME");
+        if (xdgData == nullptr || *xdgData == '\0') {
+
+            dataDirectory = std::getenv("HOME");
+            dataDirectory /= ".local/share";
+
+        } else
+            dataDirectory = xdgData;
+#elif CU_WINDOWS
+        dataDirectory = std::getenv("appdata");
+#endif
+
+    }
+#ifdef SEPARATE_RESOURCE_DIR
+    void GetResourceDirectory() {
+
+        CUP_FUNCTION();
+
+        // In portable builds, the assets will be located next to the executable
+
+        if (fs::exists(executableDirectory / "assets"))
+            resourceDirectory = executableDirectory;
+#ifdef CU_LINUX // In the case of linux, resources will be found at /usr/share/
+        else
+            resourceDirectory = "/usr/share";
+#endif
+
+#ifdef CU_EDITOR
+        resourceDirectory /= "Copper-Editor";
+#endif
+
+    }
+#endif
 
     uint64 Count() { return arguments.size(); }
     const std::string& GetArgument(uint32 index) {
@@ -100,6 +148,16 @@ namespace Copper::Args {
 
 namespace Copper {
 
+    const fs::path& ExecutableDirectory() { return Args::executableDirectory; }
+    const fs::path& ResourceDirectory() {
+
+#ifdef SEPARATE_RESOURCE_DIR
+        return Args::resourceDirectory;
+#else
+        return Args::executableDirectory;
+#endif
+
+    }
     const fs::path& DataDirectory() { return Args::dataDirectory; }
 
 }

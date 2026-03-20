@@ -99,7 +99,7 @@ CMake: $(PROJECT_FILES)
 	@rm -f compile_commands.json
 	@ln -s CMake/$(CONFIGURATION)/compile_commands.json compile_commands.json
 	@echo ""
-	@./Copper-Editor/util/premake/premake5 --file=Copper-ScriptingAPI/workspace.lua gmake2
+	@./Copper-Editor/assets/util/premake/premake5 --file=Copper-ScriptingAPI/workspace.lua gmake2
 
 # Build targets
 

@@ -66,7 +66,7 @@ namespace Copper::RendererAPI {
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-        lineShader.Create(DataDirectory() / "assets/Shaders/lineVertex.glsl", DataDirectory() / "assets/Shaders/lineFragment.glsl");
+        lineShader.Create(ResourceDirectory() / "assets/Shaders/lineVertex.glsl", ResourceDirectory() / "assets/Shaders/lineFragment.glsl");
 
         // Copper Engine deafultly renders to the main FBO, meaning every app has to take the texture there and render it to a rect taking up the entire screen
         // TODO: Maybe we dont have to have or own shaders for this ? since it is just the basic shader, no lightning or MVPs ?
@@ -74,7 +74,7 @@ namespace Copper::RendererAPI {
         //
         //Setup the Game Rect
         //
-        gameRectShader = Shader(DataDirectory() / "assets/Shaders/gameRectVertex.glsl", DataDirectory() / "assets/Shaders/gameRectFragment.glsl");
+        gameRectShader = Shader(ResourceDirectory() / "assets/Shaders/gameRectVertex.glsl", ResourceDirectory() / "assets/Shaders/gameRectFragment.glsl");
 
         glGenVertexArrays(1, &gameRectVAO);
         glBindVertexArray(gameRectVAO);

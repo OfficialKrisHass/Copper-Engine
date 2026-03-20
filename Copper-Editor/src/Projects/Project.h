@@ -39,6 +39,8 @@ namespace Editor {
 
         inline const fs::path& GetPath() const { return m_path; }
         inline const fs::path GetAssetsPath() const { return m_path / "Assets"; }
+        inline const fs::path GetTempPath() const { return m_path / "Temp"; }
+
         inline const fs::path& GetLastOpenedScenePath() const { return m_lastOpenedScenePath; }
         inline const std::string GetLastOpenedSceneName() const { return m_lastOpenedScenePath.filename().string(); }
 

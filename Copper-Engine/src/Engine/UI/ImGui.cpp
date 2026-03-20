@@ -41,7 +41,7 @@ namespace Copper {
         if (docking) io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
         if (viewports) io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
-        iniPath = (DataDirectory() / "imgui.ini").string();
+        iniPath = (ResourceDirectory() / "imgui.ini").string();
         io.IniFilename = iniPath.c_str();
         ImGui::LoadIniSettingsFromDisk(io.IniFilename);
 

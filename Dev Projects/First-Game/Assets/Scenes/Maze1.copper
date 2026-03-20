@@ -114,7 +114,7 @@ Entities:
       Fov: 90
       Near Plane: 0.100000001
       Far Plane: 1000
-      Size: [1046, 516]
+      Size: [1920, 960]
   7:
     Name: Cube
     Transform:
@@ -357,7 +357,7 @@ Entities:
       Children:
         - 25
 Scene Camera:
-  Position: [-2.20921516, 16.0820446, -16.196003]
-  Rotation: [-0.878123224, 0.241656452, 0.398021787, 0.109534025]
+  Position: [0.127552867, 16.0823631, -21.9769669]
+  Rotation: [0.00883977022, -0.00214446173, 0.971731186, 0.235731184]
   Speed: 1
   Sensitivity: 2

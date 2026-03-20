@@ -60,10 +60,9 @@ namespace Copper::Scripting {
         CUP_FUNCTION();
         VERIFY_STATE(EngineState::Initialization, "Initialize the Scripting Engine");
 
-        fs::path execFolder = DataDirectory();
-        mono_set_assemblies_path((execFolder / ASSEMBLIES_PATH).string().c_str());
+        mono_set_assemblies_path((ResourceDirectory() / ASSEMBLIES_PATH).string().c_str());
 
-        mono_config_parse((DataDirectory() / "lib/mono/config").string().c_str());
+        mono_config_parse((ResourceDirectory() / "lib/mono/config").string().c_str());
 
         data.rootDomain = mono_jit_init("CUSRootDomain");
         CU_ASSERT(data.rootDomain != nullptr, "Failed to initialize the mono JIT runtime.");
@@ -173,7 +172,7 @@ namespace Copper::Scripting {
         // Scripting api build directory and spent 2 days trying to figure out why the fuck nothing was working
         // Explanation: before time had a name, the ScriptingAPI was stored inside assets/ScriptAPI, then moved 
         // to assets/ScriptingAPI.
-        data.scriptingAPI.Create(DataDirectory() / "assets/Copper-ScriptingAPI.dll");
+        data.scriptingAPI.Create(ResourceDirectory() / "assets/Copper-ScriptingAPI.dll");
         CU_ASSERT(data.scriptingAPI.IsValid(), "Could not load ScriptingAPI assembly.");
 
         SetupInternalCalls();

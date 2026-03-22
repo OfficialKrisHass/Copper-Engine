@@ -34,6 +34,9 @@ namespace Editor::ProjectMetadata {
         out << YAML::EndMap; // Main
 
         std::ofstream file;
+        if (!fs::exists(GetProject().GetPath()))
+            fs::create_directories(GetProject().GetPath());
+
         file.open(GetProject().GetPath() / "ProjectMetadata.cu");
         file << out.c_str();
         file.close();

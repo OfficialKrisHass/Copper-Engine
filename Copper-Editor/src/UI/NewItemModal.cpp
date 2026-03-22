@@ -45,7 +45,7 @@ namespace Editor::NewItemModal {
     void CreateScript();
     void CreateMaterial();
 
-    bool CreateDisabled();
+    bool CanCreate();
 
     void Open() {
 
@@ -96,7 +96,7 @@ namespace Editor::NewItemModal {
         ImGui::SetCursorPos(ImVec2(ImGui::GetContentRegionMax().x - size.x - style.WindowPadding.x,
                                    ImGui::GetContentRegionMax().y - size.y - style.ItemSpacing.y));
 
-        bool disabled = CreateDisabled();
+        bool disabled = !CanCreate();
 
         ImGui::BeginDisabled(disabled);
         if ((ImGui::Button("Create", size) || Input::GetKeyState(KeyCode::Enter) == KeyState::Pressed) && !disabled)
@@ -197,11 +197,17 @@ namespace Editor::NewItemModal {
 
         CUP_FUNCTION();
 
+        const static fs::path scriptTemplatePath = ResourceDirectory() / "assets/Templates/Script.cs.cut";
+        const fs::path scriptPath = (directory / nameInput).replace_extension(".cs");
+
         std::ifstream templ;
         std::ofstream file;
 
-        templ.open(ResourceDirectory() / "assets/Templates/Script.cs.cut");
-        file.open((directory / nameInput).replace_extension(".cs"));
+        CU_ASSERT(fs::exists(scriptTemplatePath), "Invalid script template path. Path: '{}'", scriptTemplatePath);
+        CU_ASSERT(fs::exists(directory), "Selected directory does not appear to exist. Directory: '{}'", directory);
+
+        templ.open(scriptTemplatePath);
+        file.open(scriptPath);
 
         std::string line;
         while (std::getline(templ, line)) {
@@ -235,11 +241,11 @@ namespace Editor::NewItemModal {
 
     }
 
-    bool CreateDisabled() {
+    bool CanCreate() {
 
         CUP_FUNCTION();
 
-        if (nameInput[0] == '\0') return true;
+        if (nameInput[0] == '\0') return false;
 
         fs::path path = directory / nameInput;
 
@@ -252,7 +258,7 @@ namespace Editor::NewItemModal {
 
         }
 
-        return fs::exists(path);
+        return !fs::exists(path);
 
     }
 

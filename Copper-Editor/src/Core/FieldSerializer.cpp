@@ -117,8 +117,13 @@ namespace Editor {
 
         out << YAML::EndMap; // Main
 
-        std::ofstream file = std::ofstream(path);
+        std::ofstream file;
+        if (!fs::exists(path.parent_path()))
+            fs::create_directories(path.parent_path());
+
+        file.open(path);
         file << out.c_str();
+        file.close();
 
     }
     void LoadFields(const fs::path &path) {

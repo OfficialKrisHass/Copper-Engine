@@ -14,6 +14,13 @@ namespace Copper::Utilities {
 
         file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
+        if (!fs::exists(path)) {
+
+            LogError("Can't read a file that does not exist. Path: '{}'", path);
+            return "";
+
+        }
+
         try {
 
             file.open(path.string());
@@ -27,7 +34,7 @@ namespace Copper::Utilities {
 
         } catch (std::ifstream::failure e) {
 
-            LogError("Failed to open File: {0}", path.string());
+            LogError("Failed to open File: Path: '{}'", path);
 
         }
 
@@ -40,6 +47,13 @@ namespace Copper::Utilities {
         // Don't ask me how it works, And if it doesn't, well cry about it
 
         CUP_FUNCTION();
+
+        if (!fs::exists(path)) {
+
+            LogError("Can't read a binary file that does not exist. Path: '{}'", path);
+            return nullptr;
+
+        }
 
         std::ifstream stream;
         stream.open(path.string(), std::ios::binary | std::ios::ate);

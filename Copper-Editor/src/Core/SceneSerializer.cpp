@@ -58,6 +58,9 @@ namespace Editor::SceneSerializer {
         out << YAML::EndMap; // Main
 
         std::ofstream file;
+        if (!fs::exists(path.parent_path()))
+            fs::create_directories(path.parent_path());
+
         file.open(path);
         file << out.c_str();
         file.close();

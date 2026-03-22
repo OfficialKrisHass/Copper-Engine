@@ -52,6 +52,9 @@
 
 #include <fstream>
 
+#define EDITOR_DATA_DIRECTORY (DataDirectory() / "Copper-Editor")
+#define EDITOR_DATA_PATH (EDITOR_DATA_DIRECTORY /"EditorData.cu")
+
 using namespace Copper;
 
 // This file contains like 99% of the entire editor...... WHYYYYYYYYYYY ??????????
@@ -118,8 +121,8 @@ namespace Editor {
 
     void QueuedTasks();
 
-    void LoadEditorData();
     void SaveEditorData();
+    void LoadEditorData();
 
     void RenderDockspace();
     void RenderToolbar();
@@ -204,8 +207,14 @@ namespace Editor {
 
         out << YAML::EndMap; //End
 
-        std::ofstream file(DataDirectory() / "Copper-Editor/EditorData.cu");
+        std::ofstream file;
+
+        if (!fs::exists(EDITOR_DATA_DIRECTORY))
+            fs::create_directories(EDITOR_DATA_DIRECTORY);
+
+        file.open(EDITOR_DATA_PATH);
         file << out.c_str();
+        file.close();
 
     }
     void LoadEditorData() {
@@ -214,7 +223,7 @@ namespace Editor {
 
         // Load the file
 
-        if (!fs::exists(DataDirectory() / "Copper-Editor/EditorData.cu")) {
+        if (!fs::exists(EDITOR_DATA_PATH)) {
 
             LogWarn("EditorData.cu is missing, generating a default one");
             SaveEditorData();
@@ -222,10 +231,10 @@ namespace Editor {
         }
 
         YAML::Node main;
-        try { main = YAML::LoadFile((DataDirectory() / "Copper-Editor/EditorData.cu").string()); }
+        try { main = YAML::LoadFile(EDITOR_DATA_PATH.string()); }
         catch (YAML::Exception e) {
 
-            Input::ErrorPopup("EditorData.cu read failed", "Could not read the EditorData.cu file.\n\nIt should be located: " + (DataDirectory() / "Copper-Editor/EditorData.cu").string() + "\n\nError message: " + e.what());
+            Input::ErrorPopup("EditorData.cu read failed", "Could not read the EditorData.cu file.\n\nIt should be located: " + EDITOR_DATA_PATH.string() + "\n\nError message: " + e.what());
             exit(-1);
 
         }
@@ -603,8 +612,15 @@ namespace Editor {
 
         CUP_FUNCTION();
 
-        std::ifstream dllSrc(ResourceDirectory() / "assets/Copper-ScriptingAPI.dll", std::ios::binary);
+        const static fs::path scriptingAPIPath = ResourceDirectory() / "assets/Copper-ScriptingAPI.dll";
+
+        CU_ASSERT(fs::exists(scriptingAPIPath), "ScriptingAPI dll could not be found. It should be located at: '{}'", scriptingAPIPath);
+
+        std::ifstream dllSrc(scriptingAPIPath, std::ios::binary);
         std::fstream dllDst;
+
+        if (!fs::exists(data.project.GetPath() / "Binaries"))
+            fs::create_directories(data.project.GetPath() / "Binaries");
 
         dllDst.open(data.project.GetPath() / "Binaries/Copper-ScriptingAPI.dll", std::ios::out | std::ios::binary);
         dllDst << dllSrc.rdbuf();

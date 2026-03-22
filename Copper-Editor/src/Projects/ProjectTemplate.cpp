@@ -69,6 +69,10 @@ namespace Editor {
 
         CUP_FUNCTION();
 
+        CU_ASSERT(fs::exists(original), "Can't copy a file that does not exist. Path: '{}'", original);
+        if (!fs::exists(out.parent_path()))
+            fs::create_directories(out.parent_path());
+
         std::ifstream originalFile(original);
         std::ofstream templateFile(out);
 
@@ -95,6 +99,8 @@ namespace Editor {
     void CopyFileTo(const fs::path& original, const fs::path& where, bool binary) {
 
         CUP_FUNCTION();
+
+        CU_ASSERT(fs::exists(original), "Can't copy a file that does not exist. Path: '{}'", original);
         
         std::ios_base::openmode inFlags = std::ios_base::in;
         std::ios_base::openmode outFlags = std::ios_base::out;
@@ -107,6 +113,9 @@ namespace Editor {
 
         std::ifstream originalFile;
         std::ofstream newFile;
+
+        if (!fs::exists(where.parent_path()))
+            fs::create_directories(where.parent_path());
 
         originalFile.open(original.string(), inFlags);
         newFile.open(where.string(), outFlags);

@@ -1,9 +1,9 @@
 #include <cupch.h>
 #include "FileTemplate.h"
 
-#include <fstream>
-
 namespace Copper::Utils {
+
+    // Please god oh please replace this, its so bad it hurts, please.
 
     static void ReplaceArgument(std::string& line, size_t start, const std::string templateName, const std::unordered_map<std::string, std::string>& replacementMap);
 

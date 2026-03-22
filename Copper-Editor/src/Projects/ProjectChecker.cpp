@@ -81,6 +81,10 @@ namespace Editor::ProjectChecker {
 #endif
         if (GET_FLAG(issueFlags, MissingScriptingDLL)) {
 
+            CU_ASSERT(fs::exists(ResourceDirectory() / "assets/Copper-ScriptingAPI.dll"), "Copper-ScriptingAPI does not exist. Espected path: '{}'", ResourceDirectory() / "assets/Copper-ScriptingAPI");
+            if (!fs::exists(project.GetPath() / "Binaries"))
+                fs::create_directories(project.GetPath() / "Binaries");
+
             std::ifstream dllSrc(ResourceDirectory() / "assets/Copper-ScriptingAPI.dll", std::ios::binary);
             std::ofstream dllDst;
 

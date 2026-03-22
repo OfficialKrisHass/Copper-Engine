@@ -132,6 +132,9 @@ namespace Editor {
         finalPath.replace_extension("cutheme");
 
         std::ofstream file;
+        if (!fs::exists(finalPath.parent_path()))
+            fs::create_directories(finalPath.parent_path());
+
         file.open(finalPath.string());
         file << out.c_str();
         file.close();

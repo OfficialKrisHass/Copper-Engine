@@ -168,8 +168,14 @@ namespace Editor {
         out << YAML::Key << "Last scene" << YAML::Value << m_lastOpenedScenePath;
 
         out << YAML::EndMap; // Main
-        std::ofstream file(m_path / "Project.cu");
+
+        std::ofstream file;
+        if (!fs::exists(m_path))
+            fs::create_directories(m_path);
+
+        file.open(m_path / "Project.cu");
         file << out.c_str(); 
+        file.close();
 
         if (saveScene)
             SaveScene();

@@ -34,7 +34,6 @@
 
 #include "Engine/YAMLOverloads/Everything.h"
 
-#include <fstream>
 #include <yaml-cpp/yaml.h>
 
 #define MANAGED_REFERENCE_ADD(cID, klass) case cID: Scripting::CreateManagedReference((klass*) event->component, Scripting::Class::klass); break;

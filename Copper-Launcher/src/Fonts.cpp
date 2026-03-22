@@ -13,7 +13,7 @@ namespace Launcher::Fonts {
 
     void Initialize() {
 
-        fs::path fontPath = DataDirectory() / MainFontPath;
+        fs::path fontPath = ResourceDirectory() / MainFontPath;
 
         titleFont = UI::AddFont(fontPath, 40.0f);
         subtitleFont = UI::AddFont(fontPath, 35.0f);

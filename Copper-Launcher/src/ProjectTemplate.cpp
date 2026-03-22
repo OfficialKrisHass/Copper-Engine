@@ -91,7 +91,7 @@ namespace Launcher {
 #elif CU_LINUX
         FileFromTemplate(templateDir / "premake5.lua.cut", path / name / "premake5.lua", ":{ProjectName}", name);
 
-        const std::string premakePath = PersistentData::EditorAssetsPath() / "../util/premake/premake5";
+        const std::string premakePath = PersistentData::EditorAssetsPath() / "util/premake/premake5";
         const std::string file = path / name / "premake5.lua";
 
         const std::string cmd = premakePath + " --file=\"" + file + "\" gmake2";

@@ -16,12 +16,6 @@ namespace Launcher::PersistentData {
     static const std::string filename = "LauncherData.cup";
 #endif
 
-#ifdef CU_WINDOWS
-    static const fs::path persistenFolder = std::string(getenv("appdata")) + "\\Copper-Engine";
-#elif CU_LINUX
-    static const fs::path persistenFolder = std::string("/home/") + cuserid(nullptr)+ "/.config/Copper-Engine";
-#endif
-
     static fs::path editorPath = "";
 
     static void LocateEditor();
@@ -34,7 +28,7 @@ namespace Launcher::PersistentData {
     void Load(std::vector<ProjectEntry>& projectEntries) {
 
         YAML::Node node;
-        try { node = YAML::LoadFile((persistenFolder / filename).string()); }
+        try { node = YAML::LoadFile((DataDirectory() / filename).string()); }
         catch (YAML::Exception e) {
 
             Dialogs::Error("Couldn't Read LauncherData.cup", "Encountered an exception trying to Load the LauncherData.cup file.\nProvide the path to the Editor and we will create a new one");
@@ -45,7 +39,7 @@ namespace Launcher::PersistentData {
 
             Save(projectEntries);
 
-            try { node = YAML::LoadFile((persistenFolder / filename).string()); }
+            try { node = YAML::LoadFile((DataDirectory() / filename).string()); }
             catch (YAML::Exception e) {
 
                 Dialogs::Error("Couldn't Read LauncherData.cup", e.msg);
@@ -133,10 +127,10 @@ namespace Launcher::PersistentData {
 
         out << YAML::EndMap;
 
-        if (!std::filesystem::exists(persistenFolder))
-            std::filesystem::create_directories(persistenFolder);
+        if (!std::filesystem::exists(DataDirectory()))
+            std::filesystem::create_directories(DataDirectory());
 
-        std::ofstream file(persistenFolder / filename);
+        std::ofstream file(DataDirectory() / filename);
         file << out.c_str();
         file.close();
 

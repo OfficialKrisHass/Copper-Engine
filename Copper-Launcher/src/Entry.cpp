@@ -12,14 +12,11 @@
 #endif
 
 std::filesystem::path dataDirectory = "";
+std::filesystem::path resourceDirectory = "";
 
-namespace Launcher {
-    
-    extern int Entry(); // LauncherApp.cpp
-    const std::filesystem::path& DataDirectory() { return dataDirectory; } // Base.h
+namespace Launcher { extern int Entry(); }
 
-}
-
+void GetResourceDirectory();
 void GetDataDirectory();
 
 int main(int argc, char* argv[]) {
@@ -28,23 +25,21 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < argc; i++) {
         
         if (i == i - 2 || strcmp(argv[i], "-e") != 0) continue;
-
-        i++;
-        dataDirectory = argv[i];
+        resourceDirectory = argv[++i];
 
     }
 #endif
 
-    if (dataDirectory.empty())
-        GetDataDirectory();
+    if (resourceDirectory.empty())
+        GetResourceDirectory();
 
-    std::cout << dataDirectory << "\n";
+    GetDataDirectory();
 
     return Launcher::Entry();
 
 }
 
-void GetDataDirectory() {
+void GetResourceDirectory() {
 
     std::string tmp;
 
@@ -59,11 +54,37 @@ void GetDataDirectory() {
     size_t pos = tmp.find_last_of(std::filesystem::path::preferred_separator);
     tmp.erase(pos, std::string::npos);
 
-    dataDirectory = tmp;
+    resourceDirectory = tmp;
 
 #ifdef CU_LINUX
     if (std::filesystem::exists(dataDirectory / "assets")) return;
-    dataDirectory = LAUNCHER_DATA_DIRECTORY;
+    resourceDirectory = LAUNCHER_DATA_DIRECTORY;
 #endif
+
+}
+void GetDataDirectory() {
+
+#ifdef CU_LINUX
+    // We need to respect XDG_DATA_HOME, as some users may change the environemt variable to
+
+    const char* xdgData = std::getenv("XDG_DATA_HOME");
+    if (xdgData == nullptr || *xdgData == '\0') {
+
+        dataDirectory = std::getenv("HOME");
+        dataDirectory /= ".local/share";
+
+    } else
+        dataDirectory = xdgData;
+#elif CU_WINDOWS
+    dataDirectory = std::getenv("appdata");
+#endif
+    dataDirectory /= "Copper-Launcher";
+
+}
+
+namespace Launcher {
+
+    const std::filesystem::path& DataDirectory() { return dataDirectory; }
+    const std::filesystem::path& ResourceDirectory() { return resourceDirectory; }
 
 }

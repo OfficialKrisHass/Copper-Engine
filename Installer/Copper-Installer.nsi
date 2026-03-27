@@ -52,8 +52,10 @@ Section
     CreateShortCut "$SMPROGRAMS\Copper-Launcher.lnk" "$INSTDIR\Copper-Launcher\Copper-Launcher.exe"
     CreateShortCut "$SMPROGRAMS\Copper-Editor.lnk" "$INSTDIR\Copper-Editor\Copper-Editor.exe"
 
-    CreateDirectory "$APPDATA\Copper-Engine"
-    FileOpen $0 "$APPDATA\Copper-Engine\LauncherData.cup" w
+    CreateDirectory "$APPDATA\Copper-Editor"
+
+    CreateDirectory "$APPDATA\Copper-Launcher"
+    FileOpen $0 "$APPDATA\Copper-Launcher\LauncherData.cup" w
 
     FileWrite $0 "Editor Path: $INSTDIR\Copper-Editor\Copper-Editor.exe$\r$\n"
     FileWrite $0 "Project Entries: []$\r$\n"
@@ -69,7 +71,8 @@ Section "Uninstall"
     RMDir /r "$INSTDIR\Copper-Editor"
     RMDir /r "$INSTDIR\Copper-Launcher"
 
-    RMDir /r "$APPDATA\Copper-Engine"
+    RMDir /r "$APPDATA\Copper-Launcher"
+    RMDir /r "$APPDATA\Copper-Editor"
 
     Delete "$INSTDIR\uninstall.exe"
 

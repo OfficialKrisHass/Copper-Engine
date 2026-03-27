@@ -87,9 +87,6 @@ def editor(dir, system, configuration):
         print("Copying assets")
         copyDir(editorDir + "/assets", buildDir + "/assets/")
 
-        print("Copying utils")
-        copyDir(editorDir + "/util", buildDir + "/util/")
-
         print("Copying mono libraries")
         if not os.path.exists(buildDir + "/lib/mono"):
             os.makedirs(buildDir + "/lib/mono")

@@ -28,12 +28,16 @@ namespace Editor {
     private:
         Viewport* m_viewport = nullptr;
 
+        float m_multiplier = 1.0f;
+
         bool m_firstClick = true;
         bool m_canLook = false;
 
-        Copper::Quaternion m_rotation;
+        // Locked cursor position. ImGui uses the virtual cursor which causes it to "move" which will make it move outside the
+        // viewport, highlight UI elements and lock the cursor in the locked state.
+        Copper::Vector2I m_cursorPosition;
 
-        float m_multiplier = 1.0f;
+        Copper::Quaternion m_rotation;
 
     };
 

@@ -10,6 +10,14 @@ namespace Copper { class Window; }
 
 namespace Copper::Input {
 
+    enum class CursorMode : uint8 {
+
+        Normal = 0, // Cursor is visible and not restrianed.
+        Hidden = 1, // Cursor is invisible but not restrained.
+        Locked = 2, // Cursor is inisible and restrained.
+
+    };
+
     // Input
 
     void Initialize(Window* window);
@@ -19,16 +27,14 @@ namespace Copper::Input {
 
     // Getters
 
-    bool GetCursorVisible();
-    bool GetCursorLocked();
+    CursorMode GetCursorMode();
     Vector2I GetCursorPosition();
 
-    const Vector2I& GetCursorPosChange();
+    const Vector2I& GetCursorMotion();
 
     // Setters
 
-    void SetCursorVisible(bool visible);
-    void SetCursorLocked(bool locked);
+    void SetCursorMode(CursorMode mode);
     void SetCursorPosition(int32 x, int32 y);
 
     inline void SetCursorPosition(const Vector2I& pos) { SetCursorPosition(pos.x, pos.y); }

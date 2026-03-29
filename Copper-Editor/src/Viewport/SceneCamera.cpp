@@ -11,6 +11,8 @@
 #include <GLM/gtx/rotate_vector.hpp>
 #include <GLM/gtx/vector_angle.hpp>
 
+#include <ImGui/imgui.h>
+
 using namespace Copper;
 
 namespace Editor {
@@ -37,22 +39,23 @@ namespace Editor {
             case KeyState::None: return;
             case KeyState::Pressed: {
 
-                Input::SetCursorVisible(false);
-                Input::SetCursorLocked(true);
+                Input::SetCursorMode(Input::CursorMode::Locked);
+                m_cursorPosition = Input::GetCursorPosition();
 
                 return;
 
             }
             case KeyState::Down: {
 
-                if (Input::GetCursorVisible()) return;
+                if (Input::GetCursorMode() != Input::CursorMode::Locked) return;
+                ImGui::GetIO().AddMousePosEvent(m_cursorPosition.x, m_cursorPosition.y);
+
                 break;
 
             }
             case KeyState::Released: {
 
-                Input::SetCursorVisible(true);
-                Input::SetCursorLocked(false);
+                Input::SetCursorMode(Input::CursorMode::Normal);
 
                 return;
 

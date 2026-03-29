@@ -53,7 +53,7 @@ namespace Copper::Input {
         float ret = 0.0f;
         const MouseAxis& axis = mouseAxises[name];
 
-        ret += axis.isX ? Input::GetCursorPosChange().x : Input::GetCursorPosChange().y;
+        ret += axis.isX ? Input::GetCursorMotion().x : Input::GetCursorMotion().y;
         return ret;
 
     }

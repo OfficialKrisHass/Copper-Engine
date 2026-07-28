@@ -18,11 +18,13 @@ EmitterState::EmitterState()
       m_indent(2),
       m_preCommentIndent(2),
       m_postCommentIndent(1),
+      m_wrap(80),
       m_seqFmt(Block),
       m_mapFmt(Block),
       m_mapKeyFmt(Auto),
       m_floatPrecision(std::numeric_limits<float>::max_digits10),
       m_doublePrecision(std::numeric_limits<double>::max_digits10),
+      m_showTrailingZero(false),
       //
       m_modifiedSettings{},
       m_globalModifiedSettings{},
@@ -351,6 +353,11 @@ bool EmitterState::SetPostCommentIndent(std::size_t value,
   return true;
 }
 
+bool EmitterState::SetWrap(std::size_t value, FmtScope::value scope) {
+  _Set(m_wrap, value, scope);
+  return true;
+}
+
 bool EmitterState::SetFlowType(GroupType::value groupType, EMITTER_MANIP value,
                                FmtScope::value scope) {
   switch (value) {
@@ -397,4 +404,9 @@ bool EmitterState::SetDoublePrecision(std::size_t value,
   _Set(m_doublePrecision, value, scope);
   return true;
 }
+bool EmitterState::SetShowTrailingZero(bool value, FmtScope::value scope) {
+  _Set(m_showTrailingZero, value, scope);
+  return true;
+}
+
 }  // namespace YAML

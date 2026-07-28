@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cstdint>
 #include <iomanip>
 #include <sstream>
 
@@ -38,7 +39,7 @@ bool IsAnchorChar(int ch) {  // test for ns-anchor-char
     return false;
   }
 
-  if (ch < 0x7E) {
+  if (ch <= 0x7E) {
     return true;
   }
 
@@ -88,8 +89,8 @@ int Utf8BytesIndicated(char ch) {
 bool IsTrailingByte(char ch) { return (ch & 0xC0) == 0x80; }
 
 bool GetNextCodePointAndAdvance(int& codePoint,
-                                std::string::const_iterator& first,
-                                std::string::const_iterator last) {
+                                const char*& first,
+                                const char* last) {
   if (first == last)
     return false;
 
@@ -152,39 +153,39 @@ void WriteCodePoint(ostream_wrapper& out, int codePoint) {
   }
 }
 
-bool IsValidPlainScalar(const std::string& str, FlowType::value flowType,
+bool IsValidPlainScalar(const char* str, std::size_t size, FlowType::value flowType,
                         bool allowOnlyAscii) {
   // check against null
-  if (IsNullString(str)) {
+  if (IsNullString(str, size)) {
     return false;
   }
 
   // check the start
   const RegEx& start = (flowType == FlowType::Flow ? Exp::PlainScalarInFlow()
                                                    : Exp::PlainScalar());
-  if (!start.Matches(str)) {
+  if (!start.Matches(StringCharSource(str, size))) {
     return false;
   }
 
   // and check the end for plain whitespace (which can't be faithfully kept in a
   // plain scalar)
-  if (!str.empty() && *str.rbegin() == ' ') {
+  if (size != 0 && str[size - 1] == ' ') {
     return false;
   }
 
   // then check until something is disallowed
-  static const RegEx& disallowed_flow =
+  static const RegEx disallowed_flow =
       Exp::EndScalarInFlow() | (Exp::BlankOrBreak() + Exp::Comment()) |
       Exp::NotPrintable() | Exp::Utf8_ByteOrderMark() | Exp::Break() |
       Exp::Tab() | Exp::Ampersand();
-  static const RegEx& disallowed_block =
+  static const RegEx disallowed_block =
       Exp::EndScalar() | (Exp::BlankOrBreak() + Exp::Comment()) |
       Exp::NotPrintable() | Exp::Utf8_ByteOrderMark() | Exp::Break() |
       Exp::Tab() | Exp::Ampersand();
   const RegEx& disallowed =
       flowType == FlowType::Flow ? disallowed_flow : disallowed_block;
 
-  StringCharSource buffer(str.c_str(), str.size());
+  StringCharSource buffer(str, size);
   while (buffer) {
     if (disallowed.Matches(buffer)) {
       return false;
@@ -198,22 +199,22 @@ bool IsValidPlainScalar(const std::string& str, FlowType::value flowType,
   return true;
 }
 
-bool IsValidSingleQuotedScalar(const std::string& str, bool escapeNonAscii) {
+bool IsValidSingleQuotedScalar(const char* str, std::size_t size, bool escapeNonAscii) {
   // TODO: check for non-printable characters?
-  return std::none_of(str.begin(), str.end(), [=](char ch) {
+  return std::none_of(str, str + size, [=](char ch) {
     return (escapeNonAscii && (0x80 <= static_cast<unsigned char>(ch))) ||
            (ch == '\n');
   });
 }
 
-bool IsValidLiteralScalar(const std::string& str, FlowType::value flowType,
+bool IsValidLiteralScalar(const char* str, std::size_t size, FlowType::value flowType,
                           bool escapeNonAscii) {
   if (flowType == FlowType::Flow) {
     return false;
   }
 
   // TODO: check for non-printable characters?
-  return std::none_of(str.begin(), str.end(), [=](char ch) {
+  return std::none_of(str, str + size, [=](char ch) {
     return (escapeNonAscii && (0x80 <= static_cast<unsigned char>(ch)));
   });
 }
@@ -253,10 +254,10 @@ void WriteDoubleQuoteEscapeSequence(ostream_wrapper& out, int codePoint, StringE
     out << hexDigits[(codePoint >> (4 * (digits - 1))) & 0xF];
 }
 
-bool WriteAliasName(ostream_wrapper& out, const std::string& str) {
+bool WriteAliasName(ostream_wrapper& out, const char* str, std::size_t size) {
   int codePoint;
-  for (std::string::const_iterator i = str.begin();
-       GetNextCodePointAndAdvance(codePoint, i, str.end());) {
+  for (const char* i = str;
+       GetNextCodePointAndAdvance(codePoint, i, str + size);) {
     if (!IsAnchorChar(codePoint)) {
       return false;
     }
@@ -267,25 +268,25 @@ bool WriteAliasName(ostream_wrapper& out, const std::string& str) {
 }
 }  // namespace
 
-StringFormat::value ComputeStringFormat(const std::string& str,
+StringFormat::value ComputeStringFormat(const char* str, std::size_t size,
                                         EMITTER_MANIP strFormat,
                                         FlowType::value flowType,
                                         bool escapeNonAscii) {
   switch (strFormat) {
     case Auto:
-      if (IsValidPlainScalar(str, flowType, escapeNonAscii)) {
+      if (IsValidPlainScalar(str, size, flowType, escapeNonAscii)) {
         return StringFormat::Plain;
       }
       return StringFormat::DoubleQuoted;
     case SingleQuoted:
-      if (IsValidSingleQuotedScalar(str, escapeNonAscii)) {
+      if (IsValidSingleQuotedScalar(str, size, escapeNonAscii)) {
         return StringFormat::SingleQuoted;
       }
       return StringFormat::DoubleQuoted;
     case DoubleQuoted:
       return StringFormat::DoubleQuoted;
     case Literal:
-      if (IsValidLiteralScalar(str, flowType, escapeNonAscii)) {
+      if (IsValidLiteralScalar(str, size, flowType, escapeNonAscii)) {
         return StringFormat::Literal;
       }
       return StringFormat::DoubleQuoted;
@@ -296,11 +297,38 @@ StringFormat::value ComputeStringFormat(const std::string& str,
   return StringFormat::DoubleQuoted;
 }
 
-bool WriteSingleQuotedString(ostream_wrapper& out, const std::string& str) {
+StringFormat::value ComputeBinaryFormat(const Binary &bin,
+                                        EMITTER_MANIP strFormat,
+                                        FlowType::value flowType) {
+  // Equivalent to calling ComputeStringFormat with the base64
+  // encoded form of 'bin'.
+  switch (strFormat) {
+    case Auto:
+      if (bin.size() > 0u) {
+        return StringFormat::Plain; 
+      }
+      return StringFormat::DoubleQuoted;
+    case SingleQuoted:
+      return StringFormat::SingleQuoted;
+    case DoubleQuoted:
+      return StringFormat::DoubleQuoted;
+    case Literal:
+      if (flowType == FlowType::Flow) {
+        return StringFormat::DoubleQuoted;
+      }
+      return StringFormat::Literal;
+    default:
+      break;
+  }
+
+  return StringFormat::DoubleQuoted;
+}
+
+bool WriteSingleQuotedString(ostream_wrapper& out, const char* str, std::size_t size) {
   out << "'";
   int codePoint;
-  for (std::string::const_iterator i = str.begin();
-       GetNextCodePointAndAdvance(codePoint, i, str.end());) {
+  for (const char* i = str;
+       GetNextCodePointAndAdvance(codePoint, i, str + size);) {
     if (codePoint == '\n') {
       return false;  // We can't handle a new line and the attendant indentation
                      // yet
@@ -316,12 +344,12 @@ bool WriteSingleQuotedString(ostream_wrapper& out, const std::string& str) {
   return true;
 }
 
-bool WriteDoubleQuotedString(ostream_wrapper& out, const std::string& str,
+bool WriteDoubleQuotedString(ostream_wrapper& out, const char* str, std::size_t size,
                              StringEscaping::value stringEscaping) {
   out << "\"";
   int codePoint;
-  for (std::string::const_iterator i = str.begin();
-       GetNextCodePointAndAdvance(codePoint, i, str.end());) {
+  for (const char* i = str;
+       GetNextCodePointAndAdvance(codePoint, i, str + size);) {
     switch (codePoint) {
       case '\"':
         out << "\\\"";
@@ -363,12 +391,33 @@ bool WriteDoubleQuotedString(ostream_wrapper& out, const std::string& str,
   return true;
 }
 
-bool WriteLiteralString(ostream_wrapper& out, const std::string& str,
+bool WriteLiteralString(ostream_wrapper& out, const char* str, std::size_t size,
                         std::size_t indent) {
-  out << "|\n";
+  // depending on the numbers of new lines at the end of the string
+  // we need to use 'clip (-)', 'strip (default)' or 'keep' (+) annotation.
+  // if there is no newline at the end, we need 'clip'
+  // if there is single new line at the end, we need 'strip'
+  // otherwise 'keep'
+  //
+  // see YAML spec 1.2 chapter '8.1.1.2 Block Chomping Indicator' for more information
+  // https://yaml.org/spec/1.2.2/#8112-block-chomping-indicator
+
+
+  // The chomping depends on the number of new lines.
+  // The output following this 'WriteLiteralString' call will add an additional '\n',
+  // because of this we need to remove one in the case of 'strip' and 'keep'.
+  if (size == 0 || str[size-1] != '\n') { // clip
+      out << "|-\n";
+  } else if (size == 1 || str[size-2] != '\n') { // strip
+    out << "|\n";
+    size -= 1;
+  } else { // 'keep'
+    out << "|+\n";
+    size -= 1;
+  }
   int codePoint;
-  for (std::string::const_iterator i = str.begin();
-       GetNextCodePointAndAdvance(codePoint, i, str.end());) {
+  for (const char* i = str;
+       GetNextCodePointAndAdvance(codePoint, i, str + size);) {
     if (codePoint == '\n') {
       out << "\n";
     } else {
@@ -406,14 +455,14 @@ bool WriteChar(ostream_wrapper& out, char ch, StringEscaping::value stringEscapi
   return true;
 }
 
-bool WriteComment(ostream_wrapper& out, const std::string& str,
+bool WriteComment(ostream_wrapper& out, const char* str, std::size_t size,
                   std::size_t postCommentIndent) {
   const std::size_t curIndent = out.col();
   out << "#" << Indentation(postCommentIndent);
   out.set_comment();
   int codePoint;
-  for (std::string::const_iterator i = str.begin();
-       GetNextCodePointAndAdvance(codePoint, i, str.end());) {
+  for (const char* i = str;
+       GetNextCodePointAndAdvance(codePoint, i, str + size);) {
     if (codePoint == '\n') {
       out << "\n"
           << IndentTo(curIndent) << "#" << Indentation(postCommentIndent);
@@ -425,14 +474,14 @@ bool WriteComment(ostream_wrapper& out, const std::string& str,
   return true;
 }
 
-bool WriteAlias(ostream_wrapper& out, const std::string& str) {
+bool WriteAlias(ostream_wrapper& out, const char* str, std::size_t size) {
   out << "*";
-  return WriteAliasName(out, str);
+  return WriteAliasName(out, str, size);
 }
 
-bool WriteAnchor(ostream_wrapper& out, const std::string& str) {
+bool WriteAnchor(ostream_wrapper& out, const char* str, std::size_t size) {
   out << "&";
-  return WriteAliasName(out, str);
+  return WriteAliasName(out, str, size);
 }
 
 bool WriteTag(ostream_wrapper& out, const std::string& str, bool verbatim) {
@@ -489,9 +538,35 @@ bool WriteTagWithPrefix(ostream_wrapper& out, const std::string& prefix,
 }
 
 bool WriteBinary(ostream_wrapper& out, const Binary& binary) {
-  WriteDoubleQuotedString(out, EncodeBase64(binary.data(), binary.size()),
-                          StringEscaping::None);
-  return true;
+  std::string encoded = EncodeBase64(binary.data(), binary.size());
+  return WriteDoubleQuotedString(out, encoded.data(), encoded.size(),
+                                 StringEscaping::None);
 }
+
+bool WriteLiteralBinary(ostream_wrapper& out, const Binary& binary, std::size_t indent, std::size_t wrap) {
+  std::string encoded = EncodeBase64(binary.data(), binary.size());
+  std::string wrapped = "";
+  if (wrap) {
+    if (wrap <= indent) return false;
+    wrap -= indent;
+    std::size_t point = wrap;
+    for (std::size_t i = 0; i < encoded.size(); i++) {
+      if (i == point) {
+        wrapped += '\n';
+        point += wrap;
+      }
+      wrapped += encoded[i];
+    }
+  }
+  else
+    wrapped = encoded;
+  return WriteLiteralString(out, wrapped.data(), wrapped.size(), indent);
+}
+
+bool WriteSingleQuotedBinary(ostream_wrapper& out, const Binary& binary) {
+  std::string encoded = EncodeBase64(binary.data(), binary.size());
+  return WriteSingleQuotedString(out, encoded.data(), encoded.size());
+}
+
 }  // namespace Utils
 }  // namespace YAML

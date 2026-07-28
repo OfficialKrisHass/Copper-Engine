@@ -41,6 +41,7 @@ template <class T> using CustomVector = std::vector<T,CustomAllocator<T>>;
 template <class T> using CustomList = std::list<T,CustomAllocator<T>>;
 template <class K, class V, class C=std::less<K>> using CustomMap = std::map<K,V,C,CustomAllocator<std::pair<const K,V>>>;
 template <class K, class V, class H=std::hash<K>, class P=std::equal_to<K>> using CustomUnorderedMap = std::unordered_map<K,V,H,P,CustomAllocator<std::pair<const K,V>>>;
+template <class K, class H=std::hash<K>, class P=std::equal_to<K>> using CustomUnorderedSet = std::unordered_set<K,H,P,CustomAllocator<K>>;
 
 }  // anonymous namespace
 
@@ -67,6 +68,18 @@ TEST(NodeTest, IntScalar) {
   Node node = Node(15);
   EXPECT_TRUE(node.IsScalar());
   EXPECT_EQ(15, node.as<int>());
+}
+
+TEST(NodeTest, OctalScalar) {
+  // YAML 1.2 octal prefix "0o..." (#1251)
+  EXPECT_EQ(83, Node("0o123").as<int>());
+  EXPECT_EQ(7u, Node("0o7").as<unsigned>());
+  // Legacy leading-zero octal and other bases still work
+  EXPECT_EQ(83, Node("0123").as<int>());
+  EXPECT_EQ(255, Node("0xff").as<int>());
+  EXPECT_EQ(123, Node("123").as<int>());
+  // "0o" followed by non-octal digits must not be reinterpreted as hex
+  EXPECT_EQ(-1, Node("0oxff").as<int>(-1));
 }
 
 TEST(NodeTest, SimpleAppendSequence) {
@@ -191,6 +204,39 @@ TEST(NodeTest, MapElementRemoval) {
   EXPECT_TRUE(!node["foo"]);
 }
 
+TEST(NodeTest, MissingKey) {
+  Node node;
+  node["foo"] = "value";
+  EXPECT_TRUE(!node["bar"]);
+  EXPECT_EQ(NodeType::Undefined, node["bar"].Type());
+  EXPECT_THROW(node["bar"].as<std::string>(), InvalidNode);
+}
+
+TEST(NodeTest, MapContains) {
+  Node node, key;
+  node["foo"] = "value";
+  node["bar"] = "eulav";
+  node[1] = "hello";
+  key["test"] = "asdf";
+  key["test2"] = "ghjkl";
+  node[key] = 123;
+  EXPECT_TRUE(node.contains("foo"));
+  EXPECT_TRUE(node.contains("bar"));
+  EXPECT_TRUE(node.contains(1));
+  EXPECT_TRUE(node.contains(key));
+  EXPECT_TRUE(!node.contains("baz"));
+  EXPECT_TRUE(!node.contains(2));
+
+  node.remove("foo");
+  node.remove(key);
+  EXPECT_TRUE(!node.contains("foo"));
+  EXPECT_TRUE(node.contains("bar"));
+  EXPECT_TRUE(node.contains(1));
+  EXPECT_TRUE(!node.contains(key));
+  EXPECT_TRUE(!node.contains("baz"));
+  EXPECT_TRUE(!node.contains(2));
+}
+
 TEST(NodeTest, MapIntegerElementRemoval) {
   Node node;
   node[1] = "hello";
@@ -295,6 +341,15 @@ TEST(NodeTest, MapIteratorWithUndefinedValues) {
   for (const_iterator it = node.begin(); it != node.end(); ++it)
     count++;
   EXPECT_EQ(1, count);
+}
+
+TEST(NodeTest, DestroyedMapIterator) {
+  Node node;
+  node["key"] = "value";
+  Node valid_key_node = node.begin()->first;
+  EXPECT_EQ("key", valid_key_node.Scalar());
+  const Node& invalid_node = node.begin()->first;
+  EXPECT_THROW(invalid_node.UninstrumentedScalarForTesting(), BadDereference);
 }
 
 TEST(NodeTest, ConstIteratorOnConstUndefinedNode) {
@@ -515,6 +570,34 @@ TEST(NodeTest, StdUnorderedMapWithCustomAllocator) {
   EXPECT_EQ(squares, actualSquares);
 }
 
+TEST(NodeTest, StdUnorderedSet) {
+  std::unordered_set<int> primes;
+  primes.insert(2);
+  primes.insert(3);
+  primes.insert(5);
+  primes.insert(7);
+  primes.insert(11);
+  primes.insert(13);
+
+  Node node;
+  node["primes"] = primes;
+  EXPECT_EQ(primes, node["primes"].as<std::unordered_set<int>>());
+}
+
+TEST(NodeTest, StdUnorderedSetWithCustomAllocator) {
+  CustomUnorderedSet<int> primes;
+  primes.insert(2);
+  primes.insert(3);
+  primes.insert(5);
+  primes.insert(7);
+  primes.insert(11);
+  primes.insert(13);
+
+  Node node;
+  node["primes"] = primes;
+  EXPECT_EQ(primes, node["primes"].as<CustomUnorderedSet<int>>());
+}
+
 TEST(NodeTest, StdPair) {
   std::pair<int, std::string> p;
   p.first = 5;
@@ -725,6 +808,12 @@ TEST(NodeTest, AccessNonexistentKeyOnConstNode) {
   ASSERT_FALSE(other["5"]);
 }
 
+TEST(NodeTest, CreateMapWithFloatingPoint0Key) {
+  Node node;
+  node[0.1] = 1.0;
+  EXPECT_TRUE(node.IsMap());
+}
+
 class NodeEmitterTest : public ::testing::Test {
  protected:
   void ExpectOutput(const std::string& output, const Node& node) {
@@ -749,8 +838,15 @@ TEST_F(NodeEmitterTest, SimpleFlowSeqNode) {
   node.push_back(1.5);
   node.push_back(2.25);
   node.push_back(3.125);
+  node.push_back(34.34);
+  node.push_back(56.56);
+  node.push_back(12.12);
+  node.push_back(78.78);
+  node.push_back(0.0003);
+  node.push_back(4000.);
+  node.push_back(1.5474251e+26f);
 
-  ExpectOutput("[1.5, 2.25, 3.125]", node);
+  ExpectOutput("[1.5, 2.25, 3.125, 34.34, 56.56, 12.12, 78.78, 0.0003, 4000, 1.5474251e+26]", node);
 }
 
 TEST_F(NodeEmitterTest, NestFlowSeqNode) {
@@ -849,5 +945,17 @@ TEST_F(NodeEmitterTest, NestFlowMapListNode) {
 
   ExpectOutput("{position: [1.5, 2.25, 3.125]}", mapNode);
 }
+
+TEST_F(NodeEmitterTest, RobustAgainstLocale) {
+  std::locale::global(std::locale(""));
+  Node node;
+  node.push_back(1.5);
+  node.push_back(2.25);
+  node.push_back(3.125);
+  node.push_back(123456789);
+
+  ExpectOutput("- 1.5\n- 2.25\n- 3.125\n- 123456789", node);
+}
+
 }
 }

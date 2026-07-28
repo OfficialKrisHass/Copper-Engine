@@ -90,7 +90,7 @@ namespace Editor::ProjectMetadata {
         CUP_FUNCTION();
 
         const fs::path path = it->first.as<fs::path>();
-        const YAML::Node& metadata = it->second;
+        const YAML::Node metadata = it->second;
 
         if (!fs::exists(GetProject().GetAssetsPath() / path)) return;
 

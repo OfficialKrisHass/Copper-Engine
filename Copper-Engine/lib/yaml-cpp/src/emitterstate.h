@@ -108,6 +108,9 @@ class EmitterState {
   bool SetPostCommentIndent(std::size_t value, FmtScope::value scope);
   std::size_t GetPostCommentIndent() const { return m_postCommentIndent.get(); }
 
+  bool SetWrap(std::size_t value, FmtScope::value scope);
+  std::size_t GetWrap() const { return m_wrap.get(); }
+
   bool SetFlowType(GroupType::value groupType, EMITTER_MANIP value,
                    FmtScope::value scope);
   EMITTER_MANIP GetFlowType(GroupType::value groupType) const;
@@ -119,6 +122,8 @@ class EmitterState {
   std::size_t GetFloatPrecision() const { return m_floatPrecision.get(); }
   bool SetDoublePrecision(std::size_t value, FmtScope::value scope);
   std::size_t GetDoublePrecision() const { return m_doublePrecision.get(); }
+  bool SetShowTrailingZero(bool value, FmtScope::value scope);
+  bool GetShowTrailingZero() const { return m_showTrailingZero.get(); }
 
  private:
   template <typename T>
@@ -141,11 +146,13 @@ class EmitterState {
   Setting<EMITTER_MANIP> m_intFmt;
   Setting<std::size_t> m_indent;
   Setting<std::size_t> m_preCommentIndent, m_postCommentIndent;
+  Setting<std::size_t> m_wrap;  // applied to literal binary
   Setting<EMITTER_MANIP> m_seqFmt;
   Setting<EMITTER_MANIP> m_mapFmt;
   Setting<EMITTER_MANIP> m_mapKeyFmt;
   Setting<std::size_t> m_floatPrecision;
   Setting<std::size_t> m_doublePrecision;
+  Setting<bool>        m_showTrailingZero;
 
   SettingChanges m_modifiedSettings;
   SettingChanges m_globalModifiedSettings;

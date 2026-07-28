@@ -49,9 +49,7 @@ namespace Editor {
         if (GetEditorState() == EditorState::Play && !m_isAcceptingInput && ImGui::IsItemClicked()) {
 
             m_isAcceptingInput = true;
-
-            Input::SetCursorLocked(true);
-            Input::SetCursorVisible(false);
+            Input::SetCursorMode(Input::CursorMode::Locked);
 
         }
 

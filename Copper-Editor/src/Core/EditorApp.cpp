@@ -248,7 +248,7 @@ namespace Editor {
 
         if (Args::Count() > 0) {
 
-            const fs::path projectPath = Args::GetArgument(Args::Count() - 1);
+            const fs::path projectPath = Args::GetArgument(static_cast<uint32>(Args::Count()) - 1);
             if (fs::exists(projectPath / "Project.cu")) {
 
                 data.project.Open(projectPath);
@@ -571,8 +571,7 @@ namespace Editor {
 
         data.camView.SetIsAcceptingInput(false);
 
-        Input::SetCursorLocked(false);
-        Input::SetCursorVisible(true);
+        Input::SetCursorMode(Input::CursorMode::Normal);
 
     }
 
@@ -894,8 +893,7 @@ namespace Editor {
 
                 data.camView.SetIsAcceptingInput(false);
 
-                Input::SetCursorLocked(false);
-                Input::SetCursorVisible(true);
+                Input::SetCursorMode(Input::CursorMode::Normal);
 
                 break;
 

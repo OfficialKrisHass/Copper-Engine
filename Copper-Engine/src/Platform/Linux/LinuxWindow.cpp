@@ -255,4 +255,12 @@ namespace Copper {
 
     }
 
+    void Window::SetCursorMode(Input::CursorMode value) {
+
+        CUP_FUNCTION();
+
+        glfwSetInputMode(WINDOW, GLFW_CURSOR, GLFW_CURSOR_NORMAL + static_cast<uint8>(value));
+
+    }
+
 }

@@ -123,12 +123,14 @@ namespace Copper::Args {
         if (fs::exists(executableDirectory / "assets"))
             resourceDirectory = executableDirectory;
 #ifdef CU_LINUX // In the case of linux, resources will be found at /usr/share/
-        else
-            resourceDirectory = "/usr/share";
-#endif
+        else {
 
+            resourceDirectory = "/usr/share";
 #ifdef CU_EDITOR
-        resourceDirectory /= "Copper-Editor";
+            resourceDirectory /= "Copper-Editor";
+#endif
+        
+        }
 #endif
 
     }

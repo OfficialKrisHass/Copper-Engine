@@ -8,12 +8,14 @@
 
 namespace Copper {
 
+    namespace Input { enum class CursorMode : uint8; }
+
     struct WindowData {
 
         UVector2I size;
         std::string title;
 
-        bool focused;
+        bool focused = true;
 
         Event windowCloseEvent;
         WindowFocusedEvent windowFocusedEvent;
@@ -68,6 +70,8 @@ namespace Copper {
         void SetSize(const UVector2I& size);
 
         void SetTitle(const std::string& title);
+
+        void SetCursorMode(Input::CursorMode value);
 
         // Events
 

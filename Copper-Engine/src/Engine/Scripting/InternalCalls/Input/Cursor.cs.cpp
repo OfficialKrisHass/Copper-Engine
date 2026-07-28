@@ -7,26 +7,24 @@ namespace Copper::Scripting::Cursor {
     bool IsVisible() {
 
         CUP_FUNCTION();
-        return Input::GetCursorVisible();
+        return true;
 
     }
     void SetVisible(bool value) {
 
         CUP_FUNCTION();
-        Input::SetCursorVisible(value);
 
     }
 
     bool IsLocked() {
 
         CUP_FUNCTION();
-        return Input::GetCursorLocked();
+        return false;
 
     }
     void SetLocked(bool value) {
 
         CUP_FUNCTION();
-        return Input::SetCursorLocked(value);
 
     }
 

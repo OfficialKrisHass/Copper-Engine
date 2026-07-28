@@ -31,7 +31,7 @@ static void cpuid(int out[4], int leaf, int count) {
 
 // Platform independent xgetbv implementation.
 // Returns the xcr0 register
-static int xgetbv() {
+static uint64_t xgetbv() {
 
 #if defined(_MSC_VER)
     return _xgetbv(0);
@@ -305,7 +305,7 @@ namespace Copper {
         // Bit 1 = SSE support
         // Bit 2 = AVX support
 
-        int xcr = xgetbv();
+        uint64_t xcr = xgetbv();
 
         // Test for both SSE and AVX support (0x6 = first and second bit)
         if ((xcr & 0x6) != 0x6) return false;

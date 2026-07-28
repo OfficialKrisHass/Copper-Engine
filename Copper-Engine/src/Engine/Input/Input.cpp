@@ -17,10 +17,12 @@ namespace Copper::Input {
     std::unordered_map<KeyCode, KeyState> keyStates;
     std::vector<KeyCode> keysToUpdate;
 
-    // Mouse
+    // Cursor
 
-    Vector2I prevMousePos;
-    Vector2I cursorPosChange;
+    CursorMode cursorMode = CursorMode::Normal;
+
+    Vector2I prevCursorPosition;
+    Vector2I cursorMotion;
 
     bool OnKeyPressed(const Event& e);
     bool OnKeyReleased(const Event& e);
@@ -56,7 +58,7 @@ namespace Copper::Input {
 
         pfd::settings::verbose(false);
 
-        prevMousePos = GetCursorPosition();
+        prevCursorPosition = GetCursorPosition();
 
     }
     void Update() {
@@ -77,7 +79,7 @@ namespace Copper::Input {
         }
         keysToUpdate.clear();
 
-        cursorPosChange = Vector2I::zero;
+        cursorMotion = Vector2I::zero;
 
     }
 
@@ -147,19 +149,28 @@ namespace Copper::Input {
 
         const MouseEvent& event = static_cast<const MouseEvent&>(e);
 
-        cursorPosChange = event.mouseCoords - prevMousePos;
-        if (GetCursorLocked()) {
+        cursorMotion = event.mouseCoords - prevCursorPosition;
+        prevCursorPosition = event.mouseCoords;
 
-            SetCursorPosition(prevMousePos.x, prevMousePos.y);
-            return true;
-
-        }
-
-        prevMousePos = event.mouseCoords;
         return true;
 
     }
 
-    const Vector2I& GetCursorPosChange() { return cursorPosChange; }
+    // Getters
+
+    CursorMode GetCursorMode() { return cursorMode; }
+
+    const Vector2I& GetCursorMotion() { return cursorMotion; }
+
+    // Setters
+
+    void SetCursorMode(CursorMode mode) {
+
+        CUP_FUNCTION();
+
+        cursorMode = mode;
+        window->SetCursorMode(mode);
+
+    }
 
 }
